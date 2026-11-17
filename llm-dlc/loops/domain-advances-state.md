@@ -282,6 +282,19 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
   (`an_effect_contracts_writes_meet_the_induction_and_the_write_set`), also requiring the contract to be proved and
   the refusal to name the write. It fails with the gate removed (by mutation). No example rests on it (no example has
   `writes:`, and the one `decreases:` is a lemma whose proof takes no contract).
+- 2026-11-17, the observation binding brought level with the evidence line again (nothing of 286 decided; the frozen
+  claim unchanged). Inbox: `domain-advances-state-I014` taken, which also lands `domain-advances-state-I011`'s fix on
+  this line: `vqquvmnm`'s `lib/src/observed.rs`, `lib/src/observed/ObservedInitializer.java` and
+  `lib/tests/observed_countermodels.rs` are copied whole (they hold this line's `nameOf`), with the binding
+  countermodels (`lib/tests/binding_countermodels.rs`, `fixtures/binding-countermodels`) and `lib/README.md`'s
+  observed-initializer paragraph; the cost inventory is regenerated. The three false proofs of `klqnuoxw` are refused
+  here too. **Where bind stops now** (capped probes at bound 2, trials): observing `CachedIntrospectionResults` is now
+  refused before the run, since its initialization initializes `SpringFactoriesLoader`, whose `logger` holds a
+  `java.util.logging.Logger` the observer does not describe (the stricter check is right: that logger is the JDK's
+  shared one). Without that observation, `PropertyEditorRegistrySupport` is still observed and the run reaches
+  `CachedIntrospectionResults.<clinit>` at `BeanWrapperImpl.getCachedIntrospectionResults:174`, beside the
+  `toLowerCase()` gap of cycle 1. So step 3's stand-in should stand at `getLocalPropertyHandler` or above, where the
+  introspection caches are off the path, and the driver then drops that observation.
 - Next: step 3, option 2. A stand-in for `AbstractNestablePropertyAccessor.processLocalProperty(PropertyTokenHolder,
   PropertyValue)` on a wrapped object of exactly one class, checked on a JVM by sampling against the real method:
   - Spring's lookup (exact, uncapitalized, capitalized) over the property names and write methods the JVM's

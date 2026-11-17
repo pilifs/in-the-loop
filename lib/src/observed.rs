@@ -31,17 +31,25 @@
 //! - The classes it initialized besides itself (as the JVM logged them, `-Xlog:class+init`), its superclasses and
 //!   superinterfaces among them: each is, in the check, initialized as it is without the observed initializer (a
 //!   supertype before the class, any other where the check first uses it), so its static state just after the
-//!   observed initialization must be the state it has initialized first thing in a JVM of its own, as far as the
-//!   observation holds it. An initializer that wrote another class's static (`A.<clinit> { B.x = 1; k = 7; }`,
-//!   `lib/tests/observed_countermodels.rs`), a superclass's (`ob.Derived`) or a cell of a superinterface's array
-//!   (`ob.Filled`, both `lib/tests/fixtures/rule-countermodels`) is refused, with the field, and so is
-//!   one whose class file is not the tool's. A value not held is compared by what it is said to be, and a lambda's
-//!   hidden class is said by what it was defined from (`R$$Lambda`), without the address a JVM appends to its name,
-//!   which differs from run to run (`claims.Hooked`, `lib/tests/claims.rs`).
+//!   observed initialization must be the state it has initialized first thing in a JVM of its own. An initializer
+//!   that wrote another class's static (`A.<clinit> { B.x = 1; k = 7; }`, `lib/tests/observed_countermodels.rs`), a
+//!   superclass's (`ob.Derived`) or a cell of a superinterface's array (`ob.Filled`, both
+//!   `lib/tests/fixtures/rule-countermodels`) is refused, with the field, and so is one whose class file is not the
+//!   tool's. A value such a class holds that the observation does not hold is compared by its description, which
+//!   the observer reads in full (`Describe` in the observer): an object of the application by every field its
+//!   classes declare, a lambda by the method it calls (from its class's constant pool, which the observer's JVM is
+//!   given access to) and the values it captured, a JDK collection by its elements, a float by its bits. So a write
+//!   into an object another class holds (`bc.Boxed`) and a lambda put in place of another of its class
+//!   (`bc.Rehooked`, both `lib/tests/fixtures/binding-countermodels`) are refused, and a value the observer does
+//!   not describe (an object of the JDK it has no reading of, one whose class extends a JDK class with state) is
+//!   refused, with why. A lambda's hidden class is named by what it was defined from (`R$$Lambda`), without the
+//!   address a JVM appends to its name, which differs from run to run (`claims.Hooked`, `lib/tests/claims.rs`).
 //! - The default locale: one whose language is Turkish, Azeri or Lithuanian is refused, since the check takes the
 //!   JVM's default to be none of them ([`crate::bmc::strings::LOCALE_ASSUMPTION`]); any other is stated. The default
 //!   time zone (which the JDK reads from `user.timezone` or the machine, as `ob.Zoned`'s `TimeZone.getDefault()`
-//!   does) is stated too.
+//!   does) is stated too. The observer reads both again after the initialization, and the system properties: an
+//!   initialization that changed one (`Locale.setDefault`, as `bc.Relocaled` does, `TimeZone.setDefault`,
+//!   `System.setProperty`) is refused, with the setting, since the check runs what follows under the one before.
 //! - The system properties the class path's code read during the initialization (through `System.getProperty`,
 //!   `Integer.getInteger`, `Long.getLong` or `Boolean.getBoolean`, or by key through the map `System.getProperties()`
 //!   gives, as `ob.Bypassed` does), each with the value it had or that it was not set: stated. One that read the
@@ -52,11 +60,14 @@
 //!   reads it (`System.getenv`, `ProcessBuilder.environment`, as `ob.Environ` does) is refused, by the class.
 //! - The JDK: its release must be the check's, and its vendor and home are stated.
 //!
-//! What is still assumed, and stated: that a class it initialized holds, where the observation holds nothing of a
-//! field (an object of the application), what it would hold alone, and that a write of the value a field already
-//! had is none; that the settings it read (the locale, the time zone, the properties) are those of the run the
-//! result is about. Not seen: a read of the environment by reflection or through a JDK method other than the two,
-//! and a read of the properties through a method the observer does not override (`equals`, `hashCode`).
+//! What is still assumed, and stated: that a write of the value a field already had is none; that the settings it
+//! read (the locale, the time zone, the properties) are those of the run the result is about. Not seen: a read of
+//! the environment by reflection or through a JDK method other than the two, a read of the properties through a
+//! method the observer does not override (`equals`, `hashCode`), the JDK's own state other than those settings (a
+//! logger registered with its logging, as spring-jcl's `LogFactory` may do), what a `ReferenceQueue` holds (said as
+//! one: the collector's), the state of an object the observer describes through its public methods beyond what
+//! they say, and identity: a class's object said alike after the initialization and alone may be one object shared
+//! with the observed class, which the check holds apart.
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -135,6 +146,9 @@ pub struct On {
     pub properties: Vec<(String, Option<String>)>,
     /// The first class of the class path that read the system properties as a whole, if one did.
     pub all_properties: Option<String>,
+    /// Each setting of the JDK the initialization changed, as the observer read it again after it: the default
+    /// locale (each category), the default time zone, a system property set or removed.
+    pub changed: Vec<String>,
     /// Each class of the class path the initialization initialized besides the class, its supertypes among them.
     pub initialized: Vec<Initialized>,
 }
@@ -170,7 +184,7 @@ pub fn assumption(class: &str, observed: &Observed) -> String {
         String::new()
     } else {
         let names: Vec<String> = bound.initialized.iter().map(|i| i.name.replace('/', ".")).collect();
-        format!("; it initialized {} besides, and left each in the state the class has initialized alone, as far as the observation holds its fields (what it holds nothing of is taken to be the same too)", names.join(", "))
+        format!("; it initialized {} besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements)", names.join(", "))
     };
     format!(
         "the class initializer of {} was not run by the checker: its static state is the one a JVM (JDK {jdk}, {}) left after initializing the class first thing on {on}, from the class file the check reads (sha256 {}), in a JVM whose default locale was {} (formatting {}, display {}) and default time zone {}; {properties}{initialized}; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
@@ -236,6 +250,11 @@ pub fn observe(classes: &[String], classpath: &[PathBuf], work: &Path) -> Result
                 let line = jvm.run(&name, None)?;
                 alone.insert(other.name.clone(), state(&name, &line)?);
             }
+            if let Some(value) = undescribed(&other.state).or_else(|| undescribed(&alone[&other.name])) {
+                return Err(Error::new(format!(
+                    "--observed-initializer {binary}: its initialization initialized {name}, {value}, so whether the initialization wrote into it is not known, and the check cannot take it"
+                )));
+            }
             if let Some(field) = changed(&other.state, &alone[&other.name]) {
                 return Err(Error::new(format!(
                     "--observed-initializer {binary}: its initialization initialized {name} and left it other than it is initialized alone ({field}): it wrote another class's static state, which an observation does not carry (it holds only {binary}'s own fields), so the check cannot take it"
@@ -263,6 +282,8 @@ impl Jvm {
         let stderr = self.dir.join(format!("{binary}{suffix}.stderr"));
         let mut command = Command::new(&self.java);
         command.args(["-Xmx256m", "-XX:+UseSerialGC", "-XX:TieredStopAtLevel=1", "-XX:-UsePerfData"]);
+        // The observer reads a lambda's constant pool to say which method it calls (its Describe and Pool).
+        command.args(["--add-exports", "java.base/jdk.internal.access=ALL-UNNAMED", "--add-exports", "java.base/jdk.internal.reflect=ALL-UNNAMED"]);
         if let Some(log) = log {
             let _ = std::fs::remove_file(log);
             command.arg(format!("-Xlog:class+init=info:file={}::filecount=0", log.display()));
@@ -345,12 +366,42 @@ fn settings(binary: &str, on: &On) -> Result<(), Error> {
             on.locale
         )));
     }
+    if !on.changed.is_empty() {
+        return Err(Error::new(format!(
+            "--observed-initializer {binary}: its initialization changed the JDK's settings ({}), which an observation does not carry: the check would run what follows under the settings before it, so it cannot take it",
+            on.changed.join("; ")
+        )));
+    }
     if let Some(reader) = &on.all_properties {
         return Err(Error::new(format!(
             "--observed-initializer {binary}: {reader} read the system properties as a whole (their keys, entries or values, through System.getProperties()), and an observation lists only the properties read by name, so the check cannot take it"
         )));
     }
     Ok(())
+}
+
+/// The first value of a class's state (a field, or a cell or entry of an object a field holds) that the observation
+/// neither holds nor describes, said with why ([`changed`] compares what is described).
+fn undescribed(state: &serde_json::Value) -> Option<String> {
+    let lacks = |v: &serde_json::Value| -> Option<String> {
+        let what = v.get("u")?.as_str()?;
+        if v.get("d").is_some_and(|d| d.is_string()) {
+            return None;
+        }
+        Some(format!("{what}, which the observation neither holds nor describes ({})", v.get("why").and_then(|w| w.as_str()).unwrap_or("the observer said nothing of it")))
+    };
+    for f in state.get("fields").and_then(|f| f.as_array()).into_iter().flatten() {
+        if let Some(said) = f.get("value").and_then(lacks) {
+            return Some(format!("whose field {} holds {said}", f.get("name").and_then(|n| n.as_str()).unwrap_or("")));
+        }
+    }
+    for o in state.get("objects").and_then(|o| o.as_array()).into_iter().flatten() {
+        let held = o.get("cells").or_else(|| o.get("entries")).and_then(|c| c.as_array());
+        if let Some(said) = held.into_iter().flatten().find_map(lacks) {
+            return Some(format!("whose fields hold an object that holds {said}"));
+        }
+    }
+    None
 }
 
 /// The first field whose value differs between two states of one class, said as the field and its two values.
@@ -366,7 +417,11 @@ fn changed(after: &serde_json::Value, alone: &serde_json::Value) -> Option<Strin
             return n.to_string();
         }
         if let Some(u) = v.get("u").and_then(|u| u.as_str()) {
-            return u.to_string();
+            return match v.get("d").and_then(|d| d.as_str()) {
+                Some(d) if d.chars().count() > 200 => format!("{u} ({}…)", d.chars().take(200).collect::<String>()),
+                Some(d) => format!("{u} ({d})"),
+                None => u.to_string(),
+            };
         }
         "an object the observation holds".into()
     };
@@ -504,6 +559,7 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
             Some(serde_json::Value::String(reader)) => Some(reader.clone()),
             _ => return Err(bad("allProperties")),
         },
+        changed: list("changed")?.iter().map(|c| c.as_str().map(String::from).ok_or_else(|| bad("changed"))).collect::<Result<_, _>>()?,
         initialized: list("initialized")?
             .iter()
             .map(|i| Ok(Initialized { name: text(i, "name")?, sha256: text(i, "sha256")?, state: serde_json::json!({ "fields": i.get("fields"), "objects": i.get("objects") }) }))
@@ -553,7 +609,7 @@ mod tests {
     use super::*;
 
     /// What an observer says it observed on, as it writes it: one property read, one class initialized besides.
-    const ON: &str = r#""on":{"sha256":"ab12","from":"file:/app/","classpath":["/w/observed","/app"],"vendor":"Eclipse Adoptium","home":"/jdk","locale":{"default":"en-US","format":"de-DE","display":"en-US"},"zone":"Asia/Tokyo","properties":[{"name":"p.value","value":"xyz"},{"name":"p.unset","value":null}],"allProperties":null,"initialized":[{"name":"p/B","sha256":"cd34","fields":[{"name":"x","value":{"n":1}}],"objects":[]}]}"#;
+    const ON: &str = r#""on":{"sha256":"ab12","from":"file:/app/","classpath":["/w/observed","/app"],"vendor":"Eclipse Adoptium","home":"/jdk","locale":{"default":"en-US","format":"de-DE","display":"en-US"},"zone":"Asia/Tokyo","properties":[{"name":"p.value","value":"xyz"},{"name":"p.unset","value":null}],"allProperties":null,"changed":[],"initialized":[{"name":"p/B","sha256":"cd34","fields":[{"name":"x","value":{"n":1}}],"objects":[]}]}"#;
 
     fn on(fields: &str) -> String {
         format!("{{{fields},{ON}}}")
@@ -618,6 +674,28 @@ mod tests {
         assert!(unsaid.contains("allProperties"), "{unsaid}");
         let unzoned = parse("p.C", &line.replace(r#""zone":"Asia/Tokyo","#, "")).unwrap_err().to_string();
         assert!(unzoned.contains("zone"), "{unzoned}");
+    }
+
+    /// A value the observation does not hold is compared by its description (`bc.Boxed`'s Box, `bc.Rehooked`'s
+    /// lambda), one with none is refused with why, and an initialization that changed the JDK's settings
+    /// (`bc.Relocaled`) is refused with the setting.
+    #[test]
+    fn a_value_not_held_is_compared_by_its_description_and_a_changed_setting_is_refused() {
+        let boxed = |d: &str| serde_json::json!({"fields": [{"name": "BOX", "value": {"u": "an object of bc.Box", "d": d}}], "objects": []});
+        assert_eq!(changed(&boxed("bc.Box{value=Integer 5}"), &boxed("bc.Box{value=Integer 0}")).as_deref(), Some("its field BOX was an object of bc.Box (bc.Box{value=Integer 5}) after it and is an object of bc.Box (bc.Box{value=Integer 0}) alone"));
+        assert_eq!(changed(&boxed("bc.Box{value=Integer 0}"), &boxed("bc.Box{value=Integer 0}")), None);
+        assert_eq!(undescribed(&boxed("bc.Box{value=Integer 0}")), None);
+        let logger = serde_json::json!({"fields": [{"name": "LOG", "value": {"u": "an object of java.util.logging.Logger", "why": "an object of java.util.logging.Logger, a class of the JDK the observer does not describe"}}], "objects": []});
+        let said = undescribed(&logger).unwrap();
+        assert!(said.starts_with("whose field LOG holds an object of java.util.logging.Logger, which the observation neither holds nor describes (an object of"), "{said}");
+        let cell = serde_json::json!({"fields": [{"name": "A", "value": {"o": 0}}], "objects": [{"k": "array", "element": "Ljava/lang/Object;", "cells": [{"u": "an object of p.X"}]}]});
+        assert!(undescribed(&cell).unwrap().contains("whose fields hold an object that holds an object of p.X"), "{:?}", undescribed(&cell));
+        let line = on(r#""jdk":"25","fields":[],"objects":[]"#).replace(r#""changed":[]"#, r#""changed":["the default locale, from en-US to tr"]"#);
+        let o = parse("p.C", &line).unwrap();
+        let said = settings("p.C", &o.on).unwrap_err().to_string();
+        assert!(said.contains("its initialization changed the JDK's settings (the default locale, from en-US to tr)"), "{said}");
+        let unsaid = parse("p.C", &on(r#""jdk":"25","fields":[],"objects":[]"#).replace(r#""changed":[],"#, "")).unwrap_err().to_string();
+        assert!(unsaid.contains("changed"), "{unsaid}");
     }
 
     #[test]

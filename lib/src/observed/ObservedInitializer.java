@@ -30,8 +30,11 @@ import java.util.regex.Pattern;
  * the JDK, the default locale and time zone, each system property the class path's code read with the value it had
  * (and the first class of it that read the properties as a whole, if one did), and each class of the class path the
  * initialization initialized besides the class, its supertypes among them, with its class file's sha256 and its
- * static state as it was then. Without one, the class's state alone: what a class another initialization
- * initialized is compared with, initialized first thing in a JVM of its own.
+ * static state as it was then, and each setting of the JDK the initialization changed (the default locale and time
+ * zone, a system property), read again after it ("changed"). Without one, the class's state alone: what a class
+ * another initialization initialized is compared with, initialized first thing in a JVM of its own. In both, each
+ * value of such a class the observation does not hold is also described in full ("d", see Describe), or said why it
+ * is not ("why"), so that a write into it shows.
  */
 public final class ObservedInitializer {
     private static final Pattern INITIALIZING = Pattern.compile("Initializing '([^']+)'");
@@ -246,6 +249,36 @@ public final class ObservedInitializer {
             }
         }
 
+        /** Each system property the initialization set, removed or changed, said with its value before and after. */
+        List<String> changedFrom(Properties original) {
+            busy = true;
+            try {
+                java.util.TreeSet<String> keys = new java.util.TreeSet<>();
+                for (Object k : super.keySet()) {
+                    keys.add(String.valueOf(k));
+                }
+                for (Object k : original.keySet()) {
+                    keys.add(String.valueOf(k));
+                }
+                List<String> changed = new ArrayList<>();
+                for (String k : keys) {
+                    Object before = original.get(k);
+                    Object after = super.get(k);
+                    if (!java.util.Objects.equals(before, after)) {
+                        changed.add("the system property " + k + ", from " + said(before) + " to " + said(after));
+                    }
+                }
+                return changed;
+            }
+            finally {
+                busy = false;
+            }
+        }
+
+        private static String said(Object value) {
+            return value == null ? "not set" : "\"" + value + "\"";
+        }
+
         /** The class of the class path that made the read, past the map and the JDK's getters, or null. */
         private static String reader(StackTraceElement[] stack) {
             for (StackTraceElement frame : stack) {
@@ -286,7 +319,23 @@ public final class ObservedInitializer {
             return;
         }
         System.setProperties(original);
-        String state = new Dump().of(c);
+        // The JDK's settings the initialization changed, read again after it: the check runs what follows under the
+        // ones before it.
+        List<String> changed = new ArrayList<>();
+        String[][] settings = {
+            {"the default locale", locale, Locale.getDefault().toLanguageTag()},
+            {"the default locale for formatting", format, Locale.getDefault(Locale.Category.FORMAT).toLanguageTag()},
+            {"the default locale for display", display, Locale.getDefault(Locale.Category.DISPLAY).toLanguageTag()},
+            {"the default time zone", zone, java.util.TimeZone.getDefault().getID()},
+        };
+        for (String[] s : settings) {
+            if (!s[1].equals(s[2])) {
+                changed.add(s[0] + ", from " + s[1] + " to " + s[2]);
+            }
+        }
+        changed.addAll(recording.changedFrom(original));
+        // Alone, the class is what another initialization's is compared with: described in full.
+        String state = new Dump(log == null).of(c);
         if (log == null) {
             System.out.println("@observed {\"jdk\":" + text(jdk) + "," + state + "}");
             return;
@@ -314,12 +363,16 @@ public final class ObservedInitializer {
                 continue;
             }
             initialized.append(initialized.length() == 0 ? "" : ",").append("{\"name\":").append(text(internal)).append(",\"sha256\":")
-                    .append(text(sha256(app, internal))).append(',').append(new Dump().of(k)).append('}');
+                    .append(text(sha256(app, internal))).append(',').append(new Dump(true).of(k)).append('}');
         }
         StringBuilder properties = new StringBuilder();
         for (String key : recording.order) {
             String value = recording.read.get(key);
             properties.append(properties.length() == 0 ? "" : ",").append("{\"name\":").append(text(key)).append(",\"value\":").append(value == null ? "null" : text(value)).append('}');
+        }
+        StringBuilder changes = new StringBuilder();
+        for (String change : changed) {
+            changes.append(changes.length() == 0 ? "" : ",").append(text(change));
         }
         StringBuilder entries = new StringBuilder();
         for (String entry : classPath.split(java.io.File.pathSeparator)) {
@@ -332,7 +385,7 @@ public final class ObservedInitializer {
                 + ",\"from\":" + (from == null ? "null" : text(from)) + ",\"classpath\":[" + entries + "],\"vendor\":" + text(vendor)
                 + ",\"home\":" + text(home) + ",\"locale\":{\"default\":" + text(locale) + ",\"format\":" + text(format) + ",\"display\":"
                 + text(display) + "},\"zone\":" + text(zone) + ",\"properties\":[" + properties + "],\"allProperties\":"
-                + (recording.whole == null ? "null" : text(recording.whole)) + ",\"initialized\":[" + initialized + "]}}");
+                + (recording.whole == null ? "null" : text(recording.whole)) + ",\"changed\":[" + changes + "],\"initialized\":[" + initialized + "]}}");
     }
 
     /** The sha256 of the class file the loader reads of the class, or "" where it reads none. */
@@ -367,10 +420,18 @@ public final class ObservedInitializer {
         return o.append('"').toString();
     }
 
-    /** One class's static state, with the objects it holds numbered from 0. */
+    /**
+     * One class's static state, with the objects it holds numbered from 0; where `describe`, each value not held is
+     * described in full beside what it is said to be (Describe).
+     */
     private static final class Dump {
         private final IdentityHashMap<Object, Integer> ids = new IdentityHashMap<>();
         private final List<String> objects = new ArrayList<>();
+        private final boolean describe;
+
+        Dump(boolean describe) {
+            this.describe = describe;
+        }
 
         /** `"fields":[...],"objects":[...]` of the class's static fields. */
         String of(Class<?> c) {
@@ -385,7 +446,7 @@ public final class ObservedInitializer {
                     value = f.getType().isPrimitive() ? primitive(f.getType(), f.get(null)) : value(f.get(null));
                 }
                 catch (Throwable t) {
-                    value = unheld("a field reflection does not read (" + t.getClass().getName() + ")");
+                    value = unread("a field reflection does not read (" + t.getClass().getName() + ")");
                 }
                 if (fields.length() > 0) {
                     fields.append(',');
@@ -395,8 +456,22 @@ public final class ObservedInitializer {
             return "\"fields\":[" + fields + "],\"objects\":[" + String.join(",", objects) + "]";
         }
 
-        private static String unheld(String what) {
-            return "{\"u\":\"" + what + "\"}";
+        /** A value not held: what it is, and where describing, its description or why there is none. */
+        private String unheld(String what, Object v) {
+            if (!describe) {
+                return "{\"u\":" + text(what) + "}";
+            }
+            try {
+                return "{\"u\":" + text(what) + ",\"d\":" + text(new Describe().of(v)) + "}";
+            }
+            catch (Describe.Undescribed e) {
+                return "{\"u\":" + text(what) + ",\"why\":" + text(e.getMessage()) + "}";
+            }
+        }
+
+        /** A value reflection did not read. */
+        private String unread(String what) {
+            return describe ? "{\"u\":" + text(what) + ",\"why\":\"reflection does not read it\"}" : "{\"u\":" + text(what) + "}";
         }
 
         /**
@@ -413,7 +488,7 @@ public final class ObservedInitializer {
             return lambda >= 0 ? name.substring(0, lambda) + "$$Lambda" : name.substring(0, name.lastIndexOf('/') < 0 ? name.length() : name.lastIndexOf('/'));
         }
 
-        private static String primitive(Class<?> type, Object boxed) {
+        private String primitive(Class<?> type, Object boxed) {
             if (type == boolean.class) {
                 return "{\"n\":" + (((Boolean) boxed) ? 1 : 0) + "}";
             }
@@ -421,7 +496,7 @@ public final class ObservedInitializer {
                 return "{\"n\":" + (int) ((Character) boxed) + "}";
             }
             if (type == float.class || type == double.class) {
-                return unheld("a " + type.getName());
+                return unheld("a " + type.getName(), boxed);
             }
             return "{\"n\":" + ((Number) boxed).longValue() + "}";
         }
@@ -439,15 +514,15 @@ public final class ObservedInitializer {
             if (map) {
                 for (Object key : ((Map<?, ?>) v).keySet()) {
                     if (key != null && !(key instanceof String)) {
-                        return unheld("a java.util.HashMap with a key of " + nameOf(key.getClass()));
+                        return unheld("a java.util.HashMap with a key of " + nameOf(key.getClass()), v);
                     }
                 }
             }
             if (type.isArray() && (type.getComponentType() == float.class || type.getComponentType() == double.class)) {
-                return unheld("an array of " + type.getComponentType().getName());
+                return unheld("an array of " + type.getComponentType().getName(), v);
             }
             if (!(v instanceof String) && !(v instanceof Class) && !map && !type.isArray()) {
-                return unheld("an object of " + nameOf(type));
+                return unheld("an object of " + nameOf(type), v);
             }
             // Numbered before what it holds is, so that an object that reaches itself ends.
             int id = objects.size();
@@ -486,6 +561,278 @@ public final class ObservedInitializer {
             }
             objects.set(id, o.toString());
             return "{\"o\":" + id + "}";
+        }
+    }
+    /**
+     * A value the observation does not hold, described in full: what a class another class's initialization
+     * initialized is compared by, after that initialization and alone, so that a write into an object it holds, or
+     * a lambda put in place of another of its class, shows. A String, a boxed primitive (a float or double by its
+     * bits) and a Class by what they are; an array by its cells; a lambda by the method it calls (read from its
+     * class's constant pool) and the values it captured; an object of a class of the application by every field its
+     * classes declare, and by what its first superclass of the JDK holds (Enum its name, a Reference its referent, a
+     * ReentrantLock whether it is held, the abstract collections nothing); an object of the JDK by its contents
+     * through the class's public methods (a map's entries and a collection's elements, sorted where the class keeps
+     * no order of its own, a ResourceBundle's keys and values, a Pattern's source and flags, an atomic's value) or
+     * by its value where it is one (a Locale, a URI, a java.time value). A ReferenceQueue is said as one: what it
+     * holds is the collector's. Anything else is not described (Undescribed, with why), nor is a value past
+     * LIMIT. An object met again on its own path is said as a reference back to it.
+     */
+    private static final class Describe {
+        private static final int LIMIT = 200_000;
+        private static final List<Class<?>> STATELESS = List.of(Object.class, Number.class, Record.class, java.util.AbstractMap.class, java.util.AbstractCollection.class,
+                java.util.AbstractList.class, java.util.AbstractSequentialList.class, java.util.AbstractSet.class, java.util.AbstractQueue.class);
+        private final IdentityHashMap<Object, Boolean> path = new IdentityHashMap<>();
+        private int count;
+
+        static final class Undescribed extends Exception {
+            Undescribed(String why) {
+                super(why, null, false, false);
+            }
+        }
+
+        String of(Object v) throws Undescribed {
+            if (++count > LIMIT) {
+                throw new Undescribed("it holds more than " + LIMIT + " values");
+            }
+            if (v == null) {
+                return "null";
+            }
+            if (v instanceof String s) {
+                return text(s);
+            }
+            if (v instanceof Float f) {
+                return "float 0x" + Integer.toHexString(Float.floatToRawIntBits(f));
+            }
+            if (v instanceof Double d) {
+                return "double 0x" + Long.toHexString(Double.doubleToRawLongBits(d));
+            }
+            if (v instanceof Character ch) {
+                return "char " + (int) ch;
+            }
+            if (v instanceof Integer || v instanceof Long || v instanceof Short || v instanceof Byte || v instanceof Boolean) {
+                return v.getClass().getSimpleName() + " " + v;
+            }
+            if (v instanceof Class<?> k) {
+                return "class " + (k.isArray() ? k.descriptorString() : Dump.nameOf(k));
+            }
+            Class<?> type = v.getClass();
+            if (path.containsKey(v)) {
+                return "^" + Dump.nameOf(type);
+            }
+            path.put(v, Boolean.TRUE);
+            try {
+                if (type.isArray()) {
+                    StringBuilder o = new StringBuilder(type.getComponentType().descriptorString()).append('[');
+                    for (int i = 0; i < Array.getLength(v); i++) {
+                        o.append(i == 0 ? "" : ",").append(of(Array.get(v, i)));
+                    }
+                    return o.append(']').toString();
+                }
+                if (type.isHidden()) {
+                    return hidden(v, type);
+                }
+                if (application(type)) {
+                    return fields(v, type);
+                }
+                return jdk(v, type);
+            }
+            finally {
+                path.remove(v);
+            }
+        }
+
+        private static boolean application(Class<?> type) {
+            ClassLoader loader = type.getClassLoader();
+            return loader != null && loader != ClassLoader.getPlatformClassLoader();
+        }
+
+        /** The value of each instance field `type` declares, by name. */
+        private String declared(Object v, Class<?> type) throws Undescribed {
+            StringBuilder o = new StringBuilder();
+            for (Field f : type.getDeclaredFields()) {
+                if (Modifier.isStatic(f.getModifiers())) {
+                    continue;
+                }
+                Object value;
+                try {
+                    f.setAccessible(true);
+                    value = f.get(v);
+                }
+                catch (Throwable t) {
+                    throw new Undescribed("reflection does not read " + Dump.nameOf(type) + "." + f.getName() + " (" + t.getClass().getName() + ")");
+                }
+                o.append(o.length() == 0 ? "" : ",").append(f.getName()).append('=').append(of(value));
+            }
+            return o.toString();
+        }
+
+        /** An object of the application: the fields each of its classes declares, then its JDK superclass's part. */
+        private String fields(Object v, Class<?> type) throws Undescribed {
+            StringBuilder o = new StringBuilder(Dump.nameOf(type)).append('{');
+            Class<?> k = type;
+            for (; k != null && application(k); k = k.getSuperclass()) {
+                o.append(k == type ? "" : ";" + Dump.nameOf(k) + ":").append(declared(v, k));
+            }
+            o.append('}');
+            if (k == null || STATELESS.contains(k)) {
+                return o.toString();
+            }
+            if (k == Enum.class) {
+                return o.append('.').append(((Enum<?>) v).name()).toString();
+            }
+            if (v instanceof java.lang.ref.Reference<?> r && !overridden(type, "get")) {
+                return o.append("->").append(of(r.get())).toString();
+            }
+            if (v instanceof java.util.concurrent.locks.ReentrantLock lock && !overridden(type, "isLocked")) {
+                return o.append(lock.isLocked() ? " held" : " not held").append(lock.hasQueuedThreads() ? ", awaited" : "").toString();
+            }
+            if (v instanceof Map<?, ?> m && !overridden(type, "entrySet")) {
+                return o.append(entries(m)).toString();
+            }
+            if (v instanceof java.util.Collection<?> c && !overridden(type, "iterator")) {
+                return o.append(elements(c)).toString();
+            }
+            throw new Undescribed("an object of " + Dump.nameOf(type) + ", which extends " + k.getName() + ", whose state the observer does not read");
+        }
+
+        /** Whether a class of the application declares the public method of `type` named so, with no parameters. */
+        private static boolean overridden(Class<?> type, String name) {
+            try {
+                return application(type.getMethod(name).getDeclaringClass());
+            }
+            catch (NoSuchMethodException e) {
+                return true;
+            }
+        }
+
+        /** A lambda (or another hidden class): the methods its class calls, and the values it captured. */
+        private String hidden(Object v, Class<?> type) throws Undescribed {
+            StringBuilder o = new StringBuilder(Dump.nameOf(type)).append(" calling ");
+            List<String> calls = new ArrayList<>();
+            try {
+                Object pool = Pool.GET.invoke(Pool.ACCESS, type);
+                int size = (int) Pool.SIZE.invoke(pool);
+                for (int i = 1; i < size; i++) {
+                    if (!String.valueOf(Pool.TAG.invoke(pool, i)).endsWith("METHODREF")) {
+                        continue;
+                    }
+                    String[] member = (String[]) Pool.MEMBER.invoke(pool, i);
+                    String call = member[0] + "." + member[1] + member[2];
+                    if (!call.equals("java/lang/Object.<init>()V")) {
+                        calls.add(call);
+                    }
+                }
+            }
+            catch (Throwable t) {
+                throw new Undescribed("which method " + Dump.nameOf(type) + " calls is not read (its constant pool: " + t.getClass().getName() + ")");
+            }
+            return o.append(String.join(" ", calls)).append('{').append(declared(v, type)).append('}').toString();
+        }
+
+        /** An object of the JDK, by what its public methods say it holds. */
+        private String jdk(Object v, Class<?> type) throws Undescribed {
+            String name = Dump.nameOf(type);
+            if (v instanceof Enum<?> e) {
+                return name + "." + e.name();
+            }
+            if (v instanceof Map<?, ?> m) {
+                return name + entries(m);
+            }
+            if (v instanceof java.util.Collection<?> c) {
+                return name + elements(c);
+            }
+            if (v instanceof java.lang.ref.Reference<?> r) {
+                return name + "->" + of(r.get());
+            }
+            if (v instanceof java.lang.ref.ReferenceQueue<?>) {
+                return name;
+            }
+            if (v instanceof java.util.regex.Pattern p) {
+                return name + "{" + text(p.pattern()) + "," + p.flags() + "}";
+            }
+            if (v instanceof java.util.ResourceBundle b) {
+                StringBuilder o = new StringBuilder(name).append('{').append(b.getLocale()).append(';');
+                boolean first = true;
+                for (String key : new java.util.TreeSet<>(b.keySet())) {
+                    o.append(first ? "" : ",").append(text(key)).append('=').append(of(b.getObject(key)));
+                    first = false;
+                }
+                return o.append('}').toString();
+            }
+            if (v instanceof java.util.concurrent.atomic.AtomicReference<?> a) {
+                return name + "{" + of(a.get()) + "}";
+            }
+            if (v instanceof java.util.Optional<?> a) {
+                return name + "{" + of(a.orElse(null)) + "}";
+            }
+            if (v instanceof java.util.concurrent.atomic.AtomicInteger || v instanceof java.util.concurrent.atomic.AtomicLong || v instanceof java.util.concurrent.atomic.AtomicBoolean
+                    || v instanceof java.math.BigInteger || v instanceof java.math.BigDecimal || v instanceof Locale || v instanceof java.nio.charset.Charset
+                    || v instanceof java.util.UUID || v instanceof java.net.URI || v instanceof java.net.URL || v instanceof java.io.File || v instanceof Path
+                    || v instanceof java.time.temporal.TemporalAccessor || v instanceof java.time.temporal.TemporalAmount || v instanceof java.time.ZoneId) {
+                return name + "{" + text(v.toString()) + "}";
+            }
+            throw new Undescribed("an object of " + name + ", a class of the JDK the observer does not describe");
+        }
+
+        /** A map's entries: in its order where it keeps one (sorted, linked), sorted otherwise. */
+        private String entries(Map<?, ?> m) throws Undescribed {
+            List<String> each = new ArrayList<>();
+            for (Map.Entry<?, ?> e : m.entrySet()) {
+                each.add(of(e.getKey()) + "=" + of(e.getValue()));
+            }
+            if (!(m instanceof java.util.SortedMap) && !(m instanceof java.util.LinkedHashMap)) {
+                java.util.Collections.sort(each);
+            }
+            return "{" + String.join(",", each) + "}";
+        }
+
+        /** A collection's elements: in its order where it keeps one (a list, a deque, sorted, linked), sorted otherwise. */
+        private String elements(java.util.Collection<?> c) throws Undescribed {
+            List<String> each = new ArrayList<>();
+            for (Object e : c) {
+                each.add(of(e));
+            }
+            if (!(c instanceof List) && !(c instanceof java.util.Deque) && !(c instanceof java.util.SortedSet) && !(c instanceof java.util.LinkedHashSet)) {
+                java.util.Collections.sort(each);
+            }
+            return "[" + String.join(",", each) + "]";
+        }
+    }
+
+    /**
+     * A class's constant pool, through the JDK's internal access, which the observer's JVM is given
+     * (--add-exports java.base/jdk.internal.access and jdk.internal.reflect): the only place a lambda says which
+     * method it calls.
+     */
+    private static final class Pool {
+        static final Object ACCESS;
+        static final java.lang.reflect.Method GET;
+        static final java.lang.reflect.Method SIZE;
+        static final java.lang.reflect.Method TAG;
+        static final java.lang.reflect.Method MEMBER;
+
+        static {
+            Object access = null;
+            java.lang.reflect.Method get = null;
+            java.lang.reflect.Method size = null;
+            java.lang.reflect.Method tag = null;
+            java.lang.reflect.Method member = null;
+            try {
+                access = Class.forName("jdk.internal.access.SharedSecrets").getMethod("getJavaLangAccess").invoke(null);
+                get = Class.forName("jdk.internal.access.JavaLangAccess").getMethod("getConstantPool", Class.class);
+                Class<?> pool = Class.forName("jdk.internal.reflect.ConstantPool");
+                size = pool.getMethod("getSize");
+                tag = pool.getMethod("getTagAt", int.class);
+                member = pool.getMethod("getMemberRefInfoAt", int.class);
+            }
+            catch (Throwable t) {
+                // Left null: a lambda is then not described.
+            }
+            ACCESS = access;
+            GET = get;
+            SIZE = size;
+            TAG = tag;
+            MEMBER = member;
         }
     }
 }
