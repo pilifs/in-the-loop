@@ -168,6 +168,9 @@ that runs `lib/tools/test_costs.py run` at commit REV (`@-` by default), at low 
 directory kept warm between runs. Commit the job file like any other, from any workspace. Nobody waits for it: a run
 of `/prove-java-change` queues one when an example is done and at each merge, and its watcher triages the result.
 Of several waiting together only the newest runs; the others' step says `default tests: superseded by ID` and exits.
+A job started again after a newer one has finished is superseded too. Only one default run runs at a time: the runs
+share a warm cargo target directory and the tests' work folders under it, so a step holds a lock beside it
+(`~/.cache/in-the-loop/default-tests.lock`) and a second step waits, then asks the queue again.
 `default_tests.py last` says which run covers a commit (one at it, or at an ancestor that differs from it only in
 files no test reads), and `sync.py push` refuses without a passed one (`default_tests.py gate`).
 
