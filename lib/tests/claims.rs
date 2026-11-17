@@ -313,6 +313,27 @@ fn an_observed_initializer_gives_the_state_a_jvm_left_and_the_result_says_so() {
     assert!(property::run(&cached).unwrap_err().to_string().contains("--observed-initializer with --cache"));
 }
 
+/// An observation made with a relative `--work`, from a directory other than the class path's: the observer's JVM
+/// runs in the work folder, so the log of its class initializations, and the path the observer is given to read it,
+/// must not be taken relative to that folder (job `20261117-181750`: "Invalid -Xlog option", no observation).
+#[test]
+fn an_observed_initializer_is_observed_with_a_relative_work_folder() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let here = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("claims").join("relative-work");
+    let _ = std::fs::remove_dir_all(&here);
+    std::fs::create_dir_all(&here).unwrap();
+    let out = Command::new(env!("CARGO_BIN_EXE_jvmcontract"))
+        .current_dir(&here)
+        .args(["prove", "claims.M#observed", "--observed-initializer", "claims.Tables", "--engine", "native", "--jbmc", NO_JBMC, "--max-array-length", "3", "--details", "--work", "work/observed", "--classes"])
+        .arg(classes)
+        .output()
+        .unwrap();
+    let said = String::from_utf8_lossy(&out.stdout).to_string() + &String::from_utf8_lossy(&out.stderr);
+    assert!(said.starts_with("✓") && said.contains("the class initializer of claims.Tables was not run by the checker"), "{said}");
+    assert!(here.join("work/observed/observed/claims.Tables.init.log").is_file(), "the log is in the work folder: {said}");
+}
+
 /// The lists a registry collects its matchers in (`claims.M`, example 290). `java.util.ArrayList` is the JDK's,
 /// each of its calls a gap, until a check asks for the model (`--model java.util.ArrayList`): then the model is
 /// its definition written out on every input of the bound, the result says what it rests on, and a method the

@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.005Z",
-  "ended": "2026-11-17T19:11:03.568Z",
-  "duration_seconds": 22453,
+  "ended": "2026-11-17T19:22:32.935Z",
+  "duration_seconds": 23142,
   "stats": {
-    "turns": 110,
-    "api_calls": 847,
-    "tool_calls": 807,
+    "turns": 115,
+    "api_calls": 875,
+    "tool_calls": 836,
     "tool_errors": 9,
-    "compactions": 15,
-    "peak_context_tokens": 247898,
+    "compactions": 16,
+    "peak_context_tokens": 252174,
     "usage": {
-      "input_tokens": 1766,
-      "output_tokens": 669664,
-      "cache_read_input_tokens": 97046686,
-      "cache_creation_input_tokens": 2165795
+      "input_tokens": 1824,
+      "output_tokens": 682152,
+      "cache_read_input_tokens": 99316863,
+      "cache_creation_input_tokens": 2241462
     }
   },
   "tools": {
-    "Bash": 771,
-    "Read": 13,
-    "Edit": 12,
+    "Bash": 796,
+    "Edit": 15,
+    "Read": 14,
     "Write": 5,
     "Monitor": 3,
     "ToolSearch": 3
@@ -39,6 +39,7 @@
   "files_touched": [
     "lib/models/java/util/lists/ArrayDeque.java",
     "lib/src/bmc/mod.rs",
+    "lib/src/observed.rs",
     "lib/src/stand_in.rs",
     "lib/tests/claims.rs",
     "lib/tests/fixtures/claims/claims/Cloned.java",
@@ -260,24 +261,38 @@
     {
       "index": 15,
       "started": "2026-11-17T18:20:20.790Z",
-      "ended": "2026-11-17T19:11:03.568Z",
-      "turns": 4,
-      "api_calls": 91,
+      "ended": "2026-11-17T19:11:34.555Z",
+      "turns": 5,
+      "api_calls": 93,
       "usage": {
-        "input_tokens": 182,
-        "output_tokens": 93409,
-        "cache_read_input_tokens": 15068797,
-        "cache_creation_input_tokens": 234625
+        "input_tokens": 188,
+        "output_tokens": 94536,
+        "cache_read_input_tokens": 15565974,
+        "cache_creation_input_tokens": 238899
       },
-      "peak_context_tokens": 247898
+      "peak_context_tokens": 252174
+    },
+    {
+      "index": 16,
+      "started": "2026-11-17T19:12:36.556Z",
+      "ended": "2026-11-17T19:22:32.935Z",
+      "turns": 4,
+      "api_calls": 26,
+      "usage": {
+        "input_tokens": 52,
+        "output_tokens": 11361,
+        "cache_read_input_tokens": 1773000,
+        "cache_creation_input_tokens": 71393
+      },
+      "peak_context_tokens": 84666
     }
   ],
   "log": {
-    "sha256": "53807bc5596cedef2fc46eb9978cfe1dad971c9909af66472c4d1e2c97a9736a",
-    "bytes": 22874767,
-    "lines": 7992,
-    "gzip_bytes": 4048806,
-    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/53807bc5596cedef2fc46eb9978cfe1dad971c9909af66472c4d1e2c97a9736a.jsonl.gz"
+    "sha256": "59b45cc7a99b4be003319705fd3f392051a272d5547b96e421c31e1e3ae4d653",
+    "bytes": 23871139,
+    "lines": 8289,
+    "gzip_bytes": 4258686,
+    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/59b45cc7a99b4be003319705fd3f392051a272d5547b96e421c31e1e3ae4d653.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -432,6 +447,14 @@
       "summary": "Example 286's someMap mismatch path gets past the exception and the property's type: a PropertyChangeEvent model on request, ClassUtils' class facts, and a second sampled stand-in",
       "body": "Binding \"32\" to someMap (or SomeMap) is the one path of the protected-state claim that records a binding error. That runs through Spring's TypeMismatchException and error recording, much of it into the JDK. Three steps of it are now on the checker's side. First, a model on request of java.beans.PropertyChangeEvent (lib/models/java/beans), which also runs the model of java.util.EventObject above it (models::COMPANIONS): the event's fields and getters, and the null source's IllegalArgumentException. Fixture claims.Events is proved with the model, sampled on a JVM, and no longer proved with a getter mutated. Second, the class facts ClassUtils.getDescriptiveType needs (bmc/runtime.rs): Object.getClass() of a String, Class.getTypeName() of a class literal that is no array, and Proxy.isProxyClass of a class literal, which is false because the engine makes literals only of classes that exist as files (claims.M#typed, #unproxied). Third, ClassUtils' initializer is observed.\n\nThe binding result then asks the property's type for the message codes, which is reflection again. A second stand-in, ProtectedBeanTypeStandIn.getPropertyType, answers it for every property but age (int.class is Integer.TYPE, which the checker does not hold) and gives null for any other simple name. It was sampled on 397,649 names, all equal on 5.3.19; with one type mutated, 4 samples differ. It is a class of its own so that ProtectedBeanStandIn.java stays the source job 20261117-181750 compiled, which accept.py compares with the current file. 286's driver runs the protected-state tasks with the model, the observation and both stand-ins. Probes (inline, capped): 5.3.18 is still refuted (a trial at bound 3); 5.3.19 still stops at non-ASCII toLowerCase under the frozen claim; with field restricted to someMap and SomeMap, the next stop is LinkedHashSet.<init>() in DefaultMessageCodesResolver.resolveMessageCodes:152.\n\nTried and dropped: refusing, under assume, a gap whose object is of a JDK class below a model the check runs. With the rule switched off, a call on an IndexedPropertyChangeEvent still meets the JDK gap and not the model, so there was no hole to close. Verified: test_costs run --changed (23 of 23 passed), validate_example 286. The brief is current.",
       "log_sha256": "53807bc5596cedef2fc46eb9978cfe1dad971c9909af66472c4d1e2c97a9736a"
+    },
+    {
+      "change_id": "zlvqxmstxnkpvuoyuwvwulqzlrsutwqr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "An observed initializer is observed with a relative --work, and example 286's protected-state tasks run again (verification pending)",
+      "body": "Job 20261117-181750 (286's protected-state tasks through the bean wrapper's stand-in) failed before the check ran: with a relative --work, the observer's JVM runs in the observed/ folder and was given the -Xlog file and the log argument relative to the repository, so it refused the option. lib/src/observed.rs now makes that folder absolute. The new test an_observed_initializer_is_observed_with_a_relative_work_folder (lib/tests/claims.rs) runs the CLI from another directory with a relative --work: before the fix it failed with the job's 'Invalid -Xlog option', and now it proves claims.M#observed with the log in the work folder. A capped probe of 286's driver with a relative --work refutes the vulnerable task at a trial bound 3. Taken from the inbox: domain-advances-state-I015, with its correction I016.\n\nJob 20261117-192205-example-286-protected-state-tasks-at-the runs both tasks at the claim's bound 8 with 2 CPUs (the observer's and samplers' JVMs need two): the refutation on 5.3.18 for accept.py, and the fixed task's blocker (non-ASCII toLowerCase() at DataBinder.isAllowed:828) for the record. ProtectedBeanStandIn.java is unchanged, as accept.py compares it with what the job compiled. Verified with test_costs.py run --changed (all passed) after estimate. The rest of the brief stands.",
+      "log_sha256": "59b45cc7a99b4be003319705fd3f392051a272d5547b96e421c31e1e3ae4d653"
     }
   ],
   "logs": {
@@ -463,6 +486,12 @@
       "bytes": 14287069,
       "lines": 5060,
       "gzip_bytes": 2470990,
+      "url": null
+    },
+    "59b45cc7a99b4be003319705fd3f392051a272d5547b96e421c31e1e3ae4d653": {
+      "bytes": 23871139,
+      "lines": 8289,
+      "gzip_bytes": 4258686,
       "url": null
     },
     "6111ea7da20fcbc422a8292abcad3c2379581d4ab5e58668eeb8dd28d7b4e03c": {

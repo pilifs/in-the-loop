@@ -358,8 +358,21 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
     `LinkedHashSet.<init>()` in `DefaultMessageCodesResolver.resolveMessageCodes:152`.
   - **Tried and dropped:** extending the "unwritten model fields" refusal to JDK classes below a model. A call on an
     `IndexedPropertyChangeEvent` meets the JDK gap, not the model, so there was no hole to close.
+- 2026-11-17, job 181750's failure fixed and the job run again (frozen claim unchanged; nothing accepted yet). Inbox:
+  `domain-advances-state-I015` and `domain-advances-state-I016` (its correction) taken.
+  - **The failure.** Job 181750 stopped before the check: with a relative `--work`, the observer's JVM ran in
+    `observed/` and was given a relative `-Xlog` file (and log argument), so it refused the option.
+  - **The fix.** `observed::observe` now makes its folder absolute (`std::path::absolute`), so the log, the
+    `-Xlog` option and the observer's argument are absolute.
+  - **The test.** `an_observed_initializer_is_observed_with_a_relative_work_folder` (`lib/tests/claims.rs`) runs
+    the CLI from another directory with `--work work/observed`. Before the fix it failed with the job's "Invalid -Xlog
+    option"; now it proves `claims.M#observed` and leaves the log in the work folder.
+  - **The driver.** A capped probe with a relative `--work` refutes the vulnerable task at a trial bound 3.
+  - **The job.** Job `20261117-192205-example-286-protected-state-tasks-at-the` runs both tasks at bound 8 with 2
+    CPUs, through the driver as it now is (with the `PropertyChangeEvent` model, `ClassUtils` observed and both
+    stand-ins). `ProtectedBeanStandIn.java` is unchanged, as `accept.py` compares it.
 - Next:
-  - Once job 181750 passes, record `besideRoute` on `vulnerable-protected-state-mutation` and check
+  - Once job 192205 passes, record `besideRoute` on `vulnerable-protected-state-mutation` and check
     `accept.py 286 vulnerable-protected-state-mutation`.
   - The rest of the mismatch path:
     - a `LinkedHashSet` model (the `HashSet` model's keys in order, with `toArray(T[])`);
