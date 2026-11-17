@@ -355,6 +355,12 @@ change `svtrzmswmxpt` · [log `735bb0ae7c6a`](https://terminalvalue.net/raw-trac
 
 At the user's request the watcher asked Codex (read-only) to review the preservation stream's approach to 287 and 307. Its advice goes to the stream through its inbox as optional: close I010 in shared.rs::reach before more summary reuse, don't take job 20261117-180758 as a decision while I010 is open on its checker, move the relational boundary outward to a checked congruence of an unchanged callee (crypt_raw) rather than tune loops, and bound the remaining cost work.
 
+### Record verification results for 1 job(s)
+
+change `xmowtynznpms` · [log `735bb0ae7c6a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261117-180758-example-287-preservation-at-the-frozen-b: failed: 1 failed step(s) in 7m06s, peak 2.3 GiB (estimated 2h00m, 12.0 GiB); 4 output file(s) changed; signals: jvmcontract:fails×2 Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d.jsonl.gz) has every step in between: reasoning, tool calls and their results.
