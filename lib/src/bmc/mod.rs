@@ -61,6 +61,7 @@
 //! | the `<clinit>` of a class named by `--observed-initializer` ([`Options::observed`], [`crate::observed`]) | not run and no gap: the path takes the static state the initializer left on a JVM, as far as the observation holds it (a field it holds no value of is refused where it is read), and the run states what that rests on ([`Outcome::assumed`]) |
 //! | `invokestatic` of `Math`/`StrictMath`/`Integer`/`Long`/`Boolean` operations ([`models_jdk_static`]) | modelled in [`Engine::call_jdk_static`], each as its Javadoc specifies, exceptions included |
 //! | `invokestatic` of `Objects.requireNonNull(Object)` and `(Object, String)`, and of `Pattern.compile(String)` ([`models_jdk_reference_static`]) | modelled in [`Engine::call_jdk_static`]: `requireNonNull` returns its argument or throws `NullPointerException`; `compile` throws it for null, returns a new `Pattern` with no content (its methods the JDK calls they name) for a constant regular expression of the plain form ([`crate::jdk_facts::plain_regex`]), which the JDK compiles whatever it is, and is the gap `jdk-static-method` for any other |
+//! | `invokestatic` of `String.valueOf(Object)` | the argument itself for a String, the interned `"null"` for null; for any other object the gap `jdk-static-method` (the object's `toString()`), which the scan names wherever the call is |
 //! | `invokestatic` of any other JDK method over integers, booleans, arrays and objects ([`gaps::jdk_static_call`]) | gap: `jdk-static-method`, with no assume form |
 //! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
 //! | `invokespecial`/`invokevirtual` of `java.lang.Enum`'s constructor, `name()`, `ordinal()`, `toString()` and `equals` ([`ClassPath::checker_runs`]) | modelled: the model's bytecode (`lib/models/java/lang/Enum.java`, which JBMC runs too) sets and reads the enum's `name` and `ordinal` fields; the interpreter's natives do the same. `Enum`'s other methods (`compareTo`, `hashCode`, `valueOf` …) stay JDK gaps |
@@ -77,7 +78,7 @@
 //! | `invokestatic` of `Arrays.stream(Object[])`, `Arrays.stream(int[])` and `IntStream.range(int, int)`, and `invokevirtual` of `String.chars()` | enter the stream models only the checker runs ([`crate::models::entry`]) |
 //! | `invokestatic` of `Arrays.asList(T...)`, and the list's `size()`, `get(int)` and `toArray()` | modelled, for the checker alone: the model's bytecode (`lib/models/java/util/lists/ArrayAsList.java`), a view of the array. Any other method is the JDK's `AbstractList`'s, the JDK call it names |
 //! | `new LinkedHashMap()`, and `values()` on the map with the collection's `size()` and `iterator()` and the iterator's `hasNext()` and `next()` | modelled, for the checker alone: the model's bytecode (`lib/models/java/util/LinkedHashMap.java`) over the `HashMap` model's chain of entries, which is in insertion order; the iterator fails fast as the JDK's. Any other method is the JDK call it names |
-//! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Character.isLetter(char)` of an ASCII unit ([`strings`]); `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers or of references and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `getstatic` of `Locale`'s constants, `Locale.forLanguageTag(String)` and `Locale.setDefault(Locale)` as far as [`locale`] says; `Class.getName()`, `Class.getClassLoader()`, `Class.forName(String, boolean, ClassLoader)`, `Class.forName(String)` with its initialization, `Class.isAssignableFrom(Class)`, `Thread.currentThread()` and its `getContextClassLoader()`, `Collections.emptyMap()`, `Logger.getLogger(String)`, `getstatic` of a `java.util.logging.Level` below `INFO`, `Logger.isLoggable(Level)`, `new ArrayList()`, `new ConcurrentHashMap()` and `new ConcurrentHashMap(int)` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
+//! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Character.isLetter(char)` of an ASCII unit ([`strings`]); `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers or of references and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `getstatic` of `Locale`'s constants, `Locale.forLanguageTag(String)` and `Locale.setDefault(Locale)` as far as [`locale`] says; `Class.getName()`, `Class.getClassLoader()`, `Class.forName(String, boolean, ClassLoader)`, `Class.forName(String)` with its initialization, `Class.isAssignableFrom(Class)`, `Thread.currentThread()` and its `getContextClassLoader()`, `Collections.emptyMap()`, `Logger.getLogger(String)`, `getstatic` of a `java.util.logging.Level` other than `OFF`, `Logger.isLoggable(Level)`, `Logger.log(LogRecord)` and what a library calls to make the record, `new ArrayList()`, `new ConcurrentHashMap()` and `new ConcurrentHashMap(int)` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
 //! | `ldc` of a string or a class | implemented: one object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class, a String with its content, its code units as the class file holds them, an isolated surrogate included (`BootstrapArg::Units`) |
 //! | floating point (`fconst`, `dconst`, `fadd` …, `fcmpl` …, `f2i` …), `jsr`/`ret`, `putstatic` of a JDK field, any other `getstatic` of one, a static field of a class taken to be initialized other than a constant, `multianewarray`, any other `invokedynamic`, a JDK method with a floating-point parameter or result or an array result, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
 //! | under JBMC, not this engine ([`crate::jbmc_gaps`]): a method with no bytecode on JBMC's class path, or an `invokedynamic` JBMC does not link, or a monitor instruction, which JBMC drops | JBMC's gaps: its stub of a JDK method is one of the JDK kinds above, any other is `missing-body`, an unlinked call site is `invokedynamic`, and a method that synchronizes is `monitor`; this engine refuses the first two and implements monitors |
@@ -806,7 +807,7 @@ enum Literal {
     Charset(&'static str),
     /// A constant of `java.util.Locale`, by its field's name ([`locale`]).
     Locale(String),
-    /// A level of `java.util.logging.Level` below `INFO`, by its field's name ([`runtime`]).
+    /// A level of `java.util.logging.Level` the engine has, by its field's name ([`runtime`]).
     Level(&'static str),
     /// The one thread of the run ([`runtime`]).
     Thread,
@@ -3475,7 +3476,7 @@ impl<'a> Engine<'a> {
                     self.advance(path);
                     return Ok(None);
                 }
-                // Each level of `java.util.logging` below `INFO` is one object ([`runtime`]).
+                // Each level of `java.util.logging` but `OFF` is one object ([`runtime`]).
                 if let Some(level) = runtime::level_constant(&declaring, &member.name) {
                     let constant = self.literal(path, Literal::Level(level), runtime::LEVEL);
                     self.push(path, Val::R(Some(constant)));
@@ -4248,6 +4249,23 @@ impl<'a> Engine<'a> {
         if self.cp.model(&member.owner).is_some() && self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).is_some_and(|(_, m)| m.code.is_some()) {
             return self.call(path, &member.owner, &member.name, &member.descriptor, args);
         }
+        // `String.valueOf(Object)` of a String is the String itself (its `toString()` is itself), and of null the
+        // interned "null". Of any other object it calls that object's `toString()`: the gap it is to the scan,
+        // which cannot tell the argument's class, and to the engine.
+        if (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str()) == (STRING, "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;") {
+            if let [Val::R(object)] = args.as_slice() {
+                let value = match *object {
+                    Some(o) if path.objects[o].class == STRING => Some(o),
+                    None => Some(self.literal(path, Literal::Str("null".encode_utf16().collect()), STRING)),
+                    Some(_) => None,
+                };
+                if let Some(value) = value {
+                    self.push(path, Val::R(Some(value)));
+                    self.advance(path);
+                    return Ok(None);
+                }
+            }
+        }
         match gaps::jdk_static_call(&member.owner, &member.name, &member.descriptor) {
             JdkCall::Exact => return self.call_jdk_static(path, &member.owner, &member.name, &member.descriptor, &descriptor, args),
             JdkCall::Refused => return unsupported(format!("{}.{}{}", member.owner.replace('/', "."), member.name, member.descriptor)),
@@ -4409,8 +4427,8 @@ impl<'a> Engine<'a> {
             if let Some(step) = self.class_relation(path, o, &member.name, &member.descriptor, &args) {
                 return step;
             }
-            // Whether a Logger logs a level below `INFO` ([`runtime`]).
-            if let Some(step) = self.logger_method(path, o, &member.owner, &member.name, &member.descriptor, &args) {
+            // Whether a Logger logs a level, and what logging a line at one does ([`runtime`]).
+            if let Some(step) = self.logging_method(path, o, special, &member.owner, &member.name, &member.descriptor, &args) {
                 return step;
             }
             // A constructor that takes a capacity alone ([`runtime::capacity_constructor`]).
@@ -4452,7 +4470,9 @@ impl<'a> Engine<'a> {
         // no approximation, and is refused there too.
         // A builder's call that its model did not take (the builder's content is not the engine's) is the call
         // it is to a checker with no such model.
-        match if contracted || strings::models_builder(&member.owner, &member.name, &member.descriptor) { unmodelled } else { gaps::jdk_instance_call(self.cp, &member.owner, &member.name, &member.descriptor) } {
+        // So is a logging call its model did not take (a Logger the engine did not make, a record that could write
+        // elsewhere when it is formatted).
+        match if contracted || strings::models_builder(&member.owner, &member.name, &member.descriptor) || runtime::models_logging(&member.owner, &member.name, &member.descriptor) { unmodelled } else { gaps::jdk_instance_call(self.cp, &member.owner, &member.name, &member.descriptor) } {
             JdkCall::Exact => {}
             JdkCall::Gap(kind) => {
                 // What the call does to a builder is the contract's or the assumption's to say: the engine holds

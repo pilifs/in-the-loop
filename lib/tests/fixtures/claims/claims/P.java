@@ -114,9 +114,4 @@ public final class P {
         return !logger.isLoggable(Level.CONFIG) && !logger.isLoggable(Level.FINE) && !logger.isLoggable(Level.FINER)
                 && !logger.isLoggable(Level.FINEST) && !logger.isLoggable(Level.ALL);
     }
-
-    /** At INFO and above the answer is the JDK's call. */
-    public static boolean loud(int k) {
-        return Logger.getLogger("claims.P").isLoggable(Level.INFO) || k == k;
-    }
 }

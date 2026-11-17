@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 138, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-17 13:45 UTC |
-| Prompts | 2,853 |
-| Model calls | 29,047 |
-| Tool calls | 30,046 (531 failed) |
-| Compactions | 423 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-17 14:44 UTC |
+| Prompts | 2,858 |
+| Model calls | 29,112 |
+| Tool calls | 30,110 (533 failed) |
+| Compactions | 424 |
 | Subagents | 21 |
-| Tokens written | 29,256,084 |
-| Tokens read | 4,838,038,735 (98.1% from cache) |
-| Commits with a trace | 899 |
-| Log snapshots | 1,176 (2604.8 MB gzipped, 1,162 uploaded) |
+| Tokens written | 29,313,025 |
+| Tokens read | 4,845,779,210 (98.1% from cache) |
+| Commits with a trace | 900 |
+| Log snapshots | 1,177 (2605.7 MB gzipped, 1,162 uploaded) |
 
 ## Sessions
 
@@ -165,7 +165,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | ended | 7 min | `claude-opus-5-5` | 2 | 5 | 4 | 0 | 0 | 56,756 | 1 |
 | 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | open | 13 min | `claude-opus-5-5` | 1 | 48 | 49 | 1 | 0 | 148,170 | 1 |
 | 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | open | 17 min | `claude-opus-5-5` | 1 | 47 | 48 | 1 | 0 | 128,411 | 1 |
-| 2026-11-17 12:56 UTC | [f28025bc-e46b-4a87-a943-bfb79dea5465](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | open | 48 min | `claude-opus-5-5` | 6 | 116 | 119 | 1 | 1 | 176,568 | 8 |
+| 2026-11-17 12:56 UTC | [f28025bc-e46b-4a87-a943-bfb79dea5465](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | open | 1 h 47 min | `claude-opus-5-5` | 11 | 181 | 183 | 3 | 2 | 182,526 | 9 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -312,16 +312,16 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 2,242 | 10 | 28,745 | 226,501 | 88.7% | 114 |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 38,033 | 96 | 136,827 | 4,652,464 | 97.1% | 126 |
 | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 34,460 | 94 | 115,098 | 4,026,126 | 97.2% | 120 |
-| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 87,925 | 232 | 313,031 | 13,172,418 | 97.7% | 153 |
+| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 144,866 | 362 | 466,582 | 20,759,212 | 97.8% | 147 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 26,681 | 88.8% | 138 |
+| `Bash` | 26,743 | 88.8% | 138 |
 | `Read` | 1,268 | 4.2% | 56 |
-| `Edit` | 951 | 3.2% | 55 |
-| `Write` | 643 | 2.1% | 55 |
+| `Edit` | 952 | 3.2% | 55 |
+| `Write` | 644 | 2.1% | 55 |
 | `ToolSearch` | 163 | 0.5% | 41 |
 | `Monitor` | 119 | 0.4% | 48 |
 | `AskUserQuestion` | 63 | 0.2% | 16 |
@@ -1240,6 +1240,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 897 | change `trkpotro` | The examples' router carries example 287's two new notes | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/e41f2c4d702ac713bfe202b895a8b1166472b9b3ac35124558b19988e8a514ab.jsonl.gz)) |
 | 898 | change `kwyxmlns` | Merge the shared driver module, the pairing countermodels and the run-streams test fix into the preservation stream | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de.jsonl.gz)) |
 | 899 | change `zmvkptqz` | The pair of versions compares exceptions by class and starts each version as if it ran alone (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/b17c45752115266256b1c406ca0a71b7f65fbc6938ef86b2a85a06445afee80e.jsonl.gz)) |
+| 900 | change `unswkkxp` | The checker models a line logged at WARNING as spring-jcl logs it, so example 287's preservation reaches both sides' bcrypt | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/fda3769957a6e5d712f818f60dd7bc1e81d57b724b0cdd8b5e28f6cc89e81ea9.jsonl.gz)) |
 
 ## Logs
 
@@ -1384,7 +1385,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 1 | 0 | 0.1 MB | `887466d85ae2`, not uploaded |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 1 | 0 | 0.2 MB | `fadef0a55901`, not uploaded |
 | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 1 | 0 | 0.2 MB | `595fb15ec333`, not uploaded |
-| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 4 | 0 | 1.5 MB | `b17c45752115`, not uploaded |
+| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 5 | 0 | 2.3 MB | `fda3769957a6`, not uploaded |
 
 ## Session notes
 

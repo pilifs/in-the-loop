@@ -220,9 +220,40 @@ fn a_literal_followed_by_any_that_is_an_input_matches_as_the_definition_written_
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
     let stated = o.stated.as_ref().expect("a statement");
     assert!(stated.assumptions.iter().any(|a| a.text.contains("nothing below INFO is logged")), "{:?}", stated.assumptions);
-    let o = run(&options(classes, "claims.P#loud", 3, "P-loud"));
-    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
-    assert!(o.output.contains("java.util.logging.Level.INFO"), "{}", o.output);
+}
+
+/// A line logged at WARNING as Spring's logging adapter logs one (example 287's encoder, for a stored hash that is
+/// empty or not bcrypt's) returns normally under the default logging configuration, which the result states. What
+/// would make logging observable stops the proof where it is set up: a level, a filter or a handler set on a
+/// logger, and a record that writes elsewhere when the handler formats it. On a JVM each of those four returns false
+/// or throws, where a model that took logging for granted would prove it true.
+#[test]
+fn a_line_logged_at_warning_returns_normally_and_what_would_make_logging_observable_stops_the_proof() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    for method in ["loud", "warned", "nulls"] {
+        let o = run(&options(classes, &format!("claims.Logged#{method}"), 3, &format!("Logged-{method}")));
+        assert_eq!(o.verdict, Verdict::Verified, "{method}: {}", o.output);
+        let stated = o.stated.as_ref().expect("a statement");
+        if method != "nulls" {
+            assert!(stated.assumptions.iter().any(|a| a.text.contains("true for INFO, WARNING and SEVERE")), "{method}: {:?}", stated.assumptions);
+        }
+        if method == "warned" {
+            assert!(stated.assumptions.iter().any(|a| a.text.contains("no logger has a filter, a handler of its own or a resource bundle")), "{:?}", stated.assumptions);
+        }
+    }
+    for (method, stop) in [
+        ("off", "java.util.logging.Level.OFF"),
+        ("described", "java.lang.String.valueOf(Ljava/lang/Object;)Ljava/lang/String;"),
+        ("counted", "java.util.logging.Logger.log(Ljava/util/logging/LogRecord;)V"),
+        ("levelled", "java.util.logging.Logger.setLevel"),
+        ("filtered", "java.util.logging.Logger.setFilter"),
+        ("handled", "java.util.logging.Handler.<init>"),
+    ] {
+        let o = run(&options(classes, &format!("claims.Logged#{method}"), 3, &format!("Logged-{method}")));
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{method}: {}", o.output);
+        assert!(o.output.contains(stop), "{method}: {}", o.output);
+    }
 }
 
 /// A throws clause's condition is Java as the assumption and the assertion are: one over a String's bytes is

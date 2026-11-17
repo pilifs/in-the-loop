@@ -120,9 +120,25 @@ relational result needs a new check (the rule's applications recorded in the out
   `Level.WARNING`. Job `20261117-134306-examples-289-and-290-preservation-again` reruns both so `accept.py` can
   settle them under the exact statement; the evidence stream is told. Limit: on a JVM a library's statics stay
   shared without `--before-classpath`, so a witness that only they show is dropped there, never proved.
-- Next: lift the warning path (java.util.logging at INFO and above under the default configuration, with
-  countermodels: a level, a handler or a filter that would make it observable is refused), probe again to reach
-  the two sides' bcrypt, then step 2.
+- 2026-11-17, step 1 continued (the warning path lifted; *working formalization* and *accepted claim* unchanged).
+  The checker (`bmc/runtime.rs`) now models java.util.logging at INFO, WARNING and SEVERE as the default
+  configuration has it, and spring-jcl's `JavaUtilLog.warn`: `new LogRecord(level, message)` (NPE for null), the
+  record's setters, the Logger's bundle (null), and `Logger.log(record)` returning normally, under a second stated
+  assumption (the default ConsoleHandler only; no filter, handler or bundle). The handler formats the record and
+  calls its getters, so `log` is modelled only for a record whose class is confined to itself (a bytecode scan;
+  spring's `LocationResolvingLogRecord` passes). `String.valueOf(Object)` of a String or null is modelled too; of
+  another object it stays a gap, and the scan still names it. Countermodels first, in
+  `lib/tests/fixtures/claims/claims/Logged.java`, each false or throwing on a JVM: a record that counts its
+  formatting (falsely verified without the confinement scan, checked by disabling it), a level, a filter, a
+  handler set on a logger, and `valueOf` of an object whose `toString` counts; all stop the proof. Probes on 287:
+  a trial at bound 8 verifies (no stored hash that short reaches bcrypt); at the claim's bound 80 (`--timeout
+  200`) the pair reaches both sides' bcrypt and ends on a spurious counterexample past the invariants of
+  `crypt_raw` (pc 165) and `ekskey` (pc 260, pc 60), which a JVM run shows to be no counterexample. 191 of the
+  200 s go to the solver, at 3.6 million variables. This is the relational failure the brief describes. 287's
+  notes record it. No new inbox items. I001 to I003 were acknowledged above.
+- Next: step 2. Read `shared.rs`, `equivalence.rs:1800` and `bmc/loops.rs`, and choose the boundary by the
+  evidence: the counterexample's three loops are in `crypt_raw` and `ekskey`, which are unchanged between the
+  releases.
 - Status: working
 
 ## Loop settings

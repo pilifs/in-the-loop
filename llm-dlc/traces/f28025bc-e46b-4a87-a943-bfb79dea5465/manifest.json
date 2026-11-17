@@ -12,30 +12,31 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.021Z",
-  "ended": "2026-11-17T13:45:46.581Z",
-  "duration_seconds": 2936,
+  "ended": "2026-11-17T14:44:48.743Z",
+  "duration_seconds": 6478,
   "stats": {
-    "turns": 6,
-    "api_calls": 116,
-    "tool_calls": 119,
-    "tool_errors": 1,
-    "compactions": 1,
-    "peak_context_tokens": 176568,
+    "turns": 11,
+    "api_calls": 181,
+    "tool_calls": 183,
+    "tool_errors": 3,
+    "compactions": 2,
+    "peak_context_tokens": 182526,
     "usage": {
-      "input_tokens": 232,
-      "output_tokens": 87925,
-      "cache_read_input_tokens": 13172418,
-      "cache_creation_input_tokens": 313031
+      "input_tokens": 362,
+      "output_tokens": 144866,
+      "cache_read_input_tokens": 20759212,
+      "cache_creation_input_tokens": 466582
     }
   },
   "tools": {
-    "Bash": 114,
-    "Edit": 4,
-    "Write": 1
+    "Bash": 176,
+    "Edit": 5,
+    "Write": 2
   },
   "files_touched": [
     "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
     "lib/src/bmc/mod.rs",
+    "lib/tests/fixtures/claims/claims/Logged.java",
     "llm-dlc/loops/domain-advances-preservation.md"
   ],
   "context_windows": [
@@ -56,24 +57,38 @@
     {
       "index": 1,
       "started": "2026-11-17T13:16:09.414Z",
-      "ended": "2026-11-17T13:45:46.581Z",
-      "turns": 4,
-      "api_calls": 67,
+      "ended": "2026-11-17T13:46:43.993Z",
+      "turns": 5,
+      "api_calls": 72,
       "usage": {
-        "input_tokens": 134,
-        "output_tokens": 55318,
-        "cache_read_input_tokens": 7938483,
-        "cache_creation_input_tokens": 163295
+        "input_tokens": 144,
+        "output_tokens": 57503,
+        "cache_read_input_tokens": 8828824,
+        "cache_creation_input_tokens": 169253
       },
-      "peak_context_tokens": 176568
+      "peak_context_tokens": 182526
+    },
+    {
+      "index": 2,
+      "started": "2026-11-17T13:47:38.717Z",
+      "ended": "2026-11-17T14:44:48.743Z",
+      "turns": 4,
+      "api_calls": 60,
+      "usage": {
+        "input_tokens": 120,
+        "output_tokens": 54756,
+        "cache_read_input_tokens": 6696453,
+        "cache_creation_input_tokens": 147593
+      },
+      "peak_context_tokens": 160866
     }
   ],
   "log": {
-    "sha256": "b17c45752115266256b1c406ca0a71b7f65fbc6938ef86b2a85a06445afee80e",
-    "bytes": 3340870,
-    "lines": 1055,
-    "gzip_bytes": 569167,
-    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/b17c45752115266256b1c406ca0a71b7f65fbc6938ef86b2a85a06445afee80e.jsonl.gz"
+    "sha256": "fda3769957a6e5d712f818f60dd7bc1e81d57b724b0cdd8b5e28f6cc89e81ea9",
+    "bytes": 4901376,
+    "lines": 1634,
+    "gzip_bytes": 824911,
+    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/fda3769957a6e5d712f818f60dd7bc1e81d57b724b0cdd8b5e28f6cc89e81ea9.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -102,11 +117,11 @@
       "log_sha256": "a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de"
     },
     {
-      "change_id": "yypzyxmwluytmwrouqvxqkpppqzpqszn",
+      "change_id": "smxzwqlrvzxmnyqvzmnsuqoktxkoqomx",
       "commit_id": null,
       "immutable": false,
-      "summary": "Countermodels of the pair of versions: five false proofs of agreement, reproduced and handed to the preservation stream",
-      "body": "The challenge stream's item 1. lib/tests/fixtures/pairing-countermodels holds two versions of five methods that differ when each runs alone on a JVM and that RegressionPair.agree (lib/src/pairing.rs) proves agreeing: the previous version sets the default locale the new one lowers under; a library static shared without --before-classpath; two unrelated RuntimeExceptions, and IllegalArgumentException against a subclass, compared by category; a scope that is false everywhere but sets the default locale before both calls. All five were Verified on the checker at lupovnmv. The order of the calls is observable: with the versions' roles swapped, and with --before-classpath, the shared-static case is a violation.",
+      "summary": "The run-streams tests no longer inherit a real run's watcher, so run inside a stream they cannot ask it questions",
+      "body": "test_brief_run.py's fixture now drops RUN_STREAMS_*, FEATURE_LOOP_* and LOOP_CONDUCTOR from the environment. A stream of the domain-advances run ran the test of a run 'without a watcher', which built its env from os.environ: inside the stream's loop that carries RUN_STREAMS_WATCHER, so the test's made-up run-streams.sh put two merge questions (streams a and b of made-up) to the real watcher, which answered them leave (run-streams-domain-advances D001, D002). Verified: the 39 tests pass with a decoy RUN_STREAMS_WATCHER and LOOP_CONDUCTOR set, and nothing is written to the decoy.",
       "log_sha256": "a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de"
     },
     {
@@ -118,11 +133,11 @@
       "log_sha256": "a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de"
     },
     {
-      "change_id": "smxzwqlrvzxmnyqvzmnsuqoktxkoqomx",
+      "change_id": "yypzyxmwluytmwrouqvxqkpppqzpqszn",
       "commit_id": null,
       "immutable": false,
-      "summary": "The run-streams tests no longer inherit a real run's watcher, so run inside a stream they cannot ask it questions",
-      "body": "test_brief_run.py's fixture now drops RUN_STREAMS_*, FEATURE_LOOP_* and LOOP_CONDUCTOR from the environment. A stream of the domain-advances run ran the test of a run 'without a watcher', which built its env from os.environ: inside the stream's loop that carries RUN_STREAMS_WATCHER, so the test's made-up run-streams.sh put two merge questions (streams a and b of made-up) to the real watcher, which answered them leave (run-streams-domain-advances D001, D002). Verified: the 39 tests pass with a decoy RUN_STREAMS_WATCHER and LOOP_CONDUCTOR set, and nothing is written to the decoy.",
+      "summary": "Countermodels of the pair of versions: five false proofs of agreement, reproduced and handed to the preservation stream",
+      "body": "The challenge stream's item 1. lib/tests/fixtures/pairing-countermodels holds two versions of five methods that differ when each runs alone on a JVM and that RegressionPair.agree (lib/src/pairing.rs) proves agreeing: the previous version sets the default locale the new one lowers under; a library static shared without --before-classpath; two unrelated RuntimeExceptions, and IllegalArgumentException against a subclass, compared by category; a scope that is false everywhere but sets the default locale before both calls. All five were Verified on the checker at lupovnmv. The order of the calls is observable: with the versions' roles swapped, and with --before-classpath, the shared-static case is a violation.",
       "log_sha256": "a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de"
     },
     {
@@ -140,6 +155,14 @@
       "summary": "The pair of versions compares exceptions by class and starts each version as if it ran alone (verification pending)",
       "body": "The challenge stream's five countermodels of the pair (lib/tests/fixtures/pairing-countermodels: a default locale the previous version sets, a library static shared without --before-classpath, two unrelated RuntimeExceptions, an IllegalArgumentException against its subclass, a scope that sets the default locale) were each proved to agree, though the versions differ when each runs alone. RegressionPair (lib/src/pairing.rs) now compares exceptions by class, through getClass().getName() with a copy's 'before.' prefix taken off, and calls fresh() before the scope and before each version. At fresh() the checker (bmc/mod.rs) and the interpreter clear the path's static fields and class initialization, which hold the default locale too, so no version starts in what an earlier one left; on a JVM fresh() sets the default locale back. The checker models getClass() of a Throwable the run made (bmc/runtime.rs), as its handlers already take it for that class. The README's checker-side test is added to lib/tests/pairing_countermodels.rs: it failed on all five before and passes now, each of the seven runs a violation confirmed by replay. Limit, stated in pairing.rs and lib/README.md: on a JVM a library's statics stay shared without --before-classpath, so a witness only they show is dropped there as no reproduction, never proved.",
       "log_sha256": "b17c45752115266256b1c406ca0a71b7f65fbc6938ef86b2a85a06445afee80e"
+    },
+    {
+      "change_id": "unswkkxpxtvktmynvykylvnlmskyylwp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The checker models a line logged at WARNING as spring-jcl logs it, so example 287's preservation reaches both sides' bcrypt",
+      "body": "java.util.logging at INFO, WARNING and SEVERE is now modelled under the JDK's default configuration (lib/src/bmc/runtime.rs). isLoggable is true there. A LogRecord's constructor of a level and a message (NullPointerException for a null level) and its setters do nothing a check observes. A Logger's resource bundle and bundle name are null. Logger.log(record) returns normally under a second stated assumption: the record goes only to the root's default ConsoleHandler, and no logger has a filter, handler or bundle. The handler formats the record by calling its getters, which a subclass may override. So log is modelled only for a record whose class below LogRecord writes nothing but its own fields and calls nothing but its own methods, LogRecord's, String's, StackTraceElement's and a Throwable's constructors and getters. A bytecode scan checks this, and spring-jcl's LocationResolvingLogRecord passes. A logging call the model does not take is now the gap it is to a checker without the model; before, an isLoggable the model declined was counted exact. String.valueOf(Object) of a String or null is modelled before the static classification, so the gap scan still names it for other objects.\n\nCountermodels came first, in lib/tests/fixtures/claims/claims/Logged.java. On a JVM each returns false or throws where a model that took logging for granted would say true: a record that counts its formatting, a level, a filter and a handler set on a logger, and valueOf of an object whose toString counts. All five now stop the proof. With the confinement scan disabled, the counting record was falsely verified. The claims test a_line_logged_at_warning_returns_normally_and_what_would_make_logging_observable_stops_the_proof also proves the warned path, the null cases and loud. P.loud moved there, since INFO is now modelled. lib/README.md and 287's notes say what changed.\n\nProbes on example 287's preservation: a trial at bound 8 verifies. At the claim's bound of 80, with a 200 s timeout, the pair reaches both sides' bcrypt and ends on a spurious counterexample past the invariants of BCrypt.crypt_raw and ekskey; a JVM run shows it is no counterexample. This is the relational failure the stream's brief predicts, and step 2 starts from it. Verified with test_costs.py run --changed (26 of 26), the lint, and validate_example.py 287.",
+      "log_sha256": "fda3769957a6e5d712f818f60dd7bc1e81d57b724b0cdd8b5e28f6cc89e81ea9"
     }
   ],
   "logs": {
@@ -165,6 +188,12 @@
       "bytes": 1425374,
       "lines": 392,
       "gzip_bytes": 255829,
+      "url": null
+    },
+    "fda3769957a6e5d712f818f60dd7bc1e81d57b724b0cdd8b5e28f6cc89e81ea9": {
+      "bytes": 4901376,
+      "lines": 1634,
+      "gzip_bytes": 824911,
       "url": null
     }
   },

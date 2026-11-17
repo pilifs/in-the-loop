@@ -2227,7 +2227,8 @@ fn the_gap_scan_names_what_the_own_checker_approximates() {
     assert!(s.refused.is_empty(), "{:?}", s.refused);
     assert!(s.methods.contains("fixtures.Gaps$Primes.<clinit>()V"), "{:?}", s.methods);
     // javac from JDK 19 on converts the object with `String.valueOf` before the concatenation, which the engine
-    // refuses; the bytecode of JDK 9 to 18 passes the object itself, a `string-conversion` gap.
+    // models of a String or null alone, so the scan names it; the bytecode of JDK 9 to 18 passes the object
+    // itself, a `string-conversion` gap.
     let (ids, s) = scan("described");
     assert_eq!(ids, ["jdk-static-method:java.lang.String.valueOf(Ljava/lang/Object;)Ljava/lang/String;"]);
     assert!(s.refused.is_empty(), "{:?}", s.refused);
