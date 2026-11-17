@@ -18,6 +18,28 @@
 
 The commits this session made, oldest first, with the message the agent wrote for each.
 
+### Example 307 ahead of the preservation stream's step 6: where the checker stops, the callee's footprint, the conversions on the pinned JDKs, and countermodels for the model and the rule
+
+change `nqturzqlsqnp` · [log `d18158c1df0d`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/d18158c1df0d1632c59c054778762ea0c9aae04ceeebadebf8d5ca49c6ed8012.jsonl.gz)
+
+New files only, for the watcher of the domain-advances run to pass on as guidance within step 6; no claim, note, checker source or stream file is changed. examples/307-*/records/step-6-packet.md is the account. Six capped probes of the preservation stream's rmvpqswzxlyv (step-6-probes.json): 307's preservation stops in 1 s at the previous revision's getBytes("UTF-8"), the mutant's at StandardCharsets.US_ASCII, and with the conversions modelled the claim's unwind 513 leaves no loop summarized, so nothing is tied and the check is killed at 4 GB in 39 s; at the default unwinding it ends at the time limit as 287 does.
+
+records/callee-footprint/footprint.py reads class files and says what a callee's closure reads, writes and hands on: hashpw(byte[],String) is the same 13 methods and initializer in before, after and the mutant, writes nothing its caller can see and reads five final tables nothing else writes (hashpw-bytes.json); 287's crypt_raw is the same in 6.3.7 and 6.3.8, whose hashpw differs by nine inserted instructions (287-crypt-raw.json). records/conversion/ runs both getBytes overloads, the US-ASCII conversion and written-out encoders on 4.3 thousand million Strings on Temurin 21.0.13 and 25.0.5 with no difference, and records the overloads' bytecode. records/mutant-witness.json says which candidates the real cipher tells apart.
+
+lib/tests/fixtures/conversion-countermodels (twelve pairs, a prototype model as a patch, the test to add) and callee-countermodels (ten pairs for taking an unchanged callee as one function) each have a harness, check.py, and a README with what a JVM and today's checker say. Verified by running them: the prototype decides its six pairs, a prototype made wrong on purpose is caught on six, today's checker proves none of the seven callee countermodels and proves 307's shape in the miniature. validate_example.py 307 and the test-cost lint pass. Also found: the example route passes no --assume for an equivalence task, a witness a second run undoes is reported as not reproduced, and a parameter named b does not compile in the generated pair.
+
+### Example 307: a prototype of the relation at the unchanged callee closes both tasks at crypt_raw on JDK 25, and the callee's code has no fingerprint there at hashpw(byte[], String)
+
+change `qtxkqsmtopqz` · [log `a6cec13f811f`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/a6cec13f811f04dff808c61123c0a2195e8173fd446476e3239f2129ee8fb78c.jsonl.gz)
+
+A second delivery from the session the user brought in ahead of the preservation stream's step 6, for the stream to compare its own call-level rule against. New files, and edits to this session's own fixture; no checker source and no test changes.
+
+examples/307-*/records/step-6-call-level.md is the note and step-6-call-level-probes.json the runs. lib/tests/fixtures/callee-countermodels/prototype-one-function.patch (against kskmpmny, git 10b5d9c0, after prototype-model.patch) names a callee's outcome by the key of the state at its entry, as a loop's state past the bound is named, and checks no side condition. With it, at the claim's frozen parameters and assumption, in capped probes (4 GB, 300 s): with the relation at crypt_raw on JDK 25, preservation is verified in 79 s (878 MB) and the mutant is a violation in 58 s, replayed on a JVM; with it at hashpw(byte[], String), preservation is verified in 53 s on JDK 21 and the run is killed at 4 GB on JDK 25, and the mutant has no verdict under the claim's seven salts (the first candidate has salt = null) and is a violation under one valid salt. Without a relation the runs die at 4 GB.
+
+The JDK 25 difference: hashpw(byte[], String) calls Integer.parseInt, whose bytecode the checker follows, and JDK 25's parseInt(String, int) calls String.format(String, Object[]), which shared::reach takes as a way back into the application since kskmpmny. The fixture gains the row parsed (Parsing.java, a callee that calls Integer.parseInt): verified on JDK 21 and no verdict on JDK 25 on kskmpmny, in under a second.
+
+The prototype against the fixture's rows: by formula it falsely proves wiped and counted (what the callee writes is not in its outcome); with a relation by content added it falsely proves table, seeded, helped and aliased too. No other row turns. So the rows separate a rule with its side conditions from one without.
+
 ### VF-038: 307's frozen claim cites a specification getBytes(String) does not have; the user keeps the claim and defers the restatement and I008
 
 change `msusklystoqw` · [log `df61ff8551ea`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/df61ff8551ead1fdd65dedb5f8b23a477ad48de510116108afddd6d0ef674b32.jsonl.gz)
@@ -35,16 +57,6 @@ Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the j
 change `rtllkuzmporr` · [log `a4fd0bcefd8b`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/a4fd0bcefd8b7524858a7cb0ffd0463de37ec524d0f7a0d5fb3401d99df5f41b.jsonl.gz)
 
 289's preservation passed on one checker with the pair's and evidence's fixes; 290's step stopped before the check, in the initializer observer that runs its JVM in another folder than the relative --work assumes. Told to preservation, with the note that state is fixing the same code.
-
-### Example 307 ahead of the preservation stream's step 6: where the checker stops, the callee's footprint, the conversions on the pinned JDKs, and countermodels for the model and the rule
-
-change `nqturzqlsqnp` · [log `d18158c1df0d`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/d18158c1df0d1632c59c054778762ea0c9aae04ceeebadebf8d5ca49c6ed8012.jsonl.gz)
-
-New files only, for the watcher of the domain-advances run to pass on as guidance within step 6; no claim, note, checker source or stream file is changed. examples/307-*/records/step-6-packet.md is the account. Six capped probes of the preservation stream's rmvpqswzxlyv (step-6-probes.json): 307's preservation stops in 1 s at the previous revision's getBytes("UTF-8"), the mutant's at StandardCharsets.US_ASCII, and with the conversions modelled the claim's unwind 513 leaves no loop summarized, so nothing is tied and the check is killed at 4 GB in 39 s; at the default unwinding it ends at the time limit as 287 does.
-
-records/callee-footprint/footprint.py reads class files and says what a callee's closure reads, writes and hands on: hashpw(byte[],String) is the same 13 methods and initializer in before, after and the mutant, writes nothing its caller can see and reads five final tables nothing else writes (hashpw-bytes.json); 287's crypt_raw is the same in 6.3.7 and 6.3.8, whose hashpw differs by nine inserted instructions (287-crypt-raw.json). records/conversion/ runs both getBytes overloads, the US-ASCII conversion and written-out encoders on 4.3 thousand million Strings on Temurin 21.0.13 and 25.0.5 with no difference, and records the overloads' bytecode. records/mutant-witness.json says which candidates the real cipher tells apart.
-
-lib/tests/fixtures/conversion-countermodels (twelve pairs, a prototype model as a patch, the test to add) and callee-countermodels (ten pairs for taking an unchanged callee as one function) each have a harness, check.py, and a README with what a JVM and today's checker say. Verified by running them: the prototype decides its six pairs, a prototype made wrong on purpose is caught on six, today's checker proves none of the seven callee countermodels and proves 307's shape in the miniature. validate_example.py 307 and the test-cost lint pass. Also found: the example route passes no --assume for an equivalence task, a witness a second run undoes is reported as not reproduced, and a parameter named b does not compile in the generated pair.
 
 ### Record verification results for 1 job(s)
 
@@ -99,18 +111,6 @@ D031: challenge's loop ended at 17:11 when the OOM killer took its session (VF-0
 change `rwomprmzwrsn` · [log `920e81a3bf20`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/920e81a3bf2013d9cc21a9d1d51c1964f056ce1b8df246363de1335201238fd2.jsonl.gz)
 
 Amended from a read-only review of the domain-advances run, beside its watcher. The second of the two stops that counted challenge blocked was only the refusal beside the killed session's orphans. brief_run.py can stop and start a whole run but not one stream, so challenge sat idle for over three hours while preservation wrote its riskiest rules. A loop restarted by hand is outside run-streams.sh's bookkeeping (merge question, phase, reruns, start and wait). Needs now names the interim test-run cap (I003), a rerun of one stream inside a run, and not counting a scope refusal as a stop, together with the deferred RUN_STREAMS_WATCHER leak fix. Also removed the restart time the entry gave (20:35): at 20:19 UTC no challenge loop was running yet. No code changed; nothing to test.
-
-### Example 307: a prototype of the relation at the unchanged callee closes both tasks at crypt_raw on JDK 25, and the callee's code has no fingerprint there at hashpw(byte[], String)
-
-change `qtxkqsmtopqz` · [log `a6cec13f811f`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/a6cec13f811f04dff808c61123c0a2195e8173fd446476e3239f2129ee8fb78c.jsonl.gz)
-
-A second delivery from the session the user brought in ahead of the preservation stream's step 6, for the stream to compare its own call-level rule against. New files, and edits to this session's own fixture; no checker source and no test changes.
-
-examples/307-*/records/step-6-call-level.md is the note and step-6-call-level-probes.json the runs. lib/tests/fixtures/callee-countermodels/prototype-one-function.patch (against kskmpmny, git 10b5d9c0, after prototype-model.patch) names a callee's outcome by the key of the state at its entry, as a loop's state past the bound is named, and checks no side condition. With it, at the claim's frozen parameters and assumption, in capped probes (4 GB, 300 s): with the relation at crypt_raw on JDK 25, preservation is verified in 79 s (878 MB) and the mutant is a violation in 58 s, replayed on a JVM; with it at hashpw(byte[], String), preservation is verified in 53 s on JDK 21 and the run is killed at 4 GB on JDK 25, and the mutant has no verdict under the claim's seven salts (the first candidate has salt = null) and is a violation under one valid salt. Without a relation the runs die at 4 GB.
-
-The JDK 25 difference: hashpw(byte[], String) calls Integer.parseInt, whose bytecode the checker follows, and JDK 25's parseInt(String, int) calls String.format(String, Object[]), which shared::reach takes as a way back into the application since kskmpmny. The fixture gains the row parsed (Parsing.java, a callee that calls Integer.parseInt): verified on JDK 21 and no verdict on JDK 25 on kskmpmny, in under a second.
-
-The prototype against the fixture's rows: by formula it falsely proves wiped and counted (what the callee writes is not in its outcome); with a relation by content added it falsely proves table, seeded, helped and aliased too. No other row turns. So the rows separate a rule with its side conditions from one without.
 
 ### Merge the 307 specialist's call-level prototype into the line
 
