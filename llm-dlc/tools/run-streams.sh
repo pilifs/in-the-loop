@@ -54,6 +54,11 @@
 # RUN_STREAMS_BLOCKED_WAIT seconds (1800), leaves it for the merge to list, as without a watcher. So a decision
 # made during the run reaches its stream during the run, not after it.
 #
+# A run is stopped at a boundary by the file stop-after in its state directory (brief_run.py stop writes it, and
+# tells each loop to end after its cycle under way): a loop that ends is then not run again, one waiting on jobs
+# stops waiting, the merge is not started, and the script exits 3. Nothing is interrupted and nothing uncommitted
+# is left; running the script again continues, and removes the file.
+#
 # Each brief ends its "## Progress" with a status line its loop keeps current:
 # "- Status: working", "- Status: waiting on jobs ID ...", "- Status: done" or
 # "- Status: blocked: what needs the user". When a loop stops, this script reads
@@ -131,7 +136,7 @@
 # survives a restart. llm-dlc/tools/streams_status.py reads and renders it.
 #
 # Exits 0 when the brief's own loop is finished, 1 if it is blocked or the setup
-# fails, 2 for a bad argument and 130 if interrupted.
+# fails, 2 for a bad argument, 3 when stopped at a boundary and 130 if interrupted.
 
 set -uo pipefail
 
@@ -362,10 +367,16 @@ jobs_back() {
 # restart; phases, cycles and activity are this invocation's.
 STATE=$ROOT/llm-dlc/loop-summaries/run-streams-$NAME
 mkdir -p "$STATE" || exit 1
-rm -f "$STATE"/*.phase "$STATE"/*.cycle "$STATE"/*.last
+rm -f "$STATE"/*.phase "$STATE"/*.cycle "$STATE"/*.last "$STATE/stop-after"
+stopping() { [[ -e "$STATE/stop-after" ]]; }
 [[ -s "$STATE/start" ]] || date +%s >"$STATE/start"
 START=$(<"$STATE/start")
-phase() { printf '%s\n' "$2" >"$STATE/$1.phase"; }
+# A loop's phase, for the status bar, and each change of it with its time (LABEL.phases), which is where a summary's
+# time working, waiting on jobs, blocked, and finished while others still ran comes from (brief_run.py).
+phase() {
+  printf '%s\n' "$2" >"$STATE/$1.phase"
+  printf '%s\t%s\n' "$(date +%s)" "$2" >>"$STATE/$1.phases"
+}
 
 # With a watcher, whether a loop that ended blocked is run again (see the header): LABEL, its status, its brief.
 rerun_blocked() {
@@ -380,11 +391,23 @@ rerun_blocked() {
 }
 
 # Run one loop until it is finished, as the header says: LABEL, the workspace it
-# runs in, its name, and its brief there, which is what feature-loop.sh is given. Exits 0 when its
+# runs in, its name, and its brief there, which is what feature-loop.sh is given.
+# With a watcher the loop takes command lines from a directory of its own (conductor.py command), which is how it
+# is told to end after its cycle under way; a brief's loop is asked nothing through it. Exits 0 when its
 # brief says done, 3 when it is blocked, 130 if interrupted.
 supervise() {
   local label=$1 dir=$2 loop=$4 brief=$2/$4 code status failed=0 waited ids
+  local commands=
+  if [[ -n "${RUN_STREAMS_WATCHER:-}" ]]; then
+    commands=$STATE/loops/$label
+    mkdir -p "$commands"
+  fi
   while :; do
+    if stopping; then
+      log "[$label] the run is stopping at a boundary: not run again; its brief says $(status_of "$brief")"
+      phase "$label" "stopped at a boundary"
+      exit 4
+    fi
     # Waiting on jobs, from this run or one before it: they come back first.
     status=$(status_of "$brief")
     if [[ "$VERIFICATION" == separate && "$status" == "waiting on jobs"* ]]; then
@@ -398,6 +421,7 @@ supervise() {
         log "[$label] waiting for ${ids[*]}, checking every ${POLL}s"
         waited=0
         until jobs_back "${ids[@]}"; do
+          stopping && continue 2
           if (( waited >= JOB_WAIT )); then
             log "[$label] the jobs aren't back after ${JOB_WAIT}s: counted as blocked"
             exit 3
@@ -410,7 +434,7 @@ supervise() {
     fi
     log "[$label] starting feature-loop.sh $loop in $dir"
     phase "$label" running
-    "$dir/llm-dlc/tools/feature-loop.sh" "$loop" </dev/null 2>&1 | python3 -u "$ROOT/llm-dlc/tools/streams_status.py" tag "$label" "$STATE"
+    LOOP_CONDUCTOR=$commands "$dir/llm-dlc/tools/feature-loop.sh" "$loop" </dev/null 2>&1 | python3 -u "$ROOT/llm-dlc/tools/streams_status.py" tag "$label" "$STATE"
     code=${PIPESTATUS[0]}
     collect_records "$dir" "$label"
     (( code == 130 )) && exit 130
@@ -418,6 +442,9 @@ supervise() {
     log "[$label] the loop ended with status $code; its brief says: ${status:-no status}"
     case "$status" in
       done*) exit 0 ;;
+    esac
+    stopping && continue
+    case "$status" in
       blocked*)
         rerun_blocked "$label" "$status" "$4" || exit 3
         failed=0
@@ -585,6 +612,7 @@ for s in "${!PID[@]}"; do
   wait "${PID[$s]}"
   code=$?
   (( code == 130 )) && { log "[$s] interrupted"; stop_all; wait; exit 130; }
+  (( code == 4 )) && continue
   log "[$s] finished: $(status_of "${DIR[$s]}/${BRIEF%.md}-$s.md")"
   phase "$s" "finished: $(status_of "${DIR[$s]}/${BRIEF%.md}-$s.md")"
 done
@@ -599,7 +627,9 @@ fi
 for s in "${STREAMS[@]}"; do collect_records "${DIR[$s]}" "$s"; done
 code=0
 status=$(status_of "$ROOT/$BRIEF")
-if finished "$status"; then
+if stopping; then
+  log "stopped at a boundary: the brief's own loop is not started"
+elif finished "$status"; then
   log "[merge] its brief says $status: not run again"
   phase merge "finished: $status"
 else
@@ -609,7 +639,7 @@ else
   wait "${PID[merge]}"
   code=$?
   PID=()
-  phase merge "finished: $(status_of "$ROOT/$BRIEF")"
+  (( code == 4 )) || phase merge "finished: $(status_of "$ROOT/$BRIEF")"
 fi
 if [[ -n "$VERIFY" ]]; then
   log "stopping the verification loop after its run under way"
@@ -623,6 +653,10 @@ if [[ -n "$STATUS" ]]; then
 fi
 show_status log
 (( code == 130 )) && exit 130
+if stopping; then
+  log "stopped at a boundary, every loop after its cycle under way: running this again continues"
+  exit 3
+fi
 status=$(status_of "$ROOT/$BRIEF")
 log "finished: the brief $BRIEF says ${status:-no status}"
 # Every loop's session, so the one to resume or read is on screen. The

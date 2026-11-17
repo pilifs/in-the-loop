@@ -26,6 +26,8 @@ commit):
   queued      a question about its work is queued for the user (an open decision): what to go on with
               meanwhile
   unblocked   it may now go on with what it was waiting for
+  foundation  what the foundation stage of the run built before the stream started (brief_run.py): what to build on
+              and not build again, with the stage's own report and its commit
   overturned  a decision overturned that touches its work: the decision that replaced it (whose
               supersedes names it), and the undo steps the overturned one's record lists
 
@@ -71,10 +73,11 @@ KINDS = {
     "queued": "a question about your work is queued for the user",
     "unblocked": "you may go on",
     "overturned": "a decision overturned that touches your work",
+    "foundation": "what the run's foundation stage built before you started",
 }
 # The state a decision an item names must be in, by kind (None: any).
 DECISION_STATES = {"interface": {"decided"}, "answer": {"decided"}, "queued": {"open"},
-                   "overturned": {"decided", "superseded"}, "failure": None, "unblocked": None}
+                   "overturned": {"decided", "superseded"}, "failure": None, "unblocked": None, "foundation": None}
 
 NAME_RE = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 ITEM_RE = re.compile(r"^(?P<name>[a-z0-9][a-z0-9-]*)-I(?P<n>[0-9]{3,})$")

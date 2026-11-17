@@ -32,8 +32,10 @@ intervals. This is what it runs. BRIEF is a brief's name or file, as run-streams
         how often `wait` returns a summary from now on.
     brief_run.py status BRIEF
         where the run stands, as data.
-    brief_run.py stop BRIEF
-        interrupt the run: every loop records the interruption, and `start` continues it.
+    brief_run.py stop BRIEF [--now]
+        stop the run at a boundary: every loop ends after its cycle under way, a loop waiting on jobs stops
+        waiting, and the merge is not started, so nothing is cut off and nothing uncommitted is left. `start`
+        continues the run. --now interrupts it instead, mid-cycle: each loop records the interruption.
 
 The run's directory is llm-dlc/loop-summaries/run-streams-NAME/, which run-streams.sh keeps its own state in;
 this adds watch.json, the run's output (streams.log), the foundation's stream (foundation.jsonl) and the
@@ -58,6 +60,7 @@ from pathlib import Path
 import conductor
 import decisions
 import doctor
+import inbox
 import integration
 import streams_status
 import watch
@@ -408,8 +411,9 @@ def cmd_foundation(run: Run, model: str | None, effort: str | None, memory: str 
               "committed": head != base, "uncommitted": dirty[:20],
               "cost": watch.turn_cost(run, session, (result or {}).get("total_cost_usd"), fresh=not before)}
     record.pop("pid", None)
-    run.update(foundation=record)
-    print(json.dumps({**record, "report": (result or {}).get("result"),
+    report = (result or {}).get("result") or before.get("report")
+    run.update(foundation={**record, "report": report})
+    print(json.dumps({**record, "report": report,
                       "next": ("it left uncommitted files in its workspace: run the stage again to have them finished and committed"
                                if dirty else f"`brief_run.py land {run.name}` brings its commits to the line the streams start from"
                                if head != base else "it committed nothing: read its report before going on")}, indent=1))
@@ -470,10 +474,43 @@ def land(run: Run, workspace: str) -> dict:
     return {"landed": "merged: the line had moved since the workspace was made", "commit": watch.head_change(root)}
 
 
+REPORT_LIMIT = 6000  # characters of the foundation's report an inbox item carries: an inbox is read every cycle
+
+
+def hand_off(run: Run) -> list[str]:
+    """Tell each stream what the foundation left, once, as an item in its inbox (inbox.py, kind `foundation`):
+    the stage's own closing report and its commit. A stream reads its inbox every cycle and acknowledges the item
+    in its Progress, so what was built for it is known to have reached it, where an edited brief alone is not."""
+    foundation = run.read().get("foundation") or {}
+    report, told = (foundation.get("report") or "").strip(), list(foundation.get("handedOff") or [])
+    if not report or not foundation.get("committed"):
+        return []
+    if len(report) > REPORT_LIMIT:
+        report = report[:REPORT_LIMIT].rstrip() + " […] (cut here: the whole report is in " + str(
+            Path(foundation.get("log", "the run's foundation.jsonl")).name) + " of the run's directory)"
+    change = (foundation.get("commit") or "").split(" ")[0]
+    sent = []
+    for s in run.plan["streams"]:
+        name = Path(s["brief"]).stem
+        if name in told or not (run.root / s["brief"]).is_file():
+            continue
+        inbox.send(name, "foundation",
+                   "Before your first piece of work, read what the foundation stage built for this run and build on "
+                   "it: use what it left, don't build it again, and say in Progress if something it left is wrong "
+                   "or in your way.",
+                   detail=report, commits=[change] if change else [], folder=run.root / inbox.FOLDER,
+                   decisions_root=run.root / "llm-dlc" / "decisions", repo=run.root)
+        sent.append(name)
+    if sent:
+        run.update(foundation={**run.read()["foundation"], "handedOff": told + sent})
+    return sent
+
+
 def cmd_land(run: Run) -> int:
     out = land(run, run.foundation_workspace)
     if run.read().get("foundation"):
         run.update(foundation={**run.read()["foundation"], "landed": out["commit"]})
+        out["handedOff"] = hand_off(run)
     print(json.dumps(out, indent=1))
     return 0
 
@@ -510,13 +547,60 @@ def loops(run: Run, check: dict | None = None) -> list[tuple[str, Path, str]]:
     return out + [("merge", run.root, run.brief)]
 
 
+KINDS_OF_TIME = ("working", "waiting on jobs", "blocked", "finished, others still running")
+
+
+def times(run: Run, label: str, since: float, until: float, last_stream_end: float | None) -> dict[str, int]:
+    """Seconds of this run a loop spent in each kind of time, from the phases run-streams.sh logs (LABEL.phases):
+    working (a loop running), waiting on jobs, blocked (put to the watcher, or left blocked), and, for a stream,
+    finished while another stream still ran, which is what merging a finished stream early would save."""
+    out, marks = dict.fromkeys(KINDS_OF_TIME, 0), []
+    for line in streams_status.read(run.dir / f"{label}.phases").splitlines():
+        at, _, phase = line.partition("\t")
+        try:
+            marks.append((float(at), phase))
+        except ValueError:
+            continue
+    marks = [(max(at, since), phase) for at, phase in marks if at >= since - 1]
+    for (at, phase), (end, _) in zip(marks, marks[1:] + [(until, "")]):
+        kind = ("working" if phase == "running" else "waiting on jobs" if phase.startswith("waiting") else
+                "blocked" if phase.startswith(("blocked", "finished: blocked")) else
+                "finished, others still running" if phase.startswith("finished") and label != "merge" else None)
+        if kind == "finished, others still running":
+            end = min(end, last_stream_end if last_stream_end is not None else until)
+        if kind and end > at:
+            out[kind] += int(end - at)
+    return out
+
+
+def last_stream_end(run: Run, labels: list[str], since: float) -> float | None:
+    """When the last stream stopped running, or None while one still runs: after it, a finished stream waits for
+    nobody."""
+    ends = []
+    for label in labels:
+        marks = [line.partition("\t") for line in streams_status.read(run.dir / f"{label}.phases").splitlines()]
+        marks = [(float(at), phase) for at, _, phase in marks if at.replace(".", "").isdigit() and float(at) >= since - 1]
+        if not marks:
+            continue
+        if not marks[-1][1].startswith(("finished", "stopped")):
+            return None
+        ends.append(marks[-1][0])
+    return max(ends) if ends else None
+
+
 def state(run: Run) -> dict:
     data, check = run.read(), preflight(run)
     started = watch.stamp((data.get("run") or {}).get("started"))
     rows = []
+    alive = watch.alive((data.get("run") or {}).get("pid"))
+    try:
+        until = watch.now() if alive else (run.dir / "streams.log").stat().st_mtime
+    except OSError:
+        until = watch.now()
+    streams_end = last_stream_end(run, [s["label"] for s in check["streams"]], started or 0)
     for label, folder, brief in loops(run, check):
         phase = streams_status.read(run.dir / f"{label}.phase")
-        rows.append({"loop": label, "status": streams_status.brief_status(folder / brief) or None, "phase": phase or "not started",
+        rows.append({"loop": label, "time": times(run, label, started or 0, until, streams_end) if started else None, "status": streams_status.brief_status(folder / brief) or None, "phase": phase or "not started",
                      "cycle": streams_status.read(run.dir / f"{label}.cycle") or None,
                      "commits": streams_status.commits(folder, brief), "spent": round(streams_status.spend(run.dir, label), 2),
                      "head": watch.head_change(folder) if folder.exists() else None})
@@ -524,7 +608,7 @@ def state(run: Run) -> dict:
     record = open_decisions(run)
     queue = watch.jobs(run.root)
     return {"name": run.name, "brief": run.brief, "running": watch.alive((data.get("run") or {}).get("pid")),
-            "started": (data.get("run") or {}).get("started"),
+            "started": (data.get("run") or {}).get("started"), "stopping": (run.dir / "stop-after").exists(),
             "elapsed": watch.span(watch.now() - started) if started else None,
             "foundation": check["foundation"], "loops": rows, "spent": round(sum(r["spent"] for r in rows), 2),
             "integration": result[1] if result else None,
@@ -555,6 +639,9 @@ def summary(run: Run, s: dict) -> str:
                      + (f" ({r['phase']})" if r["phase"] not in ("running", "not started") and not r["phase"].startswith("finished") else "")
                      + f"; cycle {r['cycle'] or '-'}, {r['commits']} commits" + (f" (+{moved})" if was and moved else "")
                      + f", ${r['spent']:.2f}" + (f"; at {r['head']}" if r["head"] and (not was or was.get("head") != r["head"]) else ""))
+        spans = [f"{watch.span(v)} {k}" for k, v in (r.get("time") or {}).items() if v >= 60]
+        if spans:
+            lines.append("  - time: " + ", ".join(spans))
     if s["integration"]:
         lines.append(f"- integration: {s['integration']}")
     if s["openDecisions"]:
@@ -625,21 +712,35 @@ def cmd_wait(run: Run, interval: float | None, timeout: float) -> int:
         time.sleep(2)
 
 
-def cmd_stop(run: Run) -> int:
+def cmd_stop(run: Run, now: bool) -> int:
     pid = (run.read().get("run") or {}).get("pid")
     if not watch.alive(pid):
         print("the run is not under way")
         return 0
-    os.killpg(int(pid), signal.SIGINT)  # run-streams.sh passes it on to every loop, which records it
-    print(f"interrupted the run (pid {pid}): each loop records it, and `brief_run.py start {run.name}` continues")
+    if now:
+        os.killpg(int(pid), signal.SIGINT)  # run-streams.sh passes it on to every loop, which records it
+        print(f"interrupted the run (pid {pid}): each loop records it, and `brief_run.py start {run.name}` continues")
+        return 0
+    (run.dir / "stop-after").write_text(conductor.now() + "\n")  # run-streams.sh: run no loop again, start no merge
+    told = []
+    for loop in sorted((run.dir / "loops").glob("*")) if (run.dir / "loops").is_dir() else []:
+        if streams_status.read(run.dir / f"{loop.name}.phase") == "running":
+            conductor.cmd_command(loop, "stop")  # feature-loop.sh: end after the cycle under way
+            told.append(loop.name)
+    print(f"the run stops at a boundary: {', '.join(told) or 'no loop'} told to end after the cycle under way, nothing "
+          f"is run again and the merge is not started. `wait` returns `ended` when it has; `brief_run.py start "
+          f"{run.name}` continues, and `stop --now` interrupts instead")
     return 0
 
 
 def main(argv: list[str] | None = None, root: Path = REPO) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     sub = ap.add_subparsers(dest="command", required=True)
-    for name in ("preflight", "land", "start", "status", "stop"):
+    for name in ("preflight", "land", "start", "status"):
         sub.add_parser(name).add_argument("brief")
+    x = sub.add_parser("stop")
+    x.add_argument("brief")
+    x.add_argument("--now", action="store_true", help="interrupt mid-cycle instead of stopping at a boundary")
     b = sub.add_parser("budget")
     b.add_argument("brief")
     b.add_argument("--apply", action="store_true")
@@ -679,7 +780,7 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
         if args.command == "status":
             print(json.dumps(state(run), indent=1))
             return 0
-        return cmd_stop(run)
+        return cmd_stop(run, args.now)
     except (Problem, integration.IntegrationError) as e:
         print(f"brief_run.py: {e}", file=sys.stderr)
         return 1

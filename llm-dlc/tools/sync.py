@@ -3202,6 +3202,41 @@ def commit_message(args: list[str]) -> str | None:
     return "\n\n".join(a.strip() for a in args[1::2] if a.strip())
 
 
+def only_paths(args: list[str]) -> tuple[list[str] | None, list[str]]:
+    """`commit --only PATH ... -m ...`: the paths, and the rest of the arguments. None without --only."""
+    if args[:1] != ["--only"]:
+        return None, args
+    at = args.index("-m") if "-m" in args else len(args)
+    return [a.rstrip("/") for a in args[1:at]], args[at:]
+
+
+def set_aside(only: list[str]) -> tuple[str | None, list[str]]:
+    """Before a commit of `--only` paths: every other file changed in @ is another session's (two sessions that
+    share a working copy, as a loop and the result collector do), and goes into a change of its own below @, where
+    the commit does not take it. Returns that change and the files; (None, []) when there are none. The files on
+    disk don't change. What the trace tools write is never set aside: the commit regenerates it."""
+    mine = lambda p: any(p == o or p.startswith(o + "/") for o in only) or trace_owned(p)
+    theirs = [p for p in jj("diff", "--name-only").stdout.splitlines() if not mine(p)]
+    if not theirs:
+        return None, []
+    r = jj("split", "-r", "@", "-m", "wip: another session's files", "--", *theirs)
+    if r.returncode:
+        raise RuntimeError(f"could not set aside the files outside --only: {r.stderr.strip()}")
+    return jj("log", "--no-graph", "-r", "@-", "-T", "change_id").stdout.strip(), theirs
+
+
+def put_back(other: str | None, committed: str) -> None:
+    """After that commit: the change set aside goes on top of it and into the new @, uncommitted as it was."""
+    if not other:
+        return
+    for step in (("rebase", "-r", other, "-A", committed), ("squash", "--from", other, "--into", "@", "-u")):
+        r = jj(*step)
+        if r.returncode:
+            print(f"the files set aside are in the change {other[:12]}, not back in the working copy: jj {step[0]} "
+                  f"failed: {r.stderr.strip()}", file=sys.stderr)
+            return
+
+
 QUEUE = ("verification/jobs", "verification/priorities.json")  # what a commit changes when it changes the queue
 
 
@@ -3222,11 +3257,17 @@ def nudge_queue() -> None:
 
 
 def cmd_commit(args: list[str]) -> int:
-    """Finish @ with a message whose trailers match the manifest in its tree, then start a new change."""
+    """Finish @ with a message whose trailers match the manifest in its tree, then start a new change. With
+    `--only PATH ...` before the message, the commit takes those files and folders alone, and whatever else is
+    changed in the working copy stays uncommitted (set_aside)."""
+    only, args = only_paths(args)
     message = commit_message(args)
-    if message is None:
-        print("usage: sync.py commit -m SUMMARY [-m PARAGRAPH ...]", file=sys.stderr)
+    if message is None or only == []:
+        print("usage: sync.py commit [--only PATH ...] -m SUMMARY [-m PARAGRAPH ...]", file=sys.stderr)
         return 2
+    other, theirs = set_aside(only) if only else (None, [])
+    if theirs:
+        print(f"left uncommitted, as outside --only: {' '.join(theirs)}")
     # Describe first: the sync then stamps the trailer onto this message and writes a manifest
     # that lists @ under its real summary, before `jj new` freezes both into the commit.
     with journaled("describe", summary=message.split("\n", 1)[0]):
@@ -3238,6 +3279,7 @@ def cmd_commit(args: list[str]) -> int:
         if jj("new").returncode:
             print("jj new failed", file=sys.stderr)
             return 1
+        put_back(other, at["change_id"])
     print(f"committed {at['change_id'][:12]}")
     nudge_queue()
     # The check that used to follow every commit, run here on what the commit left: the same one as
@@ -3883,10 +3925,14 @@ def runtime_check() -> int:
 def runtime_commit(args: list[str]) -> int:
     """`commit` in a runtime checkout: the message with the release's trailer, and a new change. No session is
     read, nothing is redacted or recorded, and nothing leaves the checkout."""
+    only, args = only_paths(args)
     message = commit_message(args)
-    if message is None:
-        print("usage: sync.py commit -m SUMMARY [-m PARAGRAPH ...]", file=sys.stderr)
+    if message is None or only == []:
+        print("usage: sync.py commit [--only PATH ...] -m SUMMARY [-m PARAGRAPH ...]", file=sys.stderr)
         return 2
+    other, theirs = set_aside(only) if only else (None, [])
+    if theirs:
+        print(f"left uncommitted, as outside --only: {' '.join(theirs)}")
     if jj("describe", "-r", "@", "-m", set_runtime_trailer(message)).returncode:
         print("jj describe failed", file=sys.stderr)
         return 1
@@ -3894,6 +3940,7 @@ def runtime_commit(args: list[str]) -> int:
     if jj("new").returncode:
         print("jj new failed", file=sys.stderr)
         return 1
+    put_back(other, at["change_id"])
     print(f"committed {at['change_id'][:12]}")
     nudge_queue()
     return runtime_check()

@@ -95,7 +95,8 @@ returns, read its `report` and act on `next`:
 
 - It left uncommitted files: run the stage again, which continues the same session.
 - It committed: `python3 llm-dlc/tools/brief_run.py land BRIEF` brings its commits to the line the streams start
-  from. A merge that conflicts in real work is taken back and says so: resolve it as "Between two examples" in
+  from, and puts the session's report into each stream's inbox as an item the stream acknowledges (`handedOff`).
+  A merge that conflicts in real work is taken back and says so: resolve it as "Between two examples" in
   `llm-dlc/runtime.md` shows for a queued workspace, or run the stage again so the session rebuilds on the line as
   it is now.
 - It committed nothing: read why before going on. A brief that needs no foundation is a fine answer.
@@ -115,7 +116,8 @@ starts `run-streams.sh` detached: a workspace and a loop per stream, the integra
 one, then the brief's own loop, which merges them. Then watch it: run `python3 llm-dlc/tools/brief_run.py wait BRIEF`
 as a background task, act on what it returns, and run it again, until it returns `ended`.
 
-- **A summary**: print it as it is.
+- **A summary**: print it as it is. Its `time` lines say where each loop's time went: working, waiting on jobs,
+  blocked, and finished while other streams still ran.
 - **`question`**, a loop that ended `blocked:`. It waits half an hour for you, and the merge waits with it. Read
   the loop's status and the Progress of its brief in its workspace, and its open inbox items. If what blocked it
   is settled, or you can settle it (another stream's answer that is committed, a decision that is yours), record
@@ -130,8 +132,10 @@ as a background task, act on what it returns, and run it again, until it returns
 The user may ask about the run at any time: answer from `brief_run.py status BRIEF`, the run's output
 (`llm-dlc/loop-summaries/run-streams-NAME/streams.log`) and the queue (`python3 verification/pipeline.py status`).
 Fix what is small yourself (a verification loop that died, a job that hangs), say what you did, and leave the
-rest to the user. `brief_run.py stop BRIEF` interrupts the run, and `start` continues it: use it only at the
-user's word, or when the run is doing damage.
+rest to the user. `brief_run.py stop BRIEF` stops the run at a boundary: every loop ends after its cycle under way,
+nothing is run again and the merge is not started, so nothing is cut off; `wait` returns `ended` when it has, and
+`start` continues. Use it at the user's word, or when the run should not go on as it is. `stop BRIEF --now`
+interrupts mid-cycle instead: only when the run is doing damage.
 
 ## 4. Report
 

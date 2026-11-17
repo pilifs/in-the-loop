@@ -191,7 +191,7 @@ ask for it to be marked.
 
 The procedure is in the [`/run-verification` skill](../.claude/skills/run-verification/SKILL.md). In short: `status`,
 then `run` (in the background, or `--watch`), then `collect`, `report`, triage what needs attention, and commit the
-results with `sync.py commit`, keeping out other sessions' files. Whatever needs a person (a verdict against a change,
+results with `sync.py commit --only $(pipeline.py commit-paths)`, which takes its own files and leaves another session's uncommitted. Whatever needs a person (a verdict against a change,
 a submitter's error, a decision that changes what the results mean) goes into [`findings.md`](findings.md), which
 keeps it after the session ends; an entry is closed only by the check it names.
 

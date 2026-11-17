@@ -242,7 +242,9 @@ under way (`brief_run.py status NAME` first). The watcher does none of the brief
    commits (on 2026-11-16 the result collector committed a watcher's unfinished merge that shared its working
    copy). `brief_run.py land NAME` then brings its commits to the default workspace's line: moved forward when
    that line has not moved, else by a merge whose generated trace files are regenerated. A merge that conflicts
-   in real work is taken back and reported.
+   in real work is taken back and reported. Landing also puts the session's closing report into each stream's
+   inbox, as an item of kind `foundation` that the stream acknowledges in its Progress, so what was built for
+   it is known to have reached it.
 3. **The run** (`brief_run.py start NAME`): `run-streams.sh`, detached, with the run's directory as its watcher.
    The watcher blocks in `brief_run.py wait NAME`, which returns only what needs it: a loop that ended blocked
    (below), an integration check that stopped passing, a decision open for the user, a verification loop it had
@@ -257,6 +259,23 @@ watcher settles what it can by Design 3 of [stream-conductor.md](loops/stream-co
 the inbox item that says so, and answers `rerun`, and the stream goes on. Its answer is a decision in
 `llm-dlc/decisions/run-streams-NAME.jsonl`, reviewed like any other. This is the attended watcher of that
 brief's Design 8; a watcher that decides while nobody is there is not built.
+
+**A run is stopped at a boundary** with `brief_run.py stop NAME`: each loop is told to end after its cycle under
+way (the command line `feature-loop.sh` takes from its conductor directory), a loop waiting on jobs stops
+waiting, nothing is run again and the merge is not started. `start` continues. `stop --now` interrupts instead.
+
+**Where the time went.** `run-streams.sh` logs each change of a loop's phase with its time, and a summary says
+per loop how long it worked, waited on jobs, was blocked, and, for a stream, sat finished while another stream
+still ran. The last is what merging a finished stream early would save, and the second what going on to the
+next piece while jobs run would.
+
+**Two sessions in one working copy.** The brief's own loop and the result collector both commit in the default
+workspace. `sync.py commit --only PATH ...` commits the named files and folders alone and leaves everything else
+uncommitted where it is: the collector commits with the paths `pipeline.py commit-paths` names (its results,
+the findings, the examples table, the outputs it applied), and a loop's cycle is told to name its own. A
+collector in a workspace of its own was considered and not built: every reader of results (a stream waiting on
+its jobs, the watcher, the push gate) reads them on the default line, so its commits would have to be landed
+there one by one, which brings the shared working copy back.
 
 **Any brief runs.** `run-streams.sh NAME` takes a brief of `llm-dlc/loops/` by name or file and reads its
 streams from the brief's Loop settings (`- streams: a, b`); a brief that names none is run as its own loop

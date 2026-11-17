@@ -75,11 +75,11 @@ CLAUDE = textwrap.dedent('''\
 
 
 def brief(streams: list[str] = (), workspace: str | None = None, status: str | None = "working", extra: list[str] = (),
-          session: int | None = None) -> str:
+          session: int | None = None, separate: bool = True) -> str:
     session = session if session is not None else sum(map(ord, workspace or "main"))
     return "\n".join(["# Brief: made up", "", "## Progress", "", "- made up: started.",
                       *([f"- Status: {status}"] if status else []), "", "## Loop settings", "",
-                      *([f"- session: 00000000-0000-4000-8000-{session:012d}"] if session else []), "- verification: separate",
+                      *([f"- session: 00000000-0000-4000-8000-{session:012d}"] if session else []), *(["- verification: separate"] if separate else []),
                       *([f"- streams: {', '.join(streams)}"] if streams else []),
                       *([f"- workspace: {workspace}"] if workspace else []), *extra, ""])
 
@@ -310,7 +310,13 @@ class TheFoundation(Fixture):
         self.assertEqual((self.root / "lib-foundation.txt").read_text(), "shared\n")
         self.assertIn("the foundation: a shared piece", self.jj(self.root, "log", "--no-graph", "-r", "@-", "-T", "description"))
         self.assertIn("theirs.txt", self.jj(self.root, "diff", "-r", "@", "--name-only"))  # still uncommitted, on top
-        self.assertIn("nothing to land", json.loads(self.run_tool("land", "made-up")[1])["landed"])
+        self.assertEqual(json.loads(out)["handedOff"], ["made-up-a", "made-up-b"])  # each stream is told what it left
+        item = (self.root / "llm-dlc/loop-summaries/made-up-a-inbox.md").read_text()
+        self.assertIn("made-up-a-I001: what the run's foundation stage built before you started", item)
+        self.assertIn("Built the shared piece.", item)
+        again = json.loads(self.run_tool("land", "made-up")[1])
+        self.assertIn("nothing to land", again["landed"])
+        self.assertEqual(again["handedOff"], [])  # once
         self.assertTrue(json.loads(self.run_tool("preflight", "made-up")[1])["foundation"]["landed"])
 
     @cost("tool")
@@ -394,6 +400,24 @@ class Watching(Fixture):
         self.assertNotIn("; at ", self.wait()[1].split("**merge**")[0].split("**a**")[1])  # a's head has not moved
 
     @cost("tool")
+    def test_a_summary_says_where_each_loops_time_went(self):
+        run = self.started(ago=7200)
+        t0 = time.time() - 7200
+        def phases(label, *marks):
+            (self.dir / f"{label}.phases").write_text("".join(f"{t0 + at}\t{phase}\n" for at, phase in marks))
+        # a: an hour's work, twenty minutes for jobs, ten more of work, blocked ten, then done at 1 h 40
+        phases("a", (0, "running"), (3600, "waiting for jobs"), (4800, "running"), (5400, "blocked: put to the watcher"),
+               (6000, "finished: done"))
+        phases("b", (0, "running"), (1800, "finished: done"))  # done after half an hour, while a ran on to 1 h 40
+        phases("merge", (6000, "running"))
+        out = self.wait()[1]
+        a, b, merge = (out.split(f"**{name}**")[1].split("- **")[0] for name in ("a", "b", "merge"))
+        self.assertIn("time: 1 h 10 min working, 20 min waiting on jobs, 10 min blocked\n", a)
+        self.assertIn("time: 30 min working, 1 h 10 min finished, others still running\n", b)
+        self.assertIn("time: 20 min working\n", merge)
+        self.assertEqual(brief_run.state(run)["loops"][1]["time"]["finished, others still running"], 4200)
+
+    @cost("tool")
     def test_an_integration_check_that_stopped_passing_and_an_open_decision_are_each_told_once(self):
         run = self.started()
         run.report.parent.mkdir(parents=True, exist_ok=True)
@@ -450,6 +474,46 @@ class ARunOfStreams(Fixture):
         out, _ = p.communicate(timeout=120)
         self.assertEqual((p.returncode, self.runs()), (0, ["made-up"]), out)
         self.assertNotIn("asking the watcher", out)
+
+    @cost("tool")
+    def test_a_run_stopped_at_a_boundary_runs_nothing_again_starts_no_merge_and_is_continued_by_start(self):
+        loop = self.root / "llm-dlc" / "tools" / "verification-loop.sh"  # the pipeline's stand-in: it collects nothing
+        loop.write_text("#!/usr/bin/env bash\ntrap 'exit 0' USR1 INT TERM\nwhile :; do sleep 0.2; done\n")
+        loop.chmod(0o755)
+        self.write("llm-dlc/loops/made-up.md", brief(self.STREAMS, separate=False), message="the brief runs with the pipeline")
+        job = "20260101-000000-made-up"
+        for name, statuses in (("made-up-a", [f"waiting on jobs {job}", "done"]), ("made-up-b", ["done"]), ("made-up", ["done"])):
+            (self.statuses / name).write_text("".join(x + "\n" for x in statuses))
+        with mock.patch.dict(os.environ, {"RUN_STREAMS_POLL": "1", "RUN_STREAMS_STATUS_EVERY": "1"}):
+            self.assertEqual(self.run_tool("start", "made-up")[0], 0)
+            log = self.dir / "streams.log"
+            self.until(lambda: f"[a] waiting for {job}" in log.read_text() and "[b] finished: done" in log.read_text(), log)
+            self.assertIn("stops at a boundary", self.run_tool("stop", "made-up")[1])
+            self.assertTrue(json.loads(self.run_tool("status", "made-up")[1])["stopping"])
+            self.until(lambda: not self.alive(), log)
+            self.assertIn("stopped at a boundary, every loop after its cycle under way", log.read_text())
+            self.assertEqual(sorted(self.runs()), ["made-up-a", "made-up-b"])  # a was not run again, and no merge
+            thing = json.loads(self.run_tool("wait", "made-up", "--timeout", "0")[1])
+            self.assertEqual((thing["kind"], {r["loop"]: r["phase"] for r in thing["state"]["loops"]}["a"]), ("ended", "stopped at a boundary"))
+            self.write(f"verification/results/{job}/result.json", "{}\n")  # the job is back
+            self.assertEqual(self.run_tool("start", "made-up")[0], 0)  # continues: a's last cycle, then the merge
+            self.until(lambda: not self.alive(), log)
+        self.assertEqual((sorted(self.runs()[:2]), self.runs()[2:]), (["made-up-a", "made-up-b"], ["made-up-a", "made-up"]))
+        self.assertFalse(json.loads(self.run_tool("status", "made-up")[1])["stopping"])
+
+    def alive(self) -> bool:
+        pid = self.run_of().read()["run"]["pid"]
+        try:
+            os.waitpid(pid, os.WNOHANG)
+        except ChildProcessError:
+            pass
+        return watch.alive(pid)
+
+    def until(self, done, log: Path, seconds: float = 90) -> None:
+        end = time.time() + seconds
+        while not done():
+            self.assertLess(time.time(), end, log.read_text() if log.exists() else "no output")
+            time.sleep(0.2)
 
     @cost("tool")
     def test_a_brief_with_no_streams_is_run_as_its_own_loop(self):
