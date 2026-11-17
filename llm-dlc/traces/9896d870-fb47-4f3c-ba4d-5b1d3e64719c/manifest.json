@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.005Z",
-  "ended": "2026-11-17T13:54:51.173Z",
-  "duration_seconds": 3480,
+  "ended": "2026-11-17T13:56:08.929Z",
+  "duration_seconds": 3558,
   "stats": {
     "turns": 6,
-    "api_calls": 115,
-    "tool_calls": 117,
+    "api_calls": 121,
+    "tool_calls": 123,
     "tool_errors": 3,
     "compactions": 1,
-    "peak_context_tokens": 170827,
+    "peak_context_tokens": 179162,
     "usage": {
-      "input_tokens": 230,
-      "output_tokens": 79116,
-      "cache_read_input_tokens": 11637706,
-      "cache_creation_input_tokens": 267153
+      "input_tokens": 242,
+      "output_tokens": 82952,
+      "cache_read_input_tokens": 12687740,
+      "cache_creation_input_tokens": 275488
     }
   },
   "tools": {
-    "Bash": 111,
+    "Bash": 117,
     "Edit": 4,
     "Write": 2
   },
@@ -57,24 +57,24 @@
     {
       "index": 1,
       "started": "2026-11-17T13:14:36.229Z",
-      "ended": "2026-11-17T13:54:51.173Z",
+      "ended": "2026-11-17T13:56:08.929Z",
       "turns": 4,
-      "api_calls": 77,
+      "api_calls": 83,
       "usage": {
-        "input_tokens": 154,
-        "output_tokens": 52117,
-        "cache_read_input_tokens": 8532953,
-        "cache_creation_input_tokens": 157554
+        "input_tokens": 166,
+        "output_tokens": 55953,
+        "cache_read_input_tokens": 9582987,
+        "cache_creation_input_tokens": 165889
       },
-      "peak_context_tokens": 170827
+      "peak_context_tokens": 179162
     }
   ],
   "log": {
-    "sha256": "eae4f9d131c064759e27a9e7da4d318804d7fbd64c628d2958fd021db1e8dad0",
-    "bytes": 3101213,
-    "lines": 1034,
-    "gzip_bytes": 526566,
-    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/eae4f9d131c064759e27a9e7da4d318804d7fbd64c628d2958fd021db1e8dad0.jsonl.gz"
+    "sha256": "e02c99011dda56df411f19ce57cdc2a5834214ee214a4e0cf6663e5490120468",
+    "bytes": 3215028,
+    "lines": 1080,
+    "gzip_bytes": 544452,
+    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/e02c99011dda56df411f19ce57cdc2a5834214ee214a4e0cf6663e5490120468.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -109,6 +109,14 @@
       "summary": "Models on request of ArrayDeque and HashSet take example 286's DataBinder.bind past its binding result, to the reflection",
       "body": "Every path of DataBinder.bind makes a binding result whose AbstractErrors keeps an ArrayDeque of nested paths and whose AbstractBindingResult a HashSet of suppressed fields; both constructors were JDK gaps under strict gaps. Two models on request now stand for them, as ArrayList's does (lib/models/java/util/lists, models::ON_REQUEST): ArrayDeque as a stack (ArrayDeque(), push with its NullPointerException for null, pop with its NoSuchElementException, peek, size, isEmpty, clear) and HashSet as the keys of the HashMap model (HashSet(), add, contains, size, isEmpty). Both are abstract, as the HashMap model is, so every method they do not keep stays the JDK call it names. AbstractSet() is now an exact JDK call (gaps::exact_jdk_call), as AbstractCollection() and AbstractList() were. Documented in lib/models/README.md and lib/README.md.\n\nEvidence: claims.Deques and claims.Sets (lib/tests/claims.rs, two tool-tier tests) prove each method's JDK answer against its definition written out on every input of a bound with the model, show the class is the JDK's gap when the check does not ask for it and that a method left out (offer, remove) is still the JDK call, and run the same methods on a JVM over 5000 sampled inputs. A mutated model (pop returning the first element; add always true) fails each test. test_costs.py run --changed passed (33 test binaries), validate_example.py 286 passed, examples/tools/test_beside_route.py passed.\n\nExample 286's driver: this line was rebased onto the evidence stream's rkxyyqwn (inbox domain-advances-state-I002), whose shared module examples/tools/beside_route.py now does the three properties; the conflict in proofs/prove.py was resolved into tvxyzwqv by taking the shared module's driver and keeping only each claim's own arguments (ENTRIES: entry, models, observed initializers, unwinding). The decision claim's runs are unchanged from the evidence stream's (no model, the verifier's default unwinding); the protected-state claim's take the three models, unwind 16 and --observed-initializer for PropertyEditorRegistrySupport and CachedIntrospectionResults. Probes at bound 2 (trials, capped at 5 min and 4 GB) of vulnerable-protected-state-mutation now stop at CachedIntrospectionResults.strongClassCache, a ConcurrentHashMap the observation does not hold: the reflection. Inbox item domain-advances-evidence-I006 asks the evidence stream to coordinate observed.rs's format before step 3 extends it. Nothing decided; the frozen claim and the accepted statement are unchanged. The queued job 20261117-130335-example-286-protected-state-tasks-at-the runs the driver as it is now.",
       "log_sha256": "eae4f9d131c064759e27a9e7da4d318804d7fbd64c628d2958fd021db1e8dad0"
+    },
+    {
+      "change_id": "rzzuvvwlysxuklkttktqzowxyyztoyym",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The state stream's line takes the evidence stream's trace-check fix for a shared commit another stream's session stamped",
+      "body": "Rebasing this line onto the evidence stream's rkxyyqwn (inbox domain-advances-state-I002) brought in a commit the preservation stream's session had stamped with its LLM-Trace line (session f28025bc), whose manifest is only on the preservation line, so sync.py check failed here with 'session f28025bc... has no manifest'. The evidence stream fixed the check in mktymxvt (a note, not an error, while another workspace's manifest lists the log); this applies exactly that commit's diff to llm-dlc/tools/sync.py and test_workspaces.py, so the two lines merge cleanly. sync.py check now reports 0 errors; test_workspaces passes (14 tests). Note for the conductor: sync.py commit also restamped rkxyyqwn with this session's trace line, as it stamps every change made while a session runs, which rebased the evidence and preservation lines' descendants of it.",
+      "log_sha256": "e02c99011dda56df411f19ce57cdc2a5834214ee214a4e0cf6663e5490120468"
     }
   ],
   "logs": {
@@ -116,6 +124,12 @@
       "bytes": 1048215,
       "lines": 307,
       "gzip_bytes": 194904,
+      "url": null
+    },
+    "e02c99011dda56df411f19ce57cdc2a5834214ee214a4e0cf6663e5490120468": {
+      "bytes": 3215028,
+      "lines": 1080,
+      "gzip_bytes": 544452,
       "url": null
     },
     "eae4f9d131c064759e27a9e7da4d318804d7fbd64c628d2958fd021db1e8dad0": {
