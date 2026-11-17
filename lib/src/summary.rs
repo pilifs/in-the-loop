@@ -27,7 +27,8 @@
 //! receiver and object parameters it writes (`prove --writes`, [`crate::property::Options::writes`]), proved with
 //! its frame (every other field of those inputs is what it was, and nothing else that was there before the call is
 //! written) and also shown to read nothing that was there before the call: no field of its receiver or its object
-//! arguments, no static field but a compile-time constant (a final one an initializer computed holds what the state
+//! arguments (a final one neither: the proof made them with their constructors in the harness's state, and a
+//! caller's final field holds what its constructor made of the caller's), no static field but a compile-time constant (a final one an initializer computed holds what the state
 //! it ran in gave it), no array, and to compare no such object by identity
 //! ([`crate::bmc::Options::closed_frame`]). What it writes is then a function of its arguments alone, so in the check
 //! a call of it, by anything but the harness and the claim, on a receiver and object arguments each null or of

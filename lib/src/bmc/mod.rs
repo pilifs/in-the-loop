@@ -186,7 +186,8 @@ pub struct Options {
     pub frame: Option<(String, String, String)>,
     /// Whether the framed method is proved as an effect contract, which stands in for its calls ([`Effect`]): its
     /// writes must then be a function of its arguments alone, so it reads nothing that was there before the call (a
-    /// field or a cell of such an object, its receiver's included, or a static field that is not a constant), and
+    /// field or a cell of such an object, its receiver's included, a final field too, which its constructor made of
+    /// the state a caller made the object in, or a static field that is not a constant), and
     /// compares no such object by identity ([`Engine::in_closed_frame`]).
     pub closed_frame: bool,
     /// The calls a checked effect contract stands in for ([`Effect`]).
@@ -3082,9 +3083,19 @@ impl<'a> Engine<'a> {
     }
 
     /// Refuses, inside a summarized method, a `getfield` of a field that is not final on an object that was there
-    /// before the call ([`Engine::reads`]).
+    /// before the call ([`Engine::reads`]). Inside the method proved as an effect contract
+    /// ([`Engine::in_closed_frame`]) a final one is refused too: the proof made the receiver and the object arguments
+    /// with their constructors in the harness's fresh state, and a caller's were made in the caller's, so a final
+    /// field holds what its constructor made of a state the proof never had.
     fn reads_field(&self, path: &Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Result<(), Stop> {
-        if self.there_before(path, o) && (self.in_lemma(path) || self.in_closed_frame(path)) && !self.final_field(owner, name, descriptor) {
+        if !self.there_before(path, o) {
+            return Ok(());
+        }
+        if self.in_closed_frame(path) && self.final_field(owner, name, descriptor) {
+            let (frame_owner, method, _) = self.frame.as_ref().expect("in a frame");
+            return unsupported(format!("{}.{method} reads the final field {name} of an object that was there before the call, which its constructor set in the state a caller made it in, where the proof made it in the harness's: it is not a method an effect contract can stand in for", frame_owner.replace('/', ".")));
+        }
+        if (self.in_lemma(path) || self.in_closed_frame(path)) && !self.final_field(owner, name, descriptor) {
             self.reads(path, || format!("reads the field {name} of an object that was there before the call"))?;
         }
         Ok(())
@@ -4723,7 +4734,8 @@ impl<'a> Engine<'a> {
     /// harness: an effect contract stands in for the method's calls, wherever they are made, by the writes it states,
     /// so what the method writes may depend on nothing a caller can change before it calls. Inside it a read of
     /// what was there before the call ([`Obj::before`]: the receiver and the object arguments too, whose fields the
-    /// proof took from their constructors and a caller may have set since), of a static field that is not final
+    /// proof took from their constructors run in the harness's state, and a caller may have set since or made in
+    /// another state, a final field included), of a static field that is not final
     /// or a constant (a final one is what its initializer made of the state it ran in), or of the default locale, and
     /// a comparison by identity of such an object, each end the run with no verdict
     /// ([`Engine::reads`], [`Engine::compares`]).

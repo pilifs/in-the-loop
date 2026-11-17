@@ -240,6 +240,21 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
   first suppressed value removed) is accepted by it, whereas a JVM binds `Age=32` after `age=5`. A claim over two values is
   a new claim file, which is the user's decision. It goes into the corrected formalization this stream proposes (with
   the ASCII restriction on `field` from cycle 1), as "Done when" allows; the frozen claim is not edited.
+- 2026-11-17, a soundness fix to the effect contract's proof (nothing of 286 decided; the frozen claim unchanged).
+  Inbox: `domain-advances-state-I010` taken. The challenge stream's countermodels (`ukukylmu`, `cc.Held`) showed two
+  callers proved through a proved contract where a JVM gives 0 for 5: the contract's proof exempted a final field of
+  the receiver or an argument from the read gate, but it made those objects with their constructors in the harness's
+  fresh state, and a caller's were made in its own (`final boolean locked = Config.locked`, read by `setLevel`; an
+  argument's `final int scale`, read by `setFrom`). The README's first option is taken: inside an effect contract's
+  proof a final field of an object that was there before the call is refused by name like any other field, which is
+  what the contract's note and `summary.rs` already said it reads. The second option (keep the exemption for a field
+  every constructor sets from its parameters alone) would need an analysis of the constructors and no setter the
+  claim needs reads a final field. A lemma (not an effect contract) still reads final fields: its objects are the
+  ones a static field leads to, the challenge README's item 3, not in this inbox. The fixture, its README and the JVM
+  test are copied unchanged from `ukukylmu`; the README's
+  `an_effect_contract_reads_no_final_field_a_caller_made_in_another_state` is added to
+  `lib/tests/contract_countermodels.rs`, with the refusal also required to name the read. It fails with the refusal
+  switched off (by mutation).
 - Next: step 3, option 2. A stand-in for `AbstractNestablePropertyAccessor.processLocalProperty(PropertyTokenHolder,
   PropertyValue)` on a wrapped object of exactly one class, checked on a JVM by sampling against the real method:
   - Spring's lookup (exact, uncapitalized, capitalized) over the property names and write methods the JVM's
