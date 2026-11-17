@@ -1460,6 +1460,62 @@
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261117-133148-example-288-fixed-security-again-with-th: passed: 1 passed step(s) in 20m39s, peak 1.4 GiB (estimated 25m00s, 4.0 GiB); 10 output file(s) changed; signals: jvmcontract:holds×1 Applied 10 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
       "log_sha256": "2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4"
+    },
+    {
+      "change_id": "yypzyxmwluytmwrouqvxqkpppqzpqszn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of the pair of versions: five false proofs of agreement, reproduced and handed to the preservation stream",
+      "body": "The challenge stream's item 1. lib/tests/fixtures/pairing-countermodels holds two versions of five methods that differ when each runs alone on a JVM and that RegressionPair.agree (lib/src/pairing.rs) proves agreeing: the previous version sets the default locale the new one lowers under; a library static shared without --before-classpath; two unrelated RuntimeExceptions, and IllegalArgumentException against a subclass, compared by category; a scope that is false everywhere but sets the default locale before both calls. All five were Verified on the checker at lupovnmv. The order of the calls is observable: with the versions' roles swapped, and with --before-classpath, the shared-static case is a violation.",
+      "log_sha256": "2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4"
+    },
+    {
+      "change_id": "mqkqvvmwlxsrznyvuxsotztpnkkptwqp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of observed class initializers and of class files the tool read where a JVM reads another: three handed to the evidence stream, two refused",
+      "body": "Challenge stream, item 2. lib/tests/fixtures/observed-countermodels holds five fixtures, and lib/tests/observed_countermodels.rs holds each to what a JVM prints. Each was a false proof on the checker as it was (yypzyxmw): crossed, the outside review's A.<clinit> { B.x = 1; k = 7; } (result == 0 proved, a JVM gives 1); lowered, \"I\".toLowerCase() observed in a Turkish JVM (result == 305 proved, and the locale assumption gone from the result); configured, System.getProperty observed with the property set; released, a class of a multi-release JAR (the tool read the base file where a JVM 17+ loads META-INF/versions/17, so result == 1 was proved where a JVM gives 20, and an observation of the versioned class was put on the base file's code); shadowed, a class path copy of the JDK's org.xml.sax.helpers.AttributesImpl (result == 42 proved, a JVM gives 0).\n\nThe first three are the evidence stream's to fix (its brief's item 5 binds an observation): the checker-side test is in the fixtures' README and is sent to its inbox as a failure item. The last two are holes in the class path reader, which no stream owns, so they are refused here: ClassPath::refused (lib/src/classpath.rs) refuses by name, on load and when a class is copied for a pair, a class a multi-release JAR holds a versioned file of, and a class an entry holds in a package of the JDK's image, unless its file is the image's own byte for byte or one of the tool's models (the tool puts both on class paths itself; a first, broader version failed 13 tests for that reason). Enumerating every class still reads the first file, so that walks over which classes exist see it. Not covered: an override only a versioned file declares, and resources.",
+      "log_sha256": "2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4"
+    },
+    {
+      "change_id": "rkxyyqwnvlqztnwypvtqzvrmstlzmntz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Every example's proof driver records identities, ends the run on a mutant that is not the replay's, and marks a trial",
+      "body": "The evidence stream's step 2. examples/tools/beside_route.py holds what the five drivers (examples 286 to 290) did each in their own copy: the pinned JARs, the constructed mutant, the record (accept.record's evidence.json) and the verdict. Each driver keeps its own entry, lemmas, models, observed initializers and verifier arguments. What 289's driver alone did, all five now do: the record of the claim, the bound, each JAR, the adapter, the verifier's binary and the driver; a mutant whose JAR is not the one the newest mutant replay's receipt records ends the run; --max-array-length or --unwind (now on every driver) marks the run a trial.\n\nFinding: 286's, 287's and 288's drivers built their mutant by another recipe than the route's (a fixed --release, no -g or -parameters, every entry recompressed), so their JAR was not the bytes the mutant replay ran, which is why acceptance could not tie their mutant-security answers to the replay. The shared module uses the route's published-mutant recipe; run offline on the pinned JARs it gives each of the five examples exactly the JAR its replay ran (286 48323d21, 287 1d099295, 288 5c72df16, 289 a3a3dbff, 290 4ee35d0b).",
+      "log_sha256": "2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4"
+    },
+    {
+      "change_id": "zlxkxlstvktrsztnrmynsyukqwrokplu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The evidence stream acknowledges inbox item I001",
+      "body": "Progress records domain-advances-evidence-I001 (a test of the brief runner that can hang inside a stream until the watcher's fixture fix is merged): noted, not changed and not blocked on. Nothing else changed.",
+      "log_sha256": "2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4"
+    },
+    {
+      "change_id": "kynmlzxkpzpmpxtpywkkumrpxymwswps",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 289's four answers beside the route are accepted from the job that recorded what it ran, with no limit",
+      "body": "The evidence stream's step 1, 289's half. Job 20261117-122454-example-289-the-four-proof-tasks-again-w passed (the four tasks at the frozen bound 8, the same verdicts, with the driver's evidence.json beside each outcome). The watcher collected it on the default line; this workspace took its result folder and verification/.work-289/recorded from there unchanged (jj restore from pulrzyrl, no merge). Each 289 task's besideRoute now names that job. python3 examples/tools/accept.py 289 says:\n✓ 289 vulnerable-security: refuted, accepted (job 20261117-122454-example-289-the-four-proof-tasks-again-w; 12 checks)\n✓ 289 fixed-security: established, accepted (job 20261117-122454-example-289-the-four-proof-tasks-again-w; 13 checks)\n✓ 289 preservation: established, accepted (job 20261117-122454-example-289-the-four-proof-tasks-again-w; 13 checks)\n✓ 289 mutant-security: refuted, accepted (job 20261117-122454-example-289-the-four-proof-tasks-again-w; 13 checks)\nand --json shows an empty limits list and the artifacts check ok on each: no limit about unrecorded artifacts is left.\n\nFinding, the check's (fixed here): its first run refused mutant-security, 'spring-web-5.3.20.jar of mutant is not the JAR target.json pins' and the same for three more. The driver records the mutant's class path under the revision mutant, which is the class path it ran; target.json pins those JARs under the mutant's base (fixed-release). The artifacts check now looks a constructed mutant's JARs up under its base; the mutant's own JAR stays the mutant check's. test_accept.py has a control for it (fails without the fix) and its checkout test now holds 289 to the new job, its source commit and lib tree, with no limit.",
+      "log_sha256": "2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4"
+    },
+    {
+      "change_id": "vsttntoznvymvlwkrpnxpyvuulmnozqu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Examples 286, 287, 288 and 290 are rerun at the frozen bound with drivers that record what they ran (verification pending)",
+      "body": "Step 3 of the evidence stream's brief. Example 286's and 287's mutant-security answers are refused by examples/tools/accept.py, because their old drivers built the mutant with another recipe and its JAR's hash is in no record; every other accepted answer of 286, 287 and 290 carries the limit that the JARs, the compiled adapter and the verifier's binary were not recorded; 288's one verified task (fixed-security) was never recorded at all. Every driver now goes through examples/tools/beside_route.py, which writes evidence.json and ends the run on a mutant that is not the replay's. Four jobs rerun those tasks unchanged at the frozen bound into verification/.work-NNN/recorded, one job per example, every step run whatever the one before gave; estimates come from the earlier jobs' measured steps. When they are back, each task's besideRoute.job is switched to its job and accept.py must accept with no limit; 288's answer is recorded only if accept.py accepts it.\n\nJobs: 20261117-133148-example-286-the-three-answers-beside-the, 20261117-133148-example-287-the-three-answers-beside-the, 20261117-133148-example-288-fixed-security-again-with-th, 20261117-133148-example-290-the-four-answers-beside-the.\n\nInbox items domain-advances-evidence-I002 and I003 (286's and 287's drivers already have the three properties in the state and preservation streams) are acknowledged in Progress: both drivers are built on this stream's shared module, and their security tasks run the same code as this line's. The brief's 'Where it stands' paragraph is out of date since step 2: every driver, not only 289's, now records evidence.json.",
+      "log_sha256": "2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4"
+    },
+    {
+      "change_id": "mktymxvtmlttkuyrqpsryzsulktxpnvr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The trace check makes a note, not an error, of a shared commit another stream's session stamped, while that stream's manifest lists the log",
+      "body": "The preservation stream's session merged the evidence stream's step 2 commit (rkxyyqwn) into its own line and, by sync.py's stamping of the changes made while a session runs, rewrote that commit's description with its own LLM-Trace line. The session's manifest is only on the preservation line, so sync.py check on the evidence line failed every commit with 'session f28025bc... has no manifest'. check_trailers already treated a shared commit restamped in another workspace as a note when that workspace's working copy holds a manifest listing the log, but only for a session this tree had a manifest of. It now does the same for a session this tree has no manifest of, unless the traced commit's own tree holds that session's manifest, in which case a merge lost it and it stays an error (the existing control for that still passes).",
+      "log_sha256": "2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4"
     }
   ],
   "logs": {

@@ -1,0 +1,71 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-133148-example-287-the-three-answers-beside-the",
+  "title": "Example 287: the three answers beside the route again, with the driver's record of what it ran (evidence.json)",
+  "description": "The evidence stream's acceptance check (examples/tools/accept.py) accepts an answer given beside the route only with no limit when the driver recorded what it ran: the JARs of the class path with their hashes, the adapter's sources and compiled classes, the claim file, the bound and the verifier's binary (evidence.json, written by accept.record). Every example's proofs/prove.py now does this through examples/tools/beside_route.py, and ends the run when the mutant's JAR is not the one the mutant replay's receipt records. Example 287's mutant-security is refused today: the old driver built its mutant with another recipe (--release 17 without -g), so the mutant's JAR hash is in no record. This job reruns vulnerable-security, fixed-security and mutant-security unchanged at the frozen bound into a work folder of their own (verification/.work-287/recorded), so the earlier jobs' outputs stay as their results record them. When it has passed, each task's besideRoute.job is switched to it and python3 examples/tools/accept.py 287 must accept all three with no limit.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B9",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "287"
+    ],
+    "paths": [
+      "examples/tools/beside_route.py",
+      "examples/tools/accept.py",
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py"
+    ]
+  },
+  "expected": "exits 0: prove.py prints violation, verified and violation, each the expected one, at the frozen bound; each task's outcome.json and evidence.json come back",
+  "submitted": {
+    "at": "2026-11-17T13:31:48+00:00",
+    "session": "7ece8184-b148-4351-92d8-d634606b823e"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "patch",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "6G",
+    "duration": "45m",
+    "timeout": "3h",
+    "notes": "the earlier jobs took 820 s, 659 s and 823 s at 2.5 to 3.0 GiB peak; plus the release build of lib/ and the fetch of the pinned JARs"
+  },
+  "steps": [
+    {
+      "name": "vulnerable-security at the frozen bound",
+      "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py vulnerable-security --timeout 1800 --work verification/.work-287/recorded",
+      "cwd": "."
+    },
+    {
+      "name": "fixed-security at the frozen bound",
+      "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py fixed-security --timeout 1800 --work verification/.work-287/recorded",
+      "cwd": "."
+    },
+    {
+      "name": "mutant-security at the frozen bound",
+      "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py mutant-security --timeout 1800 --work verification/.work-287/recorded",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/.work-287/recorded/vulnerable-security/outcome.json",
+    "verification/.work-287/recorded/vulnerable-security/evidence.json",
+    "verification/.work-287/recorded/vulnerable-security/work/harness",
+    "verification/.work-287/recorded/fixed-security/outcome.json",
+    "verification/.work-287/recorded/fixed-security/evidence.json",
+    "verification/.work-287/recorded/fixed-security/work/harness",
+    "verification/.work-287/recorded/mutant-security/outcome.json",
+    "verification/.work-287/recorded/mutant-security/evidence.json",
+    "verification/.work-287/recorded/mutant-security/work/harness"
+  ]
+}

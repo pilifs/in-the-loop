@@ -266,7 +266,8 @@ fn registrations_in_order_and_classes_by_name_are_the_definitions_written_out() 
 
 /// An initializer the checker does not run (`claims.Tables`: an `IdentityHashMap` and a load factor) is a gap,
 /// and with `--observed-initializer` the state a JVM left: what the observation holds is read as the JVM has it,
-/// the result says what it rests on, and a field it holds no value of is refused by name.
+/// the result says what it rests on, and a field it holds no value of is refused by name. A class it initialized
+/// that holds a lambda (`claims.Hooked`) is bound as it is alone, whatever address the JVM put in the lambda's name.
 #[test]
 fn an_observed_initializer_gives_the_state_a_jvm_left_and_the_result_says_so() {
     jvmcontract::tool_tier!();
@@ -303,6 +304,10 @@ fn an_observed_initializer_gives_the_state_a_jvm_left_and_the_result_says_so() {
     assert!(threw.contains("--observed-initializer claims.Fails: on the JVM the class's initialization threw java.lang.IllegalStateException"), "{threw}");
     let absent = property::run(&observing("claims.M#thrown", "absent", "claims.Absent")).unwrap_err().to_string();
     assert!(absent.contains("--observed-initializer claims.Absent") && absent.contains("java.lang.ClassNotFoundException"), "{absent}");
+    // An initializer that initializes a class holding a lambda: the lambda's hidden class is named alike in the
+    // observation and in the run of that class alone, though the JVM's address in its name is not.
+    let hooked = run(&observing("claims.Hooking#hooked", "hooked", "claims.Hooked"));
+    assert_eq!(hooked.verdict, Verdict::Verified, "{}", hooked.output);
     let mut cached = observing("claims.M#observed", "cached", "claims.Tables");
     cached.cache = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("claims").join("no-cache"));
     assert!(property::run(&cached).unwrap_err().to_string().contains("--observed-initializer with --cache"));

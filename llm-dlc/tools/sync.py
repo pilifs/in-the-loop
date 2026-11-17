@@ -3587,7 +3587,10 @@ def check_trailers(manifests: dict[str, dict]) -> tuple[list, list]:
     A commit both lines hold can still be stamped by the other: a session at work there stamps the
     changes made while it ran, rewriting them under this line, and only that line's copy of its
     manifest lists the new log. Such a trailer is a note when another workspace's working copy holds
-    a manifest that lists the log, since the merge brings it here; otherwise it is an error."""
+    a manifest that lists the log, since the merge brings it here; otherwise it is an error. That holds as
+    well for a session this tree has no manifest of at all, one that merged this line's change into its
+    own and stamped it there (domain-advances' preservation stream did, 2026-11-17), unless the commit's
+    own tree holds that session's manifest: then a merge lost it."""
     errors, notes = [], []
     if not has_jj():
         return errors, notes
@@ -3595,21 +3598,25 @@ def check_trailers(manifests: dict[str, dict]) -> tuple[list, list]:
     paths = lambda sid: (str(manifest_path(sid).relative_to(REPO)), *(f"{d}/{sid}/manifest.json" for d in LEGACY_TRACES))
     with perf.phase("read trees"):
         files = tree_files([(c["commit_id"], path) for c in traced for sid, sha in TRAILER_RE.findall(c["description"])
-                            if sha and sid in manifests and sha in manifests[sid].get("logs", {}) for path in paths(sid)])
+                            if sha and (sid not in manifests or sha in manifests[sid].get("logs", {})) for path in paths(sid)])
+    # a session this tree has no manifest of, though the commit's own tree had one: a merge lost it, an error
+    lost = {(c["commit_id"], sid) for c in traced for sid, sha in TRAILER_RE.findall(c["description"])
+            if sha and sid not in manifests and any(files.get((c["commit_id"], path)) is not None for path in paths(sid))}
     unlisted = {(sid, sha) for c in traced for sid, sha in TRAILER_RE.findall(c["description"])
-                if sha and sid in manifests and sha not in manifests[sid].get("logs", {})}
+                if sha and (sid not in manifests or sha not in manifests[sid].get("logs", {}))}
     elsewhere = listed_elsewhere(unlisted, paths) if unlisted else {}
     for c in traced:
         for sid, sha in TRAILER_RE.findall(c["description"]):
             where = f"change {c['change_id'][:12]}"
             if not sha:
                 notes.append(f"{where}: legacy trailer without sha256 for {sid}")
+            elif (sid, sha) in elsewhere and (c["commit_id"], sid) not in lost:
+                notes.append(f"{where}: points at log {sha[:12]} of {sid}, which "
+                             + ("this tree's manifest predates" if sid in manifests else "this tree has no manifest of")
+                             + f": workspace {elsewhere[sid, sha]}'s copy of it lists the log, and a merge brings that "
+                             "here")
             elif sid not in manifests:
                 errors.append(f"{where}: session {sid} has no manifest")
-            elif (sid, sha) in elsewhere:
-                notes.append(f"{where}: points at log {sha[:12]} of {sid}, which this tree's manifest predates: "
-                             f"workspace {elsewhere[sid, sha]}'s copy of it lists the log, and a merge brings that "
-                             "here")
             elif sha not in manifests[sid].get("logs", {}):
                 errors.append(f"{where}: points at log {sha[:12]} that the manifest does not list")
             else:

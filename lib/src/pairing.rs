@@ -127,11 +127,11 @@ pub fn source(class: &str, method: &str, names: &[String], params: &[Type], ret:
     let _ = writeln!(s, "    private {CLASS}() {{}}\n");
     if let Some(scope) = scope {
         s.push_str("    /** The inputs the change is meant to affect, read on the new version; an input on which the expression throws is not among them. */\n");
-        let _ = writeln!(s, "    static boolean meantToChange({declared}) {{\n        try {{\n            return {scope};\n        }} catch (Throwable t) {{\n            return false;\n        }}\n    }}\n");
+        let _ = writeln!(s, "    static boolean {SCOPE_METHOD}({declared}) {{\n        try {{\n            return {scope};\n        }} catch (Throwable t) {{\n            return false;\n        }}\n    }}\n");
     }
     let _ = writeln!(s, "    public static boolean {METHOD}({declared}) {{");
     if scope.is_some() {
-        let _ = writeln!(s, "        if (meantToChange({passed})) {{ return true; }}");
+        let _ = writeln!(s, "        if ({SCOPE_METHOD}({passed})) {{ return true; }}");
     }
     for (var, owner) in [("a", format!("before.{class}")), ("b", class.to_string())] {
         let call = format!("{owner}.{method}({copies});");
@@ -205,7 +205,10 @@ pub fn run(options: &Options, work: &Path, relocated_dir: &Path, class: &ClassFi
     property.requested_models = options.requested_models.clone();
     property.observed_initializers = observed.0;
     property.previous = Some((previous, observed.1));
-    let outcome = crate::property::run(&property)?;
+    let mut outcome = crate::property::run(&property)?;
+    if let (crate::Verdict::Verified, Some(change)) = (outcome.verdict, options.unchanged_unless.as_deref()) {
+        compared(&mut outcome, &property, change, work)?;
+    }
     let own = if options.before_classpath.is_some() { ", each on its own dependency closure" } else { "" };
     let scope = match &options.unchanged_unless {
         Some(s) => format!(", outside the inputs the change is meant to affect (`{s}`, read on the new version)"),
@@ -217,6 +220,56 @@ pub fn run(options: &Options, work: &Path, relocated_dir: &Path, class: &ClassFi
         target = options.target,
     );
     Ok(Ok(Paired { outcome, statement, note }))
+}
+
+/// The name of the generated method that says whether an input is inside the allowed change.
+pub const SCOPE_METHOD: &str = "meantToChange";
+
+/// Whether a proof of the pair compares the versions on any input. `agree` returns true on an input inside the
+/// allowed change without calling either version, and the property check's own probe asks only for an input of the
+/// assumption: alone it would call a proof non-vacuous whose every assumed input lies inside the change (with
+/// `--unchanged-unless true`, every proof). So `meantToChange` is checked against `result` over the same assumption,
+/// domain and class path. A proof says every assumed input is inside the change, and the pair's proof is vacuous; a
+/// witness, which the property check replays as it replays any, is an assumed input outside the change, on which
+/// both versions are called, and becomes the statement's witness, said to lie outside the change; no verdict
+/// leaves it unknown. The pair's statement and output say which.
+fn compared(outcome: &mut crate::property::Outcome, property: &crate::property::Options, change: &str, work: &Path) -> Result<(), crate::Error> {
+    use crate::statement::Vacuity;
+    let mut inside = property.clone();
+    inside.target = format!("{CLASS}#{SCOPE_METHOD}");
+    inside.assert = Some("result".into());
+    inside.throws = Vec::new();
+    inside.lemmas = None;
+    inside.work = Some(work.join("pair-outside"));
+    let checked = crate::property::run(&inside)?;
+    let (vacuity, line) = match checked.verdict {
+        crate::Verdict::Violation => {
+            let witness = checked.counterexample.as_ref().map(|c| c.input.replacen(SCOPE_METHOD, METHOD, 1));
+            let line = format!("  outside the allowed change: {} lies outside `{change}`, so both versions are called on it", witness.as_deref().unwrap_or("an input"));
+            (Vacuity::reached(witness).outside_of(change), line)
+        }
+        crate::Verdict::Verified => {
+            let reason = format!("every input in the domain where the assumption holds lies inside the allowed change `{change}`, on which {METHOD} returns true without calling either version; the proof compares the versions on none and says nothing");
+            outcome.vacuous = Some(reason.clone());
+            (Vacuity::vacuous(&reason), format!("  vacuously: {reason}"))
+        }
+        crate::Verdict::Unverifiable => {
+            let problem = checked.problem.clone().unwrap_or_else(|| "no reason".into());
+            let line = format!("  vacuity unknown: whether any input where the assumption holds lies outside the allowed change `{change}` is not known: the check of {SCOPE_METHOD} gave no verdict ({problem})");
+            (Vacuity::unknown(&problem), line)
+        }
+    };
+    let _ = writeln!(outcome.output, "{line}");
+    if let Some(stated) = outcome.stated.as_mut() {
+        stated.vacuity = Some(vacuity);
+    }
+    if let (Some(search), Some(other)) = (outcome.search.as_mut(), checked.search) {
+        search.runs.extend(other.runs.into_iter().map(|mut r| {
+            r.purpose = format!("outside-change {}", r.purpose);
+            r
+        }));
+    }
+    Ok(())
 }
 
 #[cfg(test)]

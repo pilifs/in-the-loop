@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-17T16:31:49.935Z",
-  "duration_seconds": 169463,
+  "ended": "2026-11-17T17:08:02.703Z",
+  "duration_seconds": 171636,
   "stats": {
-    "turns": 180,
-    "api_calls": 1236,
-    "tool_calls": 1127,
+    "turns": 182,
+    "api_calls": 1245,
+    "tool_calls": 1134,
     "tool_errors": 24,
     "compactions": 6,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 2822,
-      "output_tokens": 843159,
-      "cache_read_input_tokens": 281726068,
-      "cache_creation_input_tokens": 2017902
+      "input_tokens": 2844,
+      "output_tokens": 845334,
+      "cache_read_input_tokens": 283383222,
+      "cache_creation_input_tokens": 2022999
     }
   },
   "tools": {
-    "Bash": 1079,
+    "Bash": 1086,
     "ToolSearch": 9,
     "Write": 8,
     "SendMessage": 7,
@@ -143,24 +143,24 @@
     {
       "index": 6,
       "started": "2026-11-17T12:55:11.414Z",
-      "ended": "2026-11-17T16:31:49.935Z",
-      "turns": 28,
-      "api_calls": 135,
+      "ended": "2026-11-17T17:08:02.703Z",
+      "turns": 30,
+      "api_calls": 144,
       "usage": {
-        "input_tokens": 318,
-        "output_tokens": 47628,
-        "cache_read_input_tokens": 16865383,
-        "cache_creation_input_tokens": 151307
+        "input_tokens": 340,
+        "output_tokens": 49803,
+        "cache_read_input_tokens": 18522537,
+        "cache_creation_input_tokens": 156404
       },
-      "peak_context_tokens": 181492
+      "peak_context_tokens": 186954
     }
   ],
   "log": {
-    "sha256": "7b07db6f862a423d3813739849072f896ee7d31e6726a5e69e831c9125ea259d",
-    "bytes": 23775826,
-    "lines": 10156,
-    "gzip_bytes": 4003021,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/7b07db6f862a423d3813739849072f896ee7d31e6726a5e69e831c9125ea259d.jsonl.gz"
+    "sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f",
+    "bytes": 23923032,
+    "lines": 10228,
+    "gzip_bytes": 4023737,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1499,6 +1499,190 @@
       "summary": "The evidence stream is run again: its 289/290 preservation rerun moves to the preservation stream after the merge, and 290's freeze is the user's question",
       "body": "Evidence blocked on a rerun that needs preservation's zmvkptqz and its own fix on one line, and on the user's freeze of 290's restated claim. The rerun now falls to the preservation stream once evidence is merged into the default line (D022; the merge order is the user's, D021); the freeze is recorded as an open question for the user (D023). Evidence is told through its inbox and run again for its open items I010 and I011.",
       "log_sha256": "7b07db6f862a423d3813739849072f896ee7d31e6726a5e69e831c9125ea259d"
+    },
+    {
+      "change_id": "rkxyyqwnvlqztnwypvtqzvrmstlzmntz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Every example's proof driver records identities, ends the run on a mutant that is not the replay's, and marks a trial",
+      "body": "The evidence stream's step 2. examples/tools/beside_route.py holds what the five drivers (examples 286 to 290) did each in their own copy: the pinned JARs, the constructed mutant, the record (accept.record's evidence.json) and the verdict. Each driver keeps its own entry, lemmas, models, observed initializers and verifier arguments. What 289's driver alone did, all five now do: the record of the claim, the bound, each JAR, the adapter, the verifier's binary and the driver; a mutant whose JAR is not the one the newest mutant replay's receipt records ends the run; --max-array-length or --unwind (now on every driver) marks the run a trial.\n\nFinding: 286's, 287's and 288's drivers built their mutant by another recipe than the route's (a fixed --release, no -g or -parameters, every entry recompressed), so their JAR was not the bytes the mutant replay ran, which is why acceptance could not tie their mutant-security answers to the replay. The shared module uses the route's published-mutant recipe; run offline on the pinned JARs it gives each of the five examples exactly the JAR its replay ran (286 48323d21, 287 1d099295, 288 5c72df16, 289 a3a3dbff, 290 4ee35d0b).",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "zlxkxlstvktrsztnrmynsyukqwrokplu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The evidence stream acknowledges inbox item I001",
+      "body": "Progress records domain-advances-evidence-I001 (a test of the brief runner that can hang inside a stream until the watcher's fixture fix is merged): noted, not changed and not blocked on. Nothing else changed.",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "kynmlzxkpzpmpxtpywkkumrpxymwswps",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 289's four answers beside the route are accepted from the job that recorded what it ran, with no limit",
+      "body": "The evidence stream's step 1, 289's half. Job 20261117-122454-example-289-the-four-proof-tasks-again-w passed (the four tasks at the frozen bound 8, the same verdicts, with the driver's evidence.json beside each outcome). The watcher collected it on the default line; this workspace took its result folder and verification/.work-289/recorded from there unchanged (jj restore from pulrzyrl, no merge). Each 289 task's besideRoute now names that job. python3 examples/tools/accept.py 289 says:\n✓ 289 vulnerable-security: refuted, accepted (job 20261117-122454-example-289-the-four-proof-tasks-again-w; 12 checks)\n✓ 289 fixed-security: established, accepted (job 20261117-122454-example-289-the-four-proof-tasks-again-w; 13 checks)\n✓ 289 preservation: established, accepted (job 20261117-122454-example-289-the-four-proof-tasks-again-w; 13 checks)\n✓ 289 mutant-security: refuted, accepted (job 20261117-122454-example-289-the-four-proof-tasks-again-w; 13 checks)\nand --json shows an empty limits list and the artifacts check ok on each: no limit about unrecorded artifacts is left.\n\nFinding, the check's (fixed here): its first run refused mutant-security, 'spring-web-5.3.20.jar of mutant is not the JAR target.json pins' and the same for three more. The driver records the mutant's class path under the revision mutant, which is the class path it ran; target.json pins those JARs under the mutant's base (fixed-release). The artifacts check now looks a constructed mutant's JARs up under its base; the mutant's own JAR stays the mutant check's. test_accept.py has a control for it (fails without the fix) and its checkout test now holds 289 to the new job, its source commit and lib tree, with no limit.",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "vsttntoznvymvlwkrpnxpyvuulmnozqu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Examples 286, 287, 288 and 290 are rerun at the frozen bound with drivers that record what they ran (verification pending)",
+      "body": "Step 3 of the evidence stream's brief. Example 286's and 287's mutant-security answers are refused by examples/tools/accept.py, because their old drivers built the mutant with another recipe and its JAR's hash is in no record; every other accepted answer of 286, 287 and 290 carries the limit that the JARs, the compiled adapter and the verifier's binary were not recorded; 288's one verified task (fixed-security) was never recorded at all. Every driver now goes through examples/tools/beside_route.py, which writes evidence.json and ends the run on a mutant that is not the replay's. Four jobs rerun those tasks unchanged at the frozen bound into verification/.work-NNN/recorded, one job per example, every step run whatever the one before gave; estimates come from the earlier jobs' measured steps. When they are back, each task's besideRoute.job is switched to its job and accept.py must accept with no limit; 288's answer is recorded only if accept.py accepts it.\n\nJobs: 20261117-133148-example-286-the-three-answers-beside-the, 20261117-133148-example-287-the-three-answers-beside-the, 20261117-133148-example-288-fixed-security-again-with-th, 20261117-133148-example-290-the-four-answers-beside-the.\n\nInbox items domain-advances-evidence-I002 and I003 (286's and 287's drivers already have the three properties in the state and preservation streams) are acknowledged in Progress: both drivers are built on this stream's shared module, and their security tasks run the same code as this line's. The brief's 'Where it stands' paragraph is out of date since step 2: every driver, not only 289's, now records evidence.json.",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "mktymxvtmlttkuyrqpsryzsulktxpnvr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The trace check makes a note, not an error, of a shared commit another stream's session stamped, while that stream's manifest lists the log",
+      "body": "The preservation stream's session merged the evidence stream's step 2 commit (rkxyyqwn) into its own line and, by sync.py's stamping of the changes made while a session runs, rewrote that commit's description with its own LLM-Trace line. The session's manifest is only on the preservation line, so sync.py check on the evidence line failed every commit with 'session f28025bc... has no manifest'. check_trailers already treated a shared commit restamped in another workspace as a note when that workspace's working copy holds a manifest listing the log, but only for a session this tree had a manifest of. It now does the same for a session this tree has no manifest of, unless the traced commit's own tree holds that session's manifest, in which case a merge lost it and it stays an error (the existing control for that still passes).",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "suuomluxkmpxxsnzymutrnkwyyllqoqq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Step 1's lemma half is done and example 290's four answers are accepted from the rerun that recorded what it ran",
+      "body": "The evidence stream's step 1 and part of step 3. Job 20261117-122546-examples-286-and-288-the-simplematch-lem passed: under the checker's tightened lemma checks the simpleMatch lemma is still proved by induction on pattern.length() (286 in 74.2 s, 288 in 108.5 s), and each example's fixed-security is verified with it at the frozen bound (918.0 s and 1037.5 s, 4676 and 4678 paths). Nothing was refused, so the earlier results did not rest on the hole and nothing goes to the challenge stream; 286's and 288's notes say so.\n\nJob 20261117-133148-example-290-the-four-answers-beside-the passed in 45.9 s with the same four verdicts and path counts as 20261117-002240 (preservation 573, vulnerable-security 4, fixed-security 659, mutant-security 708), each with the driver's evidence.json. Each 290 task's besideRoute now names it, and python3 examples/tools/accept.py 290 says:\n✓ 290 vulnerable-security: refuted, accepted (job 20261117-133148-example-290-the-four-answers-beside-the; 12 checks)\n✓ 290 fixed-security: established, accepted (job 20261117-133148-example-290-the-four-answers-beside-the; 13 checks)\n✓ 290 preservation: established, accepted (job 20261117-133148-example-290-the-four-answers-beside-the; 13 checks)\n✓ 290 mutant-security: refuted, accepted (job 20261117-133148-example-290-the-four-answers-beside-the; 13 checks)\nwith an empty limits list and the artifacts check ok on each. The result folders and work folders were taken from the default line as the watcher collected them (jj restore from wwqnnzwp and swltxzml, no merge). The observed initializers' audit (VF-033) is step 5; inbox item I004, which asks for it, is acknowledged in Progress.",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "ymzlyksqouqqwyoluoqxrvnzonklprtl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A preservation proof is non-vacuous only with a witness outside the allowed change, and accept.py asks the outcome to say so",
+      "body": "Step 4 of the evidence stream's brief. A regression check made as a property of the pair of versions (lib/src/pairing.rs, the route of examples 289's and 290's preservation) proves RegressionPair.agree, which returns true on an input inside the allowed change without calling either version. The property check's vacuity probe asked only for an input of the assumption, so it called a proof non-vacuous even when every assumed input lay inside the change. The control: example 289's preservation through its own driver, with only --unchanged-unless replaced by true, was verified and non-vacuous (a capped 5 s probe). 290's recorded witness, servlets=[], lies inside its own allowed change.\n\nThe fix: a verified pair with an allowed change is checked once more, meantToChange against result over the same assumption, domain and class path. A proof makes the statement vacuous; a witness, replayed as any is, becomes the statement's, with the new stated.vacuity.outside naming the change. The regression harness's own probe sets outside too, since that harness returns before the probe on an input in the scope. Now the true control is vacuous, 289 with its own change is non-vacuous at servletPath=\"\" (0.3 s more) and 290 at servlets=[0] (capped probes, recorded in both examples' notes). accept.py refuses an establishment of a task with an allowed change whose outcome does not say its witness lies outside that change (unbound) or names another (fail). So 289's and 290's accepted preservation answers are refused until a rerun on a checker with this fix; the other six stay accepted.\n\nVerified: lib/tests/pairing.rs a_pairs_proof_is_vacuous_when_the_allowed_change_covers_every_assumed_input (tool tier, fails without the fix with NonVacuous), three new cases in examples/tools/test_accept.py, the 289 checkout test now expecting preservation refused for this reason; test_costs.py run --changed 8 of 8, estimate, tag and lint clean; validate_example.py 289 and 290 pass. lib/README.md describes the check.\n\nThe brief's 'Where it stands' paragraph is out of date: 289's and 290's preservation are refused now, and every accepted answer of 289 and 290 carries no limit about unrecorded artifacts.",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "mzllzmkqlsyqqwqsznvswmoptrunxmru",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 288's fixed-security is recorded beside the route from the rerun that recorded what it ran, and accept.py accepts it with no limit",
+      "body": "Step 3 of the evidence stream's brief, 288's part. Its one verified task had never been recorded as an answer, because its driver recorded nothing of what it ran. Job 20261117-133148-example-288-fixed-security-again-with-th reran it unchanged at the frozen bound through the shared driver module. It passed in 20m39s: the simpleMatch lemma was proved by induction under the tightened lemma checks (106.0 s), and fixed-security was verified (1130.9 s, 4678 paths) and is not vacuous. The result folder and its work folder were taken from the default line as they are, with no merge. The task's besideRoute names the job; python3 examples/tools/accept.py 288 accepts it with all 13 checks ok and no limit, artifacts included. 288's notes record this, and its verdict label now names this answer. The two refutations and preservation stay undecided at the frozen bound (VF-031).\n\nProgress also answers inbox item I006 before observed.rs changes. Slot and Object do not change. Observed gains one record of what it was observed on: the class bytes, the class path, the initialized classes, the JDK, the locale and the properties read. An observation is taken only where the bytes the check loads are the bound ones. Step 5 needs the challenge stream's mqkqvvmw, which is on neither this line nor the default one, so the next cycle merges it here first.",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "wowqurkuylvprznznlxznnzwomxyluow",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 286's three answers beside the route are accepted with no limit from the rerun that recorded what it ran",
+      "body": "Job 20261117-133148-example-286-the-three-answers-beside-the passed (36m01s, 1.4 GiB). It reran vulnerable-security, fixed-security and mutant-security at the frozen bound through the shared driver module, which records the JARs, adapter and verifier it ran (evidence.json) and builds the mutant by the route's published-mutant recipe. Each run proved the simpleMatch lemma by induction first. vulnerable-security and mutant-security were refuted, with witnesses run on a JVM; the mutant's JAR is the one the mutant replay ran (48323d21…). fixed-security was verified, not vacuous. The result folder and its work folder were taken from the collector's commit (qzwtllkx) as they are, with no merge. Each task's besideRoute now names that job, and python3 examples/tools/accept.py 286 accepts all three with no limit. Before this, mutant-security was refused and the other two carried the unrecorded-artifacts limit. 286's notes record it, and the brief's Progress has cycle 7. Verified with accept.py 286, validate_example.py 286 and test_costs.py run --changed (26 of 26 passed).",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "yypzyxmwluytmwrouqvxqkpppqzpqszn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of the pair of versions: five false proofs of agreement, reproduced and handed to the preservation stream",
+      "body": "The challenge stream's item 1. lib/tests/fixtures/pairing-countermodels holds two versions of five methods that differ when each runs alone on a JVM and that RegressionPair.agree (lib/src/pairing.rs) proves agreeing: the previous version sets the default locale the new one lowers under; a library static shared without --before-classpath; two unrelated RuntimeExceptions, and IllegalArgumentException against a subclass, compared by category; a scope that is false everywhere but sets the default locale before both calls. All five were Verified on the checker at lupovnmv. The order of the calls is observable: with the versions' roles swapped, and with --before-classpath, the shared-static case is a violation.",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "mqkqvvmwlxsrznyvuxsotztpnkkptwqp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of observed class initializers and of class files the tool read where a JVM reads another: three handed to the evidence stream, two refused",
+      "body": "Challenge stream, item 2. lib/tests/fixtures/observed-countermodels holds five fixtures, and lib/tests/observed_countermodels.rs holds each to what a JVM prints. Each was a false proof on the checker as it was (yypzyxmw): crossed, the outside review's A.<clinit> { B.x = 1; k = 7; } (result == 0 proved, a JVM gives 1); lowered, \"I\".toLowerCase() observed in a Turkish JVM (result == 305 proved, and the locale assumption gone from the result); configured, System.getProperty observed with the property set; released, a class of a multi-release JAR (the tool read the base file where a JVM 17+ loads META-INF/versions/17, so result == 1 was proved where a JVM gives 20, and an observation of the versioned class was put on the base file's code); shadowed, a class path copy of the JDK's org.xml.sax.helpers.AttributesImpl (result == 42 proved, a JVM gives 0).\n\nThe first three are the evidence stream's to fix (its brief's item 5 binds an observation): the checker-side test is in the fixtures' README and is sent to its inbox as a failure item. The last two are holes in the class path reader, which no stream owns, so they are refused here: ClassPath::refused (lib/src/classpath.rs) refuses by name, on load and when a class is copied for a pair, a class a multi-release JAR holds a versioned file of, and a class an entry holds in a package of the JDK's image, unless its file is the image's own byte for byte or one of the tool's models (the tool puts both on class paths itself; a first, broader version failed 13 tests for that reason). Enumerating every class still reads the first file, so that walks over which classes exist see it. Not covered: an override only a versioned file declares, and resources.",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "tswurxzvswpolvlvyslzrpmwruroupvy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the challenge stream's countermodels of observed initializers onto the evidence line",
+      "body": "Brings in mqkqvvmw (and yypzyxmw under it): the observed-initializer and pair-of-versions countermodel fixtures and tests, and ClassPath::refused, which step 5 of the evidence brief builds on. The notes of examples 289 and 290 keep both lines' additions; costs.json, examples/index.json and the trace files were regenerated rather than merged by hand. validate_example.py 289 and 290 pass; test_costs.py run --changed passed (test_brief_run.py flaky, I001).",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "lzpqszyooynruulpykrwltmytxqmskmp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "An observed class initializer is bound to what it was observed on, and the run ends where it is not",
+      "body": "Step 5 of the evidence brief (VF-033's audit half, inbox I004). The observer now reports what it observed on: the class file's sha256 and location, the class path in order, the JDK's vendor and home, the default locale, the system properties the class path's code read with their values, and each class of the class path the initialization also initialized (from -Xlog:class+init), with its sha256 and static state. lib/src/observed.rs ends the run when an observation has no such record, ran on another class path, initialized a class file other than the one the tool reads, left a class it also initialized in a state other than that class's state when initialized alone (the outside review's countermodel A.<clinit> { B.x = 1; k = 7; } is refused, naming the field), or was taken under a Turkish, Azeri or Lithuanian default locale, which the check assumes the JVM does not have. The locale and the properties read are stated in what the result rests on. Slot and Object are unchanged, as agreed with the state stream (I006).",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "krptozvmlptxzsrnvxwnvoynuputwolv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 287's three answers beside the route are accepted with no limit from the rerun that recorded what it ran",
+      "body": "Job 20261117-133148-example-287-the-three-answers-beside-the (the evidence stream's step 3) reran 287's vulnerable-security, fixed-security and mutant-security unchanged at the frozen bound through the shared driver module, which records the JARs, adapter, claim and verifier it ran (evidence.json) and builds the mutant by the route's published-mutant recipe. It passed in 44m48s at 3.0 GiB: vulnerable and mutant refuted at a 25-character, 73-byte candidate against a valid hash (matches returns false where the claim asks for IllegalArgumentException), each witness run on a JVM, the mutant's JAR the one the mutant replay ran (sha256 1d099295...); fixed verified and not vacuous. Its result folder and work folder were taken from the default line's collector commit as they are. Each task's besideRoute now names the job, and python3 examples/tools/accept.py 287 accepts all three with no limit (12, 13 and 13 checks); before, mutant-security was refused because the old driver's mutant JAR was in no record. Verified with validate_example.py 287 and test_costs.py run --changed (26 of 26). Progress updated: step 3 now waits only on the 289/290 preservation rerun, which needs the preservation stream's zmvkptqz.",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "nzsypymyqxtwvnwnsvuvulwmsyuqlkss",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290's preservation claim restated to compare what the matchers are, prepared for the user to freeze",
+      "body": "VF-033's option B, the user's choice: claims/lone-dispatcher-matchers-preserved.json keeps the old claim's table, assumption, allowed change and bound, and compares each returned matcher's exact class, pattern, HTTP method and servlet path, in order, for both overloads of requestMatchers, rather than the count of matchers by type. Its entry is a new adapter class, MatcherDescriptionAdapter#describe, which reports each matcher's exact class and the library's own rendering of it. The old adapter and claim are unchanged, since the frozen claims and the accepted answers name them. Run on a JVM against both releases' pinned closures, describe agrees on all 28 probes with the DispatcherServlet alone and differs on 132 of the other 140, where the fix changes the selection by design. The claim states the rendering's one blind spot: a null pattern and \"null\" render alike in an MvcRequestMatcher.\n\nTwo capped probes in a scratch copy where the task points at the new claim: at bound 1 (a trial) the checker stops at a gap, StringBuilder.append(Object) in MvcRequestMatcher.toString; at the frozen bound it reached the 4 GiB cap after 133 s. So the proof needs that gap closed, then one job. Freezing is the user's, as VF-033 and 290's notes record: the hash in a claims ledger, the task pointed at the file, and the adapter source listed. proofs/prove.py then picks the entry by the task's claim. accept.py's task check now compares the adapter sources listed at the job's commit, the ones it compiled. A source listed since is reported, not refused, so 290's three security answers stay accepted after the freeze. The control in test_accept.py fails on the old check. Verified: test_costs.py run --changed (27 of 27), validate_example.py 290, accept.py 286-290 unchanged (the 289/290 preservation answers still await their rerun).",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "nosxvuntumnmpmvzpqmvvsrmxmzsmnys",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-030's Python half was empty and the default run covers it; the Rust proof tier is queued after the foundation's checker changes (verification pending)",
+      "body": "Job 20261117-152112-the-rust-proof-tier-after-the-domain-adv runs every ignored Rust test in release with --no-fail-fast. It covers the own checker's changes since the last proof-tier jobs: the domain-advances foundation's (qkqpsmqk, in bmc/mod.rs, bmc/strings.rs, property.rs and summary.rs) and this line's (pairing.rs, statement.rs, observed.rs, classpath.rs, equivalence.rs). Unlike the jobs after examples 287 to 290, it keeps VF-018's three heap tests, since VF-018 is closed and they run the own checker under auto --confirm. It also includes the seven tests wvvtwkos moved to the proof tier. About 55 minutes, 4 CPUs, 8 GiB.\n\nThe estimate counts 0 Python proof tests because there are none. No Python test is tagged @cost(\"proof\"), now or at VF-030's own job (8594e6b7adb1); the tag occurs only in the tier tools and the lint's fixtures. So test_costs.py run --tier proof --only python runs nothing, and it was not queued. The brief's step 6 is out of date in asking for it. Every Python test is in the default run, which passed inline at this line's head (tree bc1caa8a8827, 54 of 54). VF-030 is updated to say this and closes when the Rust job passes.\n\nThe brief's Progress records cycle 11 and acknowledges inbox item domain-advances-evidence-I007: accept.py's seven holes, the next cycle's work. Checked with test_costs.py run --changed (4 files passed).",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "kqxwrwrxwkvmutrkvpklpuqsnmpumkop",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "accept.py refuses or leaves unbound the seven answers the challenge stream's controls showed it accepting without evidence",
+      "body": "Inbox item domain-advances-evidence-I007 (the challenge stream's countermodels, lib/tests/fixtures/accept-countermodels/README.md at zwrpkwnl) listed seven controls in which examples/tools/accept.py accepted an answer beside the route that its evidence does not give. They are now in examples/tools/test_accept.py (Countermodels), each with the evidence of the same kind that is still accepted, and accept.py closes each hole:\n- entry: matched as whole Class#method names (the invocation's entry, or the adapter entry an assumption names as such, which 286's and 287's tasks use), not as substrings;\n- step: exactly python3 [-I] <folder>/proofs/prove.py TASK, and the artifacts check holds evidence.json's driver hash to the driver at the job's source commit;\n- domain: the claim's bound alone (a task's bounds no longer lowers it), and a witness's null input must be of a parameter the claim makes nullable;\n- replay: where the claim has an assume, a refutation needs a record that it held on the witness: the harness source the job collected (work/harness/PropertyHarness.java), which returns first wherever the assumption does not hold, so the JVM's failure of it is on an assumed input; without it the answer is unbound;\n- expressions: an equivalence task with no allowed change is refused when the generated pair has meantToChange or the outcome says it ran with an allowed change.",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "nsnxmlmtukmtswunowossrntslrtqoku",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-030 is closed: the Rust proof tier passed whole after the foundation's checker changes and the evidence line's",
+      "body": "Job 20261117-152112-the-rust-proof-tier-after-the-domain-adv (at 9ec6e448674f) passed in 42m14s at 4.2 GiB, against an estimate of 55 min and 8 GiB. It ran cargo test --release --no-fail-fast -- --ignored, 19 tests: every Rust row lib/tests/costs.json marks ignored, none left out, and all 19 passed. Among them were VF-018's three heap tests, the seven tests wvvtwkos moved, and conformance's two (1228 s). The commit the job ran at holds the foundation's checker changes (qkqpsmqk) and this line's pair and observation checks. The Python half has no tests (no Python test is tagged proof tier, cycle 11), so VF-030 is closed with nothing left. The result folder was taken from the collector's commit xnlsuqmu unchanged. Verified by reading the job's log against costs.json's ignored rows, and with test_costs.py run --changed (4 of 4).\n\nThe brief's Progress records cycle 13 and acknowledges inbox items domain-advances-evidence-I008 and I009. I008: the observation binding misses supertypes, Properties.get, the time zone and the environment. I009: keep the state stream's Dump.nameOf. Both are the next cycle's work, so the status is working. Also out of date in the brief: the 'Where it stands' paragraph (as said since ymzlyksq), and step 6's Python proof tier, which has no tests (as said in nosxvunt).",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "mmnoqoprrzmrtqovvnqruywlxrzwkmpu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "An observation is bound to its supertypes' state, to a property read through the Properties map, to the time zone and to the environment; the state stream's lambda naming is kept",
+      "body": "The challenge stream's ob countermodels (inbox item I008, lqvlvwsm) showed five holes in the observed-initializer binding of lzpqszyo. Each is now refused or stated. An initializer that writes a superclass's static (ob.Derived) or a superinterface's array (ob.Filled) is refused with the field: the observer had skipped supertypes when comparing each class the initialization initialized with that class initialized alone. A property read by key through System.getProperties() (ob.Bypassed) is recorded and stated like a getProperty read. A read of the properties as a whole is refused. The default time zone is stated beside the locale (ob.Zoned, verified at 9 under Asia/Tokyo, which the result says). A class whose code calls System.getenv or ProcessBuilder.environment is refused (ob.Environ). The observation format gains on.zone and on.allProperties; Slot, Object and the identity are unchanged.\n\nI009: ObservedInitializer.java is taken whole from the state line (llyzwmyp), whose Dump.nameOf names a lambda's hidden class without the address the JVM appends, with its claims.Hooked fixture and test lines. The ob fixtures are copied byte for byte from lqvlvwsm rather than merged.\n\nVerified: the new test an_observation_is_bound_to_its_writes_outside_the_class_and_to_every_setting_it_read (lib/tests/observed_countermodels.rs) passes and asserts how each case comes out. A new unit test in observed.rs passes. claims.rs's observed test, with Hooked, passes. test_costs.py run --changed passed 28 of 28, including the whole cargo test. Capped probes of example 290's fixed-security and preservation verified both again with the same path counts (659, 573) under the wider binding. Recorded in 290's notes, VF-033 and lib/README.md.\n\nThe brief's 'Where it stands' paragraph is out of date: every besideRoute answer of 286 to 290 except 289's and 290's preservation is now accepted with no limit.",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "wxpoyswsmkvluxrrpqptrkvuqnxksrno",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "accept.py refuses a job any of whose steps is not a plain run of an example's driver, closing the step check past kqxwrwrx",
+      "body": "The challenge stream (inbox domain-advances-evidence-I010, xnqlyxnw) found that the step check read a step's words only up to the task's name and the first --work. The pipeline runs a step with bash -c, so four kinds of job were accepted with no limit: a shell suffix after the driver that rewrites the outcome, an earlier step that replaces the driver or writes the outcome folder, --work given twice (the check took the first, the driver keeps the last), and --jvmcontract pointing at another binary. Now every step of the job file must be python3 [-I] examples/NNN-.../proofs/prove.py TASK with only --timeout, one --work and the trial flags, as plain words. A job's env and a step's cwd are refused. The result's steps must be the job file's, apart from the pipeline's own cargo build as step 0. A later step that writes the same outcome folder is refused.\n\nVerified: the controls are in test_accept.py (StepsPastTheFix, 7 tests). On the old accept.py six of them fail, 14 failures in all. The seventh checks that the honest jobs' shapes stay accepted with no limit. accept.py 286 to 290 still accepts the same 13 answers, and 289's and 290's preservation are refused as before for outside. test_accept.py passes 45 tests; test_costs.py run --changed passed 7 of 7, with one unrelated flaky JBMC unit test that passed on its second run; estimate, tag and lint agree.\n\nThe brief is out of date where its 'Where it stands' paragraph describes the results (as said since ymzlyksq), and its pending items are now settled by I012: the 289/290 preservation rerun is the preservation stream's, and 290's freeze is the user's open question.",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "qxstltmqkootwmmkzpmpnxkwnsysruor",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "test_accept.py's pipeline build step uses a path outside any home directory; the made-up one is proposed for the allow list",
+      "body": "The step controls committed just before (wxpoysws) wrote the pipeline's own cargo build step with a made-up /home/... path, which the trace check reports as another user's home directory (finding fa4e66dc, warn, in this session's log). The fixture now uses /opt/rust/bin/cargo. The finding in the log is proposed for the allow list with sync.py allow propose and waits for a person to approve it. Verified: test_accept.py passes its 45 tests.",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "vqquvmnmmoqxwqtkorlusnmrumwrtklp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "An observed initializer is refused where it wrote into a value another class holds or changed the JDK's settings: every value of a class it initialized besides is compared in full",
+      "body": "The challenge stream's binding countermodels (klqnuoxw, inbox item I011) showed three proofs a JVM contradicts. The observation compared a class the initialization initialized besides only as far as it held its fields, so a write into an object another class holds (bc.Boxed) and a lambda of Hooks put in place of another of Hooks' (bc.Rehooked) went unseen. It also read the default locale before the initialization, so an initializer that set it (bc.Relocaled) was observed as if it had not. Their fixtures and JVM test were copied from klqnuoxw unchanged.\n\nThe observer (lib/src/observed/ObservedInitializer.java, Describe) now describes in full each value it does not hold, in each class initialized besides the observed one and in that class initialized alone. An object of the application is described by every field its classes declare. A lambda is described by the method it calls, read from its class's constant pool (the observer's JVM gets --add-exports for that), and by the values it captured. A JDK collection is described by its elements, sorted where the class keeps no order, and a float by its bits. observe (lib/src/observed.rs) compares these descriptions and refuses a value with none, with why. The observer also reads the default locale, the time zone and the system properties again after the initialization, and a change is refused with the setting. The format gains on.changed, plus d or why beside u; Slot, Object and the identity are unchanged.",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
+    },
+    {
+      "change_id": "uolrlxuwtnwyxkmrulqlxmymxrvolqtz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge stream evidence of the domain-advances run into the line",
+      "body": "The stream evidence of the brief llm-dlc/loops/domain-advances.md is finished (done), and the run's watcher merges each stream the moment it is, while the others still run. Its workspace domain-advances-evidence branched from this line, which moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f"
     }
   ],
   "logs": {
@@ -1579,6 +1763,12 @@
       "lines": 4173,
       "gzip_bytes": 1617823,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/2d883926dc2e65441b6712ce94f3ffcb61ee7b9549d09732551d16392d4c3a58.jsonl.gz"
+    },
+    "30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f": {
+      "bytes": 23923032,
+      "lines": 10228,
+      "gzip_bytes": 4023737,
+      "url": null
     },
     "368d1e6abb428e19e7fb0d8d879365bdd5c491e73b63e6dbf37cc77d656cbfb2": {
       "bytes": 22333309,
