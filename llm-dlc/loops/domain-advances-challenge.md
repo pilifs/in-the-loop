@@ -695,6 +695,54 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   - evidence: `nzsypymy`.
 - Next: preservation's call-level rule as soon as it is committed; until then state's `lwxvoqsy` models and item 6's
   entries for 288's `fixed-security` and 289's other answers.
+- Sent, each citing `mnwtrnrp`: the stand-in failure to state as `domain-advances-state-I017`, the logging failure to
+  preservation as `domain-advances-preservation-I021`, and the step-check residue to evidence as
+  `domain-advances-evidence-I015`.
+- **To the watcher**: `sync.py check` here reports 21 `has no manifest` errors, up from 19. Session f28025bc is now
+  stamped on `plqpmmop` and `tqmpowvx` too. The cause is the one recorded above (`link_commits`). I have not touched
+  the trace lines.
+- 2026-11-17, item 5, preservation's `qopxypnn` (its fix for I019): **the fix holds, and five false proofs past it**,
+  to be handed over.
+  - The fix walks both reaches, resolves each field to its declaring class and takes in the initializers the JVM runs.
+    Built apart at `qopxypnn` (sources touched), `reach_countermodels.rs` passes, its checker-side test included.
+  - The new hole: no part of the reach compares a class's header, its superclass and its interfaces. `same_everywhere`
+    checks that each method one version reaches exists, the same, in the other. It does not check that both reach the
+    same methods.
+  - The fixture is `lib/tests/fixtures/supertype-countermodels`. Its README has the table, the commands, the options,
+    the checker-side test and the audit. `lib/tests/supertype_countermodels.rs` holds it to a JVM. Every method of
+    every class is the same text in both versions; only three class headers differ.
+  - Four are each **"identical in both versions; nothing to prove"** under the defaults, at `qopxypnn` and on this line
+    alike (the shortcut is older than the run):
+    - `rebased`: `Child.value` resolves to `One.value` in the previous version and to `Two.value` in the new one;
+    - `marked`: `instanceof Marker` of a `Plain` that implements it only in the previous version;
+    - `cast`: the same `checkcast`, which throws in the new version;
+    - `mixed`: a default method taken from `Left` in the previous version and from `Right` in the new one.
+  - `looped` (`marked` in a loop past the bound) is **Verified** under the ties at `qopxypnn`, non-vacuous, with and
+    without `--no-shared-callees`.
+  - With the shortcut turned off (`--before-classpath` an empty folder), `marked`, `rebased` and `mixed` are refuted,
+    and `looped` is refuted at full unwind. So only the shortcut and the ties are wrong.
+  - The README's checker-side test fails on all five at `qopxypnn`, as it should. `shared.rs` is preservation's this
+    run, so nothing in `lib/src` changes here. The test goes as a `failure` item to `domain-advances-preservation`,
+    citing this commit; the id goes in the next entry.
+  - *Audit*: in each example's pinned releases (sha256s checked against `sources.lock.json`), no class in both releases
+    differs in its superclass or interfaces. That is 2431 classes for 289, 5269 for 290 and 52 for 287. 307's pair, a
+    commit and its parent, was not read, but its target differs between the versions, so the shortcut is not taken.
+    Nothing for the watcher.
+- Tests: `test_costs.py run --changed` under `MemoryMax=8G` with `--rust-jobs 1` passed but for `tiers.rs`, which
+  failed only until the new test was estimated and tagged. After that, the new test file, `tiers.rs` and `lint` pass.
+  The rerun's only failure was the flaky JBMC timing test, which passed on retry.
+- Inbox: no open items. I004 is still waiting: preservation's call-level rule is not committed. Its line has the 307
+  specialist's prototype as guidance (`okuplpys`), and its last commit, `qopxypnn`, is the fix above.
+- New on the other lines, not yet challenged: state's `xokwnwqo` (the `LinkedHashSet` and `StringJoiner` models on
+  request, `String.lastIndexOf(int)`, `Class.isArray()`). State's `txzyyurs` accepts 286's protected-state refutation
+  on 5.3.18, by a witness replayed on a JVM, so it rests on no model.
+- Not yet challenged:
+  - preservation: its call-level rule once committed (I003, I004);
+  - state: `xokwnwqo`, `krxzxzow`/`lwxvoqsy` (the `PropertyChangeEvent` model, `ClassUtils`, the second sampler) and
+    `zlvqxmst`;
+  - evidence: `nzsypymy`.
+- Next: preservation's call-level rule as soon as it is committed; until then state's `lwxvoqsy` and `xokwnwqo`
+  models, and item 6's entries for 288's `fixed-security` and 289's other answers.
 - Status: working
 
 ## Loop settings
