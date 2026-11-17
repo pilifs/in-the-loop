@@ -1,0 +1,585 @@
+--- /dev/null
++++ b/verification/.work-307/mutant-preservation-one-function/mutant-preservation/outcome.json
+@@ -0,0 +1,471 @@
++{
++  "verdict": "violation",
++  "target": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(java.lang.String, java.lang.String)",
++  "domain": "password: String of ≤ 80 code units, or null × salt: String of ≤ 80 code units, or null",
++  "counterexample": null,
++  "proof": "found by jvmcontract's own checker (CaDiCaL) in 69.0 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain password: String of ≤ 80 code units, or null × salt: String of ≤ 80 code units, or null",
++  "problem": null,
++  "statement": "verification/.work-307/mutant-preservation-one-function/mutant-preservation/work/pair/RegressionPair.java",
++  "findings": [
++    {
++      "rule_id": "property-violated",
++      "message": "Property of RegressionPair#agree violated: `result` where salt == null || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu0YHzrHM6tf.iqN8.yx.jNN1ILEf7h0i\") || salt.equals(\"$2$05$......................\") || salt.equals(\"\") || salt.equals(\"$2a$03$......................\") || salt.equals(\"$2a$10$123456789012345678901\"):\n  agree(password=\"\\uffc0\\ub000\", salt=\"$2a$06$If6bvum7DFjUnE9p2uDeDu\")\n    outcome: false",
++      "uri": null,
++      "line": 38
++    }
++  ],
++  "output": "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-307/mutant-preservation-one-function/mutant-preservation/work/pair/RegressionPair.java) calls the previous version's org.springframework.security.crypto.bcrypt.BCrypt#hashpw(java.lang.String, java.lang.String), relocated under `before`, and then the new one's on the same inputs, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n✗ org.springframework.security.crypto.bcrypt.BCrypt#hashpw(java.lang.String, java.lang.String): the two versions differ on hashpw(password=\"\\uffc0\\ub000\", salt=\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") (the pair's property, below, returns false on it)\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter salt has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✗ Property of RegressionPair#agree violated: `result` where salt == null || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu0YHzrHM6tf.iqN8.yx.jNN1ILEf7h0i\") || salt.equals(\"$2$05$......................\") || salt.equals(\"\") || salt.equals(\"$2a$03$......................\") || salt.equals(\"$2a$10$123456789012345678901\"):\n  agree(password=\"\\uffc0\\ub000\", salt=\"$2a$06$If6bvum7DFjUnE9p2uDeDu\")\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 69.0 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain password: String of ≤ 80 code units, or null × salt: String of ≤ 80 code units, or null)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++  "work": "verification/.work-307/mutant-preservation-one-function/mutant-preservation/work",
++  "search": {
++    "engine": "native",
++    "checker": "jvmcontract's own checker (CaDiCaL)",
++    "seconds": 69.012958559,
++    "properties": 1,
++    "unwind": 513,
++    "max_array_length": 80,
++    "stage": "[-100000:100000]",
++    "native": {
++      "paths": 69,
++      "merges": 0,
++      "solver_calls": 253,
++      "solving_seconds": 58.968990201,
++      "gates_evaluated": 1863252,
++      "evaluating_seconds": 0.043359972,
++      "divisions": 0,
++      "divisions_built": 0,
++      "multiplications": 0,
++      "multiplications_built": 0,
++      "variables": 1397949,
++      "clauses": 4248575,
++      "seconds": 68.460642649,
++      "loading_seconds": 0.002847363,
++      "decoding_seconds": 0.002277706,
++      "encoding_seconds": 6.890768865,
++      "witness_seconds": 0.348126512,
++      "assumed": [
++        "each call of org.springframework.security.crypto.bcrypt.BCrypt.hashpw taken as one function of both versions (lib/src/bmc/ties.rs) ends: two versions that make it on equal inputs are taken to agree, so what is proved holds of the runs in which it ends"
++      ],
++      "calls_as_one_function": 7,
++      "calls_related": 6
++    },
++    "gap_mode": "strict",
++    "deadline_seconds": 1800.0,
++    "runs": [
++      {
++        "checker": "native",
++        "purpose": "proof",
++        "stage": null,
++        "budget_seconds": 1800.0,
++        "seconds": 68.461,
++        "ended": "violation",
++        "ending": "counterexample",
++        "phases": {
++          "loading": 0.003,
++          "lowering": 0.002,
++          "symbolic": 2.248,
++          "encoding": 6.891,
++          "solving": 58.969,
++          "trace": 0.348,
++          "other": 0.0
++        },
++        "formula": {
++          "variables": 1397949,
++          "clauses": 4248575
++        }
++      }
++    ]
++  },
++  "stated": {
++    "kind": "property",
++    "domain": {
++      "parameters": [
++        {
++          "name": "password",
++          "type": "java.lang.String",
++          "kind": "value",
++          "null": true,
++          "max_length": 80
++        },
++        {
++          "name": "salt",
++          "type": "java.lang.String",
++          "kind": "value",
++          "null": true,
++          "max_length": 80
++        }
++      ],
++      "shared_arrays": false,
++      "text": "password: String of ≤ 80 code units, or null × salt: String of ≤ 80 code units, or null"
++    },
++    "assumptions": [
++      {
++        "kind": "precondition",
++        "text": "salt == null || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu0YHzrHM6tf.iqN8.yx.jNN1ILEf7h0i\") || salt.equals(\"$2$05$......................\") || salt.equals(\"\") || salt.equals(\"$2a$03$......................\") || salt.equals(\"$2a$10$123456789012345678901\")",
++        "basis": "stated"
++      },
++      {
++        "kind": "initialization",
++        "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++        "basis": "engine"
++      },
++      {
++        "kind": "library",
++        "text": "each call of org.springframework.security.crypto.bcrypt.BCrypt.hashpw taken as one function of both versions (lib/src/bmc/ties.rs) ends: two versions that make it on equal inputs are taken to agree, so what is proved holds of the runs in which it ends",
++        "basis": "engine"
++      }
++    ],
++    "observations": {
++      "result": "the result and the parameters, against result",
++      "exceptions": "none may be thrown"
++    },
++    "bounds": {
++      "unwind": 513,
++      "max_array_length": null,
++      "complete": false,
++      "max_value_length": 80
++    },
++    "models": {
++      "used": true,
++      "digest": "sha256:d3cb60427833314ef7f913b8bc6ef4ca4c79b923fd15a09a6224d63099b17d02",
++      "classes": 31,
++      "jdk": "25.0.5",
++      "values": [
++        {
++          "source": "jvmcontract String model 7: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++          "jdk": "25.0.5",
++          "level": "tested",
++          "leaves_out": [
++            "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++            "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++            "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++            "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
++          ]
++        }
++      ]
++    },
++    "checker": {
++      "engine": "native",
++      "name": "jvmcontract's own checker (CaDiCaL)",
++      "solver": "CaDiCaL 1.9.5 (bundled)",
++      "fallback": null,
++      "sat": {
++        "solver": "CaDiCaL",
++        "version": "1.9.5",
++        "source": "bundled by the Rust crate cadical 0.1.16",
++        "configuration": [
++          "CaDiCaL's default options",
++          "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++          "the run's deadline through CaDiCaL's terminate callback",
++          "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++        ]
++      }
++    },
++    "gap_mode": "strict",
++    "confirmation": null
++  },
++  "pair": {
++    "verdict": "violation",
++    "target": "RegressionPair#agree",
++    "domain": "password: String of ≤ 80 code units, or null × salt: String of ≤ 80 code units, or null",
++    "assume": "salt == null || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu0YHzrHM6tf.iqN8.yx.jNN1ILEf7h0i\") || salt.equals(\"$2$05$......................\") || salt.equals(\"\") || salt.equals(\"$2a$03$......................\") || salt.equals(\"$2a$10$123456789012345678901\")",
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "agree(password=\"\\uffc0\\ub000\", salt=\"$2a$06$If6bvum7DFjUnE9p2uDeDu\")",
++      "outcome": "false",
++      "values": [
++        "\"\\uffc0\\ub000\"",
++        "\"$2a$06$If6bvum7DFjUnE9p2uDeDu\""
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "password",
++          "type": "java.lang.String",
++          "value": {
++            "kind": "string",
++            "units": [
++              65472,
++              45056
++            ]
++          }
++        },
++        {
++          "name": "salt",
++          "type": "java.lang.String",
++          "value": {
++            "kind": "string",
++            "units": [
++              36,
++              50,
++              97,
++              36,
++              48,
++              54,
++              36,
++              73,
++              102,
++              54,
++              98,
++              118,
++              117,
++              109,
++              55,
++              68,
++              70,
++              106,
++              85,
++              110,
++              69,
++              57,
++              112,
++              50,
++              117,
++              68,
++              101,
++              68,
++              117
++            ]
++          }
++        }
++      ],
++      "call": {
++        "class": "RegressionPair",
++        "class_file": "RegressionPair.class",
++        "classes": "after",
++        "method": "agree",
++        "descriptor": "(Ljava/lang/String;Ljava/lang/String;)Z",
++        "static": true,
++        "arguments": [
++          {
++            "name": "password",
++            "type": "java.lang.String",
++            "value": {
++              "kind": "string",
++              "units": [
++                65472,
++                45056
++              ]
++            },
++            "from": "password"
++          },
++          {
++            "name": "salt",
++            "type": "java.lang.String",
++            "value": {
++              "kind": "string",
++              "units": [
++                36,
++                50,
++                97,
++                36,
++                48,
++                54,
++                36,
++                73,
++                102,
++                54,
++                98,
++                118,
++                117,
++                109,
++                55,
++                68,
++                70,
++                106,
++                85,
++                110,
++                69,
++                57,
++                112,
++                50,
++                117,
++                68,
++                101,
++                68,
++                117
++              ]
++            },
++            "from": "salt"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 69.0 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain password: String of ≤ 80 code units, or null × salt: String of ≤ 80 code units, or null",
++    "problem": null,
++    "statement": "verification/.work-307/mutant-preservation-one-function/mutant-preservation/work/pair-work/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of RegressionPair#agree violated: `result` where salt == null || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu0YHzrHM6tf.iqN8.yx.jNN1ILEf7h0i\") || salt.equals(\"$2$05$......................\") || salt.equals(\"\") || salt.equals(\"$2a$03$......................\") || salt.equals(\"$2a$10$123456789012345678901\"):\n  agree(password=\"\\uffc0\\ub000\", salt=\"$2a$06$If6bvum7DFjUnE9p2uDeDu\")\n    outcome: false",
++        "uri": null,
++        "line": 38
++      }
++    ],
++    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter salt has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✗ Property of RegressionPair#agree violated: `result` where salt == null || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu0YHzrHM6tf.iqN8.yx.jNN1ILEf7h0i\") || salt.equals(\"$2$05$......................\") || salt.equals(\"\") || salt.equals(\"$2a$03$......................\") || salt.equals(\"$2a$10$123456789012345678901\"):\n  agree(password=\"\\uffc0\\ub000\", salt=\"$2a$06$If6bvum7DFjUnE9p2uDeDu\")\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 69.0 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain password: String of ≤ 80 code units, or null × salt: String of ≤ 80 code units, or null)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "verification/.work-307/mutant-preservation-one-function/mutant-preservation/work/pair-work",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 69.012958559,
++      "properties": 1,
++      "unwind": 513,
++      "max_array_length": 80,
++      "stage": "[-100000:100000]",
++      "native": {
++        "paths": 69,
++        "merges": 0,
++        "solver_calls": 253,
++        "solving_seconds": 58.968990201,
++        "gates_evaluated": 1863252,
++        "evaluating_seconds": 0.043359972,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 1397949,
++        "clauses": 4248575,
++        "seconds": 68.460642649,
++        "loading_seconds": 0.002847363,
++        "decoding_seconds": 0.002277706,
++        "encoding_seconds": 6.890768865,
++        "witness_seconds": 0.348126512,
++        "assumed": [
++          "each call of org.springframework.security.crypto.bcrypt.BCrypt.hashpw taken as one function of both versions (lib/src/bmc/ties.rs) ends: two versions that make it on equal inputs are taken to agree, so what is proved holds of the runs in which it ends"
++        ],
++        "calls_as_one_function": 7,
++        "calls_related": 6
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 1800.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 1800.0,
++          "seconds": 68.461,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.002,
++            "symbolic": 2.248,
++            "encoding": 6.891,
++            "solving": 58.969,
++            "trace": 0.348,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1397949,
++            "clauses": 4248575
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 69.973,
++        "setup": 0.002,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 68.461,
++        "replay": 0.006,
++        "jvm": 0.062,
++        "other": 1.442
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "password",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": true,
++            "max_length": 80
++          },
++          {
++            "name": "salt",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": true,
++            "max_length": 80
++          }
++        ],
++        "shared_arrays": false,
++        "text": "password: String of ≤ 80 code units, or null × salt: String of ≤ 80 code units, or null"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "salt == null || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu0YHzrHM6tf.iqN8.yx.jNN1ILEf7h0i\") || salt.equals(\"$2$05$......................\") || salt.equals(\"\") || salt.equals(\"$2a$03$......................\") || salt.equals(\"$2a$10$123456789012345678901\")",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "each call of org.springframework.security.crypto.bcrypt.BCrypt.hashpw taken as one function of both versions (lib/src/bmc/ties.rs) ends: two versions that make it on equal inputs are taken to agree, so what is proved holds of the runs in which it ends",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 513,
++        "max_array_length": null,
++        "complete": false,
++        "max_value_length": 80
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d3cb60427833314ef7f913b8bc6ef4ca4c79b923fd15a09a6224d63099b17d02",
++        "classes": 31,
++        "jdk": "25.0.5",
++        "values": [
++          {
++            "source": "jvmcontract String model 7: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++            "jdk": "25.0.5",
++            "level": "tested",
++            "leaves_out": [
++              "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++              "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++              "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++              "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
++            ]
++          }
++        ]
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++}
+--- /dev/null
++++ b/verification/.work-307/mutant-preservation-one-function/mutant-preservation/evidence.json
+@@ -0,0 +1,45 @@
++{
++ "schema": "beside-route-evidence/v1",
++ "example": "307",
++ "task": "mutant-preservation",
++ "claim": {
++  "file": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/claims/hashpw-preservation.json",
++  "sha256": "ee2e9189cc7d8bc38db5ce68794ca4890e61a3d9b6db2ef6bce629f7a0956ca8"
++ },
++ "bound": {
++  "maxArrayLength": 80,
++  "unwind": 513,
++  "trial": false
++ },
++ "artifacts": [
++  {
++   "revision": "after",
++   "name": "after.jar",
++   "sha256": "f6aec1cedaa7c15ff8be5d3db154771e234738559abd662045c043f6196ef09c",
++   "constructed": true
++  },
++  {
++   "revision": "mutant",
++   "name": "mutant.jar",
++   "sha256": "54a1f226d5c9b63644bd62f4b77a70ae71f797611f58f2f49b6faff2b24ab23d",
++   "constructed": true
++  }
++ ],
++ "adapter": {
++  "sources": {},
++  "classes": []
++ },
++ "jvmcontract": {
++  "path": "jvmcontract",
++  "sha256": "42409be93b351ba047b9378826237917ce60419fc940673c096d96fcfd2515a0"
++ },
++ "driver": {
++  "path": "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/proofs/prove.py",
++  "sha256": "e773561e17de68b66b036c7ed417dfb9740ffad59be27e44e4084109bb9db4ee"
++ },
++ "mutant": {
++  "sha256": "54a1f226d5c9b63644bd62f4b77a70ae71f797611f58f2f49b6faff2b24ab23d",
++  "replayed": "54a1f226d5c9b63644bd62f4b77a70ae71f797611f58f2f49b6faff2b24ab23d",
++  "patch": "controls/us-ascii.patch"
++ }
++}
+--- /dev/null
++++ b/verification/.work-307/mutant-preservation-one-function/mutant-preservation/work/pair/RegressionPair.java
+@@ -0,0 +1,47 @@
++/** Generated by jvmcontract: both versions of a method called on the same inputs, as one method that says whether they agree (lib/src/pairing.rs). */
++public final class RegressionPair {
++    private RegressionPair() {}
++
++    /** The default locale the first version started under. */
++    private static java.util.Locale start;
++
++    /** Where each version starts: the checker and the interpreter give it a fresh state here, as if it ran alone; on a JVM the default locale is set back to the one the first started under. */
++    static void fresh() {
++        if (start == null) {
++            start = java.util.Locale.getDefault();
++        } else {
++            java.util.Locale.setDefault(start);
++        }
++    }
++
++    /** A class's own name: a copy of the previous version's class is that class. */
++    static String named(Class<?> c, boolean previous) {
++        String name = c.getName();
++        return previous && name.indexOf("before.") == 0 ? name.substring(7) : name;
++    }
++
++    /** Whether the class of this name implements other interfaces in one version than in the other, as the generator found them. */
++    static boolean apart(String name) {
++        return false;
++    }
++
++    /** Whether the previous version's class and the new one's have one name and implement the same interfaces, and so do the classes above them, up to Object. */
++    static boolean same(Class<?> a, Class<?> b) {
++        if (a == null || b == null) {
++            return a == b;
++        }
++        String name = named(b, false);
++        return named(a, true).equals(name) && !apart(name) && same(a.getSuperclass(), b.getSuperclass());
++    }
++
++    public static boolean agree(java.lang.String password, java.lang.String salt) {
++        fresh();
++        fresh();
++        java.lang.String a = null; Class<?> ea = null;
++        try { a = before.org.springframework.security.crypto.bcrypt.BCrypt.hashpw(password, salt); } catch (Throwable t) { ea = t.getClass(); }
++        fresh();
++        java.lang.String b = null; Class<?> eb = null;
++        try { b = org.springframework.security.crypto.bcrypt.BCrypt.hashpw(password, salt); } catch (Throwable t) { eb = t.getClass(); }
++        return ea == null ? eb == null && (a == null ? b == null : a.equals(b)) : eb != null && same(ea, eb);
++    }
++}
+--- /dev/null
++++ b/verification/.work-307/mutant-preservation-one-function/mutant-preservation/work/pair-work/harness/PropertyHarness.java
+@@ -0,0 +1,10 @@
++/** Generated by jvmcontract: asserts a property of a method on every input. The class file JBMC checks is generated directly; this is the same statement, for readers. */
++public final class PropertyHarness {
++    public static void check(java.lang.String password, java.lang.String salt) {
++        if (!(salt == null || salt.equals("$2a$06$If6bvum7DFjUnE9p2uDeDu") || salt.equals("$2a$06$If6bvum7DFjUnE9p2uDeDu0YHzrHM6tf.iqN8.yx.jNN1ILEf7h0i") || salt.equals("$2$05$......................") || salt.equals("") || salt.equals("$2a$03$......................") || salt.equals("$2a$10$123456789012345678901"))) { return; } // the inputs the property is about
++        boolean result = false;
++        int e = 0;
++        try { result = RegressionPair.agree(password, salt); } catch (java.lang.NumberFormatException t) { e = 1; } catch (java.lang.ArithmeticException t) { e = 2; } catch (java.lang.NullPointerException t) { e = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { e = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { e = 5; } catch (java.lang.IndexOutOfBoundsException t) { e = 6; } catch (java.lang.NegativeArraySizeException t) { e = 7; } catch (java.lang.ClassCastException t) { e = 8; } catch (java.lang.IllegalStateException t) { e = 9; } catch (java.lang.IllegalArgumentException t) { e = 10; } catch (java.lang.UnsupportedOperationException t) { e = 11; } catch (java.util.NoSuchElementException t) { e = 12; } catch (java.util.ConcurrentModificationException t) { e = 13; } catch (java.lang.RuntimeException t) { e = 14; } catch (java.lang.Error t) { e = 15; }
++        assert e == 0 && (result); // no exception, and the property
++    }
++}

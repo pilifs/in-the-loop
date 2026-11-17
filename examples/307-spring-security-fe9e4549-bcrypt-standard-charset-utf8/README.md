@@ -13,10 +13,11 @@ and how, is in [`sources.lock.json`](sources.lock.json).
 
 **Since 2026-11-17: a proof beside the route.** VF-028's refusal is gone. [`proofs/prove.py`](proofs/prove.py) runs
 `preservation` and `mutant-preservation` on the route's own slices (each JAR checked against the replay that ran it),
-at the claim's bound, with the job's time rather than the route's ten minutes. The checker takes the unchanged
-`hashpw(byte[], String)` as one function of both versions (`lib/src/bmc/ties.rs`), so the proof compares the two
-conversions' bytes and not the cipher. Capped probes give `preservation` verified and `mutant-preservation` refuted at a
-non-ASCII password, reproduced on a JVM. The jobs `20261117-210114-…` decide both; `example.json`'s notes say more.
+at the claim's bound, with the job's time rather than the route's ten minutes. The checker takes bcrypt's unchanged
+callee as one function of both versions (`lib/src/bmc/ties.rs`), so the proof compares the two conversions' bytes and
+not the cipher. The jobs `20261117-210114-…` decided both: `preservation` verified (2m22s) and `mutant-preservation`
+refuted at a non-ASCII password, reproduced on a JVM. `accept.py` does not accept them yet, on its `entry` check
+alone: the outcome names the overloaded `hashpw` with its parameter types. `example.json`'s notes say more.
 
 ## The change
 

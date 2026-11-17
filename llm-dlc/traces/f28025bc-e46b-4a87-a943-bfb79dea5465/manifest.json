@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.021Z",
-  "ended": "2026-11-17T23:32:52.043Z",
-  "duration_seconds": 38161,
+  "ended": "2026-11-17T23:41:38.939Z",
+  "duration_seconds": 38688,
   "stats": {
-    "turns": 56,
-    "api_calls": 966,
-    "tool_calls": 967,
-    "tool_errors": 10,
-    "compactions": 11,
+    "turns": 61,
+    "api_calls": 1001,
+    "tool_calls": 1001,
+    "tool_errors": 11,
+    "compactions": 12,
     "peak_context_tokens": 463604,
     "usage": {
-      "input_tokens": 1944,
-      "output_tokens": 889785,
-      "cache_read_input_tokens": 153272568,
-      "cache_creation_input_tokens": 2438643
+      "input_tokens": 2016,
+      "output_tokens": 903878,
+      "cache_read_input_tokens": 155941551,
+      "cache_creation_input_tokens": 2529338
     }
   },
   "tools": {
-    "Bash": 939,
-    "Edit": 13,
-    "Read": 8,
+    "Bash": 971,
+    "Edit": 14,
+    "Read": 9,
     "Write": 4,
     "ToolSearch": 3
   },
@@ -203,24 +203,38 @@
     {
       "index": 11,
       "started": "2026-11-17T23:15:21.260Z",
-      "ended": "2026-11-17T23:32:52.043Z",
-      "turns": 4,
-      "api_calls": 52,
+      "ended": "2026-11-17T23:33:31.524Z",
+      "turns": 5,
+      "api_calls": 55,
       "usage": {
-        "input_tokens": 106,
-        "output_tokens": 26957,
-        "cache_read_input_tokens": 4799397,
-        "cache_creation_input_tokens": 119275
+        "input_tokens": 114,
+        "output_tokens": 28206,
+        "cache_read_input_tokens": 5202258,
+        "cache_creation_input_tokens": 123330
       },
-      "peak_context_tokens": 132548
+      "peak_context_tokens": 136605
+    },
+    {
+      "index": 12,
+      "started": "2026-11-17T23:34:13.842Z",
+      "ended": "2026-11-17T23:41:38.939Z",
+      "turns": 4,
+      "api_calls": 32,
+      "usage": {
+        "input_tokens": 64,
+        "output_tokens": 12844,
+        "cache_read_input_tokens": 2266122,
+        "cache_creation_input_tokens": 86640
+      },
+      "peak_context_tokens": 98141
     }
   ],
   "log": {
-    "sha256": "312965c823dbfb7c0ae0089f463b893456985a94d0fbdff107853cab5779e904",
-    "bytes": 24875014,
-    "lines": 8352,
-    "gzip_bytes": 4223805,
-    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/312965c823dbfb7c0ae0089f463b893456985a94d0fbdff107853cab5779e904.jsonl.gz"
+    "sha256": "e396977d47f36ff4cc48c88b446011f26862499db2cad66f9e6cfcdbf9264982",
+    "bytes": 26013916,
+    "lines": 8689,
+    "gzip_bytes": 4458913,
+    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/e396977d47f36ff4cc48c88b446011f26862499db2cad66f9e6cfcdbf9264982.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1055,6 +1069,86 @@
       "summary": "Merge the challenge stream's log, stand-in and supertype countermodels; a logged record's getter that can raise an Error, and a class whose header differs, are no longer taken as harmless or as the same code",
       "body": "Merged zmpzxkqn (with mnwtrnrp). I021: the logging model's scan of a record's classes (Engine::confined_record) now refuses an array of a length other than a constant up to 1024, any multianewarray, and a call among the record's own classes that can come back to itself, since the default handler's catch (Exception) lets an OutOfMemoryError or StackOverflowError out of Logger.log. lh.M#huge and #deep, each Verified 'log returned' before, now stop at the Logger.log gap; each rule alone refuses its fixture. I022: shared::reach now collects every application class the code names (method and field owners, classes made, instanceof, checkcast, anewarray, multianewarray, ldc and catch types) with their supertypes, and compares each one's header (superclass, interfaces, interface flag) in both versions in same_everywhere and in the ties' fingerprint. The four shortcut cases are no longer 'identical; nothing to prove', and looped gets no verdict where it was Verified. Each fixture README's checker-side test was added (log_countermodels.rs, supertype_countermodels.rs) and passes. Capped probes at the frozen bounds are unchanged: 287 verifies (53 paths, 52 calls taken, 48 related), 307 preservation verifies and mutant-preservation is refuted, and 289 and 290 verify. test_costs.py run --changed passes; costs.json is re-estimated and tagged, and the lint passes.",
       "log_sha256": "312965c823dbfb7c0ae0089f463b893456985a94d0fbdff107853cab5779e904"
+    },
+    {
+      "change_id": "lwkywnluvrmntsyttsrtnowtytxsluzr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261117-210114-example-307-mutant-preservation-after-ag: passed: 1 passed step(s) in 1m17s, peak 955.8 MiB (estimated 10m00s, 6.0 GiB); 5 output file(s) changed; signals: jvmcontract:fails×2 Applied 5 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "e396977d47f36ff4cc48c88b446011f26862499db2cad66f9e6cfcdbf9264982"
+    },
+    {
+      "change_id": "npqmxyrxryuwrsmmnwpwxrkzxrmoypnz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "D023 answered by the user: keep 290's frozen preservation claim for this run",
+      "body": "The restated claim lone-dispatcher-matchers-preserved.json (VF-033 option B, prepared by the evidence stream) is not rejected. It stays in example 290 unfrozen. Its adoption, and the other options, are taken up after brief 3.5 (claim evolution), which can keep the count-by-type result as history beside the stronger claim's own outcome. Nothing in the domain-advances run acts on it. Recorded with decisions.py answer; nothing to test.",
+      "log_sha256": "e396977d47f36ff4cc48c88b446011f26862499db2cad66f9e6cfcdbf9264982"
+    },
+    {
+      "change_id": "opypxzprprqmzlnuqqsszyroxoutwskv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261117-210114-example-307-preservation-at-the-frozen-b: passed: 1 passed step(s) in 2m22s, peak 2.7 GiB (estimated 10m00s, 6.0 GiB); 5 output file(s) changed; signals: jvmcontract:holds×2 Applied 5 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "e396977d47f36ff4cc48c88b446011f26862499db2cad66f9e6cfcdbf9264982"
+    },
+    {
+      "change_id": "povqtmtxpksxlwqkuzpqzxotzxommysu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Apply the user's answer to D023: 290 keeps its frozen preservation claim",
+      "body": "The conductor's side of D023, answered keep by the user (npqmxyrx): no stream acts on it in this run; the restated claim stays in 290, unfrozen.",
+      "log_sha256": "e396977d47f36ff4cc48c88b446011f26862499db2cad66f9e6cfcdbf9264982"
+    },
+    {
+      "change_id": "mltlxwzuotmvpspxuupnsnznqtmprnkn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-039: 287's claims accept a check-only guard; the user defers a claim on encode to after the run",
+      "body": "The user's answer to the preservation stream's I007 (D032): defer, recorded as a finding. Preservation is told through its inbox to prepare no new claim for 287 and to state the limit with 287's result.",
+      "log_sha256": "e396977d47f36ff4cc48c88b446011f26862499db2cad66f9e6cfcdbf9264982"
+    },
+    {
+      "change_id": "ksouzpqxkwrsulkrsrnnlotstwtyvzpm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261117-213024-examples-289-and-290-preservation-again: passed: 2 passed step(s) in 1m03s, peak 551.0 MiB (estimated 10m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:holds×2 Applied 6 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "e396977d47f36ff4cc48c88b446011f26862499db2cad66f9e6cfcdbf9264982"
+    },
+    {
+      "change_id": "uztvymnlnnoyrqyrxxywovvuuntolryy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261117-222610-example-286-s-fixed-protected-state-task: passed: 2 passed step(s) in 11m13s, peak 2.1 GiB (estimated 40m00s, 6.0 GiB); 6 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1 Applied 6 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "e396977d47f36ff4cc48c88b446011f26862499db2cad66f9e6cfcdbf9264982"
+    },
+    {
+      "change_id": "oyomlpkklzookwqtwylyuymnvzwkyzur",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261117-225439-example-286-s-adversarial-fixture-on-5-3: passed: 1 passed step(s) in 3m53s, peak 1.3 GiB (estimated 10m00s, 4.0 GiB) Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "e396977d47f36ff4cc48c88b446011f26862499db2cad66f9e6cfcdbf9264982"
+    },
+    {
+      "change_id": "vpxltzttrssuqyymtprxvomwtntksnvo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261117-230459-example-287-preservation-at-the-frozen-b: passed: 1 passed step(s) in 1m50s, peak 2.2 GiB (estimated 10m00s, 6.0 GiB); 4 output file(s) changed; signals: jvmcontract:holds×2 Applied 4 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "e396977d47f36ff4cc48c88b446011f26862499db2cad66f9e6cfcdbf9264982"
+    },
+    {
+      "change_id": "qmsonuowwzwvypttoomluonyzrultmrt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the default line's job results: 287's preservation established at bound 80 and accepted; 307's two tasks decided, refused by accept.py's entry check alone",
+      "body": "Merged the default line to vpxltztt: the results of jobs 20261117-210114 (307 preservation verified in 2m22s, mutant-preservation refuted in 1m17s with its witness replayed), 20261117-213024 (289 and 290 hold) and 20261117-230459 (287 preservation verified at the frozen bound 80 in 1m50s at 2.2 GiB, bcrypt's crypt_raw taken as one function of both releases), with D023 and VF-039. Only generated files conflicted; the trace pages were regenerated and the default run passed on the merged tree (54 of 54).\n\n287's preservation task now names job 20261117-230459 beside the route, and python3 examples/tools/accept.py 287 preservation accepts it (13 checks). 307's two tasks name job 20261117-210114 likewise, but accept.py refuses both on its entry check alone: the outcome names the overloaded BCrypt#hashpw with its parameter types, and the check compares the task's target cut at its descriptor. accept.py is the evidence stream's; the brief's Progress asks them to accept a typed target that matches the descriptor. Both examples' notes and pages record the results and their limits (VF-039 for 287; D028/D029 for 307). validate_example.py passes for 287 and 307.",
+      "log_sha256": "e396977d47f36ff4cc48c88b446011f26862499db2cad66f9e6cfcdbf9264982"
     }
   ],
   "logs": {
@@ -1140,6 +1234,12 @@
       "bytes": 8602332,
       "lines": 2867,
       "gzip_bytes": 1450503,
+      "url": null
+    },
+    "e396977d47f36ff4cc48c88b446011f26862499db2cad66f9e6cfcdbf9264982": {
+      "bytes": 26013916,
+      "lines": 8689,
+      "gzip_bytes": 4458913,
       "url": null
     },
     "e41f2c4d702ac713bfe202b895a8b1166472b9b3ac35124558b19988e8a514ab": {

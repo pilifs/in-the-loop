@@ -1,0 +1,90 @@
+{
+ "schema": "beside-route-evidence/v1",
+ "example": "289",
+ "task": "preservation",
+ "claim": {
+  "file": "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/claims/prefix-classification-preserved.json",
+  "sha256": "028ca683ec89bd34000f260c1d872dd028ffc0f262029465a6d9ee3732b859ef"
+ },
+ "bound": {
+  "maxArrayLength": 8,
+  "unwind": 26,
+  "trial": false
+ },
+ "artifacts": [
+  {
+   "revision": "vulnerable-release",
+   "name": "spring-security-web-5.6.3.jar",
+   "sha256": "fa572e891ffae92c4806e29f3789146e4b43085b95834a181a6d98a03622cd36"
+  },
+  {
+   "revision": "vulnerable-release",
+   "name": "spring-web-5.3.19.jar",
+   "sha256": "df65b8ce1066d2f640a547c5adade2625ff2a58371db60d50f89e1168b1fe08b"
+  },
+  {
+   "revision": "vulnerable-release",
+   "name": "spring-core-5.3.19.jar",
+   "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992"
+  },
+  {
+   "revision": "vulnerable-release",
+   "name": "spring-jcl-5.3.19.jar",
+   "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8"
+  },
+  {
+   "revision": "vulnerable-release",
+   "name": "javax.servlet-api-4.0.1.jar",
+   "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
+  },
+  {
+   "revision": "fixed-release",
+   "name": "spring-security-web-5.6.4.jar",
+   "sha256": "68c1909c90e2e79f30ab8e0674fe11a5ef6461428019f51abaac259204867193"
+  },
+  {
+   "revision": "fixed-release",
+   "name": "spring-web-5.3.20.jar",
+   "sha256": "d6db8d7a8239a0403f4fc2066b765f5209e1b14af58b5bb8215482188ef640bc"
+  },
+  {
+   "revision": "fixed-release",
+   "name": "spring-core-5.3.20.jar",
+   "sha256": "42d70d78b8822601a3b61c88dadf4be6a0021dde169a772c3fd4a6b8b2b61c90"
+  },
+  {
+   "revision": "fixed-release",
+   "name": "spring-jcl-5.3.20.jar",
+   "sha256": "fb6c6bf524b19a03103812e0104eaf0bcbc178ae8f425db8b547963b13483e28"
+  },
+  {
+   "revision": "fixed-release",
+   "name": "javax.servlet-api-4.0.1.jar",
+   "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
+  }
+ ],
+ "adapter": {
+  "sources": {
+   "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/replay/carrier/example289/carrier/PathOnlyRequest.java": "4fd25981e050fef0cd5df36c9ebd954e7597a455460edfebb593e3790b762a18",
+   "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/replay/adapter/example289/adapter/RegexMatchAdapter.java": "36395f81038c2764ebd82f8f58ae833c94ef2ce6eda45816c544d2d7a25ad3cf"
+  },
+  "classes": [
+   {
+    "folder": "adapter-vulnerable-release",
+    "sha256": "5203b45eef81e22428bfa57fba78d307b49ec3deb5c9a464135e840664ca04de"
+   },
+   {
+    "folder": "adapter-fixed-release",
+    "sha256": "5203b45eef81e22428bfa57fba78d307b49ec3deb5c9a464135e840664ca04de"
+   }
+  ]
+ },
+ "jvmcontract": {
+  "path": "jvmcontract",
+  "sha256": "732cd499eea6dd41441c8dbafb049fe635f759293c8d76d17505d7ab35d982c2"
+ },
+ "driver": {
+  "path": "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py",
+  "sha256": "913326abb9b1b62b3afdffd51decc90aad4afd19199798167db40348fcb025d8"
+ }
+}

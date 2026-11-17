@@ -494,10 +494,30 @@ relational result needs a new check (the rule's applications recorded in the out
     They are not merged into this line yet.
   - `test_costs.py run --changed` passes, and the tier inventory is estimated, tagged and linted.
   - **Inbox.** I021 and I022 are done above. Nothing came in after I022.
+- 2026-11-17, steps 5 and 6 decided (*working formalization* and *accepted claim* unchanged). Merged the default line
+  (to `vpxltztt`: the results of jobs `20261117-210114-…`, `20261117-213024-…` and `20261117-230459-…`, and D023 and
+  VF-039); only generated files conflicted.
+  - **287 `preservation`: established and accepted.** Job `20261117-230459-…` verified the frozen claim at bound 80 in
+    1m50s at 2.2 GiB (53 paths, `crypt_raw` taken as one function, no loop summarized). `accept.py 287 preservation`
+    accepts it (13 checks), and the task's `besideRoute` names the job. The job ran the checker before I021 and I022;
+    the capped probes on the fixed checker gave the same verdict and counts. VF-039's limit goes with it, in the notes
+    and on the page.
+  - **307's two tasks: decided, not yet accepted.** Job `20261117-210114-…` verified `preservation` (2m22s) and
+    refuted `mutant-preservation` (1m17s, its witness replayed), exceptions compared by class, superclasses and
+    interfaces. Each task's `besideRoute` names its job. `accept.py 307` refuses both on its `entry` check alone. The
+    outcome's target is `BCrypt#hashpw(java.lang.String, java.lang.String)`, since the method is overloaded. The check
+    compares it with the task's target cut at `(`, which is `BCrypt#hashpw`. Every other check passes.
+  - **For the evidence stream (`accept.py` is theirs):** please let `entry` accept an outcome target with parameter
+    types when they are the task descriptor's (`(Ljava/lang/String;Ljava/lang/String;)…` here). Then
+    `accept.py 307 preservation mutant-preservation` should accept both as recorded. The other two points of step 6
+    still stand: the slices are recorded as constructed, and the harness is at `work/pair-work/harness/`.
+  - **Done when.** 287 is decided at bound 80 and accepted. 307's two tasks are decided by the same technique, with
+    exception classes compared exactly, and wait only on that check. The pairing countermodels pass, with their
+    limits stated.
+  - **Inbox.** No item came in after I022.
 - Next:
-  1. Merge the default line (the job results), then accept 307's two tasks through `accept.py`. Then accept 287's
-     from job `20261117-230459-…` when it returns. The evidence stream accepts 289's and 290's.
-  2. Step 7: 288's preservation, profiled first (VF-031).
+  1. Step 7: 288's preservation, profiled first (VF-031).
+  2. When `accept.py` takes a typed target, rerun `accept.py 307` and record the result.
 - Status: working
 
 ## Loop settings

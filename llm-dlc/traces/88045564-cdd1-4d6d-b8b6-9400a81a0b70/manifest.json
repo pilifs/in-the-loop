@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "88045564-cdd1-4d6d-b8b6-9400a81a0b70",
-  "status": "open",
+  "status": "ended",
   "title": "Agent brief preservation work 287 308",
   "first_prompt": "<command-name>/model</command-name>\n            <command-message>model</command-message>\n            <command-args></command-args>",
   "client": {
@@ -12,20 +12,20 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-17T18:37:50.477Z",
-  "ended": "2026-11-17T20:24:34.498Z",
-  "duration_seconds": 6404,
+  "ended": "2026-11-17T21:23:25.500Z",
+  "duration_seconds": 9935,
   "stats": {
-    "turns": 6,
-    "api_calls": 170,
+    "turns": 7,
+    "api_calls": 171,
     "tool_calls": 189,
     "tool_errors": 3,
-    "compactions": 1,
+    "compactions": 2,
     "peak_context_tokens": 466832,
     "usage": {
-      "input_tokens": 344,
-      "output_tokens": 267002,
-      "cache_read_input_tokens": 43602094,
-      "cache_creation_input_tokens": 614517
+      "input_tokens": 348,
+      "output_tokens": 267328,
+      "cache_read_input_tokens": 43806783,
+      "cache_creation_input_tokens": 615072
     }
   },
   "tools": {
@@ -64,27 +64,57 @@
     {
       "index": 1,
       "started": "2026-11-17T19:49:30.503Z",
-      "ended": "2026-11-17T20:24:34.498Z",
+      "ended": "2026-11-17T20:28:12.723Z",
       "turns": 1,
-      "api_calls": 33,
+      "api_calls": 34,
       "usage": {
-        "input_tokens": 66,
-        "output_tokens": 60698,
-        "cache_read_input_tokens": 5207998,
-        "cache_creation_input_tokens": 173731
+        "input_tokens": 70,
+        "output_tokens": 61024,
+        "cache_read_input_tokens": 5412687,
+        "cache_creation_input_tokens": 174286
       },
-      "peak_context_tokens": 203216
+      "peak_context_tokens": 205248
+    },
+    {
+      "index": 2,
+      "started": "2026-11-17T21:23:25.315Z",
+      "ended": "2026-11-17T21:23:25.500Z",
+      "turns": 1,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
     }
   ],
   "log": {
-    "sha256": "a6cec13f811f04dff808c61123c0a2195e8173fd446476e3239f2129ee8fb78c",
-    "bytes": 4739940,
-    "lines": 1500,
-    "gzip_bytes": 838467,
-    "path": "llm-dlc/traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/logs/a6cec13f811f04dff808c61123c0a2195e8173fd446476e3239f2129ee8fb78c.jsonl.gz"
+    "sha256": "bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0",
+    "bytes": 4921456,
+    "lines": 1534,
+    "gzip_bytes": 876540,
+    "path": "llm-dlc/traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/logs/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz"
   },
   "subagents": [],
   "commits": [
+    {
+      "change_id": "nqturzqlsqnprkzpntqpvzqkmxolupqk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 307 ahead of the preservation stream's step 6: where the checker stops, the callee's footprint, the conversions on the pinned JDKs, and countermodels for the model and the rule",
+      "body": "New files only, for the watcher of the domain-advances run to pass on as guidance within step 6; no claim, note, checker source or stream file is changed. examples/307-*/records/step-6-packet.md is the account. Six capped probes of the preservation stream's rmvpqswzxlyv (step-6-probes.json): 307's preservation stops in 1 s at the previous revision's getBytes(\"UTF-8\"), the mutant's at StandardCharsets.US_ASCII, and with the conversions modelled the claim's unwind 513 leaves no loop summarized, so nothing is tied and the check is killed at 4 GB in 39 s; at the default unwinding it ends at the time limit as 287 does.\n\nrecords/callee-footprint/footprint.py reads class files and says what a callee's closure reads, writes and hands on: hashpw(byte[],String) is the same 13 methods and initializer in before, after and the mutant, writes nothing its caller can see and reads five final tables nothing else writes (hashpw-bytes.json); 287's crypt_raw is the same in 6.3.7 and 6.3.8, whose hashpw differs by nine inserted instructions (287-crypt-raw.json). records/conversion/ runs both getBytes overloads, the US-ASCII conversion and written-out encoders on 4.3 thousand million Strings on Temurin 21.0.13 and 25.0.5 with no difference, and records the overloads' bytecode. records/mutant-witness.json says which candidates the real cipher tells apart.\n\nlib/tests/fixtures/conversion-countermodels (twelve pairs, a prototype model as a patch, the test to add) and callee-countermodels (ten pairs for taking an unchanged callee as one function) each have a harness, check.py, and a README with what a JVM and today's checker say. Verified by running them: the prototype decides its six pairs, a prototype made wrong on purpose is caught on six, today's checker proves none of the seven callee countermodels and proves 307's shape in the miniature. validate_example.py 307 and the test-cost lint pass. Also found: the example route passes no --assume for an equivalence task, a witness a second run undoes is reported as not reproduced, and a parameter named b does not compile in the generated pair.",
+      "log_sha256": "d18158c1df0d1632c59c054778762ea0c9aae04ceeebadebf8d5ca49c6ed8012"
+    },
+    {
+      "change_id": "qtxkqsmtopqzrznlvpusvouzsovtrprx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 307: a prototype of the relation at the unchanged callee closes both tasks at crypt_raw on JDK 25, and the callee's code has no fingerprint there at hashpw(byte[], String)",
+      "body": "A second delivery from the session the user brought in ahead of the preservation stream's step 6, for the stream to compare its own call-level rule against. New files, and edits to this session's own fixture; no checker source and no test changes.\n\nexamples/307-*/records/step-6-call-level.md is the note and step-6-call-level-probes.json the runs. lib/tests/fixtures/callee-countermodels/prototype-one-function.patch (against kskmpmny, git 10b5d9c0, after prototype-model.patch) names a callee's outcome by the key of the state at its entry, as a loop's state past the bound is named, and checks no side condition. With it, at the claim's frozen parameters and assumption, in capped probes (4 GB, 300 s): with the relation at crypt_raw on JDK 25, preservation is verified in 79 s (878 MB) and the mutant is a violation in 58 s, replayed on a JVM; with it at hashpw(byte[], String), preservation is verified in 53 s on JDK 21 and the run is killed at 4 GB on JDK 25, and the mutant has no verdict under the claim's seven salts (the first candidate has salt = null) and is a violation under one valid salt. Without a relation the runs die at 4 GB.\n\nThe JDK 25 difference: hashpw(byte[], String) calls Integer.parseInt, whose bytecode the checker follows, and JDK 25's parseInt(String, int) calls String.format(String, Object[]), which shared::reach takes as a way back into the application since kskmpmny. The fixture gains the row parsed (Parsing.java, a callee that calls Integer.parseInt): verified on JDK 21 and no verdict on JDK 25 on kskmpmny, in under a second.\n\nThe prototype against the fixture's rows: by formula it falsely proves wiped and counted (what the callee writes is not in its outcome); with a relation by content added it falsely proves table, seeded, helped and aliased too. No other row turns. So the rows separate a rule with its side conditions from one without.",
+      "log_sha256": "a6cec13f811f04dff808c61123c0a2195e8173fd446476e3239f2129ee8fb78c"
+    },
     {
       "change_id": "msusklystoqwukumsymuvwvvootwloqz",
       "commit_id": null,
@@ -108,14 +138,6 @@
       "summary": "Job 20261117-185623's 290 failure goes to the preservation stream: the same relative -Xlog path as state's 286 job",
       "body": "289's preservation passed on one checker with the pair's and evidence's fixes; 290's step stopped before the check, in the initializer observer that runs its JVM in another folder than the relative --work assumes. Told to preservation, with the note that state is fixing the same code.",
       "log_sha256": "a4fd0bcefd8b7524858a7cb0ffd0463de37ec524d0f7a0d5fb3401d99df5f41b"
-    },
-    {
-      "change_id": "nqturzqlsqnprkzpntqpvzqkmxolupqk",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Example 307 ahead of the preservation stream's step 6: where the checker stops, the callee's footprint, the conversions on the pinned JDKs, and countermodels for the model and the rule",
-      "body": "New files only, for the watcher of the domain-advances run to pass on as guidance within step 6; no claim, note, checker source or stream file is changed. examples/307-*/records/step-6-packet.md is the account. Six capped probes of the preservation stream's rmvpqswzxlyv (step-6-probes.json): 307's preservation stops in 1 s at the previous revision's getBytes(\"UTF-8\"), the mutant's at StandardCharsets.US_ASCII, and with the conversions modelled the claim's unwind 513 leaves no loop summarized, so nothing is tied and the check is killed at 4 GB in 39 s; at the default unwinding it ends at the time limit as 287 does.\n\nrecords/callee-footprint/footprint.py reads class files and says what a callee's closure reads, writes and hands on: hashpw(byte[],String) is the same 13 methods and initializer in before, after and the mutant, writes nothing its caller can see and reads five final tables nothing else writes (hashpw-bytes.json); 287's crypt_raw is the same in 6.3.7 and 6.3.8, whose hashpw differs by nine inserted instructions (287-crypt-raw.json). records/conversion/ runs both getBytes overloads, the US-ASCII conversion and written-out encoders on 4.3 thousand million Strings on Temurin 21.0.13 and 25.0.5 with no difference, and records the overloads' bytecode. records/mutant-witness.json says which candidates the real cipher tells apart.\n\nlib/tests/fixtures/conversion-countermodels (twelve pairs, a prototype model as a patch, the test to add) and callee-countermodels (ten pairs for taking an unchanged callee as one function) each have a harness, check.py, and a README with what a JVM and today's checker say. Verified by running them: the prototype decides its six pairs, a prototype made wrong on purpose is caught on six, today's checker proves none of the seven callee countermodels and proves 307's shape in the miniature. validate_example.py 307 and the test-cost lint pass. Also found: the example route passes no --assume for an equivalence task, a witness a second run undoes is reported as not reproduced, and a parameter named b does not compile in the generated pair.",
-      "log_sha256": "d18158c1df0d1632c59c054778762ea0c9aae04ceeebadebf8d5ca49c6ed8012"
     },
     {
       "change_id": "vtpwwlrpxrtslyruqozmmkzpnprxvvnm",
@@ -190,14 +212,6 @@
       "log_sha256": "920e81a3bf2013d9cc21a9d1d51c1964f056ce1b8df246363de1335201238fd2"
     },
     {
-      "change_id": "qtxkqsmtopqzrznlvpusvouzsovtrprx",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Example 307: a prototype of the relation at the unchanged callee closes both tasks at crypt_raw on JDK 25, and the callee's code has no fingerprint there at hashpw(byte[], String)",
-      "body": "A second delivery from the session the user brought in ahead of the preservation stream's step 6, for the stream to compare its own call-level rule against. New files, and edits to this session's own fixture; no checker source and no test changes.\n\nexamples/307-*/records/step-6-call-level.md is the note and step-6-call-level-probes.json the runs. lib/tests/fixtures/callee-countermodels/prototype-one-function.patch (against kskmpmny, git 10b5d9c0, after prototype-model.patch) names a callee's outcome by the key of the state at its entry, as a loop's state past the bound is named, and checks no side condition. With it, at the claim's frozen parameters and assumption, in capped probes (4 GB, 300 s): with the relation at crypt_raw on JDK 25, preservation is verified in 79 s (878 MB) and the mutant is a violation in 58 s, replayed on a JVM; with it at hashpw(byte[], String), preservation is verified in 53 s on JDK 21 and the run is killed at 4 GB on JDK 25, and the mutant has no verdict under the claim's seven salts (the first candidate has salt = null) and is a violation under one valid salt. Without a relation the runs die at 4 GB.\n\nThe JDK 25 difference: hashpw(byte[], String) calls Integer.parseInt, whose bytecode the checker follows, and JDK 25's parseInt(String, int) calls String.format(String, Object[]), which shared::reach takes as a way back into the application since kskmpmny. The fixture gains the row parsed (Parsing.java, a callee that calls Integer.parseInt): verified on JDK 21 and no verdict on JDK 25 on kskmpmny, in under a second.\n\nThe prototype against the fixture's rows: by formula it falsely proves wiped and counted (what the callee writes is not in its outcome); with a relation by content added it falsely proves table, seeded, helped and aliased too. No other row turns. So the rows separate a rule with its side conditions from one without.",
-      "log_sha256": "a6cec13f811f04dff808c61123c0a2195e8173fd446476e3239f2129ee8fb78c"
-    },
-    {
       "change_id": "wtlwyxyqyxkonukwkvnkltmlumwzlsoz",
       "commit_id": null,
       "immutable": false,
@@ -212,6 +226,54 @@
       "summary": "The 307 specialist's call-level prototype goes to the preservation stream as guidance and to the challenge stream as countermodels",
       "body": "Merged as wtlwyxyq: a prototype relation at crypt_raw closes both of 307's tasks at the frozen parameters on JDK 25. Preservation's item I018 points at its record and the fixtures to test its own rule against; challenge's item I004 points at the same fixture rows as a floor for its attack on preservation's rule.",
       "log_sha256": "a6cec13f811f04dff808c61123c0a2195e8173fd446476e3239f2129ee8fb78c"
+    },
+    {
+      "change_id": "lwkywnluvrmntsyttsrtnowtytxsluzr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261117-210114-example-307-mutant-preservation-after-ag: passed: 1 passed step(s) in 1m17s, peak 955.8 MiB (estimated 10m00s, 6.0 GiB); 5 output file(s) changed; signals: jvmcontract:fails×2 Applied 5 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0"
+    },
+    {
+      "change_id": "npqmxyrxryuwrsmmnwpwxrkzxrmoypnz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "D023 answered by the user: keep 290's frozen preservation claim for this run",
+      "body": "The restated claim lone-dispatcher-matchers-preserved.json (VF-033 option B, prepared by the evidence stream) is not rejected. It stays in example 290 unfrozen. Its adoption, and the other options, are taken up after brief 3.5 (claim evolution), which can keep the count-by-type result as history beside the stronger claim's own outcome. Nothing in the domain-advances run acts on it. Recorded with decisions.py answer; nothing to test.",
+      "log_sha256": "bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0"
+    },
+    {
+      "change_id": "opypxzprprqmzlnuqqsszyroxoutwskv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261117-210114-example-307-preservation-at-the-frozen-b: passed: 1 passed step(s) in 2m22s, peak 2.7 GiB (estimated 10m00s, 6.0 GiB); 5 output file(s) changed; signals: jvmcontract:holds×2 Applied 5 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0"
+    },
+    {
+      "change_id": "povqtmtxpksxlwqkuzpqzxotzxommysu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Apply the user's answer to D023: 290 keeps its frozen preservation claim",
+      "body": "The conductor's side of D023, answered keep by the user (npqmxyrx): no stream acts on it in this run; the restated claim stays in 290, unfrozen.",
+      "log_sha256": "bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0"
+    },
+    {
+      "change_id": "mltlxwzuotmvpspxuupnsnznqtmprnkn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-039: 287's claims accept a check-only guard; the user defers a claim on encode to after the run",
+      "body": "The user's answer to the preservation stream's I007 (D032): defer, recorded as a finding. Preservation is told through its inbox to prepare no new claim for 287 and to state the limit with 287's result.",
+      "log_sha256": "bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0"
+    },
+    {
+      "change_id": "uztvymnlnnoyrqyrxxywovvuuntolryy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261117-222610-example-286-s-fixed-protected-state-task: passed: 2 passed step(s) in 11m13s, peak 2.1 GiB (estimated 40m00s, 6.0 GiB); 6 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1 Applied 6 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0"
     }
   ],
   "logs": {
@@ -267,6 +329,12 @@
       "bytes": 3304792,
       "lines": 1070,
       "gzip_bytes": 559138,
+      "url": null
+    },
+    "bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0": {
+      "bytes": 4921456,
+      "lines": 1534,
+      "gzip_bytes": 876540,
       "url": null
     },
     "ca8d3aefcb6a315c5ae5cf9ec24b81acdae5b43a9e9a49d36a043d5e659292e1": {
