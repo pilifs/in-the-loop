@@ -1,0 +1,242 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261117-013604-the-seven-tests-moved-to-the-proof-tier",
+  "title": "The seven tests moved to the proof tier on 2026-11-17, run as proof tier",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 7m29s, peak 3.5 GiB (estimated 20m00s, 4.0 GiB); signals: cargo:tests×4",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261117-013604-the-seven-tests-moved-to-the-proof-tier.json",
+    "sha256": "50cc0dcb91867811bf7b8cba3e8e63a85c189c222f5f219dcd585543d2f2c4bb",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261117-013604-the-seven-tests-moved-to-the-proof-tier",
+      "title": "The seven tests moved to the proof tier on 2026-11-17, run as proof tier",
+      "description": "Seven Rust tests left the default run for the proof tier, by the user's decision on 2026-11-17 to retier what is over the tool tier's limits or runs JBMC or TLC: observations.rs's Box Office examples comparison, application_core_joint.rs's J1 quote family, application_core.rs's E1 and E2, and integration.rs's own-checker-against-JBMC agreement and its two TLC tests. Each passed in the default run earlier the same day; this runs them as the proof tier does (release, --ignored, by exact name), to show they pass there and what they take.",
+      "kind": "library",
+      "capabilities": [
+        "tests:proof"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/costs.json"
+        ]
+      },
+      "expected": "exits 0: seven tests pass, none filtered away",
+      "submitted": {
+        "at": "2026-11-17T01:36:04+00:00",
+        "session": "b23a1dcc-0128-4ba1-b4aa-85526c834e11"
+      },
+      "requires": [
+        "cargo",
+        "javac",
+        "java",
+        "jbmc",
+        "tlc",
+        "gradle"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "4G",
+        "duration": "20m",
+        "timeout": "2h",
+        "notes": "alone in the test-fast profile the seven took 26, 77, 56, 32, 10, 1 and 4 s; most of the job is the release build of four test binaries"
+      },
+      "steps": [
+        {
+          "name": "the seven, by name",
+          "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 JVMCONTRACT_TEST_TIER=proof TEST_COST=proof cargo test --manifest-path lib/Cargo.toml --release --no-fail-fast --test observations --test application_core_joint --test application_core --test integration -- --ignored --test-threads 4 --exact box_office_examples_compare_as_their_boundary_diffs_say j1_the_quote_family_composes_the_four_streams e1_a_consumed_return_value_and_a_declared_failure e2_a_nullable_returned_dto the_tools_own_checker_agrees_with_jbmc_on_integer_proofs tlc_checks_the_box_office_model tlc_checks_temporal_properties_and_names_the_violated_one",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "e6fe4da03a48b93327c746fdc19f8ca5e5af1009",
+  "startedAt": "2026-11-17T01:38:50+00:00",
+  "finishedAt": "2026-11-17T01:46:21+00:00",
+  "wallSeconds": 451.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 295132,
+    "workers": 14,
+    "cpus": 28.0,
+    "memoryBudgetBytes": 98784247808,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1200.0,
+    "notes": "alone in the test-fast profile the seven took 26, 77, 56, 32, 10, 1 and 4 s; most of the job is the release build of four test binaries"
+  },
+  "usage": {
+    "peakMemoryBytes": 3792584704,
+    "wallSeconds": 449.8,
+    "cpuSeconds": 872.0,
+    "memoryOfEstimate": 0.88,
+    "durationOfEstimate": 0.37
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "the seven, by name",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 JVMCONTRACT_TEST_TIER=proof TEST_COST=proof cargo test --manifest-path lib/Cargo.toml --release --no-fail-fast --test observations --test application_core_joint --test application_core --test integration -- --ignored --test-threads 4 --exact box_office_examples_compare_as_their_boundary_diffs_say j1_the_quote_family_composes_the_four_streams e1_a_consumed_return_value_and_a_declared_failure e2_a_nullable_returned_dto the_tools_own_checker_agrees_with_jbmc_on_integer_proofs tlc_checks_the_box_office_model tlc_checks_temporal_properties_and_names_the_violated_one",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 449.767,
+      "cpuSeconds": 872.048,
+      "cpuThrottledSeconds": 101.526,
+      "peakMemoryBytes": 3792584704,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-the-seven-by-name.log",
+        "lines": 86,
+        "bytes": 3192,
+        "sha256": "bbe8d3fa459b60835357885f77a62cdca2a0f6bbf5711ece7765ee0efc08b26b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 4
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 61,
+          "text": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 69.17s",
+          "groups": [
+            "ok",
+            "2",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 69,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 84.56s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 78,
+          "text": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 62 filtered out; finished in 10.70s",
+          "groups": [
+            "ok",
+            "3",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 85,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 40.18s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling tempfile v3.27.0",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261117-013604-the-seven-tests-moved-to-the-proof-tier/lib)",
+        "    Finished `release` profile [optimized] target(s) in 4m 04s",
+        "     Running tests/application_core.rs (lib/target/release/deps/application_core-ac825afab43153b6)",
+        "",
+        "running 2 tests",
+        "test e2_a_nullable_returned_dto ... ok",
+        "test e1_a_consumed_return_value_and_a_declared_failure has been running for over 60 seconds",
+        "test e1_a_consumed_return_value_and_a_declared_failure ... ok",
+        "",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 69.17s",
+        "",
+        "     Running tests/application_core_joint.rs (lib/target/release/deps/application_core_joint-907f1f6d45e95eba)",
+        "",
+        "running 1 test",
+        "test j1_the_quote_family_composes_the_four_streams has been running for over 60 seconds",
+        "test j1_the_quote_family_composes_the_four_streams ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 84.56s",
+        "",
+        "     Running tests/integration.rs (lib/target/release/deps/integration-b75448fe8cc0be98)",
+        "",
+        "running 3 tests",
+        "test tlc_checks_the_box_office_model ... ok",
+        "test tlc_checks_temporal_properties_and_names_the_violated_one ... ok",
+        "test the_tools_own_checker_agrees_with_jbmc_on_integer_proofs ... ok",
+        "",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 62 filtered out; finished in 10.70s",
+        "",
+        "     Running tests/observations.rs (lib/target/release/deps/observations-5f5afb643124b5c1)",
+        "",
+        "running 1 test",
+        "test box_office_examples_compare_as_their_boundary_diffs_say ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 40.18s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-17T01:46:24+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}

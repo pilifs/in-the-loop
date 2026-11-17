@@ -18,8 +18,8 @@ loop or not.
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | moonshot | 6 | 7 | 56 | 53 | 96 | 64 (57 passed, 7 failed) | 2.3 d | 7,291,647 | $855.37 | $16.14 |
 | brief | 28 | 54 | 303 | 300 | 372 | 205 (160 passed, 45 failed) | 3.3 d | 13,238,252 | $1,113.55 | $3.71 |
-| verification | 1 | 59 | 0 | 0 | 221 | 0 | 17 h 34 min | 257,400 | $15.64 | n/a |
-| **all** | 35 | 120 | 359 | 353 | 689 | 269 (217 passed, 52 failed) | 6.3 d | 20,787,299 | $1,984.57 | $5.62 |
+| verification | 1 | 60 | 0 | 0 | 222 | 0 | 17 h 51 min | 259,213 | $15.82 | n/a |
+| **all** | 35 | 121 | 359 | 353 | 690 | 269 (217 passed, 52 failed) | 6.4 d | 20,789,112 | $1,984.75 | $5.62 |
 
 The moonshot row includes `examples-by-hand` (3 cycles, $55.22), which a person ran by hand before the script existed. See the note under [Moonshots](#moonshots).
 
@@ -175,7 +175,7 @@ streams for a brief that ran them. The *with its streams* row adds the streams t
 
 ## Verification loop
 
-59 runs from 2026-11-03 to 11-17, on `claude-sonnet-5-5`: 17 h 34 min active, 221 commits, 257,400 tokens written, $15.64 ($0.27 a run). Of the 322 verification jobs on record, 269 are tied to the loop cycle that submitted them.
+60 runs from 2026-11-03 to 11-17, on `claude-sonnet-5-5`: 17 h 51 min active, 222 commits, 259,213 tokens written, $15.82 ($0.26 a run). Of the 322 verification jobs on record, 269 are tied to the loop cycle that submitted them.
 
 ## Runs
 
