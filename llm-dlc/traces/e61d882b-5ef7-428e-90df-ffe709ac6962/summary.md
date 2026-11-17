@@ -497,6 +497,12 @@ change `lwkywnluvrmn` · [log `fea6be660e69`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 1 of the 1 job(s). 20261117-210114-example-307-mutant-preservation-after-ag: passed: 1 passed step(s) in 1m17s, peak 955.8 MiB (estimated 10m00s, 6.0 GiB); 5 output file(s) changed; signals: jvmcontract:fails×2 Applied 5 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
 
+### D023 answered by the user: keep 290's frozen preservation claim for this run
+
+change `npqmxyrxryuw` · [log `fea6be660e69`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/fea6be660e698b73a7fbbbfd5aeced83bf23f8ee6790f3bc10e4d61a181312c4.jsonl.gz)
+
+The restated claim lone-dispatcher-matchers-preserved.json (VF-033 option B, prepared by the evidence stream) is not rejected. It stays in example 290 unfrozen. Its adoption, and the other options, are taken up after brief 3.5 (claim evolution), which can keep the count-by-type result as history beside the stronger claim's own outcome. Nothing in the domain-advances run acts on it. Recorded with decisions.py answer; nothing to test.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/fea6be660e698b73a7fbbbfd5aeced83bf23f8ee6790f3bc10e4d61a181312c4.jsonl.gz) has every step in between: reasoning, tool calls and their results.
