@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "b74acbd8-95de-40d7-8793-79948e8c27ae",
-  "status": "ended",
+  "status": "open",
   "title": "Window 11 verification loop",
   "first_prompt": "<command-name>/model</command-name>\n            <command-message>model</command-message>\n            <command-args></command-args>",
   "client": {
@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T02:13:32.150Z",
-  "ended": "2026-11-17T02:53:42.154Z",
-  "duration_seconds": 2410,
+  "ended": "2026-11-17T12:29:42.932Z",
+  "duration_seconds": 36971,
   "stats": {
-    "turns": 10,
-    "api_calls": 83,
-    "tool_calls": 80,
+    "turns": 11,
+    "api_calls": 87,
+    "tool_calls": 83,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 188578,
+    "peak_context_tokens": 194540,
     "usage": {
-      "input_tokens": 178,
-      "output_tokens": 54381,
-      "cache_read_input_tokens": 9814709,
-      "cache_creation_input_tokens": 157097
+      "input_tokens": 186,
+      "output_tokens": 56948,
+      "cache_read_input_tokens": 10416121,
+      "cache_creation_input_tokens": 325707
     }
   },
   "tools": {
-    "Bash": 73,
+    "Bash": 76,
     "Edit": 4,
     "Write": 2,
     "ToolSearch": 1
@@ -43,24 +43,24 @@
     {
       "index": 0,
       "started": "2026-11-17T02:13:32.150Z",
-      "ended": "2026-11-17T02:53:42.154Z",
-      "turns": 10,
-      "api_calls": 83,
+      "ended": "2026-11-17T12:29:42.932Z",
+      "turns": 11,
+      "api_calls": 87,
       "usage": {
-        "input_tokens": 178,
-        "output_tokens": 54381,
-        "cache_read_input_tokens": 9814709,
-        "cache_creation_input_tokens": 157097
+        "input_tokens": 186,
+        "output_tokens": 56948,
+        "cache_read_input_tokens": 10416121,
+        "cache_creation_input_tokens": 325707
       },
-      "peak_context_tokens": 188578
+      "peak_context_tokens": 194540
     }
   ],
   "log": {
-    "sha256": "8d65665e5879a89b319b3b48c5a2e80b08caf9dcc3b3194e59065e9cd326490e",
-    "bytes": 1926712,
-    "lines": 639,
-    "gzip_bytes": 355045,
-    "path": "llm-dlc/traces/b74acbd8-95de-40d7-8793-79948e8c27ae/logs/8d65665e5879a89b319b3b48c5a2e80b08caf9dcc3b3194e59065e9cd326490e.jsonl.gz"
+    "sha256": "d33d0629a60239b76081a278dfca5f162a1394d586afca8c7cfc9e6c205ebaf2",
+    "bytes": 1980167,
+    "lines": 672,
+    "gzip_bytes": 363039,
+    "path": "llm-dlc/traces/b74acbd8-95de-40d7-8793-79948e8c27ae/logs/d33d0629a60239b76081a278dfca5f162a1394d586afca8c7cfc9e6c205ebaf2.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -127,6 +127,22 @@
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "8d65665e5879a89b319b3b48c5a2e80b08caf9dcc3b3194e59065e9cd326490e"
+    },
+    {
+      "change_id": "tzropvstylovslmoqprywvqvwywzqsyt",
+      "commit_id": "e40b6a02d95f17d089c4827223c74b8bdedc2a49",
+      "immutable": false,
+      "summary": "Record VF-036: equivalence checks and the Terminal-Value tests leave temp folders that exhausted /tmp's inodes",
+      "body": "A command failed with ENOSPC on /tmp while / had 160 GB free: /tmp is a tmpfs, and 1,046,553 of its 1,048,576 inodes were used, about 640,000 by jvmcontract-equivalence work folders the verifier makes for every check run without --work and never removes, and about 321,000 by the Terminal-Value software-factory tests' fixture folders. The user raised the limit to 8,388,608 inodes and cleaned /tmp by hand; the entry is a minor one, to take up if it recurs, with what a fix would be and the check that closes it.",
+      "log_sha256": "d33d0629a60239b76081a278dfca5f162a1394d586afca8c7cfc9e6c205ebaf2"
+    },
+    {
+      "change_id": "qowquqnszyoqvkwnluvnksuuxkstttml",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
+      "log_sha256": "d33d0629a60239b76081a278dfca5f162a1394d586afca8c7cfc9e6c205ebaf2"
     }
   ],
   "logs": {
@@ -153,6 +169,12 @@
       "lines": 639,
       "gzip_bytes": 355045,
       "url": "https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/8d65665e5879a89b319b3b48c5a2e80b08caf9dcc3b3194e59065e9cd326490e.jsonl.gz"
+    },
+    "d33d0629a60239b76081a278dfca5f162a1394d586afca8c7cfc9e6c205ebaf2": {
+      "bytes": 1980167,
+      "lines": 672,
+      "gzip_bytes": 363039,
+      "url": "https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/d33d0629a60239b76081a278dfca5f162a1394d586afca8c7cfc9e6c205ebaf2.jsonl.gz"
     },
     "feb1181ae1ed5ed3aa4ec53f4fd0ed0d42ba14aebb4e9f5636905e9649fdf40b": {
       "bytes": 703050,

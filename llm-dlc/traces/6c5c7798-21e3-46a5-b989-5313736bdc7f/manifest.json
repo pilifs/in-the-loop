@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-17T12:24:18.122Z",
-  "duration_seconds": 154611,
+  "ended": "2026-11-17T12:27:37.551Z",
+  "duration_seconds": 154811,
   "stats": {
-    "turns": 146,
-    "api_calls": 1052,
-    "tool_calls": 966,
+    "turns": 147,
+    "api_calls": 1055,
+    "tool_calls": 968,
     "tool_errors": 18,
     "compactions": 5,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 2396,
-      "output_tokens": 767301,
-      "cache_read_input_tokens": 250231209,
-      "cache_creation_input_tokens": 1797990
+      "input_tokens": 2404,
+      "output_tokens": 768336,
+      "cache_read_input_tokens": 251031704,
+      "cache_creation_input_tokens": 1800163
     }
   },
   "tools": {
-    "Bash": 920,
+    "Bash": 922,
     "ToolSearch": 9,
     "Write": 8,
     "SendMessage": 7,
@@ -128,24 +128,24 @@
     {
       "index": 5,
       "started": "2026-11-17T04:59:29.263Z",
-      "ended": "2026-11-17T12:24:18.122Z",
-      "turns": 21,
-      "api_calls": 129,
+      "ended": "2026-11-17T12:27:37.551Z",
+      "turns": 22,
+      "api_calls": 132,
       "usage": {
-        "input_tokens": 292,
-        "output_tokens": 82111,
-        "cache_read_input_tokens": 24764884,
-        "cache_creation_input_tokens": 231245
+        "input_tokens": 300,
+        "output_tokens": 83146,
+        "cache_read_input_tokens": 25565379,
+        "cache_creation_input_tokens": 233418
       },
-      "peak_context_tokens": 265540
+      "peak_context_tokens": 268087
     }
   ],
   "log": {
-    "sha256": "87dcf6d6fdbf45b7fffeea8f336b0940f97361b67c1eadf3270dd4c98b2ce17d",
-    "bytes": 20401211,
-    "lines": 8633,
-    "gzip_bytes": 3467948,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/87dcf6d6fdbf45b7fffeea8f336b0940f97361b67c1eadf3270dd4c98b2ce17d.jsonl.gz"
+    "sha256": "495548afdb7ec73bd48e8b52b608490cfd1ae944a2bfce7bb3002260e45f97da",
+    "bytes": 20467586,
+    "lines": 8664,
+    "gzip_bytes": 3482310,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/495548afdb7ec73bd48e8b52b608490cfd1ae944a2bfce7bb3002260e45f97da.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1271,11 +1271,19 @@
     },
     {
       "change_id": "tzropvstylovslmoqprywvqvwywzqsyt",
-      "commit_id": null,
+      "commit_id": "af570e1471d2ad354eefb9f66c25648afa0d5f8e",
       "immutable": false,
       "summary": "Record VF-036: equivalence checks and the Terminal-Value tests leave temp folders that exhausted /tmp's inodes",
       "body": "A command failed with ENOSPC on /tmp while / had 160 GB free: /tmp is a tmpfs, and 1,046,553 of its 1,048,576 inodes were used, about 640,000 by jvmcontract-equivalence work folders the verifier makes for every check run without --work and never removes, and about 321,000 by the Terminal-Value software-factory tests' fixture folders. The user raised the limit to 8,388,608 inodes and cleaned /tmp by hand; the entry is a minor one, to take up if it recurs, with what a fix would be and the check that closes it.",
       "log_sha256": "87dcf6d6fdbf45b7fffeea8f336b0940f97361b67c1eadf3270dd4c98b2ce17d"
+    },
+    {
+      "change_id": "qowquqnszyoqvkwnluvnksuuxkstttml",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
+      "log_sha256": "495548afdb7ec73bd48e8b52b608490cfd1ae944a2bfce7bb3002260e45f97da"
     }
   ],
   "logs": {
@@ -1381,6 +1389,12 @@
       "gzip_bytes": 2241935,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/45f1d9267c66e8317c6ef296de50e809df62f250ad48754840441996f650c928.jsonl.gz"
     },
+    "495548afdb7ec73bd48e8b52b608490cfd1ae944a2bfce7bb3002260e45f97da": {
+      "bytes": 20467586,
+      "lines": 8664,
+      "gzip_bytes": 3482310,
+      "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/495548afdb7ec73bd48e8b52b608490cfd1ae944a2bfce7bb3002260e45f97da.jsonl.gz"
+    },
     "4cea52ec32b474e38d481508fb9fd1cab080db066f03c25be70249bb4da9e228": {
       "bytes": 15140196,
       "lines": 6570,
@@ -1463,7 +1477,7 @@
       "bytes": 20401211,
       "lines": 8633,
       "gzip_bytes": 3467948,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/87dcf6d6fdbf45b7fffeea8f336b0940f97361b67c1eadf3270dd4c98b2ce17d.jsonl.gz"
     },
     "8b0373ab0bf7c4ebb56ee8f720527cff0a6eb17e4584f158fe4919ab48c88d24": {
       "bytes": 1322986,
