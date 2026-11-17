@@ -1,0 +1,273 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261117-122546-examples-286-and-288-the-simplematch-lem",
+  "title": "Examples 286 and 288: the simpleMatch lemma is still proved, and fixed-security with it, after the checker's lemma checks were tightened",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 35m42s, peak 1.4 GiB (estimated 50m00s, 4.0 GiB); 2 output file(s) changed; signals: jvmcontract:holds×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261117-122546-examples-286-and-288-the-simplematch-lem.json",
+    "sha256": "d0373a6853b4b63e8bce6df066a68b6e7d8055457f1da6eeceb2574fa9f89678",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261117-122546-examples-286-and-288-the-simplematch-lem",
+      "title": "Examples 286 and 288: the simpleMatch lemma is still proved, and fixed-security with it, after the checker's lemma checks were tightened",
+      "description": "On 2026-11-17 the checker's rule for a lemma (prove --lemmas) was tightened: a lemma's method, and the lemma's own assumption and assertion, may read no static field that is not final, no non-final field or array cell of an object that was there before the call, and not the default locale; and a method proved by induction is held to the write checks. Before, a lemma about a getter proved in the fresh state stood in for a call made after a write (a false proof, reproduced in lib/tests/claims.rs). The only lemmas the examples use are about PatternMatchUtils.simpleMatch(String, String): examples 286 (proofs/simple-match.contract, Spring 5.3.19) and 288 (6.1.14). Its bytecode reads no field and no array, so the results of 2026-11-15 and 2026-11-16 did not rest on the hole; this job confirms that the tightened checks still prove the lemma (by induction on the pattern's length) and each example's fixed-security claim at its frozen bound, on the same artifacts. The outcomes go to work folders of their own (.work-286/tightened, .work-288/tightened) so the accepted results' files stay as their jobs wrote them. A refusal of the lemma here (reads the static field, reads an array, reads the default locale) would name what the assertion's stream and regex models read, and is then a finding for the engine's owner, not a reason to loosen the check.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "286",
+          "288"
+        ],
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/src/summary.rs",
+          "lib/tests/claims.rs"
+        ]
+      },
+      "expected": "exits 0: each prove.py prints the lemma's own ✓ line and verdict: verified (expected verified)",
+      "submitted": {
+        "at": "2026-11-17T12:25:46+00:00",
+        "session": "3e8cabab-4a28-4a79-8207-69568d9e8162"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "patch",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "50m",
+        "timeout": "2h30m",
+        "notes": "the earlier jobs' frozen steps: 286 about 15 min of a 23 min job with a trial step, 288 22 min; peak 1.4 GiB each. Plus the release build of lib/. Asked 4G, the local runner's limit per job"
+      },
+      "steps": [
+        {
+          "name": "286 fixed-security at the frozen bound, with the lemma",
+          "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py fixed-security --timeout 3300 --work verification/.work-286/tightened",
+          "cwd": "."
+        },
+        {
+          "name": "288 fixed-security at the frozen bound, with the lemma",
+          "run": "python3 examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py fixed-security --timeout 3300 --work verification/.work-288/tightened",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/.work-286/tightened/fixed-security/outcome.json",
+        "verification/.work-288/tightened/fixed-security/outcome.json"
+      ]
+    }
+  },
+  "sourceCommit": "150c4a2557ebd284bbb73f1084e5ac7d6e1d7523",
+  "startedAt": "2026-11-17T12:55:40+00:00",
+  "finishedAt": "2026-11-17T13:33:57+00:00",
+  "wallSeconds": 2297.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1451051,
+    "workers": 10,
+    "cpus": 20.0,
+    "memoryBudgetBytes": 47244640256,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 9000.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 3000.0,
+    "notes": "the earlier jobs' frozen steps: 286 about 15 min of a 23 min job with a trial step, 288 22 min; peak 1.4 GiB each. Plus the release build of lib/. Asked 4G, the local runner's limit per job"
+  },
+  "usage": {
+    "peakMemoryBytes": 1500282880,
+    "wallSeconds": 2142.1,
+    "cpuSeconds": 2144.2,
+    "memoryOfEstimate": 0.35,
+    "durationOfEstimate": 0.71
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "286 fixed-security at the frozen bound, with the lemma",
+      "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py fixed-security --timeout 3300 --work verification/.work-286/tightened",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9000.0,
+      "cancelled": false,
+      "wallSeconds": 994.343,
+      "cpuSeconds": 995.453,
+      "cpuThrottledSeconds": 0.263,
+      "peakMemoryBytes": 1491931136,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-286-fixed-security-at-the-froz.log",
+        "lines": 10,
+        "bytes": 3848,
+        "sha256": "ab7d0f1386c84ed3813ce065ce24a979427cfdfcd092500a98b95d6302559688",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 7,
+          "text": "✓ example286.adapter.BinderDecisionAdapter#allowed satisfies `!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropert",
+          "groups": [
+            "example286.adapter.BinderDecisionAdapter#allowed satisfies `!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(p).split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.DOTALL).matcher(field).matches())` on every input where field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) (jvmcontract's own checker (CaDiCaL): 1 properties proved over allowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × disallowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × field: String of ≤ 8 code units, not null; no two the same array in 918.0 s; loops unwound 16 times with unwinding assertions)"
+          ]
+        }
+      ],
+      "tail": [
+        "lemma: note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "lemma: note: by induction on `pattern.length()`: a call simpleMatch makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with n",
+        "lemma: ✓ org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pat",
+        "lemma:   not vacuous: simpleMatch(pattern=\"\", str=\"\") reaches the calls",
+        "note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "note: lemma, proved above by induction on `pattern.length()` in 74.2 s: org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.reg",
+        "✓ example286.adapter.BinderDecisionAdapter#allowed satisfies `!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropert",
+        "  not vacuous: allowed(allowedPatterns=null, disallowedPatterns=null, field=\"\") reaches the calls",
+        "",
+        "verdict: verified (expected verified); paths 4676, solver calls 8525, variables 2530614; outcome in verification/.work-286/tightened/fixed-security/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "288 fixed-security at the frozen bound, with the lemma",
+      "run": "python3 examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py fixed-security --timeout 3300 --work verification/.work-288/tightened",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9000.0,
+      "cancelled": false,
+      "wallSeconds": 1147.796,
+      "cpuSeconds": 1148.787,
+      "cpuThrottledSeconds": 0.424,
+      "peakMemoryBytes": 1500282880,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-288-fixed-security-at-the-froz.log",
+        "lines": 10,
+        "bytes": 3999,
+        "sha256": "2eaa60685295a6cce1c32f276dc87968cdb3228ddb8a86fc5ec3c4f819410eeb",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 7,
+          "text": "✓ example288.adapter.LocaleDecisionAdapter#allowed satisfies `!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropert",
+          "groups": [
+            "example288.adapter.LocaleDecisionAdapter#allowed satisfies `!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(p).split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.DOTALL).matcher(field).matches())` on every input where configLocale >= 0 && configLocale < 5 && bindLocale >= 0 && bindLocale < 5 && field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) (jvmcontract's own checker (CaDiCaL): 1 properties proved over configLocale: int × bindLocale: int × allowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × disallowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × field: String of ≤ 8 code units, not null; no two the same array in 1037.5 s; loops unwound 16 times with unwinding assertions)"
+          ]
+        }
+      ],
+      "tail": [
+        "lemma: note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "lemma: note: by induction on `pattern.length()`: a call simpleMatch makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with n",
+        "lemma: ✓ org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pat",
+        "lemma:   not vacuous: simpleMatch(pattern=\"\", str=\"\") reaches the calls",
+        "note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "note: lemma, proved above by induction on `pattern.length()` in 108.5 s: org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.re",
+        "✓ example288.adapter.LocaleDecisionAdapter#allowed satisfies `!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropert",
+        "  not vacuous: allowed(configLocale=4, bindLocale=4, allowedPatterns=null, disallowedPatterns=null, field=\"\") reaches the calls",
+        "",
+        "verdict: verified (expected verified); paths 4678, solver calls 8753, variables 2532581; outcome in verification/.work-288/tightened/fixed-security/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-286/tightened/fixed-security/outcome.json",
+      "change": "added",
+      "bytes": 15257,
+      "sha256": "50a8b7bd8df475d2b8d451ae61834adb3f9e606c2bf4dcc014cb13cfa78d4a72",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-288/tightened/fixed-security/outcome.json",
+      "change": "added",
+      "bytes": 15551,
+      "sha256": "9d6b9147b7b80eca0b932fb853202c39a019dedd89d64b2b70e6c4d11d50215e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-17T13:34:01+00:00",
+    "applied": [
+      "verification/.work-286/tightened/fixed-security/outcome.json",
+      "verification/.work-288/tightened/fixed-security/outcome.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "09d2f5bfc7dd3385b28ab233aa4ae671db5d7bea",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/09d2f5bfc7dd3385b28ab233aa4ae671db5d7bea/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

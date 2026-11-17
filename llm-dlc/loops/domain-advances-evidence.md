@@ -150,6 +150,21 @@ Don't change `verification/pipeline.py`.
   it, still an error). Two controls in `llm-dlc/tools/test_workspaces.py`.
 - Next: step 4 (the vacuity control) while the step 3 jobs and the lemma job run; then the records and `accept.py`
   for 286, 287, 288 and 290, and the lemma half of step 1, when they are back.
+- 2026-11-17, cycle 4. **Step 1 done.** The lemma job (`20261117-122546-…-286-and-288-…`) passed: under the tightened
+  lemma checks the simpleMatch lemma is still proved by induction (286 in 74.2 s, 288 in 108.5 s) and each
+  `fixed-security` verified with it (918 s, 1037.5 s); nothing was refused, so nothing goes to the challenge stream.
+  Recorded in 286's and 288's notes. **Step 3, 290's part, done.** `20261117-133148-…-290-…` passed (45.9 s, the same
+  four verdicts and path counts as the earlier job); each 290 task's `besideRoute.job` names it, and `accept.py 290`
+  accepts all four with no limit, `artifacts` ok on each. Both result folders and their work folders came from the
+  default line as they are (`jj restore` from `wwqnnzwp` and `swltxzml`, no merge). Still running: the 286, 287 and
+  288 reruns.
+- Repeated work measured (step 7): none; the lemma job and 290's rerun came in under their estimates (0.71 and 0.08
+  of the duration), so nothing was resubmitted.
+- Inbox: `domain-advances-evidence-I004` (make `an_observed_initializer_is_bound_to_what_it_was_observed_on` pass:
+  refuse or carry the crossed, lowered and configured countermodels of `mqkqvvmw`): taken as step 5's work, which
+  comes after step 4 by the brief's order; its audit of 290 (no other class's static written, the locale read only
+  into a field the observation does not hold) goes into 290's notes with step 5.
+- Next: step 4 (the vacuity control); the records and `accept.py` for 286, 287 and 288 when their jobs are back.
 - Status: working
 
 ## Loop settings

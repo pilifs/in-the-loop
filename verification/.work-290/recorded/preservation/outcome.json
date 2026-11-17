@@ -1,0 +1,515 @@
+{
+  "verdict": "verified",
+  "target": "example290.adapter.MatcherSelectionAdapter#select",
+  "domain": "servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array",
+  "counterexample": null,
+  "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array in 3.8 s; loops unwound 64 times with unwinding assertions",
+  "problem": null,
+  "statement": "verification/.work-290/recorded/preservation/work/pair/RegressionPair.java",
+  "findings": [],
+  "output": "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-290/recorded/preservation/work/pair/RegressionPair.java) calls the previous version's example290.adapter.MatcherSelectionAdapter#select, relocated under `before`, and then the new one's on the same inputs, each on its own dependency closure, outside the inputs the change is meant to affect (`!(servlets.length == 1 && servlets[0] == 0)`, read on the new version), each array argument a copy of its own, and returns whether they returned equal results or threw in the same category. The two share the JDK and its state (a default locale one sets is the other's to start under); the previous version runs first\n✓ example290.adapter.MatcherSelectionAdapter#select: the two versions agree on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8, outside `!(servlets.length == 1 && servlets[0] == 0)` (the pair's property, below)\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"java\"; the names are servlets, method, patterns); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ RegressionPair#agree satisfies `result` on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8 (jvmcontract's own checker (CaDiCaL): 1 properties proved over servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array in 3.8 s; loops unwound 64 times with unwinding assertions)\n  not vacuous: agree(servlets=[], method=4, patterns={null, null, null, null, null, null, null, null}) reaches the calls\n",
+  "work": "verification/.work-290/recorded/preservation/work",
+  "search": {
+    "engine": "native",
+    "checker": "jvmcontract's own checker (CaDiCaL)",
+    "seconds": 3.752455801,
+    "properties": 1,
+    "unwind": 64,
+    "max_array_length": 8,
+    "stage": null,
+    "native": {
+      "paths": 573,
+      "merges": 59,
+      "solver_calls": 1087,
+      "solving_seconds": 0.119931223,
+      "gates_evaluated": 86137,
+      "evaluating_seconds": 0.002599533,
+      "divisions": 0,
+      "divisions_built": 0,
+      "multiplications": 0,
+      "multiplications_built": 0,
+      "variables": 7907,
+      "clauses": 21947,
+      "seconds": 0.839409307,
+      "loading_seconds": 0.010791204,
+      "decoding_seconds": 0.000992345,
+      "encoding_seconds": 0.425717722,
+      "witness_seconds": 0.0,
+      "assumed": [
+        "java.util.ArrayList is the tool's model of the class wherever the check runs it (--model), not the JDK's code: an ArrayList as an array of its elements and their number: ArrayList() and ArrayList(int), size, isEmpty, get, add, addAll, toArray() and toArray(T[]), and iterator() with its fail-fast iterator (lib/models/java/util/lists/ArrayList.java); a constructor or method the model does not keep is the JDK call it names",
+        "the check runs on one thread, whose context class loader is the class loader of the check's class path: nothing has set another (Thread.setContextClassLoader), as on a JVM started with that class path",
+        "the class initializer of before.org.springframework.util.AntPathMatcher was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the previous version's class path, where it is org.springframework.util.AntPathMatcher, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+        "the class initializer of before.org.springframework.util.ClassUtils was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the previous version's class path, where it is org.springframework.util.ClassUtils, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+        "the class initializer of before.org.springframework.web.util.UrlPathHelper was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the previous version's class path, where it is org.springframework.web.util.UrlPathHelper, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+        "the class initializer of javax.servlet.GenericServlet was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+        "the class initializer of javax.servlet.http.HttpServlet was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+        "the class initializer of org.springframework.util.AntPathMatcher was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+        "the class initializer of org.springframework.util.ClassUtils was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+        "the class initializer of org.springframework.web.util.UrlPathHelper was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+        "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
+      ]
+    },
+    "gap_mode": "strict",
+    "deadline_seconds": 1800.0,
+    "runs": [
+      {
+        "checker": "native",
+        "purpose": "proof",
+        "stage": null,
+        "budget_seconds": 1797.099,
+        "seconds": 0.839,
+        "ended": "verified",
+        "ending": "verified",
+        "phases": {
+          "loading": 0.011,
+          "lowering": 0.001,
+          "symbolic": 0.282,
+          "encoding": 0.426,
+          "solving": 0.12,
+          "trace": 0.0,
+          "other": 0.0
+        },
+        "formula": {
+          "variables": 7907,
+          "clauses": 21947
+        }
+      },
+      {
+        "checker": "native",
+        "purpose": "probe",
+        "stage": null,
+        "budget_seconds": 1796.247,
+        "seconds": 0.006,
+        "ended": "violation",
+        "ending": "counterexample",
+        "phases": {
+          "loading": 0.001,
+          "lowering": 0.0,
+          "symbolic": 0.001,
+          "encoding": 0.003,
+          "solving": 0.001,
+          "trace": 0.0,
+          "other": 0.0
+        },
+        "formula": {
+          "variables": 5198,
+          "clauses": 12307
+        }
+      }
+    ]
+  },
+  "stated": {
+    "kind": "property",
+    "domain": {
+      "parameters": [
+        {
+          "name": "servlets",
+          "type": "int[]",
+          "kind": "array",
+          "null": false,
+          "max_length": 8
+        },
+        {
+          "name": "method",
+          "type": "int",
+          "kind": "primitive",
+          "null": false
+        },
+        {
+          "name": "patterns",
+          "type": "java.lang.String[]",
+          "kind": "array",
+          "null": false,
+          "max_length": 8
+        }
+      ],
+      "shared_arrays": false,
+      "text": "servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array"
+    },
+    "assumptions": [
+      {
+        "kind": "precondition",
+        "text": "java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8",
+        "basis": "stated"
+      },
+      {
+        "kind": "initialization",
+        "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+        "basis": "engine"
+      },
+      {
+        "kind": "library",
+        "text": "java.util.ArrayList is the tool's model of the class wherever the check runs it (--model), not the JDK's code: an ArrayList as an array of its elements and their number: ArrayList() and ArrayList(int), size, isEmpty, get, add, addAll, toArray() and toArray(T[]), and iterator() with its fail-fast iterator (lib/models/java/util/lists/ArrayList.java); a constructor or method the model does not keep is the JDK call it names",
+        "basis": "engine"
+      },
+      {
+        "kind": "library",
+        "text": "the check runs on one thread, whose context class loader is the class loader of the check's class path: nothing has set another (Thread.setContextClassLoader), as on a JVM started with that class path",
+        "basis": "engine"
+      },
+      {
+        "kind": "library",
+        "text": "the class initializer of before.org.springframework.util.AntPathMatcher was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the previous version's class path, where it is org.springframework.util.AntPathMatcher, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+        "basis": "engine"
+      },
+      {
+        "kind": "library",
+        "text": "the class initializer of before.org.springframework.util.ClassUtils was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the previous version's class path, where it is org.springframework.util.ClassUtils, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+        "basis": "engine"
+      },
+      {
+        "kind": "library",
+        "text": "the class initializer of before.org.springframework.web.util.UrlPathHelper was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the previous version's class path, where it is org.springframework.web.util.UrlPathHelper, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+        "basis": "engine"
+      },
+      {
+        "kind": "library",
+        "text": "the class initializer of javax.servlet.GenericServlet was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+        "basis": "engine"
+      },
+      {
+        "kind": "library",
+        "text": "the class initializer of javax.servlet.http.HttpServlet was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+        "basis": "engine"
+      },
+      {
+        "kind": "library",
+        "text": "the class initializer of org.springframework.util.AntPathMatcher was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+        "basis": "engine"
+      },
+      {
+        "kind": "library",
+        "text": "the class initializer of org.springframework.util.ClassUtils was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+        "basis": "engine"
+      },
+      {
+        "kind": "library",
+        "text": "the class initializer of org.springframework.web.util.UrlPathHelper was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+        "basis": "engine"
+      },
+      {
+        "kind": "library",
+        "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+        "basis": "engine"
+      }
+    ],
+    "observations": {
+      "result": "the result and the parameters, against result",
+      "exceptions": "none may be thrown"
+    },
+    "bounds": {
+      "unwind": 64,
+      "max_array_length": 8,
+      "complete": true
+    },
+    "models": {
+      "used": true,
+      "digest": "sha256:d3cb60427833314ef7f913b8bc6ef4ca4c79b923fd15a09a6224d63099b17d02",
+      "classes": 31,
+      "jdk": "25.0.5",
+      "values": [
+        {
+          "source": "jvmcontract String model 6: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
+          "jdk": "25.0.5",
+          "level": "tested",
+          "leaves_out": [
+            "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
+            "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
+            "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
+            "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
+          ]
+        }
+      ]
+    },
+    "checker": {
+      "engine": "native",
+      "name": "jvmcontract's own checker (CaDiCaL)",
+      "solver": "CaDiCaL 1.9.5 (bundled)",
+      "fallback": null,
+      "sat": {
+        "solver": "CaDiCaL",
+        "version": "1.9.5",
+        "source": "bundled by the Rust crate cadical 0.1.16",
+        "configuration": [
+          "CaDiCaL's default options",
+          "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+          "the run's deadline through CaDiCaL's terminate callback",
+          "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+        ]
+      }
+    },
+    "gap_mode": "strict",
+    "confirmation": null,
+    "vacuity": {
+      "status": "non-vacuous",
+      "basis": "probe",
+      "text": "Some input in the domain reaches the calls: the tool's own checker found agree(servlets=[], method=4, patterns={null, null, null, null, null, null, null, null}).",
+      "witness": "agree(servlets=[], method=4, patterns={null, null, null, null, null, null, null, null})"
+    }
+  },
+  "pair": {
+    "verdict": "verified",
+    "target": "RegressionPair#agree",
+    "domain": "servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array",
+    "assume": "java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8",
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array in 3.8 s; loops unwound 64 times with unwinding assertions",
+    "problem": null,
+    "statement": "verification/.work-290/recorded/preservation/work/pair-work/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"java\"; the names are servlets, method, patterns); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ RegressionPair#agree satisfies `result` on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8 (jvmcontract's own checker (CaDiCaL): 1 properties proved over servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array in 3.8 s; loops unwound 64 times with unwinding assertions)\n  not vacuous: agree(servlets=[], method=4, patterns={null, null, null, null, null, null, null, null}) reaches the calls\n",
+    "work": "verification/.work-290/recorded/preservation/work/pair-work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 3.752455801,
+      "properties": 1,
+      "unwind": 64,
+      "max_array_length": 8,
+      "stage": null,
+      "native": {
+        "paths": 573,
+        "merges": 59,
+        "solver_calls": 1087,
+        "solving_seconds": 0.119931223,
+        "gates_evaluated": 86137,
+        "evaluating_seconds": 0.002599533,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 7907,
+        "clauses": 21947,
+        "seconds": 0.839409307,
+        "loading_seconds": 0.010791204,
+        "decoding_seconds": 0.000992345,
+        "encoding_seconds": 0.425717722,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "java.util.ArrayList is the tool's model of the class wherever the check runs it (--model), not the JDK's code: an ArrayList as an array of its elements and their number: ArrayList() and ArrayList(int), size, isEmpty, get, add, addAll, toArray() and toArray(T[]), and iterator() with its fail-fast iterator (lib/models/java/util/lists/ArrayList.java); a constructor or method the model does not keep is the JDK call it names",
+          "the check runs on one thread, whose context class loader is the class loader of the check's class path: nothing has set another (Thread.setContextClassLoader), as on a JVM started with that class path",
+          "the class initializer of before.org.springframework.util.AntPathMatcher was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the previous version's class path, where it is org.springframework.util.AntPathMatcher, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "the class initializer of before.org.springframework.util.ClassUtils was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the previous version's class path, where it is org.springframework.util.ClassUtils, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "the class initializer of before.org.springframework.web.util.UrlPathHelper was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the previous version's class path, where it is org.springframework.web.util.UrlPathHelper, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "the class initializer of javax.servlet.GenericServlet was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "the class initializer of javax.servlet.http.HttpServlet was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "the class initializer of org.springframework.util.AntPathMatcher was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "the class initializer of org.springframework.util.ClassUtils was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "the class initializer of org.springframework.web.util.UrlPathHelper was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
+        ]
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 1800.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 1797.099,
+          "seconds": 0.839,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.011,
+            "lowering": 0.001,
+            "symbolic": 0.282,
+            "encoding": 0.426,
+            "solving": 0.12,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 7907,
+            "clauses": 21947
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budget_seconds": 1796.247,
+          "seconds": 0.006,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.001,
+            "lowering": 0.0,
+            "symbolic": 0.001,
+            "encoding": 0.003,
+            "solving": 0.001,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 5198,
+            "clauses": 12307
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 4.842,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.845,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 3.996
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "servlets",
+            "type": "int[]",
+            "kind": "array",
+            "null": false,
+            "max_length": 8
+          },
+          {
+            "name": "method",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "patterns",
+            "type": "java.lang.String[]",
+            "kind": "array",
+            "null": false,
+            "max_length": 8
+          }
+        ],
+        "shared_arrays": false,
+        "text": "servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "java.util.ArrayList is the tool's model of the class wherever the check runs it (--model), not the JDK's code: an ArrayList as an array of its elements and their number: ArrayList() and ArrayList(int), size, isEmpty, get, add, addAll, toArray() and toArray(T[]), and iterator() with its fail-fast iterator (lib/models/java/util/lists/ArrayList.java); a constructor or method the model does not keep is the JDK call it names",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the check runs on one thread, whose context class loader is the class loader of the check's class path: nothing has set another (Thread.setContextClassLoader), as on a JVM started with that class path",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of before.org.springframework.util.AntPathMatcher was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the previous version's class path, where it is org.springframework.util.AntPathMatcher, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of before.org.springframework.util.ClassUtils was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the previous version's class path, where it is org.springframework.util.ClassUtils, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of before.org.springframework.web.util.UrlPathHelper was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the previous version's class path, where it is org.springframework.web.util.UrlPathHelper, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of javax.servlet.GenericServlet was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of javax.servlet.http.HttpServlet was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of org.springframework.util.AntPathMatcher was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of org.springframework.util.ClassUtils was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the class initializer of org.springframework.web.util.UrlPathHelper was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 64,
+        "max_array_length": 8,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:d3cb60427833314ef7f913b8bc6ef4ca4c79b923fd15a09a6224d63099b17d02",
+        "classes": 31,
+        "jdk": "25.0.5",
+        "values": [
+          {
+            "source": "jvmcontract String model 6: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
+            "jdk": "25.0.5",
+            "level": "tested",
+            "leaves_out": [
+              "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
+              "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
+              "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
+              "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
+            ]
+          }
+        ]
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found agree(servlets=[], method=4, patterns={null, null, null, null, null, null, null, null}).",
+        "witness": "agree(servlets=[], method=4, patterns={null, null, null, null, null, null, null, null})"
+      }
+    }
+  }
+}
