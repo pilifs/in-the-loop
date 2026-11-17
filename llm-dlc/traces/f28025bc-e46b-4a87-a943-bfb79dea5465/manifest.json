@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.021Z",
-  "ended": "2026-11-17T23:13:35.743Z",
-  "duration_seconds": 37005,
+  "ended": "2026-11-17T23:32:52.043Z",
+  "duration_seconds": 38161,
   "stats": {
-    "turns": 51,
-    "api_calls": 911,
-    "tool_calls": 912,
-    "tool_errors": 9,
-    "compactions": 10,
+    "turns": 56,
+    "api_calls": 966,
+    "tool_calls": 967,
+    "tool_errors": 10,
+    "compactions": 11,
     "peak_context_tokens": 463604,
     "usage": {
-      "input_tokens": 1832,
-      "output_tokens": 860856,
-      "cache_read_input_tokens": 147638722,
-      "cache_creation_input_tokens": 2313832
+      "input_tokens": 1944,
+      "output_tokens": 889785,
+      "cache_read_input_tokens": 153272568,
+      "cache_creation_input_tokens": 2438643
     }
   },
   "tools": {
-    "Bash": 886,
+    "Bash": 939,
     "Edit": 13,
-    "Read": 7,
+    "Read": 8,
     "Write": 4,
-    "ToolSearch": 2
+    "ToolSearch": 3
   },
   "files_touched": [
     "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
@@ -189,24 +189,38 @@
     {
       "index": 10,
       "started": "2026-11-17T21:32:27.775Z",
-      "ended": "2026-11-17T23:13:35.743Z",
-      "turns": 4,
-      "api_calls": 105,
+      "ended": "2026-11-17T23:14:26.550Z",
+      "turns": 5,
+      "api_calls": 108,
       "usage": {
-        "input_tokens": 210,
-        "output_tokens": 116202,
-        "cache_read_input_tokens": 18301664,
-        "cache_creation_input_tokens": 263070
+        "input_tokens": 216,
+        "output_tokens": 118174,
+        "cache_read_input_tokens": 19136113,
+        "cache_creation_input_tokens": 268606
       },
-      "peak_context_tokens": 276343
+      "peak_context_tokens": 281879
+    },
+    {
+      "index": 11,
+      "started": "2026-11-17T23:15:21.260Z",
+      "ended": "2026-11-17T23:32:52.043Z",
+      "turns": 4,
+      "api_calls": 52,
+      "usage": {
+        "input_tokens": 106,
+        "output_tokens": 26957,
+        "cache_read_input_tokens": 4799397,
+        "cache_creation_input_tokens": 119275
+      },
+      "peak_context_tokens": 132548
     }
   ],
   "log": {
-    "sha256": "70f5ca6b65006ca5a10663bc49aa696662280ca46ba1124182e24756d7cd5ac1",
-    "bytes": 23390829,
-    "lines": 7848,
-    "gzip_bytes": 3939903,
-    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/70f5ca6b65006ca5a10663bc49aa696662280ca46ba1124182e24756d7cd5ac1.jsonl.gz"
+    "sha256": "312965c823dbfb7c0ae0089f463b893456985a94d0fbdff107853cab5779e904",
+    "bytes": 24875014,
+    "lines": 8352,
+    "gzip_bytes": 4223805,
+    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/312965c823dbfb7c0ae0089f463b893456985a94d0fbdff107853cab5779e904.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1017,6 +1031,30 @@
       "summary": "The checker takes bcrypt's crypt_raw as one function of both releases: a call on a receiver nothing reads after it, returning an array it makes; 287's preservation verifies in a capped probe at bound 80 (verification pending)",
       "body": "Example 287's preservation claim compares Spring Security 6.3.7 and 6.3.8 on BCryptPasswordEncoder.matches. Two jobs related the two releases at bcrypt's loop summaries and stopped undecided at the previous release's BCrypt.key loop. This moves the relation up to the call of crypt_raw, whose nine methods are the same bytecode in both releases, as the 307 specialist's prototype and an outside review suggested (inbox items I015 and I018).\n\nThe rule for a call both versions share (lib/src/bmc/ties.rs, lib/src/shared.rs one_function) now takes three more cases. An instance method, where nothing can read its receiver after the call: no live local of any frame (an exception's handler counted), no other stack place, no static field, no other object; the receiver's fields are among the inputs. An array result, where the code returns an array it made of a length it computes from constants and static tables' lengths that is a constant at the call (crypt_raw's new byte[cdata.length * 4]). An array whose cells hold any values, as an input named by its content. What a call may write is what it reaches through an argument, the receiver, or a static its code takes other than to copy it at once, so bcrypt's tables, which it only clones, stay inputs. Two cost fixes found by profiling: inputs that are the same formulas are now related without a solver literal, and a check whose first run used the whole budget reports that run rather than an empty fallback.\n\nCountermodels first: KEYED in lib/tests/pairing.rs (the receiver read after the call through a live local, a static or a handler; another field value on each side; an argument returned in place of a made array; a static table the call writes). Each differs on a JVM and is not proved. With each side condition switched off in turn (a temporary switch, removed), exactly its own rows were proved. lib/tests/fixtures/callee-countermodels on JDK 25 (check.py --rule-landed) still proves no countermodel, with same, copied and parsed verified. Capped probes at the frozen bounds: 287 preservation verified in 112 s (53 paths, 52 calls taken as one function); 307 preservation verified and its mutant refuted; 289 and 290 verify as before. test_costs.py run --changed passes (26 of 26) and validate_example.py 287 passes. The fork test of the loop ties now gives inner an unused Object, so its loops still run there.\n\nJob 20261117-230459-example-287-preservation-at-the-frozen-b decides 287's preservation at bound 80. Inbox item I020 is noted in 287's notes: its claims do not tell a check-only guard from the fix (VF-039, deferred by the user). lib/README.md describes the extended rule and its limits.",
       "log_sha256": "70f5ca6b65006ca5a10663bc49aa696662280ca46ba1124182e24756d7cd5ac1"
+    },
+    {
+      "change_id": "mnwtrnrpzlqtvrxxmtzknmkprqzrnxso",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of a stand-in a lemma's proof rested on, and of an Error a logged record's getter raises with no athrow, each proved with nothing stated where a JVM says otherwise",
+      "body": "Item 5 of the challenge brief, against state's stand-ins (qlylowvo, prove --stand-in) and preservation's logging fix (lqkwokqq). A lemma's proof is a check of its own, given the check's stand-ins. The check that uses the lemma states the lemma as proved, and states only what its own run's engine noted. So at state's zlvqxmst, built apart, sn.Use#viaLemma is Verified through a lemma whose proof called a narrowly sampled stand-in, and its result names no stand-in; a JVM gives 32 where 0 is proved (lib/tests/fixtures/stand-in-countermodels). A model on request is lost the same way. Preservation's scan refuses athrow in a logged record's classes, but a JVM raises an Error without one: an OutOfMemoryError (new long[Integer.MAX_VALUE]) and a StackOverflowError (a recursion) in getMessage() each leave log through StreamHandler.publish's catch (Exception). Both are Verified 'log returned' at kskmpmny (lib/tests/fixtures/log-countermodels). The rules are those streams', so nothing in lib/src changes; each README has the checker-side test, which goes to the owner as a failure item. No accepted result rests on either: 286's simpleMatch lemma calls only String methods, and 287's LocationResolvingLogRecord neither recurses nor allocates by input.",
+      "log_sha256": "312965c823dbfb7c0ae0089f463b893456985a94d0fbdff107853cab5779e904"
+    },
+    {
+      "change_id": "zmpzxkqnrrnqoyrnnppyyvppwxvtymns",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of the code two versions are taken to share past the reach's second fix: a superclass, an interface and a default method's interface changed under identical code, each taken as identical or tied where a JVM tells the versions apart",
+      "body": "Item 5 of the challenge stream, against the preservation stream's qopxypnn (its fix for domain-advances-preservation-I019). The fix holds for what it was made for: built apart at qopxypnn with the sources touched, reach_countermodels.rs passes, its checker-side test included. What shared::reach still never compares is a class's header, its superclass and its interfaces. same_everywhere also checks only that each method one version reaches exists, the same, in the other, not that both reach the same methods. The new fixture lib/tests/fixtures/supertype-countermodels has old/ and new/ versions in which every method of every class is the same text and only three class headers differ. Under the defaults, four targets are 'identical in both versions; nothing to prove' at qopxypnn and on this line alike: rebased (Child.value resolves to One.value, then to Two.value), marked (instanceof of an interface the previous Plain implements), cast (the same checkcast, which throws in the new version) and mixed (a default method from Left, then from Right). looped (marked in a loop past the bound) is Verified under the ties, non-vacuous. A JVM gives 2 against 1 (or a ClassCastException) for each. With the shortcut turned off, three are refuted, and looped is refuted at full unwind, so only the shortcut and the ties are wrong. The README has the table, the commands, the fix options and a checker-side test, which fails on all five at qopxypnn. shared.rs is preservation's this run, so nothing in lib/src changes here; the test goes to that stream as a failure item. lib/tests/supertype_countermodels.rs holds the fixture to a JVM.",
+      "log_sha256": "312965c823dbfb7c0ae0089f463b893456985a94d0fbdff107853cab5779e904"
+    },
+    {
+      "change_id": "sqprlwkvwvsokksxoyulwostuyrwylnl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the challenge stream's log, stand-in and supertype countermodels; a logged record's getter that can raise an Error, and a class whose header differs, are no longer taken as harmless or as the same code",
+      "body": "Merged zmpzxkqn (with mnwtrnrp). I021: the logging model's scan of a record's classes (Engine::confined_record) now refuses an array of a length other than a constant up to 1024, any multianewarray, and a call among the record's own classes that can come back to itself, since the default handler's catch (Exception) lets an OutOfMemoryError or StackOverflowError out of Logger.log. lh.M#huge and #deep, each Verified 'log returned' before, now stop at the Logger.log gap; each rule alone refuses its fixture. I022: shared::reach now collects every application class the code names (method and field owners, classes made, instanceof, checkcast, anewarray, multianewarray, ldc and catch types) with their supertypes, and compares each one's header (superclass, interfaces, interface flag) in both versions in same_everywhere and in the ties' fingerprint. The four shortcut cases are no longer 'identical; nothing to prove', and looped gets no verdict where it was Verified. Each fixture README's checker-side test was added (log_countermodels.rs, supertype_countermodels.rs) and passes. Capped probes at the frozen bounds are unchanged: 287 verifies (53 paths, 52 calls taken, 48 related), 307 preservation verifies and mutant-preservation is refuted, and 289 and 290 verify. test_costs.py run --changed passes; costs.json is re-estimated and tagged, and the lint passes.",
+      "log_sha256": "312965c823dbfb7c0ae0089f463b893456985a94d0fbdff107853cab5779e904"
     }
   ],
   "logs": {
@@ -1036,6 +1074,12 @@
       "bytes": 6724018,
       "lines": 2188,
       "gzip_bytes": 1143410,
+      "url": null
+    },
+    "312965c823dbfb7c0ae0089f463b893456985a94d0fbdff107853cab5779e904": {
+      "bytes": 24875014,
+      "lines": 8352,
+      "gzip_bytes": 4223805,
       "url": null
     },
     "6fb8d7f69f3a273f258223fd33d357f9375e7a8e014c659fefe46c234d8dfee8": {

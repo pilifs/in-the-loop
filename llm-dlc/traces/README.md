@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 139, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-17 23:13 UTC |
-| Prompts | 3,149 |
-| Model calls | 31,920 |
-| Tool calls | 32,897 (581 failed) |
-| Compactions | 467 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-17 23:32 UTC |
+| Prompts | 3,169 |
+| Model calls | 32,119 |
+| Tool calls | 33,099 (586 failed) |
+| Compactions | 470 |
 | Subagents | 21 |
-| Tokens written | 31,717,350 |
-| Tokens read | 5,261,751,745 (98.1% from cache) |
-| Commits with a trace | 992 |
-| Log snapshots | 1,289 (2893.5 MB gzipped, 1,162 uploaded) |
+| Tokens written | 31,854,856 |
+| Tokens read | 5,287,050,549 (98.1% from cache) |
+| Commits with a trace | 995 |
+| Log snapshots | 1,292 (2907.7 MB gzipped, 1,162 uploaded) |
 
 ## Sessions
 
@@ -164,8 +164,8 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 12 | 21 | 17 | 2 | 2 | 56,861 | 1 |
 | 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | open | 7 h 50 min | `claude-opus-5-5` | 19 | 139 | 132 | 2 | 1 | 288,290 | 68 |
 | 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | open | 4 h 3 min | `claude-opus-5-5` | 84 | 681 | 678 | 13 | 15 | 186,120 | 22 |
-| 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | open | 7 h 56 min | `claude-opus-5-5` | 94 | 935 | 941 | 20 | 17 | 294,636 | 19 |
-| 2026-11-17 12:56 UTC | [f28025bc-e46b-4a87-a943-bfb79dea5465](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | open | 10 h 16 min | `claude-opus-5-5` | 51 | 911 | 912 | 9 | 10 | 463,604 | 101 |
+| 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | open | 9 h 49 min | `claude-opus-5-5` | 109 | 1,079 | 1,088 | 24 | 19 | 294,636 | 21 |
+| 2026-11-17 12:56 UTC | [f28025bc-e46b-4a87-a943-bfb79dea5465](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | open | 10 h 36 min | `claude-opus-5-5` | 56 | 966 | 967 | 10 | 11 | 463,604 | 104 |
 | 2026-11-17 18:37 UTC | [Agent brief preservation work 287 308](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | open | 1 h 46 min | `claude-fable-5-2` | 6 | 170 | 189 | 3 | 1 | 466,832 | 16 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
@@ -312,20 +312,20 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 8,137 | 42 | 87,022 | 814,514 | 90.3% | 111 |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 104,824 | 308 | 508,031 | 19,918,636 | 97.5% | 195 |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 469,172 | 1,388 | 1,808,399 | 65,588,806 | 97.3% | 144 |
-| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 808,268 | 1,898 | 2,721,062 | 108,951,267 | 97.6% | 138 |
-| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 860,856 | 1,832 | 2,313,832 | 147,638,722 | 98.5% | 174 |
+| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 916,845 | 2,198 | 3,056,035 | 128,156,029 | 97.7% | 143 |
+| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 889,785 | 1,944 | 2,438,643 | 153,272,568 | 98.4% | 175 |
 | [`88045564`](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | 267,002 | 344 | 614,517 | 43,602,094 | 98.6% | 166 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 29,341 | 89.2% | 139 |
-| `Read` | 1,319 | 4.0% | 60 |
-| `Edit` | 1,013 | 3.1% | 58 |
-| `Write` | 682 | 2.1% | 57 |
-| `ToolSearch` | 181 | 0.6% | 45 |
-| `Monitor` | 128 | 0.4% | 50 |
+| `Bash` | 29,520 | 89.2% | 139 |
+| `Read` | 1,323 | 4.0% | 60 |
+| `Edit` | 1,025 | 3.1% | 58 |
+| `Write` | 685 | 2.1% | 57 |
+| `ToolSearch` | 184 | 0.6% | 45 |
+| `Monitor` | 129 | 0.4% | 50 |
 | `AskUserQuestion` | 64 | 0.2% | 16 |
 | `TaskStop` | 48 | 0.1% | 19 |
 | `SendMessage` | 33 | 0.1% | 9 |
@@ -1318,23 +1318,26 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 973 | change `qnlomnmx` | Countermodels of what the pair of versions takes as the same code: a loop's ties and the identical-bytecode shortcut, each proved where a JVM tells the versions apart | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/9e917f0041d3856829e33339f6139eebd15644b9b6172a6a4b80fd3f3f42eea0.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/ebf70312a34b97902eaa3834e67b1662a6ee739ce029eb94ff3c870ce3902959.jsonl.gz)) |
 | 974 | change `plqpmmop` | Countermodels of an observation bound to the settings it read: a property read under a JDK frame or through putIfAbsent, the environment by a looked-up handle, and three startup settings, each proved where a JVM under another setting says otherwise | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/9cee85d0e7e8dae858b6fabbb5079362b51882a38a582f636de56f9141725c1e.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052.jsonl.gz)) |
 | 975 | change `tqmpowvx` | Countermodels of the code two versions are taken to share past the reach's fix: an override removed, a hidden field, an interface's initializer two ways and the target's own class's, each taken as identical or tied where a JVM tells the versions apart | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/c9f2ba9c7f39ddeab68e2bdff1e3186c131d631503621da69e434efa4d389228.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052.jsonl.gz)) |
-| 976 | change `oqsnoyom` | Example 287's preservation reaches the checker and stops at java.util.logging's WARNING, not at bcrypt (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/0fa23e6204d9e809227a5e853e2acc187ba89e43f366708997258d2fcb3b2659.jsonl.gz)) |
-| 977 | change `trkpotro` | The examples' router carries example 287's two new notes | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/e41f2c4d702ac713bfe202b895a8b1166472b9b3ac35124558b19988e8a514ab.jsonl.gz)) |
-| 978 | change `kwyxmlns` | Merge the shared driver module, the pairing countermodels and the run-streams test fix into the preservation stream | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de.jsonl.gz)) |
-| 979 | change `zmvkptqz` | The pair of versions compares exceptions by class and starts each version as if it ran alone (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/b17c45752115266256b1c406ca0a71b7f65fbc6938ef86b2a85a06445afee80e.jsonl.gz)) |
-| 980 | change `unswkkxp` | The checker models a line logged at WARNING as spring-jcl logs it, so example 287's preservation reaches both sides' bcrypt | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/fda3769957a6e5d712f818f60dd7bc1e81d57b724b0cdd8b5e28f6cc89e81ea9.jsonl.gz)) |
-| 981 | change `wokytpkz` | The pair of versions reads its scope on copies of its own and compares an exception by its class and the classes above it; 289 and 290 rerun (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/2eda7e05ab43a907937cdc85d0bd27864bfde026b2c0bcc1c205e8710dd1d3a4.jsonl.gz)) |
-| 982 | change `owrsowqm` | A pair of versions' two runs of one loop past the bound go on from one state where they run the same code from the same state | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/b436d23dc5500d8df0f8ce9da820c55a060649ad0a2ee1fb09aaca95ba6e32ea.jsonl.gz)) |
-| 983 | change `pswwploz` | The preservation stream acknowledges inbox items I006 to I009 and takes the two soundness ones next | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/d44f39ebfd2cbe3f25464ba506b3155df145d7427ec754550b02e4e84c48d32e.jsonl.gz)) |
-| 984 | change `lmyvttyt` | Merge the challenge stream's countermodels of the logging model and of the pair's exceptions into the preservation stream | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/ead8e28575e05eb0ba6cebc7020a937be38829f3070e13b2cc34d2460895314f.jsonl.gz)) |
-| 985 | change `lqkwokqq` | A logged record's getters may write its number fields and may not throw a Throwable, and the pair of versions tells apart two exception classes whose interfaces differ | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/8026afd239d466a9a3185bb713b604a030b2247358b75659f8d6e3559ccf4b33.jsonl.gz)) |
-| 986 | change `lxvttwmp` | A pair of versions' second run of a loop takes over the first's summary from the same state, and both summarize a loop at its entry by their own path's history; example 287 preservation at bound 80 (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/80d942c7774925a8b996c5c8ed2ea5cff6cf76ddb5c7cd226ab25dc3e0a7e7ab.jsonl.gz)) |
-| 987 | change `rmvpqswz` | The preservation stream acknowledges inbox items I010 and I011 and takes the tie's soundness hole next | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/6fb8d7f69f3a273f258223fd33d357f9375e7a8e014c659fefe46c234d8dfee8.jsonl.gz)) |
-| 988 | change `kskmpmny` | Merge the default line and the challenge stream's tie countermodels; the code two versions are taken to share is closed against calls back through the JDK and takes in class initializers; 287 at bound 80, 289 and 290 rerun (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/ebf70312a34b97902eaa3834e67b1662a6ee739ce029eb94ff3c870ce3902959.jsonl.gz)) |
-| 989 | change `uxyusvsv` | 307 has a driver on the route's slices, and the checker takes a call both versions share as one function of both: preservation verified and the mutant refuted in capped probes at the frozen bound (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/2649b91927799ff47bb2de518cf55b2ab1673577fb71655d09a69fa4c7fd53a3.jsonl.gz)) |
-| 990 | change `mqpxrmvu` | Merge the default line and the challenge stream's reach countermodels | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052.jsonl.gz)) |
-| 991 | change `qopxypnn` | The code two versions are taken to share resolves each field to the class that declares it and takes in the initializers the JVM runs; the observer's log path is absolute; 289 and 290 rerun (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/d25d5c89e0f564831cb3b0aebc386c921cdbb349bed775d429eb4ee77ca43fec.jsonl.gz)) |
-| 992 | change `xuwlklyo` | The checker takes bcrypt's crypt_raw as one function of both releases: a call on a receiver nothing reads after it, returning an array it makes; 287's preservation verifies in a capped probe at bound 80 (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/70f5ca6b65006ca5a10663bc49aa696662280ca46ba1124182e24756d7cd5ac1.jsonl.gz)) |
+| 976 | change `mnwtrnrp` | Countermodels of a stand-in a lemma's proof rested on, and of an Error a logged record's getter raises with no athrow, each proved with nothing stated where a JVM says otherwise | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/a0036dc2033e2f723ca224c2073f96373b2ff789467cc41aab16cddc57c27118.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/312965c823dbfb7c0ae0089f463b893456985a94d0fbdff107853cab5779e904.jsonl.gz)) |
+| 977 | change `zmpzxkqn` | Countermodels of the code two versions are taken to share past the reach's second fix: a superclass, an interface and a default method's interface changed under identical code, each taken as identical or tied where a JVM tells the versions apart | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/bbd1d15f7193100c25d3ad57ec48a4f507808e7eae415bd2547bc106ee9ef20b.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/312965c823dbfb7c0ae0089f463b893456985a94d0fbdff107853cab5779e904.jsonl.gz)) |
+| 978 | change `oqsnoyom` | Example 287's preservation reaches the checker and stops at java.util.logging's WARNING, not at bcrypt (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/0fa23e6204d9e809227a5e853e2acc187ba89e43f366708997258d2fcb3b2659.jsonl.gz)) |
+| 979 | change `trkpotro` | The examples' router carries example 287's two new notes | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/e41f2c4d702ac713bfe202b895a8b1166472b9b3ac35124558b19988e8a514ab.jsonl.gz)) |
+| 980 | change `kwyxmlns` | Merge the shared driver module, the pairing countermodels and the run-streams test fix into the preservation stream | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de.jsonl.gz)) |
+| 981 | change `zmvkptqz` | The pair of versions compares exceptions by class and starts each version as if it ran alone (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/b17c45752115266256b1c406ca0a71b7f65fbc6938ef86b2a85a06445afee80e.jsonl.gz)) |
+| 982 | change `unswkkxp` | The checker models a line logged at WARNING as spring-jcl logs it, so example 287's preservation reaches both sides' bcrypt | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/fda3769957a6e5d712f818f60dd7bc1e81d57b724b0cdd8b5e28f6cc89e81ea9.jsonl.gz)) |
+| 983 | change `wokytpkz` | The pair of versions reads its scope on copies of its own and compares an exception by its class and the classes above it; 289 and 290 rerun (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/2eda7e05ab43a907937cdc85d0bd27864bfde026b2c0bcc1c205e8710dd1d3a4.jsonl.gz)) |
+| 984 | change `owrsowqm` | A pair of versions' two runs of one loop past the bound go on from one state where they run the same code from the same state | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/b436d23dc5500d8df0f8ce9da820c55a060649ad0a2ee1fb09aaca95ba6e32ea.jsonl.gz)) |
+| 985 | change `pswwploz` | The preservation stream acknowledges inbox items I006 to I009 and takes the two soundness ones next | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/d44f39ebfd2cbe3f25464ba506b3155df145d7427ec754550b02e4e84c48d32e.jsonl.gz)) |
+| 986 | change `lmyvttyt` | Merge the challenge stream's countermodels of the logging model and of the pair's exceptions into the preservation stream | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/ead8e28575e05eb0ba6cebc7020a937be38829f3070e13b2cc34d2460895314f.jsonl.gz)) |
+| 987 | change `lqkwokqq` | A logged record's getters may write its number fields and may not throw a Throwable, and the pair of versions tells apart two exception classes whose interfaces differ | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/8026afd239d466a9a3185bb713b604a030b2247358b75659f8d6e3559ccf4b33.jsonl.gz)) |
+| 988 | change `lxvttwmp` | A pair of versions' second run of a loop takes over the first's summary from the same state, and both summarize a loop at its entry by their own path's history; example 287 preservation at bound 80 (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/80d942c7774925a8b996c5c8ed2ea5cff6cf76ddb5c7cd226ab25dc3e0a7e7ab.jsonl.gz)) |
+| 989 | change `rmvpqswz` | The preservation stream acknowledges inbox items I010 and I011 and takes the tie's soundness hole next | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/6fb8d7f69f3a273f258223fd33d357f9375e7a8e014c659fefe46c234d8dfee8.jsonl.gz)) |
+| 990 | change `kskmpmny` | Merge the default line and the challenge stream's tie countermodels; the code two versions are taken to share is closed against calls back through the JDK and takes in class initializers; 287 at bound 80, 289 and 290 rerun (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/ebf70312a34b97902eaa3834e67b1662a6ee739ce029eb94ff3c870ce3902959.jsonl.gz)) |
+| 991 | change `uxyusvsv` | 307 has a driver on the route's slices, and the checker takes a call both versions share as one function of both: preservation verified and the mutant refuted in capped probes at the frozen bound (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/2649b91927799ff47bb2de518cf55b2ab1673577fb71655d09a69fa4c7fd53a3.jsonl.gz)) |
+| 992 | change `mqpxrmvu` | Merge the default line and the challenge stream's reach countermodels | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052.jsonl.gz)) |
+| 993 | change `qopxypnn` | The code two versions are taken to share resolves each field to the class that declares it and takes in the initializers the JVM runs; the observer's log path is absolute; 289 and 290 rerun (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/d25d5c89e0f564831cb3b0aebc386c921cdbb349bed775d429eb4ee77ca43fec.jsonl.gz)) |
+| 994 | change `xuwlklyo` | The checker takes bcrypt's crypt_raw as one function of both releases: a call on a receiver nothing reads after it, returning an array it makes; 287's preservation verifies in a capped probe at bound 80 (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/70f5ca6b65006ca5a10663bc49aa696662280ca46ba1124182e24756d7cd5ac1.jsonl.gz)) |
+| 995 | change `sqprlwkv` | Merge the challenge stream's log, stand-in and supertype countermodels; a logged record's getter that can raise an Error, and a class whose header differs, are no longer taken as harmless or as the same code | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/312965c823dbfb7c0ae0089f463b893456985a94d0fbdff107853cab5779e904.jsonl.gz)) |
 
 ## Logs
 
@@ -1478,8 +1481,8 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 1 | 1 | 0.3 MB | [`965570933c02`](https://terminalvalue.net/raw-traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/965570933c0206c64a18c5652f4f74be1de3807449c6f9f9a26e20a3211055fc.jsonl.gz) |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 10 | 0 | 3.8 MB | `e0cec466eef9`, not uploaded |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 20 | 0 | 36.3 MB | `b38cb00ee8e3`, not uploaded |
-| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 19 | 0 | 42.8 MB | `c9f2ba9c7f39`, not uploaded |
-| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 17 | 0 | 30.7 MB | `70f5ca6b6500`, not uploaded |
+| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 21 | 0 | 52.8 MB | `bbd1d15f7193`, not uploaded |
+| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 18 | 0 | 35.0 MB | `312965c823db`, not uploaded |
 | [`88045564`](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | 13 | 0 | 7.3 MB | `a6cec13f811f`, not uploaded |
 
 ## Session notes

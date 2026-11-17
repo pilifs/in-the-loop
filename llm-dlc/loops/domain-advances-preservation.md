@@ -459,9 +459,44 @@ relational result needs a new check (the rule's applications recorded in the out
     at their former path counts. Job `20261117-230459-example-287-preservation-at-the-frozen-b` decides 287.
   - **Inbox.** I015 and I018 are done above. I020 (D032, VF-039): 287's notes now say its claims do not tell a
     check-only guard from the fix, and no claim is prepared. No item came in after I020.
+- 2026-11-17, I021 and I022 (soundness of steps 1 and 2; no step of 287 or 307 moved). Merged the challenge stream's
+  `zmpzxkqn` (with `mnwtrnrp`: the `log-`, `stand-in-` and `supertype-countermodels`); only generated files conflicted.
+  - **I021 (the logging model, `bmc/runtime.rs`).** `confined_record` now refuses an `Error` the code itself decides,
+    which the handler's `catch (Exception)` lets out of `log`:
+    - an array of a length other than a constant up to 1024, pushed just before and reached by no jump, and any
+      `multianewarray`;
+    - a call among the record's own classes that can come back to itself, taking every method of the name and
+      descriptor as the callee, so an override counts.
+    The JVM's own limits (a heap or a stack already all but full) are left unmodelled, as everywhere else in the
+    checker; the module and `lib/README.md` say so. Each rule is the only one that refuses its fixture: `huge` makes an
+    array and does not recurse, and `deep` recurses and makes no array. Both now stop at `Logger.log`, a gap. The
+    README's test is in `lib/tests/log_countermodels.rs` and passes. Spring's `LocationResolvingLogRecord` neither
+    allocates nor recurses, and 287's probe below still goes through the warning path.
+  - **I022 (the reach, `shared.rs`).** The reach now collects every application class the code names, with its
+    supertypes (`Reach::named`). That covers a method's owner as named and as resolved, a field's owner, a class
+    made, and the class an `instanceof`, `checkcast`, `anewarray`, `multianewarray`, `ldc` or catch type names. Each is
+    compared by its header (superclass, interfaces in order, whether it is an interface, or absent) in both versions
+    in `same_everywhere`, and each header is part of the ties' fingerprint. The README's test is in
+    `lib/tests/supertype_countermodels.rs` and passes:
+    - `rebased`, `marked`, `cast` and `mixed` are no longer "identical; nothing to prove", and go to the solver (here
+      a missing JBMC);
+    - `looped` is no verdict, since nothing ties and its spurious `agree(k=3)` does not replay.
+  - **Probes at the frozen bounds, all as before:**
+    - 287 `preservation`: verified in 111 s (53 paths, 52 calls taken, 48 related);
+    - 307 `preservation`: verified (72 taken, 66 related);
+    - 307 `mutant-preservation`: refuted;
+    - 289: verified (1373 paths);
+    - 290: verified (573 paths).
+    So job `20261117-230459-…` (287), queued before these fixes, is still to be accepted when it returns.
+  - **Job results, read on the default line:**
+    - `20261117-210114-…`: 307's `preservation` holds (2m22s) and `mutant-preservation` fails, as expected;
+    - `20261117-213024-…`: 289 and 290 hold.
+    They are not merged into this line yet.
+  - `test_costs.py run --changed` passes, and the tier inventory is estimated, tagged and linted.
+  - **Inbox.** I021 and I022 are done above. Nothing came in after I022.
 - Next:
-  1. The results of jobs `20261117-230459-…` (287), `20261117-210114-…` (307's two) and `20261117-213024-…` (289 and
-     290), then acceptance through `accept.py` once the evidence stream can read them.
+  1. Merge the default line (the job results), then accept 307's two tasks through `accept.py`. Then accept 287's
+     from job `20261117-230459-…` when it returns. The evidence stream accepts 289's and 290's.
   2. Step 7: 288's preservation, profiled first (VF-031).
 - Status: working
 

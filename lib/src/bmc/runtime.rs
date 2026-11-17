@@ -73,6 +73,7 @@
 //!   caches in a constructor, and a path that never asks one anything goes on.
 
 use super::*;
+use std::collections::BTreeSet;
 
 /// What a run that asked for a class by name, or for a class's loader, took for granted.
 pub const CLASS_PATH_ASSUMPTION: &str = "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)";
@@ -93,6 +94,8 @@ const BELOW_INFO: [&str; 5] = ["CONFIG", "FINE", "FINER", "FINEST", "ALL"];
 const LOGGED: [&str; 3] = ["INFO", "WARNING", "SEVERE"];
 pub(super) const LEVEL: &str = "java/util/logging/Level";
 const LOG_RECORD: &str = "java/util/logging/LogRecord";
+/// The longest array a confined record's getter may make ([`Engine::confined_record`]).
+const SMALL_ARRAY: i32 = 1024;
 
 /// Whether the static field is a level the engine has one object of for a run.
 pub fn level_constant(owner: &str, name: &str) -> Option<&'static str> {
@@ -360,10 +363,15 @@ impl Engine<'_> {
     /// `Throwable`'s constructors and getters. Spring's `LocationResolvingLogRecord` is such a class: it finds the
     /// caller in a new `Throwable`'s stack trace and keeps it in its own fields.
     ///
-    /// The handler catches `Exception` around the formatting, and what else can leave a getter is an `Error` the
-    /// engine does not model or a `Throwable` an `athrow` throws, which is why there is none. A field the getters
-    /// write is one the caller may read after `log` (a record it holds), which is why each is any value afterwards
-    /// and only number fields are taken: a reference written there would be any object.
+    /// The handler catches `Exception` around the formatting, and what else can leave a getter is a `Throwable` an
+    /// `athrow` throws, which is why there is none, or an `Error` the JVM raises with no `athrow`. Of those, the
+    /// scan refuses what the code itself decides: an array of a length other than a constant up to
+    /// [`SMALL_ARRAY`] (an `OutOfMemoryError` for `new long[Integer.MAX_VALUE]`), and a call that can come back to
+    /// itself through methods of those classes (a `StackOverflowError` for a recursion without end; every method of
+    /// the name and descriptor called in those classes is taken as a callee, so an override counts). What is left is
+    /// the JVM's own limits, a heap or a stack already all but full, which no check models anywhere. A field the
+    /// getters write is one the caller may read after `log` (a record it holds), which is why each is any value
+    /// afterwards and only number fields are taken: a reference written there would be any object.
     pub(super) fn confined_record(&self, class: &str) -> bool {
         use crate::classfile::Insn;
         let chain: Vec<String> = std::iter::once(class.to_string()).chain(self.cp.superclasses(class)).take_while(|c| c != LOG_RECORD).collect();
@@ -375,7 +383,9 @@ impl Engine<'_> {
                 || matches!(owner, LOG_RECORD | "java/lang/Object" | STRING | "java/lang/StackTraceElement")
                 || owner == "java/lang/Throwable" && (name == "<init>" || name.starts_with("get"))
         };
-        chain.iter().all(|c| {
+        // The calls among the chain's own methods, by name and descriptor, for the recursion check below.
+        let mut calls: BTreeMap<(String, String), BTreeSet<(String, String)>> = BTreeMap::new();
+        let confined = chain.iter().all(|c| {
             let Ok(Some(cf)) = self.cp.bytecode(c) else { return false };
             cf.methods.iter().filter(|m| m.name != "<init>" && m.name != "<clinit>").all(|m| {
                 if m.is_native() {
@@ -383,17 +393,44 @@ impl Engine<'_> {
                 }
                 let Some(code) = &m.code else { return true };
                 let Ok(insns) = code.instructions() else { return false };
-                insns.into_iter().all(|(_, insn)| match insn {
-                    Insn::PutStatic(_) | Insn::ArrayStore(_) | Insn::InvokeDynamic(_) | Insn::AThrow => false,
-                    Insn::GetStatic(i) => cf.pool.member(i).is_ok_and(|f| {
+                let mut targets: BTreeSet<u32> = insns.iter().flat_map(|(_, insn)| insn.targets()).collect();
+                targets.extend(code.exception_table.iter().map(|h| u32::from(h.handler_pc)));
+                let callees = calls.entry((m.name.clone(), m.descriptor.clone())).or_default();
+                insns.iter().enumerate().all(|(at, (pc, insn))| match insn {
+                    Insn::PutStatic(_) | Insn::ArrayStore(_) | Insn::InvokeDynamic(_) | Insn::AThrow | Insn::MultiANewArray(..) => false,
+                    // The length, a constant pushed just before and not reached by a jump.
+                    Insn::NewArray(_) | Insn::ANewArray(_) => {
+                        !targets.contains(pc) && matches!(at.checked_sub(1).map(|i| &insns[i].1), Some(Insn::IConst(n)) if (0..=SMALL_ARRAY).contains(n))
+                    }
+                    Insn::GetStatic(i) => cf.pool.member(*i).is_ok_and(|f| {
                         self.cp.bytecode(&f.owner).ok().flatten().and_then(|owner| owner.field(&f.name).map(|d| d.is_static() && d.is_final())).unwrap_or(false)
                     }),
-                    Insn::PutField(i) => cf.pool.member(i).is_ok_and(|f| chain.iter().any(|c| *c == f.owner) && matches!(f.descriptor.as_str(), "I" | "Z" | "B" | "C" | "S" | "J")),
-                    Insn::InvokeVirtual(i) | Insn::InvokeSpecial(i) | Insn::InvokeStatic(i) | Insn::InvokeInterface(i) => cf.pool.member(i).is_ok_and(|m| allowed(&m.owner, &m.name)),
+                    Insn::PutField(i) => cf.pool.member(*i).is_ok_and(|f| chain.iter().any(|c| *c == f.owner) && matches!(f.descriptor.as_str(), "I" | "Z" | "B" | "C" | "S" | "J")),
+                    Insn::InvokeVirtual(i) | Insn::InvokeSpecial(i) | Insn::InvokeStatic(i) | Insn::InvokeInterface(i) => cf.pool.member(*i).is_ok_and(|m| {
+                        if chain.iter().any(|c| *c == m.owner) {
+                            callees.insert((m.name.clone(), m.descriptor.clone()));
+                        }
+                        allowed(&m.owner, &m.name)
+                    }),
                     _ => true,
                 })
             })
-        })
+        });
+        // No call among them can come back to itself.
+        confined
+            && calls.keys().all(|start| {
+                let mut seen = BTreeSet::new();
+                let mut work: Vec<&(String, String)> = calls.get(start).into_iter().flatten().collect();
+                while let Some(m) = work.pop() {
+                    if m == start {
+                        return false;
+                    }
+                    if seen.insert(m.clone()) {
+                        work.extend(calls.get(m).into_iter().flatten());
+                    }
+                }
+                true
+            })
     }
 
     /// `Class.forName(name, false, loader)` and `Logger.getLogger(name)`: see the module's notes. `None` where

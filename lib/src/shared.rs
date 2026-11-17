@@ -289,13 +289,18 @@ struct Reach {
     /// Each application field the methods name, with the class that declares the field it resolves to (JVMS
     /// §5.4.3.2): the same instruction reads another field where a version declares one that hides an inherited one.
     fields: BTreeSet<String>,
+    /// Every application class the code names (a method's owner as an instruction names it and as it resolves, a
+    /// field's owner, a class made, one `instanceof`, `checkcast`, `anewarray`, `multianewarray`, an `ldc` or a
+    /// handler's catch type names), with each of its supertypes: what a call resolves to and what a type test
+    /// answers depend on their headers ([`header`]), which no method's code shows.
+    named: BTreeSet<String>,
     /// Whether every call could be followed: false when a virtual call may reach an implementation not listed, or a
     /// call into the JDK may come back into application code ([`inert_jdk_call`]).
     closed: bool,
 }
 
 fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
-    let mut out = Reach { methods: Vec::new(), classes: BTreeMap::new(), static_calls: BTreeSet::new(), callers: BTreeMap::new(), instance_calls: BTreeSet::new(), statics: BTreeSet::new(), fields: BTreeSet::new(), closed: true };
+    let mut out = Reach { methods: Vec::new(), classes: BTreeMap::new(), static_calls: BTreeSet::new(), callers: BTreeMap::new(), instance_calls: BTreeSet::new(), statics: BTreeSet::new(), fields: BTreeSet::new(), named: BTreeSet::new(), closed: true };
     let mut seen: HashSet<MemberRef> = HashSet::new();
     let mut work: VecDeque<MemberRef> = VecDeque::from([root.clone()]);
     // The root's own class is initialized by the call itself, before its first instruction.
@@ -312,6 +317,8 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
         if cp.is_application(&class.name) {
             out.classes.insert(class.name.clone(), class.clone());
         }
+        out.name(cp, &reference.owner);
+        out.name(cp, &class.name);
         let Some(code) = &method.code else {
             if !method.is_abstract() {
                 out.closed = false; // native
@@ -324,10 +331,21 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
             out.closed = false;
             continue;
         };
+        for handler in &code.exception_table {
+            if let Some(caught) = &handler.catch_type {
+                out.name(cp, caught);
+            }
+        }
         for (_, insn) in insns {
             match insn {
+                Insn::CheckCast(i) | Insn::InstanceOf(i) | Insn::ANewArray(i) | Insn::MultiANewArray(i, _) | Insn::Ldc(i) => {
+                    if let Ok(named) = class.pool.class_name(i) {
+                        out.name(cp, named);
+                    }
+                }
                 Insn::GetStatic(i) | Insn::PutStatic(i) | Insn::GetField(i) | Insn::PutField(i) => {
                     let Ok(field) = class.pool.member(i) else { continue };
+                    out.name(cp, &field.owner);
                     if !cp.is_application(&field.owner) {
                         continue;
                     }
@@ -351,11 +369,13 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
                 }
                 Insn::New(i) => {
                     if let Ok(made) = class.pool.class_name(i) {
+                        out.name(cp, made);
                         out.initialized(cp, &made, &mut work);
                     }
                 }
                 Insn::InvokeStatic(i) | Insn::InvokeSpecial(i) => {
                     let Ok(callee) = class.pool.member(i) else { continue };
+                    out.name(cp, &callee.owner);
                     if matches!(insn, Insn::InvokeStatic(_)) {
                         out.initialized(cp, &callee.owner, &mut work);
                     }
@@ -393,6 +413,7 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
                 }
                 Insn::InvokeVirtual(i) | Insn::InvokeInterface(i) => {
                     let Ok(callee) = class.pool.member(i) else { continue };
+                    out.name(cp, &callee.owner);
                     if !cp.is_application(&class.name) && !cp.is_application(&callee.owner) {
                         continue; // a followed JDK class's own call, as above
                     }
@@ -444,6 +465,22 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
 }
 
 impl Reach {
+    /// Adds an application class the code names (an array type by its element), with its supertypes, to
+    /// [`Reach::named`].
+    fn name(&mut self, cp: &ClassPath, class: &str) {
+        let element = class.trim_start_matches('[');
+        let class = element.strip_prefix('L').and_then(|e| e.strip_suffix(';')).unwrap_or(element);
+        if !cp.is_application(class) || self.named.contains(class) {
+            return;
+        }
+        self.named.insert(class.to_string());
+        for above in cp.superclasses(class).into_iter().chain(cp.all_interfaces(class)) {
+            if cp.is_application(&above) {
+                self.named.insert(above);
+            }
+        }
+    }
+
     /// Adds the initializers a use of `class` may run (an instance made, a static method called, a static field
     /// read or written), where they are the application's: they run as part of the code. Those are its own, and for
     /// a class its superclasses' and those of every superinterface that declares a method neither abstract nor
@@ -586,6 +623,11 @@ fn same_everywhere(before: &ClassPath, after: &ClassPath, before_reach: &Reach, 
     if after_reach.methods.is_empty() || before_reach.fields != after_reach.fields || before_reach.statics != after_reach.statics {
         return false;
     }
+    // Each class either version's code names has the same header in both: the same calls resolve to the same
+    // methods, and the same type tests give the same answers.
+    if before_reach.named.iter().chain(&after_reach.named).any(|c| header(before, c) != header(after, c)) {
+        return false;
+    }
     let found_in = |other: &ClassPath, reach: &Reach| {
         reach.methods.iter().all(|(m, shaped)| {
             if JDK_SHAREABLE.contains(&m.owner.as_str()) {
@@ -606,6 +648,16 @@ fn same_everywhere(before: &ClassPath, after: &ClassPath, before_reach: &Reach, 
         }
     }
     true
+}
+
+/// What a class's header decides, as text: its superclass, its interfaces in order, and whether it is an interface
+/// (or that the class path has no such class). Which method a call resolves to and what `instanceof` and `checkcast`
+/// answer depend on these alone besides the code ([`Reach::named`]).
+fn header(cp: &ClassPath, class: &str) -> String {
+    match cp.application(class) {
+        Ok(Some(c)) => format!("class {class} extends {:?} implements {:?} interface {}", c.super_class, c.interfaces, c.is_interface()),
+        _ => format!("class {class} absent"),
+    }
 }
 
 /// The code `root` runs, with everything it reaches, as text two methods compare by: each method's shape, and each
@@ -630,6 +682,9 @@ pub(crate) fn fingerprint(cp: &ClassPath, root: &MemberRef, name: &dyn Fn(&str) 
     }
     for field in &reached.fields {
         parts.push(name(&format!("field {field}")));
+    }
+    for class in &reached.named {
+        parts.push(name(&header(cp, class)));
     }
     parts.sort();
     Some((parts.join("\n\n"), reached.classes.keys().cloned().collect()))
