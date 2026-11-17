@@ -85,7 +85,10 @@
 //! A gap is refused by name under [`gaps::GapMode::Strict`], the default: the path ends there, and a run that met
 //! one has no verdict unless another path is a violation, which stands. Under [`gaps::GapMode::Assume`] the engine
 //! goes on with the approximation [`gaps::GapKind::approximation`] states, and the outcome names every gap it
-//! assumed ([`Outcome::gaps`]); a gap with no assume form ([`gaps::GapKind::assumable`]) is refused there too. Under [`gaps::GapMode::Advised`] it refuses a gap as under strict: the proof
+//! assumed ([`Outcome::gaps`]); a gap with no assume form ([`gaps::GapKind::assumable`]) is refused there too, and so
+//! is one whose object (the one a constructor constructs, or the new one a method is taken to return) is of a class
+//! whose model the check runs ([`ClassPath::checker_runs`]), whose methods would read fields no constructor of it
+//! wrote (`tests/model_countermodels.rs`). Under [`gaps::GapMode::Advised`] it refuses a gap as under strict: the proof
 //! drivers stop before the engine runs when the gap scan finds one with no contract ([`crate::advice`]), so the
 //! engine meets one only where the scan did not see it. A gap a contract closes (`--contracts`,
 //! [`crate::gap_contracts`], [`Options::contracts`]) is no gap: at a JDK call the engine runs the contract's method
@@ -4559,7 +4562,21 @@ impl<'a> Engine<'a> {
                     path.objects[o].array = None;
                 }
                 let gap = Gap { kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() };
-                if let Some(Closure { how: Closing::Stub { method, descriptor: stub, receiver }, .. }) = self.contracts.get(&gap).cloned() {
+                // The object such a call constructs, or the new one assume takes it to return, is of a class whose
+                // model this check runs: the model's methods would read fields that no constructor of it wrote, a
+                // state the model never makes, so its values could only be made up (a JDK `ArrayDeque.clone()`
+                // would be empty). A constructor's contract writes no field of the model either.
+                let unwritten = match (kind, &descriptor.ret) {
+                    (GapKind::JdkConstructor, _) => Some(member.owner.clone()),
+                    (_, Type::Object(name)) => Some(name.clone()),
+                    _ => None,
+                }
+                .filter(|class| !self.cp.is_application(class) && self.cp.checker_runs(class));
+                let contract = self.contracts.get(&gap).cloned();
+                if let Some(class) = unwritten.as_ref().filter(|_| contract.is_some() && kind == GapKind::JdkConstructor) {
+                    return unsupported(format!("{}.{}{} under a contract, on an object of {}, whose model this check runs: the contract writes none of the model's fields, which its methods read", member.owner.replace('/', "."), member.name, member.descriptor, class.replace('/', ".")));
+                }
+                if let Some(Closure { how: Closing::Stub { method, descriptor: stub, receiver }, .. }) = contract {
                     // A contract closes the gap: its method of the generated class runs in place of the call.
                     self.apply(path, gap);
                     let mut full = Vec::new();
@@ -4571,6 +4588,10 @@ impl<'a> Engine<'a> {
                 }
                 if let Some(end) = self.meet(path, kind, &member.owner, &member.name, &member.descriptor) {
                     return Ok(Some(end));
+                }
+                if let Some(class) = unwritten {
+                    let made = if kind == GapKind::JdkConstructor { "constructs" } else { "returns" };
+                    return unsupported(format!("{}.{}{} under --gaps assume: the object it {made} is of {}, whose model this check runs, and the model's methods would read fields no constructor of it wrote, so their values could only be made up", member.owner.replace('/', "."), member.name, member.descriptor, class.replace('/', ".")));
                 }
                 if let Type::Object(name) = &descriptor.ret {
                     let r = self.alloc(path, name);

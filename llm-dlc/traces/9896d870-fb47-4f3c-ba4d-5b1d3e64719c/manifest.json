@@ -12,29 +12,32 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.005Z",
-  "ended": "2026-11-17T14:38:47.065Z",
-  "duration_seconds": 6116,
+  "ended": "2026-11-17T14:52:24.180Z",
+  "duration_seconds": 6933,
   "stats": {
-    "turns": 16,
-    "api_calls": 263,
-    "tool_calls": 265,
-    "tool_errors": 4,
-    "compactions": 3,
+    "turns": 21,
+    "api_calls": 294,
+    "tool_calls": 296,
+    "tool_errors": 6,
+    "compactions": 4,
     "peak_context_tokens": 234168,
     "usage": {
-      "input_tokens": 526,
-      "output_tokens": 220264,
-      "cache_read_input_tokens": 33060770,
-      "cache_creation_input_tokens": 670892
+      "input_tokens": 588,
+      "output_tokens": 236691,
+      "cache_read_input_tokens": 35582023,
+      "cache_creation_input_tokens": 756183
     }
   },
   "tools": {
-    "Bash": 256,
-    "Edit": 6,
-    "Write": 3
+    "Bash": 282,
+    "Edit": 9,
+    "Write": 3,
+    "Monitor": 1,
+    "Read": 1
   },
   "files_touched": [
     "lib/models/java/util/lists/ArrayDeque.java",
+    "lib/src/bmc/mod.rs",
     "lib/tests/claims.rs",
     "lib/tests/fixtures/claims/claims/Deques.java",
     "lib/tests/fixtures/claims/claims/Frames.java",
@@ -86,24 +89,38 @@
     {
       "index": 3,
       "started": "2026-11-17T14:18:50.859Z",
-      "ended": "2026-11-17T14:38:47.065Z",
-      "turns": 4,
-      "api_calls": 62,
+      "ended": "2026-11-17T14:39:26.706Z",
+      "turns": 5,
+      "api_calls": 64,
       "usage": {
-        "input_tokens": 124,
-        "output_tokens": 71411,
-        "cache_read_input_tokens": 7854591,
-        "cache_creation_input_tokens": 169802
+        "input_tokens": 128,
+        "output_tokens": 72822,
+        "cache_read_input_tokens": 8224020,
+        "cache_creation_input_tokens": 175033
       },
-      "peak_context_tokens": 183075
+      "peak_context_tokens": 188306
+    },
+    {
+      "index": 4,
+      "started": "2026-11-17T14:40:20.722Z",
+      "ended": "2026-11-17T14:52:24.180Z",
+      "turns": 4,
+      "api_calls": 29,
+      "usage": {
+        "input_tokens": 58,
+        "output_tokens": 15016,
+        "cache_read_input_tokens": 2151824,
+        "cache_creation_input_tokens": 80060
+      },
+      "peak_context_tokens": 93333
     }
   ],
   "log": {
-    "sha256": "c28d60f436bf5c08b90bf77371b4a0f50ab1b0495e513f358b7a4ab0cfc37571",
-    "bytes": 6977477,
-    "lines": 2425,
-    "gzip_bytes": 1149882,
-    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/c28d60f436bf5c08b90bf77371b4a0f50ab1b0495e513f358b7a4ab0cfc37571.jsonl.gz"
+    "sha256": "fb89115d3b7f2295e0bce2662ef197cb8d97fa2380ff0f621281bf9d00b92de8",
+    "bytes": 7909094,
+    "lines": 2753,
+    "gzip_bytes": 1334344,
+    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/fb89115d3b7f2295e0bce2662ef197cb8d97fa2380ff0f621281bf9d00b92de8.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -162,6 +179,14 @@
       "summary": "An effect contract at a call: a setter's checked write set stands in for its calls, and the application-level rename statement is proved through the honest setter and refuted through the adversarial one",
       "body": "A lemma with a writes: line is now an effect contract of a public instance method (prove --lemmas). It is proved first with its frame (the write set of the last commit) and also as reading nothing that was there before the call: no field of the receiver or an object argument, no static field that is not final, no array, no default locale, and no identity comparison of such an object (bmc::Options::closed_frame, which generalizes Engine::reads and Engine::compares as the write set generalized Engine::keeps). What the method writes is then a function of its arguments. In the check, a call on a receiver of exactly the contract's class, with arguments within its bounds, runs a stub of the claim's class (bmc::Effect, the effect intrinsic). A written field takes the parameter the assertion gives it (this.f == p; the expression language now compares a String field with a String parameter by identity), another written primitive takes any value, and nothing else changes. Elsewhere the method runs as written. A written reference field with no parameter, assume:, throws:, array parameters and non-integral results are refused by name.\n\nVerified with lib/tests/fixtures/claims Frames: the honest setter's contract is proved and used (the statement lists it among what the run rests on), and 'an admin stays one under the new name' is proved. The adversarial setter's contract is refuted, so the check that rests on it is refused. Without it, 'a rename makes no account an admin' is refuted by a rename to admin:, and the witness replays. Five use-side countermodels each grant admin on a JVM (Frames.main): a name past the contract's bound, a receiver field a caller set, a static switch, a literal's identity, a subclass hook called through the inherited setter. Each was a false proof with its rule switched off (by mutation: closed_frame off, the exact-class check off, the stub's bounds guard off). New tests: two tool tests in claims.rs and unit tests for the stub, the conjunct split and String identity; test_costs run --changed passes and lint agrees. Inbox item domain-advances-state-I003 is taken in Progress. The brief is not wrong.",
       "log_sha256": "c28d60f436bf5c08b90bf77371b4a0f50ab1b0495e513f358b7a4ab0cfc37571"
+    },
+    {
+      "change_id": "qysmsruuonpkklrltllzknvuoqrrqtst",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Under --gaps assume, a gap whose object is of a class whose model the check runs is refused by name: the models on request no longer read fields no constructor wrote",
+      "body": "Inbox domain-advances-state-I004, from the challenge stream (lqyqxwqv): with --model java.util.ArrayDeque or java.util.ArrayList and --gaps assume, the own checker proved that ArrayDeque.clone(), new ArrayDeque(Collection) and new ArrayList(Collection) of one element have size 0, where a JVM gives 1. Assume took the call to make, or to construct, an object with no field written, and the model's size() then read those unwritten fields: a value nobody computed. The engine (lib/src/bmc/mod.rs, the JDK instance call's gap arm) now refuses such a gap under assume when the object it would construct, or the new object it would return, is of a class the checker runs a model of (ClassPath::checker_runs, so the HashMap model the checker always runs is covered too). Under advised, a constructor's contract on such a class is refused as well, since it writes none of the model's fields. Strict is unchanged: the gap is still refused there by name first.\n\nThe challenge stream's fixture (lib/tests/fixtures/model-countermodels: README.md, mc/Gapped.java) and its JVM test file are copied unchanged from lqyqxwqv. The README's checker test, a_model_does_not_read_fields_no_constructor_of_it_wrote, is added to lib/tests/model_countermodels.rs. It also requires each refusal to name the call, and it fails with the refusal switched off (a mutation, then restored). test_costs run --changed: 34 binaries pass; estimate, tag and lint agree. No accepted result used the hole, since every example task runs strict. Merging with the challenge line will meet lib/tests/model_countermodels.rs added on both sides: this side is that file plus the one test and its imports.",
+      "log_sha256": "fb89115d3b7f2295e0bce2662ef197cb8d97fa2380ff0f621281bf9d00b92de8"
     }
   ],
   "logs": {
@@ -199,6 +224,12 @@
       "bytes": 950480,
       "lines": 288,
       "gzip_bytes": 177631,
+      "url": null
+    },
+    "fb89115d3b7f2295e0bce2662ef197cb8d97fa2380ff0f621281bf9d00b92de8": {
+      "bytes": 7909094,
+      "lines": 2753,
+      "gzip_bytes": 1334344,
       "url": null
     }
   },

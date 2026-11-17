@@ -155,6 +155,18 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
   switch, a literal's identity, a subclass's hook reached through the inherited setter. Not yet: a stated read set,
   the postcondition beyond parameter equalities, escaping allocations, a second consumer, and the use at a reflective
   call (`Method.invoke`, how the binder reaches a setter).
+- 2026-11-17, a soundness fix to the models on request (nothing of 286 decided; the frozen claim unchanged). Inbox:
+  `domain-advances-state-I004` taken. The challenge stream's countermodels (`lqyqxwqv`) showed that under `--gaps
+  assume`, with `--model` of the class, the own checker proved `ArrayDeque.clone()`, `ArrayDeque(Collection)` and
+  `ArrayList(Collection)` give an empty collection where a JVM gives one element: assume made or constructed an object
+  with no field written, and the model's `size()` read those fields. Such a gap is now refused by name under assume
+  when its object (the one a constructor constructs, or the new one a method is taken to return) is of a class whose
+  model the check runs (`ClassPath::checker_runs`, which also covers the `HashMap` model the checker always runs), and
+  a constructor's contract under advised is refused likewise, since it writes none of the model's fields. The
+  fixture, its README and its JVM test are copied unchanged from `lqyqxwqv`; the README's test
+  `a_model_does_not_read_fields_no_constructor_of_it_wrote` is added to `lib/tests/model_countermodels.rs` and also
+  requires the refusal to name the call; it fails with the refusal switched off. No accepted result used the hole
+  (every example task is strict).
 - Next: step 3, now that I003 answers I006: how bind resolves a property name to its write method. That means a held
   kind for `CachedIntrospectionResults`' empty `strongClassCache` (an `Object` variant), then observing a bean's
   property descriptors, or an introspection contract sampled on a JVM, and the effect contract applied at
