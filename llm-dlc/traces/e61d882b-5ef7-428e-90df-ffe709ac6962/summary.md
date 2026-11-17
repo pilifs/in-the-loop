@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (ended) |
+| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (open) |
 | When | 2026-11-17 12:37 UTC to 2026-11-17 21:19 UTC (521 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.326 |
@@ -520,6 +520,12 @@ The conductor's side of D023, answered keep by the user (npqmxyrx): no stream ac
 change `mltlxwzuotmv` · [log `b0ef12008f89`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/b0ef12008f89c3a580f61ba79aaec00c30364093653b86e6ff301e48bef9e435.jsonl.gz)
 
 The user's answer to the preservation stream's I007 (D032): defer, recorded as a finding. Preservation is told through its inbox to prepare no new claim for 287 and to state the limit with 287's result.
+
+### Record verification results for 1 job(s)
+
+change `oyomlpkklzoo` · [log `b0ef12008f89`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/b0ef12008f89c3a580f61ba79aaec00c30364093653b86e6ff301e48bef9e435.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261117-225439-example-286-s-adversarial-fixture-on-5-3: passed: 1 passed step(s) in 3m53s, peak 1.3 GiB (estimated 10m00s, 4.0 GiB) Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
 
 ## Conversation
 
