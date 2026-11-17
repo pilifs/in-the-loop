@@ -90,7 +90,19 @@ relational result needs a new check (the rule's applications recorded in the out
 
 ## Progress
 
-- Nothing yet.
+- 2026-11-17, step 1 (the first failure reproduced; *working formalization* and *accepted claim* unchanged).
+  287's `proofs/prove.py` has an equivalence branch in 289's shape and 289's three properties (`evidence.json`,
+  the mutant checked against the replay's JAR, a trial marked); the mutant recipe was checked by hand to rebuild
+  the replay's JAR (`1d099295…`). Finding against the brief: both refusals of 2026-11-16 are gone (a nullable
+  String now makes the check a property of the pair, whose allowed change javac compiles), and the first stop
+  is not the cryptography: a capped probe stops in 13 s at `reads static field java.util.logging.Level.WARNING`,
+  the encoder's `logger.warn` for a null, empty or non-bcrypt stored hash (spring-jcl's `JavaUtilLog.warn`:
+  `isLoggable`, a `LogRecord`, `Logger.log`), where the checker models java.util.logging only below INFO. The
+  claim's domain includes those stored values, so the path is lifted, not excluded. Job
+  `20261117-130445-example-287-preservation-through-the-ada` records the stop at bound 80; 287's notes say so.
+- Next: lift the warning path (java.util.logging at INFO and above under the default configuration, a write to
+  `System.err` that neither result nor exception observes, with countermodels: a level, a handler or a filter
+  that would make it observable is refused), probe again to reach the two sides' bcrypt, then step 2.
 - Status: working
 
 ## Loop settings

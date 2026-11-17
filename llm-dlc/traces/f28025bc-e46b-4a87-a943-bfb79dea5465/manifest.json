@@ -1,0 +1,92 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "f28025bc-e46b-4a87-a943-bfb79dea5465",
+  "status": "open",
+  "title": null,
+  "first_prompt": "Work on the brief in `llm-dlc/loops/domain-advances-preservation.md`. Read it in full now, even if you have read it before: it is the instruction for this cycle and every cycle of this loop, and what ",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.326"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-17T12:56:51.021Z",
+  "ended": "2026-11-17T13:14:16.507Z",
+  "duration_seconds": 1045,
+  "stats": {
+    "turns": 1,
+    "api_calls": 44,
+    "tool_calls": 46,
+    "tool_errors": 1,
+    "compactions": 0,
+    "peak_context_tokens": 151991,
+    "usage": {
+      "input_tokens": 88,
+      "output_tokens": 30605,
+      "cache_read_input_tokens": 4450818,
+      "cache_creation_input_tokens": 140648
+    }
+  },
+  "tools": {
+    "Bash": 44,
+    "Edit": 1,
+    "Write": 1
+  },
+  "files_touched": [
+    "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
+    "llm-dlc/loops/domain-advances-preservation.md"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-17T12:56:51.021Z",
+      "ended": "2026-11-17T13:14:16.507Z",
+      "turns": 1,
+      "api_calls": 44,
+      "usage": {
+        "input_tokens": 88,
+        "output_tokens": 30605,
+        "cache_read_input_tokens": 4450818,
+        "cache_creation_input_tokens": 140648
+      },
+      "peak_context_tokens": 151991
+    }
+  ],
+  "log": {
+    "sha256": "0fa23e6204d9e809227a5e853e2acc187ba89e43f366708997258d2fcb3b2659",
+    "bytes": 1318856,
+    "lines": 371,
+    "gzip_bytes": 237820,
+    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/0fa23e6204d9e809227a5e853e2acc187ba89e43f366708997258d2fcb3b2659.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "yuzsnnyqnonysswxpqsnlvlkusqlnsnk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "0fa23e6204d9e809227a5e853e2acc187ba89e43f366708997258d2fcb3b2659"
+    },
+    {
+      "change_id": "oqsnoyomxkswwxynqrnwtqpssnmtmknz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 287's preservation reaches the checker and stops at java.util.logging's WARNING, not at bcrypt (verification pending)",
+      "body": "The preservation stream's step 1. Example 287's driver (proofs/prove.py) gains an equivalence branch in the shape of example 289's: jvmcontract equivalence of PasswordMatchAdapter#matches, the adapter compiled against each release, 6.3.7 on its own pinned JARs (--before-classpath), the claim's nullable parameters, and the task's allowed change as --unchanged-unless, at the claim's bound of 80. It also gains 289's three properties: it writes evidence.json (accept.record), it builds the mutant by the replay route's recipe and ends the run when the JAR is not the one the mutant replay's receipt records (checked by hand: the rebuilt JAR is the replay's, sha256 1d099295...), and a run with --max-array-length or --unwind is marked a trial.\n\nWhere it stops now: a capped probe (13 s) got past both refusals recorded on 2026-11-16 (the nullable String, VF-028, and the String expression in the allowed change: a nullable String now makes the check a property of the pair, lib/src/pairing.rs) and stopped at 'outside the fragment: reads static field java.util.logging.Level.WARNING'. For a null, empty or non-bcrypt stored hash, BCryptPasswordEncoder.matches logs a warning through spring-jcl's JavaUtilLog, and the checker models java.util.logging only below INFO. So the brief's prediction that the first failure is the cryptography is out of date; the claim's domain includes those stored hashes, so the path is to be lifted, not excluded. Job 20261117-130445-example-287-preservation-through-the-ada records the stop at the frozen bound; the example's notes and the brief's Progress say so.",
+      "log_sha256": "0fa23e6204d9e809227a5e853e2acc187ba89e43f366708997258d2fcb3b2659"
+    }
+  ],
+  "logs": {
+    "0fa23e6204d9e809227a5e853e2acc187ba89e43f366708997258d2fcb3b2659": {
+      "bytes": 1318856,
+      "lines": 371,
+      "gzip_bytes": 237820,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

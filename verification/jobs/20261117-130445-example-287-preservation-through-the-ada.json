@@ -1,0 +1,54 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-130445-example-287-preservation-through-the-ada",
+  "title": "Example 287 preservation through the adapter entry: where the frozen claim stops on today's checker",
+  "description": "The first attempt of example 287's preservation task (claims/in-range-matching-preserved.json, frozen, bound 80) on the checker as it is, by proofs/prove.py preservation, which now has an equivalence branch in the shape of example 289's driver: jvmcontract equivalence of example287.adapter.PasswordMatchAdapter#matches with the adapter compiled against each release, 6.3.7 on its own pinned JARs (--before-classpath), --nullable candidate and storedHash as the claim says, and the task's allowed change as --unchanged-unless; native, strict gaps. The driver also writes evidence.json (accept.record). The last observation (2026-11-16) was a refusal before any proof, at the nullable String (VF-028) and at a String expression in the allowed change; both are gone, since a regression check with a nullable String is now made as a property of the pair (lib/src/pairing.rs), which javac compiles. A capped probe (13 s) found the next stop: RegressionPair#agree cannot be verified, outside the fragment: reads static field java.util.logging.Level.WARNING. That is BCryptPasswordEncoder.matches's logger.warn for a null, empty or non-bcrypt stored hash, through spring-jcl's JavaUtilLog.warn, which reads Level.WARNING and writes a LogRecord through java.util.logging; the checker models java.util.logging only below INFO (lib/src/bmc/runtime.rs). This job records that stop at the frozen bound as the preservation stream's first failure. It is no answer to the claim. The step passes when the driver ends unverified with exactly that refusal, and fails on a verdict or on any other stop.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "B9",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "287"
+    ],
+    "paths": [
+      "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
+      "lib/src/pairing.rs",
+      "lib/src/bmc/runtime.rs"
+    ]
+  },
+  "expected": "exits 0: prove.py ends 'verdict: unverifiable (expected verified)' and outcome.json's problem is 'outside the fragment: reads static field java.util.logging.Level.WARNING'",
+  "submitted": {
+    "at": "2026-11-17T13:04:45+00:00",
+    "session": "f28025bc-e46b-4a87-a943-bfb79dea5465"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "5m",
+    "timeout": "1h",
+    "notes": "one capped probe of this step took 13 s and stopped before any loop; plus the release build of lib/ and the fetch of the four pinned JARs"
+  },
+  "steps": [
+    {
+      "name": "preservation at the frozen bound, 80",
+      "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py preservation --timeout 1800 --work verification/.work-287/preservation-first-failure; status=$?; echo \"prove.py exit $status\"; test $status = 1 && python3 -c \"import json,sys; o=json.load(open('verification/.work-287/preservation-first-failure/preservation/outcome.json')); print(o['verdict'], '|', o['problem']); sys.exit(0 if o['verdict']=='unverifiable' and o['problem']=='outside the fragment: reads static field java.util.logging.Level.WARNING' else 1)\"",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-287/preservation-first-failure/preservation/outcome.json",
+    "verification/.work-287/preservation-first-failure/preservation/evidence.json",
+    "verification/.work-287/preservation-first-failure/preservation/stderr.txt",
+    "verification/.work-287/preservation-first-failure/preservation/work/pair/RegressionPair.java"
+  ]
+}
