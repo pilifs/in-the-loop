@@ -1,0 +1,59 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-122546-examples-286-and-288-the-simplematch-lem",
+  "title": "Examples 286 and 288: the simpleMatch lemma is still proved, and fixed-security with it, after the checker's lemma checks were tightened",
+  "description": "On 2026-11-17 the checker's rule for a lemma (prove --lemmas) was tightened: a lemma's method, and the lemma's own assumption and assertion, may read no static field that is not final, no non-final field or array cell of an object that was there before the call, and not the default locale; and a method proved by induction is held to the write checks. Before, a lemma about a getter proved in the fresh state stood in for a call made after a write (a false proof, reproduced in lib/tests/claims.rs). The only lemmas the examples use are about PatternMatchUtils.simpleMatch(String, String): examples 286 (proofs/simple-match.contract, Spring 5.3.19) and 288 (6.1.14). Its bytecode reads no field and no array, so the results of 2026-11-15 and 2026-11-16 did not rest on the hole; this job confirms that the tightened checks still prove the lemma (by induction on the pattern's length) and each example's fixed-security claim at its frozen bound, on the same artifacts. The outcomes go to work folders of their own (.work-286/tightened, .work-288/tightened) so the accepted results' files stay as their jobs wrote them. A refusal of the lemma here (reads the static field, reads an array, reads the default locale) would name what the assertion's stream and regex models read, and is then a finding for the engine's owner, not a reason to loosen the check.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "286",
+      "288"
+    ],
+    "paths": [
+      "lib/src/bmc/mod.rs",
+      "lib/src/summary.rs",
+      "lib/tests/claims.rs"
+    ]
+  },
+  "expected": "exits 0: each prove.py prints the lemma's own ✓ line and verdict: verified (expected verified)",
+  "submitted": {
+    "at": "2026-11-17T12:25:46+00:00",
+    "session": "3e8cabab-4a28-4a79-8207-69568d9e8162"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "patch",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "50m",
+    "timeout": "2h30m",
+    "notes": "the earlier jobs' frozen steps: 286 about 15 min of a 23 min job with a trial step, 288 22 min; peak 1.4 GiB each. Plus the release build of lib/. Asked 4G, the local runner's limit per job"
+  },
+  "steps": [
+    {
+      "name": "286 fixed-security at the frozen bound, with the lemma",
+      "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py fixed-security --timeout 3300 --work verification/.work-286/tightened",
+      "cwd": "."
+    },
+    {
+      "name": "288 fixed-security at the frozen bound, with the lemma",
+      "run": "python3 examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py fixed-security --timeout 3300 --work verification/.work-288/tightened",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/.work-286/tightened/fixed-security/outcome.json",
+    "verification/.work-288/tightened/fixed-security/outcome.json"
+  ]
+}

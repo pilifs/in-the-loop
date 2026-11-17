@@ -1,0 +1,81 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-122454-example-289-the-four-proof-tasks-again-w",
+  "title": "Example 289: the four proof tasks again, with the driver's record of identities (evidence.json)",
+  "description": "Example 289's four answers beside the route are accepted by the new acceptance check (examples/tools/accept.py) from their saved results, with one limit: nothing the jobs left says which JARs, adapter classes and verifier binary were used; that rested on the driver's own hash checks. proofs/prove.py now writes evidence.json beside each outcome (the claim file's hash, the bound and whether it is the claim's, each JAR of the class path with its revision and hash, the adapter's sources and compiled classes, the verifier's binary, the driver), and ends the run when the mutant's JAR is not the one the mutant replay ran. This job reruns the four tasks unchanged at the frozen bound into a work folder of their own (verification/.work-289/recorded), so the earlier jobs' outputs stay as their results record them. It also runs the claims on the checker after its soundness fixes of 2026-11-17 (no lemma and no induction is used here, so nothing should change). When it has passed, whoever switches each task's besideRoute to this job runs python3 examples/tools/accept.py 289, which must accept all four with no limit about unrecorded artifacts.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence",
+    "B9",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "289"
+    ],
+    "paths": [
+      "examples/tools/accept.py",
+      "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py"
+    ]
+  },
+  "expected": "exits 0: prove.py prints verdict: violation, verified, verified and violation, each the expected one, at bound 8; each task's outcome.json and evidence.json come back",
+  "submitted": {
+    "at": "2026-11-17T12:24:54+00:00",
+    "session": "3e8cabab-4a28-4a79-8207-69568d9e8162"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "patch",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "20m",
+    "timeout": "1h30m",
+    "notes": "the four earlier jobs took 5 s, 3m46s, 4m13s (with the release build) and about 10 s; peak 1.8 GiB (preservation). Plus the release build of lib/ and the fetch of the pinned JARs"
+  },
+  "steps": [
+    {
+      "name": "vulnerable-security at the frozen bound, 8",
+      "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py vulnerable-security --timeout 1800 --work verification/.work-289/recorded",
+      "cwd": "."
+    },
+    {
+      "name": "fixed-security at the frozen bound, 8",
+      "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py fixed-security --timeout 1800 --work verification/.work-289/recorded",
+      "cwd": "."
+    },
+    {
+      "name": "preservation at the frozen bound, 8",
+      "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py preservation --timeout 1800 --work verification/.work-289/recorded",
+      "cwd": "."
+    },
+    {
+      "name": "mutant-security at the frozen bound, 8",
+      "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py mutant-security --timeout 1800 --work verification/.work-289/recorded",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-289/recorded/vulnerable-security/outcome.json",
+    "verification/.work-289/recorded/vulnerable-security/evidence.json",
+    "verification/.work-289/recorded/vulnerable-security/work/harness/PropertyHarness.java",
+    "verification/.work-289/recorded/vulnerable-security/work/harness/PropertyClaim.java",
+    "verification/.work-289/recorded/fixed-security/outcome.json",
+    "verification/.work-289/recorded/fixed-security/evidence.json",
+    "verification/.work-289/recorded/fixed-security/work/harness/PropertyHarness.java",
+    "verification/.work-289/recorded/fixed-security/work/harness/PropertyClaim.java",
+    "verification/.work-289/recorded/mutant-security/outcome.json",
+    "verification/.work-289/recorded/mutant-security/evidence.json",
+    "verification/.work-289/recorded/mutant-security/work/harness/PropertyHarness.java",
+    "verification/.work-289/recorded/mutant-security/work/harness/PropertyClaim.java",
+    "verification/.work-289/recorded/preservation/outcome.json",
+    "verification/.work-289/recorded/preservation/evidence.json",
+    "verification/.work-289/recorded/preservation/work/pair/RegressionPair.java"
+  ]
+}

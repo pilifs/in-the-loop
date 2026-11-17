@@ -30,8 +30,10 @@ step by hand:
 A claim's answer is the route's (build.py's), from a current receipt, or one given beside the route: by a script of
 the example's own (286 and 287 have one, proofs/prove.py), run as a verification job, which leaves no receipt. The
 sidecar records such an answer on its task (`besideRoute`: the answer, the job, how it was run), and it counts here
-only while that job's result is in this checkout, passed, and the job names the example; otherwise the claim stays
-open and `beside.why` says what is missing. A claim still open also carries `blocked`, the kinds of the observed
+only while the acceptance check accepts it (examples/tools/accept.py: the job's result is in this checkout and
+passed, the outcome its step wrote gives that very answer, about the claim as frozen, at its bound, on the entry the
+task names, a refutation reproduced on a JVM, an establishment complete and not vacuous); otherwise the claim stays
+open and `beside.why` says which check refuses it. A claim still open also carries `blocked`, the kinds of the observed
 verifier gaps its task stops at, and each row the example's own words on its outcome, `verdict` (its verdictLabel)
 and `next` (its hand-off): whether a loop has anything left to do on an example with open claims is a judgment, and
 those are what it is made from.
@@ -64,26 +66,21 @@ def gap(kind: str, what: str, task: str | None = None) -> dict:
     return {"kind": kind, "task": task, "what": what}
 
 
-def beside(root: Path, number: str, record: dict) -> dict:
-    """A task's `besideRoute` record with whether it counts: its job's result is here and passed, and the job names
-    this example. The record is the sidecar's word; the job's result is what makes it more than that."""
-    out = {"answer": record.get("answer"), "job": record.get("job"), "by": record.get("by"), "confirmed": False}
-    name = str(record.get("job"))
-    if "/" in name or name.startswith("."):
-        return {**out, "why": f"{name!r} is not a job's id"}
+def beside(root: Path, number: str, task: str, record: dict, source=None) -> dict:
+    """A task's `besideRoute` record with whether it counts: whether the acceptance check (examples/tools/accept.py)
+    derives the same answer from what the job left. The record is the sidecar's word; that a job passed and names
+    the example says only that a script exited 0, and would support either answer. `why` is the first check that
+    refuses it, `actual` what the evidence gives, `limits` what an accepted answer rests on that no record shows."""
+    sys.path.insert(0, TOOLS)
     try:
-        result = json.loads((root / "verification/results" / name / "result.json").read_text())
-    except (OSError, ValueError):
-        return {**out, "why": f"no result of job {name} in this checkout (verification/results)"}
-    if result.get("status") != "passed":
-        return {**out, "why": f"job {name} ended {result.get('status')}, not passed"}
-    try:
-        job = json.loads((root / "verification/jobs" / f"{name}.json").read_text())
-    except (OSError, ValueError):
-        return {**out, "why": f"job {name}'s file is not in this checkout (verification/jobs)"}
-    if number not in ((job.get("links") or {}).get("examples") or []):
-        return {**out, "why": f"job {name} does not name example {number} (links.examples)"}
-    return {**out, "confirmed": True}
+        import accept
+        checked = accept.check(root, number, task, source)
+    finally:
+        sys.path.remove(TOOLS)
+    out = {"answer": record.get("answer"), "job": record.get("job"), "by": record.get("by"), "confirmed": checked["accepted"]}
+    if not checked["accepted"]:
+        return {**out, "actual": checked.get("actual"), "why": checked.get("why") or f"the evidence gives {checked.get('actual')}"}
+    return {**out, "limits": checked["limits"]} if checked["limits"] else out
 
 
 def answer(claim: dict) -> str | None:
@@ -140,7 +137,7 @@ def row(root: Path, number: str, sidecar_file: Path | None) -> dict:
                    for task, status in projected["claims"].items()}
     for t in target.get("tasks") or []:
         if t.get("besideRoute") and t["id"] in r["claims"]:
-            r["claims"][t["id"]]["beside"] = beside(root, number, t["besideRoute"])
+            r["claims"][t["id"]]["beside"] = beside(root, number, t["id"], t["besideRoute"])
     for task, c in r["claims"].items():
         stops = sorted({b["kind"] for b in ready["tasks"].get(task, {}).get("blockers", [])
                         if b.get("observed") and b["kind"] in capability})

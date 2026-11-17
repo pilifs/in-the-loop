@@ -209,7 +209,7 @@
           "gaps": { "enum": ["strict", "assume", "advised"] },
           "bounds": { "description": "Explicit bounds, by the tool's option names (maxArrayLength, unwind, maxStringLength ...).", "type": "object", "propertyNames": { "pattern": "^[a-z][A-Za-z0-9]*$" }, "additionalProperties": { "type": "integer", "minimum": 0 } },
           "besideRoute": {
-            "description": "An answer to this task's claim given beside the route: by a script of the example's own, on the claim file as frozen, run as a verification job, which leaves no receipt. llm-dlc/tools/changes.py counts the claim as decided only while that job's result is in the checkout, passed, and the job names the example (links.examples); a route receipt, once there is one, outranks it. Written once the job is in; the task's `expected` and its claim stay as they were.",
+            "description": "An answer to this task's claim given beside the route: by a script of the example's own, on the claim file as frozen, run as a verification job, which leaves no receipt. llm-dlc/tools/changes.py counts the claim as decided only while the acceptance check (examples/tools/accept.py) derives this answer from what that job left: its result in the checkout, passed and naming the example (links.examples), and the outcome its step wrote giving this verdict about the claim as frozen, at the claim's bound; a route receipt, once there is one, outranks it. Written once the job is in; the task's `expected` and its claim stay as they were.",
             "type": "object",
             "required": ["answer", "job", "by", "recorded"],
             "additionalProperties": false,

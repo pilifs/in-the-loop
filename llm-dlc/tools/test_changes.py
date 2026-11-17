@@ -18,6 +18,7 @@ REPO = Path(__file__).resolve().parents[2]
 FIXTURES = REPO / "examples/tools/targets/fixtures"
 sys.path.insert(0, changes.TOOLS)
 from targets import sidecar, workflow  # noqa: E402
+import test_accept  # noqa: E402  (the fixture of an answer beside the route)
 
 PROOFS = {"vulnerable-security": "refuted", "fixed-security": "established", "preservation": "established",
           "mutant-security": "refuted", "regex-probe": "unresolved"}
@@ -69,20 +70,11 @@ class Checkout(unittest.TestCase):
         (folder / "target.json").write_text(json.dumps(target))
         return folder
 
-    def beside(self, folder, task, answer, job, status="passed", names=None):
-        """An answer given beside the route, as a sidecar records it, with the job's files as the pipeline leaves
-        them: its result (none when `status` is None) and the job itself, naming the examples it is about."""
-        target = json.loads((folder / "target.json").read_text())
-        next(t for t in target["tasks"] if t["id"] == task)["besideRoute"] = {
-            "answer": answer, "job": job, "by": "proofs/prove.py: made up", "recorded": "2026-01-02"}
-        (folder / "target.json").write_text(json.dumps(target))
-        verification = self.root / "verification"
-        if status:
-            (verification / "results" / job).mkdir(parents=True)
-            (verification / "results" / job / "result.json").write_text(json.dumps({"id": job, "status": status}))
-        (verification / "jobs").mkdir(parents=True, exist_ok=True)
-        (verification / "jobs" / f"{job}.json").write_text(json.dumps(
-            {"id": job, "links": {"examples": [folder.name[:3]] if names is None else names}}))
+    def beside(self, folder, task, answer, job, **how):
+        """An answer given beside the route, as a sidecar records it, with what the pipeline and the example's
+        driver leave: the job, its result and the collected outcome of that answer (examples/tools/test_accept.py's
+        `beside`, where `how` is described: no result, a failed job, another example's, another outcome)."""
+        return test_accept.beside(self.root, folder, task, answer, job, **how)
 
     def rows(self, *numbers):
         return {r["id"]: r for r in changes.listing(self.root, list(numbers))["examples"]}
@@ -179,6 +171,17 @@ class StateTest(Checkout):
         self.assertNotIn("blocked", claim, "a claim with its answer stops nowhere")
         self.assertEqual(changes.listing(self.root, [])["pending"], [])
         self.assertIn("1 refuted beside the route", self.run_main()[1])
+
+    def test_an_answer_beside_the_route_does_not_count_when_the_jobs_outcome_gives_another(self):
+        """A passed job that names the example once supported either answer. Now the outcome decides."""
+        folder = self.example("900", answers=PROOFS)
+        self.beside(folder, "regex-probe", "established", "20260102-000001-example-900-the-probe-beside", outcome="refuted")
+        row = self.rows()["900"]
+        claim = row["claims"]["regex-probe"]
+        self.assertEqual((row["state"], claim["beside"]["confirmed"], claim["beside"]["actual"]), ("prepared", False, "refuted"))
+        self.assertIn("conclusion: the outcome's verdict is violation (refuted), and the answer recorded is established", claim["beside"]["why"])
+        self.assertIsNone(changes.answer(claim))
+        self.assertEqual(changes.listing(self.root, [])["pending"], ["900"])
 
     def test_an_answer_beside_the_route_does_not_count_without_a_passed_job_of_this_example(self):
         cases = {"900": ({"status": "failed"}, "ended failed"), "901": ({"status": None}, "no result of job"),
