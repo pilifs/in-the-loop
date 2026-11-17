@@ -1,0 +1,11 @@
+Note: /home/filip/code/in-the-loop/verification/.state/work/20261117-002240-example-290-the-four-proof-tasks-through/examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/replay/adapter/example290/adapter/SelectionRegistry.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name "java"; the names are servlets, method, patterns); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target
+✗ Property of example290.adapter.MatcherSelectionAdapter#select violated: `false` where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalArgumentException when true:
+  select(servlets=[0, 0], method=0, patterns={})
+    outcome: 0
+  (found by jvmcontract's own checker (CaDiCaL) in 1.3 s searching inputs in [0:20], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array)
+
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.
+
+verdict: violation (expected violation); paths 4, solver calls 17, variables 6041; outcome in verification/.work-290/vulnerable-security/outcome.json
