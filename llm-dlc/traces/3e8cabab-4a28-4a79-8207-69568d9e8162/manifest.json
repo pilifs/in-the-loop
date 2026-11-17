@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "3e8cabab-4a28-4a79-8207-69568d9e8162",
-  "status": "ended",
+  "status": "open",
   "title": "Prove-java-change skill and in-the-loop runtime",
   "first_prompt": "<command-name>/model</command-name>\n            <command-message>model</command-message>\n            <command-args></command-args>",
   "client": {
@@ -12,14 +12,14 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T19:24:01.389Z",
-  "ended": "2026-11-17T12:41:53.348Z",
-  "duration_seconds": 148672,
+  "ended": "2026-11-17T13:35:41.840Z",
+  "duration_seconds": 151900,
   "stats": {
-    "turns": 38,
+    "turns": 39,
     "api_calls": 929,
     "tool_calls": 974,
     "tool_errors": 33,
-    "compactions": 7,
+    "compactions": 8,
     "peak_context_tokens": 466382,
     "usage": {
       "input_tokens": 1904,
@@ -199,14 +199,28 @@
         "cache_creation_input_tokens": 420270
       },
       "peak_context_tokens": 449844
+    },
+    {
+      "index": 8,
+      "started": "2026-11-17T13:35:41.396Z",
+      "ended": "2026-11-17T13:35:41.840Z",
+      "turns": 1,
+      "api_calls": 0,
+      "usage": {
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 0
     }
   ],
   "log": {
-    "sha256": "db8426e717da05b1e78c67f4e65b6179a6bf872f0b3f46ae84d4c14b708e5287",
-    "bytes": 24331979,
-    "lines": 8455,
-    "gzip_bytes": 4181887,
-    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/db8426e717da05b1e78c67f4e65b6179a6bf872f0b3f46ae84d4c14b708e5287.jsonl.gz"
+    "sha256": "2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4",
+    "bytes": 24502975,
+    "lines": 8481,
+    "gzip_bytes": 4223535,
+    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz"
   },
   "subagents": [
     {
@@ -1382,6 +1396,54 @@
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261117-122454-example-289-the-four-proof-tasks-again-w: passed: 4 passed step(s) in 1m33s, peak 551.4 MiB (estimated 20m00s, 4.0 GiB); 15 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1; jvmcontract:holds×2 Applied 15 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
       "log_sha256": "db8426e717da05b1e78c67f4e65b6179a6bf872f0b3f46ae84d4c14b708e5287"
+    },
+    {
+      "change_id": "smxzwqlrvzxmnyqvzmnsuqoktxkoqomx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The run-streams tests no longer inherit a real run's watcher, so run inside a stream they cannot ask it questions",
+      "body": "test_brief_run.py's fixture now drops RUN_STREAMS_*, FEATURE_LOOP_* and LOOP_CONDUCTOR from the environment. A stream of the domain-advances run ran the test of a run 'without a watcher', which built its env from os.environ: inside the stream's loop that carries RUN_STREAMS_WATCHER, so the test's made-up run-streams.sh put two merge questions (streams a and b of made-up) to the real watcher, which answered them leave (run-streams-domain-advances D001, D002). Verified: the 39 tests pass with a decoy RUN_STREAMS_WATCHER and LOOP_CONDUCTOR set, and nothing is written to the decoy.",
+      "log_sha256": "2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4"
+    },
+    {
+      "change_id": "kxvzvywpoqxuvyoxtvkwltuonqrsuork",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The streams of domain-advances are told the leaking run-streams test is not their work",
+      "body": "Each stream's inbox has an item (I001, a failure) saying that test_brief_run.py's no-watcher test may hang or fail in their test runs until they have the fixture fix (smxzwqlr), and that they should not change it or block on it.",
+      "log_sha256": "2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4"
+    },
+    {
+      "change_id": "kkytrqkutoplpxkoywvoovplxzvpuxmr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261117-130445-example-287-preservation-through-the-ada: passed: 1 passed step(s) in 15.8s, peak 817.1 MiB (estimated 5m00s, 4.0 GiB); 4 output file(s) changed; signals: jvmcontract:fails×2 Applied 4 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4"
+    },
+    {
+      "change_id": "yoqtxvqqztznrlslkvxrzyzyqtlwkypx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261117-130335-example-286-protected-state-tasks-at-the: passed: 2 passed step(s) in 3m30s, peak 218.5 MiB (estimated 20m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:fails×1 Applied 6 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4"
+    },
+    {
+      "change_id": "swltxzmlzrplsxutqxzutpzxomtvwxrv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261117-122546-examples-286-and-288-the-simplematch-lem: passed: 2 passed step(s) in 35m42s, peak 1.4 GiB (estimated 50m00s, 4.0 GiB); 2 output file(s) changed; signals: jvmcontract:holds×1 Applied 2 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4"
+    },
+    {
+      "change_id": "synxurtvrlmxnspqzowrtnmxsyyouvpm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The watcher answers leave to the questions a leaked test put to the domain-advances run",
+      "body": "Streams that ran test_brief_run.py before the fixture fix (smxzwqlr) put their test's made-up streams a and b to the real watcher; each is answered leave and recorded (run-streams-domain-advances D004 onward). Nothing was merged.",
+      "log_sha256": "2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4"
     }
   ],
   "logs": {
@@ -1402,6 +1464,12 @@
       "lines": 247,
       "gzip_bytes": 223649,
       "url": "https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/28bfb328658f5e5231d936637643363cfe936f0c63bd59c91348b262cd86e0a6.jsonl.gz"
+    },
+    "2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4": {
+      "bytes": 24502975,
+      "lines": 8481,
+      "gzip_bytes": 4223535,
+      "url": null
     },
     "324460a5ab60e82b3c555bb2ed2d16f6846b70dfc4cc635b2b4bd5a7bcce4a12": {
       "bytes": 17578519,
