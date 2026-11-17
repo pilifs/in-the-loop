@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-17T15:09:19.023Z",
-  "duration_seconds": 9096,
+  "ended": "2026-11-17T18:14:21.172Z",
+  "duration_seconds": 20198,
   "stats": {
-    "turns": 8,
-    "api_calls": 58,
-    "tool_calls": 52,
+    "turns": 10,
+    "api_calls": 74,
+    "tool_calls": 66,
     "tool_errors": 2,
     "compactions": 0,
-    "peak_context_tokens": 202673,
+    "peak_context_tokens": 230298,
     "usage": {
-      "input_tokens": 128,
-      "output_tokens": 42340,
-      "cache_read_input_tokens": 6693646,
-      "cache_creation_input_tokens": 164033
+      "input_tokens": 164,
+      "output_tokens": 53221,
+      "cache_read_input_tokens": 9972014,
+      "cache_creation_input_tokens": 365276
     }
   },
   "tools": {
-    "Bash": 49,
-    "Read": 2,
+    "Bash": 62,
+    "Read": 3,
     "Write": 1
   },
   "files_touched": [
@@ -40,24 +40,24 @@
     {
       "index": 0,
       "started": "2026-11-17T12:37:43.460Z",
-      "ended": "2026-11-17T15:09:19.023Z",
-      "turns": 8,
-      "api_calls": 58,
+      "ended": "2026-11-17T18:14:21.172Z",
+      "turns": 10,
+      "api_calls": 74,
       "usage": {
-        "input_tokens": 128,
-        "output_tokens": 42340,
-        "cache_read_input_tokens": 6693646,
-        "cache_creation_input_tokens": 164033
+        "input_tokens": 164,
+        "output_tokens": 53221,
+        "cache_read_input_tokens": 9972014,
+        "cache_creation_input_tokens": 365276
       },
-      "peak_context_tokens": 202673
+      "peak_context_tokens": 230298
     }
   ],
   "log": {
-    "sha256": "5fdbc05d089c8341bdc0b2c1e0ddfd20fe18222609a7f6f3a52da36f83c56979",
-    "bytes": 1460970,
-    "lines": 447,
-    "gzip_bytes": 281424,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/5fdbc05d089c8341bdc0b2c1e0ddfd20fe18222609a7f6f3a52da36f83c56979.jsonl.gz"
+    "sha256": "735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d",
+    "bytes": 1685139,
+    "lines": 548,
+    "gzip_bytes": 315679,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -302,12 +302,132 @@
       "log_sha256": "5fdbc05d089c8341bdc0b2c1e0ddfd20fe18222609a7f6f3a52da36f83c56979"
     },
     {
+      "change_id": "nosxvuntumnmpmvzpqmvvsrmxmzsmnys",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-030's Python half was empty and the default run covers it; the Rust proof tier is queued after the foundation's checker changes (verification pending)",
+      "body": "Job 20261117-152112-the-rust-proof-tier-after-the-domain-adv runs every ignored Rust test in release with --no-fail-fast. It covers the own checker's changes since the last proof-tier jobs: the domain-advances foundation's (qkqpsmqk, in bmc/mod.rs, bmc/strings.rs, property.rs and summary.rs) and this line's (pairing.rs, statement.rs, observed.rs, classpath.rs, equivalence.rs). Unlike the jobs after examples 287 to 290, it keeps VF-018's three heap tests, since VF-018 is closed and they run the own checker under auto --confirm. It also includes the seven tests wvvtwkos moved to the proof tier. About 55 minutes, 4 CPUs, 8 GiB.\n\nThe estimate counts 0 Python proof tests because there are none. No Python test is tagged @cost(\"proof\"), now or at VF-030's own job (8594e6b7adb1); the tag occurs only in the tier tools and the lint's fixtures. So test_costs.py run --tier proof --only python runs nothing, and it was not queued. The brief's step 6 is out of date in asking for it. Every Python test is in the default run, which passed inline at this line's head (tree bc1caa8a8827, 54 of 54). VF-030 is updated to say this and closes when the Rust job passes.\n\nThe brief's Progress records cycle 11 and acknowledges inbox item domain-advances-evidence-I007: accept.py's seven holes, the next cycle's work. Checked with test_costs.py run --changed (4 files passed).",
+      "log_sha256": "735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d"
+    },
+    {
+      "change_id": "kqxwrwrxwkvmutrkvpklpuqsnmpumkop",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "accept.py refuses or leaves unbound the seven answers the challenge stream's controls showed it accepting without evidence",
+      "body": "Inbox item domain-advances-evidence-I007 (the challenge stream's countermodels, lib/tests/fixtures/accept-countermodels/README.md at zwrpkwnl) listed seven controls in which examples/tools/accept.py accepted an answer beside the route that its evidence does not give. They are now in examples/tools/test_accept.py (Countermodels), each with the evidence of the same kind that is still accepted, and accept.py closes each hole:\n- entry: matched as whole Class#method names (the invocation's entry, or the adapter entry an assumption names as such, which 286's and 287's tasks use), not as substrings;\n- step: exactly python3 [-I] <folder>/proofs/prove.py TASK, and the artifacts check holds evidence.json's driver hash to the driver at the job's source commit;\n- domain: the claim's bound alone (a task's bounds no longer lowers it), and a witness's null input must be of a parameter the claim makes nullable;\n- replay: where the claim has an assume, a refutation needs a record that it held on the witness: the harness source the job collected (work/harness/PropertyHarness.java), which returns first wherever the assumption does not hold, so the JVM's failure of it is on an assumed input; without it the answer is unbound;\n- expressions: an equivalence task with no allowed change is refused when the generated pair has meantToChange or the outcome says it ran with an allowed change.",
+      "log_sha256": "735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d"
+    },
+    {
+      "change_id": "nsnxmlmtukmtswunowossrntslrtqoku",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-030 is closed: the Rust proof tier passed whole after the foundation's checker changes and the evidence line's",
+      "body": "Job 20261117-152112-the-rust-proof-tier-after-the-domain-adv (at 9ec6e448674f) passed in 42m14s at 4.2 GiB, against an estimate of 55 min and 8 GiB. It ran cargo test --release --no-fail-fast -- --ignored, 19 tests: every Rust row lib/tests/costs.json marks ignored, none left out, and all 19 passed. Among them were VF-018's three heap tests, the seven tests wvvtwkos moved, and conformance's two (1228 s). The commit the job ran at holds the foundation's checker changes (qkqpsmqk) and this line's pair and observation checks. The Python half has no tests (no Python test is tagged proof tier, cycle 11), so VF-030 is closed with nothing left. The result folder was taken from the collector's commit xnlsuqmu unchanged. Verified by reading the job's log against costs.json's ignored rows, and with test_costs.py run --changed (4 of 4).\n\nThe brief's Progress records cycle 13 and acknowledges inbox items domain-advances-evidence-I008 and I009. I008: the observation binding misses supertypes, Properties.get, the time zone and the environment. I009: keep the state stream's Dump.nameOf. Both are the next cycle's work, so the status is working. Also out of date in the brief: the 'Where it stands' paragraph (as said since ymzlyksq), and step 6's Python proof tier, which has no tests (as said in nosxvunt).",
+      "log_sha256": "735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d"
+    },
+    {
+      "change_id": "mmnoqoprrzmrtqovvnqruywlxrzwkmpu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "An observation is bound to its supertypes' state, to a property read through the Properties map, to the time zone and to the environment; the state stream's lambda naming is kept",
+      "body": "The challenge stream's ob countermodels (inbox item I008, lqvlvwsm) showed five holes in the observed-initializer binding of lzpqszyo. Each is now refused or stated. An initializer that writes a superclass's static (ob.Derived) or a superinterface's array (ob.Filled) is refused with the field: the observer had skipped supertypes when comparing each class the initialization initialized with that class initialized alone. A property read by key through System.getProperties() (ob.Bypassed) is recorded and stated like a getProperty read. A read of the properties as a whole is refused. The default time zone is stated beside the locale (ob.Zoned, verified at 9 under Asia/Tokyo, which the result says). A class whose code calls System.getenv or ProcessBuilder.environment is refused (ob.Environ). The observation format gains on.zone and on.allProperties; Slot, Object and the identity are unchanged.\n\nI009: ObservedInitializer.java is taken whole from the state line (llyzwmyp), whose Dump.nameOf names a lambda's hidden class without the address the JVM appends, with its claims.Hooked fixture and test lines. The ob fixtures are copied byte for byte from lqvlvwsm rather than merged.\n\nVerified: the new test an_observation_is_bound_to_its_writes_outside_the_class_and_to_every_setting_it_read (lib/tests/observed_countermodels.rs) passes and asserts how each case comes out. A new unit test in observed.rs passes. claims.rs's observed test, with Hooked, passes. test_costs.py run --changed passed 28 of 28, including the whole cargo test. Capped probes of example 290's fixed-security and preservation verified both again with the same path counts (659, 573) under the wider binding. Recorded in 290's notes, VF-033 and lib/README.md.\n\nThe brief's 'Where it stands' paragraph is out of date: every besideRoute answer of 286 to 290 except 289's and 290's preservation is now accepted with no limit.",
+      "log_sha256": "735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d"
+    },
+    {
+      "change_id": "wxpoyswsmkvluxrrpqptrkvuqnxksrno",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "accept.py refuses a job any of whose steps is not a plain run of an example's driver, closing the step check past kqxwrwrx",
+      "body": "The challenge stream (inbox domain-advances-evidence-I010, xnqlyxnw) found that the step check read a step's words only up to the task's name and the first --work. The pipeline runs a step with bash -c, so four kinds of job were accepted with no limit: a shell suffix after the driver that rewrites the outcome, an earlier step that replaces the driver or writes the outcome folder, --work given twice (the check took the first, the driver keeps the last), and --jvmcontract pointing at another binary. Now every step of the job file must be python3 [-I] examples/NNN-.../proofs/prove.py TASK with only --timeout, one --work and the trial flags, as plain words. A job's env and a step's cwd are refused. The result's steps must be the job file's, apart from the pipeline's own cargo build as step 0. A later step that writes the same outcome folder is refused.\n\nVerified: the controls are in test_accept.py (StepsPastTheFix, 7 tests). On the old accept.py six of them fail, 14 failures in all. The seventh checks that the honest jobs' shapes stay accepted with no limit. accept.py 286 to 290 still accepts the same 13 answers, and 289's and 290's preservation are refused as before for outside. test_accept.py passes 45 tests; test_costs.py run --changed passed 7 of 7, with one unrelated flaky JBMC unit test that passed on its second run; estimate, tag and lint agree.\n\nThe brief is out of date where its 'Where it stands' paragraph describes the results (as said since ymzlyksq), and its pending items are now settled by I012: the 289/290 preservation rerun is the preservation stream's, and 290's freeze is the user's open question.",
+      "log_sha256": "735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d"
+    },
+    {
+      "change_id": "qxstltmqkootwmmkzpmpnxkwnsysruor",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "test_accept.py's pipeline build step uses a path outside any home directory; the made-up one is proposed for the allow list",
+      "body": "The step controls committed just before (wxpoysws) wrote the pipeline's own cargo build step with a made-up /home/... path, which the trace check reports as another user's home directory (finding fa4e66dc, warn, in this session's log). The fixture now uses /opt/rust/bin/cargo. The finding in the log is proposed for the allow list with sync.py allow propose and waits for a person to approve it. Verified: test_accept.py passes its 45 tests.",
+      "log_sha256": "735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d"
+    },
+    {
+      "change_id": "vqquvmnmmoqxwqtkorlusnmrumwrtklp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "An observed initializer is refused where it wrote into a value another class holds or changed the JDK's settings: every value of a class it initialized besides is compared in full",
+      "body": "The challenge stream's binding countermodels (klqnuoxw, inbox item I011) showed three proofs a JVM contradicts. The observation compared a class the initialization initialized besides only as far as it held its fields, so a write into an object another class holds (bc.Boxed) and a lambda of Hooks put in place of another of Hooks' (bc.Rehooked) went unseen. It also read the default locale before the initialization, so an initializer that set it (bc.Relocaled) was observed as if it had not. Their fixtures and JVM test were copied from klqnuoxw unchanged.\n\nThe observer (lib/src/observed/ObservedInitializer.java, Describe) now describes in full each value it does not hold, in each class initialized besides the observed one and in that class initialized alone. An object of the application is described by every field its classes declare. A lambda is described by the method it calls, read from its class's constant pool (the observer's JVM gets --add-exports for that), and by the values it captured. A JDK collection is described by its elements, sorted where the class keeps no order, and a float by its bits. observe (lib/src/observed.rs) compares these descriptions and refuses a value with none, with why. The observer also reads the default locale, the time zone and the system properties again after the initialization, and a change is refused with the setting. The format gains on.changed, plus d or why beside u; Slot, Object and the identity are unchanged.",
+      "log_sha256": "735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d"
+    },
+    {
+      "change_id": "vzovllprprlkxyzzolmonlottyvstozz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261117-151521-examples-289-and-290-preservation-once-m: passed: 2 passed step(s) in 57.3s, peak 550.7 MiB (estimated 10m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:holds×2 Applied 6 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d"
+    },
+    {
+      "change_id": "xnlsuqmupktymnnlzyzrtxoxplzzsumx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261117-152112-the-rust-proof-tier-after-the-domain-adv: passed: 1 passed step(s) in 42m14s, peak 4.2 GiB (estimated 55m00s, 8.0 GiB); signals: cargo:tests×35 Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d"
+    },
+    {
+      "change_id": "ltkznttykmurztokpomwzovqysppxzrn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The evidence stream is run again: its 289/290 preservation rerun moves to the preservation stream after the merge, and 290's freeze is the user's question",
+      "body": "Evidence blocked on a rerun that needs preservation's zmvkptqz and its own fix on one line, and on the user's freeze of 290's restated claim. The rerun now falls to the preservation stream once evidence is merged into the default line (D022; the merge order is the user's, D021); the freeze is recorded as an open question for the user (D023). Evidence is told through its inbox and run again for its open items I010 and I011.",
+      "log_sha256": "735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d"
+    },
+    {
+      "change_id": "uolrlxuwtnwyxkmrulqlxmymxrvolqtz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge stream evidence of the domain-advances run into the line",
+      "body": "The stream evidence of the brief llm-dlc/loops/domain-advances.md is finished (done), and the run's watcher merges each stream the moment it is, while the others still run. Its workspace domain-advances-evidence branched from this line, which moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d"
+    },
+    {
+      "change_id": "qrxtwtloowtnlltopwlkquvsltyslsnk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the merge of stream evidence in the domain-advances brief's Progress",
+      "body": "The run's watcher merged stream evidence (vqquvmnmmoqx) into the default line; the brief's status is now working.",
+      "log_sha256": "735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d"
+    },
+    {
+      "change_id": "wpmnpvlvnvylrzwonosszzozmspklwpy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The preservation stream is asked to take the default line and rerun 289's and 290's preservation",
+      "body": "Evidence is merged (qrxtwtlo), so its fix and preservation's zmvkptqz can first meet on the preservation line; the rerun falls to preservation as decided (D022), through its inbox.",
+      "log_sha256": "735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d"
+    },
+    {
+      "change_id": "rzzrluxkturtrmkxoupywlmxzqpuplso",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-037: a stream's changed-test run filled its loop's 12G cap, and the OOM killer took the session",
+      "body": "The challenge stream of the domain-advances run ended in its cycle 17 when the kernel killed its claude process: its test_costs.py run --changed ran several Rust test binaries and javacs side by side in the loop's 12G scope. The tests went on as orphans, the immediate rerun was refused beside them, and the stream was counted blocked. The watcher stopped the scope; the finding records what would let the tests fail alone instead.",
+      "log_sha256": "735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d"
+    },
+    {
       "change_id": "zmxknqtytrmmpkxqkstqznrkmktzkolv",
       "commit_id": null,
       "immutable": false,
       "summary": "The challenge stream is left unmerged until its loop can be continued after the run",
       "body": "Its session was killed by the OOM killer (VF-037) with uncommitted work in its workspace, so brief_run.py merge refuses it. It is continued with brief_run.py start once the other streams end, and merged before state, as the user's merge order (D021) asks.",
       "log_sha256": "5fdbc05d089c8341bdc0b2c1e0ddfd20fe18222609a7f6f3a52da36f83c56979"
+    },
+    {
+      "change_id": "wwpkylrynorxnztppmskrxprwvqlqzsq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The preservation stream is passed an outside review of its relational check, for optional consideration",
+      "body": "At the user's request the watcher asked Codex (read-only) to review the preservation stream's approach to 287 and 307. Its advice goes to the stream through its inbox as optional: close I010 in shared.rs::reach before more summary reuse, don't take job 20261117-180758 as a decision while I010 is open on its checker, move the relational boundary outward to a checked congruence of an unchanged callee (crypt_raw) rather than tune loops, and bound the remaining cost work.",
+      "log_sha256": "735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d"
     }
   ],
   "logs": {
@@ -321,6 +441,12 @@
       "bytes": 693304,
       "lines": 172,
       "gzip_bytes": 146327,
+      "url": null
+    },
+    "735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d": {
+      "bytes": 1685139,
+      "lines": 548,
+      "gzip_bytes": 315679,
       "url": null
     },
     "887466d85ae2b9a053998b76061340b63451ab145972c3cfaaa378eb63fdfbef": {
