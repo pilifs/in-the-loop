@@ -1,0 +1,559 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261117-004852-default-test-run-at-nmskpkrkukuy",
+  "title": "Default test run at nmskpkrkukuy",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 7m01s, peak 6.0 GiB (estimated 12m00s, 4.0 GiB); signals: cargo:tests×33",
+  "attention": [
+    "step 1 (default tests) was held back 34m59s by its 6-CPU quota in 7m01s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261117-004852-default-test-run-at-nmskpkrkukuy.json",
+    "sha256": "acb8034dae375b626813f632381442299d5af5580d5eef8e668171c05d12f8e9",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261117-004852-default-test-run-at-nmskpkrkukuy",
+      "title": "Default test run at nmskpkrkukuy",
+      "description": "The default test run (python3 lib/tools/test_costs.py run: cargo test and every Python suite, the unit and tool tiers) at change nmskpkrkukuy, \"The default run builds Rust's tests in a lightly optimised profile and takes 3.4 minutes: the engine's own tests are sev\", queued with Rust's tests in the test-fast profile: the run's time as a job, and the profile's first build in the job's warm target directory. Nobody waits for it: the watcher or the next session reads the result, and sync.py push requires a passed run that covers the commit it pushes (verification/default_tests.py).",
+      "kind": "other",
+      "capabilities": [
+        "tests:default"
+      ],
+      "links": {
+        "commits": [
+          "nmskpkrkukuy"
+        ]
+      },
+      "expected": "exits 0: every test of the default run passes",
+      "submitted": {
+        "at": "2026-11-17T00:48:52+00:00",
+        "session": "b23a1dcc-0128-4ba1-b4aa-85526c834e11"
+      },
+      "revision": "225f3605b7c118efdc5c514b0edba18809fc49a1",
+      "requires": [
+        "cargo"
+      ],
+      "resources": {
+        "cpus": 6.0,
+        "memory": "4G",
+        "duration": "12m",
+        "timeout": "1h",
+        "notes": "as a job on six CPUs the run took 19.5 minutes one test file after another, 14.5 with Rust beside Python and 8.6 with the Rust binaries and Python files several at a time (2026-11-17), longer beside proof jobs; its cargo target directory is kept warm between runs"
+      },
+      "steps": [
+        {
+          "name": "default tests",
+          "run": "nice -n 10 python3 verification/default_tests.py step",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "225f3605b7c118efdc5c514b0edba18809fc49a1",
+  "startedAt": "2026-11-17T00:50:35+00:00",
+  "finishedAt": "2026-11-17T00:57:37+00:00",
+  "wallSeconds": 422.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3023815,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 6.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 6.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 720.0,
+    "notes": "as a job on six CPUs the run took 19.5 minutes one test file after another, 14.5 with Rust beside Python and 8.6 with the Rust binaries and Python files several at a time (2026-11-17), longer beside proof jobs; its cargo target directory is kept warm between runs"
+  },
+  "usage": {
+    "peakMemoryBytes": 6442450944,
+    "wallSeconds": 421.2,
+    "cpuSeconds": 2473.3,
+    "memoryOfEstimate": 1.5,
+    "durationOfEstimate": 0.59
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "default tests",
+      "run": "nice -n 10 python3 verification/default_tests.py step",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 421.244,
+      "cpuSeconds": 2473.326,
+      "cpuThrottledSeconds": 2099.036,
+      "peakMemoryBytes": 6442450944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 1726,
+      "log": {
+        "path": "logs/1-default-tests.log",
+        "lines": 119,
+        "bytes": 22446,
+        "sha256": "aa03762eccf7e5a08def08de3b68a4ec0a047b5b2bf6ee71da747f6c78b13961",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 33
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 4,
+          "text": "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 52.98s [53s with the others]",
+          "groups": [
+            "ok",
+            "12",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 7,
+          "text": "test result: ok. 34 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 27.13s [27s with the others]",
+          "groups": [
+            "ok",
+            "34",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 11,
+          "text": "test result: ok. 10 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 39.53s [40s with the others]",
+          "groups": [
+            "ok",
+            "10",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 15,
+          "text": "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 161.55s [162s with the others]",
+          "groups": [
+            "ok",
+            "14",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 19,
+          "text": "test result: ok. 65 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 82.16s [82s with the others]",
+          "groups": [
+            "ok",
+            "65",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 22,
+          "text": "test result: ok. 49 passed; 0 failed; 9 ignored; 0 measured; 0 filtered out; finished in 49.74s [50s with the others]",
+          "groups": [
+            "ok",
+            "49",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 27,
+          "text": "test result: ok. 40 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 19.11s [19s with the others]",
+          "groups": [
+            "ok",
+            "40",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 31,
+          "text": "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 237.79s [238s with the others]",
+          "groups": [
+            "ok",
+            "6",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 36,
+          "text": "test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 52.31s [52s with the others]",
+          "groups": [
+            "ok",
+            "17",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 40,
+          "text": "test result: ok. 285 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 20.07s [20s with the others]",
+          "groups": [
+            "ok",
+            "285",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 46,
+          "text": "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 37.44s [37s with the others]",
+          "groups": [
+            "ok",
+            "4",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 52,
+          "text": "test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 18.65s [19s with the others]",
+          "groups": [
+            "ok",
+            "22",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 75,
+          "text": "test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 22.33s [22s with the others]",
+          "groups": [
+            "ok",
+            "8",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 77,
+          "text": "test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.98s [13s with the others]",
+          "groups": [
+            "ok",
+            "19",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 79,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.56s [10s with the others]",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 81,
+          "text": "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.36s [7s with the others]",
+          "groups": [
+            "ok",
+            "12",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 83,
+          "text": "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.92s [10s with the others]",
+          "groups": [
+            "ok",
+            "5",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 85,
+          "text": "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.70s [11s with the others]",
+          "groups": [
+            "ok",
+            "12",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 87,
+          "text": "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.38s [4s with the others]",
+          "groups": [
+            "ok",
+            "10",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 89,
+          "text": "test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.60s [14s with the others]",
+          "groups": [
+            "ok",
+            "18",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 91,
+          "text": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.08s [4s with the others]",
+          "groups": [
+            "ok",
+            "3",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 93,
+          "text": "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.29s [11s with the others]",
+          "groups": [
+            "ok",
+            "14",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 95,
+          "text": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.96s [4s with the others]",
+          "groups": [
+            "ok",
+            "3",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 97,
+          "text": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.89s [4s with the others]",
+          "groups": [
+            "ok",
+            "2",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 99,
+          "text": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.25s [3s with the others]",
+          "groups": [
+            "ok",
+            "3",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 101,
+          "text": "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.75s [9s with the others]",
+          "groups": [
+            "ok",
+            "3",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 103,
+          "text": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.78s [5s with the others]",
+          "groups": [
+            "ok",
+            "2",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 105,
+          "text": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s [0s with the others]",
+          "groups": [
+            "ok",
+            "2",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 107,
+          "text": "test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s [0s with the others]",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 109,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s [0s with the others]",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 111,
+          "text": "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.99s [2s with the others]",
+          "groups": [
+            "ok",
+            "4",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 113,
+          "text": "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.93s [1s with the others]",
+          "groups": [
+            "ok",
+            "4",
+            "0"
+          ]
+        },
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 115,
+          "text": "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s [2s with the others]",
+          "groups": [
+            "ok",
+            "0",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "     Running lib/tests/reuse.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/reuse-0171c8f2f2d29533)",
+        "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.36s [7s with the others]",
+        "     Running lib/tests/foundations.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/foundations-57f6c489891fe1b4)",
+        "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 9.92s [10s with the others]",
+        "     Running lib/tests/claims.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/claims-1b66eb54caf6ea8c)",
+        "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.70s [11s with the others]",
+        "     Running lib/tests/value_parameters.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/value_parameters-7e3850eec4ce6ce9)",
+        "test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.38s [4s with the others]",
+        "     Running lib/tests/values.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/values-c0048b3f5b9e6e07)",
+        "test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.60s [14s with the others]",
+        "     Running lib/tests/compare_domains.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/compare_domains-4c6ca1434b36c9d5)",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.08s [4s with the others]",
+        "     Running lib/tests/reuse_summaries.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/reuse_summaries-2c2391961245e143)",
+        "test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.29s [11s with the others]",
+        "     Running lib/tests/dependencies.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/dependencies-f2004e4471cb20eb)",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.96s [4s with the others]",
+        "     Running lib/tests/string_literals.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/string_literals-7348db4870f0de23)",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.89s [4s with the others]",
+        "     Running lib/tests/object_strings.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/object_strings-4eea30042a6db2a2)",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.25s [3s with the others]",
+        "     Running lib/tests/pairing.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/pairing-a2fcb8a3f022f22e)",
+        "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.75s [9s with the others]",
+        "     Running lib/tests/interface_regression.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/interface_regression-15d4b27d923c5391)",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.78s [5s with the others]",
+        "     Running lib/tests/tiers.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/tiers-535d46654d6f786f)",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s [0s with the others]",
+        "     Running lib/tests/preparation.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/preparation-c98e4dbc2c427cc4)",
+        "test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s [0s with the others]",
+        "     Running lib/src/main.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/jvmcontract-e33480fc19840074)",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s [0s with the others]",
+        "     Running lib/tests/loops.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/loops-6bd90011ce0c44d1)",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.99s [2s with the others]",
+        "     Running lib/tests/interface_parameters.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/interface_parameters-3a63b5630933a0f5)",
+        "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.93s [1s with the others]",
+        "     Running the doctests",
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s [2s with the others]",
+        "cargo test: 33 test binaries, 3 at a time, in 312s",
+        "default tier: 49 of 49 passed",
+        "default tests: unread zlib:eNrFXVuP6zhy/ivBPkdty3c/TmYG2EVmN4Od5CEIggEt0TZP67ai1H08v37rQsqSLOpmdwLszum2ySqyWJeviiX1//zpLYhEGcqFlkWhkot++6bT5E//+i/3L95VFOlFlqcf0vsmPoQXXEVykV1jylOk9HXx27//5Zdf3uKwY0guP5T89M4qCZFb79Ay8T5krs4qEIVKk66xXhaVF5UsYpG/yyKLRCDvG7ioQhRFrk5lITV+8uMvP/zXTz8bCr/85cef//bbz7UfvR9/9",
+        "default tests: passed: default tier: 49 of 49 passed"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-17T00:57:40+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}

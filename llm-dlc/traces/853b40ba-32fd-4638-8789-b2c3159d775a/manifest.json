@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "853b40ba-32fd-4638-8789-b2c3159d775a",
-  "status": "open",
+  "status": "ended",
   "title": null,
   "first_prompt": "<command-message>run-verification</command-message>\n<command-name>/run-verification</command-name>\n<command-args>This is an unattended run started by llm-dlc/tools/verification-loop.sh, in a fresh ses",
   "client": {
@@ -12,48 +12,48 @@
     "claude-sonnet-5-5"
   ],
   "started": "2026-11-16T23:20:56.965Z",
-  "ended": "2026-11-16T23:46:01.416Z",
-  "duration_seconds": 1504,
+  "ended": "2026-11-17T00:07:24.038Z",
+  "duration_seconds": 2787,
   "stats": {
     "turns": 1,
-    "api_calls": 14,
-    "tool_calls": 16,
+    "api_calls": 19,
+    "tool_calls": 20,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 44603,
+    "peak_context_tokens": 47471,
     "usage": {
-      "input_tokens": 28,
-      "output_tokens": 2705,
-      "cache_read_input_tokens": 514414,
-      "cache_creation_input_tokens": 31290
+      "input_tokens": 38,
+      "output_tokens": 4021,
+      "cache_read_input_tokens": 742614,
+      "cache_creation_input_tokens": 34158
     }
   },
   "tools": {
-    "Bash": 16
+    "Bash": 20
   },
   "files_touched": [],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-16T23:20:56.965Z",
-      "ended": "2026-11-16T23:46:01.416Z",
+      "ended": "2026-11-17T00:07:24.038Z",
       "turns": 1,
-      "api_calls": 14,
+      "api_calls": 19,
       "usage": {
-        "input_tokens": 28,
-        "output_tokens": 2705,
-        "cache_read_input_tokens": 514414,
-        "cache_creation_input_tokens": 31290
+        "input_tokens": 38,
+        "output_tokens": 4021,
+        "cache_read_input_tokens": 742614,
+        "cache_creation_input_tokens": 34158
       },
-      "peak_context_tokens": 44603
+      "peak_context_tokens": 47471
     }
   ],
   "log": {
-    "sha256": "a014aa07f016b3f0b6999bc6cb3125e461b6ff9290ed8abbada044efccb806f1",
-    "bytes": 406360,
-    "lines": 101,
-    "gzip_bytes": 92265,
-    "path": "llm-dlc/traces/853b40ba-32fd-4638-8789-b2c3159d775a/logs/a014aa07f016b3f0b6999bc6cb3125e461b6ff9290ed8abbada044efccb806f1.jsonl.gz"
+    "sha256": "c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298",
+    "bytes": 450395,
+    "lines": 131,
+    "gzip_bytes": 98566,
+    "path": "llm-dlc/traces/853b40ba-32fd-4638-8789-b2c3159d775a/logs/c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -88,6 +88,38 @@
       "summary": "Record verification results: the default test run at qnmttuprxxym passed, closing VF-032",
       "body": "Collected 1 job (20261116-232054): the default tier passed 49 of 49 under the runner (14m32s, peak 2.7 GiB), which is the check VF-032 named; the entry is closed. The proof-tier job for example 290 is still running.",
       "log_sha256": "a014aa07f016b3f0b6999bc6cb3125e461b6ff9290ed8abbada044efccb806f1"
+    },
+    {
+      "change_id": "kxkyqntwvlolrqrtkkkvmrtyuwqzlsvx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: the proof tier after example 290's engine changes passed",
+      "body": "Collected 1 job (20261116-231725): every proof-tier Rust test but VF-018's three passed in release (35m32s, peak 3.5 GiB against an estimated 8 GiB).",
+      "log_sha256": "7cd2cae70c1656fb7682d0dbce28e85dca339d08a8387f0c6c6dab8e26c751b7"
+    },
+    {
+      "change_id": "qystlsvplrmvtymslznqzolmkzyywlrr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290: vulnerable-security is refuted in a probe at the frozen bound with a model of ArrayList the check asks for, and its job is queued (verification pending)",
+      "body": "5.8.4 collects its matchers in ArrayLists on every path, and jvmcontract's own checker stopped at new ArrayList(int). The checker now has a model of java.util.ArrayList that it runs only for a check that asks for it (prove --model java.util.ArrayList; lib/models/java/util/lists/ArrayList.java, models::ON_REQUEST, ClassPath::runs_model): both constructors, size, isEmpty, get, add, addAll, both toArray and a fail-fast iterator; any other method is the JDK call it names. It is on request and not run for every check because new ArrayList(int) is the gap the contract library, the conformance corpus and the examples' recorded refusals are written about: without the option nothing changes. A result states the model where a path ran it; JBMC, --cache and a class with no model on request are refused. Arrays.copyOf of an array of references, which the model grows by, is modelled for every check, as it was for arrays of numbers.",
+      "log_sha256": "c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298"
+    },
+    {
+      "change_id": "onkqouutwkoryzmluwqkymmqwqkmwpzp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: example 290 vulnerable-security through the adapter entry is refuted at the frozen bound, as expected",
+      "body": "Job 20261117-000856-example-290-vulnerable-security-through passed on vm-1 (1 step, 3.4 s, peak 187 MiB against an estimate of 5 min and 4 GiB): the frozen claim on 5.8.4 is refuted as the job expected. Outputs applied: the work folder's outcome and harness. No findings.",
+      "log_sha256": "c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298"
+    },
+    {
+      "change_id": "lptpzxuplxkymxytqpnuroqllyntnrto",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The default run takes 4.6 minutes where it took 16: Rust's test binaries and the Python files run several at a time, and a passed run covers what it left unread",
+      "body": "test_costs.py run: cargo only builds the Rust test binaries (--no-run), and they then run several at a time (--rust-jobs, by default half the CPUs, at most 4, and one per 1.5 GB of a job's memory limit), the longest first by what each took the last time (kept in the target directory). The Python test files run several at a time too (--python-jobs, 3 by default, 2 in a job); a file that fails has its second run alone after the others, so two files that disturbed each other show as flaky. The proof tier still runs one binary at a time, and --rust-jobs 1 --python-jobs 1 is the run as it was. Measured on this machine: the Rust binaries 707 s one after another in the first job, 403 s three at a time under a six-CPU limit beside another test job (peak 3.4 GB), 230 s four at a time; the whole default run 276 s, 49 of 49 passed, nothing flaky.\n\nThree Rust test files prepare their fixtures together and not one after another, with the same assertions: observations.rs's Box Office examples test builds its ten patched examples four at a time (the binary went from 146 s to 71 s alone) and keeps the Gradle build between runs under a hash of its sources, tasks and JDK; application_core.rs and application_core_joint.rs compile their nineteen fixture builds four at a time.\n\ndefault_tests.py: a run in the pipeline's fresh export records which files nothing opened and which folders nothing listed, from their access times (one packed line in its log; 'default_tests.py unread JOB' lists it), and a passed run then covers a later commit that only modifies those files or adds and removes files inside those folders. lib/ always counts as read, a rename is never covered, and a filesystem without access times records nothing. A probe of the Python half in an export left 546 entries unread, among them the example pages, CLAUDE.md and the runtime page. 'default_tests.py flaky' counts flaky tests over the collected runs. sync.py adopt-logs takes a log as a hard link where it can. Verified by the default run above, which includes the new tests of each piece (stand-in cargo and made-up runs); the inventory has the eight new Python rows, added by hand as the handoff note says.",
+      "log_sha256": "c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298"
     }
   ],
   "logs": {
@@ -95,6 +127,12 @@
       "bytes": 316840,
       "lines": 55,
       "gzip_bytes": 81204,
+      "url": null
+    },
+    "7cd2cae70c1656fb7682d0dbce28e85dca339d08a8387f0c6c6dab8e26c751b7": {
+      "bytes": 441439,
+      "lines": 123,
+      "gzip_bytes": 96589,
       "url": null
     },
     "8499d2ee8251a43182f5ef4f1f488e0087846e92301fc21f5f248c1cae33795f": {
@@ -107,6 +145,12 @@
       "bytes": 406360,
       "lines": 101,
       "gzip_bytes": 92265,
+      "url": null
+    },
+    "c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298": {
+      "bytes": 450395,
+      "lines": 131,
+      "gzip_bytes": 98566,
       "url": null
     },
     "e372cf1c5b52bc72cd08eeabe192e115fca0587b1053545da08f23d3811b1468": {

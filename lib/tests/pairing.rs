@@ -141,3 +141,72 @@ fn what_a_property_of_the_pair_does_not_take_is_refused_by_name() {
         assert!(o.output.contains(why), "{}", o.output);
     }
 }
+
+/// A library that asks about its surroundings by name: whether the class path has `lib.Extra`, its own class's
+/// name, and a table its initializer builds through a map the checker does not run. `extra` says whether this
+/// version has `lib.Extra`, and `base` is what its table adds.
+fn probe(extra: bool, base: u32) -> Vec<(&'static str, String)> {
+    let made = if extra { "    static Object made() {\n        return new Extra();\n    }\n" } else { "" };
+    let mut sources = vec![(
+        "lib/Probe.java",
+        format!("package lib;\npublic final class Probe {{\n    static final java.util.IdentityHashMap<Object, Object> TABLE = new java.util.IdentityHashMap<>();\n    static final int BASE;\n    static {{\n        TABLE.put(\"a\", \"b\");\n        BASE = TABLE.size() + {base};\n    }}\n{made}    static boolean has(String name) {{\n        try {{\n            Class.forName(name);\n            return true;\n        }}\n        catch (ClassNotFoundException e) {{\n            return false;\n        }}\n    }}\n    public static int answer(int k) {{\n        return (has(\"lib.Extra\") ? 100 : 0) + Probe.class.getName().length() + BASE + k;\n    }}\n}}\n"),
+    )];
+    if extra {
+        sources.push(("lib/Extra.java", "package lib;\npublic final class Extra {\n}\n".to_string()));
+    }
+    sources
+}
+
+/// What the previous version's code asks by a name it computes is answered as on its own class path: a class by
+/// its name is the previous version's own (and none that only the new version has), a class's name is its own and
+/// not the copy's, and an initializer to observe is observed in each version on that version's class path. The two
+/// versions here return the same number only if all three hold: one finds `lib.Extra` and adds 100 for it, the
+/// other's table adds the 100, and both add the nine letters of `lib.Probe`.
+#[test]
+fn the_previous_versions_questions_by_name_are_answered_on_its_own_class_path() {
+    jvmcontract::tool_tier!();
+    let with = compile("probe-with", &probe(true, 0), &[]);
+    let without = compile("probe-without", &probe(false, 100), &[]);
+    let entry = "package app;\npublic final class Entry {\n    public static int answer(int k) {\n        return lib.Probe.answer(k);\n    }\n}\n".to_string();
+    let entries = (compile("probe-entry-with", &[("app/Entry.java", entry.clone())], &[&with]), compile("probe-entry-without", &[("app/Entry.java", entry)], &[&without]));
+    let pair = |before: (&Path, &Path), after: (&Path, &Path), work: &str, observed: bool| {
+        let mut o = equivalence::Options::new(before.0, after.0, "app.Entry#answer");
+        o.engine = Engine::Native;
+        o.jbmc = NO_JBMC.into();
+        o.classpath = vec![after.1.to_path_buf()];
+        o.before_classpath = Some(vec![before.1.to_path_buf()]);
+        o.assume = Some("k >= 0 && k < 4".into());
+        o.work = Some(tmp(work));
+        if observed {
+            o.observed_initializers = vec!["lib.Probe".into()];
+        }
+        equivalence::run(&o).unwrap()
+    };
+    // The initializer is a gap until it is observed.
+    let unobserved = pair((&entries.0, &with), (&entries.1, &without), "probe-unobserved", false);
+    assert_eq!(unobserved.verdict, Verdict::Unverifiable, "{}", unobserved.output);
+
+    for (before, after, work) in [((&entries.0, &with), (&entries.1, &without), "probe-had"), ((&entries.1, &without), (&entries.0, &with), "probe-has")] {
+        let o = pair((before.0.as_path(), before.1.as_path()), (after.0.as_path(), after.1.as_path()), work, true);
+        assert_eq!(o.verdict, Verdict::Verified, "{work}: {}", o.output);
+        let stated = o.pair.as_ref().and_then(|p| p.stated.as_ref()).expect("the pair's statement");
+        let rests_on = |start: &str, part: &str| stated.assumptions.iter().any(|a| a.text.starts_with(start) && a.text.contains(part));
+        assert!(rests_on("the class initializer of before.lib.Probe was not run by the checker", "on the previous version's class path, where it is lib.Probe"), "{work}: {:?}", stated.assumptions);
+        assert!(rests_on("the class initializer of lib.Probe was not run by the checker", "on the check's class path"), "{work}: {:?}", stated.assumptions);
+    }
+
+    // The options are the pair's property's: a check the harness makes refuses them, and so does a class neither
+    // version has.
+    let mut plain = equivalence::Options::new(&entries.0, &entries.0, "app.Entry#answer");
+    plain.engine = Engine::Native;
+    plain.jbmc = NO_JBMC.into();
+    plain.classpath = vec![with.clone()];
+    plain.work = Some(tmp("probe-plain"));
+    plain.observed_initializers = vec!["lib.Probe".into()];
+    let o = equivalence::run(&plain).unwrap();
+    assert!(o.verdict == Verdict::Unverifiable && o.output.contains("--observed-initializer and --model are for a regression check made as a property of the pair of versions"), "{}", o.output);
+    plain.assume = Some("k >= 0".into());
+    plain.observed_initializers = vec!["lib.Absent".into()];
+    let o = equivalence::run(&plain).unwrap();
+    assert!(o.verdict == Verdict::Unverifiable && o.output.contains("--observed-initializer lib.Absent: neither version's class path has the class"), "{}", o.output);
+}

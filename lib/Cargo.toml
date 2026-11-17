@@ -35,6 +35,18 @@ tempfile = "3"
 [profile.dev.package.cadical]
 opt-level = 3
 
+# What `lib/tools/test_costs.py run` builds the default and unit tiers with (`cargo test --profile test-fast`): the
+# dev profile, checks and all, at the first optimisation level. The tests that run the tool's own engine are several
+# times faster so (tests/alignment.rs: 94 s as dev, 10 s here; tests/summaries.rs 13 s and 5 s), and a build after an
+# edit takes 14 s where dev takes 7 s (measured 2026-11-17). Plain `cargo test` is still the dev profile.
+[profile.test-fast]
+inherits = "dev"
+opt-level = 1
+debug = "line-tables-only"
+
+[profile.test-fast.package.cadical]
+opt-level = 3
+
 [profile.release]
 lto = true
 codegen-units = 1

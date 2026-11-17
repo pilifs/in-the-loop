@@ -76,15 +76,23 @@ pub struct Observed {
     /// Each static field the class declares, by name.
     pub fields: BTreeMap<String, Slot>,
     pub objects: Vec<Object>,
+    /// For a class of the previous version of a pair ([`observe_previous`]): its own name, the one it was observed
+    /// under on the previous version's class path. The check holds it under another.
+    pub previous: Option<String>,
 }
 
 /// The observations a check was given, by the class's internal name.
 pub type Observations = BTreeMap<String, Observed>;
 
 /// What a result that took the observed state of `class`'s initializer rests on.
-pub fn assumption(class: &str, jdk: &str) -> String {
+pub fn assumption(class: &str, observed: &Observed) -> String {
+    let jdk = &observed.jdk;
+    let on = match &observed.previous {
+        Some(own) => format!("the previous version's class path, where it is {}", own.replace('/', ".")),
+        None => "the check's class path".to_string(),
+    };
     format!(
-        "the class initializer of {} was not run by the checker: its static state is the one a JVM (JDK {jdk}) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+        "the class initializer of {} was not run by the checker: its static state is the one a JVM (JDK {jdk}) left after initializing the class first thing on {on}, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
         class.replace('/', ".")
     )
 }
@@ -156,6 +164,39 @@ pub fn observe_for(classes: &[String], classpath: &[PathBuf], work: &Path) -> Re
     Ok(observed)
 }
 
+/// [`observe_for`] for classes of the previous version of a pair: each is observed under its own name on the
+/// previous version's class path, and the observation is then of the copy the check holds (`before/x/Y`), a
+/// `Class` it holds being the copy's where the check holds a copy of that class. An error where it holds the
+/// `Class` of a class of the previous version that the check has no copy of.
+pub fn observe_previous(classes: &[String], previous: &crate::relocate::Previous, work: &Path) -> Result<Observations, Error> {
+    use crate::relocate::Found;
+    let mut out = Observations::new();
+    for (class, mut observed) in observe_for(classes, &previous.classpath, &work.join("previous"))? {
+        let binary = class.replace('/', ".");
+        if !previous.relocated.contains(&class) {
+            return Err(Error::new(format!("--observed-initializer {binary}: the check holds no copy of the previous version's class")));
+        }
+        let held = format!("{}/{class}", previous.prefix);
+        for object in &mut observed.objects {
+            let Object::Class(name) = object else { continue };
+            // A class by its internal name, or an array of one by its descriptor (`[Lx/Y;`).
+            let (open, element, close) = match name.rfind("[L") {
+                Some(at) if name.ends_with(';') => (&name[..at + 2], &name[at + 2..name.len() - 1], ";"),
+                _ if name.starts_with('[') => continue,
+                _ => ("", name.as_str(), ""),
+            };
+            match previous.find(element) {
+                Found::Class(now) => *name = format!("{open}{now}{close}"),
+                Found::Elsewhere => {}
+                Found::NotCopied => return Err(Error::new(format!("--observed-initializer {binary}: the previous version's initializer left the Class of {}, a class of its class path that the check holds no copy of", element.replace('/', ".")))),
+            }
+        }
+        observed.previous = Some(class);
+        out.insert(held, observed);
+    }
+    Ok(out)
+}
+
 /// One observation, from the observer's line.
 pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
     let bad = |what: &str| Error::new(format!("--observed-initializer {binary}: the observation is not one the tool reads ({what})"));
@@ -203,7 +244,7 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
         let name = f.get("name").and_then(|n| n.as_str()).ok_or_else(|| bad("a field"))?;
         fields.insert(name.to_string(), slot(f.get("value").ok_or_else(|| bad("a field"))?)?);
     }
-    let observed = Observed { jdk: json.get("jdk").and_then(|j| j.as_str()).ok_or_else(|| bad("the JDK"))?.to_string(), fields, objects };
+    let observed = Observed { jdk: json.get("jdk").and_then(|j| j.as_str()).ok_or_else(|| bad("the JDK"))?.to_string(), fields, objects, previous: None };
     let within = |s: &Slot| !matches!(s, Slot::Object(i) if *i >= observed.objects.len());
     let all = observed.fields.values().chain(observed.objects.iter().flat_map(|o| match o {
         Object::Map(entries) => entries.iter().flat_map(|(k, v)| [k, v]).collect::<Vec<_>>(),

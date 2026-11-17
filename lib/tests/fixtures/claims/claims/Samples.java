@@ -105,6 +105,11 @@ public final class Samples {
             for (int q = 0; q < few.length; q++) few[q] = r.nextInt(3);
             check(M.ints(few, r.nextInt(3)), "ints " + java.util.Arrays.toString(few));
             check(M.listed(few) && M.listed(keys) && M.emptied(), "listed " + java.util.Arrays.toString(few));
+            int[] fewer = new int[r.nextInt(3)];
+            check(M.collected(keys, r.nextInt(12) - 3) && M.collected(few, 7) && M.filled(keys, r.nextInt(keys.length + 3) - 1), "collected " + java.util.Arrays.toString(keys));
+            check(M.appended(few.length + fewer.length > 3 ? fewer : few, fewer, r.nextBoolean()) && M.swept(r.nextInt(4)) && M.contained(), "appended " + java.util.Arrays.toString(few));
+            check(M.cached(r.nextInt(600) - 300), "cached");
+            check(M.recopied(keys, r.nextInt(keys.length + 4) - 2), "recopied " + java.util.Arrays.toString(keys));
             int n = r.nextInt(4) == 0 ? r.nextInt() : r.nextInt(2400) - 1200;
             check(M.numbered(n, (short) r.nextInt(), (byte) r.nextInt()), "numbered " + n);
         }

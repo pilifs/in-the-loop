@@ -55,7 +55,9 @@ The loop's side, for feature-loop.sh:
     conductor.py note DIR TYPE [KEY=VALUE ...]
         append an event that asks nothing: where the loop is, for whoever watches
     conductor.py unfinished ITEM ...
-        of these examples, the ones with verification jobs still queued, running or not collected, one per line
+        of these examples, the ones with verification jobs still queued, running or not collected, one per line;
+        when the queue can't be read, every one of them, with exit status 1: a job is never taken to be in
+        because its status could not be read
     conductor.py commands DIR
         print the lines `command` left and forget them
 
@@ -311,17 +313,34 @@ def cmd_commands(directory: Path) -> int:
     return 0
 
 
+class QueueUnreadable(RuntimeError):
+    """pipeline.py status gave nothing to read: the queue's state is unknown, which is not the same as empty."""
+
+
+def queue_status(root: Path, tries: int = 3) -> dict:
+    """pipeline.py status --json, read again a few times before giving up: under load, or while a commit or a runner
+    holds the queue, it has once printed nothing, and an empty answer read as "no jobs" sends a loop back to an
+    example whose proof is still running."""
+    for attempt in range(tries):
+        r = subprocess.run([sys.executable, str(root / "verification/pipeline.py"), "status", "--json"],
+                           capture_output=True, text=True, cwd=root)
+        try:
+            status = json.loads(r.stdout)
+            if r.returncode == 0 and isinstance(status, dict):
+                return status
+        except ValueError:
+            pass
+        if attempt + 1 < tries:
+            time.sleep(2 * (attempt + 1))
+    raise QueueUnreadable(f"pipeline.py status gave nothing to read (exit {r.returncode}): {r.stderr.strip()[-200:]}")
+
+
 def unfinished_jobs(root: Path = REPO) -> dict[str, list[str]]:
     """Example number -> its verification jobs that are queued, running or finished and not collected yet. A job is
     an example's when one of its outputs is in that example's folder (or, for a job whose file is not in this
     checkout, when its title names the example). A job this machine can't run never finishes here, so it does not
-    count."""
-    r = subprocess.run([sys.executable, str(root / "verification/pipeline.py"), "status", "--json"],
-                       capture_output=True, text=True, cwd=root)
-    try:
-        status = json.loads(r.stdout)
-    except ValueError:
-        return {}
+    count. Raises QueueUnreadable when the queue can't be read."""
+    status = queue_status(root)
     rows = [row for key in ("pending", "running", "finished, not collected") for row in status.get(key, [])
             if "; cannot run here:" not in row]
     found: dict[str, list[str]] = {}
@@ -341,7 +360,13 @@ def unfinished_jobs(root: Path = REPO) -> dict[str, list[str]]:
 
 
 def cmd_unfinished(items: list[str]) -> int:
-    jobs = unfinished_jobs()
+    try:
+        jobs = unfinished_jobs(REPO)
+    except QueueUnreadable as e:
+        print(f"conductor.py unfinished: {e}; counting every example named as unfinished", file=sys.stderr)
+        for item in items:
+            print(item)
+        return 1
     for item in items:
         if jobs.get(item):
             print(item)

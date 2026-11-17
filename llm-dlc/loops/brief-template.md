@@ -62,15 +62,14 @@ Say in the brief which of the two modes it runs in:
 
 Say in the brief which of the two it runs under:
 - **Inline** (the default): the standing rule above, the whole default run before every commit.
-- **Queued** (`- tests: queued` in Loop settings): the default run takes 16 to 22 minutes, and with it inline an
-  owner waits that long before the next piece can start (example 289, 2026-11-16: implementation submitted after
-  30 minutes, the cycle reported after 53). Under this policy a cycle runs the tests of what it changed before its
-  commit, and queues the whole default run as a job for that commit
-  (`python3 verification/pipeline.py submit --kind library --run "python3 lib/tools/test_costs.py run" ...`), named in the commit like
-  any other job. It then takes the next piece. A default run that comes back failed is the first thing its owner
-  takes up, before new work, and what was built on the failed commit is not accepted until the repair's run passes.
-  The whole default run still runs inline before a merge of streams is committed and before anything is published.
-  Bookkeeping commits (Progress, a status line, a result recorded) queue nothing: the code they sit on has its run.
+- **Queued** (`- tests: queued` in Loop settings): as a `/prove-java-change` run does since 2026-11-17 (CLAUDE.md,
+  Tests). A cycle runs the tests of what it changed before its commit (`python3 lib/tools/test_costs.py run --changed`),
+  and once a piece of work is done it queues the default run as a job nobody waits for
+  (`python3 verification/default_tests.py queue --why "WHY"`, committed with its next commit), then takes the next
+  piece. Of the default runs waiting together only the newest runs. A run that comes back failed is the first thing
+  its owner takes up, before new work, and what was built on the failed commit is not accepted until the repair's
+  run passes. Bookkeeping commits (Progress, a status line, a result recorded) queue nothing. A push requires a
+  passed run covering its commit whatever the policy (`default_tests.py gate`).
 
 ### How a brief is run
 

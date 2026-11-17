@@ -29,6 +29,12 @@
 //!   JDK has: whether the argument's class is the receiver's or below it, as `instanceof` decides it
 //!   ([`ClassPath::is_subtype`]). `NullPointerException` for a null argument. Of a primitive type's or an array's
 //!   `Class` it is the JDK call it was.
+//! - In a regression check made as a property of the pair of versions ([`crate::pairing`]) the previous version's
+//!   classes are copies under another package beside the new version's ([`crate::relocate::Previous`]). A copy's
+//!   `getName()` is its class's own name. A `Class.forName` called by a copy finds the copy of the class named,
+//!   and no class that only the new version's class path has (`ClassNotFoundException`); a class the previous
+//!   version's class path has and the check holds no copy of stays the JDK's call. Called by any other class,
+//!   it finds no copy.
 //! - `Collections.emptyMap()`: the JDK's one empty map, the same object on every call, never null. The object has
 //!   no content: every method of it is the JDK call it was.
 //! - `Thread.currentThread()`: the one thread of the run, the same object on every call. Its
@@ -43,6 +49,9 @@
 //!   would have formatted is not run. At any other level, or on any other Logger, it is the JDK call it was.
 //! - `new ArrayList()`: the JDK's no-argument constructor only sets the list's own fields, so the object is made
 //!   as any object with no content is, its methods the JDK calls they were.
+//! - `new ConcurrentHashMap()` and `new ConcurrentHashMap(int)`: likewise (the JDK allocates the table at the first
+//!   entry), the second with its `IllegalArgumentException` for a negative capacity. A library makes such maps as
+//!   caches in a constructor, and a path that never asks one anything goes on.
 
 use super::*;
 
@@ -100,7 +109,15 @@ pub fn models_instance(owner: &str, name: &str, descriptor: &str) -> bool {
 /// The JDK constructors that only set their object's own fields, throw nothing and take nothing: the object is
 /// made as one with no content.
 pub fn plain_constructor(owner: &str, descriptor: &str) -> bool {
-    matches!((owner, descriptor), ("java/util/ArrayList", "()V"))
+    matches!((owner, descriptor), ("java/util/ArrayList" | CONCURRENT_MAP, "()V"))
+}
+
+const CONCURRENT_MAP: &str = "java/util/concurrent/ConcurrentHashMap";
+
+/// The JDK constructors that take an initial capacity and nothing else, and only set their object's own fields:
+/// `IllegalArgumentException` for a negative capacity, and otherwise the object made as one with no content.
+pub fn capacity_constructor(owner: &str, descriptor: &str) -> bool {
+    matches!((owner, descriptor), (CONCURRENT_MAP, "(I)V"))
 }
 
 impl Engine<'_> {
@@ -149,7 +166,9 @@ impl Engine<'_> {
         let class = self.class_named(path, o)?;
         let value = match name {
             "getName" => {
-                let units: Vec<u16> = class.replace('/', ".").encode_utf16().collect();
+                // A copy of a class of the previous version of a pair has that class's own name.
+                let own = self.previous.as_ref().and_then(|p| p.original(&class)).unwrap_or(&class);
+                let units: Vec<u16> = own.replace('/', ".").encode_utf16().collect();
                 self.literal(path, Literal::Str(units), STRING)
             }
             _ => {
@@ -220,8 +239,26 @@ impl Engine<'_> {
                     return None;
                 }
                 // A binary name has no `/`: one that does names no class.
-                let internal = text.replace('.', "/");
-                let found = !text.contains('/') && self.cp.exists(&internal);
+                let mut internal = text.replace('.', "/");
+                let mut found = !text.contains('/') && self.cp.exists(&internal);
+                // In a pair of versions, the previous version's code finds its own classes, which the check holds
+                // as copies, and none that only the new version has; the new version's finds no copy.
+                if let Some(previous) = self.previous.clone() {
+                    use crate::relocate::Found;
+                    let caller = &path.frames.last().expect("a frame").class.name;
+                    if previous.original(caller).is_some() {
+                        match previous.find(&internal) {
+                            Found::Class(held) => {
+                                found = !text.contains('/') && self.cp.exists(&held);
+                                internal = held;
+                            }
+                            Found::NotCopied => return None,
+                            Found::Elsewhere => found = found && !self.cp.is_application(&internal),
+                        }
+                    } else if previous.original(&internal).is_some() {
+                        found = false;
+                    }
+                }
                 if found && (!self.cp.is_application(&internal) || !self.cp.loads(&internal)) {
                     return None;
                 }

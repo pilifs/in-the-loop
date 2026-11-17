@@ -117,6 +117,8 @@ pub struct ClassPath {
     /// The classes whose initializer a check has the observed state of ([`crate::observed`]), set by the check: the
     /// own checker neither runs such an initializer nor meets it as a gap, and the scan does not walk it.
     pub(crate) observed_initializers: RefCell<std::collections::BTreeSet<String>>,
+    /// The models on request a check asked for ([`crate::models::ON_REQUEST`]), by internal name, set by the check.
+    pub(crate) requested_models: RefCell<std::collections::BTreeSet<String>>,
     /// The time spent reading and parsing class files, for a checker's phases ([`crate::phases`]).
     loading: std::cell::Cell<std::time::Duration>,
 }
@@ -131,7 +133,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jdk: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), observed_initializers: Default::default(), loading: Default::default() }
+        ClassPath { entries: Vec::new(), jdk: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -324,10 +326,16 @@ impl ClassPath {
     /// for JBMC's class path that the checker runs as bytecode ([`crate::models::CHECKER_RUNS`], `java.lang.Enum`),
     /// where the interpreter keeps its natives.
     pub fn checker_model(&self, name: &str) -> Option<Rc<ClassFile>> {
-        if crate::models::find(name).is_some_and(|m| m.jbmc_only && !crate::models::CHECKER_RUNS.contains(&name)) {
+        if crate::models::find(name).is_some_and(|m| m.jbmc_only && !self.runs_model(name)) {
             return None;
         }
         self.any_model(name)
+    }
+
+    /// Whether the own checker runs the model of the class as bytecode: one of [`crate::models::CHECKER_RUNS`], or
+    /// a class of a model on request that the check asked for ([`crate::models::ON_REQUEST`]).
+    pub fn runs_model(&self, name: &str) -> bool {
+        crate::models::CHECKER_RUNS.contains(&name) || crate::models::on_request(name).is_some_and(|r| self.requested_models.borrow().contains(r))
     }
 
     fn any_model(&self, name: &str) -> Option<Rc<ClassFile>> {
@@ -380,7 +388,7 @@ impl ClassPath {
     /// and those of the models it runs although they are only for JBMC's class path ([`crate::models::CHECKER_RUNS`],
     /// `java.lang.Enum`). The other models it runs for static calls alone.
     pub fn checker_runs(&self, name: &str) -> bool {
-        self.is_application(name) || (crate::models::CHECKER_RUNS.contains(&name) && self.checker_model(name).is_some())
+        self.is_application(name) || (self.runs_model(name) && self.checker_model(name).is_some())
     }
 
     /// The class whose static fields and initializer the tool's own checker holds and runs (JVMS §5.5): an
@@ -388,7 +396,7 @@ impl ClassPath {
     /// whose initializer makes the one empty list and the sentinel of a list of one). Any other JDK class is taken to
     /// be initialized already, and only its constants are read.
     pub fn checker_class(&self, name: &str) -> Option<Rc<ClassFile>> {
-        if crate::models::CHECKER_RUNS.contains(&name) {
+        if self.runs_model(name) {
             return self.checker_model(name);
         }
         // A class of a JDK package is the JDK's, initialized already, whichever entry holds it (`javax.servlet`'s are

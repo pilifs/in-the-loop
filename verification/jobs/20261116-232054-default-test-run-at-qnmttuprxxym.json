@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261116-232054-default-test-run-at-qnmttuprxxym",
+  "title": "Default test run at qnmttuprxxym",
+  "description": "The default test run (python3 lib/tools/test_costs.py run: cargo test and every Python suite, the unit and tool tiers) at change qnmttuprxxym, \"sync.py adopt-logs also takes the uploaded logs a workspace lacks, so its sessions' metrics are computed from the same l\", queued to check the parallel run, the retry and the VF-032 fix end to end, in the workspace prove-setup. Nobody waits for it: the watcher or the next session reads the result, and sync.py push requires a passed run that covers the commit it pushes (verification/default_tests.py).",
+  "kind": "other",
+  "capabilities": [
+    "tests:default"
+  ],
+  "links": {
+    "commits": [
+      "qnmttuprxxym"
+    ]
+  },
+  "expected": "exits 0: every test of the default run passes",
+  "submitted": {
+    "at": "2026-11-16T23:20:54+00:00",
+    "session": "6c5c7798-21e3-46a5-b989-5313736bdc7f"
+  },
+  "revision": "73542e073f35051fdeb2e98529629ba9fc5784c3",
+  "requires": [
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 6.0,
+    "memory": "4G",
+    "duration": "25m",
+    "timeout": "1h",
+    "notes": "the default run took about 16 minutes inline in 2026-11 (11 Rust, 5 Python), longer beside proof jobs; its cargo target directory is kept warm between runs"
+  },
+  "steps": [
+    {
+      "name": "default tests",
+      "run": "nice -n 10 python3 verification/default_tests.py step",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

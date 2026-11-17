@@ -72,7 +72,7 @@
         ]
       }
     },
-    "proof": "found by jvmcontract's own checker (CaDiCaL) in 6.7 s searching inputs in [0:20], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array",
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 8.7 s searching inputs in [0:20], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array",
     "problem": null,
     "statement": "verification/.work-290/mutant-security/work/harness/PropertyHarness.java",
     "findings": [
@@ -83,12 +83,12 @@
         "line": 55
       }
     ],
-    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"java\"; the names are servlets, method, patterns); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✗ Property of example290.adapter.MatcherSelectionAdapter#select violated: `false` where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalArgumentException when true:\n  select(servlets=[1, 0], method=0, patterns={})\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 6.7 s searching inputs in [0:20], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.\n",
+    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"java\"; the names are servlets, method, patterns); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✗ Property of example290.adapter.MatcherSelectionAdapter#select violated: `false` where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalArgumentException when true:\n  select(servlets=[1, 0], method=0, patterns={})\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 8.7 s searching inputs in [0:20], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.\n",
     "work": "verification/.work-290/mutant-security/work",
     "search": {
       "engine": "native",
       "checker": "jvmcontract's own checker (CaDiCaL)",
-      "seconds": 6.701280913,
+      "seconds": 8.665306202,
       "properties": 1,
       "unwind": 64,
       "max_array_length": 8,
@@ -97,20 +97,20 @@
         "paths": 708,
         "merges": 138,
         "solver_calls": 1758,
-        "solving_seconds": 0.204097671,
+        "solving_seconds": 0.399961768,
         "gates_evaluated": 97926,
-        "evaluating_seconds": 0.003217801,
+        "evaluating_seconds": 0.004479181,
         "divisions": 0,
         "divisions_built": 0,
         "multiplications": 0,
         "multiplications_built": 0,
         "variables": 15905,
         "clauses": 49037,
-        "seconds": 5.9202507109999996,
-        "loading_seconds": 0.004970137,
-        "decoding_seconds": 0.000448122,
-        "encoding_seconds": 3.481680386,
-        "witness_seconds": 0.000779342,
+        "seconds": 7.610654469,
+        "loading_seconds": 0.007105597,
+        "decoding_seconds": 0.00056381,
+        "encoding_seconds": 4.562916957,
+        "witness_seconds": 0.001558066,
         "assumed": [
           "the check runs on one thread, whose context class loader is the class loader of the check's class path: nothing has set another (Thread.setContextClassLoader), as on a JVM started with that class path",
           "the class initializer of javax.servlet.GenericServlet was not run by the checker: its static state is the one a JVM (JDK 25.0.5) left after initializing the class first thing on the check's class path, and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
@@ -138,17 +138,17 @@
           "checker": "native",
           "purpose": "proof",
           "stage": null,
-          "budget_seconds": 1799.233,
-          "seconds": 5.92,
+          "budget_seconds": 1798.968,
+          "seconds": 7.611,
           "ended": "violation",
           "ending": "counterexample",
           "phases": {
-            "loading": 0.005,
-            "lowering": 0.0,
-            "symbolic": 2.228,
-            "encoding": 3.482,
-            "solving": 0.204,
-            "trace": 0.001,
+            "loading": 0.007,
+            "lowering": 0.001,
+            "symbolic": 2.639,
+            "encoding": 4.563,
+            "solving": 0.4,
+            "trace": 0.002,
             "other": 0.0
           },
           "formula": {
@@ -158,15 +158,15 @@
         }
       ],
       "phases": {
-        "seconds": 7.712,
-        "setup": 0.002,
+        "seconds": 9.832,
+        "setup": 0.001,
         "harness": 0.0,
         "gaps": 0.0,
         "contracts": 0.0,
-        "runs": 5.92,
+        "runs": 7.611,
         "replay": 0.001,
-        "jvm": 0.295,
-        "other": 1.495
+        "jvm": 0.399,
+        "other": 1.82
       }
     },
     "replay": {
@@ -249,8 +249,8 @@
       },
       "models": {
         "used": true,
-        "digest": "sha256:28cf5914033da1c9c8ee6235137131f4d2a213c49b4408dab5cb7e553f07b95e",
-        "classes": 29,
+        "digest": "sha256:d3cb60427833314ef7f913b8bc6ef4ca4c79b923fd15a09a6224d63099b17d02",
+        "classes": 31,
         "jdk": "25.0.5",
         "values": [
           {

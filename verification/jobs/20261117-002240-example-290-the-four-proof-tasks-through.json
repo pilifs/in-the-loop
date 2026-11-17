@@ -1,0 +1,72 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-002240-example-290-the-four-proof-tasks-through",
+  "title": "Example 290, the four proof tasks through the adapter entry by one script: preservation of the release pair, expected established, and the three security verdicts again",
+  "description": "Each step runs examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py on one task of target.json with its frozen claim file, unchanged, at the claim's bound of 8, by jvmcontract's own checker under strict gaps. The entry is example290.adapter.MatcherSelectionAdapter#select(int[] servlets, int method, String[] patterns), which each claim's first assumption names; the class path is the release's ten pinned JARs, each checked against its SHA-256. These are proofs beside the example route, which takes no adapter entry (each task's invocation in target.json says so). Nothing is put in a method's place and no lemma is given. New here is preservation (claims/lone-dispatcher-selection-preserved.json, the release pair 5.8.4 to 5.8.5): jvmcontract equivalence makes it a property of the pair of versions, one generated method that calls the adapter compiled against each release, each on its own ten JARs (the previous one's copied under the package before), and says whether they return the same count or throw in the same category, outside the task's allowed change (every configuration but the lone DispatcherServlet). Expected established: where the DispatcherServlet is the only servlet, both releases make one MvcRequestMatcher per pattern. What the verifier gained for it since the last jobs: (1) what the previous version's code asks by a name it computes is answered as on its own class path (Class.forName called by a copy finds the copy, and no class only the new version has; a copy's getName() is the class's own name; lib/src/relocate.rs Previous, lib/src/bmc/runtime.rs), which 5.8.4's initializer needs when it asks whether Spring MVC is present; (2) equivalence takes --observed-initializer and --model for such a check, and an initializer is observed in each release on that release's own class path; (3) new ConcurrentHashMap() and new ConcurrentHashMap(int) make an object with no content (a negative capacity refused), the caches an AntPathMatcher's constructor makes and no path here asks; (4) the script observes two more library initializers, UrlPathHelper's (a commons-logging Log) and AntPathMatcher's (a regular expression with a reluctant quantifier), met only where a release goes on to make MvcRequestMatchers. An outcome states each observation and the ArrayList model where a path used one. A control run inline with a wider region that must agree (every single-servlet configuration) was refuted on select(servlets=[1], ...), run on a JVM, where the fix changes the selection by design, so the pair's check is not vacuous. The three security tasks ran before (jobs 20261117-000856-example-290-vulnerable-security-through, 20261116-225709-example-290-fixed-security-through-the-a and 20261116-231724-example-290-mutant-security-through-the); they are run again so that all four verdicts are the same script's at one commit: the script now names five observed initializers and the model for every task. Expected as before: 5.8.4 refuted, 5.8.5 established, the mutant refuted.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "290"
+    ],
+    "paths": [
+      "examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py",
+      "lib/src/relocate.rs",
+      "lib/src/pairing.rs",
+      "lib/src/bmc/runtime.rs",
+      "lib/models/java/util/lists/ArrayList.java"
+    ]
+  },
+  "expected": "exits 0 at each step: prove.py prints 'verdict: verified (expected verified)' for preservation and fixed-security, and 'verdict: violation (expected violation)' with a witness 'run on a JVM' for vulnerable-security and mutant-security",
+  "submitted": {
+    "at": "2026-11-17T00:22:40+00:00",
+    "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "patch",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "5m",
+    "timeout": "2h",
+    "notes": "inline at this bound: preservation established in 2.1 s (573 paths, 7,907 variables), vulnerable-security refuted in 0.7 s (4 paths), fixed-security established (659 paths) and mutant-security refuted (708 paths) in about 7 s each. The time besides is the release build of lib/ if its tree isn't cached and the fetch of the JARs"
+  },
+  "steps": [
+    {
+      "name": "preservation at the frozen bound, 8",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py preservation --timeout 1800 --work verification/.work-290",
+      "cwd": "."
+    },
+    {
+      "name": "vulnerable-security at the frozen bound, 8",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py vulnerable-security --timeout 1800 --work verification/.work-290",
+      "cwd": "."
+    },
+    {
+      "name": "fixed-security at the frozen bound, 8",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py fixed-security --timeout 1800 --work verification/.work-290",
+      "cwd": "."
+    },
+    {
+      "name": "mutant-security at the frozen bound, 8",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py mutant-security --timeout 1800 --work verification/.work-290",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-290/preservation/outcome.json",
+    "verification/.work-290/vulnerable-security/outcome.json",
+    "verification/.work-290/fixed-security/outcome.json",
+    "verification/.work-290/mutant-security/outcome.json"
+  ]
+}

@@ -844,6 +844,29 @@ def measures(run: Run, events: list[dict], claims: dict) -> dict:
             "claimsPerDollar": round(answered / cost, 4) if cost else None}
 
 
+def default_runs(root: Path) -> list[dict]:
+    """The collected default test runs (verification/default_tests.py), newest first, or none where it isn't."""
+    path = root / "verification/default_tests.py"
+    if not path.exists():
+        return []
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("default_tests", path)
+    module = importlib.util.module_from_spec(spec)
+    try:
+        spec.loader.exec_module(module)
+        return module.runs(root)
+    except Exception:  # a broken tool must not stop the watcher
+        return []
+
+
+def unfinished_or_none(root: Path) -> dict | None:
+    """conductor.unfinished_jobs, or None when the queue can't be read: never an empty answer that reads as "in"."""
+    try:
+        return conductor.unfinished_jobs(root)
+    except conductor.QueueUnreadable:
+        return None
+
+
 def state(run: Run) -> dict:
     events = conductor.read_events(run.dir)
     loop = run.run_json()
@@ -867,7 +890,7 @@ def state(run: Run) -> dict:
             "cycleStarted": stamp(current.get("time")), "turn": turn(current.get("turn")) if under_way else {},
             "claims": claims, "exampleState": {i: rows[i]["state"] for i in rows},
             "head": head[-1].split()[0] if head else None, "jobs": jobs(run.root),
-            "unfinished": conductor.unfinished_jobs(run.root),
+            "unfinished": unfinished_or_none(run.root) or {},
             "loopAlive": alive(loop.get("pid")) if loop else False, "ended": ended,
             "verification": verification_running(run.root),
             "mergeQueue": merge_queue(run), "asked": conductor.pending(run.dir), "decisions": decisions_state(run),
@@ -1044,7 +1067,8 @@ def assessment(run: Run, event: dict) -> dict:
     item = event.get("item")
     rows = changes.listing(run.root, [item])["examples"] if item else []
     row = rows[0] if rows else {}
-    out = len(conductor.unfinished_jobs(run.root).get(item, []))
+    known = unfinished_or_none(run.root)
+    out = len(known.get(item, [])) if known is not None else "unknown (the queue could not be read)"
     hint = ("every claim has its answer: finished, unless the report says work is left" if row.get("state") == "decided"
             else "its claims are not all answered, and jobs of it are queued: waiting if the session has nothing else to do, else continue" if out
             else "its claims are not all answered and nothing of it is queued: continue, unless what is left needs a "
@@ -1079,6 +1103,23 @@ def next_thing(run: Run, interval: float) -> dict | None:
             out["mergeQueue"] = merge_queue(run)
         return out
     data = run.read()
+    seen = set(data.get("defaultRunsTold") or [])
+    fresh = [r for r in default_runs(run.root) if r["job"] not in seen and r["verdict"] in ("passed", "failed")]
+    if fresh:
+        r = fresh[-1]  # the oldest not yet told: they come in order
+        r = {k: v for k, v in r.items() if k != "unread"}  # hundreds of paths the gate reads, and nobody else
+        run.update(defaultRunsTold=sorted(seen | {r["job"]}))
+        if r["verdict"] == "failed":
+            return {"kind": "default-tests", "run": r,
+                    "note": "nobody waits on this run: triage it. A small, mechanical failure (an inventory row, a lint, "
+                            "a stale index or count) you fix in the side workspace, merged at the next change of "
+                            "example; one in the area the loop works on goes to "
+                            f"{RUN}/test-findings.md for its next cycle to read; anything else to the user. "
+                            "`culprits` names the commit each failing test first fails at since the last passed run, "
+                            "where the job had time to find it"}
+        return {"kind": "default-tests", "run": r,
+                "note": ("passed, but these failed once and passed on a second run: name them to the user as flaky, "
+                         "to be fixed" if r.get("flaky") else "passed: nothing to do")}
     told = set(data.get("setupsTold") or [])
     for a in data.get("setups") or []:
         key = f"{a['example']}#{a['attempt']}:{a['stage']}"
@@ -1100,8 +1141,8 @@ def next_thing(run: Run, interval: float) -> dict | None:
     waiting = {e["item"] for e in conductor.read_events(run.dir) if e.get("type") == "item" and e.get("state") == "waiting"}
     announced = set(data.get("announced") or [])
     if waiting - announced:
-        out_jobs = conductor.unfinished_jobs(run.root)
-        for item in sorted(waiting - announced):
+        out_jobs = unfinished_or_none(run.root)
+        for item in sorted(waiting - announced) if out_jobs is not None else []:
             if not out_jobs.get(item):
                 run.update(announced=sorted(announced | {item}))
                 return {"kind": "proof", "item": item,
@@ -1180,7 +1221,8 @@ def cmd_add(run: Run, items: list[str]) -> int:
 def cmd_proof(run: Run, item: str, timeout: float) -> int:
     until = time.monotonic() + timeout
     while True:
-        out = conductor.unfinished_jobs(run.root).get(item, [])
+        known = unfinished_or_none(run.root)
+        out = known.get(item, []) if known is not None else ["(the queue could not be read)"]
         if not out:
             row = (changes.listing(run.root, [item])["examples"] or [{}])[0]
             print(json.dumps({"item": item, "jobs": "in", "example": row.get("state"),

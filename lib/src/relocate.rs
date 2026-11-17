@@ -13,6 +13,57 @@ use std::path::Path;
 use crate::classfile::{decode_modified_utf16, decode_modified_utf8, encode_modified_utf8, flags};
 use crate::Error;
 
+/// The previous version of a pair of versions held in one program: which of its classes the program holds, under
+/// which names, and what its class path holds besides. A question the previous version's code asks by a name it
+/// computes (a class by its name, a class's name) is answered from here, as on the previous version's own class
+/// path, and not from the program's, which is the new version's with the copies beside it.
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
+pub struct Previous {
+    /// The package the copies are under, `before`.
+    pub prefix: String,
+    /// The classes copied, by their own internal names: the previous version's build and, with a dependency
+    /// closure of its own, the classes of it that the copies name.
+    pub relocated: BTreeSet<String>,
+    /// Every class the previous version's class path holds, its build included, by internal name.
+    pub classes: BTreeSet<String>,
+    /// Whether the libraries are both versions' (no closure of its own): a class of them is the program's as it is.
+    pub shared: bool,
+    /// The previous version's class path: its build, then its libraries.
+    pub classpath: Vec<std::path::PathBuf>,
+}
+
+/// A class by its name, as the previous version's code finds it.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum Found {
+    /// The program's class of this internal name: a copy, or a library's class both versions share.
+    Class(String),
+    /// The previous version's class path has the class, and the program holds no copy of it (nothing the copies
+    /// name in a constant pool reaches it).
+    NotCopied,
+    /// The previous version's class path has no such class: the JDK's, or none.
+    Elsewhere,
+}
+
+impl Previous {
+    /// The own name of a class the program holds as a copy (`before/x/Y` is `x/Y`), or `None` for any other.
+    pub fn original<'a>(&self, name: &'a str) -> Option<&'a str> {
+        name.strip_prefix(self.prefix.as_str())?.strip_prefix('/').filter(|n| self.relocated.contains(*n))
+    }
+
+    /// The class of the internal name `name`, as the previous version's code finds it by that name.
+    pub fn find(&self, name: &str) -> Found {
+        if self.relocated.contains(name) {
+            Found::Class(format!("{}/{name}", self.prefix))
+        } else if !self.classes.contains(name) {
+            Found::Elsewhere
+        } else if self.shared {
+            Found::Class(name.to_string())
+        } else {
+            Found::NotCopied
+        }
+    }
+}
+
 /// Copies every class under `input` to `output/<prefix>/...`, renamed. Returns the relocated class names.
 pub fn directory(input: &Path, output: &Path, prefix: &str) -> Result<BTreeSet<String>, Error> {
     let mut files = Vec::new();

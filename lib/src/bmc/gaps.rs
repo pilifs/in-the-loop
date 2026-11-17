@@ -392,6 +392,10 @@ pub struct GapSetting {
     /// The class initializers the engine takes the observed state of in place of running them
     /// ([`crate::observed`]), in any mode.
     pub observed: std::sync::Arc<crate::observed::Observations>,
+    /// The models on request the engine runs ([`crate::models::ON_REQUEST`]), by internal name, in any mode.
+    pub models: std::sync::Arc<BTreeSet<String>>,
+    /// The previous version of a pair the check holds beside the new one ([`crate::relocate::Previous`]).
+    pub previous: Option<std::sync::Arc<crate::relocate::Previous>>,
 }
 
 impl From<GapMode> for GapSetting {
@@ -513,7 +517,7 @@ const MODEL_INTERFACES: &[&str] = &["java/util/List", "java/util/Collection", "j
 /// (`overrides`, the walk's), and every application class below `owner` has code for it too, its own or a model's.
 /// On a receiver a gap made, the engine meets the JDK call where it runs it, as before.
 fn dispatched_to_models(cp: &ClassPath, owner: &str, name: &str, descriptor: &str, overrides: &[String], made: &BTreeSet<String>) -> bool {
-    if !(crate::models::CHECKER_RUNS.contains(&owner) || MODEL_INTERFACES.contains(&owner)) || !overrides.iter().any(|o| crate::models::CHECKER_RUNS.contains(&o.as_str())) {
+    if !(cp.runs_model(owner) || MODEL_INTERFACES.contains(&owner)) || !overrides.iter().any(|o| cp.runs_model(o)) {
         return false;
     }
     made.iter().filter(|n| cp.is_application(n) && cp.is_subtype(n, owner)).all(|n| cp.checker_method(n, name, descriptor).is_some_and(|(c, m)| cp.checker_runs(&c.name) && m.code.is_some()))
@@ -542,14 +546,14 @@ pub enum JdkCall {
 
 /// Whether the own checker models an instance call of the JDK on an object whose content it holds: a
 /// `StringBuilder`'s constructors and methods ([`super::strings`]), a class literal's name and loader, whether a
-/// Logger logs a level below `INFO`, and `new ArrayList()` ([`super::runtime`]). They are the own checker's alone: to JBMC the same calls are its stubs
+/// Logger logs a level below `INFO`, `new ArrayList()` and a `ConcurrentHashMap` made empty ([`super::runtime`]). They are the own checker's alone: to JBMC the same calls are its stubs
 /// ([`crate::jbmc_gaps`] asks [`exact_jdk_call`], never this), and a contract for one is still a contract for a gap
 /// ([`unmodelled_instance_call`]), which the engine applies in place of its model where one is given.
 pub fn modelled_jdk_call(owner: &str, name: &str, descriptor: &str) -> bool {
     super::strings::models_builder(owner, name, descriptor)
         || super::runtime::models_instance(owner, name, descriptor)
         || super::runtime::models_logger(owner, name, descriptor)
-        || (name == "<init>" && super::runtime::plain_constructor(owner, descriptor))
+        || (name == "<init>" && (super::runtime::plain_constructor(owner, descriptor) || super::runtime::capacity_constructor(owner, descriptor)))
 }
 
 /// How the engine treats an instance call `owner.name(descriptor)` that runs JDK code: the one classification the

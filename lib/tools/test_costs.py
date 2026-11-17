@@ -662,7 +662,9 @@ def tier_runs(tier, doc, root=ROOT, only=None, tests=(), test_threads=None):
     env = {"JVMCONTRACT_TEST_TIER": value, "TEST_COST": value}
     runs = []
     if only in (None, "rust"):
-        argv = ["cargo", "test", "--manifest-path", "lib/Cargo.toml"] + (["--release"] if tier == "proof" else [])
+        # The default and unit tiers in the test-fast profile (lib/Cargo.toml: dev, lightly optimised), the proof
+        # tier in release.
+        argv = ["cargo", "test", "--manifest-path", "lib/Cargo.toml"] + (["--release"] if tier == "proof" else ["--profile", "test-fast"])
         argv += [a for t in tests for a in ("--test", t)]
         after = (["--ignored"] if tier == "proof" else []) + (["--test-threads", str(test_threads)] if test_threads else [])
         runs.append(("cargo test", argv + (["--"] + after if after else []), env, root))
@@ -685,35 +687,400 @@ def _shown(argv, env):
     return " ".join([f"{k}={v}" for k, v in env.items()] + [Path(a).name if a == sys.executable else a for a in argv])
 
 
-def run_tier(tier, path=INVENTORY, root=ROOT, only=None, tests=(), test_threads=None, dry_run=False):
-    """Run TIER's commands one after another: cargo's output as it comes, one line per Python file (its output in
-    full when it fails). Returns 0 if every command passed."""
+# --- choosing the tests of what changed --------------------------------------------------------------------------
+
+# What makes `cargo test` worth running: lib/ but its Python tools and pages, and the two Python files tests/tiers.rs
+# reads for its lint.
+RUST_INPUTS = re.compile(r"^lib/(?!tools/|README\.md$|.*\.md$)|^lib/tools/(test_costs|cost_tier)\.py$")
+SKIP_DIRS = {".git", ".jj", "target", "node_modules", "__pycache__", ".state"}
+# Files a test is not taken to read by naming them: records and generated files that every few modules name (the
+# trace index, the decision records, job results), and the test inventory, which every test file names through the
+# shared cost decorator. A test of them is chosen as any other, by changing or importing what changed.
+NOT_BY_NAME = re.compile(r"^(llm-dlc/traces/|llm-dlc/index\.json$|llm-dlc/README\.md$|llm-dlc/decisions/|verification/results/|"
+                         r"verification/jobs/|lib/tests/costs\.json$|examples/index\.json$|examples/README\.md$)")
+SHARED = {"cost_tier.py"}  # imported by every test file: what it names says nothing of one test
+
+
+def changed_paths(root, since=None):
+    """The files changed in @ (`jj diff`), or since revision SINCE."""
+    argv = ["jj", "--quiet", "diff", "--name-only"] + (["--from", since, "--to", "@"] if since else [])
+    r = subprocess.run(argv, cwd=root, capture_output=True, text=True)
+    if r.returncode:
+        raise SystemExit(f"jj diff: {r.stderr.strip()}")
+    return sorted(set(r.stdout.split()))
+
+
+def _python_modules(root):
+    """Every Python file of the repository by its module name's last part: an import names a module, not a path, and
+    the tests put several folders on sys.path, so a name is taken to mean every file of that name (more is chosen,
+    never less)."""
+    out = {}
+    for dirpath, dirs, files in os.walk(root):
+        dirs[:] = [d for d in dirs if d not in SKIP_DIRS and not d.startswith(".")]
+        for f in files:
+            if f.endswith(".py"):
+                path = Path(dirpath) / f
+                out.setdefault(path.stem if f != "__init__.py" else path.parent.name, []).append(path)
+    return out
+
+
+def _imports(path):
+    import ast
+    try:
+        tree = ast.parse(Path(path).read_text())
+    except (OSError, SyntaxError, ValueError):
+        return set()
+    names = set()
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            names |= {part for a in node.names for part in a.name.split(".")}
+        elif isinstance(node, ast.ImportFrom):
+            names |= set((node.module or "").split(".")) | {a.name for a in node.names}
+    return names - {""}
+
+
+def _strings(path, cache={}):
+    """The string literals of a Python file's code, its docstrings left out: where a test names a file it reads or
+    runs, as opposed to a page its prose points at."""
+    import ast
+    path = Path(path)
+    if path not in cache:
+        try:
+            tree = ast.parse(path.read_text())
+        except (OSError, SyntaxError, ValueError):
+            cache[path] = ""
+            return ""
+        docs = {id(n.body[0].value) for n in ast.walk(tree)
+                if isinstance(n, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)) and n.body
+                and isinstance(n.body[0], ast.Expr) and isinstance(n.body[0].value, ast.Constant)}
+        cache[path] = "\n".join(n.value for n in ast.walk(tree)
+                                if isinstance(n, ast.Constant) and isinstance(n.value, str) and id(n) not in docs)
+    return cache[path]
+
+
+def closure(path, modules, cache):
+    """The repository's Python files a test file imports, itself included, transitively."""
+    seen, todo = set(), [Path(path).resolve()]
+    while todo:
+        p = todo.pop()
+        if p in seen:
+            continue
+        seen.add(p)
+        if p not in cache:
+            cache[p] = _imports(p)
+        todo += [m.resolve() for name in cache[p] for m in modules.get(name, [])]
+    return seen
+
+
+def changed_selection(root, doc, changed):
+    """What the change in CHANGED (repository paths) asks to run: (`cargo test` arguments or None, the Python test
+    files with why each). A Python file is chosen when it changed, when a module it imports (transitively) changed,
+    or when its source or that of a module it imports names a changed file by its path or, for a distinctive name,
+    by its file name: a test that reads a schema, a sidecar or a script it runs. Naming counts in the test file and
+    the modules it imports directly, and not for the files NOT_BY_NAME lists. Rust runs when lib/ changed beyond
+    its Python tools and pages; only the test binaries that changed, when nothing else of lib/ did."""
+    root = Path(root)
+    rust_changed = [c for c in changed if RUST_INPUTS.search(c)]
+    rust = None
+    if rust_changed:
+        only_tests = all(re.fullmatch(r"lib/tests/[^/]+\.rs", c) for c in rust_changed)
+        rust = [Path(c).stem for c in rust_changed] if only_tests else []
+    modules, cache, chosen = _python_modules(root), {}, {}
+    changed_abs = {(root / c).resolve(): c for c in changed}
+    names = [(c, Path(c).name) for c in changed]
+    for rel in sorted({r["file"] for r in doc["python"]}):
+        test = (root / rel).resolve()
+        if not test.exists():
+            continue
+        files = closure(test, modules, cache)
+        why = None
+        if test in changed_abs:
+            why = "it changed"
+        elif hit := next((changed_abs[f] for f in files if f in changed_abs), None):
+            why = f"it imports {hit}"
+        else:
+            direct = [test] + [m.resolve() for n in cache.get(test, set()) for m in modules.get(n, [])
+                               if m.name not in SHARED]
+            text = "\n".join(_strings(f) for f in dict.fromkeys(direct))
+            for c, name in names:
+                if NOT_BY_NAME.search(c):
+                    continue
+                if c in text or (len(name) >= 10 and name != "README.md" and name in text):
+                    why = f"it names {c}"
+                    break
+        if why:
+            chosen[rel] = why
+    return rust, chosen
+
+
+RUST_FAILED = re.compile(r"^test (\S+) \.\.\. FAILED$", re.M)
+# Rust test binaries at a time: each runs its own tests on every CPU it sees, so a few are enough to keep a run's
+# CPUs busy, and each more adds memory (a tool-tier test may have a JVM or javac running). Measured 2026-11-16 on six
+# CPUs: three at a time took 403 s where one after another took 707 s, at a peak of 3.4 GB; so half the CPUs, at most
+# four, and no more than one for each 1.5 GB of a job's memory limit, which leaves room for the Python files beside.
+def _rust_jobs(environ=os.environ, cpus=None):
+    jobs = min(4, int(float(environ.get("VERIFY_CPUS") or cpus or os.cpu_count() or 2)) // 2)
+    if environ.get("VERIFY_MEMORY_LIMIT_MB"):
+        jobs = min(jobs, int(float(environ["VERIFY_MEMORY_LIMIT_MB"])) // 1500)
+    return max(1, jobs)
+
+
+RUST_JOBS = _rust_jobs()
+_OUT = threading.Lock()  # one line at a time, from the Rust binaries and the Python files ending together
+# Python test files at a time: each is one process, mostly waiting on the processes its tests start. One after
+# another they took 514 s on 2026-11-17, more than twice Rust's 230 s beside them; three at a time, two in a job
+# with a memory limit (the Rust binaries have the larger share of it).
+PYTHON_JOBS = 2 if os.environ.get("VERIFY_MEMORY_LIMIT_MB") else max(1, min(3, (os.cpu_count() or 2) // 2))
+PYTHON_SECONDS = (Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "in-the-loop"
+                  / "python-test-seconds.json")  # what each Python test file took in the last whole default run
+BINARY_SECONDS = "test-binary-seconds.json"  # in cargo's target directory: what each test binary took the last time
+
+
+def _python_file(label, argv, env, cwd):
+    """Run one Python test file: (exit code, the line for it, its output)."""
+    p = subprocess.run(argv, env={**os.environ, **env}, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    ran, outcome = PY_RAN_LINE.findall(p.stdout), PY_OUTCOME_LINE.findall(p.stdout)
+    line = f"{label}: {ran[-1] if ran else 'no tests ran'}{', ' + outcome[-1] if outcome else ''}"
+    return p.returncode, line, p.stdout
+
+
+def rust_seconds(doc):
+    """Each Rust source file's tests' recorded seconds, summed: what orders the test binaries, longest first."""
+    out = {}
+    for r in doc.get("rust", []):
+        out[r["file"]] = out.get(r["file"], 0) + (r.get("cost") or {}).get("seconds", 0)
+    return out
+
+
+def cargo_binaries(argv, env, cwd, jobs, seconds=None, root=ROOT):
+    """`cargo test`, its test binaries JOBS at a time: (exit code, output). Cargo runs one test binary after another,
+    so a run waits for the sum of them while most of the machine is idle; here cargo only builds them
+    (`--no-run`), and each then runs as cargo would run it (in its package's folder, with the arguments after `--`),
+    the longest first by SECONDS (repository path of a source file to seconds), with the doctests as one more. The
+    output keeps cargo's shape, which the retry and the default-run job read: a `Running` line for each binary, then
+    its `test result:` line, or its whole output when it fails."""
+    from concurrent.futures import ThreadPoolExecutor
+    cut = argv.index("--") if "--" in argv else len(argv)
+    front, after = argv[:cut], argv[cut + 1:]
+    full = {**os.environ, **env}
+    build = subprocess.run(front + ["--no-run", "--message-format=json"], env=full, cwd=cwd, stdout=subprocess.PIPE,
+                           stderr=subprocess.PIPE, text=True)
+    binaries, rendered = [], []
+    for line in build.stdout.splitlines():
+        try:
+            message = json.loads(line)
+        except ValueError:
+            rendered.append(line)
+            continue
+        if not isinstance(message, dict):
+            rendered.append(line)
+        elif message.get("reason") == "compiler-message":
+            rendered.append((message.get("message") or {}).get("rendered") or "")
+        elif message.get("reason") == "compiler-artifact" and message.get("executable") and (message.get("profile") or {}).get("test"):
+            binaries.append((message["target"]["src_path"], message["executable"], message.get("manifest_path")))
+    if build.returncode:
+        return build.returncode, "\n".join(rendered) + build.stderr
+    def rel(src):
+        try:
+            return str(Path(src).resolve().relative_to(Path(root).resolve()))
+        except ValueError:
+            return src
+    # The longest first, or the last binaries to start set the end alone: by what each took the last time here
+    # (kept in the target directory, beside the binaries it describes), and by the inventory for one not yet timed.
+    seconds = dict(seconds or {})
+    kept = Path(binaries[0][1]).resolve().parents[2] / BINARY_SECONDS if binaries else None
+    try:
+        last = json.loads(kept.read_text()) if kept else {}
+        seconds.update({k: v for k, v in last.items() if isinstance(v, (int, float))} if isinstance(last, dict) else {})
+    except (OSError, ValueError):
+        pass
+    binaries.sort(key=lambda b: -seconds.get(rel(b[0]), 0))
+    units = [(f"{rel(src)} ({exe})", [exe, *after], str(Path(manifest).parent) if manifest else cwd,
+              {"CARGO_MANIFEST_DIR": str(Path(manifest).parent)} if manifest else {}, rel(src))
+             for src, exe, manifest in binaries]
+    if "--test" not in front and "--ignored" not in after:  # as cargo: the doctests, unless test binaries were named
+        units.append(("the doctests", front + ["--doc"] + (["--"] + after if after else []), cwd, {}, "--doc"))
+    lock, parts, codes, took_s = _OUT, [], [], {}
+
+    def one(unit):
+        label, command, where, more, name = unit
+        began = time.monotonic()
+        p = subprocess.run(command, env={**full, **more}, cwd=where, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+        took = time.monotonic() - began
+        results = [line for line in p.stdout.splitlines() if line.startswith("test result:")]
+        text = f"     Running {label}\n"
+        if p.returncode:
+            text += p.stdout + f"\nerror: test failed, to rerun pass `{'--doc' if name == '--doc' else '--test ' + Path(name).stem}`\n"
+        else:
+            text += "".join(f"{line} [{took:.0f}s with the others]\n" for line in results)
+        with lock:
+            parts.append(text)
+            codes.append(p.returncode)
+            if name != "--doc":
+                took_s[name] = round(took, 1)
+            sys.stdout.write(text)
+            sys.stdout.flush()
+
+    began = time.monotonic()
+    with ThreadPoolExecutor(max_workers=max(1, jobs)) as pool:
+        list(pool.map(one, units))
+    if kept and "--test" not in front:  # a whole run's times; a named binary's alone would forget the others
+        try:
+            kept.write_text(json.dumps(took_s, indent=1, sort_keys=True) + "\n")
+        except OSError:
+            pass
+    summary = (f"cargo test: {len(units)} test binaries, {jobs} at a time, in {time.monotonic() - began:.0f}s"
+               f"{'' if not any(codes) else '; ' + str(sum(1 for c in codes if c)) + ' failed'}\n")
+    sys.stdout.write(summary)
+    return (101 if any(codes) else 0), build.stderr + "".join(parts) + summary
+
+
+def _second_run(label, argv, env, cwd, line, output, failed, flaky):
+    """A Python file that failed, run once more: flaky if it passes now, failed (with its first output) if not."""
+    again, _, _ = _python_file(label, argv, env, cwd)
+    if again == 0:
+        print(f"FLAKY {line} (failed, then passed on a second run)", flush=True)
+        flaky.append(label)
+    else:
+        print(f"FAIL {line}", flush=True)
+        print(output)
+        failed.append(label)
+
+
+def run_tier(tier, path=INVENTORY, root=ROOT, only=None, tests=(), test_threads=None, dry_run=False,
+             serial=False, retry=True, changed=None, rust_jobs=1, python_jobs=1):
+    """Run TIER's commands: cargo's, and one line per Python file (its output in full when it fails). `cargo test`
+    runs beside the Python files unless SERIAL (its output, kept in a file meanwhile, is printed when it ends), which
+    takes the wall time from Rust's plus Python's to the longer of the two. With RETRY, what fails is run once more,
+    a Python file whole and Rust's failed tests by name, and what passes then is reported as flaky (`FLAKY ...`) and
+    counted as passed: a run then stops failing on noise, and the flaky tests are named to be fixed. With RUST_JOBS
+    over 1 (and not the proof tier, whose tests are heavy one at a time), Rust's test binaries run that many at a
+    time (`cargo_binaries`). With PYTHON_JOBS over 1 the Python files run that many at a time, the longest first by
+    their last run here, each line printed as its file ends; a file that fails then has its second run alone, after
+    the others, so two files that disturbed each other show as flaky and not as failed. Returns 0 if every command
+    passed."""
     doc = json.loads(Path(path).read_text())
     runs = tier_runs(tier, doc, root, only, tests, test_threads)
+    if changed is not None:  # only the tests of what changed (CHANGED: repository paths)
+        rust, chosen = changed_selection(root, doc, changed)
+        print(f"{len(changed)} changed file(s): " + (f"cargo test{' --test ' + ' --test '.join(rust) if rust else ''}"
+              if rust is not None else "no cargo test") + f", {len(chosen)} Python test file(s)")
+        for rel, why in chosen.items():
+            print(f"  {rel}: {why}")
+        if rust:
+            runs = [r for r in runs if r[0] != "cargo test"] + tier_runs(tier, doc, root, "rust", rust, test_threads)
+        runs = [r for r in runs if (r[0] == "cargo test" and rust is not None) or r[0] in chosen]
+        if not runs:
+            print(f"{tier} tier: nothing to run for what changed")
+            return 0
     if tier == "proof" and not any(label != "cargo test" for label, *_ in runs) and only != "rust":
         print("python: no proof-tier tests")
-    failed = []
-    for label, argv, env, cwd in runs:
-        if dry_run:
+    if dry_run:
+        for label, argv, env, cwd in runs:
             print(_shown(argv, env))
-            continue
-        full = {**os.environ, **env}
-        if label == "cargo test":
-            print(f"$ {_shown(argv, env)}", flush=True)
-            code = subprocess.run(argv, env=full, cwd=cwd).returncode
+        return 0
+    failed, flaky = [], []
+    cargo = next((r for r in runs if r[0] == "cargo test"), None)
+    background = together = None
+    if cargo and rust_jobs > 1 and tier != "proof" and not serial:
+        # Its binaries several at a time, beside the Python files: each binary's lines are printed as it ends.
+        print(f"$ {_shown(cargo[1], cargo[2])} ({rust_jobs} test binaries at a time"
+              f"{', beside the Python files' if len(runs) > 1 else ''})", flush=True)
+        together = {}
+        thread = threading.Thread(target=lambda: together.update(zip(("code", "output"), cargo_binaries(
+            cargo[1], cargo[2], cargo[3], rust_jobs, rust_seconds(doc), root))))
+        thread.start()
+    elif cargo and not serial and len(runs) > 1:
+        import tempfile
+        log = tempfile.NamedTemporaryFile("w+", prefix="cargo-test-", suffix=".log", delete=False)
+        print(f"$ {_shown(cargo[1], cargo[2])} (beside the Python files; its output when it ends)", flush=True)
+        background = (subprocess.Popen(cargo[1], env={**os.environ, **cargo[2]}, cwd=cargo[3], stdout=log,
+                                       stderr=subprocess.STDOUT), log)
+    elif cargo:
+        print(f"$ {_shown(cargo[1], cargo[2])}", flush=True)
+    python = [r for r in runs if r[0] != "cargo test"]
+    kept = PYTHON_SECONDS if Path(root).resolve() == ROOT.resolve() else None  # this repository's files' times only
+    if python_jobs > 1 and len(python) > 1:
+        # The longest first, by what each file took the last time here: the last files to start then end with the
+        # rest, and one long file doesn't set the end alone.
+        try:
+            last = json.loads(kept.read_text()) if kept else {}
+        except (OSError, ValueError):
+            last = {}
+        python.sort(key=lambda r: -last.get(r[0], 0) if isinstance(last.get(r[0], 0), (int, float)) else 0)
+    out_lock, took_s, again_later = _OUT, {}, []
+
+    def one(run):
+        label, argv, env, cwd = run
+        began = time.monotonic()
+        code, line, output = _python_file(label, argv, env, cwd)
+        with out_lock:
+            took_s[label] = round(time.monotonic() - began, 1)
+            if code and retry:
+                again_later.append((run, line, output))  # its second run is alone, after the others
+            else:
+                print(f"{'ok  ' if code == 0 else 'FAIL'} {line}", flush=True)
+                if code:
+                    print(output)
+                    failed.append(label)
+
+    if python_jobs > 1 and len(python) > 1:
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=python_jobs) as pool:
+            list(pool.map(one, python))
+    else:
+        for run in python:
+            one(run)
+            # One after another, a file's second run follows it at once, as before.
+            for (label, argv, env, cwd), line, output in again_later:
+                _second_run(label, argv, env, cwd, line, output, failed, flaky)
+            again_later.clear()
+    for (label, argv, env, cwd), line, output in again_later:
+        _second_run(label, argv, env, cwd, line, output, failed, flaky)
+    order = [r[0] for r in runs]
+    failed.sort(key=order.index)
+    flaky.sort(key=order.index)
+    if kept and only != "rust" and changed is None and tier == "default" and len(python) > 1:
+        try:
+            kept.parent.mkdir(parents=True, exist_ok=True)
+            kept.write_text(json.dumps(took_s, indent=1, sort_keys=True) + "\n")
+        except OSError:
+            pass
+    if cargo:
+        if together is not None:
+            thread.join()
+            code, output = together.get("code", 1), together.get("output", "")
+            if code and "Running " not in output:
+                sys.stdout.write(output)  # the build failed: what cargo said
+        elif background:
+            proc, log = background
+            code = proc.wait()
+            log.seek(0)
+            output = log.read()
+            log.close()
+            os.unlink(log.name)
+            sys.stdout.write(output if code else "\n".join(output.splitlines()[-3:]) + "\n")
         else:
-            p = subprocess.run(argv, env=full, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-            code = p.returncode
-            ran, outcome = PY_RAN_LINE.findall(p.stdout), PY_OUTCOME_LINE.findall(p.stdout)
-            print(f"{'ok  ' if code == 0 else 'FAIL'} {label}: {ran[-1] if ran else 'no tests ran'}"
-                  f"{', ' + outcome[-1] if outcome else ''}", flush=True)
-            if code:
-                print(p.stdout)
+            p = subprocess.run(cargo[1], env={**os.environ, **cargo[2]}, cwd=cargo[3], stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT, text=True)
+            code, output = p.returncode, p.stdout
+            sys.stdout.write(output)
+        names = sorted(set(RUST_FAILED.findall(output)))
+        if code and retry and names:
+            argv = cargo[1][:cargo[1].index("--")] if "--" in cargo[1] else list(cargo[1])
+            after = cargo[1][cargo[1].index("--") + 1:] if "--" in cargo[1] else []
+            again = subprocess.run(argv + ["--", *after, "--exact", *names], env={**os.environ, **cargo[2]},
+                                   cwd=cargo[3], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+            if again.returncode == 0:
+                print(f"FLAKY cargo test: {', '.join(names)} (failed, then passed on a second run)", flush=True)
+                flaky.append("cargo test")
+                code = 0
+            else:
+                print(f"cargo test: {', '.join(names)} failed again on a second run", flush=True)
         if code:
-            failed.append(label)
-    if not dry_run:
-        print(f"{tier} tier: {len(runs) - len(failed)} of {len(runs)} passed"
-              + (f"; failed: {', '.join(failed)}" if failed else ""))
+            failed.insert(0, "cargo test")
+    print(f"{tier} tier: {len(runs) - len(failed)} of {len(runs)} passed"
+          + (f"; failed: {', '.join(failed)}" if failed else "") + (f"; flaky: {', '.join(flaky)}" if flaky else ""))
     return 1 if failed else 0
 
 
@@ -873,6 +1240,17 @@ def main(argv=None):
     r.add_argument("--test", action="append", default=[], metavar="NAME", help="a Rust test binary (repeatable)")
     r.add_argument("--test-threads", type=int, help="Rust tests at once")
     r.add_argument("--dry-run", action="store_true", help="print the commands, run nothing")
+    r.add_argument("--serial", action="store_true", help="cargo test after the Python files, not beside them")
+    r.add_argument("--rust-jobs", type=int, default=RUST_JOBS, metavar="N",
+                   help=f"Rust test binaries at a time (default {RUST_JOBS}: half of $VERIFY_CPUS or of the "
+                        "machine's, at most 4, and one per 1.5 GB of $VERIFY_MEMORY_LIMIT_MB); 1 is plain cargo "
+                        "test, one binary after another")
+    r.add_argument("--python-jobs", type=int, default=PYTHON_JOBS, metavar="N",
+                   help=f"Python test files at a time (default {PYTHON_JOBS}); 1 is one after another")
+    r.add_argument("--no-retry", action="store_true", help="what fails is not run a second time")
+    r.add_argument("--changed", action="store_true", help="only the tests of what changed in @ (jj diff): the files that "
+                   "changed, import what changed, or name a changed file; cargo test when lib/ changed")
+    r.add_argument("--from", dest="since", metavar="REV", help="with --changed: what changed since REV, not only in @")
     r.add_argument("--path", default=str(INVENTORY))
     lt = sub.add_parser("lint", help="check that the tests' tier tags, their sources and the inventory agree")
     lt.add_argument("--only", choices=("rust", "python"), help="one language")
@@ -900,7 +1278,9 @@ def main(argv=None):
                     print(f"  unlisted: {r['file']}::{r['name']}: {r['unlisted']}")
         return 0
     if a.command == "run":
-        return run_tier(a.tier, a.path, ROOT, a.only, a.test, a.test_threads, a.dry_run)
+        changed = changed_paths(ROOT, a.since) if a.changed or a.since else None
+        return run_tier(a.tier, a.path, ROOT, a.only, a.test, a.test_threads, a.dry_run, a.serial, not a.no_retry, changed,
+                        a.rust_jobs, a.python_jobs)
     if a.command == "lint":
         problems = lint(a.path, ROOT, a.only)
         for line in problems:

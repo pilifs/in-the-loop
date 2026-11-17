@@ -75,6 +75,8 @@ pub const MODELS: &[Model] = &[
     model!(checker "java/util/LinkedHashMap$LinkedValues", "java/util/LinkedHashMap.java", "java/util/LinkedHashMap$LinkedValues.class", "the values collection of the LinkedHashMap model: size and iterator; the own checker only"),
     model!(checker "java/util/LinkedHashMap$LinkedValueIterator", "java/util/LinkedHashMap.java", "java/util/LinkedHashMap$LinkedValueIterator.class", "the iterator of the LinkedHashMap model's values: hasNext and next, fail-fast; the own checker only"),
     model!(checker "java/util/ArrayAsList", "java/util/lists/ArrayAsList.java", "java/util/ArrayAsList.class", "what Arrays.asList(T...) returns: a list that is a view of the array, with size, get and toArray(); not a JDK class; the own checker only"),
+    model!(checker "java/util/ArrayList", "java/util/lists/ArrayList.java", "java/util/ArrayList.class", "an ArrayList as an array of its elements and their number: ArrayList() and ArrayList(int), size, isEmpty, get, add, addAll, toArray() and toArray(T[]), and iterator() with its fail-fast iterator; run only for a check that asks for it (--model java.util.ArrayList); the own checker only"),
+    model!(checker "java/util/ArrayList$Itr", "java/util/lists/ArrayList.java", "java/util/ArrayList$Itr.class", "the iterator of the ArrayList model: hasNext and next, fail-fast; the own checker only"),
     model!(jbmc "java/util/List", "java/util/List.java", "java/util/List.class", "the static factories of and copyOf, step for step as the JDK's: immutable lists, NullPointerException on a null element, copyOf of one of them the list itself; JBMC only"),
     model!(jbmc "java/util/ImmutableCollections", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections.class", "the list factories' helpers and the one empty list; JBMC only"),
     model!(jbmc "java/util/ImmutableCollections$AbstractImmutableList", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections$AbstractImmutableList.class", "an immutable list: every change throws UnsupportedOperationException; iterator, equals, hashCode and contains over the elements; JBMC only"),
@@ -122,6 +124,31 @@ pub const CHECKER_RUNS: &[&str] = &[
     "java/util/stream/RangeStream",
     "java/util/stream/IntArrayStream",
 ];
+
+/// The models the own checker runs only for a check that asks for one (`prove --model CLASS`,
+/// [`ClassPath::runs_model`](crate::classpath::ClassPath::runs_model)), each with the classes nested in it:
+/// otherwise the class is the JDK's, whose constructors and methods are the JDK calls they were (gaps, with their
+/// contracts). `java.util.ArrayList` is one because its constructor `ArrayList(int)` is the gap the contract
+/// library, the conformance corpus and the examples' recorded refusals are written about: a check that needs what
+/// a list holds asks for the model, and its result says so ([`requested_assumption`]).
+pub const ON_REQUEST: &[&str] = &["java/util/ArrayList"];
+
+/// The model on request a class belongs to: the class itself or the one it is nested in.
+pub fn on_request(name: &str) -> Option<&'static str> {
+    ON_REQUEST.iter().copied().find(|r| name == *r || name.strip_prefix(r).is_some_and(|rest| rest.starts_with('$')))
+}
+
+/// The internal name of the model `--model CLASS` asks for, or what to say when there is none.
+pub fn requested(class: &str) -> Result<&'static str, Error> {
+    let name = class.replace('.', "/");
+    ON_REQUEST.iter().copied().find(|r| *r == name).ok_or_else(|| Error::new(format!("--model {class}: no model on request of that class; there is one of {}", ON_REQUEST.iter().map(|r| r.replace('/', ".")).collect::<Vec<_>>().join(", "))))
+}
+
+/// What a result rests on when its check asked for a model ([`ON_REQUEST`]), in the words it states.
+pub fn requested_assumption(model: &str) -> String {
+    let m = find(model).expect("a model on request is a model");
+    format!("{} is the tool's model of the class wherever the check runs it (--model), not the JDK's code: {} (lib/models/{}); a constructor or method the model does not keep is the JDK call it names", model.replace('/', "."), m.note.split(';').next().unwrap_or(m.note), m.source)
+}
 
 /// The JDK calls that enter a model by a method of the model's own: `java.util.Arrays.stream(T[])`,
 /// `Arrays.stream(int[])`, `Arrays.asList(T...)`, `String.chars()` and `IntStream.range(int, int)`, whose classes

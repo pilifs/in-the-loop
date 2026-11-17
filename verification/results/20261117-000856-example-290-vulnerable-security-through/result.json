@@ -1,0 +1,252 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261117-000856-example-290-vulnerable-security-through",
+  "title": "Example 290 vulnerable-security through the adapter entry: the frozen claim on 5.8.4, expected refuted",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.4s, peak 187.2 MiB (estimated 5m00s, 4.0 GiB); 3 output file(s) changed; signals: jvmcontract:fails×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261117-000856-example-290-vulnerable-security-through.json",
+    "sha256": "1e2956e0b8d675451c4d755834861df38bd993bb7eb681e109d0bd6733f8da48",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261117-000856-example-290-vulnerable-security-through",
+      "title": "Example 290 vulnerable-security through the adapter entry: the frozen claim on 5.8.4, expected refuted",
+      "description": "The frozen claim claims/ambiguous-servlet-configuration-rejected.json, unchanged, run by examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py: jvmcontract prove (own checker, strict gaps). The entry is example290.adapter.MatcherSelectionAdapter#select(int[] servlets, int method, String[] patterns), the one the claim's first assumption names: it fills a LinkedHashMap with one registration per element of servlets (a table of class names: DispatcherServlet, a plain servlet), puts it in carriers for the servlet context and the web application context, and makes one call of the original requestMatchers on a fresh minimal registry. The claim's expressions are passed as they are written (the assumption, assert false, throws IllegalArgumentException when true), compiled by javac and run as bytecode, at the claim's bound of 8; loops are followed exactly for 64 turns. The class path is the release's ten pinned JARs, each checked against its SHA-256. This is a proof beside the example route, which takes no adapter entry (each task's invocation in target.json says so). Nothing is put in a method's place and no lemma is given. As for fixed-security and mutant-security (jobs 20261116-225709-example-290-fixed-security-through-the-a and 20261116-231724-example-290-mutant-security-through-the), three library initializers with no input that the checker does not run are observed on a JVM on the release's class path (prove --observed-initializer), which the outcome states where a path uses one. What is new: 5.8.4 collects its matchers in ArrayLists on every path, and the checker stopped at new ArrayList(int) (AbstractRequestMatcherRegistry.createMvcMatchers:192). The script now asks for the checker's model of java.util.ArrayList (prove --model java.util.ArrayList; lib/models/java/util/lists/ArrayList.java: the two constructors, size, isEmpty, get, add, addAll, both toArray and a fail-fast iterator, any other method the JDK call it names). The model is run only for a check that asks for it: without the option the class is the JDK's and its constructor the gap the contract library and the recorded refusals are about, so no other verdict changes. The outcome states the model where a path ran it. The model is proved to be its definition written out on every input of a bound, and the definitions hold on a JVM (lib/tests/claims.rs: claims.M#collected, filled, appended, swept). Arrays.copyOf of an array of references, which the model grows by, is modelled for every check (claims.M#recopied). Expected refuted: 5.8.4 returns matchers where a DispatcherServlet is registered beside another servlet, where the claim says it throws.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "290"
+        ],
+        "paths": [
+          "examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py",
+          "lib/models/java/util/lists/ArrayList.java",
+          "lib/src/models.rs"
+        ]
+      },
+      "expected": "exits 0: prove.py prints 'verdict: violation (expected violation)', the witness 'run on a JVM' with two or more servlets registered, one of them the DispatcherServlet",
+      "submitted": {
+        "at": "2026-11-17T00:08:56+00:00",
+        "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "1h",
+        "notes": "an inline probe at this bound took 0.7 s (4 paths): select(servlets=[0, 0], method=0, patterns={}) returns 0, run on a JVM. The time besides is the release build of lib/ if its tree isn't cached and the fetch of the JARs"
+      },
+      "steps": [
+        {
+          "name": "the claim at the frozen bound, 8",
+          "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py vulnerable-security --timeout 1800 --work verification/.work-290",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/.work-290/vulnerable-security/outcome.json",
+        "verification/.work-290/vulnerable-security/work/harness/PropertyHarness.java",
+        "verification/.work-290/vulnerable-security/work/harness/PropertyClaim.java"
+      ]
+    }
+  },
+  "sourceCommit": "f74915c25756f89d9ebafdf834192d0a4ad33063",
+  "startedAt": "2026-11-17T00:10:06+00:00",
+  "finishedAt": "2026-11-17T00:13:01+00:00",
+  "wallSeconds": 175.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2766671,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": "an inline probe at this bound took 0.7 s (4 paths): select(servlets=[0, 0], method=0, patterns={}) returns 0, run on a JVM. The time besides is the release build of lib/ if its tree isn't cached and the fetch of the JARs"
+  },
+  "usage": {
+    "peakMemoryBytes": 196268032,
+    "wallSeconds": 3.4,
+    "cpuSeconds": 4.2,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 170.381,
+      "cpuSeconds": 170.597,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1941577728,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "37726ce991f288d252cf6e588c6bb05b8159afa057060428e3e35c6fc4c8e93c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261117-000856-example-290-vulnerable-security-through/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 50s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "the claim at the frozen bound, 8",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py vulnerable-security --timeout 1800 --work verification/.work-290",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 3.407,
+      "cpuSeconds": 4.228,
+      "cpuThrottledSeconds": 0.432,
+      "peakMemoryBytes": 196268032,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-the-claim-at-the-frozen-bound.log",
+        "lines": 11,
+        "bytes": 1684,
+        "sha256": "46d577fe27ad619de9bed4108e8168943c5697257f18765cd61d9d9676af99eb",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 4,
+          "text": "✗ Property of example290.adapter.MatcherSelectionAdapter#select violated: `false` where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalArgum",
+          "groups": [
+            "Property of example290.adapter.MatcherSelectionAdapter#select violated: `false` where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalArgumentException when true:"
+          ]
+        }
+      ],
+      "tail": [
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261117-000856-example-290-vulnerable-security-through/examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/replay/adapter/example290/adapter/SelectionRegistry.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"java\"; the names are servlets, method, patterns); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target",
+        "✗ Property of example290.adapter.MatcherSelectionAdapter#select violated: `false` where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalArgum",
+        "  select(servlets=[0, 0], method=0, patterns={})",
+        "    outcome: 0",
+        "  (found by jvmcontract's own checker (CaDiCaL) in 0.7 s searching inputs in [0:20], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of i",
+        "",
+        "The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.",
+        "",
+        "verdict: violation (expected violation); paths 4, solver calls 17, variables 6041; outcome in verification/.work-290/vulnerable-security/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-290/vulnerable-security/outcome.json",
+      "change": "added",
+      "bytes": 12748,
+      "sha256": "7440c69d777cf76cdcedf06cffe4a6461c246d736e34cf6a8f1e2a674b912864",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/vulnerable-security/work/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1902,
+      "sha256": "8143fdcd73d1027377ffd381b68653156c8d58675b4598cea72b8edf3e842a07",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/vulnerable-security/work/harness/PropertyClaim.java",
+      "change": "added",
+      "bytes": 719,
+      "sha256": "194ea7bb389dcd5f4a992d6a67d08c05ba35b08f1f209ed510e3225d075e28d8",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-17T00:13:04+00:00",
+    "applied": [
+      "verification/.work-290/vulnerable-security/outcome.json",
+      "verification/.work-290/vulnerable-security/work/harness/PropertyHarness.java",
+      "verification/.work-290/vulnerable-security/work/harness/PropertyClaim.java"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "d6505376d22f561eee0ac8306d35733c7d945ac8",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d6505376d22f561eee0ac8306d35733c7d945ac8/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}
