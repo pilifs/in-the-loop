@@ -349,6 +349,12 @@ change `wwpkylrynorx` · [log `735bb0ae7c6a`](https://terminalvalue.net/raw-trac
 
 At the user's request the watcher asked Codex (read-only) to review the preservation stream's approach to 287 and 307. Its advice goes to the stream through its inbox as optional: close I010 in shared.rs::reach before more summary reuse, don't take job 20261117-180758 as a decision while I010 is open on its checker, move the relational boundary outward to a checked congruence of an unchanged callee (crypt_raw) rather than tune loops, and bound the remaining cost work.
 
+### The preservation stream is passed an outside review of its relational check, for optional consideration
+
+change `svtrzmswmxpt` · [log `735bb0ae7c6a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d.jsonl.gz)
+
+At the user's request the watcher asked Codex (read-only) to review the preservation stream's approach to 287 and 307. Its advice goes to the stream through its inbox as optional: close I010 in shared.rs::reach before more summary reuse, don't take job 20261117-180758 as a decision while I010 is open on its checker, move the relational boundary outward to a checked congruence of an unchanged callee (crypt_raw) rather than tune loops, and bound the remaining cost work.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d.jsonl.gz) has every step in between: reasoning, tool calls and their results.
