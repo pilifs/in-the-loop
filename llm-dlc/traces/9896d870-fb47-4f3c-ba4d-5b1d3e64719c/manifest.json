@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.005Z",
-  "ended": "2026-11-17T15:25:24.085Z",
-  "duration_seconds": 8913,
+  "ended": "2026-11-17T15:45:41.874Z",
+  "duration_seconds": 10131,
   "stats": {
-    "turns": 31,
-    "api_calls": 367,
-    "tool_calls": 367,
+    "turns": 36,
+    "api_calls": 419,
+    "tool_calls": 418,
     "tool_errors": 7,
-    "compactions": 6,
+    "compactions": 7,
     "peak_context_tokens": 234168,
     "usage": {
-      "input_tokens": 734,
-      "output_tokens": 298485,
-      "cache_read_input_tokens": 42330147,
-      "cache_creation_input_tokens": 980282
+      "input_tokens": 838,
+      "output_tokens": 339612,
+      "cache_read_input_tokens": 47346349,
+      "cache_creation_input_tokens": 1120749
     }
   },
   "tools": {
-    "Bash": 351,
+    "Bash": 401,
     "Edit": 9,
-    "Read": 3,
+    "Read": 4,
     "Write": 3,
     "Monitor": 1
   },
@@ -131,24 +131,38 @@
     {
       "index": 6,
       "started": "2026-11-17T15:17:41.300Z",
-      "ended": "2026-11-17T15:25:24.085Z",
-      "turns": 4,
-      "api_calls": 28,
+      "ended": "2026-11-17T15:26:00.151Z",
+      "turns": 5,
+      "api_calls": 30,
       "usage": {
-        "input_tokens": 56,
-        "output_tokens": 21418,
-        "cache_read_input_tokens": 2148590,
-        "cache_creation_input_tokens": 90939
+        "input_tokens": 60,
+        "output_tokens": 22302,
+        "cache_read_input_tokens": 2358882,
+        "cache_creation_input_tokens": 94314
       },
-      "peak_context_tokens": 104212
+      "peak_context_tokens": 107587
+    },
+    {
+      "index": 7,
+      "started": "2026-11-17T15:26:46.950Z",
+      "ended": "2026-11-17T15:45:41.874Z",
+      "turns": 4,
+      "api_calls": 50,
+      "usage": {
+        "input_tokens": 100,
+        "output_tokens": 40243,
+        "cache_read_input_tokens": 4805910,
+        "cache_creation_input_tokens": 137092
+      },
+      "peak_context_tokens": 150365
     }
   ],
   "log": {
-    "sha256": "6111ea7da20fcbc422a8292abcad3c2379581d4ab5e58668eeb8dd28d7b4e03c",
-    "bytes": 10285880,
-    "lines": 3490,
-    "gzip_bytes": 1755255,
-    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/6111ea7da20fcbc422a8292abcad3c2379581d4ab5e58668eeb8dd28d7b4e03c.jsonl.gz"
+    "sha256": "7e98b42bc2a888a7ac6faf5e863857e0dc7d65a8f009572be5680944fc46636f",
+    "bytes": 11703596,
+    "lines": 3957,
+    "gzip_bytes": 2015997,
+    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/7e98b42bc2a888a7ac6faf5e863857e0dc7d65a8f009572be5680944fc46636f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -231,6 +245,14 @@
       "summary": "An effect contract stands in for a call only as it was proved: no final static an initializer computed, and object arguments of exactly their classes; the challenge stream's three callers are refuted or refused",
       "body": "The challenge stream's countermodels (qmtxwupn, inbox domain-advances-state-I007) proved three callers through a proved effect contract where a JVM breaks them. The one bean passed twice was already refuted on this line, since the contract is proved with same-class inputs that may alias. The other two are fixed. An effect contract's proof now refuses a read of any static field that is not a compile-time constant, final ones included: an initializer ran before the call in the caller's state, and the proof's ran in the harness's fresh one (Locked.LOCKED = Config.locked). At a call, the stub stands in only where every object argument other than a String is null or of exactly its declared class, like the receiver: a subclass may override what the method calls on it (Rogue.linked sets admin). linkedAdmin is now refuted, with a witness replayed on a JVM. The stub also writes a nested parameter class with a '.', which javac takes.\\n\\nVerified: the challenge's fixture, README and JVM test are copied unchanged, and its checker-side test an_effect_contract_does_not_prove_a_call_a_jvm_breaks is added and passes. A new claims.Frames case (Mentor#adopt over a nested Honest parameter) is proved through its contract, which is among what it rests on. Each of the three rules, switched off by mutation, fails a test. test_costs run --changed passes (36 binaries, 5 of 5 default tier). Not changed: lemmas may still read a final static an initializer computed (the challenge's item 3, not in this stream's inbox). A merge with the challenge line conflicts on the fixture and test it added: take this line's.\\n\\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
       "log_sha256": "6111ea7da20fcbc422a8292abcad3c2379581d4ab5e58668eeb8dd28d7b4e03c"
+    },
+    {
+      "change_id": "llyzwmyptusvrxnttuznxwrusnzlkpzr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The state line takes the observation binding, and the binding no longer takes a lambda's per-run name for a write: example 286's bind reaches CachedIntrospectionResults again; step 3's account chosen",
+      "body": "Example 286's protected-state path (state stream, step 3). The evidence stream's binding of an observed initializer to what it was observed on (lzpqszyo) is copied onto this line unchanged: lib/src/observed.rs, lib/src/observed/ObservedInitializer.java, lib/src/classpath.rs (ClassPath::refused, from mqkqvvmw), lib/tests/observed_countermodels.rs with its fixtures, and lib/README.md's paragraph. It is copied rather than merged because a merge would have this session's sync.py stamp the evidence line's commits made today, as happened once before (rzzuvvwl). On a merge of the two lines these files are identical except ObservedInitializer.java and observed.rs's module doc, changed here as below.\n\nWith the binding, 286's probe (fixed-protected-state-mutation at bound 2, a trial) ended before DataBinder.bind. Initializing CachedIntrospectionResults initializes ReflectionUtils, and the binding compares that class's state with its state when initialized alone. It found USER_DECLARED_METHODS to be 'an object of ReflectionUtils$$Lambda/0x000000006604a6e8' in one run and '...$$Lambda/0x000000000e040a90' in the other, and refused the observation as a write to another class. The address is the JVM's name for the lambda's hidden class, and it differs from run to run. The observer now names a hidden class by what it was defined from (R$$Lambda), both for an object it does not hold and for a HashMap key's class. Test: the fixture claims.Hooked initializes claims.Hooks, which holds a lambda, after defining two lambdas of its own. The proof of claims.Hooking#hooked through Hooked's observation is Verified (tests/claims.rs, an_observed_initializer_gives_the_state_a_jvm_left_and_the_result_says_so). With the address kept in the name, the test fails with exactly that refusal. With the fix, the probe stops where it did before the binding: the read of strongClassCache, a ConcurrentHashMap the observation does not hold. Inbox item domain-advances-evidence-I009 tells the evidence stream about the change, since its I008 work edits the same file.\n\nStep 3's account is chosen and recorded in the brief's Progress, from 5.3.19's bytecode. Below CachedIntrospectionResults.forClass the binder runs on reflection and caches. It reaches a ConcurrentHashMap and two of Spring's ConcurrentReferenceHashMaps, java.beans.Introspector, Method objects, some forty default editors and Method.invoke. A held empty ConcurrentHashMap would only move the stop to its get. The next piece is therefore the brief's option 2: a stand-in for AbstractNestablePropertyAccessor.processLocalProperty, checked against the real method on a JVM by sampling, with the resolved setter run as written or through its effect contract.\n\nVerified: test_costs.py run --changed passed (observed_countermodels 4, claims and the other changed tests). The cost inventory test failed only until test_costs.py estimate was run; after it the tiers test and lint pass. The brief's other sections are still accurate.",
+      "log_sha256": "7e98b42bc2a888a7ac6faf5e863857e0dc7d65a8f009572be5680944fc46636f"
     }
   ],
   "logs": {
@@ -250,6 +272,12 @@
       "bytes": 10285880,
       "lines": 3490,
       "gzip_bytes": 1755255,
+      "url": null
+    },
+    "7e98b42bc2a888a7ac6faf5e863857e0dc7d65a8f009572be5680944fc46636f": {
+      "bytes": 11703596,
+      "lines": 3957,
+      "gzip_bytes": 2015997,
       "url": null
     },
     "a3ad388bcc53c6d97f04d9927c36b676984c9bcdcf5113a5d45ade9739803514": {

@@ -202,13 +202,40 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
   still read a final static an initializer computed (`claims.Effects#limit`). The challenge README names that as its
   item 3's hole, which is not in this inbox. A merge with the challenge line conflicts on the fixture and test files
   added on both: take this line's.
-- Next: step 3: how bind resolves a property name to its write method. That means taking `lzpqszyo` into this line,
-  a held kind for `CachedIntrospectionResults`' empty `strongClassCache` (an `Object` variant, printed
-  deterministically by the observer's `Dump.value`), then observing a bean's property descriptors, or an
-  introspection contract sampled on a JVM, and the effect contract applied at `Method.invoke` of the resolved setter. Then the adversarial bean and twin beside `ProtectedBean` (when the evidence
-  stream's 286 jobs no longer hang on the adapter set) and the app-level refutation through `displayName` on the real
-  binder. Still open from cycle 1: non-ASCII `toLowerCase()` (a Unicode lowering model or an ASCII claim for the
-  user).
+- 2026-11-17, step 3 begun: the observation binding taken, and the account of the binding path chosen (nothing of
+  286 decided; the frozen claim unchanged). Inbox: nothing open. `lzpqszyo`'s binding is on this line, its files
+  copied unchanged (`observed.rs`, `ObservedInitializer.java`, `ClassPath::refused` with `mqkqvvmw`'s
+  `observed_countermodels.rs` and fixtures, `lib/README.md`'s paragraph), not merged: a merge would have this
+  session's `sync.py` stamp the evidence line's commits of today. With it 286's probe ended before `bind`: the
+  initialization of `CachedIntrospectionResults` initializes `ReflectionUtils`, and the binding took its
+  `USER_DECLARED_METHODS` lambda for a write, since a JVM names a lambda's hidden class with an address that differs
+  from run to run. The observer now names a hidden class by what it was defined from (`R$$Lambda`); `claims.Hooked`
+  holds that (`tests/claims.rs`), and fails with the address kept. Sent `domain-advances-evidence-I009`, as their
+  I008 work changes the same file. The probe (bound 2, a trial) then stops where it did, at `strongClassCache`.
+  **The account chosen**, from 5.3.19's bytecode: below `forClass` the path is reflection and caches throughout:
+  `strongClassCache` (a `ConcurrentHashMap`), `softClassCache` (Spring's `ConcurrentReferenceHashMap`: segments, locks,
+  reference queues), `new CachedIntrospectionResults` (`Introspector`, the `BeanInfoFactory` list,
+  `GenericTypeAwarePropertyDescriptor`s over `Method`s), the type descriptor cache (another
+  `ConcurrentReferenceHashMap`; annotations read by reflection), some forty default editors made at the first
+  conversion, `Method.invoke` of the getter (`extractOldValueForEditor`) and the setter, and for an unknown name
+  `PropertyMatch` over `BeanUtils.getPropertyDescriptors`. Observing all of it (option 1) needs held objects of
+  `java.beans` and `java.lang.reflect` classes, whose fields reflection does not read without opening `java.base`, and
+  a model of each JDK call on them; a held empty `ConcurrentHashMap` alone only moves the stop to its `get`. So step
+  3 takes option 2.
+- Next: step 3, option 2. A stand-in for `AbstractNestablePropertyAccessor.processLocalProperty(PropertyTokenHolder,
+  PropertyValue)` on a wrapped object of exactly one class, checked on a JVM by sampling against the real method:
+  - Spring's lookup (exact, uncapitalized, capitalized) over the property names and write methods the JVM's
+    introspection gives;
+  - the getter, then the setter called as written or through its effect contract (the contract's use at the
+    reflective call);
+  - the value converted as the default editor converts it, for the values sampled;
+  - otherwise `NotWritablePropertyException` or `TypeMismatchException`.
+  Sampled on each property's name and its case variants, every name of at most 2 units over a small alphabet, and
+  random names, comparing the bean's fields, the exception's class and the property value's flags. Results that use
+  it say they rest on it (tested evidence, against the claim's "introspection runs as written"). Then the beans
+  beside `ProtectedBean` (when the evidence stream's 286 jobs no longer hang on the adapter set) and the app-level
+  refutation through `displayName` on the real binder. Still open from cycle 1: non-ASCII `toLowerCase()` (a Unicode
+  lowering model, or an ASCII claim for the user).
 - Status: working
 
 ## Loop settings
