@@ -99,6 +99,7 @@ pub const PROPERTY_OPTIONS: &[(&str, &str)] = &[
     ("observed_initializers", "what the proof rests on, an observation on a JVM: refused under the cache, which does not key it (property::run)"),
     ("previous", "set only by a regression check made as a property of the pair of versions: refused under the cache"),
     ("requested_models", "what the proof rests on, a model run on request: refused under the cache, which does not key it (property::run)"),
+    ("stand_ins", "what the proof rests on, a stand-in sampled on a JVM: refused under the cache, which does not key it (property::run)"),
     ("writes", "part of the claim, a write set and its frame: refused under the cache, which does not key it"),
     ("effect", "set only by a check that uses the effect contract, with a write set: refused under the cache"),
 ];

@@ -295,20 +295,37 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
   `CachedIntrospectionResults.<clinit>` at `BeanWrapperImpl.getCachedIntrospectionResults:174`, beside the
   `toLowerCase()` gap of cycle 1. So step 3's stand-in should stand at `getLocalPropertyHandler` or above, where the
   introspection caches are off the path, and the driver then drops that observation.
-- Next: step 3, option 2. A stand-in for `AbstractNestablePropertyAccessor.processLocalProperty(PropertyTokenHolder,
-  PropertyValue)` on a wrapped object of exactly one class, checked on a JVM by sampling against the real method:
-  - Spring's lookup (exact, uncapitalized, capitalized) over the property names and write methods the JVM's
-    introspection gives;
-  - the getter, then the setter called as written or through its effect contract (the contract's use at the
-    reflective call);
-  - the value converted as the default editor converts it, for the values sampled;
-  - otherwise `NotWritablePropertyException` or `TypeMismatchException`.
-  Sampled on each property's name and its case variants, every name of at most 2 units over a small alphabet, and
-  random names, comparing the bean's fields, the exception's class and the property value's flags. Results that use
-  it say they rest on it (tested evidence, against the claim's "introspection runs as written"). Then the beans
-  beside `ProtectedBean` (when the evidence stream's 286 jobs no longer hang on the adapter set) and the app-level
-  refutation through `displayName` on the real binder. Still open from cycle 1: non-ASCII `toLowerCase()` (a Unicode
-  lowering model, or an ASCII claim for the user).
+- 2026-11-17, step 3, option 2: stand-ins sampled on a JVM (nothing of 286 decided; the frozen claim unchanged).
+  Inbox: nothing open. **`prove --stand-in CLASS`** (`lib/src/stand_in.rs`, the call in `bmc::StandIn`): each public
+  static method of the class but `main` stands in for an instance method. Its first parameter's class is the exact
+  class of the receivers it covers, and the rest of its descriptor is the method's, which that class declares or
+  inherits. A call resolving to that method on a receiver of exactly that class runs the stand-in. A subclass's
+  receiver, and the stand-in's own calls, run the method as written, so a stand-in hands back what it does not cover.
+  Its `main` samples it against the method (`sample<TAB>input<TAB>method's outcome<TAB>stand-in's outcome`). The
+  tool runs that `main` first, on the check's class path, and takes the stand-in only if every sample is the same.
+  A result that used it says so among what it rests on: sampled, not proved. Refused: JBMC and `--cache`.
+  - Fixture `lib/tests/fixtures/stand-ins` (a reflective property writer); tests in `lib/tests/stand_in.rs`.
+    With the stand-in a claim the method leaves undecided is proved and names the stand-in, and a refutation
+    replays on a JVM. A subclass's receiver, and a bean the stand-in hands back, stop at the method's gap as without
+    it. A stand-in that forgets `Age`, one that samples nothing, and one with a public helper are refused.
+  - With the exact-receiver check or the sample comparison switched off (by mutation), a test fails.
+  - 286's stand-in is drafted, not committed: `org.springframework.beans.ProtectedBeanStandIn`, for
+    `setPropertyValue(PropertyValue)` on a `BeanWrapperImpl` of exactly a `ProtectedBean`. It covers the six
+    properties' lookup (exact, uncapitalized, capitalized), the getter, `NumberUtils.parseNumber` for `age`, and the
+    mismatch exceptions; anything else goes back to the method.
+  - Sampled against 5.3.19: 38,400 samples, all the same. These cover names (case variants, every name of at most 2
+    units over 12 letters, 200 random, some non-ASCII), 12 values, and the extract, suppress and optional flags.
+- Next: wire that stand-in into 286's driver and probe.
+  - Its source goes under `proofs/`, compiled by the driver against the release beside the adapter, not into
+    `replay/adapter`, which would change the adapter set `accept.py` compares for every 286 task.
+  - The driver then passes `--stand-in` and drops `CachedIntrospectionResults` from `STATE_OBSERVED`.
+  - A probe at bound 2 says where bind stops. Expected: the mismatch path's `PropertyChangeEvent` (a JDK constructor)
+    and the binding-error recording, which reads the property's type and value through `getPropertyType` and
+    `getPropertyValue` (stand-ins of their own, or the evidence of what they need); and `toLowerCase()`.
+  - Then step 2, the refutation (its witness replays whatever the stand-in is); the beans beside `ProtectedBean`; and
+    the effect contract at the stand-in's setter call, in place of the reflective call.
+  - Still open from cycle 1: non-ASCII `toLowerCase()`, and the corrected formalization (I009's two values, an ASCII
+    `field`).
 - Status: working
 
 ## Loop settings

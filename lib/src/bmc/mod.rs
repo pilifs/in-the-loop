@@ -192,6 +192,8 @@ pub struct Options {
     pub closed_frame: bool,
     /// The calls a checked effect contract stands in for ([`Effect`]).
     pub effects: std::sync::Arc<Vec<Effect>>,
+    /// The library methods a stand-in sampled on a JVM replaces ([`StandIn`], `--stand-in`).
+    pub stand_ins: std::sync::Arc<Vec<StandIn>>,
     /// The classes whose initializer the engine does not run, by internal name, each with the static state the
     /// initializer left on a JVM ([`crate::observed`], `--observed-initializer`): a use that initializes one gives
     /// the path that state, and the run states what that rests on ([`Outcome::assumed`]).
@@ -230,6 +232,27 @@ pub struct Effect {
     pub writes: Vec<EffectWrite>,
 }
 
+/// A library method whose calls on a receiver of exactly the class `receiver` run a static method of a stand-in class
+/// instead (`prove --stand-in CLASS`, [`crate::stand_in`]): `method` of `class`, of descriptor `method_descriptor`
+/// (the receiver first, then the method's parameters). The stand-in's own calls run the method as written, so a
+/// stand-in hands a case it does not cover back to it. A stand-in is no proof: it was sampled against the method on
+/// a JVM on the check's class path before the run, and a run that makes such a call states that it rests on that
+/// (`assumption`).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct StandIn {
+    /// The class that declares the method the call resolves to, its name and descriptor.
+    pub owner: String,
+    pub name: String,
+    pub descriptor: String,
+    /// The exact class of the receivers it stands in for.
+    pub receiver: String,
+    pub class: String,
+    pub method: String,
+    pub method_descriptor: String,
+    /// What a run that uses it states it rests on.
+    pub assumption: String,
+}
+
 /// A field an effect contract writes: of the object in the stub's local `object` (the receiver at 0, or an object
 /// parameter), the field `field` of type `descriptor`, which the call leaves holding the stub's local `value` (a
 /// parameter the contract's assertion says it equals) or, with none, any value of its primitive type.
@@ -244,7 +267,7 @@ pub struct EffectWrite {
 
 impl Default for Options {
     fn default() -> Self {
-        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, merge_heaps_after: 1024, invariants: true, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured, parameters: Parameters::default(), summaries: Default::default(), pure: None, own_induction: false, frame: None, closed_frame: false, effects: Default::default(), observed: Default::default(), models: Default::default(), previous: None }
+        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, merge_heaps_after: 1024, invariants: true, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured, parameters: Parameters::default(), summaries: Default::default(), pure: None, own_induction: false, frame: None, closed_frame: false, effects: Default::default(), stand_ins: Default::default(), observed: Default::default(), models: Default::default(), previous: None }
     }
 }
 
@@ -1227,6 +1250,7 @@ struct Engine<'a> {
     /// Whether it is proved as an effect contract ([`Options::closed_frame`]).
     closed_frame: bool,
     effects: std::sync::Arc<Vec<Effect>>,
+    stand_ins: std::sync::Arc<Vec<StandIn>>,
     b: Blaster,
     codes: HashMap<(String, String, String), Rc<Decoded>>,
     pending: Vec<Path>,
@@ -1380,6 +1404,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         frame: options.frame.clone(),
         closed_frame: options.closed_frame,
         effects: options.effects.clone(),
+        stand_ins: options.stand_ins.clone(),
         applied: BTreeMap::new(),
         hides: HashMap::new(),
         supers: HashMap::new(),
@@ -1685,7 +1710,7 @@ pub fn run_for_proof(entries: &[std::path::PathBuf], models: bool, class: &str, 
 #[allow(clippy::too_many_arguments)]
 pub fn run_for_proof_with(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &GapSetting, parameters: &Parameters, summaries: &[Summary], pure: Option<(String, String, String)>, own_induction: bool, frame: Option<(String, String, String)>, closed_frame: bool, effects: &[Effect], work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
     let cp = crate::witness::classpath(entries.iter().chain(&gaps.class_dir).map(std::path::PathBuf::as_path))?.with_models(models);
-    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps: gaps.mode, contracts: gaps.contracts.clone(), observed: gaps.observed.clone(), models: gaps.models.clone(), previous: gaps.previous.clone(), parameters: parameters.clone(), summaries: std::sync::Arc::new(summaries.to_vec()), pure, own_induction, frame, closed_frame, effects: std::sync::Arc::new(effects.to_vec()), ..Options::default() })?;
+    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps: gaps.mode, contracts: gaps.contracts.clone(), observed: gaps.observed.clone(), models: gaps.models.clone(), stand_ins: gaps.stand_ins.clone(), previous: gaps.previous.clone(), parameters: parameters.clone(), summaries: std::sync::Arc::new(summaries.to_vec()), pure, own_induction, frame, closed_frame, effects: std::sync::Arc::new(effects.to_vec()), ..Options::default() })?;
     let log = work.join("bmc.log");
     let _ = std::fs::write(&log, format!("jvmcontract's own checker on {class}.{method}\n{}\n", outcome.summary()));
     Ok(outcome.into_jbmc_result(log))
@@ -4602,6 +4627,19 @@ impl<'a> Engine<'a> {
                     _ => true,
                 });
                 let effect = self.effects.iter().find(|e| e.owner == cf.name && e.name == member.name && e.descriptor == member.descriptor && path.objects[o].class == e.owner && !path.objects[o].assumed && exact_arguments).map(|e| (e.stub.clone(), e.stub_descriptor.clone()));
+                // A stand-in of the method for a receiver of exactly its class, from anything but the stand-in's
+                // own class, which calls the method as written ([`StandIn`]).
+                let stand_in = self.stand_ins.iter().find(|s| s.owner == cf.name && s.name == member.name && s.descriptor == member.descriptor && path.objects[o].class == s.receiver && !path.objects[o].assumed && caller != s.class).cloned();
+                if let Some(s) = stand_in {
+                    let depth = path.frames.last().expect("a frame").stack.len();
+                    path.frames.last_mut().expect("a frame").stack.extend(full.iter().cloned());
+                    if let Some(step) = self.initialise(path, &s.class) {
+                        return step;
+                    }
+                    path.frames.last_mut().expect("a frame").stack.truncate(depth);
+                    self.assumed.insert(s.assumption.clone());
+                    return self.call(path, &s.class, &s.method, &s.method_descriptor, full);
+                }
                 if let Some((stub, stub_descriptor)) = effect.filter(|_| initialized && caller != crate::harness::expr::CLAIM_CLASS && path.frames.len() > 1) {
                     // The instruction runs again once the claim's class is initialized: its operands are on the
                     // stack while it is.

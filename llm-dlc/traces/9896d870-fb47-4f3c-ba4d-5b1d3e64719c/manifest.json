@@ -12,33 +12,34 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.005Z",
-  "ended": "2026-11-17T17:09:22.767Z",
-  "duration_seconds": 15152,
+  "ended": "2026-11-17T17:45:06.942Z",
+  "duration_seconds": 17296,
   "stats": {
-    "turns": 95,
-    "api_calls": 617,
-    "tool_calls": 579,
+    "turns": 100,
+    "api_calls": 672,
+    "tool_calls": 632,
     "tool_errors": 8,
-    "compactions": 12,
+    "compactions": 13,
     "peak_context_tokens": 234168,
     "usage": {
-      "input_tokens": 1304,
-      "output_tokens": 435799,
-      "cache_read_input_tokens": 64462779,
-      "cache_creation_input_tokens": 1578597
+      "input_tokens": 1416,
+      "output_tokens": 514834,
+      "cache_read_input_tokens": 71276800,
+      "cache_creation_input_tokens": 1753895
     }
   },
   "tools": {
-    "Bash": 549,
+    "Bash": 600,
     "Edit": 12,
-    "Read": 8,
-    "Write": 4,
+    "Read": 9,
+    "Write": 5,
     "Monitor": 3,
     "ToolSearch": 3
   },
   "files_touched": [
     "lib/models/java/util/lists/ArrayDeque.java",
     "lib/src/bmc/mod.rs",
+    "lib/src/stand_in.rs",
     "lib/tests/claims.rs",
     "lib/tests/fixtures/claims/claims/Cloned.java",
     "lib/tests/fixtures/claims/claims/Deques.java",
@@ -217,24 +218,38 @@
     {
       "index": 12,
       "started": "2026-11-17T17:02:28.942Z",
-      "ended": "2026-11-17T17:09:22.767Z",
-      "turns": 4,
-      "api_calls": 20,
+      "ended": "2026-11-17T17:09:52.421Z",
+      "turns": 5,
+      "api_calls": 22,
       "usage": {
-        "input_tokens": 40,
-        "output_tokens": 8644,
-        "cache_read_input_tokens": 1120877,
-        "cache_creation_input_tokens": 57487
+        "input_tokens": 46,
+        "output_tokens": 9409,
+        "cache_read_input_tokens": 1263490,
+        "cache_creation_input_tokens": 59576
       },
-      "peak_context_tokens": 70760
+      "peak_context_tokens": 72851
+    },
+    {
+      "index": 13,
+      "started": "2026-11-17T17:10:37.434Z",
+      "ended": "2026-11-17T17:45:06.942Z",
+      "turns": 4,
+      "api_calls": 53,
+      "usage": {
+        "input_tokens": 106,
+        "output_tokens": 78270,
+        "cache_read_input_tokens": 6671408,
+        "cache_creation_input_tokens": 173209
+      },
+      "peak_context_tokens": 186482
     }
   ],
   "log": {
-    "sha256": "ab5d9a0dfbab4bf4750bfdf2b6ad8cee118a23f0ed2e21b3a053d12f2b261794",
-    "bytes": 17415423,
-    "lines": 5973,
-    "gzip_bytes": 3131109,
-    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/ab5d9a0dfbab4bf4750bfdf2b6ad8cee118a23f0ed2e21b3a053d12f2b261794.jsonl.gz"
+    "sha256": "e1a1803871d69a7a13d6b304bd99460f567e55864c83839c64064270d585332d",
+    "bytes": 18918590,
+    "lines": 6479,
+    "gzip_bytes": 3384876,
+    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/e1a1803871d69a7a13d6b304bd99460f567e55864c83839c64064270d585332d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -365,6 +380,14 @@
       "summary": "The state line takes the evidence line's observer of vqquvmnm whole: the binding countermodels are refused here too, and example 286's observation of CachedIntrospectionResults is refused before the run",
       "body": "Inbox item domain-advances-state-I014 (and with it I011's fix): lib/src/observed.rs, lib/src/observed/ObservedInitializer.java and lib/tests/observed_countermodels.rs are copied unchanged from the evidence line's vqquvmnm, which holds this line's naming of a lambda's hidden class, together with the challenge stream's binding countermodels (lib/tests/binding_countermodels.rs and its fixtures) and lib/README.md's observed-initializer paragraph; the line's other README paragraphs are kept. An observed initialization is now refused where it wrote into a value another class holds or changed the JDK's settings. The cost inventory is regenerated; lint agrees.\n\nVerified: test_costs.py run --changed passed (41 test binaries, among them observed_countermodels 6 of 6, binding_countermodels, and claims 26 of 26 with claims.Hooked). Capped probes of 286's fixed-protected-state-mutation at bound 2 (trials): the observation of CachedIntrospectionResults is now refused, since its initialization initializes SpringFactoriesLoader, whose logger holds a java.util.logging.Logger the observer does not describe. Without it, PropertyEditorRegistrySupport is still observed and the run reaches CachedIntrospectionResults.<clinit> at BeanWrapperImpl.getCachedIntrospectionResults:174, beside the toLowerCase() gap. So step 3's stand-in should stand at getLocalPropertyHandler or above. The brief's Progress records this; the rest of the brief is current.",
       "log_sha256": "ab5d9a0dfbab4bf4750bfdf2b6ad8cee118a23f0ed2e21b3a053d12f2b261794"
+    },
+    {
+      "change_id": "qlylowvomrqrmmuuwtkmvkpqywluvutm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A library method the own checker can't run may be replaced by a stand-in sampled against it on a JVM (prove --stand-in), and a result that used one says it rests on it",
+      "body": "Step 3, option 2, of the state stream's brief. Spring's bean wrapper resolves a property through its introspection caches and java.beans and calls the setter with Method.invoke, on every path of DataBinder.bind (example 286). Observing those caches is refused, and running them would need models of java.beans and java.lang.reflect. So the binding path gets a stand-in instead. Each public static method of the stand-in class (but main) replaces an instance method: its first parameter's class is the exact class of the receivers it covers, the rest of its descriptor is the method's. A call resolving to that method on a receiver of exactly that class runs the stand-in. A subclass's receiver, and the stand-in's own calls, run the method as written, so a stand-in hands back what it does not cover. Its main prints one line per sample with the method's outcome and the stand-in's. The tool runs it first on the check's class path and takes the stand-in only if every sample is the same, refusing it by the first input that differs, or when nothing is sampled, or for a public method that replaces nothing. A result that used a stand-in names it among what it rests on, with the number of samples, as sampled evidence and not a proof. A refutation through one is still replayed on a JVM. JBMC and --cache are refused.\n\nVerified by lib/tests/stand_in.rs on the fixture lib/tests/fixtures/stand-ins, a reflective property writer. With the stand-in, a claim the method leaves undecided is proved and the stand-in is named; a refutation replays on a JVM. A subclass receiver, and a bean the stand-in hands back, stop at the method's gap as before. A stand-in that forgets 'Age', one that samples nothing, and one with a public helper are refused. Switching off the exact-receiver check, or the sample comparison, by mutation makes a test fail. test_costs run --changed passes, after the proof cache's projection named the new option. 286's own stand-in is drafted, not committed: sampled against 5.3.19's setPropertyValue, its 38,400 samples all match. Wiring it into the driver is the next cycle. The brief is not out of date.",
+      "log_sha256": "e1a1803871d69a7a13d6b304bd99460f567e55864c83839c64064270d585332d"
     }
   ],
   "logs": {
@@ -432,6 +455,12 @@
       "bytes": 3215028,
       "lines": 1080,
       "gzip_bytes": 544452,
+      "url": null
+    },
+    "e1a1803871d69a7a13d6b304bd99460f567e55864c83839c64064270d585332d": {
+      "bytes": 18918590,
+      "lines": 6479,
+      "gzip_bytes": 3384876,
       "url": null
     },
     "eae4f9d131c064759e27a9e7da4d318804d7fbd64c628d2958fd021db1e8dad0": {

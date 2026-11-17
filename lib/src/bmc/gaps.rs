@@ -394,6 +394,8 @@ pub struct GapSetting {
     pub observed: std::sync::Arc<crate::observed::Observations>,
     /// The models on request the engine runs ([`crate::models::ON_REQUEST`]), by internal name, in any mode.
     pub models: std::sync::Arc<BTreeSet<String>>,
+    /// The library methods a stand-in sampled on a JVM replaces ([`super::StandIn`]), in any mode.
+    pub stand_ins: std::sync::Arc<Vec<super::StandIn>>,
     /// The previous version of a pair the check holds beside the new one ([`crate::relocate::Previous`]).
     pub previous: Option<std::sync::Arc<crate::relocate::Previous>>,
 }

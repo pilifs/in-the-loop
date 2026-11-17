@@ -750,6 +750,16 @@ struct ProveArgs {
     /// the model as what it rests on. Not with --cache.
     #[arg(long = "model")]
     model: Vec<String>,
+    /// A class of the check's class path, `pkg.Class`, that stands in for library methods the tool's own checker
+    /// can't run (reflection, introspection); may be repeated. Each public static method of it but main stands in for
+    /// an instance method: its first parameter is the exact class of the receivers it covers, the rest of its
+    /// descriptor the method's. Its main samples it against the method on a JVM, printing one line per sample,
+    /// `sample<TAB>input<TAB>the method's outcome<TAB>the stand-in's outcome`; it runs first, on the check's class
+    /// path, and the stand-in is taken only if the two outcomes are the same on each of at least one sample. The
+    /// stand-in's own calls run the method as written. The result states each stand-in it used as what it rests on:
+    /// sampled, not proved. Not with --cache.
+    #[arg(long = "stand-in")]
+    stand_in: Vec<String>,
     /// A local proof cache directory, never committed: a verified or refuted result is stored under the property
     /// claim's key (the code closure of the target and of what its inputs are made by, a construction plan's makers
     /// and setup calls included, the assertion, the assumptions, the domain, the plan whole, the bounds, the models,
@@ -1013,6 +1023,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.lemmas = args.lemmas.clone();
                 options.observed_initializers = args.observed_initializer.clone();
                 options.requested_models = args.model.clone();
+                options.stand_ins = args.stand_in.clone();
                 let outcome = property::run(&options)?;
                 exit = exit.max(outcome.verdict.exit_code());
                 if !args.json {
