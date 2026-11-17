@@ -154,6 +154,15 @@ names. Their conformance is `claims.Deques` and `claims.Sets` (`tests/claims.rs`
 against its definition on every input of a bound with the model, the same methods sampled on a JVM, and a method
 left out still the JDK's call.
 
+`java.beans.PropertyChangeEvent` ([`java/beans`](java/beans/)) is one too (`--model java.beans.PropertyChangeEvent`),
+and the check that asks for it also runs the model of the class above it, `java.util.EventObject` (beside it in
+`java/beans`, `models::COMPANIONS`): Spring's bean wrapper makes one for each value it cannot convert, the event a
+`TypeMismatchException` carries (example 286). The event is its fields: the constructor with `EventObject`'s
+`IllegalArgumentException("null source")`, `getSource`, `getPropertyName`, `getOldValue`, `getNewValue` and the
+propagation id. `toString` of either is the JDK call it names, and so is the constructor of a JDK class below them
+(`IndexedPropertyChangeEvent`, the AWT's events), whose objects then meet every method as the JDK's. Its
+conformance is `claims.Events`.
+
 A model of a class outside the JDK (a widely used library's, say) would work the same way, except that it must come
 *after* the library on the class path and not replace a class the library ships; that is the next step, not taken
 yet.

@@ -396,6 +396,28 @@ public final class M {
                 && f.flag != null && f.flag instanceof Boolean;
     }
 
+    /**
+     * A String's class, as Spring's {@code ClassUtils.getDescriptiveType} names a value: the literal of
+     * {@code String}, whose type name is its name, the same String, and which is no proxy class; nor is a class of the
+     * application.
+     */
+    public static boolean typed(String s) {
+        Class<?> c = s.getClass();
+        return c == String.class && c.getTypeName().equals("java.lang.String") && c.getTypeName() == c.getName()
+                && !java.lang.reflect.Proxy.isProxyClass(c) && !java.lang.reflect.Proxy.isProxyClass(Flag.class);
+    }
+
+    /** {@code Proxy.isProxyClass(null)} is {@code NullPointerException}. */
+    public static boolean unproxied() {
+        try {
+            java.lang.reflect.Proxy.isProxyClass(null);
+            return false;
+        }
+        catch (NullPointerException e) {
+            return true;
+        }
+    }
+
     /** What the object says is the JDK's call. */
     public static boolean truthTold(boolean b) {
         return (b ? Boolean.TRUE : Boolean.FALSE).booleanValue() == b;

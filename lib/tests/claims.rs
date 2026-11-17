@@ -352,12 +352,17 @@ fn an_array_list_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_defin
     assert_eq!(told.verdict, Verdict::Unverifiable, "{}", told.output);
     assert!(told.output.contains("java.lang.Boolean.booleanValue()Z"), "{}", told.output);
 
+    // A String's class, as Spring's `ClassUtils.getDescriptiveType` names a value (example 286): the literal of
+    // `String`, its type name its name, and no proxy class; `Proxy.isProxyClass(null)` throws.
+    proved(classes, "claims.M#typed", 3);
+    proved(classes, "claims.M#unproxied", 1);
+
     let left_out = run(&asking("claims.M#contained", "M-contained", "java.util.ArrayList"));
     assert_eq!(left_out.verdict, Verdict::Unverifiable, "{}", left_out.output);
     assert!(left_out.output.contains("java.util.ArrayList.contains(Ljava/lang/Object;)Z"), "{}", left_out.output);
 
     let none = property::run(&asking("claims.M#swept", "M-none", "java.util.Vector")).unwrap_err().to_string();
-    assert!(none.contains("--model java.util.Vector: no model on request of that class; there is one of java.util.ArrayList, java.util.ArrayDeque, java.util.HashSet"), "{none}");
+    assert!(none.contains("--model java.util.Vector: no model on request of that class; there is one of java.util.ArrayList, java.util.ArrayDeque, java.util.HashSet, java.beans.PropertyChangeEvent"), "{none}");
     let mut cached = asking("claims.M#swept", "M-cached", "java.util.ArrayList");
     cached.cache = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("claims").join("no-cache"));
     assert!(property::run(&cached).unwrap_err().to_string().contains("--model with --cache"));
@@ -392,6 +397,37 @@ fn an_array_deque_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_defi
     let left_out = run(&asking("offered"));
     assert_eq!(left_out.verdict, Verdict::Unverifiable, "{}", left_out.output);
     assert!(left_out.output.contains("java.util.Deque.offer(Ljava/lang/Object;)Z") || left_out.output.contains("java.util.ArrayDeque.offer(Ljava/lang/Object;)Z"), "{}", left_out.output);
+}
+
+/// A `java.beans.PropertyChangeEvent`, as Spring's bean wrapper makes one for a value it cannot convert
+/// (`claims.Events`, example 286): the JDK's, its constructor a gap, until a check asks for the model (`--model
+/// java.beans.PropertyChangeEvent`, which runs the model of `java.util.EventObject` with it); then the model is the
+/// definition written out on every input of the bound, and `toString`, which it does not keep, is still the JDK call
+/// it names. The same methods hold on a JVM, over sampled inputs, on the JDK's event.
+#[test]
+fn a_property_change_event_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_definition_written_out() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let sampled = Command::new("java").arg("-cp").arg(classes).args(["claims.Events", "5000"]).output().expect("java runs");
+    assert_eq!(String::from_utf8_lossy(&sampled.stdout).trim(), "ok", "{}", String::from_utf8_lossy(&sampled.stderr));
+
+    let unasked = run(&options(classes, "claims.Events#made", 3, "Events-unasked"));
+    assert_eq!(unasked.verdict, Verdict::Unverifiable, "{}", unasked.output);
+    assert!(unasked.output.contains("java.beans.PropertyChangeEvent.<init>(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V"), "{}", unasked.output);
+
+    let asking = |method: &str| {
+        let mut o = options(classes, &format!("claims.Events#{method}"), 3, &format!("Events-{method}"));
+        o.requested_models = vec!["java.beans.PropertyChangeEvent".to_string()];
+        o
+    };
+    let o = run(&asking("made"));
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let stated = o.stated.as_ref().expect("a statement");
+    assert!(stated.assumptions.iter().any(|a| a.text.starts_with("java.beans.PropertyChangeEvent is the tool's model of the class wherever the check runs it (--model)")), "{:?}", stated.assumptions);
+    let left_out = run(&asking("described"));
+    assert_eq!(left_out.verdict, Verdict::Unverifiable, "{}", left_out.output);
+    assert!(left_out.output.contains("java.beans.PropertyChangeEvent.toString()"), "{}", left_out.output);
+
 }
 
 /// A `java.util.HashSet` of names, as Spring's `AbstractBindingResult` records suppressed fields (`claims.Sets`,

@@ -79,6 +79,8 @@ pub const MODELS: &[Model] = &[
     model!(checker "java/util/ArrayList$Itr", "java/util/lists/ArrayList.java", "java/util/ArrayList$Itr.class", "the iterator of the ArrayList model: hasNext and next, fail-fast; the own checker only"),
     model!(checker "java/util/HashSet", "java/util/lists/HashSet.java", "java/util/HashSet.class", "a HashSet as the keys of the HashMap model, as the JDK's: HashSet(), add, contains, size and isEmpty, an element found by hashCode and equals; run only for a check that asks for it (--model java.util.HashSet); the own checker only"),
     model!(checker "java/util/ArrayDeque", "java/util/lists/ArrayDeque.java", "java/util/ArrayDeque.class", "an ArrayDeque used as a stack, its elements in an array: ArrayDeque(), push (NullPointerException for null), pop (NoSuchElementException when empty), peek, size, isEmpty and clear; run only for a check that asks for it (--model java.util.ArrayDeque); the own checker only"),
+    model!(checker "java/beans/PropertyChangeEvent", "java/beans/PropertyChangeEvent.java", "java/beans/PropertyChangeEvent.class", "a PropertyChangeEvent as its fields: the constructor, getPropertyName, getNewValue, getOldValue and the propagation id, the source kept by the model of EventObject; run only for a check that asks for it (--model java.beans.PropertyChangeEvent); the own checker only"),
+    model!(checker "java/util/EventObject", "java/beans/EventObject.java", "java/util/EventObject.class", "an EventObject as its source: the constructor (IllegalArgumentException for a null source) and getSource; run with the model of PropertyChangeEvent and only for a check that asks for that one; the own checker only"),
     model!(jbmc "java/util/List", "java/util/List.java", "java/util/List.class", "the static factories of and copyOf, step for step as the JDK's: immutable lists, NullPointerException on a null element, copyOf of one of them the list itself; JBMC only"),
     model!(jbmc "java/util/ImmutableCollections", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections.class", "the list factories' helpers and the one empty list; JBMC only"),
     model!(jbmc "java/util/ImmutableCollections$AbstractImmutableList", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections$AbstractImmutableList.class", "an immutable list: every change throws UnsupportedOperationException; iterator, equals, hashCode and contains over the elements; JBMC only"),
@@ -134,11 +136,21 @@ pub const CHECKER_RUNS: &[&str] = &[
 /// library, the conformance corpus and the examples' recorded refusals are written about: a check that needs what
 /// a list holds asks for the model, and its result says so ([`requested_assumption`]). `java.util.ArrayDeque` is
 /// one for the same reason, and `java.util.HashSet`: their constructors are gaps of every binding result Spring's
-/// `AbstractErrors` and `AbstractBindingResult` make (example 286, `DataBinder.bind`).
-pub const ON_REQUEST: &[&str] = &["java/util/ArrayList", "java/util/ArrayDeque", "java/util/HashSet"];
+/// `AbstractErrors` and `AbstractBindingResult` make (example 286, `DataBinder.bind`). `java.beans.PropertyChangeEvent`
+/// is one for the event the bean wrapper makes for a value it cannot convert, and brings the model of the class above
+/// it, `java.util.EventObject` ([`COMPANIONS`]).
+pub const ON_REQUEST: &[&str] = &["java/util/ArrayList", "java/util/ArrayDeque", "java/util/HashSet", "java/beans/PropertyChangeEvent"];
 
-/// The model on request a class belongs to: the class itself or the one it is nested in.
+/// The models run with a model on request and only with it, each with the one it comes with: a class above the
+/// model whose constructor the model's calls.
+pub const COMPANIONS: &[(&str, &str)] = &[("java/util/EventObject", "java/beans/PropertyChangeEvent")];
+
+/// The model on request a class belongs to: the class itself, the one it is nested in, or the one it comes with
+/// ([`COMPANIONS`]).
 pub fn on_request(name: &str) -> Option<&'static str> {
+    if let Some((_, with)) = COMPANIONS.iter().find(|(c, _)| *c == name) {
+        return Some(with);
+    }
     ON_REQUEST.iter().copied().find(|r| name == *r || name.strip_prefix(r).is_some_and(|rest| rest.starts_with('$')))
 }
 
@@ -259,10 +271,11 @@ mod tests {
         }
         let models = Path::new(env!("CARGO_MANIFEST_DIR")).join("models");
         let out = tempfile::tempdir().unwrap();
-        // `util/lists` is compiled against the JDK's `List`, as `build.sh` compiles it: with no source path.
-        for package in ["lang", "nio/charset", "util", "util/stream", "util/lists"] {
+        // `util/lists` and `beans` are compiled against the JDK's `List`, as `build.sh` compiles them: with no source
+        // path.
+        for package in ["lang", "nio/charset", "util", "util/stream", "util/lists", "beans"] {
             let sources: Vec<_> = std::fs::read_dir(models.join("java").join(package)).unwrap().map(|e| e.unwrap().path()).filter(|p| p.extension().is_some_and(|e| e == "java")).collect();
-            let alone: &[&str] = if package == "util/lists" { &["-sourcepath", ""] } else { &[] };
+            let alone: &[&str] = if matches!(package, "util/lists" | "beans") { &["-sourcepath", ""] } else { &[] };
             let status = std::process::Command::new("javac").args(["--release", "8", "-Xlint:-options", "-g"]).args(alone).arg("-d").arg(out.path()).args(&sources).status().unwrap();
             assert!(status.success(), "the models compile");
         }

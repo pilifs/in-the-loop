@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.005Z",
-  "ended": "2026-11-17T18:18:27.307Z",
-  "duration_seconds": 19296,
+  "ended": "2026-11-17T19:11:03.568Z",
+  "duration_seconds": 22453,
   "stats": {
-    "turns": 105,
-    "api_calls": 754,
-    "tool_calls": 715,
+    "turns": 110,
+    "api_calls": 847,
+    "tool_calls": 807,
     "tool_errors": 9,
-    "compactions": 14,
-    "peak_context_tokens": 234168,
+    "compactions": 15,
+    "peak_context_tokens": 247898,
     "usage": {
-      "input_tokens": 1580,
-      "output_tokens": 575209,
-      "cache_read_input_tokens": 81607810,
-      "cache_creation_input_tokens": 1927907
+      "input_tokens": 1766,
+      "output_tokens": 669664,
+      "cache_read_input_tokens": 97046686,
+      "cache_creation_input_tokens": 2165795
     }
   },
   "tools": {
-    "Bash": 680,
+    "Bash": 771,
+    "Read": 13,
     "Edit": 12,
-    "Read": 12,
     "Write": 5,
     "Monitor": 3,
     "ToolSearch": 3
@@ -246,24 +246,38 @@
     {
       "index": 14,
       "started": "2026-11-17T17:46:34.272Z",
-      "ended": "2026-11-17T18:18:27.307Z",
-      "turns": 4,
-      "api_calls": 80,
+      "ended": "2026-11-17T18:18:59.452Z",
+      "turns": 5,
+      "api_calls": 82,
       "usage": {
-        "input_tokens": 160,
-        "output_tokens": 59254,
-        "cache_read_input_tokens": 9956716,
-        "cache_creation_input_tokens": 170978
+        "input_tokens": 164,
+        "output_tokens": 60300,
+        "cache_read_input_tokens": 10326795,
+        "cache_creation_input_tokens": 174241
       },
-      "peak_context_tokens": 184251
+      "peak_context_tokens": 187514
+    },
+    {
+      "index": 15,
+      "started": "2026-11-17T18:20:20.790Z",
+      "ended": "2026-11-17T19:11:03.568Z",
+      "turns": 4,
+      "api_calls": 91,
+      "usage": {
+        "input_tokens": 182,
+        "output_tokens": 93409,
+        "cache_read_input_tokens": 15068797,
+        "cache_creation_input_tokens": 234625
+      },
+      "peak_context_tokens": 247898
     }
   ],
   "log": {
-    "sha256": "bb857afcabfcc6b3121c5cb93d689e4bbdc10bd7b3836f8e98d1bc718085f52c",
-    "bytes": 20751650,
-    "lines": 7200,
-    "gzip_bytes": 3698084,
-    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/bb857afcabfcc6b3121c5cb93d689e4bbdc10bd7b3836f8e98d1bc718085f52c.jsonl.gz"
+    "sha256": "53807bc5596cedef2fc46eb9978cfe1dad971c9909af66472c4d1e2c97a9736a",
+    "bytes": 22874767,
+    "lines": 7992,
+    "gzip_bytes": 4048806,
+    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/53807bc5596cedef2fc46eb9978cfe1dad971c9909af66472c4d1e2c97a9736a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -410,6 +424,14 @@
       "summary": "Example 286's binding runs through the bean wrapper by a stand-in sampled on 5.3.19, and the protected-state claim is refuted on 5.3.18 at its own bound in a probe (verification pending)",
       "body": "The state stream of the domain-advances brief, steps 2 and 3. proofs/prove.py compiles proofs/stand-ins/org/springframework/beans/ProtectedBeanStandIn.java against the release beside the adapter and passes --stand-in. The stand-in replaces AbstractNestablePropertyAccessor.setPropertyValue(PropertyValue) on a BeanWrapperImpl of exactly a ProtectedBean, so the introspection caches are off the path, and CachedIntrospectionResults is no longer observed. Its source and classes are recorded among the adapter's in evidence.json, which accept.py compares with the job's commit; target.json's adapter set is unchanged. The stand-in writes the six properties' lookup without case tables: of all chars, only A to Z lower-case to a property's first unit, and none upper-cases to one. It converts age's text only for an optional sign and 1 to 9 ASCII digits (Integer.parseInt), and hands everything else back to the method before it changes anything. Its sampler sweeps every char as a name's first unit: 463,616 samples on 5.3.19, all the same; with ten digits allowed (by mutation), 16 differ.\n\nTwo JDK steps on the path, each written out and checked. The ArrayList model keeps remove(Object), which DataBinder.checkAllowedFields uses to drop a disallowed value: claims.M#removed is proved with the model, holds on a JVM over 20,000 samples, and is refuted with the model's modCount change removed (by mutation). Boolean.TRUE and Boolean.FALSE are one object each for a run (bmc::runtime::truth_constant), as PropertyValue.conversionNecessary stores them; a call on one stays the JDK's: claims.M#truths is proved, and #truthTold names Boolean.booleanValue as a gap.\n\nProbes, inline and capped. vulnerable-protected-state-mutation is refuted at the claim's bound 8 in 63 s: ageAfterBinding(upperCasePattern=false, field=\"Age\") returns 32, run on a JVM, so the refutation rests on no stand-in or model. fixed-protected-state-mutation stops only at String.toLowerCase() on a non-ASCII field (DataBinder.isAllowed:828). With field also restricted to ASCII (not the frozen claim), the next stop at bound 7 is PropertyChangeEvent.<init> on the someMap mismatch path. Job 20261117-181750-example-286-protected-state-tasks-at-the runs both tasks at bound 8: the refutation for accept.py, and the fixed task's blocker for the record. Verified with test_costs run --changed (all passed) and validate_example 286. The rest of the brief is still accurate.",
       "log_sha256": "bb857afcabfcc6b3121c5cb93d689e4bbdc10bd7b3836f8e98d1bc718085f52c"
+    },
+    {
+      "change_id": "lwxvoqsynprmsvvqrysoqvpotrsluxxv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 286's someMap mismatch path gets past the exception and the property's type: a PropertyChangeEvent model on request, ClassUtils' class facts, and a second sampled stand-in",
+      "body": "Binding \"32\" to someMap (or SomeMap) is the one path of the protected-state claim that records a binding error. That runs through Spring's TypeMismatchException and error recording, much of it into the JDK. Three steps of it are now on the checker's side. First, a model on request of java.beans.PropertyChangeEvent (lib/models/java/beans), which also runs the model of java.util.EventObject above it (models::COMPANIONS): the event's fields and getters, and the null source's IllegalArgumentException. Fixture claims.Events is proved with the model, sampled on a JVM, and no longer proved with a getter mutated. Second, the class facts ClassUtils.getDescriptiveType needs (bmc/runtime.rs): Object.getClass() of a String, Class.getTypeName() of a class literal that is no array, and Proxy.isProxyClass of a class literal, which is false because the engine makes literals only of classes that exist as files (claims.M#typed, #unproxied). Third, ClassUtils' initializer is observed.\n\nThe binding result then asks the property's type for the message codes, which is reflection again. A second stand-in, ProtectedBeanTypeStandIn.getPropertyType, answers it for every property but age (int.class is Integer.TYPE, which the checker does not hold) and gives null for any other simple name. It was sampled on 397,649 names, all equal on 5.3.19; with one type mutated, 4 samples differ. It is a class of its own so that ProtectedBeanStandIn.java stays the source job 20261117-181750 compiled, which accept.py compares with the current file. 286's driver runs the protected-state tasks with the model, the observation and both stand-ins. Probes (inline, capped): 5.3.18 is still refuted (a trial at bound 3); 5.3.19 still stops at non-ASCII toLowerCase under the frozen claim; with field restricted to someMap and SomeMap, the next stop is LinkedHashSet.<init>() in DefaultMessageCodesResolver.resolveMessageCodes:152.\n\nTried and dropped: refusing, under assume, a gap whose object is of a JDK class below a model the check runs. With the rule switched off, a call on an IndexedPropertyChangeEvent still meets the JDK gap and not the model, so there was no hole to close. Verified: test_costs run --changed (23 of 23 passed), validate_example 286. The brief is current.",
+      "log_sha256": "53807bc5596cedef2fc46eb9978cfe1dad971c9909af66472c4d1e2c97a9736a"
     }
   ],
   "logs": {
@@ -429,6 +451,12 @@
       "bytes": 9246295,
       "lines": 3183,
       "gzip_bytes": 1562533,
+      "url": null
+    },
+    "53807bc5596cedef2fc46eb9978cfe1dad971c9909af66472c4d1e2c97a9736a": {
+      "bytes": 22874767,
+      "lines": 7992,
+      "gzip_bytes": 4048806,
       "url": null
     },
     "59a978ebae41f83dd51f046b07d362ccc2eb4015c6893eada0b5da9c1c513010": {

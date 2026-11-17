@@ -338,11 +338,35 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
       `someMap` mismatch path.
   - Job `20261117-181750-example-286-protected-state-tasks-at-the` runs both tasks at bound 8: the refutation for
     `accept.py`, and the fixed task's blocker for the record.
+- 2026-11-17, step 3 continued: the `someMap` mismatch path, begun (frozen claim unchanged; nothing accepted yet).
+  Inbox: nothing open. Job 181750 has no result yet.
+  - **A model on request of `java.beans.PropertyChangeEvent`** (`--model java.beans.PropertyChangeEvent`; it also
+    runs the model of `java.util.EventObject` above it, `models::COMPANIONS`). The model is the event's fields,
+    getters and the null source's `IllegalArgumentException`. Fixture `claims.Events`: proved with the model,
+    sampled on a JVM, and with a getter mutated no longer proved.
+  - **`ClassUtils.getDescriptiveType`'s class facts** (`bmc/runtime.rs`): `Object.getClass()` of a String,
+    `Class.getTypeName()` of a class literal that is no array, and `Proxy.isProxyClass` of a class literal (false).
+    `claims.M#typed` and `#unproxied` are proved and sampled.
+  - **A second stand-in**, `ProtectedBeanTypeStandIn.getPropertyType`, for the property type the binding result
+    asks when it records an error. It covers every property but `age`, whose `int.class` is `Integer.TYPE`, and gives
+    null for other simple names. 397,649 samples, all equal on 5.3.19; with one type mutated, 4 differ.
+    - It is a class of its own because `accept.py` compares `ProtectedBeanStandIn.java` with what job 181750
+      compiled.
+  - **The driver** runs the protected-state tasks with the model, `ClassUtils` observed, and both stand-ins.
+    5.3.18 is still refuted (a trial at bound 3).
+  - **Where the path stops now.** Probe with `field` restricted to `someMap` and `SomeMap`: at
+    `LinkedHashSet.<init>()` in `DefaultMessageCodesResolver.resolveMessageCodes:152`.
+  - **Tried and dropped:** extending the "unwritten model fields" refusal to JDK classes below a model. A call on an
+    `IndexedPropertyChangeEvent` meets the JDK gap, not the model, so there was no hole to close.
 - Next:
   - Once job 181750 passes, record `besideRoute` on `vulnerable-protected-state-mutation` and check
     `accept.py 286 vulnerable-protected-state-mutation`.
-  - Meanwhile, the mismatch path (`someMap`, `SomeMap`): a `PropertyChangeEvent` model, then the error recording
-    (`getPropertyType`, `getPropertyValue`, message codes, `Throwable`).
+  - The rest of the mismatch path:
+    - a `LinkedHashSet` model (the `HashSet` model's keys in order, with `toArray(T[])`);
+    - `java.util.StringJoiner`, for `MessageCodeFormatter.toDelimitedString`;
+    - `Class.isArray()` of a literal, for `ObjectUtils.isArray`;
+    - a `Throwable`'s message and cause, read by `getLocalizedMessage` through `NestedRuntimeException.getMessage`
+      and by the cause's `toString`.
   - Then the beans beside `ProtectedBean`, and the effect contract at the stand-in's setter call.
   - Still open from cycle 1: non-ASCII `toLowerCase()` (the fixed task's blocker under the frozen claim), and the
     corrected formalization (I009's two values, an ASCII `field`).

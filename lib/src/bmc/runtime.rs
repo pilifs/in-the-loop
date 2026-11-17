@@ -6,10 +6,16 @@
 //! class path and the JDK, which the engine has: each is modelled where the answer is one, under an assumption the
 //! run states ([`CLASS_PATH_ASSUMPTION`]), and stays the JDK call it was elsewhere.
 //!
-//! - `Object.getClass()` of an object of an application class that the run made with `new`: that class's literal,
-//!   the one object a class literal of it is (JLS §15.8.2). Of any other object (an array, a lambda's, a JDK
-//!   class's) it is the JDK call it was.
+//! - `Object.getClass()` of an object of an application class that the run made with `new`, and of a String (a
+//!   final class): that class's literal, the one object a class literal of it is (JLS §15.8.2). Of any other object
+//!   (an array, a lambda's, another JDK class's) it is the JDK call it was.
 //! - `Class.getName()` of a class literal: the class's binary name, the interned String (the JVM interns it).
+//!   `Class.getTypeName()` of the literal of a class that is no array: the same String, as the JDK's returns
+//!   `getName()` for such a class (an array's is its element type's name and `[]`, the JDK call it was).
+//! - `java.lang.reflect.Proxy.isProxyClass(Class)` of a class literal: false. The engine makes the literal of a
+//!   class it finds on the class path or in the JDK, by a constant name, and a proxy class is one the JVM generates
+//!   while it runs, which neither has. `NullPointerException` for null. Spring's `ClassUtils.getDescriptiveType`
+//!   asks it of every value it names in a message.
 //! - `Class.getClassLoader()` of the literal of a class of the check's class path: the one loader object of the
 //!   run; of a JDK class, the JDK call it was.
 //! - `Class.forName(String, boolean, ClassLoader)` with that loader, a name that is a constant and `false`
@@ -102,12 +108,13 @@ const THREAD: &str = "java/lang/Thread";
 const COLLECTIONS: &str = "java/util/Collections";
 pub(super) const EMPTY_MAP: &str = "java/util/Collections$EmptyMap";
 const FOR_NAME: &str = "(Ljava/lang/String;)Ljava/lang/Class;";
+const PROXY: &str = "java/lang/reflect/Proxy";
 
 /// Whether the engine models the static call here, where its arguments let it.
 pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!(
         (owner, name, descriptor),
-        (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;" | FOR_NAME) | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;") | (THREAD, "currentThread", "()Ljava/lang/Thread;") | (COLLECTIONS, "emptyMap", "()Ljava/util/Map;")
+        (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;" | FOR_NAME) | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;") | (THREAD, "currentThread", "()Ljava/lang/Thread;") | (COLLECTIONS, "emptyMap", "()Ljava/util/Map;") | (PROXY, "isProxyClass", "(Ljava/lang/Class;)Z")
     )
 }
 
@@ -115,7 +122,7 @@ pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
 pub fn models_instance(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!(
         (owner, name, descriptor),
-        (CLASS, "getName", "()Ljava/lang/String;")
+        (CLASS, "getName" | "getTypeName", "()Ljava/lang/String;")
             | (CLASS, "getClassLoader", "()Ljava/lang/ClassLoader;")
             | (CLASS, "isAssignableFrom", "(Ljava/lang/Class;)Z")
             | ("java/lang/Object", "getClass", "()Ljava/lang/Class;")
@@ -158,7 +165,7 @@ impl Engine<'_> {
     pub(super) fn class_method(&mut self, path: &mut Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Option<Step> {
         if (name, descriptor) == ("getClass", "()Ljava/lang/Class;") {
             let class = path.objects[o].class.clone();
-            if class.starts_with('[') || path.objects[o].lambda.is_some() || !self.cp.is_application(&class) {
+            if class.starts_with('[') || path.objects[o].lambda.is_some() || !(self.cp.is_application(&class) || class == STRING) {
                 return None;
             }
             let literal = self.literal(path, Literal::Class(class), CLASS);
@@ -182,7 +189,10 @@ impl Engine<'_> {
         }
         let class = self.class_named(path, o)?;
         let value = match name {
-            "getName" => {
+            "getName" | "getTypeName" => {
+                if name == "getTypeName" && class.starts_with('[') {
+                    return None;
+                }
                 // A copy of a class of the previous version of a pair has that class's own name.
                 let own = self.previous.as_ref().and_then(|p| p.original(&class)).unwrap_or(&class);
                 let units: Vec<u16> = own.replace('/', ".").encode_utf16().collect();
@@ -295,6 +305,14 @@ impl Engine<'_> {
                 }
                 let o = self.literal(path, Literal::Class(internal), CLASS);
                 self.push(path, Val::R(Some(o)));
+                self.advance(path);
+                Some(Ok(None))
+            }
+            (PROXY, "isProxyClass", [Val::R(class)]) => {
+                let Some(class) = *class else { return Some(self.raise(path, "java/lang/NullPointerException")) };
+                self.class_named(path, class)?;
+                let no = self.b.constant(0, 32);
+                self.push(path, Val::I(no));
                 self.advance(path);
                 Some(Ok(None))
             }
