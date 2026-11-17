@@ -266,11 +266,33 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   - Whether I005's holes carry into a caller: an exceptional exit does not (`throws:` is refused, and an undeclared throw refutes the contract, tried). Aliasing does, through `pairedLevel`. `prove --may-alias this,other` already makes the frame refute I005's `promote`, so it is a ready fix.
   - Also found: the stub names a nested object-parameter class with its `$`, which javac rejects. That is a refusal, not a false result.
   - *Audit*: no example task has a `writes:` lemma or passes `--writes` on any line, so no accepted result rests on these holes. Nothing for the watcher. All three bear on 286's protected state.
+- The effect-contract failure went to state as `domain-advances-state-I007`, citing `qmtxwupn`.
+- 2026-11-17, item 7, the acceptance check (`examples/tools/accept.py` on the evidence line at `krptozvm`, through `rkxyyqwn`, `ymzlyksq`, `mzllzmkq` and `wowqurku`): **seven controls it accepts**, to be handed over.
+  - Written in `lib/tests/fixtures/accept-countermodels/README.md`, which has the table, the controls' code, what was tried, the fix options and the audit.
+  - The controls are tests on `test_accept.py`'s own made-up checkout. All 7 fail on the evidence line's `accept.py` (10 failures with subtests), each because the answer is accepted:
+    - *entry*: the outcome's target is matched as a substring of the invocation's entry or of an assumption's text. An outcome about `GateAdapter#allowed`, or about the same class name in another package, stands for `GateAdapter#allowedTwice`, and so does a method an assumption mentions.
+    - *step*: a driver word is any word ending in `proofs/prove.py` that contains the folder. A driver of another checkout counts, and so does `echo`.
+    - *domain*:
+      - a witness's null inputs are not held to the claim's `nullable`;
+      - nothing holds a witness to the claim's assumption;
+      - a task's `bounds` lower the claim's.
+    - *expressions*: a task with no allowed change accepts a pair that ran with one.
+  - A vacuity witness inside the allowed change is guarded where the task has one, since `vacuity.outside` must be the task's change. A prefix of the change is caught there too.
+  - `accept.py` is the evidence stream's, so nothing is changed here. The controls go as a `failure` item to `domain-advances-evidence`, citing this commit; its id goes in the next entry.
+  - *Audit*: with the source commits, the evidence line accepts 13 answers, and none rests on these holes. Nothing for the watcher. The 13 are 286's and 287's three each, 288's `fixed-security`, and 289's and 290's security answers.
+    - Every outcome is about the entry named, every step runs the example's driver, and every recorded driver hash is the source commit's.
+    - Null witness inputs are of nullable parameters.
+    - Every equivalence task has an allowed change, and no task has bounds.
+    - 286 and 287 pass the entry check only by the substring route, through the claim's "adapter entry" assumption, so a fix must keep that route.
+  - This also reads `mzllzmkq` and `wowqurku` as far as acceptance goes: 288's `fixed-security` and 286's three are among the 13.
+- Inbox: no open items.
 - Next:
-  - item 7, the drivers' records (`rkxyyqwn`) and the vacuity witness outside the change (`ymzlyksq`), as `test_accept.py` controls;
-  - then the evidence stream's `mzllzmkq` and `wowqurku`;
-  - item 6;
-  - item 5 again as the other streams commit (state's `qysmsruu` is in progress on I004).
+  - send item 7 to evidence;
+  - item 5 on the commits that landed since:
+    - state's `qysmsruu` (the fix for I004);
+    - evidence's `lzpqszyo` (an observation bound to what it was observed on, for I004);
+    - preservation's `unswkkxp` (spring-jcl's WARNING line modelled);
+  - item 6.
 - Status: working
 
 ## Loop settings
