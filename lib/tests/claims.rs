@@ -332,7 +332,7 @@ fn an_array_list_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_defin
         o.requested_models = vec![model.to_string()];
         o
     };
-    for method in ["collected", "filled", "appended", "swept"] {
+    for method in ["collected", "filled", "appended", "swept", "removed"] {
         let o = run(&asking(&format!("claims.M#{method}"), &format!("M-{method}"), "java.util.ArrayList"));
         assert_eq!(o.verdict, Verdict::Verified, "{method}: {}", o.output);
         let stated = o.stated.as_ref().expect("a statement");
@@ -344,6 +344,13 @@ fn an_array_list_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_defin
     let unused = run(&asking("claims.M#recopied", "M-recopied-asking", "java.util.ArrayList"));
     assert_eq!(unused.verdict, Verdict::Verified, "{}", unused.output);
     assert!(!unused.stated.as_ref().expect("a statement").assumptions.iter().any(|a| a.text.contains("the tool's model of the class")), "{}", unused.output);
+
+    // `Boolean.TRUE` and `Boolean.FALSE`, which a list's owner may store (Spring's `PropertyValue`): one object each;
+    // what one says is the JDK's call.
+    proved(classes, "claims.M#truths", 3);
+    let told = run(&options(classes, "claims.M#truthTold", 3, "M-truthTold"));
+    assert_eq!(told.verdict, Verdict::Unverifiable, "{}", told.output);
+    assert!(told.output.contains("java.lang.Boolean.booleanValue()Z"), "{}", told.output);
 
     let left_out = run(&asking("claims.M#contained", "M-contained", "java.util.ArrayList"));
     assert_eq!(left_out.verdict, Verdict::Unverifiable, "{}", left_out.output);

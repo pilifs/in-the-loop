@@ -320,6 +320,87 @@ public final class M {
         }
     }
 
+    /** An element equal to another of the same number, as Spring's {@code PropertyValue} is by name and value. */
+    static final class Same {
+        final int i;
+
+        Same(int i) {
+            this.i = i;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            return o instanceof Same && ((Same) o).i == i;
+        }
+
+        @Override
+        public int hashCode() {
+            return i;
+        }
+    }
+
+    /**
+     * {@code remove(Object)}, as Spring's {@code MutablePropertyValues} takes out a disallowed value: the first element
+     * the argument equals ({@code k < 0}: null, the first null) is taken out and those after it move up, true where
+     * there was one; an iterator made before fails fast after a removal and not after a miss.
+     */
+    public static boolean removed(int[] a, int k, int nullAt) {
+        int n = a.length + (nullAt >= 0 && nullAt <= a.length ? 1 : 0);
+        if (n > 3) {
+            return true;
+        }
+        ArrayList<Object> list = new ArrayList<>();
+        Object[] all = new Object[n];
+        for (int i = 0, j = 0; i < n; i++) {
+            all[i] = n > a.length && i == nullAt ? null : new Same(a[j++]);
+            list.add(all[i]);
+        }
+        Object o = k < 0 ? null : new Same(k);
+        int at = -1;
+        for (int i = 0; i < n && at < 0; i++) {
+            if (o == null ? all[i] == null : all[i] != null && ((Same) all[i]).i == k) {
+                at = i;
+            }
+        }
+        Iterator<Object> it = list.iterator();
+        if (list.remove(o) != (at >= 0) || list.size() != (at >= 0 ? n - 1 : n)) {
+            return false;
+        }
+        for (int i = 0, j = 0; i < n; i++) {
+            if (i != at && list.get(j++) != all[i]) {
+                return false;
+            }
+        }
+        try {
+            Object first = it.next();
+            return at < 0 && first == all[0];
+        }
+        catch (ConcurrentModificationException e) {
+            return at >= 0;
+        }
+        catch (NoSuchElementException e) {
+            return at < 0 && n == 0;
+        }
+    }
+
+    /** A flag held in a field, as Spring's {@code PropertyValue.conversionNecessary}. */
+    static final class Flag {
+        Boolean flag;
+    }
+
+    /** {@code Boolean.TRUE} and {@code Boolean.FALSE}: one object each, told apart, and the same where stored. */
+    public static boolean truths(boolean b) {
+        Flag f = new Flag();
+        f.flag = b ? Boolean.TRUE : Boolean.FALSE;
+        return Boolean.TRUE != Boolean.FALSE && f.flag == (b ? Boolean.TRUE : Boolean.FALSE) && (f.flag == Boolean.TRUE) == b
+                && f.flag != null && f.flag instanceof Boolean;
+    }
+
+    /** What the object says is the JDK's call. */
+    public static boolean truthTold(boolean b) {
+        return (b ? Boolean.TRUE : Boolean.FALSE).booleanValue() == b;
+    }
+
     /** A method the {@code ArrayList} model does not keep: the JDK call it names. */
     public static boolean contained() {
         return !new ArrayList<At>().contains(null);

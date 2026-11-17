@@ -1238,9 +1238,9 @@ impl<'a> Walker<'a> {
         if matches!((owner, name), ("java/lang/Integer" | "java/lang/Long", "MAX_VALUE" | "MIN_VALUE")) {
             return true;
         }
-        // The JDK's objects the engine has one of for a run: the UTF-8 charset, `Locale`'s constants and the
-        // logging levels below `INFO`.
-        if (owner, name) == (super::bytes::STANDARD_CHARSETS, "UTF_8") || super::locale::constant(owner, name) || super::runtime::level_constant(owner, name).is_some() {
+        // The JDK's objects the engine has one of for a run: the UTF-8 charset, `Locale`'s constants, the
+        // logging levels below `INFO`, and `Boolean.TRUE` and `Boolean.FALSE`.
+        if (owner, name) == (super::bytes::STANDARD_CHARSETS, "UTF_8") || super::locale::constant(owner, name) || super::runtime::level_constant(owner, name).is_some() || super::runtime::truth_constant(owner, name).is_some() {
             return true;
         }
         let Ok(Some(cf)) = self.cp.bytecode(owner) else { return false };

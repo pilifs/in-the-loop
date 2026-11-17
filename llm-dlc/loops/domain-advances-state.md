@@ -315,17 +315,37 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
     mismatch exceptions; anything else goes back to the method.
   - Sampled against 5.3.19: 38,400 samples, all the same. These cover names (case variants, every name of at most 2
     units over 12 letters, 200 random, some non-ASCII), 12 values, and the extract, suppress and optional flags.
-- Next: wire that stand-in into 286's driver and probe.
-  - Its source goes under `proofs/`, compiled by the driver against the release beside the adapter, not into
-    `replay/adapter`, which would change the adapter set `accept.py` compares for every 286 task.
-  - The driver then passes `--stand-in` and drops `CachedIntrospectionResults` from `STATE_OBSERVED`.
-  - A probe at bound 2 says where bind stops. Expected: the mismatch path's `PropertyChangeEvent` (a JDK constructor)
-    and the binding-error recording, which reads the property's type and value through `getPropertyType` and
-    `getPropertyValue` (stand-ins of their own, or the evidence of what they need); and `toLowerCase()`.
-  - Then step 2, the refutation (its witness replays whatever the stand-in is); the beans beside `ProtectedBean`; and
-    the effect contract at the stand-in's setter call, in place of the reflective call.
-  - Still open from cycle 1: non-ASCII `toLowerCase()`, and the corrected formalization (I009's two values, an ASCII
-    `field`).
+- 2026-11-17, step 3 wired into 286 and step 2 reached: the refutation on the real binder (frozen claim unchanged;
+  nothing accepted yet). Inbox: nothing open.
+  - **The driver.** The stand-in is `proofs/stand-ins/org/springframework/beans/ProtectedBeanStandIn.java`. The driver
+    compiles it against the release beside the adapter and passes `--stand-in`. Its source and classes are recorded
+    among the adapter's in `evidence.json`, which `accept.py` compares with the job's commit, so `target.json`'s
+    adapter set is unchanged. `CachedIntrospectionResults` is no longer observed.
+  - **The stand-in, revised.** The lookup needs no case tables: of the 65,536 chars, only `A` to `Z` lower-case to a
+    property's first unit, and none upper-cases to one. The sampler now sweeps every char as the first unit. `age`
+    converts by `Integer.parseInt` only for an optional sign and 1 to 9 ASCII digits. Every other text, and every
+    other hand-back, goes to the method before the stand-in changes anything. 463,616 samples, all the same on
+    5.3.19; with ten digits allowed (by mutation), 16 differ.
+  - **Two JDK steps the path needed.** The `ArrayList` model keeps `remove(Object)`, which `checkAllowedFields` uses
+    to drop a disallowed value. It is checked by `claims.M#removed`, sampled on a JVM, and refuted with its `modCount`
+    change removed. `Boolean.TRUE` and `Boolean.FALSE` are one object each, written to `conversionNecessary`; a call
+    on one stays the JDK's (`claims.M#truths`, `#truthTold`).
+  - **Probes** (inline, capped):
+    - `vulnerable-protected-state-mutation` is **refuted at the claim's bound 8** in 63 s:
+      `ageAfterBinding(false, "Age")` returns 32, run on a JVM, so the refutation rests on no stand-in or model.
+    - `fixed-protected-state-mutation` stops only at non-ASCII `toLowerCase()` (`isAllowed:828`).
+    - With `field` also ASCII (not the frozen claim), the next stop at bound 7 is `PropertyChangeEvent.<init>` on the
+      `someMap` mismatch path.
+  - Job `20261117-181750-example-286-protected-state-tasks-at-the` runs both tasks at bound 8: the refutation for
+    `accept.py`, and the fixed task's blocker for the record.
+- Next:
+  - Once job 181750 passes, record `besideRoute` on `vulnerable-protected-state-mutation` and check
+    `accept.py 286 vulnerable-protected-state-mutation`.
+  - Meanwhile, the mismatch path (`someMap`, `SomeMap`): a `PropertyChangeEvent` model, then the error recording
+    (`getPropertyType`, `getPropertyValue`, message codes, `Throwable`).
+  - Then the beans beside `ProtectedBean`, and the effect contract at the stand-in's setter call.
+  - Still open from cycle 1: non-ASCII `toLowerCase()` (the fixed task's blocker under the frozen claim), and the
+    corrected formalization (I009's two values, an ASCII `field`).
 - Status: working
 
 ## Loop settings

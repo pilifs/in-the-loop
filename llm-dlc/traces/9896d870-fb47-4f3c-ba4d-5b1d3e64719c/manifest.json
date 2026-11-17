@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.005Z",
-  "ended": "2026-11-17T17:45:06.942Z",
-  "duration_seconds": 17296,
+  "ended": "2026-11-17T18:18:27.307Z",
+  "duration_seconds": 19296,
   "stats": {
-    "turns": 100,
-    "api_calls": 672,
-    "tool_calls": 632,
-    "tool_errors": 8,
-    "compactions": 13,
+    "turns": 105,
+    "api_calls": 754,
+    "tool_calls": 715,
+    "tool_errors": 9,
+    "compactions": 14,
     "peak_context_tokens": 234168,
     "usage": {
-      "input_tokens": 1416,
-      "output_tokens": 514834,
-      "cache_read_input_tokens": 71276800,
-      "cache_creation_input_tokens": 1753895
+      "input_tokens": 1580,
+      "output_tokens": 575209,
+      "cache_read_input_tokens": 81607810,
+      "cache_creation_input_tokens": 1927907
     }
   },
   "tools": {
-    "Bash": 600,
+    "Bash": 680,
     "Edit": 12,
-    "Read": 9,
+    "Read": 12,
     "Write": 5,
     "Monitor": 3,
     "ToolSearch": 3
@@ -232,24 +232,38 @@
     {
       "index": 13,
       "started": "2026-11-17T17:10:37.434Z",
-      "ended": "2026-11-17T17:45:06.942Z",
-      "turns": 4,
-      "api_calls": 53,
+      "ended": "2026-11-17T17:45:36.811Z",
+      "turns": 5,
+      "api_calls": 55,
       "usage": {
-        "input_tokens": 106,
-        "output_tokens": 78270,
-        "cache_read_input_tokens": 6671408,
-        "cache_creation_input_tokens": 173209
+        "input_tokens": 110,
+        "output_tokens": 79391,
+        "cache_read_input_tokens": 7045702,
+        "cache_creation_input_tokens": 176243
       },
-      "peak_context_tokens": 186482
+      "peak_context_tokens": 189516
+    },
+    {
+      "index": 14,
+      "started": "2026-11-17T17:46:34.272Z",
+      "ended": "2026-11-17T18:18:27.307Z",
+      "turns": 4,
+      "api_calls": 80,
+      "usage": {
+        "input_tokens": 160,
+        "output_tokens": 59254,
+        "cache_read_input_tokens": 9956716,
+        "cache_creation_input_tokens": 170978
+      },
+      "peak_context_tokens": 184251
     }
   ],
   "log": {
-    "sha256": "e1a1803871d69a7a13d6b304bd99460f567e55864c83839c64064270d585332d",
-    "bytes": 18918590,
-    "lines": 6479,
-    "gzip_bytes": 3384876,
-    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/e1a1803871d69a7a13d6b304bd99460f567e55864c83839c64064270d585332d.jsonl.gz"
+    "sha256": "bb857afcabfcc6b3121c5cb93d689e4bbdc10bd7b3836f8e98d1bc718085f52c",
+    "bytes": 20751650,
+    "lines": 7200,
+    "gzip_bytes": 3698084,
+    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/bb857afcabfcc6b3121c5cb93d689e4bbdc10bd7b3836f8e98d1bc718085f52c.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -388,6 +402,14 @@
       "summary": "A library method the own checker can't run may be replaced by a stand-in sampled against it on a JVM (prove --stand-in), and a result that used one says it rests on it",
       "body": "Step 3, option 2, of the state stream's brief. Spring's bean wrapper resolves a property through its introspection caches and java.beans and calls the setter with Method.invoke, on every path of DataBinder.bind (example 286). Observing those caches is refused, and running them would need models of java.beans and java.lang.reflect. So the binding path gets a stand-in instead. Each public static method of the stand-in class (but main) replaces an instance method: its first parameter's class is the exact class of the receivers it covers, the rest of its descriptor is the method's. A call resolving to that method on a receiver of exactly that class runs the stand-in. A subclass's receiver, and the stand-in's own calls, run the method as written, so a stand-in hands back what it does not cover. Its main prints one line per sample with the method's outcome and the stand-in's. The tool runs it first on the check's class path and takes the stand-in only if every sample is the same, refusing it by the first input that differs, or when nothing is sampled, or for a public method that replaces nothing. A result that used a stand-in names it among what it rests on, with the number of samples, as sampled evidence and not a proof. A refutation through one is still replayed on a JVM. JBMC and --cache are refused.\n\nVerified by lib/tests/stand_in.rs on the fixture lib/tests/fixtures/stand-ins, a reflective property writer. With the stand-in, a claim the method leaves undecided is proved and the stand-in is named; a refutation replays on a JVM. A subclass receiver, and a bean the stand-in hands back, stop at the method's gap as before. A stand-in that forgets 'Age', one that samples nothing, and one with a public helper are refused. Switching off the exact-receiver check, or the sample comparison, by mutation makes a test fail. test_costs run --changed passes, after the proof cache's projection named the new option. 286's own stand-in is drafted, not committed: sampled against 5.3.19's setPropertyValue, its 38,400 samples all match. Wiring it into the driver is the next cycle. The brief is not out of date.",
       "log_sha256": "e1a1803871d69a7a13d6b304bd99460f567e55864c83839c64064270d585332d"
+    },
+    {
+      "change_id": "krxzxzowmownmsnwwlqrwlxwrkomroxn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 286's binding runs through the bean wrapper by a stand-in sampled on 5.3.19, and the protected-state claim is refuted on 5.3.18 at its own bound in a probe (verification pending)",
+      "body": "The state stream of the domain-advances brief, steps 2 and 3. proofs/prove.py compiles proofs/stand-ins/org/springframework/beans/ProtectedBeanStandIn.java against the release beside the adapter and passes --stand-in. The stand-in replaces AbstractNestablePropertyAccessor.setPropertyValue(PropertyValue) on a BeanWrapperImpl of exactly a ProtectedBean, so the introspection caches are off the path, and CachedIntrospectionResults is no longer observed. Its source and classes are recorded among the adapter's in evidence.json, which accept.py compares with the job's commit; target.json's adapter set is unchanged. The stand-in writes the six properties' lookup without case tables: of all chars, only A to Z lower-case to a property's first unit, and none upper-cases to one. It converts age's text only for an optional sign and 1 to 9 ASCII digits (Integer.parseInt), and hands everything else back to the method before it changes anything. Its sampler sweeps every char as a name's first unit: 463,616 samples on 5.3.19, all the same; with ten digits allowed (by mutation), 16 differ.\n\nTwo JDK steps on the path, each written out and checked. The ArrayList model keeps remove(Object), which DataBinder.checkAllowedFields uses to drop a disallowed value: claims.M#removed is proved with the model, holds on a JVM over 20,000 samples, and is refuted with the model's modCount change removed (by mutation). Boolean.TRUE and Boolean.FALSE are one object each for a run (bmc::runtime::truth_constant), as PropertyValue.conversionNecessary stores them; a call on one stays the JDK's: claims.M#truths is proved, and #truthTold names Boolean.booleanValue as a gap.\n\nProbes, inline and capped. vulnerable-protected-state-mutation is refuted at the claim's bound 8 in 63 s: ageAfterBinding(upperCasePattern=false, field=\"Age\") returns 32, run on a JVM, so the refutation rests on no stand-in or model. fixed-protected-state-mutation stops only at String.toLowerCase() on a non-ASCII field (DataBinder.isAllowed:828). With field also restricted to ASCII (not the frozen claim), the next stop at bound 7 is PropertyChangeEvent.<init> on the someMap mismatch path. Job 20261117-181750-example-286-protected-state-tasks-at-the runs both tasks at bound 8: the refutation for accept.py, and the fixed task's blocker for the record. Verified with test_costs run --changed (all passed) and validate_example 286. The rest of the brief is still accurate.",
+      "log_sha256": "bb857afcabfcc6b3121c5cb93d689e4bbdc10bd7b3836f8e98d1bc718085f52c"
     }
   ],
   "logs": {
@@ -443,6 +465,12 @@
       "bytes": 16516198,
       "lines": 5744,
       "gzip_bytes": 2925149,
+      "url": null
+    },
+    "bb857afcabfcc6b3121c5cb93d689e4bbdc10bd7b3836f8e98d1bc718085f52c": {
+      "bytes": 20751650,
+      "lines": 7200,
+      "gzip_bytes": 3698084,
       "url": null
     },
     "c28d60f436bf5c08b90bf77371b4a0f50ab1b0495e513f358b7a4ab0cfc37571": {

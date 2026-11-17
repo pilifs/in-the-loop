@@ -131,13 +131,14 @@ Otherwise the class is the JDK's: `new ArrayList(int)` is the gap the contract l
 ([`contracts`](contracts/)), the conformance corpus and the examples' recorded refusals are written about, and a
 model run unasked would change each of them. The model is a list as an array of its elements and their number. It
 keeps `ArrayList()`, `ArrayList(int)` with its `IllegalArgumentException`, `size`, `isEmpty`, `get` with its
-`IndexOutOfBoundsException`, `add`, `addAll`, `toArray()`, `toArray(T[])` and `iterator()`, whose iterator fails
+`IndexOutOfBoundsException`, `add`, `addAll`, `remove(Object)` (by the argument's `equals`, as the JDK's),
+`toArray()`, `toArray(T[])` and `iterator()`, whose iterator fails
 fast on `AbstractList`'s `modCount`. It keeps no capacity: the array is as long as the list (grown with
 `Arrays.copyOf`, which the checker models for arrays of references), so a capacity a JVM could not allocate is no
 `OutOfMemoryError` here. Every other method is `AbstractList`'s or `AbstractCollection`'s, the JDK call it names,
 and so is the iterator's `remove`. A `toArray(T[])` into an array that cannot hold an element is an
 `ArrayStoreException` on a JVM, which the checker's array stores do not model. Its conformance is
-`claims.M#collected`, `filled`, `appended` and `swept`.
+`claims.M#collected`, `filled`, `appended`, `swept` and `removed`.
 
 `java.util.ArrayDeque` and `java.util.HashSet` ([`java/util/lists`](java/util/lists/) too) are models on request
 for the same reason (`--model java.util.ArrayDeque`, `--model java.util.HashSet`): their constructors are JDK gaps

@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 137, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-17 17:45 UTC |
-| Prompts | 2,936 |
-| Model calls | 29,514 |
-| Tool calls | 30,472 (536 failed) |
-| Compactions | 434 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-17 18:18 UTC |
+| Prompts | 2,941 |
+| Model calls | 29,596 |
+| Tool calls | 30,555 (537 failed) |
+| Compactions | 435 |
 | Subagents | 21 |
-| Tokens written | 29,633,625 |
-| Tokens read | 4,887,542,666 (98.1% from cache) |
-| Commits with a trace | 908 |
-| Log snapshots | 1,185 (2622.5 MB gzipped, 1,162 uploaded) |
+| Tokens written | 29,694,000 |
+| Tokens read | 4,898,047,852 (98.1% from cache) |
+| Commits with a trace | 909 |
+| Log snapshots | 1,186 (2626.2 MB gzipped, 1,162 uploaded) |
 
 ## Sessions
 
@@ -164,7 +164,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 12 | 21 | 17 | 2 | 2 | 56,861 | 1 |
 | 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | open | 7 min | `claude-opus-5-5` | 2 | 5 | 4 | 0 | 0 | 56,756 | 1 |
 | 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | open | 13 min | `claude-opus-5-5` | 1 | 48 | 49 | 1 | 0 | 148,170 | 1 |
-| 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | open | 4 h 48 min | `claude-opus-5-5` | 100 | 672 | 632 | 8 | 13 | 234,168 | 17 |
+| 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | open | 5 h 21 min | `claude-opus-5-5` | 105 | 754 | 715 | 9 | 14 | 234,168 | 18 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -310,14 +310,14 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 8,137 | 42 | 87,022 | 814,514 | 90.3% | 111 |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 2,242 | 10 | 28,745 | 226,501 | 88.7% | 114 |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 38,033 | 96 | 136,827 | 4,652,464 | 97.1% | 126 |
-| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 514,834 | 1,416 | 1,753,895 | 71,276,800 | 97.6% | 142 |
+| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 575,209 | 1,580 | 1,927,907 | 81,607,810 | 97.7% | 145 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 27,085 | 88.9% | 137 |
-| `Read` | 1,275 | 4.2% | 56 |
+| `Bash` | 27,165 | 88.9% | 137 |
+| `Read` | 1,278 | 4.2% | 56 |
 | `Edit` | 957 | 3.1% | 54 |
 | `Write` | 646 | 2.1% | 54 |
 | `ToolSearch` | 166 | 0.5% | 42 |
@@ -1247,6 +1247,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 906 | change `kktznxnk` | An effect contract's stub meets the write gate: the challenge stream's proof by induction and empty write set through a contracted setter are refused | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/aba1f6e54b7f740b9a9525eaa7cfa374c7bd00cb8c710266fe75e665a5be7a96.jsonl.gz)) |
 | 907 | change `qtqkrwsz` | The state line takes the evidence line's observer of vqquvmnm whole: the binding countermodels are refused here too, and example 286's observation of CachedIntrospectionResults is refused before the run | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/ab5d9a0dfbab4bf4750bfdf2b6ad8cee118a23f0ed2e21b3a053d12f2b261794.jsonl.gz)) |
 | 908 | change `qlylowvo` | A library method the own checker can't run may be replaced by a stand-in sampled against it on a JVM (prove --stand-in), and a result that used one says it rests on it | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/e1a1803871d69a7a13d6b304bd99460f567e55864c83839c64064270d585332d.jsonl.gz)) |
+| 909 | change `krxzxzow` | Example 286's binding runs through the bean wrapper by a stand-in sampled on 5.3.19, and the protected-state claim is refuted on 5.3.18 at its own bound in a probe (verification pending) | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/bb857afcabfcc6b3121c5cb93d689e4bbdc10bd7b3836f8e98d1bc718085f52c.jsonl.gz)) |
 
 ## Logs
 
@@ -1390,7 +1391,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 1 | 1 | 0.3 MB | [`965570933c02`](https://terminalvalue.net/raw-traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/965570933c0206c64a18c5652f4f74be1de3807449c6f9f9a26e20a3211055fc.jsonl.gz) |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 1 | 0 | 0.1 MB | `887466d85ae2`, not uploaded |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 1 | 0 | 0.2 MB | `fadef0a55901`, not uploaded |
-| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 16 | 0 | 27.0 MB | `e1a1803871d6`, not uploaded |
+| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 17 | 0 | 30.7 MB | `bb857afcabfc`, not uploaded |
 
 ## Session notes
 

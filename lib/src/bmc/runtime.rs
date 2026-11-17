@@ -47,6 +47,10 @@
 //!   the one object the constant is. `Logger.isLoggable(Level)` of such a Logger and such a level: false, under
 //!   the assumption the run states ([`LOGGING_ASSUMPTION`]), so a library's debug line is not written and what it
 //!   would have formatted is not run. At any other level, or on any other Logger, it is the JDK call it was.
+//! - `getstatic` of `Boolean.TRUE` or `Boolean.FALSE`: the one object each constant is, distinct from the other and
+//!   from every object the run makes, as on a JVM. The object has no content: every method of it is the JDK call it
+//!   was, as is `Boolean.valueOf`. A library stores one where it records a decision (Spring's
+//!   `PropertyValue.conversionNecessary`).
 //! - `new ArrayList()`: the JDK's no-argument constructor only sets the list's own fields, so the object is made
 //!   as any object with no content is, its methods the JDK calls they were.
 //! - `new ConcurrentHashMap()` and `new ConcurrentHashMap(int)`: likewise (the JDK allocates the table at the first
@@ -63,6 +67,19 @@ pub const CONTEXT_LOADER_ASSUMPTION: &str = "the check runs on one thread, whose
 
 /// What a run that asked a logger whether a level below `INFO` is logged took for granted.
 pub const LOGGING_ASSUMPTION: &str = "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL)";
+
+pub(super) const BOOLEAN: &str = "java/lang/Boolean";
+
+/// Whether the static field is `Boolean.TRUE` or `Boolean.FALSE`, and which: one object each for a run, as each is
+/// one on a JVM, distinct from each other and from any other object. Nothing of it is read here: a call on it
+/// (`booleanValue`, `equals`, ...) is the JDK call it names, and `Boolean.valueOf`, which returns one of them, is too.
+pub fn truth_constant(owner: &str, name: &str) -> Option<bool> {
+    match (owner, name) {
+        (BOOLEAN, "TRUE") => Some(true),
+        (BOOLEAN, "FALSE") => Some(false),
+        _ => None,
+    }
+}
 
 /// The levels of `java.util.logging.Level` below `INFO`, by their fields' names.
 const BELOW_INFO: [&str; 5] = ["CONFIG", "FINE", "FINER", "FINEST", "ALL"];
