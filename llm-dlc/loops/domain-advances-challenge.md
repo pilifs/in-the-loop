@@ -581,11 +581,47 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   - After `cleared` became `kept`, the new test and `test_costs.py lint` were run again under the cap and pass.
   - Its next step, preservation's call-level rule, is taken next. Preservation's `kskmpmny` looks like it: "closed
     against calls back through the JDK", merged with this stream's tie countermodels.
-- Not yet challenged: preservation's `kskmpmny` and `lqkwokqq` (I006, I009); evidence's `wxpoysws`; state's
-  `twtuqvvr`, `qlylowvo` (a stand-in sampled on a JVM) and `krxzxzow`/`lwxvoqsy`.
+- The settings failure went to evidence as `domain-advances-evidence-I014`, citing `plqpmmop`.
+- 2026-11-17, item 5, preservation's `kskmpmny`, its fix for I010 (the reach closed against calls back through the JDK,
+  and the initializers of the application classes the code uses): **the fix holds, and six false proofs past it**, to
+  be handed over.
+  - Built apart at `kskmpmny` (sources touched): `tie_countermodels.rs` passes, its checker-side test included.
+  - The fixture is `lib/tests/fixtures/reach-countermodels`. Its README has the table, the commands, what was tried, the
+    options and the checker-side test. `lib/tests/reach_countermodels.rs` holds it to a JVM: each version alone gives 2
+    (0 for `hidden`) against 1.
+  - Five targets are each **"identical in both versions; nothing to prove"** under the defaults. This holds at
+    `kskmpmny` and on this line alike, since the shortcut is older than the run:
+    - `removed`: an override the previous version declared and the new one removed. Only the new version's reach is
+      walked, and the previous version is looked up by the new one's declaring class;
+    - `hidden`: a field the previous version declared that hides an inherited one. Fields are not compared;
+    - `constant`: an interface's static read through a class that implements it. javac names that class, the JVM
+      initializes the interface, and `initialized` takes superclasses only;
+    - `defaulted`: making an object initializes a superinterface that declares a default method;
+    - `Own#f`: the target's own class's initializer.
+  - `looped` (`constant`'s read in a loop past the bound) is **Verified** under the ties at `kskmpmny`, non-vacuous. On
+    this line, which has no ties, it gets no verdict.
+  - The README's checker-side test fails on all six at `kskmpmny`, as it should. `shared.rs` is preservation's this
+    run, so nothing in `lib/src` changes here. The test goes as a `failure` item to `domain-advances-preservation`,
+    citing this commit; the id goes in the next entry.
+  - Read, not run: the JDK side of the fix (charsets by name, inherited JDK code, concatenation). No countermodel was
+    found there; a sealed static call from walked JDK code (`Class.forName`) counts as inert, but no inherited method
+    was found that makes one with a name the application chooses.
+  - *Audit*: the shortcut needs no `--before-classpath`, which 288 to 290 all pass. 289's rerun on `kskmpmny` unwinds
+    fully. 287's `BCrypt`, read in both pinned releases (hashes checked), implements no interface and uses only its own
+    fields. Nothing for the watcher.
+- Inbox: `domain-advances-challenge-I004` (attack the call-level rule with the 307 specialist's callee
+  countermodels): taken on, but waiting. Preservation's call-level rule is not committed yet: its working copy holds
+  it uncommitted, and its last commit is `kskmpmny`, which this entry challenges. Once it lands, I will run
+  `callee-countermodels`' `check.py` rows against it, built apart, and then look past them.
+- **To the watcher**: `sync.py check` here reports 19 `has no manifest` errors, up from 15. `kskmpmny` stamped session
+  f28025bc on four more of my commits (`qnlomnmx`, `uqrzluvx`, `klqnuoxw`, `xnqlyxnw`). The cause is the one recorded
+  above (`link_commits`). I have not touched the trace lines.
+- Not yet challenged: preservation's `lqkwokqq` (I006, I009) and its call-level rule once committed (I003, I004);
+  evidence's `wxpoysws`; state's `twtuqvvr`, `qlylowvo` (a stand-in sampled on a JVM), `krxzxzow`/`lwxvoqsy` and
+  `zlvqxmst`.
 - Next:
-  - item 5: preservation's `kskmpmny` first, as I003 asks; then state's `qlylowvo` stand-ins and `twtuqvvr`, and
-    evidence's `wxpoysws`;
+  - item 5: preservation's call-level rule as soon as it is committed (I003, I004); until then, state's `qlylowvo`
+    stand-ins and `twtuqvvr`, and evidence's `wxpoysws`;
   - item 5: `nzsypymy` (290's preservation restated, also item 6);
   - item 6's entries for 288's `fixed-security` and 289's other answers.
 - Status: working
