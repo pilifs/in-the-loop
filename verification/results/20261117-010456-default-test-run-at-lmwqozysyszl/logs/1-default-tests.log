@@ -1,0 +1,694 @@
+$ JVMCONTRACT_TEST_TIER=tool TEST_COST=tool cargo test --manifest-path lib/Cargo.toml --profile test-fast (3 test binaries at a time, beside the Python files)
+ok   llm-dlc/tools/test_prove_loop.py: Ran 30 tests in 105.155s, OK
+     Running lib/tests/integration.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/integration-7e648e182b3891cc)
+
+running 65 tests
+test a_callee_unchanged_in_both_versions_is_one_function_in_the_proof ... ok
+test a_catch_around_a_shared_callee_is_still_a_difference ... ok
+test a_check_lost_in_the_move_to_a_record_is_found_on_the_components ... ok
+test a_boolean_that_became_a_remaining_time_is_proved_under_the_stated_relation ... ok
+test a_change_confined_to_its_declared_inputs_is_proved_and_refuted_without_the_declaration ... ok
+test a_counterexample_the_shared_callee_cannot_reproduce_falls_back_to_its_bytecode ... ok
+test a_method_moved_and_renamed_is_proved_against_its_previous_name ... ok
+test a_law_may_call_the_method_and_a_boolean_method_is_its_own_property ... ok
+test a_postcondition_is_proved_over_every_input_and_refuted_with_a_witness ... ok
+test a_pure_finite_method_gets_a_complete_contract ... ok
+test a_gap_is_refused_by_name_under_strict_and_named_as_an_assumption_under_assume ... ok
+test a_method_whose_parameters_were_reordered_is_proved_against_the_previous_order ... ok
+test a_contract_closes_its_gap_and_the_verdict_rests_on_it ... ok
+test a_record_result_is_compared_component_by_component ... ok
+test a_record_that_gained_a_component_is_related_by_building_the_previous_record ... ok
+test a_method_that_declares_a_checked_exception_is_compared_on_it_and_a_change_in_it_is_found ... ok
+test a_relative_jbmc_path_is_found_from_the_current_directory ... ok
+test a_records_method_made_static_is_related_by_building_its_receiver ... ok
+test a_record_result_of_other_components_is_related_by_a_relation_over_them ... ok
+test a_remaining_time_in_milliseconds_that_expires_entries_early_is_found_under_the_relation ... ok
+test a_rewrite_under_a_reordering_that_changes_a_tie_is_found ... ok
+test a_small_callee_is_computed_as_written_rather_than_shared ... ok
+test a_rounding_refactor_is_refuted_with_a_replayed_counterexample ... ok
+test a_string_parameter_is_refused_under_jbmc ... ok
+test a_static_method_that_became_a_records_method_is_related_by_the_components ... ok
+test a_target_identical_in_both_versions_needs_no_proof ... ok
+test an_instance_method_of_an_enum_takes_the_receiver_as_its_domain ... ok
+test an_overloaded_method_is_named_by_its_parameter_types ... ok
+test a_record_whose_constructor_changed_is_not_identical ... ok
+test advised_stops_before_solving_with_each_gap_and_what_its_contract_states ... ok
+test capability_contracts_list_each_entry_point_with_its_call_site ... ok
+test a_shift_that_overflows_is_found_on_the_records_components ... ok
+test details_print_the_statement_and_where_the_time_went ... ok
+test draws_the_state_machine_of_a_contract ... ok
+test a_witness_through_contracts_is_run_on_a_jvm ... ok
+test generates_the_tla_operator_the_python_generator_wrote ... ok
+test identity_and_initialization_agree_with_the_jvm ... ok
+test impure_or_unbounded_methods_are_refused_with_the_reason ... ok
+test a_method_of_a_record_is_proved_on_its_components ... ok
+test confirm_applies_the_own_checkers_contracts_for_jbmc ... ok
+test old_reads_an_array_as_the_call_received_it ... FAILED
+test proofs_over_modelled_jdk_classes_are_decided_by_the_models ... FAILED
+test generalized_quantifiers_fold_and_counterexamples_shrink ... FAILED
+test relocation_renames_the_class_and_its_references ... ok
+test reproduces_the_contract_the_java_tool_committed_for_box_office ... ok
+test results_of_two_types_need_a_relation ... ok
+test the_boundary_contract_lists_entry_points_advice_and_where_advice_does_not_apply ... ok
+test the_effect_monitor_catches_writes_the_static_analysis_misses ... ok
+test the_gap_scan_gives_each_class_initializer_a_shape ... ok
+test the_gap_scan_names_what_the_own_checker_approximates ... ok
+test the_interpreter_models_strings_records_switches_lambdas_and_exceptions ... ok
+test the_interpreter_runs_the_models_where_the_jdk_is_modelled ... ok
+test jbmc_own_approximations_are_gaps_in_the_same_modes ... ok
+test the_contract_library_closes_gaps_on_its_records_and_max_trust_refuses_trusted_contracts ... ok
+test the_json_reading_of_jbmc_gives_each_verdict_and_ending ... ok
+test throws_clauses_prove_the_exceptional_path ... ok
+test jbmc_applies_the_contracts_for_its_gaps ... ok
+test the_previous_versions_parameters_must_be_mapped_when_they_differ ... ok
+test unbounded_recursion_is_refused_not_run_forever ... ok
+test update_then_verify_passes_and_detects_drift_with_sarif ... ok
+test tlc_checks_the_box_office_model ... ok
+test tlc_checks_temporal_properties_and_names_the_violated_one ... ok
+test arrays_are_quantified_over_and_witnessed ... ok
+test the_tools_own_checker_agrees_with_jbmc_on_integer_proofs ... ok
+test arrays_are_compared_in_regression_proofs_as_left_by_each_version ... ok
+
+failures:
+
+---- old_reads_an_array_as_the_call_received_it stdout ----
+
+thread 'old_reads_an_array_as_the_call_received_it' (4113137) panicked at tests/integration.rs:935:5:
+assertion `left == right` failed: ✗ fixtures.InPlace#reverse cannot be verified: class not found: fixtures.InPlace
+
+  left: Unverifiable
+ right: Verified
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- proofs_over_modelled_jdk_classes_are_decided_by_the_models stdout ----
+
+thread 'proofs_over_modelled_jdk_classes_are_decided_by_the_models' (4113145) panicked at tests/integration.rs:1317:5:
+assertion `left == right` failed: ✗ fixtures.Models#hexDigit cannot be verified: class not found: fixtures.Models
+
+  left: Unverifiable
+ right: Verified
+
+---- generalized_quantifiers_fold_and_counterexamples_shrink stdout ----
+
+thread 'generalized_quantifiers_fold_and_counterexamples_shrink' (4109397) panicked at tests/integration.rs:1080:5:
+assertion `left == right` failed: ✗ fixtures.Search#total cannot be verified: class not found: fixtures.Search
+
+  left: Unverifiable
+ right: Verified
+
+
+failures:
+    generalized_quantifiers_fold_and_counterexamples_shrink
+    old_reads_an_array_as_the_call_received_it
+    proofs_over_modelled_jdk_classes_are_decided_by_the_models
+
+test result: FAILED. 62 passed; 3 failed; 0 ignored; 0 measured; 0 filtered out; finished in 78.41s
+
+
+error: test failed, to rerun pass `--test integration`
+ok   examples/tools/targets/test_runtime.py: Ran 73 tests in 194.844s, OK
+ok   verification/test_pipeline.py: Ran 38 tests in 102.590s, OK
+     Running lib/tests/observations.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/observations-c6a77b34b509eef7)
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 43.92s [44s with the others]
+ok   examples/tools/targets/test_receipt_streams.py: Ran 5 tests in 24.299s, OK
+     Running lib/tests/environment.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/environment-d1ce315d55c28511)
+
+running 17 tests
+test a_call_past_the_models_bound_is_unresolved ... ok
+test a_handler_that_uses_a_modelled_rate_proves_its_rewrite ... ok
+test a_wrong_query_key_is_refuted_under_the_environment_that_shows_it ... ok
+test an_event_sent_on_the_wrong_branch_of_a_rate_is_refuted_in_the_trace ... ok
+test an_ignored_result_is_refuted ... ok
+test compare_counts_a_declared_environment_as_a_persons_decision ... ok
+test a_dropped_retry_is_refuted_under_a_per_call_choice_and_proves_under_a_query ... ok
+test repeated_reads_of_one_key_are_functionally_consistent ... ok
+test keys_asked_for_in_another_order_get_their_own_answers ... ok
+test a_newly_missing_catch_of_a_modelled_failure_is_refuted_and_replayed ... ok
+(source unavailable)
+(source unavailable)
+(source unavailable)
+/home/filip/.cache/in-the-loop/default-tests-target/tmp/environment/sources/command-before/rates/PriceController.java:0: error: package org.springframework.kafka.core does not exist
+(source unavailable)
+(source unavailable)
+(source unavailable)
+/home/filip/.cache/in-the-loop/default-tests-target/tmp/environment/sources/command-before/rates/PriceController.java:0: error: package org.springframework.web.bind.annotation does not exist
+(source unavailable)
+(source unavailable)
+(source unavailable)
+/home/filip/.cache/in-the-loop/default-tests-target/tmp/environment/sources/command-before/rates/PriceController.java:0: error: package org.springframework.web.bind.annotation does not exist
+(source unavailable)
+(source unavailable)
+(source unavailable)
+/home/filip/.cache/in-the-loop/default-tests-target/tmp/environment/sources/command-before/rates/PriceController.java:0: error: package org.springframework.web.bind.annotation does not exist
+(source unavailable)
+(source unavailable)
+(source unavailable)
+/home/filip/.cache/in-the-loop/default-tests-target/tmp/environment/sources/command-before/rates/PriceController.java:0: error: cannot find symbol
+
+  symbol: class RestController
+(source unavailable)
+(source unavailable)
+(source unavailable)
+/home/filip/.cache/in-the-loop/default-tests-target/tmp/environment/sources/command-before/rates/PriceController.java:0: error: cannot find symbol
+
+  symbol:   class KafkaTemplate
+  location: class PriceController
+(source unavailable)
+(source unavailable)
+(source unavailable)
+/home/filip/.cache/in-the-loop/default-tests-target/tmp/environment/sources/command-before/rates/PriceController.java:0: error: cannot find symbol
+
+  symbol:   class KafkaTemplate
+  location: class PriceController
+(source unavailable)
+(source unavailable)
+(source unavailable)
+/home/filip/.cache/in-the-loop/default-tests-target/tmp/environment/sources/command-before/rates/PriceController.java:0: error: cannot find symbol
+
+  symbol:   class RequestParam
+  location: class PriceController
+(source unavailable)
+(source unavailable)
+(source unavailable)
+/home/filip/.cache/in-the-loop/default-tests-target/tmp/environment/sources/command-before/rates/PriceController.java:0: error: cannot find symbol
+
+  symbol:   class RequestParam
+  location: class PriceController
+(source unavailable)
+(source unavailable)
+(source unavailable)
+/home/filip/.cache/in-the-loop/default-tests-target/tmp/environment/sources/command-before/rates/PriceController.java:0: error: cannot find symbol
+
+  symbol:   class PostMapping
+  location: class PriceController
+10 errors
+test the_command_checks_under_a_declared_environment ... FAILED
+/home/filip/.cache/in-the-loop/default-tests-target/tmp/environment/sources/choice-wrong-key-before/rates/PriceController.java:3: error: package org.springframework.kafka.core does not exist
+import org.springframework.kafka.core.KafkaTemplate;
+                                     ^
+/home/filip/.cache/in-the-loop/default-tests-target/tmp/environment/sources/choice-wrong-key-before/rates/PriceController.java:4: error: package org.springframework.web.bind.annotation does not exist
+import org.springframework.web.bind.annotation.PostMapping;
+                                              ^
+/home/filip/.cache/in-the-loop/default-tests-target/tmp/environment/sources/choice-wrong-key-before/rates/PriceController.java:5: error: package org.springframework.web.bind.annotation does not exist
+import org.springframework.web.bind.annotation.RequestParam;
+                                              ^
+/home/filip/.cache/in-the-loop/default-tests-target/tmp/environment/sources/choice-wrong-key-before/rates/PriceController.java:6: error: package org.springframework.web.bind.annotation does not exist
+import org.springframework.web.bind.annotation.RestController;
+                                              ^
+/home/filip/.cache/in-the-loop/default-tests-target/tmp/environment/sources/choice-wrong-key-before/rates/PriceController.java:8: error: cannot find symbol
+@RestController
+ ^
+  symbol: class RestController
+/home/filip/.cache/in-the-loop/default-tests-target/tmp/environment/sources/choice-wrong-key-before/rates/PriceController.java:11: error: cannot find symbol
+    private final KafkaTemplate<String, PriceEvent> kafka;
+                  ^
+  symbol:   class KafkaTemplate
+  location: class PriceController
+/home/filip/.cache/in-the-loop/default-tests-target/tmp/environment/sources/choice-wrong-key-before/rates/PriceController.java:13: error: cannot find symbol
+    public PriceController(Rates rates, KafkaTemplate<String, PriceEvent> kafka) {
+                                        ^
+  symbol:   class KafkaTemplate
+  location: class PriceController
+/home/filip/.cache/in-the-loop/default-tests-target/tmp/environment/sources/choice-wrong-key-before/rates/PriceController.java:19: error: cannot find symbol
+    public long price(@RequestParam int code, @RequestParam int quantity) {
+                       ^
+  symbol:   class RequestParam
+  location: class PriceController
+/home/filip/.cache/in-the-loop/default-tests-target/tmp/environment/sources/choice-wrong-key-before/rates/PriceController.java:19: error: cannot find symbol
+    public long price(@RequestParam int code, @RequestParam int quantity) {
+                                               ^
+  symbol:   class RequestParam
+  location: class PriceController
+/home/filip/.cache/in-the-loop/default-tests-target/tmp/environment/sources/choice-wrong-key-before/rates/PriceController.java:18: error: cannot find symbol
+    @PostMapping("/price")
+     ^
+  symbol:   class PostMapping
+  location: class PriceController
+10 errors
+test a_per_call_choice_proves_a_rewrite_and_refutes_a_wrong_key ... FAILED
+test the_old_builds_unresolved_mark_says_only_what_happened_in_it ... ok
+test the_environment_model_is_in_the_claim_key_of_the_cached_proof ... ok
+test reading_more_of_a_modelled_failure_than_its_class_is_refused ... ok
+test without_a_model_a_used_result_is_never_proved ... ok
+test under_a_per_call_choice_a_second_read_of_a_key_is_its_own_answer ... ok
+
+failures:
+
+---- the_command_checks_under_a_declared_environment stdout ----
+
+thread 'the_command_checks_under_a_declared_environment' (4151475) panicked at tests/environment.rs:49:5:
+assertion failed: cmd.args(files).status().expect("javac runs").success()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- a_per_call_choice_proves_a_rewrite_and_refutes_a_wrong_key stdout ----
+
+thread 'a_per_call_choice_proves_a_rewrite_and_refutes_a_wrong_key' (4141506) panicked at tests/environment.rs:49:5:
+assertion failed: cmd.args(files).status().expect("javac runs").success()
+
+
+failures:
+    a_per_call_choice_proves_a_rewrite_and_refutes_a_wrong_key
+    the_command_checks_under_a_declared_environment
+
+test result: FAILED. 15 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 37.77s
+
+
+error: test failed, to rerun pass `--test environment`
+ok   examples/tools/targets/test_runtime_upstream.py: Ran 30 tests in 60.393s, OK
+     Running lib/tests/application_core.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/application_core-b67f5a42b65854c3)
+
+running 14 tests
+test j3_semantic_changes_change_the_claim_key ... ok
+[0.001s][warning][perf,memops] Cannot use file /tmp/hsperfdata_filip/4089000 because it is locked by another process (errno = 11)
+test g0_an_unsupported_domain_policy_is_refused_before_any_verdict ... ok
+test every_build_compiles_and_every_case_has_its_verdict ... ok
+test o1_an_ordinary_receiver_in_the_regression_and_property_checks ... ok
+test o2_an_array_valued_constructor_faithful_to_identity ... ok
+test the_frozen_claims_are_the_shared_types ... ok
+test the_result_schema_registers_the_statements_new_kinds ... ok
+test v1_a_symbolic_string_crosses_the_proof_boundary ... ok
+test r1_the_native_property_cache ... ok
+test r2_a_heap_reading_helper_on_its_own ... ok
+test o3_a_defect_only_a_history_reaches ... ok
+test v2_a_bounded_supported_list_as_input ... ok
+test e2_a_nullable_returned_dto ... FAILED
+test e1_a_consumed_return_value_and_a_declared_failure has been running for over 60 seconds
+test e1_a_consumed_return_value_and_a_declared_failure ... ok
+
+failures:
+
+---- e2_a_nullable_returned_dto stdout ----
+
+thread 'e2_a_nullable_returned_dto' (4088962) panicked at tests/application_core.rs:106:19:
+offer-claim alias-to-copy: refused by Observations, which isn't among the row's streams []: reading the classes under /home/filip/.cache/in-the-loop/default-tests-target/tmp/application-core/quote/before: /home/filip/.cache/in-the-loop/default-tests-target/tmp/application-core/quote/before is neither a directory nor a jar
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    e2_a_nullable_returned_dto
+
+test result: FAILED. 13 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 170.43s
+
+
+error: test failed, to rerun pass `--test application_core`
+ok   llm-dlc/tools/test_watch.py: Ran 41 tests in 3.003s, OK
+     Running lib/tests/heap.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/heap-32e4358bc5eddce0)
+test result: ok. 49 passed; 0 failed; 9 ignored; 0 measured; 0 filtered out; finished in 35.41s [35s with the others]
+ok   examples/tools/test_targets_contract.py: Ran 16 tests in 24.249s, OK (skipped=2)
+ok   llm-dlc/tools/test_performance.py: Ran 104 tests in 32.784s, OK (skipped=2)
+ok   examples/tools/targets/test_gap_inventory.py: Ran 12 tests in 6.056s, OK
+ok   examples/tools/test_economics.py: Ran 11 tests in 5.619s, OK
+     Running lib/tests/application_core_joint.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/application_core_joint-610b5ca968165be3)
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 215.19s [215s with the others]
+     Running lib/tests/environment_quotes.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/environment_quotes-90d21787816d4eb3)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 20.63s [21s with the others]
+     Running lib/tests/conformance.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/conformance-731d732e55a77d3f)
+test result: ok. 10 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 52.10s [52s with the others]
+ok   examples/tools/targets/test_fixtures.py: Ran 6 tests in 15.173s, OK
+ok   examples/tools/test_build.py: Ran 191 tests in 22.206s, OK
+ok   examples/tools/targets/test_workflow.py: Ran 64 tests in 39.729s, OK (skipped=1)
+     Running lib/tests/alignment.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/alignment-00a7069e137919a6)
+
+running 34 tests
+test a_lone_weak_candidate_is_a_question_too ... ok
+test a_method_moved_to_a_new_class_leads_and_its_callers_say_so ... ok
+test a_method_moved_into_the_value_object_takes_it_in_place_of_the_old_object ... ok
+test a_moved_method_that_reads_what_the_value_object_does_not_keep_is_not_related ... ok
+test a_renamed_field_is_related_by_its_constructor_and_a_new_one_left_free ... ok
+test a_record_that_gained_a_component_is_built_from_the_old_ones_and_the_new_one_left_free ... ok
+test a_lone_candidate_on_type_alone_is_asked_and_what_it_reaches_is_not_called_free ... ok
+test a_field_whose_own_class_changed_shape_is_related_through_that_class ... ok
+test a_constructor_that_shifts_what_it_stores_or_stores_a_constant_is_never_related ... ok
+test a_renamed_method_with_the_same_body_leads ... ok
+test a_stated_derivation_is_used_as_a_person_stated_it ... ok
+test approve_needs_a_rank_among_several ... ok
+test an_overloaded_name_is_written_with_its_parameter_types ... ok
+test an_approved_relation_a_proof_refutes_is_listed_with_its_counterexample ... ok
+test approving_sets_the_intent_only_and_a_file_whose_decisions_are_approved_asks_nothing ... ok
+test a_value_object_the_constructor_makes_is_related_inside_it ... ok
+test mappings_a_proof_cannot_tell_apart_are_one_candidate ... ok
+test code_that_did_not_change_over_a_class_that_did_is_mapped_through_the_class ... ok
+test parameters_gathered_into_a_record_are_its_components ... ok
+test of_a_question_on_type_alone_the_proof_keeps_the_mapping_that_holds ... ok
+test a_result_whose_class_changed_shape_is_compared_field_by_field ... ok
+test proved_relations_with_different_inputs_stay_a_question_with_an_input_that_separates_them ... ok
+test proved_relations_with_the_same_inputs_are_one_candidate_told_apart_by_a_result_no_input_gives ... ok
+test reordered_parameters_keep_their_names ... ok
+test an_approved_relation_s_evidence_comes_from_a_proof_under_the_current_claim_key_and_goes_stale ... FAILED
+test the_kernel_keeps_its_methods_and_its_constructor_takes_the_value_object ... ok
+test the_kernel_s_quote_is_related_field_by_field_from_its_constructors ... ok
+test the_command_writes_hints_and_keeps_what_a_person_approved ... ok
+test the_outcome_rules_count_no_vacuous_proof_and_name_a_person_s_decision ... ok
+test the_offset_defect_is_refuted_and_no_mapping_hides_it ... ok
+test the_result_relations_come_from_the_catalogue ... ok
+test two_equally_good_candidates_are_a_question ... ok
+test two_inputs_only_their_type_ties_are_a_question ... ok
+test the_offset_mapping_is_never_proposed_for_an_anchored_input ... ok
+
+failures:
+
+---- an_approved_relation_s_evidence_comes_from_a_proof_under_the_current_claim_key_and_goes_stale stdout ----
+
+thread 'an_approved_relation_s_evidence_comes_from_a_proof_under_the_current_claim_key_and_goes_stale' (4182543) panicked at tests/alignment.rs:990:9:
+jvmcontract: No such file or directory (os error 2)
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    an_approved_relation_s_evidence_comes_from_a_proof_under_the_current_claim_key_and_goes_stale
+
+test result: FAILED. 33 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 36.67s
+
+
+error: test failed, to rerun pass `--test alignment`
+ok   lib/tools/test_tier_lint.py: Ran 12 tests in 9.219s, OK
+     Running lib/tests/environment_responses.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/environment_responses-39050ae82273b17b)
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 44.91s [45s with the others]
+     Running lib/src/lib.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/jvmcontract-14cbc93e5ef18ff4)
+test result: ok. 285 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 45.30s [45s with the others]
+ok   llm-dlc/tools/test_verification_loop.py: Ran 2 tests in 12.102s, OK
+     Running lib/tests/summaries.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/summaries-e93640045ad2631f)
+
+running 40 tests
+test a_changed_superclass_changes_the_class_part ... ok
+test a_changed_callee_body_names_the_callee ... ok
+test a_changed_enum_case_in_a_pattern_switch_is_a_changed_body ... ok
+test a_field_the_projection_does_not_know_makes_the_claim_uncacheable ... ok
+test a_changed_helper_proved_once_is_one_function_in_each_of_its_callers ... ok
+test a_changed_version_or_setting_is_a_miss ... ok
+test a_constant_field_changes_the_class_part ... ok
+test a_helper_s_proof_never_rests_on_the_proof_it_is_used_in ... ok
+test a_framework_annotation_or_configuration_value_changes_the_claim ... ok
+test a_part_not_computed_makes_the_claim_uncacheable ... ok
+test a_framework_annotation_the_claim_uses_changes_the_closure ... ok
+test a_caller_s_key_is_the_same_whichever_run_proved_its_helper ... ok
+test a_helper_that_differs_only_where_its_caller_never_calls_it_is_proved_as_written ... ok
+test a_new_class_that_adds_a_dispatch_target_changes_the_closure_with_no_body_changed ... ok
+test a_new_subclass_that_overrides_nothing_leaves_the_dispatch_alone ... ok
+test a_stored_witness_reads_back_as_the_arguments_it_was ... ok
+test a_refuted_hit_replays_its_witness_first ... ok
+test a_real_regression_is_still_found_through_the_refinement ... ok
+test an_entry_that_is_corrupt_for_another_key_or_unresolved_is_a_miss ... ok
+test a_record_input_s_constructor_is_part_of_the_claim_s_code ... ok
+test an_unresolved_result_or_a_refutation_without_a_witness_is_never_stored ... ok
+test claims_are_read_from_build_py_s_records_as_they_are ... ok
+test a_renamed_target_a_target_gone_and_one_not_in_the_first_build ... ok
+test each_part_the_brief_names_changes_the_key ... ok
+test every_part_of_the_claim_changed_in_turn_changes_the_key ... ok
+test a_target_the_build_does_not_have_is_named_missing ... ok
+test configuration_is_part_of_a_closure_that_touches_spring_and_of_no_other ... ok
+test a_rerun_of_the_same_claim_is_an_exact_hit ... ok
+test the_cache_gives_back_what_it_stored_for_that_key_only ... ok
+test the_binary_identity_is_the_digest_of_its_bytes ... ok
+test an_unrelated_change_leaves_the_closure_alone ... ok
+test a_wrong_helper_change_is_not_shared_and_its_caller_s_check_finds_it ... ok
+test the_key_does_not_depend_on_how_the_claim_was_written ... ok
+test only_the_callee_a_spurious_counterexample_rests_on_is_computed_as_written ... ok
+test the_replay_stub_gives_the_stub_s_answers_again_and_is_the_callee_elsewhere ... ok
+test the_cache_is_used_with_the_own_checker_only ... ok
+test the_impact_report_names_the_claims_a_change_invalidates_and_the_parts_that_changed ... ok
+test the_same_sources_compiled_twice_give_the_same_closure ... FAILED
+test only_a_helper_over_integers_that_raises_no_exception_of_its_own_is_offered_for_proof ... FAILED
+test the_code_changes_that_no_body_shows_change_the_claim ... ok
+
+failures:
+
+---- the_same_sources_compiled_twice_give_the_same_closure stdout ----
+
+thread 'the_same_sources_compiled_twice_give_the_same_closure' (6801) panicked at tests/summaries.rs:107:5:
+assertion `left == right` failed
+  left: Closure { root: "k/Pricing.total(J)J", parts: {"missing k/Pricing.total(J)J": "ffa63583dfa6706b87d284b86b0d693a161e4840aad2c5cf6b5d27c3b9621f7d"} }
+ right: Closure { root: "k/Pricing.total(J)J", parts: {"class k/Pricing": "11639664ac17d095fb239158915c4da15de16804228ee4a5b7b14a2d9ae84710", "method k/Pricing.discount(J)J": "876ea4ba1c66b05db6eba310cd62203667c60e64ccbdaad300ff64fabdd80e90", "method k/Pricing.total(J)J": "2fa10b57960ee5c5cb45d87dcec3f436d692a62ca931960c6d7987ee69cd690a"} }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- only_a_helper_over_integers_that_raises_no_exception_of_its_own_is_offered_for_proof stdout ----
+
+thread 'only_a_helper_over_integers_that_raises_no_exception_of_its_own_is_offered_for_proof' (3772) panicked at tests/summaries.rs:1074:5:
+assertion `left == right` failed
+  left: 0
+ right: 1
+
+
+failures:
+    only_a_helper_over_integers_that_raises_no_exception_of_its_own_is_offered_for_proof
+    the_same_sources_compiled_twice_give_the_same_closure
+
+test result: FAILED. 38 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 29.37s
+
+
+error: test failed, to rerun pass `--test summaries`
+ok   examples/tools/targets/test_acceptance.py: Ran 15 tests in 33.588s, OK
+ok   lib/tools/test_test_costs.py: Ran 22 tests in 11.388s, OK
+     Running lib/tests/application_core_objects.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/application_core_objects-d7bb6e4553c5be8b)
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 25.85s [26s with the others]
+ok   llm-dlc/tools/test_integration.py: Ran 5 tests in 4.650s, OK
+ok   llm-dlc/tools/test_prune_workspaces.py: Ran 14 tests in 4.696s, OK
+ok   llm-dlc/tools/test_workspaces.py: Ran 12 tests in 3.429s, OK
+ok   llm-dlc/tools/test_release.py: Ran 11 tests in 1.920s, OK
+     Running lib/tests/effects.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/effects-5487ebe5fb9b8b92)
+
+running 19 tests
+test a_handler_that_uses_a_modeled_calls_result_is_refused_by_name ... ok
+test a_model_the_check_does_not_encode_is_refused_by_name ... FAILED
+test a_handler_given_an_application_object_is_refused_by_name ... ok
+test a_duplicated_event_is_refuted_in_exact_order ... ok
+test a_dropped_event_is_refuted_by_a_witness_replayed_on_the_jvm ... ok
+test a_changed_total_is_refuted_in_the_response_and_the_event ... ok
+test the_claim_a_spec_makes_is_the_joint_examples_claim ... ok
+test a_null_dependency_called_through_a_supertype_leaves_the_result_unresolved_where_reached ... ok
+test payloads_of_two_classes_through_one_call_are_snapshotted_each_through_its_own_class ... ok
+test the_command_reports_what_the_narrow_case_refuses_and_checks_the_rest ... ok
+test a_trace_past_its_bound_is_unresolved_not_shorter ... ok
+test the_effect_log_plan_names_its_stubs_and_assumptions ... ok
+test a_payload_literal_with_an_isolated_surrogate_is_snapshotted_unit_for_unit ... FAILED
+test what_the_analysis_cannot_see_is_unresolved ... ok
+test the_refactor_preserves_the_response_status_and_event_trace ... ok
+test the_command_checks_every_entry_point_of_two_builds ... ok
+test the_command_reports_a_refutation_with_both_builds_attempts ... ok
+test the_command_writes_a_sarif_finding_per_refuted_entry_point_anchored_at_its_handler ... ok
+test an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged ... ok
+
+failures:
+
+---- a_model_the_check_does_not_encode_is_refused_by_name stdout ----
+
+thread 'a_model_the_check_does_not_encode_is_refused_by_name' (11206) panicked at tests/effects.rs:92:120:
+no POST /quotes
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- a_payload_literal_with_an_isolated_surrogate_is_snapshotted_unit_for_unit stdout ----
+
+thread 'a_payload_literal_with_an_isolated_surrogate_is_snapshotted_unit_for_unit' (14009) panicked at tests/effects.rs:92:120:
+no POST /quotes
+
+
+failures:
+    a_model_the_check_does_not_encode_is_refused_by_name
+    a_payload_literal_with_an_isolated_surrogate_is_snapshotted_unit_for_unit
+
+test result: FAILED. 17 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.21s
+
+
+error: test failed, to rerun pass `--test effects`
+ok   llm-dlc/tools/test_changes.py: Ran 21 tests in 1.231s, OK
+ok   llm-dlc/tools/test_conductor.py: Ran 22 tests in 2.224s, OK
+     Running lib/tests/values.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/values-c0048b3f5b9e6e07)
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 26.02s [26s with the others]
+ok   examples/tools/targets/test_packets.py: Ran 22 tests in 3.109s, OK
+ok   lib/benchmark/test_run.py: Ran 27 tests in 3.187s, OK
+     Running lib/tests/claims.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/claims-1b66eb54caf6ea8c)
+
+running 12 tests
+Note: /home/filip/code/in-the-loop/verification/.state/work/20261117-010456-default-test-run-at-lmwqozysyszl/lib/tests/fixtures/claims/claims/C.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+test a_string_array_parameter_is_strings_of_their_own_or_null_and_a_witness_runs_on_a_jvm ... ok
+test a_throws_clause_over_a_strings_bytes_is_compiled_by_javac_and_checked ... ok
+test an_objects_class_a_strings_to_string_and_an_initializer_that_keeps_a_method_reference_run ... ok
+test a_glob_stated_with_the_regex_library_matches_as_the_matcher_written_out ... ok
+test lambdas_method_references_and_the_stream_models_run_as_the_loops_they_stand_for ... ok
+test lower_casing_under_a_locale_that_is_an_input_is_the_definition_written_out ... FAILED
+test the_string_and_builder_methods_are_the_definitions_written_out_over_char_at ... FAILED
+test text_as_bytes_and_digits_and_a_hashs_shape_are_the_definitions_written_out ... FAILED
+test a_method_that_calls_itself_is_proved_by_induction_on_a_measure_that_decreases ... FAILED
+test a_lemma_is_proved_first_and_its_summary_stands_in_for_the_calls_of_its_method ... FAILED
+test a_literal_followed_by_any_that_is_an_input_matches_as_the_definition_written_out ... FAILED
+test an_expression_the_tools_compiler_does_not_take_is_compiled_by_javac_and_run_as_bytecode ... ok
+
+failures:
+
+---- lower_casing_under_a_locale_that_is_an_input_is_the_definition_written_out stdout ----
+
+thread 'lower_casing_under_a_locale_that_is_an_input_is_the_definition_written_out' (20234) panicked at tests/claims.rs:157:9:
+assertion `left == right` failed: nulls: ✗ claims.C#nulls cannot be verified: class not found: claims.C
+
+  left: Unverifiable
+ right: Verified
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- the_string_and_builder_methods_are_the_definitions_written_out_over_char_at stdout ----
+
+thread 'the_string_and_builder_methods_are_the_definitions_written_out_over_char_at' (20491) panicked at tests/claims.rs:65:5:
+assertion `left == right` failed: claims.T#indexOfString: ✗ claims.T#indexOfString cannot be verified: class not found: claims.T
+
+  left: Unverifiable
+ right: Verified
+
+---- text_as_bytes_and_digits_and_a_hashs_shape_are_the_definitions_written_out stdout ----
+
+thread 'text_as_bytes_and_digits_and_a_hashs_shape_are_the_definitions_written_out' (20242) panicked at tests/claims.rs:65:5:
+assertion `left == right` failed: claims.B#equal: ✗ claims.B#equal cannot be verified: class not found: claims.B
+
+  left: Unverifiable
+ right: Verified
+
+---- a_method_that_calls_itself_is_proved_by_induction_on_a_measure_that_decreases stdout ----
+
+thread 'a_method_that_calls_itself_is_proved_by_induction_on_a_measure_that_decreases' (18365) panicked at tests/claims.rs:317:5:
+note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target
+note: by induction on `text.length()`: a call matches makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with no verdict
+✗ claims.Glob#matches cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:claims.Glob.matches(Ljava/lang/String;Ljava/lang/String;)Z@jdk-25.0.5 (claims.Glob.matches(java.lang.String, java.lang.String) at PropertyHarness.check). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)
+
+
+---- a_lemma_is_proved_first_and_its_summary_stands_in_for_the_calls_of_its_method stdout ----
+
+thread 'a_lemma_is_proved_first_and_its_summary_stands_in_for_the_calls_of_its_method' (18363) panicked at tests/claims.rs:347:5:
+assertion `left == right` failed: lemma: note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target
+lemma: note: by induction on `pattern.length()`: a call matches makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with no verdict
+lemma: ✓ claims.Glob#matches satisfies `result == java.util.regex.Pattern.compile(String.join(".*", java.util.Arrays.stream(pattern.split("\\*", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(text).matches()` on every input where pattern.chars().allMatch(c -> c < 128) && text.chars().allMatch(c -> c < 128) (jvmcontract's own checker (CaDiCaL): 1 properties proved over pattern: String of ≤ 3 code units, not null × text: String of ≤ 3 code units, not null in 0.8 s; loops unwound 16 times with unwinding assertions)
+lemma:   not vacuous: matches(pattern="", text="") reaches the calls
+note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target
+note: lemma, proved above by induction on `pattern.length()` in 2.7 s: claims.Glob#matches satisfies `result == java.util.regex.Pattern.compile(String.join(".*", java.util.Arrays.stream(pattern.split("\\*", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(text).matches()` where pattern.chars().allMatch(c -> c < 128) && text.chars().allMatch(c -> c < 128), on Strings of at most 3 code units; its calls within that are taken to return what it states, and any other runs the method as written
+✗ claims.Glob#any cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:claims.Glob.any([Ljava/lang/String;Ljava/lang/String;)Z@jdk-25.0.5 (claims.Glob.any(java.lang.String[], java.lang.String) at PropertyHarness.check). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)
+
+  left: Unverifiable
+ right: Verified
+
+---- a_literal_followed_by_any_that_is_an_input_matches_as_the_definition_written_out stdout ----
+
+thread 'a_literal_followed_by_any_that_is_an_input_matches_as_the_definition_written_out' (18364) panicked at tests/claims.rs:205:5:
+assertion `left == right` failed: note: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter p has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target
+✗ claims.P#exact cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:claims.P.exact(Ljava/lang/String;Ljava/lang/String;)Z@jdk-25.0.5 (claims.P.exact(java.lang.String, java.lang.String) at PropertyHarness.check). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)
+
+  left: Unverifiable
+ right: Violation
+
+
+failures:
+    a_lemma_is_proved_first_and_its_summary_stands_in_for_the_calls_of_its_method
+    a_literal_followed_by_any_that_is_an_input_matches_as_the_definition_written_out
+    a_method_that_calls_itself_is_proved_by_induction_on_a_measure_that_decreases
+    lower_casing_under_a_locale_that_is_an_input_is_the_definition_written_out
+    text_as_bytes_and_digits_and_a_hashs_shape_are_the_definitions_written_out
+    the_string_and_builder_methods_are_the_definitions_written_out_over_char_at
+
+test result: FAILED. 6 passed; 6 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.78s
+
+
+error: test failed, to rerun pass `--test claims`
+ok   examples/tools/targets/test_workflow_refusal.py: Ran 9 tests in 1.801s, OK
+ok   llm-dlc/tools/test_review.py: Ran 28 tests in 1.303s, OK
+ok   verification/test_default_tests.py: Ran 14 tests in 0.089s, OK
+ok   examples/tools/targets/test_route.py: Ran 13 tests in 0.764s, OK
+ok   llm-dlc/tools/test_claude_setup.py: Ran 21 tests in 0.948s, OK
+ok   llm-dlc/tools/test_decisions.py: Ran 15 tests in 0.235s, OK
+ok   llm-dlc/tools/test_loop_stats.py: Ran 22 tests in 0.047s, OK
+ok   llm-dlc/tools/test_inbox.py: Ran 8 tests in 0.793s, OK
+ok   llm-dlc/tools/test_runs.py: Ran 13 tests in 0.246s, OK
+ok   llm-dlc/tools/test_streams_status.py: Ran 9 tests in 0.377s, OK
+ok   examples/tools/targets/test_interfaces.py: Ran 4 tests in 0.000s, OK
+     Running lib/tests/reuse_summaries.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/reuse_summaries-2c2391961245e143)
+
+running 14 tests
+test a_helper_whose_versions_read_fields_of_different_layouts_has_no_summary ... ok
+test a_helpers_summary_rests_on_its_own_proof_and_a_helper_reading_an_extra_field_has_none ... ok
+test a_caller_of_a_helper_reading_an_extra_field_keeps_its_body_and_is_refuted ... FAILED
+test a_changed_callers_proof_reuses_the_helpers_summary_at_each_call ... FAILED
+test a_callers_classes_with_the_summary_applied_agree_with_the_versions_as_written_on_the_jvm ... ok
+test a_caller_that_reads_the_receiver_before_its_mutation_or_through_an_alias_is_refuted ... ok
+test a_summary_over_constructor_made_receivers_is_not_offered_where_a_later_call_breaks_its_precondition ... ok
+test a_lifted_helper_agrees_with_the_helper_on_the_jvm ... ok
+test a_helpers_summary_over_an_array_field_is_reused_at_each_call_and_its_bound_is_a_fact ... FAILED
+test an_array_helper_lifted_agrees_with_the_helper_on_the_jvm_out_of_bounds_included ... ok
+test the_quote_helpers_footprint_is_its_fee_policy_and_the_defects_extra_read_is_found ... ok
+test each_kind_of_helper_outside_the_category_is_refused_by_name ... ok
+test an_array_summary_is_not_applied_past_its_bound_and_an_extra_read_has_none ... ok
+test an_array_summarys_adapters_agree_with_the_versions_as_written_on_the_jvm ... ok
+
+failures:
+
+---- a_caller_of_a_helper_reading_an_extra_field_keeps_its_body_and_is_refuted stdout ----
+
+thread 'a_caller_of_a_helper_reading_an_extra_field_keeps_its_body_and_is_refuted' (14378) panicked at tests/reuse_summaries.rs:418:39:
+called `Result::unwrap()` on an `Err` value: Error("/home/filip/.cache/in-the-loop/default-tests-target/tmp/reuse-summaries/tariff-before/classes is neither a directory nor a jar")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- a_changed_callers_proof_reuses_the_helpers_summary_at_each_call stdout ----
+
+thread 'a_changed_callers_proof_reuses_the_helpers_summary_at_each_call' (14381) panicked at tests/reuse_summaries.rs:418:39:
+called `Result::unwrap()` on an `Err` value: Error("/home/filip/.cache/in-the-loop/default-tests-target/tmp/reuse-summaries/tariff-before/classes is neither a directory nor a jar")
+
+---- a_helpers_summary_over_an_array_field_is_reused_at_each_call_and_its_bound_is_a_fact stdout ----
+
+thread 'a_helpers_summary_over_an_array_field_is_reused_at_each_call_and_its_bound_is_a_fact' (14383) panicked at tests/reuse_summaries.rs:797:39:
+called `Result::unwrap()` on an `Err` value: Error("/home/filip/.cache/in-the-loop/default-tests-target/tmp/reuse-summaries/rates-after/classes is neither a directory nor a jar")
+
+
+failures:
+    a_caller_of_a_helper_reading_an_extra_field_keeps_its_body_and_is_refuted
+    a_changed_callers_proof_reuses_the_helpers_summary_at_each_call
+    a_helpers_summary_over_an_array_field_is_reused_at_each_call_and_its_bound_is_a_fact
+
+test result: FAILED. 11 passed; 3 failed; 0 ignored; 0 measured; 0 filtered out; finished in 14.27s
+
+
+error: test failed, to rerun pass `--test reuse_summaries`
+ok   examples/tools/targets/test_sidecar.py: Ran 19 tests in 0.239s, OK
+ok   examples/tools/targets/test_without_jbmc.py: Ran 3 tests in 0.174s, OK
+ok   llm-dlc/tools/test_contribute.py: Ran 10 tests in 0.037s, OK
+ok   llm-dlc/tools/test_mode.py: Ran 14 tests in 0.010s, OK
+ok   llm-dlc/tools/test_tool_time.py: Ran 10 tests in 0.014s, OK
+ok   examples/tools/test_alignment.py: Ran 23 tests in 0.032s, OK
+ok   examples/tools/test_gap_table.py: Ran 3 tests in 0.003s, OK
+ok   lib/solvers/test_compare.py: Ran 5 tests in 0.002s, OK
+ok   examples/tools/test_scaffold_example.py: Ran 4 tests in 0.148s, OK
+ok   llm-dlc/tools/test_doctor.py: Ran 11 tests in 0.001s, OK
+ok   lib/tools/test_cost_inventory.py: Ran 19 tests in 0.034s, OK
+ok   llm-dlc/tools/test_metrics.py: Ran 21 tests in 0.033s, OK
+     Running lib/tests/foundations.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/foundations-57f6c489891fe1b4)
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.65s [11s with the others]
+     Running lib/tests/pairing.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/pairing-a2fcb8a3f022f22e)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.91s [6s with the others]
+     Running lib/tests/compare.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/compare-7e18c7508f0c0939)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.39s [10s with the others]
+     Running lib/tests/reuse.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/reuse-0171c8f2f2d29533)
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.89s [6s with the others]
+     Running lib/tests/interface_regression.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/interface_regression-15d4b27d923c5391)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.64s [5s with the others]
+     Running lib/tests/value_parameters.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/value_parameters-7e3850eec4ce6ce9)
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.84s [8s with the others]
+     Running lib/tests/compare_domains.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/compare_domains-4c6ca1434b36c9d5)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.13s [6s with the others]
+     Running lib/tests/dependencies.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/dependencies-f2004e4471cb20eb)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.22s [5s with the others]
+     Running lib/tests/object_strings.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/object_strings-4eea30042a6db2a2)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.69s [3s with the others]
+     Running lib/tests/loops.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/loops-6bd90011ce0c44d1)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.65s [3s with the others]
+     Running lib/tests/tiers.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/tiers-535d46654d6f786f)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s [0s with the others]
+     Running lib/tests/preparation.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/preparation-c98e4dbc2c427cc4)
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s [0s with the others]
+     Running lib/src/main.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/jvmcontract-e33480fc19840074)
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s [0s with the others]
+     Running lib/tests/string_literals.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/string_literals-7348db4870f0de23)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.45s [3s with the others]
+     Running lib/tests/interface_parameters.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/interface_parameters-3a63b5630933a0f5)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.62s [1s with the others]
+     Running the doctests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s [1s with the others]
+cargo test: 33 test binaries, 3 at a time, in 321s; 8 failed
+FLAKY cargo test: a_caller_of_a_helper_reading_an_extra_field_keeps_its_body_and_is_refuted, a_changed_callers_proof_reuses_the_helpers_summary_at_each_call, a_helpers_summary_over_an_array_field_is_reused_at_each_call_and_its_bound_is_a_fact, a_lemma_is_proved_first_and_its_summary_stands_in_for_the_calls_of_its_method, a_literal_followed_by_any_that_is_an_input_matches_as_the_definition_written_out, a_method_that_calls_itself_is_proved_by_induction_on_a_measure_that_decreases, a_model_the_check_does_not_encode_is_refused_by_name, a_payload_literal_with_an_isolated_surrogate_is_snapshotted_unit_for_unit, a_per_call_choice_proves_a_rewrite_and_refutes_a_wrong_key, an_approved_relation_s_evidence_comes_from_a_proof_under_the_current_claim_key_and_goes_stale, e2_a_nullable_returned_dto, generalized_quantifiers_fold_and_counterexamples_shrink, lower_casing_under_a_locale_that_is_an_input_is_the_definition_written_out, old_reads_an_array_as_the_call_received_it, only_a_helper_over_integers_that_raises_no_exception_of_its_own_is_offered_for_proof, proofs_over_modelled_jdk_classes_are_decided_by_the_models, text_as_bytes_and_digits_and_a_hashs_shape_are_the_definitions_written_out, the_command_checks_under_a_declared_environment, the_same_sources_compiled_twice_give_the_same_closure, the_string_and_builder_methods_are_the_definitions_written_out_over_char_at (failed, then passed on a second run)
+default tier: 49 of 49 passed; flaky: cargo test
+default tests: unread 581 paths (verification/default-tests-unread.txt)
+default tests: passed: default tier: 49 of 49 passed; flaky: cargo test
