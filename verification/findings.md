@@ -157,7 +157,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ### VF-030: the proof-tier job after example 286's engine changes stopped at `heap.rs`, so the tests after it and every Python proof test never ran
 
-- **Status**: open
+- **Status**: closed by job `20261117-152112-the-rust-proof-tier-after-the-domain-adv` (at `9ec6e448674f`, passed 2026-11-17 on `vm-1`, 42m14s, peak 4.2 GiB): every ignored Rust test passed, none hidden by a failure; the Python half has no tests (Update 2026-11-17)
 - **Raised**: 2026-11-16 on `vm-1`, job `20261115-234440-the-proof-tier-after-example-286-s-engin` at `8594e6b7adb1`
   (`lib/tools/test_costs.py run --tier proof`, 1h34m, peak 3.3 GiB).
 - **Found**: `cargo test` stops at the first failing test binary. `heap.rs` failed (VF-018's three JBMC
@@ -190,6 +190,13 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   Job `20261117-152112-the-rust-proof-tier-after-the-domain-adv` runs the whole tier with `--no-fail-fast`. It includes
   VF-018's three, since VF-018 is closed and they run the own checker under `auto --confirm`, and the seven tests
   `wvvtwkos` moved. **Closes when** that job passes. A failure there is a new finding about these changes, not this entry.
+- **Closed** 2026-11-17 on `vm-1`: job `20261117-152112-the-rust-proof-tier-after-the-domain-adv` (at `9ec6e448674f`,
+  the evidence line after the foundation's checker changes and its own pair and observation checks) passed in 42m14s, peak
+  4.2 GiB (estimated 55 min, 8 GiB). `cargo test --release --no-fail-fast -- --ignored` ran 19 tests and all passed: the
+  19 Rust rows `lib/tests/costs.json` marks ignored, none left out, VF-018's three heap tests and the seven `wvvtwkos`
+  moved among them (`conformance` 2 in 1228 s, `heap` 9 in 370 s, `application_core` 2, `application_core_joint` 1, the
+  TLC, compare and own-checker tests). So no proof-tier check got slower than its limit or changed its verdict with these
+  changes, and with the Python half empty nothing is left.
 
 ### VF-023: under `--engine auto --confirm`, the own checker proves `listSizes` and `listChange` and JBMC refutes them with a witness the interpreter says holds
 

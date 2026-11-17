@@ -337,7 +337,29 @@ Don't change `verification/pipeline.py`.
   Nothing else needs only me.
   Then blocked: the 289/290 preservation rerun needs `zmvkptqz` merged onto this line, and 290's restated claim
   needs the user's freeze.
-- Status: waiting on jobs 20261117-152112-the-rust-proof-tier-after-the-domain-adv
+- 2026-11-17, cycle 13. **Step 6 done: VF-030 is closed.** Job `20261117-152112-the-rust-proof-tier-after-the-domain-adv`
+  passed in 42m14s at 4.2 GiB, against an estimate of 55 min and 8 GiB. It ran 19 tests, every Rust row `costs.json` marks
+  ignored, and all of them passed. Among them were VF-018's three heap tests, the seven `wvvtwkos` moved, and `conformance`'s
+  two (1228 s). The job ran at `9ec6e448674f`, after the foundation's checker changes and this line's pair and observation
+  checks. Its result folder came from the collector's commit (`xnlsuqmu`) unchanged. VF-030 says closed, with what ran;
+  the Python half had no tests (cycle 11). The Done-when's last row is met.
+- Repeated work measured (step 7): none. The job used 0.77 of its duration estimate and 0.52 of its memory estimate.
+- Inbox:
+  - `domain-advances-evidence-I008` (the binding of `lzpqszyo` leaves out supertypes, `Properties.get`, the time zone and
+    the environment). Taken as the next cycle's work, since it is step 5's binding and mine. The work: make
+    `an_observation_is_bound_to_its_writes_outside_the_class_and_to_every_setting_it_read` (section `ob` of
+    `lib/tests/fixtures/rule-countermodels/README.md`, at `lqvlvwsm`) pass, after bringing that commit's fixtures onto
+    this line. None of 290's accepted answers rests on these holes, by the item's audit.
+  - `domain-advances-evidence-I009` (keep the state stream's `Dump.nameOf`, which names a lambda's hidden class without
+    the address the JVM appends). Taken with I008, since both change `ObservedInitializer.java`: I008's change is built
+    on `llyzwmyp`'s `nameOf`, with its test lines in `tests/claims.rs`, so the two lines meet without a conflict in
+    `Dump`.
+- Next:
+  - I008 with I009.
+  - The 289/290 preservation rerun once this line and `zmvkptqz` meet. The job `20261117-151521-…-289-and-290-preservation-once-m`
+    has run, and the watcher collected it on the default line (`vzovllpr`). `zmvkptqz` is still on neither line.
+  - 290's restated claim waits on the user's freeze.
+- Status: working
 
 ## Loop settings
 
