@@ -91,6 +91,15 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   - An audit of the observed initializers: the state each verdict reads, and that the default locale, resources, class
     path order and JVM properties cannot change it; a regression test of an initializer that writes another class's
     static; or refuse what the import cannot carry.
+- **Audit, done** (2026-11-17, the evidence stream of domain-advances, step 5): recorded in 290's notes. No `<clinit>` of
+  the five observed classes writes another class's static, and what they read of the locale goes into fields the
+  observation does not hold (the challenge stream's reading, `lib/tests/fixtures/observed-countermodels/README.md`).
+  The checker now binds an observation to what it was observed on and ends the run where it is not
+  (`lib/src/observed.rs`, `On`): the class file, the class path order, each class the initialization also initialized
+  (left as it is alone, else refused: the countermodel `A.<clinit> { B.x = 1; k = 7; }`), a default locale the check's
+  lowering agrees with, and the properties read, stated with their values; `lib/tests/observed_countermodels.rs`
+  holds it. A capped probe verified 290's fixed-security and preservation again under it.
+- **Left**: the restated preservation claim (B), prepared by the evidence stream and frozen by the user.
 - **Tracked in**: `examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/example.json`
   (notes); decision `prove-change-D005` (`llm-dlc/decisions/prove-change.md`).
 - **Closes when**: a restated preservation claim is decided at the frozen bound, and the initializer audit is recorded

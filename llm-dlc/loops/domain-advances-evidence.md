@@ -227,6 +227,30 @@ Don't change `verification/pipeline.py`.
 - Inbox: no open items.
 - Next: merge `mqkqvvmw` onto this line, then step 5 (the binding, I004's test, the countermodel); 287's records when
   its job is back; the 289/290 preservation rerun once this line and `zmvkptqz` meet.
+- 2026-11-17, cycle 8. **`mqkqvvmw` merged** (`tswurxzv`, with `yypzyxmw` under it). **Step 5, the binding, done.**
+  The observer (`lib/src/observed/ObservedInitializer.java`) now says what it observed on, as I006 agreed: `Slot` and
+  `Object` unchanged, `Observed` gains `on` (`On`): the class file's sha256 and location, the class path in order, the
+  JDK's vendor and home, the default locale (default, formatting, display), the system properties the class path's
+  code read with their values (the JDK's reads of its own configuration, as it opens a JAR, are not the
+  initializer's: the first probe listed a dozen, `java.home`'s path among them), and each class of the class path
+  the initialization also initialized (from `-Xlog:class+init`), with its sha256 and static state. `observe` ends the
+  run where it is not bound: a line with no `on`; another class path; a class file the tool reads otherwise or not at
+  all; a class also initialized whose class file differs or whose state differs from its state initialized alone in
+  a JVM of its own (the countermodel `A.<clinit> { B.x = 1; k = 7; }`: refused, "its field x was 1 after it and is 0
+  alone"); a default locale of `tr`, `az` or `lt`, which the check takes the JVM's not to be. The locale and the
+  properties are stated in what the result rests on. I004's test, `an_observed_initializer_is_bound_to_what_it_was_observed_on`,
+  is in `lib/tests/observed_countermodels.rs` and passes (crossed and lowered refused, configured stated as
+  `oc.value = "xyz"`), with four unit tests in `observed.rs`. 290 still binds: capped probes of fixed-security and
+  preservation with the new checker verified both again with the same path counts (659, 573); ClassUtils's and
+  UrlPathHelper's initializations initialize nine classes of the class path between them, each the same alone.
+  290's notes record the audit and the binding; VF-033 has its audit half done and says the restated claim is left.
+  Not covered, and stated: a field the observation holds nothing of in a class also initialized, and a write of the
+  value a field already had.
+- Repeated work measured (step 7): none.
+- Inbox: no open items.
+- Next: 287's records and `accept.py 287` (its job `20261117-133148-…-287-…` is back, collected on the default line
+  while this cycle ran); step 5's last piece, 290's restated preservation claim (option B), prepared with its freeze
+  recorded as the user's; then step 6 (VF-030); the 289/290 preservation rerun once this line and `zmvkptqz` meet.
 - Status: working
 
 ## Loop settings

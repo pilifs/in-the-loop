@@ -12,34 +12,36 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:50.868Z",
-  "ended": "2026-11-17T14:26:31.861Z",
-  "duration_seconds": 5381,
+  "ended": "2026-11-17T14:48:39.512Z",
+  "duration_seconds": 6709,
   "stats": {
-    "turns": 40,
-    "api_calls": 309,
-    "tool_calls": 304,
+    "turns": 41,
+    "api_calls": 367,
+    "tool_calls": 362,
     "tool_errors": 6,
     "compactions": 7,
-    "peak_context_tokens": 161880,
+    "peak_context_tokens": 182184,
     "usage": {
-      "input_tokens": 628,
-      "output_tokens": 170072,
-      "cache_read_input_tokens": 26013301,
-      "cache_creation_input_tokens": 771482
+      "input_tokens": 750,
+      "output_tokens": 224281,
+      "cache_read_input_tokens": 34626857,
+      "cache_creation_input_tokens": 871088
     }
   },
   "tools": {
-    "Bash": 290,
+    "Bash": 342,
     "Edit": 6,
     "Read": 4,
-    "Write": 2,
-    "Monitor": 1,
-    "ToolSearch": 1
+    "Monitor": 3,
+    "ToolSearch": 3,
+    "Write": 3,
+    "TaskStop": 1
   },
   "files_touched": [
     "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/target.json",
     "examples/tools/beside_route.py",
     "examples/tools/test_beside_route.py",
+    "lib/src/observed/ObservedInitializer.java",
     "llm-dlc/loops/domain-advances-evidence.md"
   ],
   "context_windows": [
@@ -144,24 +146,24 @@
     {
       "index": 7,
       "started": "2026-11-17T14:20:23.148Z",
-      "ended": "2026-11-17T14:26:31.861Z",
-      "turns": 4,
-      "api_calls": 17,
+      "ended": "2026-11-17T14:48:39.512Z",
+      "turns": 5,
+      "api_calls": 75,
       "usage": {
-        "input_tokens": 34,
-        "output_tokens": 6244,
-        "cache_read_input_tokens": 1030191,
-        "cache_creation_input_tokens": 69305
+        "input_tokens": 156,
+        "output_tokens": 60453,
+        "cache_read_input_tokens": 9643747,
+        "cache_creation_input_tokens": 168911
       },
-      "peak_context_tokens": 82578
+      "peak_context_tokens": 182184
     }
   ],
   "log": {
-    "sha256": "4a1a4eb9d1ff372f58176e88f4316e96774b43cfe8b8e05ad268678065e72744",
-    "bytes": 9262484,
-    "lines": 2897,
-    "gzip_bytes": 1673087,
-    "path": "llm-dlc/traces/7ece8184-b148-4351-92d8-d634606b823e/logs/4a1a4eb9d1ff372f58176e88f4316e96774b43cfe8b8e05ad268678065e72744.jsonl.gz"
+    "sha256": "21f60ac8926c25299bf414b0e605d151bd65d31d0e8df75374e857c17b72c412",
+    "bytes": 10363499,
+    "lines": 3298,
+    "gzip_bytes": 1838604,
+    "path": "llm-dlc/traces/7ece8184-b148-4351-92d8-d634606b823e/logs/21f60ac8926c25299bf414b0e605d151bd65d31d0e8df75374e857c17b72c412.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -260,6 +262,14 @@
       "summary": "Merge the challenge stream's countermodels of observed initializers onto the evidence line",
       "body": "Brings in mqkqvvmw (and yypzyxmw under it): the observed-initializer and pair-of-versions countermodel fixtures and tests, and ClassPath::refused, which step 5 of the evidence brief builds on. The notes of examples 289 and 290 keep both lines' additions; costs.json, examples/index.json and the trace files were regenerated rather than merged by hand. validate_example.py 289 and 290 pass; test_costs.py run --changed passed (test_brief_run.py flaky, I001).",
       "log_sha256": "4a1a4eb9d1ff372f58176e88f4316e96774b43cfe8b8e05ad268678065e72744"
+    },
+    {
+      "change_id": "lzpqszyooynruulpykrwltmytxqmskmp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "An observed class initializer is bound to what it was observed on, and the run ends where it is not",
+      "body": "Step 5 of the evidence brief (VF-033's audit half, inbox I004). The observer now reports what it observed on: the class file's sha256 and location, the class path in order, the JDK's vendor and home, the default locale, the system properties the class path's code read with their values, and each class of the class path the initialization also initialized (from -Xlog:class+init), with its sha256 and static state. lib/src/observed.rs ends the run when an observation has no such record, ran on another class path, initialized a class file other than the one the tool reads, left a class it also initialized in a state other than that class's state when initialized alone (the outside review's countermodel A.<clinit> { B.x = 1; k = 7; } is refused, naming the field), or was taken under a Turkish, Azeri or Lithuanian default locale, which the check assumes the JVM does not have. The locale and the properties read are stated in what the result rests on. Slot and Object are unchanged, as agreed with the state stream (I006).",
+      "log_sha256": "21f60ac8926c25299bf414b0e605d151bd65d31d0e8df75374e857c17b72c412"
     }
   ],
   "logs": {
@@ -267,6 +277,12 @@
       "bytes": 6507488,
       "lines": 2198,
       "gzip_bytes": 1125013,
+      "url": null
+    },
+    "21f60ac8926c25299bf414b0e605d151bd65d31d0e8df75374e857c17b72c412": {
+      "bytes": 10363499,
+      "lines": 3298,
+      "gzip_bytes": 1838604,
       "url": null
     },
     "3e094d753f1148b94c24cb84bb696b57b32dd898b37d93409c7354a7fc3bcdd7": {

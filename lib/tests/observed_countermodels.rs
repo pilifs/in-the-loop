@@ -4,8 +4,9 @@
 //! multi-release JAR from `base/` and `versioned/` (the class file for Java 17 on), and `shadow/`, a class path copy
 //! of the JDK's `org.xml.sax.helpers.AttributesImpl`. `oc.M.main` runs one entry point on a JVM, and the first test
 //! holds the fixtures to what a JVM says. The checker's side of the observed initializers, the proofs it should not
-//! make, is in the fixtures' README for the stream that binds an observation (domain-advances-evidence, 2026-11-17);
-//! the two class files are refused here (`ClassPath::refused`), and the last test holds that.
+//! make, is in the fixtures' README; the evidence stream bound an observation to what it was observed on
+//! (`jvmcontract::observed::On`), and the last test holds that it is. The two class files are refused here
+//! (`ClassPath::refused`), and the two tests before it hold that.
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -163,4 +164,47 @@ fn a_class_path_copy_of_a_class_of_the_jdks_modules_is_refused_not_read() {
         assert_eq!(o.verdict, Verdict::Unverifiable, "{name}: {}", o.output);
         assert!(o.output.contains("org.xml.sax.helpers.AttributesImpl.<init>()"), "{name}: the JDK's constructor is the gap: {}", o.output);
     }
+}
+
+/// An observation is bound to what it was observed on: an initializer that writes another class's static is
+/// refused or its write carried, and one observed in a Turkish JVM, or with a property set, is refused or the result
+/// says so. On a JVM in English with no `oc.value`, crossed() is 1, lowered() 105 and configured() 6. The binding
+/// refuses the first two (`oc.A` left `oc.B.x` 1 where `oc.B` alone has 0; the default locale `tr-TR` is one the
+/// check takes the JVM's not to be) and states the property the third read, with its value.
+#[test]
+fn an_observed_initializer_is_bound_to_what_it_was_observed_on() {
+    jvmcontract::tool_tier!();
+    let Some(c) = classes() else { return };
+    let mut crossed = proving("oc.M#crossed", "result == 0", "crossed");
+    crossed.observed_initializers = vec!["oc.A".into()];
+    let crossed_run = property::run(&crossed);
+    let crossed_proved = matches!(crossed_run, Ok(ref o) if o.verdict == Verdict::Verified);
+    // The observer's JVM takes its settings from the environment; JAVA_TOOL_OPTIONS stands for a machine whose
+    // default locale is Turkish, or a launcher that sets a property.
+    let cli = |settings: &str, target: &str, assert: &str, class: &str, name: &str| {
+        let out = Command::new(env!("CARGO_BIN_EXE_jvmcontract"))
+            .env("JAVA_TOOL_OPTIONS", settings)
+            .args(["prove", target, "--assert", assert, "--observed-initializer", class, "--engine", "native", "--jbmc", NO_JBMC, "--details", "--classes"])
+            .arg(&c.app)
+            .arg("--classpath")
+            .arg(&c.jar)
+            .arg("--work")
+            .arg(work(name))
+            .output()
+            .unwrap();
+        String::from_utf8_lossy(&out.stdout).to_string() + &String::from_utf8_lossy(&out.stderr)
+    };
+    let lowered = cli("-Duser.language=tr -Duser.country=TR", "oc.M#lowered", "result == 305", "oc.Lowered", "lowered");
+    let configured = cli("-Doc.value=xyz", "oc.M#configured", "result == 3", "oc.Configured", "configured");
+    let lowered_unbound = lowered.starts_with("✓") && !lowered.contains("default locale");
+    let configured_unbound = configured.starts_with("✓") && !configured.contains("oc.value");
+    assert!(!crossed_proved && !lowered_unbound && !configured_unbound, "crossed proved: {crossed_proved}\nlowered: {lowered}\nconfigured: {configured}");
+    // And how: each refusal names what the observation was not bound to, and the property is stated with its value.
+    let crossed_said = match crossed_run {
+        Ok(o) => o.output,
+        Err(e) => e.to_string(),
+    };
+    assert!(crossed_said.contains("initialized oc.B and left it other than it is initialized alone (its field x was 1 after it and is 0 alone)"), "{crossed_said}");
+    assert!(lowered.contains("default locale is tr-TR"), "{lowered}");
+    assert!(configured.contains("oc.value = \"xyz\""), "{configured}");
 }
