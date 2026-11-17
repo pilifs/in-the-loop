@@ -144,6 +144,13 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   - `domain-advances-challenge-I001`: `test_brief_run.py` inherits the watcher. Noted, and neither changed nor blocked on: this cycle's runs unset `RUN_STREAMS_WATCHER`.
   - Last cycle's pairing failure item went to preservation as `domain-advances-preservation-I003`.
 - Tests: `test_costs.py run --changed`, which is the whole Rust default tier since `lib/src` changed, passed on the final code. Its only failure was the JBMC timing test `jbmc::tests::a_run_that_dies_gives_no_verdict_whatever_it_printed`, which is flaky: it failed once and passed on retry, and it is unrelated. An earlier run had the same with `..._never_meets_the_second_attempt`.
+- The item 2 failure went to evidence as `domain-advances-evidence-I004`, citing `mqkqvvmw`.
+- **To the watcher**: `sync.py check` on this line reports `ERROR change yypzyxmwluyt: session f28025bc-… has no manifest`.
+  - How it happened: the preservation stream merged `yypzyxmw` (my item 1) into its line (`kwyxmlns`). Its `sync.py` then stamped its own session's `LLM-Trace` lines on that commit (operation `3cfb3c0eb24b`, from `domain-advances-preservation@`).
+  - The cause: `link_commits` in `llm-dlc/tools/sync.py` counts as a session's every mutable ancestor of its `@` authored while the session ran, and a commit merged in from another stream qualifies.
+  - The manifest for `f28025bc` exists only on the preservation line, so the error should clear once the lines meet.
+  - I have not touched the trace lines or `sync.py`.
+  - Any stream that merges another's commits while that stream is still mutable can do the same.
 - Next: item 3, what the foundation's fixes leave (`Engine::reads` and `Engine::keeps`), starting with the final static that an initializer cycle leaves unset at a lemma's call.
 - Status: working
 
