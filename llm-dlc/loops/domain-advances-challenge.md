@@ -624,6 +624,77 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
     stand-ins and `twtuqvvr`, and evidence's `wxpoysws`;
   - item 5: `nzsypymy` (290's preservation restated, also item 6);
   - item 6's entries for 288's `fixed-security` and 289's other answers.
+- The reach failure went to preservation as `domain-advances-preservation-I019`, citing `tqmpowvx`.
+- 2026-11-17, item 5, state's stand-ins (`qlylowvo`, `prove --stand-in`) through `zlvqxmst`: **a false proof that
+  does not state the stand-in it rests on**, to be handed over.
+  - The hole: a lemma's proof is a check of its own, given the check's stand-ins. The check that uses the lemma states
+    the lemma as `proved` and states only what its own run's engine noted, so a stand-in the lemma's proof called is
+    named nowhere in its result.
+  - The fixture is `lib/tests/fixtures/stand-in-countermodels`. Its README has the table, the commands, the options,
+    what was tried, the audit and the checker-side test. `lib/tests/stand_in_countermodels.rs` holds it to a JVM.
+  - A stand-in whose sampler is honest but narrow (four names, never "Age"). At `zlvqxmst`, built apart:
+    - `sn.Use#ageAfter` is Verified `result == 0` and states the stand-in, "4 samples ... not proved";
+    - `sn.Use#viaLemma`, through that lemma, is **Verified** with only the lemma stated, as `proved`.
+    - A JVM gives 32 for both on "Age".
+  - The same loss holds for a model on request (`kztoupry`): probed with `ArrayDeque`, not kept, since the model is right.
+    The default locale is refused inside a lemma's proof, so it cannot be lost this way.
+  - The README's checker-side test fails at `zlvqxmst`, as it should. The stand-ins and the lemma loop of
+    `property.rs` are state's this run, so nothing in `lib/src` changes here. The test goes as a `failure` item to
+    `domain-advances-state`, citing this commit; the id goes in the next entry.
+  - **Tried and guarded**:
+    - the exact-receiver check;
+    - a pair's previous version, whose classes are copies under other names;
+    - the stand-in's hand-back.
+    A sampler that compares little, and the state a stand-in is called in, are limits of sampling that the
+    result states. 286's sampler varies only two of the wrapper's flags, so a custom editor or a conversion service is
+    unsampled; its adapter registers neither.
+  - *Audit*: only 286 passes `--stand-in`, beside `--lemmas` (`simpleMatch`) and `--model java.util.ArrayList`.
+    `simpleMatch`'s proof calls only `String` methods, so its statements lose nothing. Nothing for the watcher.
+- 2026-11-17, item 5, preservation's `lqkwokqq` (its fix for I006 and I009): **holds for both, and two false proofs
+  past the logging fix**, to be handed over.
+  - At `kskmpmny`, which contains it, built apart, `rule_countermodels.rs` and `thrown_pair_countermodels.rs` pass,
+    their checker-side tests included. So I006's `seen` and `escaped` are no longer proved, and I009's `marked` is
+    refuted. `messaged` and `coded` are proved under the stated note that messages and an exception's fields are not
+    compared, which the preservation brief accepts.
+  - The new hole: the scan refuses `athrow` on the reasoning that nothing else but an `Error` the engine does not model
+    leaves a getter. A JVM raises an `Error` with no `athrow`, and `StreamHandler.publish`'s `catch (Exception)` lets it
+    out of `log`.
+  - The fixture is `lib/tests/fixtures/log-countermodels`. Its README has the table, the commands, the options, what
+    was tried, the audit and the checker-side test. `lib/tests/log_countermodels.rs` holds it to a JVM.
+  - Each is **Verified** `result == 1` ("log returned") at `kskmpmny`, built apart, where a JVM gives 0:
+    - `huge`: `getMessage()` makes `new long[Integer.MAX_VALUE]`, an `OutOfMemoryError`;
+    - `deep`: `getMessage()` calls a private method that calls itself, a `StackOverflowError`.
+  - **Tried and guarded**: a getter that writes `LogRecord`'s own fields through its setters, which the havoc leaves
+    out. Any read of `LogRecord`'s state after construction is a gap under strict, `super.getMessage()` included.
+  - Logging is preservation's this run, so nothing in `lib/src` changes here. The test goes as a `failure` item to
+    `domain-advances-preservation`, citing this commit; the id goes in the next entry.
+  - *Audit*: 287's preservation, open, logs through spring-jcl 6.1.18's `LocationResolvingLogRecord` (read with
+    `javap`), whose getters neither recurse nor allocate by input. Nothing for the watcher.
+- State's `twtuqvvr` (its fix for I010) and `kktznxnk` (its fix for I013): **both hold**. At `zlvqxmst`, built apart,
+  `contract_countermodels.rs` passes, and so does `effect_countermodels.rs`, which carries I013's checker-side test
+  (`an_effect_contracts_writes_meet_the_induction_and_the_write_set`).
+- Evidence's `wxpoysws` (its fix for I010, the step check): **holds** for the controls of I010, which are its own
+  `StepsPastTheFix` tests. One residue, guarded elsewhere: "no later step writes the same outcome folder" compares
+  `--work` words after `normpath`. So a later step whose `--work` is the absolute path of the job's work folder
+  (`<state>/work/<job id>/...`, known when the job is written) escapes the check. With the flags a step may give, what
+  it can write there is a run at another bound, or of another example's task of the same name. The domain check
+  refuses the first for every claim of 286 to 290 and 307, since each states `maxArrayLength`, and the entry check
+  refuses the second. A claim with no bound would be open to it: `domain` says OK when the claim states none and the
+  chosen step overrides none, without reading the outcome's bound. Written in `accept-countermodels/README.md`, "Past
+  the step check's fix". It goes to `domain-advances-evidence` as a `failure` item, citing this commit; the id goes in
+  the next entry.
+- Tests: `test_costs.py run --changed` under `MemoryMax=8G` with `--rust-jobs 1` passed but for `tiers.rs`. That one
+  failed only because `log_countermodels.rs` was added during the run; after `estimate` and `tag`, `tiers.rs`, both
+  new test files and `lint` pass.
+- Inbox: no open items. I004 is still waiting on preservation's call-level rule, which is not committed:
+  `domain-advances-preservation@` is a working copy of 20:45, and its last commit is still `kskmpmny`.
+- Not yet challenged:
+  - preservation: its call-level rule once committed (I003, I004);
+  - state: `krxzxzow`/`lwxvoqsy` (the `PropertyChangeEvent` model, `ClassUtils`, the `ArrayList.remove(Object)` model,
+    the 286 stand-in's second sampler), and `zlvqxmst`;
+  - evidence: `nzsypymy`.
+- Next: preservation's call-level rule as soon as it is committed; until then state's `lwxvoqsy` models and item 6's
+  entries for 288's `fixed-security` and 289's other answers.
 - Status: working
 
 ## Loop settings

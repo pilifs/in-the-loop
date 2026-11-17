@@ -319,3 +319,21 @@ Every step of the jobs behind the 13 accepted answers is a plain driver run:
 - each job's other steps are driver runs of its other tasks.
 
 No accepted answer rests on these holes, so there is nothing for the watcher.
+
+## Past the step check's fix (`wxpoysws`)
+
+The four controls above are the evidence stream's own `StepsPastTheFix` tests at `wxpoysws`, and they pass there. One
+residue, guarded today by other checks:
+
+- *An absolute `--work`*. "No later step writes the same outcome folder" compares each step's `--work` word after
+  `posixpath.normpath`. The pipeline runs every step in `<state>/work/<job id>`, which is known when the job file is
+  written. So a later plain driver run with `--work <state>/work/<job id>/out` writes the chosen step's outcome folder
+  `out/TASK`, and the check does not see it.
+- What such a step can write there, with the flags a step may give:
+  - a run of the same task at another bound;
+  - a run of another example's task of the same name (`fixed-security` is a task of 287 to 290).
+- The domain check refuses the first, since an established outcome below the claim's `maxArrayLength` fails, and
+  every claim of 286 to 290 and 307 states one. The entry check refuses the second.
+- Not guarded, for a claim with no bound: `domain` says OK when "the claim states no bound on lengths, and the step
+  overrides none", from the chosen step's flags, without reading the outcome's own bound.
+- The fix: compare the folders resolved against the work root, or refuse an absolute `--work`.
