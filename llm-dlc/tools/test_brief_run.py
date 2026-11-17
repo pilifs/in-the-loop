@@ -148,7 +148,9 @@ class Fixture(unittest.TestCase):
                "VERIFY_MACHINE_CONFIG": ""}
         self.env = mock.patch.dict(os.environ, env)
         self.env.start()
-        for key in ("TMUX", "TMUX_PANE"):
+        # Run inside a stream's loop, the tests would otherwise inherit its run: a made-up run-streams.sh "without a
+        # watcher" would ask the real one (RUN_STREAMS_WATCHER) about its made-up streams.
+        for key in [k for k in os.environ if k.startswith(("RUN_STREAMS_", "FEATURE_LOOP_"))] + ["LOOP_CONDUCTOR", "TMUX", "TMUX_PANE"]:
             os.environ.pop(key, None)
         files = {".gitignore": "llm-dlc/loop-summaries/\nverification/pipeline.local.toml\n", "llm-dlc/tools/sync.py": FAKE_SYNC, "verification/pipeline.py": FAKE_PIPELINE, "sessions/base": "",
                  "llm-dlc/index.json": "base\n", "lib.txt": "one\n",

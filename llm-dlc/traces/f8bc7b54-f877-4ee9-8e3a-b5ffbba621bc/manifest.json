@@ -1,0 +1,85 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc",
+  "status": "open",
+  "title": null,
+  "first_prompt": "Work on the brief in `llm-dlc/loops/domain-advances-challenge.md`. Read it in full now, even if you have read it before: it is the instruction for this cycle and every cycle of this loop, and what you",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.326"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-17T12:56:50.898Z",
+  "ended": "2026-11-17T13:14:34.506Z",
+  "duration_seconds": 1064,
+  "stats": {
+    "turns": 1,
+    "api_calls": 47,
+    "tool_calls": 48,
+    "tool_errors": 1,
+    "compactions": 0,
+    "peak_context_tokens": 128411,
+    "usage": {
+      "input_tokens": 94,
+      "output_tokens": 34460,
+      "cache_read_input_tokens": 4026126,
+      "cache_creation_input_tokens": 115098
+    }
+  },
+  "tools": {
+    "Bash": 45,
+    "Edit": 1,
+    "Read": 1,
+    "Write": 1
+  },
+  "files_touched": [
+    "lib/tests/pairing_countermodels.rs",
+    "llm-dlc/loops/domain-advances-challenge.md"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-17T12:56:50.898Z",
+      "ended": "2026-11-17T13:14:34.506Z",
+      "turns": 1,
+      "api_calls": 47,
+      "usage": {
+        "input_tokens": 94,
+        "output_tokens": 34460,
+        "cache_read_input_tokens": 4026126,
+        "cache_creation_input_tokens": 115098
+      },
+      "peak_context_tokens": 128411
+    }
+  ],
+  "log": {
+    "sha256": "595fb15ec3335a53e70af61949ac21367d41d014a4e527a122e12810b8f2d017",
+    "bytes": 1122589,
+    "lines": 392,
+    "gzip_bytes": 188917,
+    "path": "llm-dlc/traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/logs/595fb15ec3335a53e70af61949ac21367d41d014a4e527a122e12810b8f2d017.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "yypzyxmwluytmwrouqvxqkpppqzpqszn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of the pair of versions: five false proofs of agreement, reproduced and handed to the preservation stream",
+      "body": "The challenge stream's item 1. lib/tests/fixtures/pairing-countermodels holds two versions of five methods that differ when each runs alone on a JVM and that RegressionPair.agree (lib/src/pairing.rs) proves agreeing: the previous version sets the default locale the new one lowers under; a library static shared without --before-classpath; two unrelated RuntimeExceptions, and IllegalArgumentException against a subclass, compared by category; a scope that is false everywhere but sets the default locale before both calls. All five were Verified on the checker at lupovnmv. The order of the calls is observable: with the versions' roles swapped, and with --before-classpath, the shared-static case is a violation.",
+      "log_sha256": "595fb15ec3335a53e70af61949ac21367d41d014a4e527a122e12810b8f2d017"
+    }
+  ],
+  "logs": {
+    "595fb15ec3335a53e70af61949ac21367d41d014a4e527a122e12810b8f2d017": {
+      "bytes": 1122589,
+      "lines": 392,
+      "gzip_bytes": 188917,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}

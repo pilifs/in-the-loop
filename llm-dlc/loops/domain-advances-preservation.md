@@ -100,9 +100,16 @@ relational result needs a new check (the rule's applications recorded in the out
   `isLoggable`, a `LogRecord`, `Logger.log`), where the checker models java.util.logging only below INFO. The
   claim's domain includes those stored values, so the path is lifted, not excluded. Job
   `20261117-130445-example-287-preservation-through-the-ada` records the stop at bound 80; 287's notes say so.
-- Next: lift the warning path (java.util.logging at INFO and above under the default configuration, a write to
-  `System.err` that neither result nor exception observes, with countermodels: a level, a handler or a filter
-  that would make it observable is refused), probe again to reach the two sides' bcrypt, then step 2.
+- 2026-11-17, the inbox taken in (a merge, no step of the brief). I001: merged smxzwqlr; `test_brief_run.py`
+  passes in this workspace without the `env -u` workaround. I002: merged rkxyyqwnvlqz (a merge in place of a
+  rebase, so this stream's two commits keep their ids); 287's driver is now theirs on `beside_route.Run` with the
+  equivalence branch put back as the task's own arguments, and a trial probe at bound 8 stops where job
+  `20261117-130445-…` expects (its paths are the module's too). I003: merged yypzyxmwluyt (the five fixtures and
+  `lib/tests/pairing_countermodels.rs`); the fix is step 4, taken next.
+- Next: I003 / step 4, the pairing's five countermodels (fresh JDK state per version or a refusal, exceptions by
+  class, a scope that cannot write), then lift the warning path (java.util.logging at INFO and above under the
+  default configuration, with countermodels: a level, a handler or a filter that would make it observable is
+  refused), probe again to reach the two sides' bcrypt, then step 2.
 - Status: working
 
 ## Loop settings

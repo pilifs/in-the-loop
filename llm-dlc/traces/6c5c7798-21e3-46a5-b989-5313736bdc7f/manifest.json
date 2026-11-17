@@ -12,33 +12,33 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-17T12:47:52.214Z",
-  "duration_seconds": 156025,
+  "ended": "2026-11-17T13:08:59.086Z",
+  "duration_seconds": 157292,
   "stats": {
-    "turns": 149,
-    "api_calls": 1091,
-    "tool_calls": 1002,
-    "tool_errors": 19,
-    "compactions": 5,
+    "turns": 159,
+    "api_calls": 1133,
+    "tool_calls": 1041,
+    "tool_errors": 20,
+    "compactions": 6,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 2480,
-      "output_tokens": 792196,
-      "cache_read_input_tokens": 261630385,
-      "cache_creation_input_tokens": 1850083
+      "input_tokens": 2574,
+      "output_tokens": 807104,
+      "cache_read_input_tokens": 267443102,
+      "cache_creation_input_tokens": 1938453
     }
   },
   "tools": {
-    "Bash": 956,
+    "Bash": 993,
     "ToolSearch": 9,
     "Write": 8,
     "SendMessage": 7,
     "ListAgents": 6,
+    "Edit": 5,
     "AskUserQuestion": 4,
-    "Edit": 4,
     "TaskStop": 4,
-    "Monitor": 2,
-    "Read": 2
+    "Read": 3,
+    "Monitor": 2
   },
   "files_touched": [
     "CLAUDE.md",
@@ -47,6 +47,7 @@
     "examples/tools/test_scaffold_example.py",
     "examples/tools/validate_example.py",
     "llm-dlc/prove-plan.schema.json",
+    "llm-dlc/tools/test_brief_run.py",
     "verification/findings.md",
     "~/code/in-the-loop-prove-setup/verification/default_tests.py",
     "~/code/in-the-loop-prove-setup/verification/pipeline.py",
@@ -128,24 +129,38 @@
     {
       "index": 5,
       "started": "2026-11-17T04:59:29.263Z",
-      "ended": "2026-11-17T12:47:52.214Z",
-      "turns": 24,
-      "api_calls": 168,
+      "ended": "2026-11-17T12:53:39.122Z",
+      "turns": 27,
+      "api_calls": 178,
       "usage": {
-        "input_tokens": 376,
-        "output_tokens": 107006,
-        "cache_read_input_tokens": 36164060,
-        "cache_creation_input_tokens": 283338
+        "input_tokens": 400,
+        "output_tokens": 110341,
+        "cache_read_input_tokens": 39394360,
+        "cache_creation_input_tokens": 299850
       },
-      "peak_context_tokens": 319252
+      "peak_context_tokens": 336265
+    },
+    {
+      "index": 6,
+      "started": "2026-11-17T12:55:11.414Z",
+      "ended": "2026-11-17T13:08:59.086Z",
+      "turns": 7,
+      "api_calls": 32,
+      "usage": {
+        "input_tokens": 70,
+        "output_tokens": 11573,
+        "cache_read_input_tokens": 2582417,
+        "cache_creation_input_tokens": 71858
+      },
+      "peak_context_tokens": 100240
     }
   ],
   "log": {
-    "sha256": "a706d10aeaedc1ab8d74099548938bbf173415195861cb7657807f77288dd3ad",
-    "bytes": 21114333,
-    "lines": 8924,
-    "gzip_bytes": 3575347,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/a706d10aeaedc1ab8d74099548938bbf173415195861cb7657807f77288dd3ad.jsonl.gz"
+    "sha256": "368d1e6abb428e19e7fb0d8d879365bdd5c491e73b63e6dbf37cc77d656cbfb2",
+    "bytes": 22333309,
+    "lines": 9328,
+    "gzip_bytes": 3818770,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/368d1e6abb428e19e7fb0d8d879365bdd5c491e73b63e6dbf37cc77d656cbfb2.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1348,6 +1363,22 @@
       "summary": "Merge the machine-level runner settings into the line",
       "body": "The commit that makes verification/pipeline.py read ~/.config/in-the-loop/pipeline.local.toml was made in the workspace machine-config while this line took the domain-advances foundation; nothing but the generated trace files met, and they were regenerated.",
       "log_sha256": "a706d10aeaedc1ab8d74099548938bbf173415195861cb7657807f77288dd3ad"
+    },
+    {
+      "change_id": "pulrzyrlllyvrruprlmlwznpunrsnlzs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261117-122454-example-289-the-four-proof-tasks-again-w: passed: 4 passed step(s) in 1m33s, peak 551.4 MiB (estimated 20m00s, 4.0 GiB); 15 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1; jvmcontract:holds×2 Applied 15 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "0e425745552df769700f93857d7f089ff2a6d615162d69299a5ce80454264afe"
+    },
+    {
+      "change_id": "smxzwqlrvzxmnyqvzmnsuqoktxkoqomx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The run-streams tests no longer inherit a real run's watcher, so run inside a stream they cannot ask it questions",
+      "body": "test_brief_run.py's fixture now drops RUN_STREAMS_*, FEATURE_LOOP_* and LOOP_CONDUCTOR from the environment. A stream of the domain-advances run ran the test of a run 'without a watcher', which built its env from os.environ: inside the stream's loop that carries RUN_STREAMS_WATCHER, so the test's made-up run-streams.sh put two merge questions (streams a and b of made-up) to the real watcher, which answered them leave (run-streams-domain-advances D001, D002). Verified: the 39 tests pass with a decoy RUN_STREAMS_WATCHER and LOOP_CONDUCTOR set, and nothing is written to the decoy.",
+      "log_sha256": "368d1e6abb428e19e7fb0d8d879365bdd5c491e73b63e6dbf37cc77d656cbfb2"
     }
   ],
   "logs": {
@@ -1368,6 +1399,12 @@
       "lines": 5270,
       "gzip_bytes": 2137615,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/0ada096dba59f192e9caac6037ac22b6b8e0b39ff3a74727ff220fc2741ee245.jsonl.gz"
+    },
+    "0e425745552df769700f93857d7f089ff2a6d615162d69299a5ce80454264afe": {
+      "bytes": 22088288,
+      "lines": 9157,
+      "gzip_bytes": 3791932,
+      "url": null
     },
     "16d9364a18b41f710b8e72d44f039f82001cc31e8f40bc759ff17361b16ae046": {
       "bytes": 14925226,
@@ -1410,6 +1447,12 @@
       "lines": 4173,
       "gzip_bytes": 1617823,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/2d883926dc2e65441b6712ce94f3ffcb61ee7b9549d09732551d16392d4c3a58.jsonl.gz"
+    },
+    "368d1e6abb428e19e7fb0d8d879365bdd5c491e73b63e6dbf37cc77d656cbfb2": {
+      "bytes": 22333309,
+      "lines": 9328,
+      "gzip_bytes": 3818770,
+      "url": null
     },
     "39ef98b0ab6cf2bd4520f682e03e1fc7f9bbc012501a544221126c1aa5a365f3": {
       "bytes": 2732690,

@@ -1,0 +1,83 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "7ece8184-b148-4351-92d8-d634606b823e",
+  "status": "open",
+  "title": null,
+  "first_prompt": "Work on the brief in `llm-dlc/loops/domain-advances-evidence.md`. Read it in full now, even if you have read it before: it is the instruction for this cycle and every cycle of this loop, and what you ",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.326"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-17T12:56:50.868Z",
+  "ended": "2026-11-17T13:10:41.772Z",
+  "duration_seconds": 831,
+  "stats": {
+    "turns": 1,
+    "api_calls": 48,
+    "tool_calls": 49,
+    "tool_errors": 1,
+    "compactions": 0,
+    "peak_context_tokens": 148170,
+    "usage": {
+      "input_tokens": 96,
+      "output_tokens": 38033,
+      "cache_read_input_tokens": 4652464,
+      "cache_creation_input_tokens": 136827
+    }
+  },
+  "tools": {
+    "Bash": 47,
+    "Write": 2
+  },
+  "files_touched": [
+    "examples/tools/beside_route.py",
+    "examples/tools/test_beside_route.py"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-17T12:56:50.868Z",
+      "ended": "2026-11-17T13:10:41.772Z",
+      "turns": 1,
+      "api_calls": 48,
+      "usage": {
+        "input_tokens": 96,
+        "output_tokens": 38033,
+        "cache_read_input_tokens": 4652464,
+        "cache_creation_input_tokens": 136827
+      },
+      "peak_context_tokens": 148170
+    }
+  ],
+  "log": {
+    "sha256": "fadef0a55901ed98be485baeba4c8742903eb5ab48c947d75dc6027ef66d3a30",
+    "bytes": 1376070,
+    "lines": 410,
+    "gzip_bytes": 221814,
+    "path": "llm-dlc/traces/7ece8184-b148-4351-92d8-d634606b823e/logs/fadef0a55901ed98be485baeba4c8742903eb5ab48c947d75dc6027ef66d3a30.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "rkxyyqwnvlqztnwypvtqzvrmstlzmntz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Every example's proof driver records identities, ends the run on a mutant that is not the replay's, and marks a trial",
+      "body": "The evidence stream's step 2. examples/tools/beside_route.py holds what the five drivers (examples 286 to 290) did each in their own copy: the pinned JARs, the constructed mutant, the record (accept.record's evidence.json) and the verdict. Each driver keeps its own entry, lemmas, models, observed initializers and verifier arguments. What 289's driver alone did, all five now do: the record of the claim, the bound, each JAR, the adapter, the verifier's binary and the driver; a mutant whose JAR is not the one the newest mutant replay's receipt records ends the run; --max-array-length or --unwind (now on every driver) marks the run a trial.\n\nFinding: 286's, 287's and 288's drivers built their mutant by another recipe than the route's (a fixed --release, no -g or -parameters, every entry recompressed), so their JAR was not the bytes the mutant replay ran, which is why acceptance could not tie their mutant-security answers to the replay. The shared module uses the route's published-mutant recipe; run offline on the pinned JARs it gives each of the five examples exactly the JAR its replay ran (286 48323d21, 287 1d099295, 288 5c72df16, 289 a3a3dbff, 290 4ee35d0b).",
+      "log_sha256": "fadef0a55901ed98be485baeba4c8742903eb5ab48c947d75dc6027ef66d3a30"
+    }
+  ],
+  "logs": {
+    "fadef0a55901ed98be485baeba4c8742903eb5ab48c947d75dc6027ef66d3a30": {
+      "bytes": 1376070,
+      "lines": 410,
+      "gzip_bytes": 221814,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}
