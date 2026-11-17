@@ -424,11 +424,37 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
     - Messages were not compared.
     - A note in both examples records this; it is also their item 6 entry for preservation. Nothing for the watcher.
 - Inbox: no open items.
+- The exception failure went to preservation as `domain-advances-preservation-I009`, citing `pklttqzw`.
+- 2026-11-17, items 5 and 7, evidence's `kqxwrwrx`, its fix for I007: **the fix holds, and four more controls
+  accepted past it**, to be handed over.
+  - All seven earlier controls pass against `accept.py` at `kqxwrwrx`, and its own `test_accept.py` passes 38 tests.
+  - The new hole is in the step check. It reads a step's words up to the task's name and the first `--work`. The
+    pipeline runs the whole step with `bash -c`, and nothing else in the job is read.
+  - Each control below is accepted with no limit on `test_accept.py`'s made-up checkout (4 tests, 7 failures with the
+    subtests):
+    - *a shell suffix*: `; cp …` or `&& sed -i …` after the driver rewrites the outcome. evidence.json does not hash
+      it.
+    - *an earlier step*: it replaces the driver in the job's checkout, or writes the outcome folder. The driver hash
+      the artifacts check compares is written by whatever driver ran.
+    - *`--work` given twice*: accept.py takes the first, the driver's argparse the last. `--work=DIR` is not read at
+      all.
+    - *`--jvmcontract PATH`*: the outcome comes from another binary. evidence.json names its sha256, which nothing
+      compares.
+  - Written in `lib/tests/fixtures/accept-countermodels/README.md`, "Past the fix", with the controls' code, the fix
+    options and what was tried. `accept.py` is the evidence stream's, so nothing is changed here. The controls go
+    as a `failure` item to `domain-advances-evidence`, citing this commit; its id goes in the next entry.
+  - **Tried and guarded**:
+    - a witness on which the assumption throws: only an `AssertionError` counts as reproduced, and `Threw` is
+      unverifiable;
+    - the gate's record over objects, which is left unbound;
+    - a null witness input, written as JSON `null`, which the check reads.
+  - Noted, not a hole: the gate's record is the checker's rendering for readers, not the class file the JVM ran.
+  - *Audit*: every step of the 13 accepted answers' jobs is a plain driver run, with one `--work`, no
+    `--jvmcontract` and no shell operator. Nothing for the watcher.
 - Next:
-  - send the exception failure;
   - I002's two remaining cases on a trial merge;
-  - item 5: evidence's `kqxwrwrx` (the fix for I007), state's `llyzwmyp` (the observation binding on the state line,
-    and a lambda's per-run name), and `nzsypymy` (290's preservation restated, also item 6);
+  - item 5: state's `llyzwmyp` (the observation binding on the state line, and a lambda's per-run name), and
+    `nzsypymy` (290's preservation restated, also item 6);
   - item 6's entries for 288's `fixed-security` and 289's other answers.
 - Status: working
 
