@@ -216,9 +216,30 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   - Also read for item 5:
     - `mktymxvt` changes only `sync.py`'s trace check, which is not a rule of the run's results. Nothing to attack under this brief.
     - `rkxyyqwn` and `ymzlyksq` go with item 7, the acceptance check.
+- The fresh-pair failure went to preservation as `domain-advances-preservation-I005`, citing `roqtqlpm`.
+- 2026-11-17, item 5, the state stream's models on request of ArrayDeque and HashSet (`kztoupry`): **three false
+  proofs under `--gaps assume`**, to be handed over.
+  - The fixtures are in `lib/tests/fixtures/model-countermodels`; its README has the table, the commands, what was tried, the audit and the checker-side test.
+  - `lib/tests/model_countermodels.rs` holds the fixtures to a JVM.
+  - The hole: under assume, a gap's object is `Obj::new(class)`, with no field written. A gap is a constructor or a method the model does not keep. When the check runs a model of that class, the model's `size()` reads those fields. Without the model, `size()` is a gap that has no assume form.
+  - Each was **Verified** `result == 0` on `domain-advances-state@-` (`qrqtplwq`, built apart), where a JVM gives 1:
+    - `cloned`: `ArrayDeque.clone()` returns an `ArrayDeque`. Every assumption the result states is true of the JDK.
+    - `copied`: `ArrayDeque(Collection)`.
+    - `listed`: `ArrayList(Collection)`, which also reproduces on this line, since the ArrayList model is older than the run.
+    - The last two state "keeps nothing of its arguments", which is false of the JDK, but nothing tells the reader it became a value.
+  - The README's checker-side test fails on all three there, as it should. The models on request are the state stream's this run, so no refusal is committed here. The test goes as a `failure` item to `domain-advances-state`, citing this commit; its id goes in the next entry.
+  - **Tried and guarded**:
+    - Under strict, `clone`, `equals`, `hashCode` and `toString` of either class, and a set as a map key: each is a gap refused by name, with no fall-through to `Object`'s.
+    - `HashSet(int)` under advised: the library's contract says "modifies nothing", which would leave `map` null, but the run reports the model's methods as gaps with no contract and solves nothing.
+    - An element whose hash changes after `add`: proved not found, as on the JDK. The interpreter's set looks up by `equals` alone (`interp/natives.rs`), a refusal, not a false result.
+    - A lemma reading a deque from before the call is refused by `Engine::reads`.
+    - The exception classes match JDK 25.
+  - *Audit*: no example task runs under `--gaps assume`. 286's and 290's drivers ask for the models under strict, and 147 to 149, the only `advised` tasks, ask for none. Nothing for the watcher.
+- Inbox: no open items.
 - Next, item 5:
-  - the state stream's ArrayDeque and HashSet models (`kztoupry`): whether their reads and writes pass `Engine::reads` and `Engine::keeps`, and their exception classes against a JVM's;
-  - the drivers' records (`rkxyyqwn`) and the vacuity witness outside the change (`ymzlyksq`), as item 7 controls.
+  - the state stream's write set (`qrqtplwq`, `prove --writes`): its brief's side conditions;
+  - the drivers' records (`rkxyyqwn`) and the vacuity witness outside the change (`ymzlyksq`), as item 7 controls;
+  - then the evidence stream's `mzllzmkq`.
 - Items 6 and 7 after.
 - Status: working
 
