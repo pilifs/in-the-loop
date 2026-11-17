@@ -310,6 +310,12 @@ change `omnttzkzonux` · [log `2efc099126aa`](https://terminalvalue.net/raw-trac
 
 Brings the run-brief line (xppmwwpp through ksuoxmnk): an open Opus session becomes a brief's watcher or takes a run over, a feature brief runs on command with a foundation stage on Fable 5.2 before its streams, a commit takes only its own files, a run stops at a boundary, the foundation's report reaches each stream's inbox, a workspace a brief's run makes takes the session logs it lacks, the gaps the user settled before its first run, a tool for a stale workspace, and a throwaway brief to rehearse with. Conflict: CLAUDE.md's Tests section keeps the main line's three bullets (the every-session rule from the tests session) and adds run-brief's bullet for briefs whose Loop settings say tests: queued; the generated trace files are regenerated. Verified: test_costs.py run --changed from the main line's previous tip chose cargo test and 28 Python files for the 26 changed files, and all 29 passed (2m15s). run-brief's own default run at sttksmqy passed; one is queued at this merge for the push gate.
 
+### Queue the default test run at the merge of run-brief (verification pending)
+
+change `ssorlrotqlup` · [log `2efc099126aa`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/2efc099126aad5943ca8a5dfd8da8212e8fff84c3b66b9408494952ac227eb8f.jsonl.gz)
+
+Job 20261117-022611-default-test-run-at-omnttzkzonux: the default run at the merge of run-brief into the main line, which the push gate requires before the push the user asked for.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/2efc099126aad5943ca8a5dfd8da8212e8fff84c3b66b9408494952ac227eb8f.jsonl.gz) has every step in between: reasoning, tool calls and their results.

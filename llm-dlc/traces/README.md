@@ -19,7 +19,7 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | Subagents | 19 |
 | Tokens written | 28,623,451 |
 | Tokens read | 4,691,054,365 (98.1% from cache) |
-| Commits with a trace | 874 |
+| Commits with a trace | 875 |
 | Log snapshots | 1,145 (2551.1 MB gzipped, 1,014 uploaded) |
 
 ## Sessions
@@ -139,7 +139,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-15 12:23 UTC | [72d38e75-aae0-402e-9b8a-881beec53824](72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | ended | 3 h 33 min | `claude-opus-5-5` | 61 | 471 | 470 | 9 | 10 | 190,640 | 21 |
 | 2026-11-15 14:52 UTC | [Moonshot loop stats backfill](0c1ceb11-1913-4783-af0d-e3fa5724273b/summary.md) | ended | 1 h 21 min | `claude-fable-5-2` | 11 | 116 | 117 | 2 | 0 | 415,695 | 12 |
 | 2026-11-15 16:13 UTC | [a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) | ended | 1 d 8 h | `claude-fable-5-2` | 41 | 1,941 | 1,999 | 18 | 14 | 566,568 | 89 |
-| 2026-11-15 17:27 UTC | [Moonshot loop status](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | open | 1 d 8 h | `claude-opus-5-5` | 108 | 787 | 721 | 11 | 3 | 564,231 | 132 |
+| 2026-11-15 17:27 UTC | [Moonshot loop status](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | open | 1 d 8 h | `claude-opus-5-5` | 108 | 787 | 721 | 11 | 3 | 564,231 | 133 |
 | 2026-11-15 17:34 UTC | [48807e20-0bdb-4031-8ced-d21d16fc3816](48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) | ended | 1 h 25 min | `claude-sonnet-5-5` | 1 | 36 | 36 | 2 | 0 | 70,286 | 6 |
 | 2026-11-15 19:24 UTC | [Prove-java-change skill and in-the-loop runtime](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | ended | 1 d 6 h | `claude-fable-5-2` | 31 | 796 | 832 | 23 | 6 | 466,382 | 121 |
 | 2026-11-15 23:45 UTC | [5399f71b-f38b-4670-8fbe-9aa44d5cd46d](5399f71b-f38b-4670-8fbe-9aa44d5cd46d/summary.md) | ended | 1 h 35 min | `claude-sonnet-5-5` | 3 | 29 | 27 | 2 | 0 | 66,255 | 3 |
@@ -154,12 +154,12 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-16 20:48 UTC | [a6490df0-ff44-40c1-b34e-d0de7394edeb](a6490df0-ff44-40c1-b34e-d0de7394edeb/summary.md) | ended | 1 h 35 min | `claude-sonnet-5-5` | 1 | 31 | 32 | 0 | 0 | 57,613 | 6 |
 | 2026-11-16 22:43 UTC | [55c066b9-518c-495d-8dfa-4ffaf85839d4](55c066b9-518c-495d-8dfa-4ffaf85839d4/summary.md) | ended | 31 min | `claude-sonnet-5-5` | 1 | 18 | 18 | 0 | 0 | 49,848 | 5 |
 | 2026-11-16 23:20 UTC | [853b40ba-32fd-4638-8789-b2c3159d775a](853b40ba-32fd-4638-8789-b2c3159d775a/summary.md) | ended | 46 min | `claude-sonnet-5-5` | 1 | 19 | 20 | 0 | 0 | 47,471 | 9 |
-| 2026-11-16 23:33 UTC | [Test suite improvements from docs](b23a1dcc-0128-4ba1-b4aa-85526c834e11/summary.md) | open | 2 h 17 min | `claude-fable-5-2` | 8 | 185 | 185 | 3 | 0 | 411,633 | 42 |
+| 2026-11-16 23:33 UTC | [Test suite improvements from docs](b23a1dcc-0128-4ba1-b4aa-85526c834e11/summary.md) | open | 2 h 17 min | `claude-fable-5-2` | 8 | 185 | 185 | 3 | 0 | 411,633 | 43 |
 | 2026-11-17 00:10 UTC | [5e11162e-5d2d-4d1e-8380-f13b91726445](5e11162e-5d2d-4d1e-8380-f13b91726445/summary.md) | ended | 4 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 42,281 | 2 |
 | 2026-11-17 00:23 UTC | [587c234b-0915-4213-816f-e502a741da0a](587c234b-0915-4213-816f-e502a741da0a/summary.md) | ended | 50 min | `claude-sonnet-5-5` | 1 | 23 | 23 | 0 | 0 | 61,464 | 20 |
 | 2026-11-17 01:38 UTC | [217e3061-f107-4c8d-b779-3330a34ecabf](217e3061-f107-4c8d-b779-3330a34ecabf/summary.md) | ended | 18 min | `claude-sonnet-5-5` | 1 | 12 | 12 | 0 | 0 | 44,455 | 10 |
-| 2026-11-17 02:00 UTC | [7a0043cd-fc61-48d4-bca1-fdef53364800](7a0043cd-fc61-48d4-bca1-fdef53364800/summary.md) | open | 18 min | `claude-sonnet-5-5` | 1 | 13 | 14 | 0 | 0 | 43,651 | 5 |
-| 2026-11-17 02:13 UTC | [Window 11 verification loop](b74acbd8-95de-40d7-8793-79948e8c27ae/summary.md) | open | 5 min | `claude-opus-5-5` | 6 | 22 | 18 | 1 | 0 | 73,241 | 4 |
+| 2026-11-17 02:00 UTC | [7a0043cd-fc61-48d4-bca1-fdef53364800](7a0043cd-fc61-48d4-bca1-fdef53364800/summary.md) | open | 18 min | `claude-sonnet-5-5` | 1 | 13 | 14 | 0 | 0 | 43,651 | 6 |
+| 2026-11-17 02:13 UTC | [Window 11 verification loop](b74acbd8-95de-40d7-8793-79948e8c27ae/summary.md) | open | 5 min | `claude-opus-5-5` | 6 | 22 | 18 | 1 | 0 | 73,241 | 5 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -1203,6 +1203,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 872 | change `sttksmqy` | /run-brief: the gaps the user settled before its first run, a tool for a stale workspace, and a throwaway brief to rehearse with | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/ff8c349b1a7cd7783917560332df5ed502db827588231a735dfbcdc07b8ca76a.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/9fb0125cfbee1225a5429c009839ff7b128ba89a788844e670010dbc783fc186.jsonl.gz)) |
 | 873 | change `ksuoxmnk` | Queue a default test run at run-brief's gap fixes (verification pending) | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/ff8c349b1a7cd7783917560332df5ed502db827588231a735dfbcdc07b8ca76a.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/9fb0125cfbee1225a5429c009839ff7b128ba89a788844e670010dbc783fc186.jsonl.gz)), [`7a0043cd`](7a0043cd-fc61-48d4-bca1-fdef53364800/summary.md) ([log](https://terminalvalue.net/raw-traces/7a0043cd-fc61-48d4-bca1-fdef53364800/91e38050106609f142c9305166b9db06bbbfd1d7e40ebd10113b293fa339b9f4.jsonl.gz)) |
 | 874 | change `omnttzkz` | Merge run-brief: the /run-brief skill's watcher, foundation stage and gap fixes, with its queued test policy for briefs | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/ff8c349b1a7cd7783917560332df5ed502db827588231a735dfbcdc07b8ca76a.jsonl.gz)), [`b23a1dcc`](b23a1dcc-0128-4ba1-b4aa-85526c834e11/summary.md) ([log](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/2efc099126aad5943ca8a5dfd8da8212e8fff84c3b66b9408494952ac227eb8f.jsonl.gz)), [`7a0043cd`](7a0043cd-fc61-48d4-bca1-fdef53364800/summary.md) ([log](https://terminalvalue.net/raw-traces/7a0043cd-fc61-48d4-bca1-fdef53364800/91e38050106609f142c9305166b9db06bbbfd1d7e40ebd10113b293fa339b9f4.jsonl.gz)), [`b74acbd8`](b74acbd8-95de-40d7-8793-79948e8c27ae/summary.md) ([log](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/608f2d4e4c2abb5e5b99981e900ba19111998b2b05dea6ee1de0f3689e599799.jsonl.gz)) |
+| 875 | change `ssorlrot` | Queue the default test run at the merge of run-brief (verification pending) | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/ff8c349b1a7cd7783917560332df5ed502db827588231a735dfbcdc07b8ca76a.jsonl.gz)), [`b23a1dcc`](b23a1dcc-0128-4ba1-b4aa-85526c834e11/summary.md) ([log](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/2efc099126aad5943ca8a5dfd8da8212e8fff84c3b66b9408494952ac227eb8f.jsonl.gz)), [`7a0043cd`](7a0043cd-fc61-48d4-bca1-fdef53364800/summary.md) ([log](https://terminalvalue.net/raw-traces/7a0043cd-fc61-48d4-bca1-fdef53364800/91e38050106609f142c9305166b9db06bbbfd1d7e40ebd10113b293fa339b9f4.jsonl.gz)), [`b74acbd8`](b74acbd8-95de-40d7-8793-79948e8c27ae/summary.md) ([log](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/608f2d4e4c2abb5e5b99981e900ba19111998b2b05dea6ee1de0f3689e599799.jsonl.gz)) |
 
 ## Logs
 
