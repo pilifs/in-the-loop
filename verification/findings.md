@@ -70,8 +70,15 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   directory, whose `tmp/` holds the tests' work folders and proof caches. All three failures are a test finding
   another run's files there (a stored result for a build it had not checked, a changed claim answered from the
   cache), and `010456` itself had eight Rust tests fail and pass on their second run. Not reproduced on purpose.
-  Since change `kzwsnszx` a default-run step holds a lock for its whole run, so two no longer overlap. Why the runner
-  started a passed job again is not found.
+  Since change `kzwsnszx` a default-run step holds a lock for its whole run, so two no longer overlap.
+- **Why the passed job ran again** (found the same day, from `jj op log`): the first pass was collected and
+  committed in the default workspace at 01:06:45 ("Record verification results: the default test run at
+  xunroyyopkuq passed", change `slquqtpy`), and in the same second a `jj new lzvyqmsy` there, the fast-forward to
+  prove-setup's rebased commits, moved the working copy off that commit before it was anyone's parent. The runner
+  looks for results in its state folder and in the working copy, found neither, and started the job again at
+  01:07:12. Change `slquqtpy` is still a visible head, with the result in it, and is not on the main line: it needs
+  merging there. The runner now also counts a result recorded on any visible head as done, says so, and
+  `pipeline.py status` lists such a job under "recorded on another head".
 - **Tracked in**: the job's `logs/1-default-tests.log`.
 - **Closes when**: a default test run at a commit that contains the merge passes (the run at `lmwqozysyszl` already
   passed; confirm it contains `9c48697e070a`, then this closes).

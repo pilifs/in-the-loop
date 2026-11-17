@@ -109,6 +109,28 @@ class PipelineTest(unittest.TestCase):
                          "another-made-up")
         self.assertNotIn("session", submitted("From a terminal", session=None))
 
+    def test_a_job_whose_result_is_recorded_on_another_head_is_not_run_again(self):
+        # As on 2026-11-17: a passed job's result is committed, and the working copy is then moved off that commit
+        # (here: the branch goes back, and the result with it), so no result is in sight where the runner looks.
+        marks = self.repo.dir.parent / f"{self.repo.dir.name}-ran"
+        job_id = self.repo.submit("Run once", "--run", f"echo ran >> {marks}")
+        self.repo.commit("job (verification pending)")
+        before = self.repo.git("rev-parse", "HEAD")
+        self.repo.pipeline("run", "--rev", "HEAD")
+        self.repo.pipeline("collect")
+        self.repo.commit("Record verification results")
+        self.repo.git("branch", "results-left-behind", "HEAD")
+        self.repo.git("update-ref", "HEAD", before)
+        self.repo.git("reset", "-q", "--hard", before)
+        self.addCleanup(lambda: marks.unlink(missing_ok=True))
+        self.assertFalse((self.repo.dir / "verification/results" / job_id).exists())
+        out = self.repo.pipeline("run", "--rev", "HEAD").stdout
+        self.assertEqual(marks.read_text(), "ran\n", "the job ran once: its result exists, on the other branch")
+        self.assertIn(f"note  {job_id}: its result is recorded in commit", out)
+        status = self.repo.pipeline("status", "--rev", "HEAD").stdout
+        self.assertIn("recorded on another head: 1", status)
+        self.assertIn("pending: 0", status)
+
     def test_an_uncommitted_job_is_not_run(self):
         job_id = self.repo.submit("Not committed yet", "--run", "true")
         self.repo.pipeline("run", "--rev", "HEAD")

@@ -279,6 +279,32 @@ def queue_revs():
     return revs
 
 
+_RECORDED = {}  # a commit's tree doesn't change: the results it records are read once
+
+
+def recorded_on_heads():
+    """The jobs whose result some head of the repository records, by job id, with that head's commit: jj's visible
+    heads, or git's branches outside jj. A result is collected into this working copy and committed there, but the
+    working copy can be moved off that commit before it is anyone's parent (on 2026-11-17 a `jj new` in a workspace
+    two sessions shared left the commit recording a passed job as a side head, and the runner, seeing no result
+    here, ran the job a second time). Such a job is done, and its result is one merge away."""
+    if (ROOT / ".jj").exists() and shutil.which("jj"):
+        proc = run_quiet(["jj", "log", "--no-graph", "--ignore-working-copy", "-r", "visible_heads()", "-T",
+                          'commit_id ++ "\n"'], cwd=ROOT)
+    else:
+        proc = run_quiet(["git", "for-each-ref", "--format=%(objectname)", "refs/heads"], cwd=ROOT)
+    found = {}
+    for head in (proc.stdout.split() if proc.returncode == 0 else []):
+        if head not in _RECORDED:
+            listed = git("ls-tree", "-r", "--name-only", head, "--", f"{RESULTS}/", check=False)
+            _RECORDED[head] = ({Path(line).parent.name for line in listed.stdout.splitlines()
+                                if Path(line).name == "result.json" and Path(line).parent.parent.as_posix() == RESULTS}
+                               if listed.returncode == 0 else set())
+        for job_id in _RECORDED[head]:
+            found.setdefault(job_id, head)
+    return found
+
+
 def resolve(rev):
     return git("rev-parse", "--verify", f"{rev}^{{commit}}").stdout.strip()
 
@@ -788,6 +814,7 @@ class Runner:
         self.running = {}      # id -> {"plan", "thread", "steps": [Step]}
         self.finished = []     # ids finished in this run
         self.stopping = False
+        self.told_elsewhere = set()
         self.wrapper = self.state / "step-wrapper.sh"
         self.wrapper.write_text(WRAPPER)
 
@@ -824,6 +851,14 @@ class Runner:
         tree = ROOT / RESULTS
         if tree.exists():
             done |= {p.name for p in tree.iterdir() if (p / "result.json").exists()}
+        # A result committed on a head this working copy isn't on: done all the same, and said once, since it is
+        # missing here until that commit is merged.
+        for job_id, head in sorted(recorded_on_heads().items()):
+            if job_id not in done and job_id not in self.told_elsewhere:
+                self.told_elsewhere.add(job_id)
+                print(f"note  {job_id}: its result is recorded in commit {head[:12]}, which this working copy is not "
+                      f"on; not run again. Merge that commit to have the result here", flush=True)
+            done.add(job_id)
         return done
 
     def pending(self, revs, wanted=None, min_priority=None):
@@ -1425,16 +1460,20 @@ def cmd_status(args):
     finished = sorted(p.name for p in (state / "results").iterdir() if (p / "result.json").exists()
                       and json.loads((p / "result.json").read_text()).get("status") != "cancelled") if (state / "results").exists() else []
     collected = sorted(p.name for p in (ROOT / RESULTS).iterdir() if (p / "result.json").exists()) if (ROOT / RESULTS).exists() else []
-    rows = {"pending": [], "running": [], "finished, not collected": [], "collected": []}
+    elsewhere = {i: head for i, head in recorded_on_heads().items() if i not in collected and i not in finished}
+    rows = {"pending": [], "running": [], "finished, not collected": [], "recorded on another head": [], "collected": []}
     seen = set()
     priorities = load_priorities(rev)
-    waiting = lambda job_id: job_id not in collected and job_id not in finished and job_id not in claims
+    waiting = lambda job_id: job_id not in collected and job_id not in finished and job_id not in claims and job_id not in elsewhere
     for job, path, source in sorted(queued_jobs(revs, waiting), key=queue_order(priorities)):
         job_id = job.get("id")
         seen.add(job_id)
         p = plan(job, config)
         line = f"{job_id}  {job.get('title', '')}"
-        if job_id in collected:
+        if job_id in elsewhere:
+            rows["recorded on another head"].append(f"{line}  (in commit {elsewhere[job_id][:12]}, which this working copy "
+                                                    f"is not on: merge it; the job is not run again)")
+        elif job_id in collected:
             res = json.loads((ROOT / RESULTS / job_id / "result.json").read_text())
             rows["collected"].append(f"{line}  [{res['status']}]")
         elif job_id in finished:

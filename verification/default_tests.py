@@ -119,7 +119,7 @@ def newer_than(me: str, runner_root: Path) -> tuple[str | None, bool]:
     could be read). A newer run that has already finished makes this one moot as much as one still waiting: a job
     started again after a later one ran has nothing left to say."""
     status = queue_status(runner_root)
-    rows = [row for key in ("pending", "running", "finished, not collected") for row in status.get(key, [])]
+    rows = [row for key in ("pending", "running", "finished, not collected", "recorded on another head") for row in status.get(key, [])]
     ids = {i for row in rows if (i := job_id(row))}
     ids |= {d.name for d in (runner_root / "verification/results").glob("*-default-test-run-at-*")}
     newer = sorted(i for i in ids if i > me and "-default-test-run-at-" in i)
