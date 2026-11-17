@@ -1,0 +1,389 @@
+{
+  "verdict": "verified",
+  "target": "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(java.lang.String, java.lang.String)",
+  "domain": "password: String of ≤ 80 code units, or null × salt: String of ≤ 80 code units, or null",
+  "counterexample": null,
+  "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over password: String of ≤ 80 code units, or null × salt: String of ≤ 80 code units, or null in 134.6 s; loops unwound 513 times with unwinding assertions; 72 calls of methods both versions share taken as one function of both, 66 of them related to an earlier call by their inputs",
+  "problem": null,
+  "statement": "verification/.work-307/preservation-one-function/preservation/work/pair/RegressionPair.java",
+  "findings": [],
+  "output": "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-307/preservation-one-function/preservation/work/pair/RegressionPair.java) calls the previous version's org.springframework.security.crypto.bcrypt.BCrypt#hashpw(java.lang.String, java.lang.String), relocated under `before`, and then the new one's on the same inputs, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n✓ org.springframework.security.crypto.bcrypt.BCrypt#hashpw(java.lang.String, java.lang.String): the two versions agree on every input where salt == null || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu0YHzrHM6tf.iqN8.yx.jNN1ILEf7h0i\") || salt.equals(\"$2$05$......................\") || salt.equals(\"\") || salt.equals(\"$2a$03$......................\") || salt.equals(\"$2a$10$123456789012345678901\") (the pair's property, below)\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter salt has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ RegressionPair#agree satisfies `result` on every input where salt == null || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu0YHzrHM6tf.iqN8.yx.jNN1ILEf7h0i\") || salt.equals(\"$2$05$......................\") || salt.equals(\"\") || salt.equals(\"$2a$03$......................\") || salt.equals(\"$2a$10$123456789012345678901\") (jvmcontract's own checker (CaDiCaL): 1 properties proved over password: String of ≤ 80 code units, or null × salt: String of ≤ 80 code units, or null in 134.6 s; loops unwound 513 times with unwinding assertions; 72 calls of methods both versions share taken as one function of both, 66 of them related to an earlier call by their inputs)\n  not vacuous: agree(password=null, salt=null) reaches the calls\n",
+  "work": "verification/.work-307/preservation-one-function/preservation/work",
+  "search": {
+    "engine": "native",
+    "checker": "jvmcontract's own checker (CaDiCaL)",
+    "seconds": 134.567920368,
+    "properties": 1,
+    "unwind": 513,
+    "max_array_length": 80,
+    "stage": null,
+    "native": {
+      "paths": 75,
+      "merges": 0,
+      "solver_calls": 470,
+      "solving_seconds": 52.450042488,
+      "gates_evaluated": 624247,
+      "evaluating_seconds": 0.029398612,
+      "divisions": 0,
+      "divisions_built": 0,
+      "multiplications": 0,
+      "multiplications_built": 0,
+      "variables": 5979010,
+      "clauses": 12881423,
+      "seconds": 133.934525794,
+      "loading_seconds": 0.002724524,
+      "decoding_seconds": 0.00234363,
+      "encoding_seconds": 67.59339913,
+      "witness_seconds": 0.0,
+      "assumed": [
+        "each call of org.springframework.security.crypto.bcrypt.BCrypt.hashpw taken as one function of both versions (lib/src/bmc/ties.rs) ends: two versions that make it on equal inputs are taken to agree, so what is proved holds of the runs in which it ends"
+      ],
+      "calls_as_one_function": 72,
+      "calls_related": 66
+    },
+    "gap_mode": "strict",
+    "deadline_seconds": 1800.0,
+    "runs": [
+      {
+        "checker": "native",
+        "purpose": "proof",
+        "stage": null,
+        "budget_seconds": 1800.0,
+        "seconds": 133.935,
+        "ended": "verified",
+        "ending": "verified",
+        "phases": {
+          "loading": 0.003,
+          "lowering": 0.002,
+          "symbolic": 13.886,
+          "encoding": 67.593,
+          "solving": 52.45,
+          "trace": 0.0,
+          "other": 0.0
+        },
+        "formula": {
+          "variables": 5979010,
+          "clauses": 12881423
+        }
+      },
+      {
+        "checker": "native",
+        "purpose": "probe",
+        "stage": null,
+        "budget_seconds": 1665.432,
+        "seconds": 0.009,
+        "ended": "violation",
+        "ending": "counterexample",
+        "phases": {
+          "loading": 0.0,
+          "lowering": 0.0,
+          "symbolic": 0.005,
+          "encoding": 0.003,
+          "solving": 0.001,
+          "trace": 0.0,
+          "other": 0.0
+        },
+        "formula": {
+          "variables": 8036,
+          "clauses": 18690
+        }
+      }
+    ]
+  },
+  "stated": {
+    "kind": "property",
+    "domain": {
+      "parameters": [
+        {
+          "name": "password",
+          "type": "java.lang.String",
+          "kind": "value",
+          "null": true,
+          "max_length": 80
+        },
+        {
+          "name": "salt",
+          "type": "java.lang.String",
+          "kind": "value",
+          "null": true,
+          "max_length": 80
+        }
+      ],
+      "shared_arrays": false,
+      "text": "password: String of ≤ 80 code units, or null × salt: String of ≤ 80 code units, or null"
+    },
+    "assumptions": [
+      {
+        "kind": "precondition",
+        "text": "salt == null || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu0YHzrHM6tf.iqN8.yx.jNN1ILEf7h0i\") || salt.equals(\"$2$05$......................\") || salt.equals(\"\") || salt.equals(\"$2a$03$......................\") || salt.equals(\"$2a$10$123456789012345678901\")",
+        "basis": "stated"
+      },
+      {
+        "kind": "initialization",
+        "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+        "basis": "engine"
+      },
+      {
+        "kind": "library",
+        "text": "each call of org.springframework.security.crypto.bcrypt.BCrypt.hashpw taken as one function of both versions (lib/src/bmc/ties.rs) ends: two versions that make it on equal inputs are taken to agree, so what is proved holds of the runs in which it ends",
+        "basis": "engine"
+      }
+    ],
+    "observations": {
+      "result": "the result and the parameters, against result",
+      "exceptions": "none may be thrown"
+    },
+    "bounds": {
+      "unwind": 513,
+      "max_array_length": null,
+      "complete": true,
+      "max_value_length": 80
+    },
+    "models": {
+      "used": true,
+      "digest": "sha256:d3cb60427833314ef7f913b8bc6ef4ca4c79b923fd15a09a6224d63099b17d02",
+      "classes": 31,
+      "jdk": "25.0.5",
+      "values": [
+        {
+          "source": "jvmcontract String model 7: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
+          "jdk": "25.0.5",
+          "level": "tested",
+          "leaves_out": [
+            "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
+            "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
+            "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
+            "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
+          ]
+        }
+      ]
+    },
+    "checker": {
+      "engine": "native",
+      "name": "jvmcontract's own checker (CaDiCaL)",
+      "solver": "CaDiCaL 1.9.5 (bundled)",
+      "fallback": null,
+      "sat": {
+        "solver": "CaDiCaL",
+        "version": "1.9.5",
+        "source": "bundled by the Rust crate cadical 0.1.16",
+        "configuration": [
+          "CaDiCaL's default options",
+          "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+          "the run's deadline through CaDiCaL's terminate callback",
+          "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+        ]
+      }
+    },
+    "gap_mode": "strict",
+    "confirmation": null,
+    "vacuity": {
+      "status": "non-vacuous",
+      "basis": "probe",
+      "text": "Some input in the domain reaches the calls: the tool's own checker found agree(password=null, salt=null).",
+      "witness": "agree(password=null, salt=null)"
+    }
+  },
+  "pair": {
+    "verdict": "verified",
+    "target": "RegressionPair#agree",
+    "domain": "password: String of ≤ 80 code units, or null × salt: String of ≤ 80 code units, or null",
+    "assume": "salt == null || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu0YHzrHM6tf.iqN8.yx.jNN1ILEf7h0i\") || salt.equals(\"$2$05$......................\") || salt.equals(\"\") || salt.equals(\"$2a$03$......................\") || salt.equals(\"$2a$10$123456789012345678901\")",
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over password: String of ≤ 80 code units, or null × salt: String of ≤ 80 code units, or null in 134.6 s; loops unwound 513 times with unwinding assertions; 72 calls of methods both versions share taken as one function of both, 66 of them related to an earlier call by their inputs",
+    "problem": null,
+    "statement": "verification/.work-307/preservation-one-function/preservation/work/pair-work/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter salt has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ RegressionPair#agree satisfies `result` on every input where salt == null || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu0YHzrHM6tf.iqN8.yx.jNN1ILEf7h0i\") || salt.equals(\"$2$05$......................\") || salt.equals(\"\") || salt.equals(\"$2a$03$......................\") || salt.equals(\"$2a$10$123456789012345678901\") (jvmcontract's own checker (CaDiCaL): 1 properties proved over password: String of ≤ 80 code units, or null × salt: String of ≤ 80 code units, or null in 134.6 s; loops unwound 513 times with unwinding assertions; 72 calls of methods both versions share taken as one function of both, 66 of them related to an earlier call by their inputs)\n  not vacuous: agree(password=null, salt=null) reaches the calls\n",
+    "work": "verification/.work-307/preservation-one-function/preservation/work/pair-work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 134.567920368,
+      "properties": 1,
+      "unwind": 513,
+      "max_array_length": 80,
+      "stage": null,
+      "native": {
+        "paths": 75,
+        "merges": 0,
+        "solver_calls": 470,
+        "solving_seconds": 52.450042488,
+        "gates_evaluated": 624247,
+        "evaluating_seconds": 0.029398612,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 5979010,
+        "clauses": 12881423,
+        "seconds": 133.934525794,
+        "loading_seconds": 0.002724524,
+        "decoding_seconds": 0.00234363,
+        "encoding_seconds": 67.59339913,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "each call of org.springframework.security.crypto.bcrypt.BCrypt.hashpw taken as one function of both versions (lib/src/bmc/ties.rs) ends: two versions that make it on equal inputs are taken to agree, so what is proved holds of the runs in which it ends"
+        ],
+        "calls_as_one_function": 72,
+        "calls_related": 66
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 1800.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 1800.0,
+          "seconds": 133.935,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.003,
+            "lowering": 0.002,
+            "symbolic": 13.886,
+            "encoding": 67.593,
+            "solving": 52.45,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 5979010,
+            "clauses": 12881423
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budget_seconds": 1665.432,
+          "seconds": 0.009,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.005,
+            "encoding": 0.003,
+            "solving": 0.001,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 8036,
+            "clauses": 18690
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 135.41,
+        "setup": 0.002,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 133.944,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 1.464
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "password",
+            "type": "java.lang.String",
+            "kind": "value",
+            "null": true,
+            "max_length": 80
+          },
+          {
+            "name": "salt",
+            "type": "java.lang.String",
+            "kind": "value",
+            "null": true,
+            "max_length": 80
+          }
+        ],
+        "shared_arrays": false,
+        "text": "password: String of ≤ 80 code units, or null × salt: String of ≤ 80 code units, or null"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "salt == null || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu0YHzrHM6tf.iqN8.yx.jNN1ILEf7h0i\") || salt.equals(\"$2$05$......................\") || salt.equals(\"\") || salt.equals(\"$2a$03$......................\") || salt.equals(\"$2a$10$123456789012345678901\")",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "each call of org.springframework.security.crypto.bcrypt.BCrypt.hashpw taken as one function of both versions (lib/src/bmc/ties.rs) ends: two versions that make it on equal inputs are taken to agree, so what is proved holds of the runs in which it ends",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 513,
+        "max_array_length": null,
+        "complete": true,
+        "max_value_length": 80
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:d3cb60427833314ef7f913b8bc6ef4ca4c79b923fd15a09a6224d63099b17d02",
+        "classes": 31,
+        "jdk": "25.0.5",
+        "values": [
+          {
+            "source": "jvmcontract String model 7: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
+            "jdk": "25.0.5",
+            "level": "tested",
+            "leaves_out": [
+              "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
+              "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
+              "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
+              "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
+            ]
+          }
+        ]
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found agree(password=null, salt=null).",
+        "witness": "agree(password=null, salt=null)"
+      }
+    }
+  }
+}
