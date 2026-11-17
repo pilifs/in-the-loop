@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.021Z",
-  "ended": "2026-11-17T18:09:25.870Z",
-  "duration_seconds": 18755,
+  "ended": "2026-11-17T18:10:06.859Z",
+  "duration_seconds": 18796,
   "stats": {
     "turns": 31,
-    "api_calls": 483,
-    "tool_calls": 483,
+    "api_calls": 486,
+    "tool_calls": 486,
     "tool_errors": 4,
     "compactions": 6,
     "peak_context_tokens": 244847,
     "usage": {
-      "input_tokens": 972,
-      "output_tokens": 416086,
-      "cache_read_input_tokens": 60227243,
-      "cache_creation_input_tokens": 1197724
+      "input_tokens": 978,
+      "output_tokens": 418260,
+      "cache_read_input_tokens": 60899707,
+      "cache_creation_input_tokens": 1200342
     }
   },
   "tools": {
-    "Bash": 468,
+    "Bash": 471,
     "Edit": 11,
     "Write": 3,
     "ToolSearch": 1
@@ -131,24 +131,24 @@
     {
       "index": 6,
       "started": "2026-11-17T16:55:20.357Z",
-      "ended": "2026-11-17T18:09:25.870Z",
+      "ended": "2026-11-17T18:10:06.859Z",
       "turns": 4,
-      "api_calls": 101,
+      "api_calls": 104,
       "usage": {
-        "input_tokens": 202,
-        "output_tokens": 77892,
-        "cache_read_input_tokens": 14275973,
-        "cache_creation_input_tokens": 210029
+        "input_tokens": 208,
+        "output_tokens": 80066,
+        "cache_read_input_tokens": 14948437,
+        "cache_creation_input_tokens": 212647
       },
-      "peak_context_tokens": 223302
+      "peak_context_tokens": 225920
     }
   ],
   "log": {
-    "sha256": "80d942c7774925a8b996c5c8ed2ea5cff6cf76ddb5c7cd226ab25dc3e0a7e7ab",
-    "bytes": 12710256,
-    "lines": 4307,
-    "gzip_bytes": 2132706,
-    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/80d942c7774925a8b996c5c8ed2ea5cff6cf76ddb5c7cd226ab25dc3e0a7e7ab.jsonl.gz"
+    "sha256": "6fb8d7f69f3a273f258223fd33d357f9375e7a8e014c659fefe46c234d8dfee8",
+    "bytes": 12880216,
+    "lines": 4331,
+    "gzip_bytes": 2158641,
+    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/6fb8d7f69f3a273f258223fd33d357f9375e7a8e014c659fefe46c234d8dfee8.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -415,6 +415,14 @@
       "summary": "A pair of versions' second run of a loop takes over the first's summary from the same state, and both summarize a loop at its entry by their own path's history; example 287 preservation at bound 80 (verification pending)",
       "body": "Job 20261117-180758-example-287-preservation-at-the-frozen-b runs example 287's frozen preservation claim at its bound of 80 through proofs/prove.py, with a fresh --work and no trial flags. It is step 5 of the preservation stream: if it verifies, accept.py records it.\n\nProfiled first, with a temporary log of each loop summary and of each slow solver call (removed). Three changes to the own checker's loop invariants (lib/src/bmc/loops.rs, ties.rs). First, a summary from a state whose key was summarized before takes over that summary's written places and invariant, in the key's numbering, where the path's condition has every literal the first was proved under: the new release no longer searches again for what the previous one found from the same state. Second, in a pair of versions a loop is summarized at its entry only where this path summarized it since its version began (Path::summarized, cleared at fresh() and intersected at a merge). The check-wide history made the new release start bcrypt's key() loops at their entry on a later path where the previous release had started them past the bound, so nothing tied. Third, a loop's written set leaves out arrays nothing reachable holds, which halved the solver calls. The outcome counts tied places and summaries taken over (search.native.tied, summaries_reused).",
       "log_sha256": "80d942c7774925a8b996c5c8ed2ea5cff6cf76ddb5c7cd226ab25dc3e0a7e7ab"
+    },
+    {
+      "change_id": "rmvpqswzxlyvvrulnlwvklwzsymlvltu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The preservation stream acknowledges inbox items I010 and I011 and takes the tie's soundness hole next",
+      "body": "I010 (from the challenge stream): the code fingerprint the ties of a pair of versions compare skips JDK virtual and interface calls, which can dispatch into application code. So two runs whose code differs can be tied. It is taken next, with the fixtures' test, before any further pair result is accepted. Example 287's job 20261117-180758 was queued before the item arrived: its verdict counts only if the fix leaves 287's fingerprints unchanged, else 287 is rerun. I011: merge the default line, then rerun 289's and 290's preservation on a checker with both streams' fixes; taken with I010.",
+      "log_sha256": "6fb8d7f69f3a273f258223fd33d357f9375e7a8e014c659fefe46c234d8dfee8"
     }
   ],
   "logs": {
@@ -428,6 +436,12 @@
       "bytes": 6724018,
       "lines": 2188,
       "gzip_bytes": 1143410,
+      "url": null
+    },
+    "6fb8d7f69f3a273f258223fd33d357f9375e7a8e014c659fefe46c234d8dfee8": {
+      "bytes": 12880216,
+      "lines": 4331,
+      "gzip_bytes": 2158641,
       "url": null
     },
     "8026afd239d466a9a3185bb713b604a030b2247358b75659f8d6e3559ccf4b33": {

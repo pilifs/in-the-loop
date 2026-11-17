@@ -255,8 +255,18 @@ relational result needs a new check (the rule's applications recorded in the out
   `20261117-180758-example-287-preservation-at-the-frozen-b` decides it at bound 80 (fresh `--work`, up to 3.5
   hours). The jobs `20261117-130445-…` (287's first failure) and `20261117-151521-…` (289 and 290) passed on the
   default line. No new inbox items; I001 to I009 were acknowledged above.
-- Next: when the job is back, accept 287 `preservation` with `accept.py` if it verifies. Otherwise record where it
-  stopped as step 5's second approach. Step 6 (307) can start meanwhile: it needs only the technique.
+- 2026-11-17, the inbox read after that commit (no step moved). Two items came in during the cycle:
+  - I010: the code fingerprint (`shared.rs` `reach`) skips JDK virtual and interface calls, which may dispatch
+    into application code, so a tie can join two runs whose code differs. That is a hole in step 2's tie (and so
+    in the summaries taken over). Taken next: merge `qnlomnmx`'s fixtures, then close the reach or add the
+    overriding methods, with the README's test in `lib/tests/tie_countermodels.rs`. Job
+    `20261117-180758-…` was queued before this item. Its verdict is accepted only if the fix leaves 287's
+    fingerprints as they were (bcrypt's loops call no JDK interface on an application object, to be checked);
+    otherwise 287 is rerun.
+  - I011: merge the default line (with the evidence stream's line, at `qrxtwtlo`), then rerun 289's and 290's
+    preservation on one checker with both streams' fixes, and record what it gives. Taken with I010, so the
+    rerun has the tie fix too.
+- Next: I010 and I011, then 287's job result (accept or record), then step 6 (307).
 - Status: working
 
 ## Loop settings
