@@ -230,11 +230,33 @@ relational result needs a new check (the rule's applications recorded in the out
     For the evidence stream: the rerun of job `20261117-151521-…` compared what this checker compares on those
     two examples. A claim that says "the same exception" is now held to the note's reading. If `accept.py` should
     check that the note is there, that check is the evidence stream's to add.
-- Next: step 5's cost: make the rounds loop's search cheaper before a job:
-  - keep out of `written` the places of objects nothing reachable holds;
-  - let a summary whose key and invariant the path already has (the other side's, on this path) go on without
-    searching again.
-  Then queue 287 `preservation` at bound 80.
+- 2026-11-17, step 5 (the cost of the search; *working formalization* and *accepted claim* unchanged). Profiled first,
+  with a temporary log of each loop summary and of each solver call over half a second (removed before the commit).
+  A correction to the step 2 entry: `crypt_raw`'s rounds loop (`key()` twice a round) is at pc 130, and pc 165 is the
+  64 rounds of `encipher`. What the profile showed, and the three changes (`bmc/loops.rs`, `bmc/ties.rs`):
+  - The new release searched again for every invariant the previous one had found from the same state. Now a
+    summary from a state of a key already summarized takes over that summary's written places and invariant, by
+    the key's object numbers, where the path's condition has every literal the first was proved under. The outcome
+    counts them (`search.native.summaries_reused`, and `tied`).
+  - On the third path (a cost of 5 or more), the new release's `key()` loops were summarized at their entry (i = 0),
+    because the check had summarized them on another path. The previous release's had been summarized past the
+    bound, so nothing tied. Now, in a pair, a loop is summarized at its entry only where this path summarized it
+    since its version began (`Path::summarized`, cleared at `fresh()`, intersected at a merge). The test
+    `two_versions_summarize_a_loop_at_its_entry_alike_on_every_fork` (`lib/tests/pairing.rs`) failed under the
+    check's history, with a spurious counterexample, and passes now.
+  - A loop's written set leaves out arrays nothing reachable holds (each `key()` call's `koffp` and `lr`), which
+    halved the solver calls.
+  The `mix` countermodels are still not proved. Capped probe of 287 at bound 80 (`--timeout 240`):
+  - 621 paths and 208 summaries taken over, against 509 paths before;
+  - on the three paths whose both sides ran, the new release added no variable;
+  - the time goes to the previous release's runs over further stored-hash shapes, about 100 s each, and the run
+    did not finish.
+  289 and 290 still verify at their frozen bounds, and a 287 trial at bound 8 verifies. Job
+  `20261117-180758-example-287-preservation-at-the-frozen-b` decides it at bound 80 (fresh `--work`, up to 3.5
+  hours). The jobs `20261117-130445-…` (287's first failure) and `20261117-151521-…` (289 and 290) passed on the
+  default line. No new inbox items; I001 to I009 were acknowledged above.
+- Next: when the job is back, accept 287 `preservation` with `accept.py` if it verifies. Otherwise record where it
+  stopped as step 5's second approach. Step 6 (307) can start meanwhile: it needs only the technique.
 - Status: working
 
 ## Loop settings

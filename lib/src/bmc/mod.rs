@@ -292,6 +292,10 @@ pub struct Outcome {
     /// The loops that go round more often than the bound and that an invariant covers ([`loops`]), each as
     /// `p.C.m at pc N`: a proof holds of all their iterations, and a witness past one is run before it is believed.
     pub loops: Vec<String>,
+    /// In a pair of versions, how many places and reads past a summarized loop took the bits the other side's
+    /// were given, and how many summaries were one made before from a state of the same key ([`ties`]).
+    pub tied: u64,
+    pub summaries_reused: u64,
     /// Where the run's solver calls were written, when they were ([`Options::transcript`]).
     pub transcript: Option<std::path::PathBuf>,
 }
@@ -353,6 +357,8 @@ impl Outcome {
             witness_seconds: self.witness,
             assumed: self.assumed.clone(),
             loops: self.loops.clone(),
+            tied: self.tied,
+            summaries_reused: self.summaries_reused,
         }
     }
 
@@ -412,6 +418,12 @@ pub struct Stats {
     /// The loops beyond the bound that an invariant covers ([`Outcome::loops`]); absent when there is none.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub loops: Vec<String>,
+    /// In a pair of versions, the places and reads that took bits the other side's were given, and the loops'
+    /// summaries that were one made before ([`Outcome::tied`]); absent when none.
+    #[serde(skip_serializing_if = "is_zero")]
+    pub tied: u64,
+    #[serde(skip_serializing_if = "is_zero")]
+    pub summaries_reused: u64,
 }
 
 impl Stats {
@@ -784,6 +796,11 @@ struct Path {
     /// Whether the path is past a loop an invariant covers: its state then stands for more than the states a run
     /// reaches, and a computed index into a large array is not followed ([`loops`]).
     loose: bool,
+    /// In a pair of versions, the loops (by class, a previous version's copy by its own name, method and head) an
+    /// invariant covered on this path since the version it runs began ([`loops`]): one entered again is given its
+    /// invariant at once ([`Engine::summarize_at_entry`]). A run's own history, and not the check's, so that two
+    /// versions running the same code summarize the same loops at the same points and their states tie ([`ties`]).
+    summarized: Rc<std::collections::BTreeSet<(String, String, u32)>>,
 }
 
 /// Where a class is in its initialization (JVMS §5.5).
@@ -1377,6 +1394,8 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         gap_mode: engine.gap_mode,
         assumed: engine.assumed.iter().map(|a| a.to_string()).collect(),
         loops: engine.loops.iter().cloned().collect(),
+        tied: engine.ties.shared,
+        summaries_reused: engine.ties.reused,
         transcript: engine.b.transcript_path().map(std::path::Path::to_path_buf),
     };
 
@@ -1500,7 +1519,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         }
         let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
         locals.resize(code.max_locals.max(locals.len()), None);
-        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, loose: false };
+        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, loose: false, summarized: Default::default() };
         engine.pending.push(first);
 
         // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
@@ -2311,6 +2330,9 @@ impl<'a> Engine<'a> {
 
     fn absorb(&mut self, into: &mut Path, other: &Path) {
         into.loose |= other.loose;
+        if into.summarized != other.summarized {
+            into.summarized = Rc::new(into.summarized.intersection(&other.summarized).cloned().collect());
+        }
         let prefix = into.cond.iter().zip(&other.cond).take_while(|(x, y)| x == y).count();
         let common: Vec<Lit> = into.cond[prefix..].iter().copied().filter(|l| other.cond[prefix..].contains(l)).collect();
         let rest_into: Vec<Lit> = into.cond[prefix..].iter().copied().filter(|l| !common.contains(l)).collect();
@@ -4221,6 +4243,7 @@ impl<'a> Engine<'a> {
             // Nor is it past the other's summarized loops: a computed index into a large array is followed again
             // until it passes one of its own, so that its run is the other's where both run the same ([`ties`]).
             path.loose = false;
+            path.summarized = Default::default();
             self.advance(path);
             return Ok(None);
         }

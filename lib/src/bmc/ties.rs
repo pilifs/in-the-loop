@@ -21,6 +21,14 @@
 //!   of the array's content and the index. The content is named: the cells' bits of an array whose cells are
 //!   known; of one whose cells hold any values ([`Obj::unknown`]), the summary that made them so, then each write
 //!   since, by its index and value. A read of a content and an index already read takes the bits read then.
+//! - **The summary itself** is a function of the state and the code: what an iteration from that state writes,
+//!   and whether a candidate is kept, depend on nothing else. A second summary from a state of the same key takes
+//!   over the first's written places and invariant ([`loops::Summary`]), each object by its number in the key,
+//!   where its path's condition has every literal the first was proved under (an input of the second is one of
+//!   the first). The new version then searches for no invariant the previous one found from the same state.
+//!   Both versions summarize a loop at its entry, rather than past the bound, by their own run's history alone
+//!   (`Path::summarized`): the check's history would have one side's run start at the entry where the other's
+//!   started past the bound, and no state of one would be the other's.
 //!
 //! **The key** is everything an iteration can read: the code (the method's text with everything it reaches,
 //! [`crate::shared::fingerprint`]) and the pc of the head, the frame's live locals, every object reachable from
@@ -40,7 +48,9 @@
 //! that value on each side. What each side does past the loop (its exits, its exceptions, what it returns) is its
 //! own code from its own state: only the values are shared, never a path. The countermodels are in
 //! `lib/tests/pairing.rs`: a changed callee inside the loop, unequal arrays, an alias on one side only, a mutable
-//! static, an exceptional exit on one side, and a write after the loop on one side, each a violation.
+//! static, an exceptional exit on one side, and a write after the loop on one side, each a violation. The same
+//! file holds a fork of the previous version past its loops, on whose second branch the new version's loops tie
+//! only because whether a loop is summarized at its entry is each run's own history.
 //!
 //! The ties are made only in a check of a pair of versions, which is where two runs of one code meet.
 
@@ -67,6 +77,10 @@ pub(super) struct Ties {
     classes: HashMap<String, String>,
     /// How many times a place or a read took bits made before.
     pub(super) shared: u64,
+    /// Each loop's summary from a state with a key, by the key ([`loops::Summary`]).
+    pub(super) summaries: HashMap<u64, loops::Summary>,
+    /// How many summaries were a summary made before from a state of the same key.
+    pub(super) reused: u64,
 }
 
 impl Ties {

@@ -301,6 +301,10 @@ fn two_runs_of_one_loop_past_the_bound_go_on_from_one_state() {
     let o = mixed("same");
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
     assert!(o.output.contains("covered by invariants") && o.output.contains("before.app.same.Mix.run at pc"), "{}", o.output);
+    // The new version's loop starts from the state the previous version's did, and its summary is that one's,
+    // not searched for again.
+    let native = o.search.as_ref().and_then(|s| s.native.as_ref()).expect("the own checker's account");
+    assert!(native.summaries_reused >= 1 && native.loops.iter().any(|l| l.starts_with("app.same.Mix.run at pc")), "{native:?}");
 }
 
 #[test]
@@ -327,4 +331,34 @@ fn each_mixes_countermodel_differs_on_a_jvm() {
     for (i, v) in MIXES.iter().enumerate() {
         assert_eq!(before[i] == after[i], *v == "same", "{v}: {} | {}", before[i], after[i]);
     }
+}
+
+/// A loop inside one past the bound is given its invariant at its entry once it was given one before (a key
+/// schedule's loops, in each of a hash's rounds), and two versions' states tie only where both give it at the same
+/// point. Here the previous version's run forks after its loops, and the new version runs once on each fork: on the
+/// second, the inner loop had been summarized by the new version on the first fork, but not yet by the new
+/// version's run on this one. Whether it is summarized at its entry is now this path's own history since its version
+/// began, and the second fork is proved as the first is. When that was the check's history, the new version's
+/// inner loop on the second fork started at its entry, the previous version's past the bound, and nothing tied
+/// (checked by hand, 2026-11-17).
+#[test]
+fn two_versions_summarize_a_loop_at_its_entry_alike_on_every_fork() {
+    jvmcontract::tool_tier!();
+    let source = |old: bool| {
+        let check = if old { "" } else { "if (x == 12345) { throw new IllegalArgumentException(); }" };
+        format!(
+            "package app.nested;\npublic final class Mix {{\n    public static int digest(int x) {{\n        {check}\n        int[] t = new int[256];\n        int acc = rounds(t, x);\n        if (acc > 0) {{\n            return acc + t[x & 127];\n        }}\n        return acc - t[x & 63];\n    }}\n    private static int rounds(int[] t, int acc) {{\n        for (int i = 0; i < 100; i++) {{\n            acc = acc * 7 + t[(acc >>> 5) & 255];\n            t[i & 255] ^= acc;\n        }}\n        for (int r = 0; r < 40; r++) {{\n            acc = inner(t, acc);\n        }}\n        return acc;\n    }}\n    private static int inner(int[] t, int acc) {{\n        for (int i = 0; i < 100; i++) {{\n            acc = acc * 31 + t[(acc >>> 3) & 255];\n            t[acc & 255] ^= acc;\n        }}\n        return acc;\n    }}\n}}\n"
+        )
+    };
+    let old = compile("nested-old", &[("app/nested/Mix.java", source(true))], &[]);
+    let new = compile("nested-new", &[("app/nested/Mix.java", source(false))], &[]);
+    let mut o = equivalence::Options::new(&old, &new, "app.nested.Mix#digest");
+    o.engine = Engine::Native;
+    o.jbmc = NO_JBMC.into();
+    o.assume = Some("x != 12345".into());
+    o.work = Some(tmp("nested"));
+    let o = equivalence::run(&o).unwrap();
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let native = o.search.as_ref().and_then(|s| s.native.as_ref()).expect("the own checker's account");
+    assert!(native.loops.iter().any(|l| l.starts_with("app.nested.Mix.inner at pc")) && native.summaries_reused >= 2, "{native:?}");
 }

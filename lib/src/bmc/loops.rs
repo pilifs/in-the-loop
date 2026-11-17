@@ -34,7 +34,15 @@
 //!
 //! In a pair of versions the state the path goes on from is named by the state it was summarized from
 //! ([`ties`]): a summary of the same code from the same state, on the other side or the same, goes on from the same
-//! values, where each side's were free bits of its own.
+//! values, where each side's were free bits of its own. Such a summary is not looked for again: what the first
+//! wrote and its invariant are taken over ([`Summary`]), where the path's condition holds every literal the first
+//! was proved under. And a loop is given its invariant at its entry, without unwinding to the bound, only where
+//! this path summarized it since its version began ([`Path::summarized`]), so that both versions do so at the same
+//! points.
+//!
+//! **What is written** leaves out the places of objects nothing reachable holds: an array a method made and
+//! dropped is never read or written again, and a loop entered once in each of many calls of its method would
+//! otherwise carry every earlier call's arrays into its search ([`reachable`]).
 //!
 //! **That the loop ends** is shown apart: a local of the frame that an iteration leaves strictly greater, or
 //! strictly less, as a signed number, on every way back to the head. Such a loop ends, since the local has
@@ -42,7 +50,7 @@
 //! ([`Outcome::assumed`]): what was proved then holds of the runs in which the loop ends.
 
 use super::*;
-use std::collections::BTreeSet;
+use std::collections::{BTreeSet, HashSet};
 
 /// The most rounds of running an iteration and dropping what it does not keep, before the loop is left unwound.
 const MOST_ROUNDS: usize = 24;
@@ -133,6 +141,18 @@ pub(super) struct Known {
     failed: BTreeSet<(Scalar, Form)>,
 }
 
+/// A loop's summary from a state with a key ([`ties`]), in that key's terms: an object by its number in the state,
+/// a field and a class by the names a previous version's copy has as its own. A summary of the same code from a
+/// state of the same key, on the other side of a pair of versions, is this one: what an iteration writes, the
+/// invariant, whether the loop is shown to end, and the path condition it was proved under.
+#[derive(Debug, Clone)]
+pub(super) struct Summary {
+    written: Vec<(Place, (usize, bool))>,
+    candidates: Vec<Candidate>,
+    ends: bool,
+    cond: Vec<Lit>,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 struct Candidate {
     of: Scalar,
@@ -144,6 +164,44 @@ struct Candidate {
 /// Where each object of a path is, by its allocation.
 fn by_allocation(path: &Path) -> HashMap<u64, usize> {
     path.objects.iter().enumerate().map(|(i, o)| (o.made, i)).collect()
+}
+
+/// The objects of `path` that something it can still read holds, by allocation: whatever a frame's locals or
+/// operand stack, a static field or an interned literal reaches through fields, cells of references and the
+/// objects one is the same as ([`Obj::same`]). An object outside it is one no instruction reads or writes again,
+/// such as the arrays a method made and returned without.
+fn reachable(path: &Path) -> HashSet<u64> {
+    let mut seen: HashSet<usize> = HashSet::new();
+    let mut queue: Vec<usize> = Vec::new();
+    let reach = |v: &Val, seen: &mut HashSet<usize>, queue: &mut Vec<usize>| {
+        for (_, target) in v.options().unwrap_or_default() {
+            if let Some(o) = target.filter(|o| seen.insert(*o)) {
+                queue.push(o);
+            }
+        }
+    };
+    for frame in &path.frames {
+        frame.locals.iter().flatten().chain(&frame.stack).for_each(|v| reach(v, &mut seen, &mut queue));
+    }
+    path.statics.values().for_each(|v| reach(v, &mut seen, &mut queue));
+    for &o in path.literals.values() {
+        if seen.insert(o) {
+            queue.push(o);
+        }
+    }
+    while let Some(o) = queue.pop() {
+        let obj = &path.objects[o];
+        obj.fields.values().for_each(|v| reach(v, &mut seen, &mut queue));
+        if let Some(array) = &obj.array {
+            array.refs.iter().for_each(|v| reach(v, &mut seen, &mut queue));
+        }
+        for &(_, same) in &obj.same {
+            if seen.insert(same) {
+                queue.push(same);
+            }
+        }
+    }
+    seen.into_iter().map(|o| path.objects[o].made).collect()
 }
 
 /// Whether the values `x` of `a` and `y` of `b` are the same: `None` where they differ and one is a reference.
@@ -252,6 +310,98 @@ fn differences(start: &Path, back: &Path) -> Result<Vec<(Place, (usize, bool))>,
         }
     }
     Ok(out)
+}
+
+/// A summary's places, candidates and forms in the terms of a state's key ([`Summary`]), and back in the terms of
+/// a path whose state has that key. Each is `None` where it has no such terms: an object the key does not number,
+/// or a field or static field the path does not hold under that name.
+struct Terms<'a> {
+    previous: &'a crate::relocate::Previous,
+    /// From allocation to number, the state's objects as [`Engine::state_key`] numbers them, and back.
+    numbers: &'a HashMap<u64, i64>,
+    made: HashMap<u64, u64>,
+}
+
+impl<'a> Terms<'a> {
+    fn new(previous: &'a crate::relocate::Previous, numbers: &'a HashMap<u64, i64>) -> Terms<'a> {
+        Terms { previous, numbers, made: numbers.iter().map(|(&made, &n)| (n as u64, made)).collect() }
+    }
+
+    fn name(&self, text: &str) -> String {
+        ties::unprefixed(text, self.previous)
+    }
+
+    fn place_out(&self, place: &Place) -> Option<Place> {
+        Some(match place {
+            Place::Local(slot) => Place::Local(*slot),
+            Place::Field(made, key) => Place::Field(*self.numbers.get(made)? as u64, self.name(key)),
+            Place::Static(class, name) => Place::Static(self.name(class), name.clone()),
+            Place::Cells(made) => Place::Cells(*self.numbers.get(made)? as u64),
+        })
+    }
+
+    fn scalar_out(&self, scalar: &Scalar) -> Option<Scalar> {
+        Some(match scalar {
+            Scalar::Local(slot) => Scalar::Local(*slot),
+            Scalar::Field(made, key) => Scalar::Field(*self.numbers.get(made)? as u64, self.name(key)),
+            Scalar::Static(class, name) => Scalar::Static(self.name(class), name.clone()),
+            Scalar::Cell(made, i) => Scalar::Cell(*self.numbers.get(made)? as u64, *i),
+        })
+    }
+
+    fn form_out(&self, form: &Form) -> Option<Form> {
+        Some(match form {
+            Form::Index(made) => Form::Index(*self.numbers.get(made)? as u64),
+            other => other.clone(),
+        })
+    }
+
+    /// The object of number `n` of `path`, by allocation and by index.
+    fn object(&self, here: &HashMap<u64, usize>, n: u64) -> Option<(u64, usize)> {
+        let made = *self.made.get(&n)?;
+        Some((made, *here.get(&made)?))
+    }
+
+    /// The field of the object `o` of `path` whose name in the key's terms is `key`.
+    fn field(&self, path: &Path, o: usize, key: &str) -> Option<String> {
+        path.objects[o].fields.keys().find(|k| self.name(k) == key).cloned()
+    }
+
+    /// The static field of `path` whose class in the key's terms is `class`.
+    fn static_class(&self, path: &Path, class: &str, name: &str) -> Option<String> {
+        path.statics.keys().find(|(c, n)| n == name && self.name(c) == class).map(|(c, _)| c.clone())
+    }
+
+    fn place_in(&self, path: &Path, here: &HashMap<u64, usize>, place: &Place) -> Option<Place> {
+        Some(match place {
+            Place::Local(slot) => Place::Local(*slot),
+            Place::Field(n, key) => {
+                let (made, o) = self.object(here, *n)?;
+                Place::Field(made, self.field(path, o, key)?)
+            }
+            Place::Static(class, name) => Place::Static(self.static_class(path, class, name)?, name.clone()),
+            Place::Cells(n) => Place::Cells(self.object(here, *n)?.0),
+        })
+    }
+
+    fn scalar_in(&self, path: &Path, here: &HashMap<u64, usize>, scalar: &Scalar) -> Option<Scalar> {
+        Some(match scalar {
+            Scalar::Local(slot) => Scalar::Local(*slot),
+            Scalar::Field(n, key) => {
+                let (made, o) = self.object(here, *n)?;
+                Scalar::Field(made, self.field(path, o, key)?)
+            }
+            Scalar::Static(class, name) => Scalar::Static(self.static_class(path, class, name)?, name.clone()),
+            Scalar::Cell(n, i) => Scalar::Cell(self.object(here, *n)?.0, *i),
+        })
+    }
+
+    fn form_in(&self, here: &HashMap<u64, usize>, form: &Form) -> Option<Form> {
+        Some(match form {
+            Form::Index(n) => Form::Index(self.object(here, *n)?.0),
+            other => other.clone(),
+        })
+    }
 }
 
 impl Engine<'_> {
@@ -511,14 +661,20 @@ impl Engine<'_> {
     /// a path that is past a summarized loop already: the loop is then given its invariant at once, of all its
     /// iterations, and not unwound to the bound first. A loop of many iterations inside one of many more (a key
     /// schedule's, run for each of a hash's rounds) is otherwise unwound to the bound each time the outer one
-    /// goes round. Where no invariant is found the loop is unwound as any other.
+    /// goes round. Where no invariant is found the loop is unwound as any other. In a pair of versions the loop is
+    /// one this path summarized since its version began ([`Path::summarized`]), so that whether a loop is given its
+    /// invariant at its entry or past the bound is the same on both sides, and their states tie ([`ties`]).
     pub(super) fn summarize_at_entry(&mut self, path: &mut Path) -> Result<bool, Stop> {
         if !path.loose || self.known_loops.is_empty() {
             return Ok(false);
         }
         let frame = path.frames.last().expect("a frame");
         let pc = frame.pc();
-        if !frame.code.loops.iter().any(|(head, _)| *head == pc) || frame.back_edges.contains_key(&pc) || frame.summarized.contains(&pc) || !self.known_loops.contains_key(&(frame.class.name.clone(), frame.method.clone(), pc)) {
+        let known = match &self.previous {
+            Some(previous) => path.summarized.contains(&(ties::unprefixed(&frame.class.name, previous), frame.method.clone(), pc)),
+            None => self.known_loops.contains_key(&(frame.class.name.clone(), frame.method.clone(), pc)),
+        };
+        if !frame.code.loops.iter().any(|(head, _)| *head == pc) || frame.back_edges.contains_key(&pc) || frame.summarized.contains(&pc) || !known {
             return Ok(false);
         }
         if self.covered(path, pc, pc)?.is_some() {
@@ -549,15 +705,34 @@ impl Engine<'_> {
         let top = base.frames.last_mut().expect("a frame");
         top.at = at;
         top.forget_dead();
+        // On the main path of a pair of versions, a state whose key a summary was made from goes on as that one.
+        let tie = if self.indexed.is_none() { self.state_key(&base) } else { None };
+        if let Some(tie) = &tie {
+            if let Some(tied) = self.reused(&base, tie)? {
+                let (written, ends) = tied.1;
+                if !ends {
+                    self.assumed.insert(format!("the loop of {what} ends: no local of its frame was found that every iteration leaves greater, or every iteration leaves less, so what is proved holds of the runs in which it ends"));
+                }
+                self.loops.insert(what);
+                let failed = self.known_loops.get(&known).map(|k| k.failed.clone()).unwrap_or_default();
+                self.known_loops.insert(known, Known { written, failed });
+                *path = tied.0;
+                self.passed(path, head);
+                return Ok(None);
+            }
+        }
         // What the loop wrote the last time it was summarized, where the state holds such a place, and no
-        // candidate of a shape an iteration did not keep then.
+        // candidate of a shape an iteration did not keep then. A place of an object nothing reachable holds (an
+        // array an earlier call of the loop's method made and dropped) is one no iteration writes: it is left out,
+        // and a loop entered once for each of many calls does not carry every earlier call's arrays.
         let Known { mut written, failed } = self.known_loops.get(&known).cloned().unwrap_or_default();
         let here = by_allocation(&base);
+        let held = reachable(&base);
         written.retain(|place, was| match place {
             Place::Local(slot) => base.frames.last().and_then(|f| f.locals.get(*slot)).and_then(|v| v.as_ref()).and_then(kind) == Some(*was),
-            Place::Field(made, key) => here.get(made).and_then(|&o| base.objects[o].fields.get(key)).and_then(kind) == Some(*was),
+            Place::Field(made, key) => held.contains(made) && here.get(made).and_then(|&o| base.objects[o].fields.get(key)).and_then(kind) == Some(*was),
             Place::Static(class, name) => base.statics.get(&(class.clone(), name.clone())).and_then(kind) == Some(*was),
-            Place::Cells(made) => here.get(made).is_some_and(|&o| base.objects[o].class.starts_with('[') && base.objects[o].array.as_ref().is_some_and(|a| cell_width(&a.element) == was.0)),
+            Place::Cells(made) => held.contains(made) && here.get(made).is_some_and(|&o| base.objects[o].class.starts_with('[') && base.objects[o].array.as_ref().is_some_and(|a| cell_width(&a.element) == was.0)),
         });
         let mut failed = failed;
         let mut candidates = if written.is_empty() { Vec::new() } else { self.candidates(&base, &written, &failed) };
@@ -699,7 +874,8 @@ impl Engine<'_> {
                 continue;
             }
             // Inductive: the path goes on from the head in the state that stands for every later iteration.
-            if !self.ends(&start, &backs, &written)? {
+            let ends = self.ends(&start, &backs, &written)?;
+            if !ends {
                 self.assumed.insert(format!("the loop of {what} ends: no local of its frame was found that every iteration leaves greater, or every iteration leaves less, so what is proved holds of the runs in which it ends"));
             }
             self.loops.insert(what);
@@ -715,12 +891,35 @@ impl Engine<'_> {
                 }
             }
             self.known_loops.insert(known, Known { written: written.clone(), failed });
-            *path = self.tied(&base, start, &written, &candidates)?;
-            path.loose = true;
-            path.frames.last_mut().expect("a frame").summarized.insert(head);
+            if let (Some((state, numbers)), Some(previous)) = (&tie, self.previous.clone()) {
+                let terms = Terms::new(&previous, numbers);
+                let written: Option<Vec<_>> = written.iter().map(|(place, kind)| Some((terms.place_out(place)?, *kind))).collect();
+                let candidates: Option<Vec<_>> = candidates.iter().map(|c| Some(Candidate { of: terms.scalar_out(&c.of)?, form: terms.form_out(&c.form)?, shown: true })).collect();
+                if let (Some(written), Some(candidates)) = (written, candidates) {
+                    self.ties.summaries.entry(*state).or_insert(Summary { written, candidates, ends, cond: base.cond.clone() });
+                }
+            }
+            *path = match self.tie(&base, &written, &candidates)? {
+                Some(tied) => tied,
+                None => start,
+            };
+            self.passed(path, head);
             return Ok(None);
         }
         unwound(format!("none was found in {MOST_ROUNDS} rounds"))
+    }
+
+    /// Marks the path as past the loop headed at `head` of its top frame, which an invariant covers.
+    fn passed(&mut self, path: &mut Path, head: u32) {
+        path.loose = true;
+        let frame = path.frames.last_mut().expect("a frame");
+        frame.summarized.insert(head);
+        if let Some(previous) = &self.previous {
+            let at = (ties::unprefixed(&frame.class.name, previous), frame.method.clone(), head);
+            if !path.summarized.contains(&at) {
+                Rc::make_mut(&mut path.summarized).insert(at);
+            }
+        }
     }
 
     /// The state the path goes on from past the loop: `start`, the state the invariant was shown of, with the bits
@@ -728,8 +927,8 @@ impl Engine<'_> {
     /// a summary of the same code from the same state, on the other side of a pair of versions, goes on from the
     /// same values. The invariant is stated of them as of `start`'s. Where no input takes the path in that state
     /// (bits named before, which the path has said things of), it is `start`, untied.
-    fn tied(&mut self, base: &Path, start: Path, written: &BTreeMap<Place, (usize, bool)>, candidates: &[Candidate]) -> Result<Path, Stop> {
-        let Some(tie) = self.state_key(base) else { return Ok(start) };
+    fn tie(&mut self, base: &Path, written: &BTreeMap<Place, (usize, bool)>, candidates: &[Candidate]) -> Result<Option<Path>, Stop> {
+        let Some(tie) = self.state_key(base) else { return Ok(None) };
         let mut tied = base.clone();
         let any = self.havoc(&mut tied, written, Some(&tie));
         let there = by_allocation(&tied);
@@ -754,12 +953,37 @@ impl Engine<'_> {
         }
         if models.is_empty() {
             if !self.solve(&tied.cond)? {
-                return Ok(start);
+                return Ok(None);
             }
             models.push(self.b.snapshot());
         }
         tied.models = models;
-        Ok(tied)
+        Ok(Some(tied))
+    }
+
+    /// The state the path goes on from past the loop where a summary was made from a state of the key `tie` that
+    /// `base` is in ([`Summary`]), on this path or the other side's, with what the loop writes and whether it is
+    /// shown to end: the summary's places and invariant in `base`'s terms, tied as that summary's were ([`tie`]).
+    /// `None` where none was, or where it does not carry over: a place or candidate `base` has no terms for, a
+    /// path condition that does not hold every literal the summary was proved under, or a tied state no input
+    /// takes the path in. An iteration from a state of one key runs the same code on the same values (the same
+    /// bits) and writes the same places, so the invariant shown inductive under the summary's condition is
+    /// inductive under a condition that has it, and holds at the head where it held at the other's.
+    #[allow(clippy::type_complexity)]
+    fn reused(&mut self, base: &Path, tie: &(u64, HashMap<u64, i64>)) -> Result<Option<(Path, (BTreeMap<Place, (usize, bool)>, bool))>, Stop> {
+        let (Some(summary), Some(previous)) = (self.ties.summaries.get(&tie.0).cloned(), self.previous.clone()) else { return Ok(None) };
+        let had: HashSet<Lit> = base.cond.iter().copied().collect();
+        if !summary.cond.iter().all(|lit| had.contains(lit)) {
+            return Ok(None);
+        }
+        let terms = Terms::new(&previous, &tie.1);
+        let here = by_allocation(base);
+        let written: Option<BTreeMap<_, _>> = summary.written.iter().map(|(place, kind)| Some((terms.place_in(base, &here, place)?, *kind))).collect();
+        let candidates: Option<Vec<_>> = summary.candidates.iter().map(|c| Some(Candidate { of: terms.scalar_in(base, &here, &c.of)?, form: terms.form_in(&here, &c.form)?, shown: true })).collect();
+        let (Some(written), Some(candidates)) = (written, candidates) else { return Ok(None) };
+        let Some(tied) = self.tie(base, &written, &candidates)? else { return Ok(None) };
+        self.ties.reused += 1;
+        Ok(Some((tied, (written, summary.ends))))
     }
 
     /// The candidates among `candidates` that hold in the state `base`, of every input that takes the path there.

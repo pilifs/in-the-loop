@@ -12,30 +12,31 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.021Z",
-  "ended": "2026-11-17T16:53:50.967Z",
-  "duration_seconds": 14220,
+  "ended": "2026-11-17T18:09:25.870Z",
+  "duration_seconds": 18755,
   "stats": {
-    "turns": 26,
-    "api_calls": 379,
-    "tool_calls": 379,
+    "turns": 31,
+    "api_calls": 483,
+    "tool_calls": 483,
     "tool_errors": 4,
-    "compactions": 5,
+    "compactions": 6,
     "peak_context_tokens": 244847,
     "usage": {
-      "input_tokens": 762,
-      "output_tokens": 336971,
-      "cache_read_input_tokens": 45464836,
-      "cache_creation_input_tokens": 984775
+      "input_tokens": 972,
+      "output_tokens": 416086,
+      "cache_read_input_tokens": 60227243,
+      "cache_creation_input_tokens": 1197724
     }
   },
   "tools": {
-    "Bash": 368,
-    "Edit": 7,
+    "Bash": 468,
+    "Edit": 11,
     "Write": 3,
     "ToolSearch": 1
   },
   "files_touched": [
     "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
+    "lib/src/bmc/loops.rs",
     "lib/src/bmc/mod.rs",
     "lib/src/bmc/ties.rs",
     "lib/src/shared.rs",
@@ -116,24 +117,38 @@
     {
       "index": 5,
       "started": "2026-11-17T16:26:25.312Z",
-      "ended": "2026-11-17T16:53:50.967Z",
-      "turns": 4,
-      "api_calls": 61,
+      "ended": "2026-11-17T16:54:27.702Z",
+      "turns": 5,
+      "api_calls": 64,
       "usage": {
-        "input_tokens": 124,
-        "output_tokens": 46347,
-        "cache_read_input_tokens": 6425039,
-        "cache_creation_input_tokens": 147913
+        "input_tokens": 132,
+        "output_tokens": 47570,
+        "cache_read_input_tokens": 6911473,
+        "cache_creation_input_tokens": 150833
       },
-      "peak_context_tokens": 161186
+      "peak_context_tokens": 164108
+    },
+    {
+      "index": 6,
+      "started": "2026-11-17T16:55:20.357Z",
+      "ended": "2026-11-17T18:09:25.870Z",
+      "turns": 4,
+      "api_calls": 101,
+      "usage": {
+        "input_tokens": 202,
+        "output_tokens": 77892,
+        "cache_read_input_tokens": 14275973,
+        "cache_creation_input_tokens": 210029
+      },
+      "peak_context_tokens": 223302
     }
   ],
   "log": {
-    "sha256": "8026afd239d466a9a3185bb713b604a030b2247358b75659f8d6e3559ccf4b33",
-    "bytes": 10551194,
-    "lines": 3447,
-    "gzip_bytes": 1800948,
-    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/8026afd239d466a9a3185bb713b604a030b2247358b75659f8d6e3559ccf4b33.jsonl.gz"
+    "sha256": "80d942c7774925a8b996c5c8ed2ea5cff6cf76ddb5c7cd226ab25dc3e0a7e7ab",
+    "bytes": 12710256,
+    "lines": 4307,
+    "gzip_bytes": 2132706,
+    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/80d942c7774925a8b996c5c8ed2ea5cff6cf76ddb5c7cd226ab25dc3e0a7e7ab.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -170,44 +185,12 @@
       "log_sha256": "a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de"
     },
     {
-      "change_id": "rkxyyqwnvlqztnwypvtqzvrmstlzmntz",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Every example's proof driver records identities, ends the run on a mutant that is not the replay's, and marks a trial",
-      "body": "The evidence stream's step 2. examples/tools/beside_route.py holds what the five drivers (examples 286 to 290) did each in their own copy: the pinned JARs, the constructed mutant, the record (accept.record's evidence.json) and the verdict. Each driver keeps its own entry, lemmas, models, observed initializers and verifier arguments. What 289's driver alone did, all five now do: the record of the claim, the bound, each JAR, the adapter, the verifier's binary and the driver; a mutant whose JAR is not the one the newest mutant replay's receipt records ends the run; --max-array-length or --unwind (now on every driver) marks the run a trial.\n\nFinding: 286's, 287's and 288's drivers built their mutant by another recipe than the route's (a fixed --release, no -g or -parameters, every entry recompressed), so their JAR was not the bytes the mutant replay ran, which is why acceptance could not tie their mutant-security answers to the replay. The shared module uses the route's published-mutant recipe; run offline on the pinned JARs it gives each of the five examples exactly the JAR its replay ran (286 48323d21, 287 1d099295, 288 5c72df16, 289 a3a3dbff, 290 4ee35d0b).",
-      "log_sha256": "a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de"
-    },
-    {
       "change_id": "yypzyxmwluytmwrouqvxqkpppqzpqszn",
       "commit_id": null,
       "immutable": false,
       "summary": "Countermodels of the pair of versions: five false proofs of agreement, reproduced and handed to the preservation stream",
       "body": "The challenge stream's item 1. lib/tests/fixtures/pairing-countermodels holds two versions of five methods that differ when each runs alone on a JVM and that RegressionPair.agree (lib/src/pairing.rs) proves agreeing: the previous version sets the default locale the new one lowers under; a library static shared without --before-classpath; two unrelated RuntimeExceptions, and IllegalArgumentException against a subclass, compared by category; a scope that is false everywhere but sets the default locale before both calls. All five were Verified on the checker at lupovnmv. The order of the calls is observable: with the versions' roles swapped, and with --before-classpath, the shared-static case is a violation.",
       "log_sha256": "a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de"
-    },
-    {
-      "change_id": "kwyxmlnsmmwrtvqwwloppwnsrkyknwks",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Merge the shared driver module, the pairing countermodels and the run-streams test fix into the preservation stream",
-      "body": "Takes in three commits the inbox asked for: rkxyyqwnvlqz (every example's driver on examples/tools/beside_route.py, I002), yypzyxmwluyt (the challenge stream's five pairing countermodels, I003) and smxzwqlr (the run-streams tests no longer inherit a real watcher, I001). Merged rather than rebased, so this stream's own commits keep their ids. Example 287's driver conflicted: it is the evidence stream's version, with the preservation task's equivalence branch (the pair's adapters, --before-classpath, --assume where the claim has one, --unchanged-unless) put back as the task's own arguments. The generated trace files were regenerated (sync.py regenerate) and lib/tests/costs.json re-estimated.",
-      "log_sha256": "a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de"
-    },
-    {
-      "change_id": "zmvkptqzpvkxuvprtzsuzkrpwtyoovtq",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "The pair of versions compares exceptions by class and starts each version as if it ran alone (verification pending)",
-      "body": "The challenge stream's five countermodels of the pair (lib/tests/fixtures/pairing-countermodels: a default locale the previous version sets, a library static shared without --before-classpath, two unrelated RuntimeExceptions, an IllegalArgumentException against its subclass, a scope that sets the default locale) were each proved to agree, though the versions differ when each runs alone. RegressionPair (lib/src/pairing.rs) now compares exceptions by class, through getClass().getName() with a copy's 'before.' prefix taken off, and calls fresh() before the scope and before each version. At fresh() the checker (bmc/mod.rs) and the interpreter clear the path's static fields and class initialization, which hold the default locale too, so no version starts in what an earlier one left; on a JVM fresh() sets the default locale back. The checker models getClass() of a Throwable the run made (bmc/runtime.rs), as its handlers already take it for that class. The README's checker-side test is added to lib/tests/pairing_countermodels.rs: it failed on all five before and passes now, each of the seven runs a violation confirmed by replay. Limit, stated in pairing.rs and lib/README.md: on a JVM a library's statics stay shared without --before-classpath, so a witness only they show is dropped there as no reproduction, never proved.",
-      "log_sha256": "b17c45752115266256b1c406ca0a71b7f65fbc6938ef86b2a85a06445afee80e"
-    },
-    {
-      "change_id": "unswkkxpxtvktmynvykylvnlmskyylwp",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "The checker models a line logged at WARNING as spring-jcl logs it, so example 287's preservation reaches both sides' bcrypt",
-      "body": "java.util.logging at INFO, WARNING and SEVERE is now modelled under the JDK's default configuration (lib/src/bmc/runtime.rs). isLoggable is true there. A LogRecord's constructor of a level and a message (NullPointerException for a null level) and its setters do nothing a check observes. A Logger's resource bundle and bundle name are null. Logger.log(record) returns normally under a second stated assumption: the record goes only to the root's default ConsoleHandler, and no logger has a filter, handler or bundle. The handler formats the record by calling its getters, which a subclass may override. So log is modelled only for a record whose class below LogRecord writes nothing but its own fields and calls nothing but its own methods, LogRecord's, String's, StackTraceElement's and a Throwable's constructors and getters. A bytecode scan checks this, and spring-jcl's LocationResolvingLogRecord passes. A logging call the model does not take is now the gap it is to a checker without the model; before, an isLoggable the model declined was counted exact. String.valueOf(Object) of a String or null is modelled before the static classification, so the gap scan still names it for other objects.\n\nCountermodels came first, in lib/tests/fixtures/claims/claims/Logged.java. On a JVM each returns false or throws where a model that took logging for granted would say true: a record that counts its formatting, a level, a filter and a handler set on a logger, and valueOf of an object whose toString counts. All five now stop the proof. With the confinement scan disabled, the counting record was falsely verified. The claims test a_line_logged_at_warning_returns_normally_and_what_would_make_logging_observable_stops_the_proof also proves the warned path, the null cases and loud. P.loud moved there, since INFO is now modelled. lib/README.md and 287's notes say what changed.\n\nProbes on example 287's preservation: a trial at bound 8 verifies. At the claim's bound of 80, with a 200 s timeout, the pair reaches both sides' bcrypt and ends on a spurious counterexample past the invariants of BCrypt.crypt_raw and ekskey; a JVM run shows it is no counterexample. This is the relational failure the stream's brief predicts, and step 2 starts from it. Verified with test_costs.py run --changed (26 of 26), the lint, and validate_example.py 287.",
-      "log_sha256": "fda3769957a6e5d712f818f60dd7bc1e81d57b724b0cdd8b5e28f6cc89e81ea9"
     },
     {
       "change_id": "mqkqvvmwlxsrznyvuxsotztpnkkptwqp",
@@ -248,6 +231,94 @@
       "summary": "Countermodels of the fresh pair of versions: a scope that writes the caller's array, and two exception classes of one name, each proved to agree",
       "body": "Item 5 of the challenge brief, against the preservation stream's zmvkptqz (lib/src/pairing.rs: each version from a fresh state, an exception compared by its class's name). Two pairs of versions a caller tells apart when each runs alone on a JVM are each Verified, non-vacuous, on the preservation line's checker (built apart). first: the scope is called on the caller's own arrays and each version's copy is taken after it, so a scope that zeroes a cell makes the versions agree (alone on {5}: 5 against 0); this line's checker proves it too. failing: two classes named app.Failure, one an IllegalArgumentException and one an IllegalStateException, are one answer by name, though a caller's handler catches one and not the other. Fixtures in lib/tests/fixtures/fresh-pair-countermodels with the commands, the audit and the checker-side test, which fails on both there; lib/tests/fresh_pair_countermodels.rs (tool tier) holds them to a JVM. The pairing is the preservation stream's, so no refusal is committed: the test goes to it as a failure item. Audit: 288-290's allowed changes only read; 289's and 290's accepted preservation answers are already refused by the evidence stream's ymzlyksq until a rerun. Verified: test_costs.py run --changed (default tier, 38 binaries) passed; estimate and tag.",
       "log_sha256": "2eda7e05ab43a907937cdc85d0bd27864bfde026b2c0bcc1c205e8710dd1d3a4"
+    },
+    {
+      "change_id": "lqyqxwqvppkpyzzumylosktwknnqrurl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of the models on request under assumed gaps: three collections a gap makes, each proved empty where a JVM finds one element",
+      "body": "Item 5 of the challenge stream, against the state stream's models on request of ArrayDeque and HashSet (kztoupry). Under --gaps assume, a constructor or method a model does not keep makes an object with no field written. The model's size() then reads those fields, though without the model that call has no assume form. The fixture mc.Gapped (lib/tests/fixtures/model-countermodels) has three cases: ArrayDeque.clone(), whose stated assumptions are all true of the JDK; ArrayDeque(Collection); and ArrayList(Collection), which also reproduces on this line. Each is Verified as result == 0 on the state stream's checker (qrqtplwq), and a JVM gives 1. lib/tests/model_countermodels.rs holds the fixture to a JVM. The checker-side test is in the README, where it fails on all three on the state stream's line, and goes to that stream through its inbox, since the models are its this run. The README also lists what was tried and found guarded: the left-out methods under strict, HashSet(int) under advised, a key whose hash changes, a lemma over a deque, and the exception classes. Audit: no example task runs under --gaps assume, so no accepted result is affected. Verified with test_costs.py run --changed (it passed) and the checker-side test run on a copy of the state stream's tree.",
+      "log_sha256": "ead8e28575e05eb0ba6cebc7020a937be38829f3070e13b2cc34d2460895314f"
+    },
+    {
+      "change_id": "synvlnlsowtxputokxmmzpuponxoqkry",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of a write set: a protected field written before a declared exception, and through one bean passed twice, each proved unchanged",
+      "body": "Challenge stream, item 5, against the state stream's write set (qrqtplwq, prove --writes). The frame is conjoined to the assertion, so it is read only after a normal return and only on distinct object inputs. lib/tests/fixtures/frame-countermodels/fc/Framed.java has three methods that a JVM sees writing the protected admin field, each Verified on the state checker built apart at qrqtplwq and at vwktulky. Bean#rename, under --throws 'java.lang.IllegalArgumentException when length < 0', sets admin and then throws. Bean#promote(other), with the write set other.admin, does it when called as b.promote(b). Static grant(from, to), with the write set to.admin, does it when called as grant(b, b). lib/tests/frame_countermodels.rs holds the fixture to a JVM. The README has the table, the commands, the fix options and the checker-side test, which fails on all three on the state line. That test goes to domain-advances-state as a failure item, since the write set is its rule this run, so no refusal is committed here.\n\nTried and found guarded: a write through a callee, a lambda or a recursion (refuted by the frame); Locale.setDefault (refused by name); a StringBuilder parameter (not taken); an inherited field (fields_of refuses a subclass). The identity of a String field after 16 String operations matches JDK 25 or is a gap. Audit: no example task passes --writes on any line, so no accepted result rests on these holes. Verified with test_costs.py run --changed (passed) and the checker-side test run on both state commits (fails, as it should). Progress also records state-I004, and the evidence session's trace stamps on mqkqvvmw and yypzyxmw for the watcher.",
+      "log_sha256": "ead8e28575e05eb0ba6cebc7020a937be38829f3070e13b2cc34d2460895314f"
+    },
+    {
+      "change_id": "qmtxwupnmwmytxtyqsqmwwsxkrllypvx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of an effect contract at a call: a final static set from a caller's setting, one bean passed twice, and a subclass argument, each a caller's property proved where a JVM breaks it",
+      "body": "The state stream's vwktulky lets a setter's checked write set (a lemma with writes:) stand in for its calls through a stub that makes the stated writes. Three callers in lib/tests/fixtures/effect-countermodels each have a proved contract and a property that is Verified on that checker (built apart) while a JVM breaks it. lockedLevel: the setter reads a final static that its class's initializer takes from Config.locked, which the caller sets first, and the contract's proof initialized the class fresh (a JVM gives 0 for 5). pairedLevel: bean.setBoth(bean, mine, theirs) writes the argument's field and then the receiver's, while the stub writes in the writes: order, and the contract's proof never passes one object twice (a JVM gives mine). linkedAdmin: an argument of a subclass whose override, called by the setter, grants admin, since only the receiver's class is checked to be exact.\n\nlib/tests/effect_countermodels.rs holds the fixtures to a JVM. The README has the checker-side test, which fails on all three at vwktulky; it goes to domain-advances-state as a failure item, since the effect contract is that stream's this run, so no refusal is committed here. Also recorded: an exceptional exit does not carry into a caller (throws: is refused, and an undeclared throw refutes the contract, tried), aliasing does, and prove --may-alias this,other already makes the frame refute the earlier promote countermodel. The stub writes a nested object-parameter class with its $, which javac rejects (a refusal). Audit: no example task uses a writes: lemma or --writes on any line. test_costs run --changed and lint pass. The brief is not wrong.",
+      "log_sha256": "ead8e28575e05eb0ba6cebc7020a937be38829f3070e13b2cc34d2460895314f"
+    },
+    {
+      "change_id": "zwrpkwnlqpyxtyozklmopuoomwppwunm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of the acceptance check: seven controls accept.py accepts for an answer its evidence does not give",
+      "body": "The challenge stream's item 7. Seven controls were written as tests on test_accept.py's own made-up checkout and run against examples/tools/accept.py on the evidence line (krptozvm). Each fails there because accept.py accepts the answer (10 failures with subtests):\n- The outcome's target is matched as a substring of the invocation's entry or of an assumption's text. Another method, the same class in another package, and a method an assumption mentions all stand in for the entry.\n- The step's driver is any word ending in proofs/prove.py that contains the folder, so a driver of another checkout counts, and so does echo.\n- A witness's null inputs are not held to the claim's nullable.\n- A witness is not held to the claim's assumption.\n- A task's bounds can lower the claim's.\n- For a task with no allowed change, the pair is not asked whether it ran with one.\nA vacuity witness inside the allowed change is guarded where the task has one (vacuity.outside, ymzlyksq).\n\nThe controls, the fix options and the audit are in lib/tests/fixtures/accept-countermodels/README.md. accept.py is the evidence stream's, so nothing in it is changed here, and the controls go to that stream as a failure item.\n\nAudit: given the source commits, the evidence line accepts 13 answers (286, 287, 288, 289, 290), and none rests on these holes. 286 and 287 pass the entry check only by the substring route, through the claim's adapter-entry assumption, so a fix must keep it.",
+      "log_sha256": "ead8e28575e05eb0ba6cebc7020a937be38829f3070e13b2cc34d2460895314f"
+    },
+    {
+      "change_id": "lqvlvwsmkumusvtrtllpknsrnqvpkzzo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of three rules that landed, and three wrong implementations the claims of 287, 307 and 286's protected state accept",
+      "body": "Item 5 of the challenge stream, on the other streams' newest rules, each built apart with its sources touched and checked against the release CLI. Nine false proofs, each Verified where a JVM says otherwise (lib/tests/fixtures/rule-countermodels, held to a JVM by lib/tests/rule_countermodels.rs; the README has a checker-side test per stream, which fails on that stream's line):\n- the state stream's refusal under --gaps assume (qysmsruu) keys on the declared return class, so HashSet.clone() and Date.clone(), declared to return Object, are proved to return no HashSet and no Date (the Date case also on this line, older than the run);\n- the evidence stream's binding of an observation (lzpqszyo) leaves out a supertype's static and a superinterface's array written by the initializer, a property read through Properties.get (the result says it read none), the default time zone and the environment;\n- the preservation stream's WARNING-logging model (unswkkxp) takes a LogRecord subclass as confined when its getMessage writes the record the caller holds, or throws a Throwable that StreamHandler.publish lets out.\nEach goes to its stream as a failure item. The state stream's I004 fix and the evidence stream's I004 binding pass their own tests. Audit: no example runs under assume; 290's five observed classes (javap on the pinned JARs) write only their own statics and read only the stated locale; 287's preservation logs through a record nothing reads after log. Nothing for the watcher.\n\nItem 6: a mutant under controls/ for each of 287 (check-only-guard.patch: encode hashes a 73-byte password again, whose 72-byte prefix then matches), 307 (default-charset.patch: getBytes(), UTF-8 on JDK 18+, differs on 17 probes under COMPAT) and 286 (first-suppressed-only.patch: later values bound unchecked; the probes catch it, no claim does). Each is the fix's on every probe the claims cover, each claim is predicted to accept it, and each example's notes say why.",
+      "log_sha256": "ead8e28575e05eb0ba6cebc7020a937be38829f3070e13b2cc34d2460895314f"
+    },
+    {
+      "change_id": "ukukylmumqmzxxtokpspxklutzvzxtwy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of an effect contract past its fix: a final field a caller's object was made with, read as if the proof's constructor had made it",
+      "body": "The challenge stream's item 5 on the state stream's fixes for its inbox items I005 (sltlykpk, a write set's frame on a declared exceptional exit and over inputs that may be one object) and I007 (nslmqyry, an effect contract reads no non-constant static and stands in only for arguments of exactly their classes). Built apart at nslmqyry, the earlier frame and effect countermodels all pass: both fixes hold.\n\nNew hole: inside an effect contract's proof the read gate exempts a final instance field of an object that was there before the call, but the proof makes the receiver and arguments with their constructors in the harness's fresh state, while a caller's object was made in its own. Two callers in lib/tests/fixtures/contract-countermodels (cc.Held) are Verified 'result == level' at nslmqyry, stating no assumption, where a JVM gives 0 for 5: a receiver whose 'final boolean locked = Config.locked' was made with the setting on, and the same through an argument's final field. lib/tests/contract_countermodels.rs holds the fixture to a JVM (tool tier); the checker-side test is in the README and fails on both at nslmqyry, as it should. The effect contract is the state stream's, so nothing in lib/src changes here; it goes to that stream as a failure item. Tried and guarded: a contract whose call starts a class initializer (Engine::initializes_in_frame, the first case of inbox item domain-advances-challenge-I002) and a receiver of a class with two constructors.",
+      "log_sha256": "ead8e28575e05eb0ba6cebc7020a937be38829f3070e13b2cc34d2460895314f"
+    },
+    {
+      "change_id": "pklttqzwropkztlvvmlpxwskyrmsprlw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of the pair of versions past its fix: an exception's interface, message and own field, each proved to agree where a caller's handler tells the versions apart",
+      "body": "Challenge stream, item 5, against the preservation stream's wokytpkz (lib/src/pairing.rs: the scope read on copies of its own, an exception compared by its class's name and the names of every class above it). Built apart at wokytpkz with the sources touched, the earlier pairing and fresh-pair countermodel tests pass, checker-side tests included: both fixes hold, and a changed superclass's superclass under kept names is refuted.\n\nNew fixture lib/tests/fixtures/thrown-pair-countermodels with lib/tests/thrown_pair_countermodels.rs (tool tier), which holds it to a JVM. Three pairs are each Verified 'agree on every input where k >= 0 && k < 4' at wokytpkz, non-vacuous and with no assumption stated, where a caller's handler tells the versions apart: marked (an interface, the module's documented limit), messaged (the message) and coded (a field of the exception's own class). The README's checker-side test fails on exactly those three there. The pairing is the preservation stream's, so nothing in lib/src changes here; the test goes to it as a failure item.\n\nAudit: 289's and 290's preservation claims say 'throw the same exception'. In their pinned JARs (hashes checked), no class named *Exception or *Error differs between the releases in what it extends, implements or holds (javap -p, 101 and 191 classes), so the interface and field cases cannot occur there. Messages were not compared. Notes are added to both examples. Nothing for the watcher.\n\nVerified with test_costs.py run --changed (all passed) and validate_example.py 289 and 290.",
+      "log_sha256": "ead8e28575e05eb0ba6cebc7020a937be38829f3070e13b2cc34d2460895314f"
+    },
+    {
+      "change_id": "rkxyyqwnvlqztnwypvtqzvrmstlzmntz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Every example's proof driver records identities, ends the run on a mutant that is not the replay's, and marks a trial",
+      "body": "The evidence stream's step 2. examples/tools/beside_route.py holds what the five drivers (examples 286 to 290) did each in their own copy: the pinned JARs, the constructed mutant, the record (accept.record's evidence.json) and the verdict. Each driver keeps its own entry, lemmas, models, observed initializers and verifier arguments. What 289's driver alone did, all five now do: the record of the claim, the bound, each JAR, the adapter, the verifier's binary and the driver; a mutant whose JAR is not the one the newest mutant replay's receipt records ends the run; --max-array-length or --unwind (now on every driver) marks the run a trial.\n\nFinding: 286's, 287's and 288's drivers built their mutant by another recipe than the route's (a fixed --release, no -g or -parameters, every entry recompressed), so their JAR was not the bytes the mutant replay ran, which is why acceptance could not tie their mutant-security answers to the replay. The shared module uses the route's published-mutant recipe; run offline on the pinned JARs it gives each of the five examples exactly the JAR its replay ran (286 48323d21, 287 1d099295, 288 5c72df16, 289 a3a3dbff, 290 4ee35d0b).",
+      "log_sha256": "a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de"
+    },
+    {
+      "change_id": "kwyxmlnsmmwrtvqwwloppwnsrkyknwks",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the shared driver module, the pairing countermodels and the run-streams test fix into the preservation stream",
+      "body": "Takes in three commits the inbox asked for: rkxyyqwnvlqz (every example's driver on examples/tools/beside_route.py, I002), yypzyxmwluyt (the challenge stream's five pairing countermodels, I003) and smxzwqlr (the run-streams tests no longer inherit a real watcher, I001). Merged rather than rebased, so this stream's own commits keep their ids. Example 287's driver conflicted: it is the evidence stream's version, with the preservation task's equivalence branch (the pair's adapters, --before-classpath, --assume where the claim has one, --unchanged-unless) put back as the task's own arguments. The generated trace files were regenerated (sync.py regenerate) and lib/tests/costs.json re-estimated.",
+      "log_sha256": "a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de"
+    },
+    {
+      "change_id": "zmvkptqzpvkxuvprtzsuzkrpwtyoovtq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The pair of versions compares exceptions by class and starts each version as if it ran alone (verification pending)",
+      "body": "The challenge stream's five countermodels of the pair (lib/tests/fixtures/pairing-countermodels: a default locale the previous version sets, a library static shared without --before-classpath, two unrelated RuntimeExceptions, an IllegalArgumentException against its subclass, a scope that sets the default locale) were each proved to agree, though the versions differ when each runs alone. RegressionPair (lib/src/pairing.rs) now compares exceptions by class, through getClass().getName() with a copy's 'before.' prefix taken off, and calls fresh() before the scope and before each version. At fresh() the checker (bmc/mod.rs) and the interpreter clear the path's static fields and class initialization, which hold the default locale too, so no version starts in what an earlier one left; on a JVM fresh() sets the default locale back. The checker models getClass() of a Throwable the run made (bmc/runtime.rs), as its handlers already take it for that class. The README's checker-side test is added to lib/tests/pairing_countermodels.rs: it failed on all five before and passes now, each of the seven runs a violation confirmed by replay. Limit, stated in pairing.rs and lib/README.md: on a JVM a library's statics stay shared without --before-classpath, so a witness only they show is dropped there as no reproduction, never proved.",
+      "log_sha256": "b17c45752115266256b1c406ca0a71b7f65fbc6938ef86b2a85a06445afee80e"
+    },
+    {
+      "change_id": "unswkkxpxtvktmynvykylvnlmskyylwp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The checker models a line logged at WARNING as spring-jcl logs it, so example 287's preservation reaches both sides' bcrypt",
+      "body": "java.util.logging at INFO, WARNING and SEVERE is now modelled under the JDK's default configuration (lib/src/bmc/runtime.rs). isLoggable is true there. A LogRecord's constructor of a level and a message (NullPointerException for a null level) and its setters do nothing a check observes. A Logger's resource bundle and bundle name are null. Logger.log(record) returns normally under a second stated assumption: the record goes only to the root's default ConsoleHandler, and no logger has a filter, handler or bundle. The handler formats the record by calling its getters, which a subclass may override. So log is modelled only for a record whose class below LogRecord writes nothing but its own fields and calls nothing but its own methods, LogRecord's, String's, StackTraceElement's and a Throwable's constructors and getters. A bytecode scan checks this, and spring-jcl's LocationResolvingLogRecord passes. A logging call the model does not take is now the gap it is to a checker without the model; before, an isLoggable the model declined was counted exact. String.valueOf(Object) of a String or null is modelled before the static classification, so the gap scan still names it for other objects.\n\nCountermodels came first, in lib/tests/fixtures/claims/claims/Logged.java. On a JVM each returns false or throws where a model that took logging for granted would say true: a record that counts its formatting, a level, a filter and a handler set on a logger, and valueOf of an object whose toString counts. All five now stop the proof. With the confinement scan disabled, the counting record was falsely verified. The claims test a_line_logged_at_warning_returns_normally_and_what_would_make_logging_observable_stops_the_proof also proves the warned path, the null cases and loud. P.loud moved there, since INFO is now modelled. lib/README.md and 287's notes say what changed.\n\nProbes on example 287's preservation: a trial at bound 8 verifies. At the claim's bound of 80, with a 200 s timeout, the pair reaches both sides' bcrypt and ends on a spurious counterexample past the invariants of BCrypt.crypt_raw and ekskey; a JVM run shows it is no counterexample. This is the relational failure the stream's brief predicts, and step 2 starts from it. Verified with test_costs.py run --changed (26 of 26), the lint, and validate_example.py 287.",
+      "log_sha256": "fda3769957a6e5d712f818f60dd7bc1e81d57b724b0cdd8b5e28f6cc89e81ea9"
     },
     {
       "change_id": "zlxkxlstvktrsztnrmynsyukqwrokplu",
@@ -322,62 +393,6 @@
       "log_sha256": "d44f39ebfd2cbe3f25464ba506b3155df145d7427ec754550b02e4e84c48d32e"
     },
     {
-      "change_id": "lqyqxwqvppkpyzzumylosktwknnqrurl",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Countermodels of the models on request under assumed gaps: three collections a gap makes, each proved empty where a JVM finds one element",
-      "body": "Item 5 of the challenge stream, against the state stream's models on request of ArrayDeque and HashSet (kztoupry). Under --gaps assume, a constructor or method a model does not keep makes an object with no field written. The model's size() then reads those fields, though without the model that call has no assume form. The fixture mc.Gapped (lib/tests/fixtures/model-countermodels) has three cases: ArrayDeque.clone(), whose stated assumptions are all true of the JDK; ArrayDeque(Collection); and ArrayList(Collection), which also reproduces on this line. Each is Verified as result == 0 on the state stream's checker (qrqtplwq), and a JVM gives 1. lib/tests/model_countermodels.rs holds the fixture to a JVM. The checker-side test is in the README, where it fails on all three on the state stream's line, and goes to that stream through its inbox, since the models are its this run. The README also lists what was tried and found guarded: the left-out methods under strict, HashSet(int) under advised, a key whose hash changes, a lemma over a deque, and the exception classes. Audit: no example task runs under --gaps assume, so no accepted result is affected. Verified with test_costs.py run --changed (it passed) and the checker-side test run on a copy of the state stream's tree.",
-      "log_sha256": "ead8e28575e05eb0ba6cebc7020a937be38829f3070e13b2cc34d2460895314f"
-    },
-    {
-      "change_id": "synvlnlsowtxputokxmmzpuponxoqkry",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Countermodels of a write set: a protected field written before a declared exception, and through one bean passed twice, each proved unchanged",
-      "body": "Challenge stream, item 5, against the state stream's write set (qrqtplwq, prove --writes). The frame is conjoined to the assertion, so it is read only after a normal return and only on distinct object inputs. lib/tests/fixtures/frame-countermodels/fc/Framed.java has three methods that a JVM sees writing the protected admin field, each Verified on the state checker built apart at qrqtplwq and at vwktulky. Bean#rename, under --throws 'java.lang.IllegalArgumentException when length < 0', sets admin and then throws. Bean#promote(other), with the write set other.admin, does it when called as b.promote(b). Static grant(from, to), with the write set to.admin, does it when called as grant(b, b). lib/tests/frame_countermodels.rs holds the fixture to a JVM. The README has the table, the commands, the fix options and the checker-side test, which fails on all three on the state line. That test goes to domain-advances-state as a failure item, since the write set is its rule this run, so no refusal is committed here.\n\nTried and found guarded: a write through a callee, a lambda or a recursion (refuted by the frame); Locale.setDefault (refused by name); a StringBuilder parameter (not taken); an inherited field (fields_of refuses a subclass). The identity of a String field after 16 String operations matches JDK 25 or is a gap. Audit: no example task passes --writes on any line, so no accepted result rests on these holes. Verified with test_costs.py run --changed (passed) and the checker-side test run on both state commits (fails, as it should). Progress also records state-I004, and the evidence session's trace stamps on mqkqvvmw and yypzyxmw for the watcher.",
-      "log_sha256": "ead8e28575e05eb0ba6cebc7020a937be38829f3070e13b2cc34d2460895314f"
-    },
-    {
-      "change_id": "qmtxwupnmwmytxtyqsqmwwsxkrllypvx",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Countermodels of an effect contract at a call: a final static set from a caller's setting, one bean passed twice, and a subclass argument, each a caller's property proved where a JVM breaks it",
-      "body": "The state stream's vwktulky lets a setter's checked write set (a lemma with writes:) stand in for its calls through a stub that makes the stated writes. Three callers in lib/tests/fixtures/effect-countermodels each have a proved contract and a property that is Verified on that checker (built apart) while a JVM breaks it. lockedLevel: the setter reads a final static that its class's initializer takes from Config.locked, which the caller sets first, and the contract's proof initialized the class fresh (a JVM gives 0 for 5). pairedLevel: bean.setBoth(bean, mine, theirs) writes the argument's field and then the receiver's, while the stub writes in the writes: order, and the contract's proof never passes one object twice (a JVM gives mine). linkedAdmin: an argument of a subclass whose override, called by the setter, grants admin, since only the receiver's class is checked to be exact.\n\nlib/tests/effect_countermodels.rs holds the fixtures to a JVM. The README has the checker-side test, which fails on all three at vwktulky; it goes to domain-advances-state as a failure item, since the effect contract is that stream's this run, so no refusal is committed here. Also recorded: an exceptional exit does not carry into a caller (throws: is refused, and an undeclared throw refutes the contract, tried), aliasing does, and prove --may-alias this,other already makes the frame refute the earlier promote countermodel. The stub writes a nested object-parameter class with its $, which javac rejects (a refusal). Audit: no example task uses a writes: lemma or --writes on any line. test_costs run --changed and lint pass. The brief is not wrong.",
-      "log_sha256": "ead8e28575e05eb0ba6cebc7020a937be38829f3070e13b2cc34d2460895314f"
-    },
-    {
-      "change_id": "zwrpkwnlqpyxtyozklmopuoomwppwunm",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Countermodels of the acceptance check: seven controls accept.py accepts for an answer its evidence does not give",
-      "body": "The challenge stream's item 7. Seven controls were written as tests on test_accept.py's own made-up checkout and run against examples/tools/accept.py on the evidence line (krptozvm). Each fails there because accept.py accepts the answer (10 failures with subtests):\n- The outcome's target is matched as a substring of the invocation's entry or of an assumption's text. Another method, the same class in another package, and a method an assumption mentions all stand in for the entry.\n- The step's driver is any word ending in proofs/prove.py that contains the folder, so a driver of another checkout counts, and so does echo.\n- A witness's null inputs are not held to the claim's nullable.\n- A witness is not held to the claim's assumption.\n- A task's bounds can lower the claim's.\n- For a task with no allowed change, the pair is not asked whether it ran with one.\nA vacuity witness inside the allowed change is guarded where the task has one (vacuity.outside, ymzlyksq).\n\nThe controls, the fix options and the audit are in lib/tests/fixtures/accept-countermodels/README.md. accept.py is the evidence stream's, so nothing in it is changed here, and the controls go to that stream as a failure item.\n\nAudit: given the source commits, the evidence line accepts 13 answers (286, 287, 288, 289, 290), and none rests on these holes. 286 and 287 pass the entry check only by the substring route, through the claim's adapter-entry assumption, so a fix must keep it.",
-      "log_sha256": "ead8e28575e05eb0ba6cebc7020a937be38829f3070e13b2cc34d2460895314f"
-    },
-    {
-      "change_id": "lqvlvwsmkumusvtrtllpknsrnqvpkzzo",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Countermodels of three rules that landed, and three wrong implementations the claims of 287, 307 and 286's protected state accept",
-      "body": "Item 5 of the challenge stream, on the other streams' newest rules, each built apart with its sources touched and checked against the release CLI. Nine false proofs, each Verified where a JVM says otherwise (lib/tests/fixtures/rule-countermodels, held to a JVM by lib/tests/rule_countermodels.rs; the README has a checker-side test per stream, which fails on that stream's line):\n- the state stream's refusal under --gaps assume (qysmsruu) keys on the declared return class, so HashSet.clone() and Date.clone(), declared to return Object, are proved to return no HashSet and no Date (the Date case also on this line, older than the run);\n- the evidence stream's binding of an observation (lzpqszyo) leaves out a supertype's static and a superinterface's array written by the initializer, a property read through Properties.get (the result says it read none), the default time zone and the environment;\n- the preservation stream's WARNING-logging model (unswkkxp) takes a LogRecord subclass as confined when its getMessage writes the record the caller holds, or throws a Throwable that StreamHandler.publish lets out.\nEach goes to its stream as a failure item. The state stream's I004 fix and the evidence stream's I004 binding pass their own tests. Audit: no example runs under assume; 290's five observed classes (javap on the pinned JARs) write only their own statics and read only the stated locale; 287's preservation logs through a record nothing reads after log. Nothing for the watcher.\n\nItem 6: a mutant under controls/ for each of 287 (check-only-guard.patch: encode hashes a 73-byte password again, whose 72-byte prefix then matches), 307 (default-charset.patch: getBytes(), UTF-8 on JDK 18+, differs on 17 probes under COMPAT) and 286 (first-suppressed-only.patch: later values bound unchecked; the probes catch it, no claim does). Each is the fix's on every probe the claims cover, each claim is predicted to accept it, and each example's notes say why.",
-      "log_sha256": "ead8e28575e05eb0ba6cebc7020a937be38829f3070e13b2cc34d2460895314f"
-    },
-    {
-      "change_id": "ukukylmumqmzxxtokpspxklutzvzxtwy",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Countermodels of an effect contract past its fix: a final field a caller's object was made with, read as if the proof's constructor had made it",
-      "body": "The challenge stream's item 5 on the state stream's fixes for its inbox items I005 (sltlykpk, a write set's frame on a declared exceptional exit and over inputs that may be one object) and I007 (nslmqyry, an effect contract reads no non-constant static and stands in only for arguments of exactly their classes). Built apart at nslmqyry, the earlier frame and effect countermodels all pass: both fixes hold.\n\nNew hole: inside an effect contract's proof the read gate exempts a final instance field of an object that was there before the call, but the proof makes the receiver and arguments with their constructors in the harness's fresh state, while a caller's object was made in its own. Two callers in lib/tests/fixtures/contract-countermodels (cc.Held) are Verified 'result == level' at nslmqyry, stating no assumption, where a JVM gives 0 for 5: a receiver whose 'final boolean locked = Config.locked' was made with the setting on, and the same through an argument's final field. lib/tests/contract_countermodels.rs holds the fixture to a JVM (tool tier); the checker-side test is in the README and fails on both at nslmqyry, as it should. The effect contract is the state stream's, so nothing in lib/src changes here; it goes to that stream as a failure item. Tried and guarded: a contract whose call starts a class initializer (Engine::initializes_in_frame, the first case of inbox item domain-advances-challenge-I002) and a receiver of a class with two constructors.",
-      "log_sha256": "ead8e28575e05eb0ba6cebc7020a937be38829f3070e13b2cc34d2460895314f"
-    },
-    {
-      "change_id": "pklttqzwropkztlvvmlpxwskyrmsprlw",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Countermodels of the pair of versions past its fix: an exception's interface, message and own field, each proved to agree where a caller's handler tells the versions apart",
-      "body": "Challenge stream, item 5, against the preservation stream's wokytpkz (lib/src/pairing.rs: the scope read on copies of its own, an exception compared by its class's name and the names of every class above it). Built apart at wokytpkz with the sources touched, the earlier pairing and fresh-pair countermodel tests pass, checker-side tests included: both fixes hold, and a changed superclass's superclass under kept names is refuted.\n\nNew fixture lib/tests/fixtures/thrown-pair-countermodels with lib/tests/thrown_pair_countermodels.rs (tool tier), which holds it to a JVM. Three pairs are each Verified 'agree on every input where k >= 0 && k < 4' at wokytpkz, non-vacuous and with no assumption stated, where a caller's handler tells the versions apart: marked (an interface, the module's documented limit), messaged (the message) and coded (a field of the exception's own class). The README's checker-side test fails on exactly those three there. The pairing is the preservation stream's, so nothing in lib/src changes here; the test goes to it as a failure item.\n\nAudit: 289's and 290's preservation claims say 'throw the same exception'. In their pinned JARs (hashes checked), no class named *Exception or *Error differs between the releases in what it extends, implements or holds (javap -p, 101 and 191 classes), so the interface and field cases cannot occur there. Messages were not compared. Notes are added to both examples. Nothing for the watcher.\n\nVerified with test_costs.py run --changed (all passed) and validate_example.py 289 and 290.",
-      "log_sha256": "ead8e28575e05eb0ba6cebc7020a937be38829f3070e13b2cc34d2460895314f"
-    },
-    {
       "change_id": "lmyvttytkolwzyutuulpuuytmkvmznzl",
       "commit_id": null,
       "immutable": false,
@@ -392,6 +407,14 @@
       "summary": "A logged record's getters may write its number fields and may not throw a Throwable, and the pair of versions tells apart two exception classes whose interfaces differ",
       "body": "Inbox I006 and I009, from the challenge stream. The checker's model of java.util.logging (bmc/runtime.rs) took Logger.log(record) of a 'confined' LogRecord subclass to change nothing. But the default handler's formatting calls the record's getters, which could write a field of a record the caller holds, or throw a Throwable that its catch (Exception) lets out. The confinement scan now refuses athrow and any field write but a number field's. After log, every such field of the record's own classes holds any value. Spring's LocationResolvingLogRecord writes only a boolean and still passes, and 287's trial at bound 8 still verifies through it. The lg test from lib/tests/fixtures/rule-countermodels is in rule_countermodels.rs and passes: seen is a violation, escaped a gap.\n\nThe pair of versions (pairing.rs) compared an exception by its class's name and its superclasses' names. It now also compares the interfaces each class implements, transitively, in the class files when the pair is written: a copy whose interfaces differ from its twin's is named in the generated apart(), so marked (tests/fixtures/thrown-pair-countermodels) is refuted. The message, the cause and an exception's own fields are not compared. That limit is stated in the outcome's note, the module and lib/README.md, since the brief asks for exception classes compared exactly and expects 307 established, where a JVM's NullPointerException messages for a null password differ between getBytes(String) and getBytes(Charset). The README's test is in thrown_pair_countermodels.rs and passes, with messaged and coded proved only under that note. Capped probes: 289 and 290 still verify at their frozen bounds, and apart() is empty for 287, 289 and 290. test_costs.py run --changed, the pairing test files and the default run (54 of 54) pass.",
       "log_sha256": "8026afd239d466a9a3185bb713b604a030b2247358b75659f8d6e3559ccf4b33"
+    },
+    {
+      "change_id": "lxvttwmpnttkqqmvzututqsovkxopssz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A pair of versions' second run of a loop takes over the first's summary from the same state, and both summarize a loop at its entry by their own path's history; example 287 preservation at bound 80 (verification pending)",
+      "body": "Job 20261117-180758-example-287-preservation-at-the-frozen-b runs example 287's frozen preservation claim at its bound of 80 through proofs/prove.py, with a fresh --work and no trial flags. It is step 5 of the preservation stream: if it verifies, accept.py records it.\n\nProfiled first, with a temporary log of each loop summary and of each slow solver call (removed). Three changes to the own checker's loop invariants (lib/src/bmc/loops.rs, ties.rs). First, a summary from a state whose key was summarized before takes over that summary's written places and invariant, in the key's numbering, where the path's condition has every literal the first was proved under: the new release no longer searches again for what the previous one found from the same state. Second, in a pair of versions a loop is summarized at its entry only where this path summarized it since its version began (Path::summarized, cleared at fresh() and intersected at a merge). The check-wide history made the new release start bcrypt's key() loops at their entry on a later path where the previous release had started them past the bound, so nothing tied. Third, a loop's written set leaves out arrays nothing reachable holds, which halved the solver calls. The outcome counts tied places and summaries taken over (search.native.tied, summaries_reused).",
+      "log_sha256": "80d942c7774925a8b996c5c8ed2ea5cff6cf76ddb5c7cd226ab25dc3e0a7e7ab"
     }
   ],
   "logs": {
@@ -411,6 +434,12 @@
       "bytes": 10551194,
       "lines": 3447,
       "gzip_bytes": 1800948,
+      "url": null
+    },
+    "80d942c7774925a8b996c5c8ed2ea5cff6cf76ddb5c7cd226ab25dc3e0a7e7ab": {
+      "bytes": 12710256,
+      "lines": 4307,
+      "gzip_bytes": 2132706,
       "url": null
     },
     "a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de": {
