@@ -1,0 +1,222 @@
+$ JVMCONTRACT_TEST_TIER=tool TEST_COST=tool cargo test --manifest-path lib/Cargo.toml --profile test-fast (3 test binaries at a time, beside the Python files)
+     Running lib/tests/integration.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/integration-7e648e182b3891cc)
+test result: ok. 65 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 85.64s [86s with the others]
+     Running lib/tests/application_core_joint.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/application_core_joint-610b5ca968165be3)
+
+running 6 tests
+test j1_o2_a_receiver_with_dependencies_and_a_request_with_a_string ... ok
+test j1_r2_a_receiver_with_dependencies ... ok
+test h_the_throttle_family ... ok
+test j2_the_native_claims_without_jbmc ... ok
+test l_the_basket_family ... ok
+test j1_the_quote_family_composes_the_four_streams has been running for over 60 seconds
+test j1_the_quote_family_composes_the_four_streams ... FAILED
+
+failures:
+
+---- j1_the_quote_family_composes_the_four_streams stdout ----
+evidence: {"accounting":[["result","preserved"],["exception","preserved"],["effect:quotes/Events#send(Lquotes/QuoteEvent;)V","preserved"]],"assumptions":["Rates.rate is a generated stub in both builds, answering from the environment model rates.rate: a deterministic read-only query of one declared snapshot, the same function in both builds, of (arg0) only: calls with equal keys get equal results and calls with different keys independent ones, never by position; any long, or a throw of quotes.RateUnavailable (made with no arguments: its class, and no message or cause) for any key; at most 1 calls of it in a trace, one more leaves the result unresolved","Events.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit","only Rates.rate may fail, and only as its model says: each failure a new instance of its class, made by its constructor without arguments, with no message, cause or stack the dependency would give, which no handler of either build reads; every other modeled call returns normally","at most 2 attempts are recorded, exactly in order; one more leaves the result unresolved","this a QuoteService, request a QuoteRequest made by the plan's constructors from the inputs, the same in both builds, each dependency null in both and reached only through the modelled calls' stubs; a constructor's exception is the outcome, as the call's is","a String input is the values stream's String of at most 4 UTF-16 code units, any content, never null","a payload string is snapshotted by its content, at most 4 code units; a longer one leaves the result unresolved","a String key is compared by its content; one of more than 4 code units, which the environment's table holds no key of, leaves the result unresolved"],"build":"after","claim":"quote-claim","domain":"this: a QuoteService made by its constructor from any fee and floor, its dependencies the environment model's stubs; request: a QuoteRequest made by its constructor from a code of at most 4 UTF-16 code units and at most 4 quantities (the service and the request made by their constructors; the dependencies are the environment model's stubs): this.feeCents: long × this.floorCents: long × request.code: java.lang.String × request.quantities: int[] × the environment's answers, one for both builds: Rates.rate (rates.rate): any function of (arg0) to long, or a throw of quotes.RateUnavailable (made with no arguments: its class, and no message or cause), within 1 calls of it per trace","engine":"native (the tool's own checker, CaDiCaL), no JBMC","expected":"verified","family":"quote","key":"sha256:0ad4035fcdefaff9f6e3ef9578e37ebced255a772e2f4a6814045b2dc588300d","problem":null,"replayed":false,"reused":{"exact":null},"row":"J1 (E1)","run":"cold","verdict":"verified","witness":null}
+evidence: {"accounting":[["result","preserved"],["exception","preserved"],["effect:quotes/Events#send(Lquotes/QuoteEvent;)V","preserved"]],"assumptions":["Rates.rate is a generated stub in both builds, answering from the environment model rates.rate: a deterministic read-only query of one declared snapshot, the same function in both builds, of (arg0) only: calls with equal keys get equal results and calls with different keys independent ones, never by position; any long, or a throw of quotes.RateUnavailable (made with no arguments: its class, and no message or cause) for any key; at most 1 calls of it in a trace, one more leaves the result unresolved","Events.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit","only Rates.rate may fail, and only as its model says: each failure a new instance of its class, made by its constructor without arguments, with no message, cause or stack the dependency would give, which no handler of either build reads; every other modeled call returns normally","at most 2 attempts are recorded, exactly in order; one more leaves the result unresolved","this a QuoteService, request a QuoteRequest made by the plan's constructors from the inputs, the same in both builds, each dependency null in both and reached only through the modelled calls' stubs; a constructor's exception is the outcome, as the call's is","a String input is the values stream's String of at most 4 UTF-16 code units, any content, never null","a payload string is snapshotted by its content, at most 4 code units; a longer one leaves the result unresolved","a String key is compared by its content; one of more than 4 code units, which the environment's table holds no key of, leaves the result unresolved"],"build":"after","claim":"quote-claim","domain":"this: a QuoteService made by its constructor from any fee and floor, its dependencies the environment model's stubs; request: a QuoteRequest made by its constructor from a code of at most 4 UTF-16 code units and at most 4 quantities (the service and the request made by their constructors; the dependencies are the environment model's stubs): this.feeCents: long × this.floorCents: long × request.code: java.lang.String × request.quantities: int[] × the environment's answers, one for both builds: Rates.rate (rates.rate): any function of (arg0) to long, or a throw of quotes.RateUnavailable (made with no arguments: its class, and no message or cause), within 1 calls of it per trace","engine":"native (the tool's own checker, CaDiCaL), no JBMC","expected":"verified","family":"quote","key":"sha256:0ad4035fcdefaff9f6e3ef9578e37ebced255a772e2f4a6814045b2dc588300d","problem":null,"replayed":false,"reused":{"exact":{"exact":"sha256:0ad4035fcdefaff9f6e3ef9578e37ebced255a772e2f4a6814045b2dc588300d","from":"jvmcontract 0.1.0 (sha256:88c2ee12af0d), --engine native, at 2026-11-17T01:07:30Z, on copies of /home/filip/.cache/in-the-loop/default-tests-target/tmp/application-core-joint-builds/quote/before and /home/filip/.cache/in-the-loop/default-tests-target/tmp/application-core-joint-builds/quote/after"}},"row":"J1 (E1)","run":"rerun","verdict":"verified","witness":null}
+evidence: {"accounting":[["result","preserved"],["exception","preserved"],["effect:quotes/Events#send(Lquotes/QuoteEvent;)V","preserved"]],"assumptions":["Rates.rate is a generated stub in both builds, answering from the environment model rates.rate: a deterministic read-only query of one declared snapshot, the same function in both builds, of (arg0) only: calls with equal keys get equal results and calls with different keys independent ones, never by position; any long, or a throw of quotes.RateUnavailable (made with no arguments: its class, and no message or cause) for any key; at most 1 calls of it in a trace, one more leaves the result unresolved","Events.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit","only Rates.rate may fail, and only as its model says: each failure a new instance of its class, made by its constructor without arguments, with no message, cause or stack the dependency would give, which no handler of either build reads; every other modeled call returns normally","at most 2 attempts are recorded, exactly in order; one more leaves the result unresolved","this a QuoteService, request a QuoteRequest made by the plan's constructors from the inputs, the same in both builds, each dependency null in both and reached only through the modelled calls' stubs; a constructor's exception is the outcome, as the call's is","a String input is the values stream's String of at most 4 UTF-16 code units, any content, never null","a payload string is snapshotted by its content, at most 4 code units; a longer one leaves the result unresolved","a String key is compared by its content; one of more than 4 code units, which the environment's table holds no key of, leaves the result unresolved"],"build":"alias-to-copy","claim":"quote-claim","domain":"this: a QuoteService made by its constructor from any fee and floor, its dependencies the environment model's stubs; request: a QuoteRequest made by its constructor from a code of at most 4 UTF-16 code units and at most 4 quantities (the service and the request made by their constructors; the dependencies are the environment model's stubs): this.feeCents: long × this.floorCents: long × request.code: java.lang.String × request.quantities: int[] × the environment's answers, one for both builds: Rates.rate (rates.rate): any function of (arg0) to long, or a throw of quotes.RateUnavailable (made with no arguments: its class, and no message or cause), within 1 calls of it per trace","engine":"native (the tool's own checker, CaDiCaL), no JBMC","expected":"verified","family":"quote","key":"sha256:0ad4035fcdefaff9f6e3ef9578e37ebced255a772e2f4a6814045b2dc588300d","problem":null,"replayed":false,"reused":{"exact":{"exact":"sha256:0ad4035fcdefaff9f6e3ef9578e37ebced255a772e2f4a6814045b2dc588300d","from":"jvmcontract 0.1.0 (sha256:88c2ee12af0d), --engine native, at 2026-11-17T01:07:30Z, on copies of /home/filip/.cache/in-the-loop/default-tests-target/tmp/application-core-joint-builds/quote/before and /home/filip/.cache/in-the-loop/default-tests-target/tmp/application-core-joint-builds/quote/after"}},"row":"J1 (E1)","run":"cold","verdict":"verified","witness":null}
+evidence: {"accounting":[["result","preserved"],["exception","preserved"],["effect:quotes/Events#send(Lquotes/QuoteEvent;)V","preserved"]],"assumptions":["Rates.rate is a generated stub in both builds, answering from the environment model rates.rate: a deterministic read-only query of one declared snapshot, the same function in both builds, of (arg0) only: calls with equal keys get equal results and calls with different keys independent ones, never by position; any long, or a throw of quotes.RateUnavailable (made with no arguments: its class, and no message or cause) for any key; at most 1 calls of it in a trace, one more leaves the result unresolved","Events.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit","only Rates.rate may fail, and only as its model says: each failure a new instance of its class, made by its constructor without arguments, with no message, cause or stack the dependency would give, which no handler of either build reads; every other modeled call returns normally","at most 2 attempts are recorded, exactly in order; one more leaves the result unresolved","this a QuoteService, request a QuoteRequest made by the plan's constructors from the inputs, the same in both builds, each dependency null in both and reached only through the modelled calls' stubs; a constructor's exception is the outcome, as the call's is","a String input is the values stream's String of at most 4 UTF-16 code units, any content, never null","a payload string is snapshotted by its content, at most 4 code units; a longer one leaves the result unresolved","a String key is compared by its content; one of more than 4 code units, which the environment's table holds no key of, leaves the result unresolved"],"build":"alias-to-copy","claim":"quote-claim","domain":"this: a QuoteService made by its constructor from any fee and floor, its dependencies the environment model's stubs; request: a QuoteRequest made by its constructor from a code of at most 4 UTF-16 code units and at most 4 quantities (the service and the request made by their constructors; the dependencies are the environment model's stubs): this.feeCents: long × this.floorCents: long × request.code: java.lang.String × request.quantities: int[] × the environment's answers, one for both builds: Rates.rate (rates.rate): any function of (arg0) to long, or a throw of quotes.RateUnavailable (made with no arguments: its class, and no message or cause), within 1 calls of it per trace","engine":"native (the tool's own checker, CaDiCaL), no JBMC","expected":"verified","family":"quote","key":"sha256:0ad4035fcdefaff9f6e3ef9578e37ebced255a772e2f4a6814045b2dc588300d","problem":null,"replayed":false,"reused":{"exact":{"exact":"sha256:0ad4035fcdefaff9f6e3ef9578e37ebced255a772e2f4a6814045b2dc588300d","from":"jvmcontract 0.1.0 (sha256:88c2ee12af0d), --engine native, at 2026-11-17T01:07:30Z, on copies of /home/filip/.cache/in-the-loop/default-tests-target/tmp/application-core-joint-builds/quote/before and /home/filip/.cache/in-the-loop/default-tests-target/tmp/application-core-joint-builds/quote/after"}},"row":"J1 (E1)","run":"rerun","verdict":"verified","witness":null}
+evidence: {"accounting":[["result","refuted"],["exception","unresolved"],["effect:quotes/Events#send(Lquotes/QuoteEvent;)V","refuted"]],"assumptions":["Rates.rate is a generated stub in both builds, answering from the environment model rates.rate: a deterministic read-only query of one declared snapshot, the same function in both builds, of (arg0) only: calls with equal keys get equal results and calls with different keys independent ones, never by position; any long, or a throw of quotes.RateUnavailable (made with no arguments: its class, and no message or cause) for any key; at most 1 calls of it in a trace, one more leaves the result unresolved","Events.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit","only Rates.rate may fail, and only as its model says: each failure a new instance of its class, made by its constructor without arguments, with no message, cause or stack the dependency would give, which no handler of either build reads; every other modeled call returns normally","at most 2 attempts are recorded, exactly in order; one more leaves the result unresolved","this a QuoteService, request a QuoteRequest made by the plan's constructors from the inputs, the same in both builds, each dependency null in both and reached only through the modelled calls' stubs; a constructor's exception is the outcome, as the call's is","a String input is the values stream's String of at most 4 UTF-16 code units, any content, never null","a payload string is snapshotted by its content, at most 4 code units; a longer one leaves the result unresolved","a String key is compared by its content; one of more than 4 code units, which the environment's table holds no key of, leaves the result unresolved"],"build":"helper-extra-field","claim":"quote-claim","domain":"this: a QuoteService made by its constructor from any fee and floor, its dependencies the environment model's stubs; request: a QuoteRequest made by its constructor from a code of at most 4 UTF-16 code units and at most 4 quantities (the service and the request made by their constructors; the dependencies are the environment model's stubs): this.feeCents: long × this.floorCents: long × request.code: java.lang.String × request.quantities: int[] × the environment's answers, one for both builds: Rates.rate (rates.rate): any function of (arg0) to long, or a throw of quotes.RateUnavailable (made with no arguments: its class, and no message or cause), within 1 calls of it per trace","engine":"native (the tool's own checker, CaDiCaL), no JBMC","expected":["refuted","result"],"family":"quote","key":"sha256:ccb4d4b32c2b1c32ca040f300759a0a7bef52568267ba0e7384bf603ee893030","problem":null,"replayed":true,"reused":{"exact":{"exact":"sha256:ccb4d4b32c2b1c32ca040f300759a0a7bef52568267ba0e7384bf603ee893030","from":"jvmcontract 0.1.0 (sha256:88c2ee12af0d), --engine native, at 2026-11-17T01:08:13Z, on copies of /home/filip/.cache/in-the-loop/default-tests-target/tmp/application-core-joint-builds/quote/before and /home/filip/.cache/in-the-loop/default-tests-target/tmp/application-core-joint-builds/quote/helper-extra-field"}},"row":"J1 (E1)","run":"cold","verdict":"refuted","witness":"quotes.QuoteService#quote on this.feeCents=0, this.floorCents=100, request.code=\"\", request.quantities={0, 0, 0} under the environment Rates.rate (rates.rate): (arg0=\"\") gives 0, any other key gives 0: the old build returns 0 and attempts no modeled call; the new one returns 1 and attempts Events.send(event.code=\"\", event.amountCents=1). Replayed on a JVM (JDK 25.0.5) under the modeled dependencies (generated stubs for Rates.rate, Events.send, the modelled calls answering from that environment, the others returning normally), not against real infrastructure"}
+
+thread 'j1_the_quote_family_composes_the_four_streams' (4106397) panicked at tests/application_core_joint.rs:232:13:
+quote-claim helper-extra-field: a build whose verdict differs from after's is never answered by a stored result
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    j1_the_quote_family_composes_the_four_streams
+
+test result: FAILED. 5 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 99.97s
+
+
+error: test failed, to rerun pass `--test application_core_joint`
+     Running lib/tests/environment_responses.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/environment_responses-39050ae82273b17b)
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 14.59s [15s with the others]
+ok   llm-dlc/tools/test_prove_loop.py: Ran 30 tests in 123.328s, OK
+     Running lib/tests/conformance.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/conformance-731d732e55a77d3f)
+test result: ok. 10 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 48.53s [49s with the others]
+     Running lib/tests/environment.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/environment-d1ce315d55c28511)
+
+running 17 tests
+test a_call_past_the_models_bound_is_unresolved ... ok
+test a_wrong_query_key_is_refuted_under_the_environment_that_shows_it ... ok
+test a_handler_that_uses_a_modelled_rate_proves_its_rewrite ... ok
+test an_event_sent_on_the_wrong_branch_of_a_rate_is_refuted_in_the_trace ... ok
+test an_ignored_result_is_refuted ... ok
+test compare_counts_a_declared_environment_as_a_persons_decision ... ok
+test a_dropped_retry_is_refuted_under_a_per_call_choice_and_proves_under_a_query ... ok
+test repeated_reads_of_one_key_are_functionally_consistent ... ok
+test keys_asked_for_in_another_order_get_their_own_answers ... ok
+test the_command_checks_under_a_declared_environment ... ok
+test the_old_builds_unresolved_mark_says_only_what_happened_in_it ... ok
+test a_newly_missing_catch_of_a_modelled_failure_is_refuted_and_replayed ... ok
+test a_per_call_choice_proves_a_rewrite_and_refutes_a_wrong_key ... FAILED
+test without_a_model_a_used_result_is_never_proved ... ok
+test reading_more_of_a_modelled_failure_than_its_class_is_refused ... ok
+test under_a_per_call_choice_a_second_read_of_a_key_is_its_own_answer ... ok
+test the_environment_model_is_in_the_claim_key_of_the_cached_proof ... ok
+
+failures:
+
+---- a_per_call_choice_proves_a_rewrite_and_refutes_a_wrong_key stdout ----
+
+thread 'a_per_call_choice_proves_a_rewrite_and_refutes_a_wrong_key' (4154468) panicked at tests/environment.rs:134:113:
+POST /price
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    a_per_call_choice_proves_a_rewrite_and_refutes_a_wrong_key
+
+test result: FAILED. 16 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 30.42s
+
+
+error: test failed, to rerun pass `--test environment`
+     Running lib/src/lib.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/jvmcontract-14cbc93e5ef18ff4)
+test result: ok. 285 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 20.77s [21s with the others]
+     Running lib/tests/application_core.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/application_core-b67f5a42b65854c3)
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 196.37s [196s with the others]
+     Running lib/tests/observations.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/observations-c6a77b34b509eef7)
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 66.46s [66s with the others]
+     Running lib/tests/alignment.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/alignment-00a7069e137919a6)
+test result: ok. 34 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 29.90s [30s with the others]
+ok   verification/test_pipeline.py: Ran 38 tests in 109.370s, OK
+     Running lib/tests/heap.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/heap-32e4358bc5eddce0)
+test result: ok. 49 passed; 0 failed; 9 ignored; 0 measured; 0 filtered out; finished in 68.88s [69s with the others]
+     Running lib/tests/summaries.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/summaries-e93640045ad2631f)
+test result: ok. 40 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 20.58s [21s with the others]
+     Running lib/tests/environment_quotes.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/environment_quotes-90d21787816d4eb3)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 50.22s [50s with the others]
+ok   examples/tools/targets/test_runtime.py: Ran 73 tests in 257.974s, OK
+     Running lib/tests/effects.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/effects-5487ebe5fb9b8b92)
+
+running 19 tests
+test a_handler_given_an_application_object_is_refused_by_name ... ok
+test a_model_the_check_does_not_encode_is_refused_by_name ... ok
+test a_handler_that_uses_a_modeled_calls_result_is_refused_by_name ... ok
+test a_null_dependency_called_through_a_supertype_leaves_the_result_unresolved_where_reached ... ok
+test a_duplicated_event_is_refuted_in_exact_order ... ok
+test a_dropped_event_is_refuted_by_a_witness_replayed_on_the_jvm ... ok
+test the_claim_a_spec_makes_is_the_joint_examples_claim ... ok
+test payloads_of_two_classes_through_one_call_are_snapshotted_each_through_its_own_class ... ok
+test a_trace_past_its_bound_is_unresolved_not_shorter ... ok
+test the_command_reports_what_the_narrow_case_refuses_and_checks_the_rest ... ok
+test a_changed_total_is_refuted_in_the_response_and_the_event ... ok
+test the_effect_log_plan_names_its_stubs_and_assumptions ... ok
+test a_payload_literal_with_an_isolated_surrogate_is_snapshotted_unit_for_unit ... ok
+test what_the_analysis_cannot_see_is_unresolved ... ok
+test the_refactor_preserves_the_response_status_and_event_trace ... ok
+test the_command_checks_every_entry_point_of_two_builds ... ok
+test the_command_reports_a_refutation_with_both_builds_attempts ... ok
+test the_command_writes_a_sarif_finding_per_refuted_entry_point_anchored_at_its_handler ... ok
+test an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged ... FAILED
+
+failures:
+
+---- an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged stdout ----
+
+thread 'an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged' (17895) panicked at tests/effects.rs:257:5:
+a changed annotation is a miss: Some(ClaimKey("sha256:2cf62f9e3284d223a2299a2d13db0d86f2649aa1105284c327af5082f0bc5a4e"))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged
+
+test result: FAILED. 18 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.59s
+
+
+error: test failed, to rerun pass `--test effects`
+     Running lib/tests/values.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/values-c0048b3f5b9e6e07)
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 27.12s [27s with the others]
+     Running lib/tests/application_core_objects.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/application_core_objects-d7bb6e4553c5be8b)
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 24.77s [25s with the others]
+     Running lib/tests/claims.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/claims-1b66eb54caf6ea8c)
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 19.29s [19s with the others]
+     Running lib/tests/reuse_summaries.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/reuse_summaries-2c2391961245e143)
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 25.61s [26s with the others]
+     Running lib/tests/foundations.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/foundations-57f6c489891fe1b4)
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 11.53s [12s with the others]
+     Running lib/tests/pairing.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/pairing-a2fcb8a3f022f22e)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.42s [10s with the others]
+     Running lib/tests/value_parameters.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/value_parameters-7e3850eec4ce6ce9)
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 7.71s [8s with the others]
+     Running lib/tests/compare.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/compare-7e18c7508f0c0939)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 16.59s [17s with the others]
+     Running lib/tests/compare_domains.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/compare_domains-4c6ca1434b36c9d5)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.78s [6s with the others]
+     Running lib/tests/interface_regression.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/interface_regression-15d4b27d923c5391)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.79s [7s with the others]
+     Running lib/tests/reuse.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/reuse-0171c8f2f2d29533)
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.08s [10s with the others]
+ok   examples/tools/targets/test_receipt_streams.py: Ran 5 tests in 46.298s, OK
+     Running lib/tests/dependencies.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/dependencies-f2004e4471cb20eb)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.13s [6s with the others]
+     Running lib/tests/object_strings.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/object_strings-4eea30042a6db2a2)
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.51s [4s with the others]
+     Running lib/tests/interface_parameters.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/interface_parameters-3a63b5630933a0f5)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.92s [1s with the others]
+     Running lib/tests/string_literals.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/string_literals-7348db4870f0de23)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.58s [5s with the others]
+     Running lib/tests/loops.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/loops-6bd90011ce0c44d1)
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.25s [2s with the others]
+     Running lib/tests/preparation.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/preparation-c98e4dbc2c427cc4)
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s [0s with the others]
+     Running lib/src/main.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/jvmcontract-e33480fc19840074)
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s [0s with the others]
+     Running lib/tests/tiers.rs (/home/filip/.cache/in-the-loop/default-tests-target/test-fast/deps/tiers-535d46654d6f786f)
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s [0s with the others]
+     Running the doctests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s [1s with the others]
+cargo test: 33 test binaries, 3 at a time, in 311s; 3 failed
+ok   examples/tools/targets/test_runtime_upstream.py: Ran 30 tests in 90.051s, OK
+ok   llm-dlc/tools/test_watch.py: Ran 41 tests in 4.197s, OK
+ok   llm-dlc/tools/test_performance.py: Ran 104 tests in 21.390s, OK (skipped=2)
+ok   examples/tools/targets/test_gap_inventory.py: Ran 12 tests in 5.101s, OK
+ok   examples/tools/test_targets_contract.py: Ran 16 tests in 15.908s, OK (skipped=2)
+ok   examples/tools/test_economics.py: Ran 11 tests in 4.579s, OK
+ok   examples/tools/targets/test_fixtures.py: Ran 6 tests in 6.587s, OK
+ok   examples/tools/test_build.py: Ran 191 tests in 4.885s, OK
+ok   examples/tools/targets/test_workflow.py: Ran 64 tests in 11.513s, OK (skipped=1)
+ok   lib/tools/test_tier_lint.py: Ran 12 tests in 2.009s, OK
+ok   examples/tools/targets/test_acceptance.py: Ran 15 tests in 6.707s, OK
+ok   lib/tools/test_test_costs.py: Ran 22 tests in 6.674s, OK
+ok   llm-dlc/tools/test_verification_loop.py: Ran 2 tests in 12.351s, OK
+ok   llm-dlc/tools/test_integration.py: Ran 5 tests in 1.914s, OK
+ok   llm-dlc/tools/test_prune_workspaces.py: Ran 14 tests in 2.354s, OK
+ok   llm-dlc/tools/test_release.py: Ran 11 tests in 0.926s, OK
+ok   llm-dlc/tools/test_workspaces.py: Ran 12 tests in 1.779s, OK
+ok   llm-dlc/tools/test_changes.py: Ran 21 tests in 0.826s, OK
+ok   examples/tools/targets/test_packets.py: Ran 22 tests in 0.670s, OK
+ok   llm-dlc/tools/test_conductor.py: Ran 22 tests in 2.109s, OK
+ok   examples/tools/targets/test_workflow_refusal.py: Ran 9 tests in 0.440s, OK
+ok   lib/benchmark/test_run.py: Ran 27 tests in 0.952s, OK
+ok   verification/test_default_tests.py: Ran 13 tests in 0.046s, OK
+ok   llm-dlc/tools/test_review.py: Ran 28 tests in 0.297s, OK
+ok   examples/tools/targets/test_route.py: Ran 13 tests in 0.259s, OK
+ok   llm-dlc/tools/test_claude_setup.py: Ran 21 tests in 0.363s, OK
+ok   llm-dlc/tools/test_decisions.py: Ran 15 tests in 0.111s, OK
+ok   llm-dlc/tools/test_loop_stats.py: Ran 22 tests in 0.023s, OK
+ok   llm-dlc/tools/test_inbox.py: Ran 8 tests in 0.376s, OK
+ok   llm-dlc/tools/test_runs.py: Ran 13 tests in 0.122s, OK
+ok   llm-dlc/tools/test_streams_status.py: Ran 9 tests in 0.199s, OK
+ok   examples/tools/targets/test_interfaces.py: Ran 4 tests in 0.000s, OK
+ok   examples/tools/targets/test_sidecar.py: Ran 19 tests in 0.125s, OK
+ok   examples/tools/targets/test_without_jbmc.py: Ran 3 tests in 0.101s, OK
+ok   llm-dlc/tools/test_contribute.py: Ran 10 tests in 0.011s, OK
+ok   llm-dlc/tools/test_mode.py: Ran 14 tests in 0.004s, OK
+ok   llm-dlc/tools/test_tool_time.py: Ran 10 tests in 0.010s, OK
+ok   examples/tools/test_alignment.py: Ran 23 tests in 0.007s, OK
+ok   examples/tools/test_gap_table.py: Ran 3 tests in 0.002s, OK
+ok   lib/solvers/test_compare.py: Ran 5 tests in 0.002s, OK
+ok   examples/tools/test_scaffold_example.py: Ran 4 tests in 0.055s, OK
+ok   llm-dlc/tools/test_doctor.py: Ran 11 tests in 0.001s, OK
+ok   lib/tools/test_cost_inventory.py: Ran 19 tests in 0.021s, OK
+ok   llm-dlc/tools/test_metrics.py: Ran 21 tests in 0.003s, OK
+cargo test: a_per_call_choice_proves_a_rewrite_and_refutes_a_wrong_key, an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged, j1_the_quote_family_composes_the_four_streams failed again on a second run
+default tier: 48 of 49 passed; failed: cargo test
+default tests: failed: default tier: 48 of 49 passed; failed: cargo test
+default tests: no culprit sought: the last passed run (225f3605b7c1) is not on 9c48697e070a's first-parent line

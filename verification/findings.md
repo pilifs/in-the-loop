@@ -18,6 +18,32 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-034: the default test run at `xunroyyopkuq` (the prove-setup merge) failed three Rust tests, twice
+
+- **Status**: closed (job `20261117-010456-default-test-run-at-lmwqozysyszl` passed at a descendant of `xunroyyopkuq`;
+  the cause of the failures is not known, so a recurrence would reopen it).
+- **Raised**: 2026-11-17 on `vm-1`. Job `20261117-005759-default-test-run-at-xunroyyopkuq` (at `9c48697e070a`), failed in
+  6m28s; the pipeline found no culprit (the last passed run, `225f3605b7c1`, is not on that commit's first-parent line).
+  The later default run at `lmwqozysyszl` (`20261117-010456-default-test-run-at-lmwqozysyszl`) passed, so the failures may
+  be specific to the merge commit or flaky under load.
+- **Found**: `cargo test` failed, and again on its rerun, in three tests (48 of 49 default-tier suites passed):
+  - `application_core_joint::j1_the_quote_family_composes_the_four_streams` (`tests/application_core_joint.rs:232`):
+    "quote-claim helper-extra-field: a build whose verdict differs from after's is never answered by a stored result".
+    The helper-extra-field build was refuted with a replayed witness, but a stored result (an `exact` reuse) was
+    reported for it.
+  - `environment::a_per_call_choice_proves_a_rewrite_and_refutes_a_wrong_key` (`tests/environment.rs:134`): panicked with
+    only the message `POST /price`.
+  - `effects::an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged` (`tests/effects.rs:257`): "a changed
+    annotation is a miss: Some(ClaimKey(sha256:2cf62f9e...))", i.e. a changed claim was answered from the cache.
+  All Python suites passed. Two of the three are about result reuse by claim key, which suggests one cause in the
+  reuse/claim-key code at the merge.
+- **Needs**: the author of the prove-setup merge or the watcher of the `/prove-java-change` run: check whether
+  `9c48697e070a`'s line has the failures when run alone (`cargo test --test effects --test application_core_joint
+  --test environment`), and whether the passed run at `lmwqozysyszl` covers a fix.
+- **Tracked in**: the job's `logs/1-default-tests.log`.
+- **Closes when**: a default test run at a commit that contains the merge passes (the run at `lmwqozysyszl` already
+  passed; confirm it contains `9c48697e070a`, then this closes).
+
 ### VF-033: example 290's preservation claim compares only the count of matchers by type, and its fixed-security verdict rests on initializers observed on a JVM
 
 - **Status**: open, for a later run (the user's decision on 2026-11-17, reviewing the watcher's answer D005).
