@@ -706,6 +706,15 @@ fn a_write_set_refuses_every_write_its_frame_does_not_read() {
         assert_eq!(o.verdict, Verdict::Unverifiable, "{bean}: {}", o.output);
         assert!(o.problem.as_deref().unwrap_or_default().contains(why), "{bean}: {}", o.output);
     }
+    // The frame is of locations, over inputs that may be one object: `link` writes `other.admin`, which it names, and
+    // its own name where `other` is itself, which a check of two distinct accounts would not see.
+    let mut linking = options(classes, "claims.Frames$Linking#link", 3, "frames-linking");
+    linking.writes = Some(vec!["other.admin".into()]);
+    let linking = run(&linking);
+    assert_eq!(linking.verdict, Verdict::Violation, "{}", linking.output);
+    assert!(linking.output.contains("violated: `this.displayName == \\old(this.displayName) && (this == other || this.admin == \\old(this.admin)) && other.displayName == \\old(other.displayName)`"), "{}", linking.output);
+    assert!(linking.output.contains("this and other may be the same object"), "{}", linking.output);
+    assert_eq!(linking.replay.as_ref().map(|r| (r.by.as_str(), r.reproduced)), Some(("jvm", true)), "{}", linking.output);
     let unknown = framed("Honest", &["this.name"], "unknown");
     assert!(unknown.problem.as_deref().unwrap_or_default().contains("this.name is no field of the receiver or an object parameter; a write set names some of this.displayName, this.admin"), "{}", unknown.output);
 }
@@ -719,7 +728,7 @@ fn the_frame_countermodels_are_what_a_jvm_says_they_are() {
     assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
     assert_eq!(
         String::from_utf8_lossy(&out.stdout).trim(),
-        "adversarial.admin=true honest.admin=false restoring.admin=false copying.title.same=false copying.title.equal=true lastName=x audit.writes=1 counting.audit.same=true held.writes=1 seen[0]=1 rename.admin=true honest.rename=true lengthy.admin=true promoted.admin=true matched.admin=true sneaky.admin=true trusted.admin=true"
+        "adversarial.admin=true honest.admin=false restoring.admin=false copying.title.same=false copying.title.equal=true lastName=x audit.writes=1 counting.audit.same=true held.writes=1 seen[0]=1 rename.admin=true honest.rename=true lengthy.admin=true promoted.admin=true matched.admin=true sneaky.admin=true trusted.admin=true linked.name=self"
     );
 }
 

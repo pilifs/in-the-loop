@@ -714,8 +714,10 @@ struct ProveArgs {
     decreases: Option<String>,
     /// The method's write set, a first effect contract: the fields of its receiver and object parameters it may
     /// write, comma-separated (`this.displayName`), or nothing (`--writes ''`). The check then also proves the
-    /// frame: after a call that returns, every other field of those inputs is what it was (a primitive by value, a
-    /// String or an object by identity), stated in the assertion so that a witness replays; and the tool's own
+    /// frame: after a call that returns or throws an exception `--throws` declares, every other field of those
+    /// inputs is what it was (a primitive by value, a String or an object by identity), stated in the assertion so
+    /// that a witness replays. It is a frame of locations: inputs of one class may be one object, and a field one
+    /// of them names is written for both. And the tool's own
     /// checker refuses inside the call a write to anything else that was there before it (a static field, an
     /// array, an object none of the inputs is). With the tool's own checker (`--engine native`).
     #[arg(long)]

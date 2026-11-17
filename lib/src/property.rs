@@ -131,9 +131,12 @@ pub struct Options {
     pub previous: Option<(crate::relocate::Previous, Vec<String>)>,
     /// The method's write set (`prove --writes`), a first effect contract: the fields of its receiver and object
     /// parameters it may write, each as `this.name` or `p.name`; empty, it writes nothing that was there before
-    /// the call. The check then also proves the frame: after a call that returns, every other field of those
-    /// inputs is what it was (by value, a reference by identity, `p.f == \old(p.f)`, conjoined to the assertion,
-    /// so that a witness of a write outside the set is the harness's to replay), and the tool's own checker
+    /// the call. The check then also proves the frame: after a call that returns, and after one that throws an
+    /// exception a throws clause declares, every other field of those inputs is what it was (by value, a reference
+    /// by identity, `p.f == \old(p.f)`, conjoined to the assertion, so that a witness of a write outside the set is
+    /// the harness's to replay). It is a frame of locations, as JML's `assignable` is: inputs of one class may be
+    /// one object, and the check lets them be, so `this.f` is framed only where it is no named `p.f` (`this == p ||
+    /// this.f == \old(this.f)`). The tool's own checker also
     /// refuses inside the call a write to anything else that was there before it: a static field, an array, an
     /// object none of the inputs is ([`crate::bmc::Options::frame`]). With `--engine native`.
     pub writes: Option<Vec<String>>,
@@ -316,32 +319,51 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
 
 /// [`run`], whose phases it times.
 /// The name of the claim's method for the condition of the `i`th throws clause.
-/// The frame of a write set over the `inputs` (the receiver and the object parameters, each by name with its
-/// fields): each field none of `writes` names is after the call what it was before, a primitive by value and a
-/// reference by identity. `None` where the inputs have no field; an entry that names no field of an input, or a
-/// field the expressions can't read (an array), is refused by name.
-fn frame(inputs: &[(String, harness::Fields)], writes: &[String]) -> Result<Option<String>, String> {
+/// The frame of a write set over the `inputs` (the receiver and the object parameters, each by name with its class
+/// and fields): each field none of `writes` names is after the call what it was before, a primitive by value and a
+/// reference by identity. It is a frame of locations, as JML's `assignable` is: inputs of one class may be one object
+/// (the check lets them be, [`alias_pairs`]), and then `this.admin` is `other.admin`, so where `other.admin` is
+/// written `this.admin` is framed only where `this != other`. `None` where the inputs have no field; an entry that
+/// names no field of an input, or a field the expressions can't read (an array), is refused by name.
+fn frame(inputs: &[(String, String, harness::Fields)], writes: &[String]) -> Result<Option<String>, String> {
     for w in writes {
-        let known = inputs.iter().any(|(name, fields)| w.strip_prefix(name.as_str()).and_then(|rest| rest.strip_prefix('.')).is_some_and(|f| fields.fields.iter().any(|(n, _)| n == f)));
+        let known = inputs.iter().any(|(name, _, fields)| w.strip_prefix(name.as_str()).and_then(|rest| rest.strip_prefix('.')).is_some_and(|f| fields.fields.iter().any(|(n, _)| n == f)));
         if !known {
-            let all: Vec<String> = inputs.iter().flat_map(|(name, fields)| fields.fields.iter().map(move |(n, _)| format!("{name}.{n}"))).collect();
+            let all: Vec<String> = inputs.iter().flat_map(|(name, _, fields)| fields.fields.iter().map(move |(n, _)| format!("{name}.{n}"))).collect();
             return Err(format!("{w} is no field of the receiver or an object parameter; a write set names some of {}", if all.is_empty() { "none: there is no such field".to_string() } else { all.join(", ") }));
         }
     }
     let mut kept = Vec::new();
-    for (name, fields) in inputs {
+    for (name, class, fields) in inputs {
         for (f, kind) in &fields.fields {
             let path = format!("{name}.{f}");
             if writes.contains(&path) {
                 continue;
             }
-            match kind {
-                harness::FieldKind::Array(t) => return Err(format!("{path} is an array field ({}), which a frame does not read yet; name it in the write set to leave it unframed, and the check then refuses a write into its array", t.java_name())),
-                _ => kept.push(format!("{path} == \\old({path})")),
+            if let harness::FieldKind::Array(t) = kind {
+                return Err(format!("{path} is an array field ({}), which a frame does not read yet; name it in the write set to leave it unframed, and the check then refuses a write into its array", t.java_name()));
             }
+            // The other inputs this one may be, whose same field the write set names.
+            let written_as: Vec<String> = inputs.iter().filter(|(other, c, _)| other != name && c == class && writes.contains(&format!("{other}.{f}"))).map(|(other, _, _)| format!("{name} == {other}")).collect();
+            let unchanged = format!("{path} == \\old({path})");
+            kept.push(if written_as.is_empty() { unchanged } else { format!("({} || {unchanged})", written_as.join(" || ")) });
         }
     }
     Ok((!kept.is_empty()).then(|| kept.join(" && ")))
+}
+
+/// The pairs of a write set's inputs that may be one object: every two of one class, each made by its constructor.
+/// The frame is of locations, so a call on one object passed twice is among the calls it is about.
+fn alias_pairs(inputs: &[(String, String, harness::Fields)]) -> Vec<(String, String)> {
+    let mut pairs = Vec::new();
+    for (i, (a, ca, _)) in inputs.iter().enumerate() {
+        for (b, cb, _) in &inputs[i + 1..] {
+            if ca == cb {
+                pairs.push((a.clone(), b.clone()));
+            }
+        }
+    }
+    pairs
 }
 
 fn thrown_name(i: usize) -> String {
@@ -508,22 +530,33 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     layout.result_fields.0 = result_fields;
     // A write set (`--writes`): its frame is part of the assertion, and the own checker refuses what the harness
     // can't read after the call.
+    // The frame also holds where the method throws an exception a throws clause declares (`exit_frame`), and the
+    // inputs of one class may be one object (`framed_pairs`).
+    let mut exit_frame = None;
+    let mut framed_pairs = Vec::new();
     let framed = match &options.writes {
         None => options.assert.clone(),
         Some(writes) => {
             if options.engine != crate::Engine::Native {
                 return refuse(&mut out, line, "a write set's frame is the tool's own checker's alone (--engine native): only it refuses a write to a static field or to an object that is none of the inputs, which the harness does not read".into());
             }
-            let inputs: Vec<(String, harness::Fields)> = layout.receiver.iter().chain(&layout.args).filter_map(|slot| match slot {
-                harness::Slot::Record { name, record, .. } if record.given.is_none() => record.fields.clone().map(|f| (name.clone(), f)),
+            let inputs: Vec<(String, String, harness::Fields)> = layout.receiver.iter().chain(&layout.args).filter_map(|slot| match slot {
+                harness::Slot::Record { name, record, .. } if record.given.is_none() => record.fields.clone().map(|f| (name.clone(), record.class.clone(), f)),
                 _ => None,
             }).collect();
+            framed_pairs = alias_pairs(&inputs);
+            if !framed_pairs.is_empty() && plan.is_some() {
+                let (a, b) = &framed_pairs[0];
+                return refuse(&mut out, line, format!("the write set {}: {a} and {b} are of one class, so they may be one object, and a construction plan's nodes say which inputs are; a write set with a plan is over inputs of distinct classes only", writes.join(", ")));
+            }
             match frame(&inputs, writes) {
                 // No field to read after the call: the engine's refusals are the frame, and a void method's
                 // property is that it returns.
                 Ok(None) => options.assert.clone().or_else(|| (descriptor.ret == Type::Void).then(|| "true".to_string())),
                 Ok(Some(frame)) => {
-                    let _ = writeln!(out, "frame: {method_name} writes {}; after the call, {frame}", if writes.is_empty() { "nothing".to_string() } else { writes.join(", ") });
+                    let exits = if options.throws.is_empty() { "the call" } else { "the call, whether it returns or throws an exception a throws clause declares" };
+                    let _ = writeln!(out, "frame: {method_name} writes {}; after {exits}, {frame}", if writes.is_empty() { "nothing".to_string() } else { writes.join(", ") });
+                    exit_frame = Some(frame.clone());
                     Some(match (&options.assert, &descriptor.ret) {
                         (Some(a), _) => format!("({a}) && {frame}"),
                         (None, Type::Boolean) => format!("{} && {frame}", harness::RESULT),
@@ -568,11 +601,12 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // Over objects, a name that is not an array's is the layout's to judge (an object's, or one it refuses by name).
     let is_array = |n: &str| !over_objects || params.iter().any(|p| p.name == n && matches!(p.ty, Type::Array(_)));
     let (array_nullable, object_nullable): (Vec<String>, Vec<String>) = options.nullable.iter().cloned().partition(|n| is_array(n));
-    let mut object_pairs = Vec::new();
+    let mut object_pairs: Vec<(String, String)> = framed_pairs.clone();
     let mut array_pairs = Vec::new();
     for (a, b) in &options.may_alias {
         match (is_array(a), is_array(b)) {
             (true, true) => array_pairs.push((a.clone(), b.clone())),
+            (false, false) if framed_pairs.iter().any(|(x, y)| (x, y) == (a, b) || (y, x) == (a, b)) => {}
             (false, false) => object_pairs.push((a.clone(), b.clone())),
             _ => return refuse(&mut out, line, format!("--may-alias {a},{b}: an array and {} are never one", if is_array(a) { b } else { a })),
         }
@@ -789,7 +823,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // was ([`crate::bmc::Options::pure`]), and a summary's to read nothing a caller can change.
     let pure = (options.summary || options.decreases.is_some()).then(|| (class_internal.clone(), method_name.clone(), method.descriptor.clone()));
     let own_induction = !options.summary;
-    let generate = |assume: Option<&str>, assertion: Option<&str>, signals: &[Signal]| harness::generate_property_over(&class_internal, &method_name, &layout, &descriptor.ret, assume, assertion, signals, options.max_array_length);
+    let generate = |assume: Option<&str>, assertion: Option<&str>, signals: &[Signal]| harness::generate_property_framed(&class_internal, &method_name, &layout, &descriptor.ret, assume, assertion, signals, exit_frame.as_deref(), options.max_array_length);
     // With such members the claim's class is needed whatever the expressions are.
     let own = if members.is_empty() { generate(options.assume.as_deref(), framed.as_deref(), &signals) } else { Err(Error::new("the check uses a lemma or a proof by induction")) };
     let harness = match own {
@@ -1370,6 +1404,10 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             // What a throws clause required of this input, when that is what failed.
             let expected = match (applying(&arguments), thrown) {
                 (Some(i), _) => Some(format!("throws {}, since {}", harness.signals[i].0.java_name(), harness.signals[i].0.when)),
+                // Over objects a condition is the harness's to evaluate: where the method threw a declared exception,
+                // what a write set requires there is its frame too.
+                (None, Some(t)) if over_objects && exit_frame.is_some() && harness.signals.iter().any(|(s, _)| cp.is_subtype(t, &s.class)) => Some(format!("where a throws clause applies, its exception and the write set's frame after it ({})", exit_frame.as_deref().unwrap_or_default())),
+                (None, Some(_)) if over_objects => None,
                 // Where each condition can be evaluated here: one javac compiled is the harness's to evaluate.
                 (None, Some(_)) if !harness.signals.is_empty() && harness.signals.iter().all(|(_, when)| !when.has_call()) => Some("a normal return: no throws clause applies to this input".to_string()),
                 _ => None,

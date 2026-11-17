@@ -1305,13 +1305,19 @@ pub fn parse_after(src: &str, params: &[Param], callee: Option<&Callee>, first_f
 /// H2): `l.price.cents` reads a field path, `\old(l.quantity)` one before the call (only with `old`), and `l ==
 /// null`, `result == l` and `result.price != l.price` compare references.
 pub fn parse_over_objects(src: &str, params: &[Param], callee: Option<&Callee>, first_free_slot: u16, old: Option<&[(u16, u16)]>, objects: &[(String, super::Fields)]) -> Result<Expr, Error> {
+    parse_over_objects_from(src, params, callee, first_free_slot, old, objects).map(|(expr, _)| expr)
+}
+
+/// As [`parse_over_objects`], with the first local slot the expression leaves free (after its quantifiers' and the
+/// fields it reads under `\old`), from which another expression of the same method takes its own.
+pub fn parse_over_objects_from(src: &str, params: &[Param], callee: Option<&Callee>, first_free_slot: u16, old: Option<&[(u16, u16)]>, objects: &[(String, super::Fields)]) -> Result<(Expr, u16), Error> {
     let tokens = lex(src)?;
     let mut parser = Parser { tokens, pos: 0, params, callee, scope: Vec::new(), next_slot: first_free_slot, old, in_old: false, objects };
     let expr = parser.ternary()?;
     if parser.peek() != &Token::End {
         return Err(Error::new(format!("unexpected {:?} after the expression", parser.peek())));
     }
-    Ok(expr)
+    Ok((expr, parser.next_slot))
 }
 
 // Evaluation, for checking a replayed counterexample

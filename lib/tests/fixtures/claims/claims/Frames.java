@@ -271,6 +271,27 @@ public final class Frames {
         }
     }
 
+    /**
+     * Writes the other account's protected field, which its write set names, and its own name only where the other
+     * account is itself: a frame proved of two distinct accounts says nothing of one passed twice.
+     */
+    public static final class Linking {
+        String displayName;
+        boolean admin;
+
+        public Linking(String displayName, boolean admin) {
+            this.displayName = displayName;
+            this.admin = admin;
+        }
+
+        public void link(Linking other) {
+            other.admin = true;
+            if (this == other) {
+                this.displayName = "self";
+            }
+        }
+    }
+
     /** The application: a request renames a fresh account, which is no admin; whether it is one after. */
     public static boolean adminAfterRename(String name) {
         Adversarial account = new Adversarial("", false);
@@ -348,6 +369,9 @@ public final class Frames {
         out.append(" lengthy.admin=").append(lengthyAdminAfterRename("abcd")).append(" promoted.admin=").append(promotedAfterRename("r", "x"));
         out.append(" matched.admin=").append(matchedAfterRename(true)).append(" sneaky.admin=").append(sneakyAfterRename(true, "x"));
         out.append(" trusted.admin=").append(trustedAfterRename("x"));
+        Linking linking = new Linking("", false);
+        linking.link(linking);
+        out.append(" linked.name=").append(linking.displayName);
         System.out.println(out);
     }
 }

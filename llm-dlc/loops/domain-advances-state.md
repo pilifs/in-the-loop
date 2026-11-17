@@ -167,10 +167,27 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
   `a_model_does_not_read_fields_no_constructor_of_it_wrote` is added to `lib/tests/model_countermodels.rs` and also
   requires the refusal to name the call; it fails with the refusal switched off. No accepted result used the hole
   (every example task is strict).
-- Next: step 3, now that I003 answers I006: how bind resolves a property name to its write method. That means a held
-  kind for `CachedIntrospectionResults`' empty `strongClassCache` (an `Object` variant), then observing a bean's
-  property descriptors, or an introspection contract sampled on a JVM, and the effect contract applied at
-  `Method.invoke` of the resolved setter. Then the adversarial bean and twin beside `ProtectedBean` (when the evidence
+- 2026-11-17, a soundness fix to the write set (nothing of 286 decided; the frozen claim unchanged). Inbox:
+  `domain-advances-state-I005` taken. The challenge stream's countermodels (`synvlnls`, `fc.Framed`) showed the frame
+  proved where a JVM sees `admin` written, in two ways. First, a write before a declared exception: the frame was
+  part of the assertion, read after a normal return only. It now holds on a declared exceptional exit too (the
+  harness checks it after the expected exception, `harness::generate_property_framed`), so `rename("b", -1)` is
+  refuted with a witness a JVM replays. Second, one bean passed as two inputs: the frame is now of locations, as JML's
+  `assignable` is. Every two inputs of one class may be one object (the check adds the alias choice and the domain
+  says so), and a field one of them names is framed in the other only where they differ (`this == other ||
+  this.admin == \old(this.admin)`). So `promote` and `grant` are proved with that frame, which a JVM keeps, and
+  never with `this.admin == \old(this.admin)` alone, which it breaks. The README's test is adapted to that: the
+  exceptional case must be refuted, and the alias cases must not prove the unaliased frame. A test that what the
+  frame names is proved on either exit and alias, and a countermodel of my own (`claims.Frames$Linking#link`, which
+  writes its own name only where `other` is itself), is refuted only because aliasing is explored. Each fails with
+  its fix switched off (by mutation). An effect contract is proved through the same check, so its stub's writes now
+  rest on a frame of locations. `domain-advances-state-I006` noted: the observation binding (`lzpqszyo`) is not on
+  this line yet; step 3's held kinds will be built on `observed.rs` as it stands there, and an observer line needs its
+  `on` record.
+- Next: step 3: how bind resolves a property name to its write method. That means taking `lzpqszyo` into this line,
+  a held kind for `CachedIntrospectionResults`' empty `strongClassCache` (an `Object` variant, printed
+  deterministically by the observer's `Dump.value`), then observing a bean's property descriptors, or an
+  introspection contract sampled on a JVM, and the effect contract applied at `Method.invoke` of the resolved setter. Then the adversarial bean and twin beside `ProtectedBean` (when the evidence
   stream's 286 jobs no longer hang on the adapter set) and the app-level refutation through `displayName` on the real
   binder. Still open from cycle 1: non-ASCII `toLowerCase()` (a Unicode lowering model or an ASCII claim for the
   user).

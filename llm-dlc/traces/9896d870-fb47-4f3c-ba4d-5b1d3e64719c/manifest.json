@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.005Z",
-  "ended": "2026-11-17T14:52:24.180Z",
-  "duration_seconds": 6933,
+  "ended": "2026-11-17T15:16:25.006Z",
+  "duration_seconds": 8374,
   "stats": {
-    "turns": 21,
-    "api_calls": 294,
-    "tool_calls": 296,
-    "tool_errors": 6,
-    "compactions": 4,
+    "turns": 26,
+    "api_calls": 337,
+    "tool_calls": 338,
+    "tool_errors": 7,
+    "compactions": 5,
     "peak_context_tokens": 234168,
     "usage": {
-      "input_tokens": 588,
-      "output_tokens": 236691,
-      "cache_read_input_tokens": 35582023,
-      "cache_creation_input_tokens": 756183
+      "input_tokens": 674,
+      "output_tokens": 276056,
+      "cache_read_input_tokens": 39898469,
+      "cache_creation_input_tokens": 886079
     }
   },
   "tools": {
-    "Bash": 282,
+    "Bash": 323,
     "Edit": 9,
     "Write": 3,
-    "Monitor": 1,
-    "Read": 1
+    "Read": 2,
+    "Monitor": 1
   },
   "files_touched": [
     "lib/models/java/util/lists/ArrayDeque.java",
@@ -103,24 +103,38 @@
     {
       "index": 4,
       "started": "2026-11-17T14:40:20.722Z",
-      "ended": "2026-11-17T14:52:24.180Z",
-      "turns": 4,
-      "api_calls": 29,
+      "ended": "2026-11-17T14:52:51.412Z",
+      "turns": 5,
+      "api_calls": 31,
       "usage": {
-        "input_tokens": 58,
-        "output_tokens": 15016,
-        "cache_read_input_tokens": 2151824,
-        "cache_creation_input_tokens": 80060
+        "input_tokens": 62,
+        "output_tokens": 15900,
+        "cache_read_input_tokens": 2339461,
+        "cache_creation_input_tokens": 82519
       },
-      "peak_context_tokens": 93333
+      "peak_context_tokens": 95792
+    },
+    {
+      "index": 5,
+      "started": "2026-11-17T14:53:32.851Z",
+      "ended": "2026-11-17T15:16:25.006Z",
+      "turns": 4,
+      "api_calls": 41,
+      "usage": {
+        "input_tokens": 82,
+        "output_tokens": 38481,
+        "cache_read_input_tokens": 4128809,
+        "cache_creation_input_tokens": 127437
+      },
+      "peak_context_tokens": 140710
     }
   ],
   "log": {
-    "sha256": "fb89115d3b7f2295e0bce2662ef197cb8d97fa2380ff0f621281bf9d00b92de8",
-    "bytes": 7909094,
-    "lines": 2753,
-    "gzip_bytes": 1334344,
-    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/fb89115d3b7f2295e0bce2662ef197cb8d97fa2380ff0f621281bf9d00b92de8.jsonl.gz"
+    "sha256": "3e74a3b6d1a8129e7d2b771b732c77db9732c8a2408524ffe1ec1727d4f9e11e",
+    "bytes": 9246295,
+    "lines": 3183,
+    "gzip_bytes": 1562533,
+    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/3e74a3b6d1a8129e7d2b771b732c77db9732c8a2408524ffe1ec1727d4f9e11e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -187,6 +201,14 @@
       "summary": "Under --gaps assume, a gap whose object is of a class whose model the check runs is refused by name: the models on request no longer read fields no constructor wrote",
       "body": "Inbox domain-advances-state-I004, from the challenge stream (lqyqxwqv): with --model java.util.ArrayDeque or java.util.ArrayList and --gaps assume, the own checker proved that ArrayDeque.clone(), new ArrayDeque(Collection) and new ArrayList(Collection) of one element have size 0, where a JVM gives 1. Assume took the call to make, or to construct, an object with no field written, and the model's size() then read those unwritten fields: a value nobody computed. The engine (lib/src/bmc/mod.rs, the JDK instance call's gap arm) now refuses such a gap under assume when the object it would construct, or the new object it would return, is of a class the checker runs a model of (ClassPath::checker_runs, so the HashMap model the checker always runs is covered too). Under advised, a constructor's contract on such a class is refused as well, since it writes none of the model's fields. Strict is unchanged: the gap is still refused there by name first.\n\nThe challenge stream's fixture (lib/tests/fixtures/model-countermodels: README.md, mc/Gapped.java) and its JVM test file are copied unchanged from lqyqxwqv. The README's checker test, a_model_does_not_read_fields_no_constructor_of_it_wrote, is added to lib/tests/model_countermodels.rs. It also requires each refusal to name the call, and it fails with the refusal switched off (a mutation, then restored). test_costs run --changed: 34 binaries pass; estimate, tag and lint agree. No accepted result used the hole, since every example task runs strict. Merging with the challenge line will meet lib/tests/model_countermodels.rs added on both sides: this side is that file plus the one test and its imports.",
       "log_sha256": "fb89115d3b7f2295e0bce2662ef197cb8d97fa2380ff0f621281bf9d00b92de8"
+    },
+    {
+      "change_id": "sltlykpktwrtlvywpwuquqptoqztnonp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A write set's frame holds on a declared exceptional exit and is of locations over inputs that may be one object: the challenge stream's three false frames are refuted or proved as JML's assignable states them",
+      "body": "Inbox item domain-advances-state-I005 (the challenge stream's countermodels, synvlnls, fc.Framed). Before this commit, prove --writes proved a frame in two cases where a JVM sees the protected field written. In the first, a method writes admin and then throws an exception its throws clause declares: the frame was part of the assertion, which was read only after a normal return. The harness now checks the frame after the expected exception too (harness::generate_property_framed, whose \\old reads take their own locals after the assertion's), so rename(\"b\", -1) is refuted with a witness a JVM replays. In the second, one bean is passed as two inputs. The frame is now of locations, as JML's assignable is. Every two inputs of one class may be one object: the check adds the alias choice, and the domain says so. A field that one of them names is framed in the other only where the two differ (this == other || this.admin == \\old(this.admin)). So promote --writes other.admin and grant --writes to.admin are proved with that frame, which a JVM keeps, and never with the unaliased one, which it breaks. A write set with a construction plan over two inputs of one class is refused by name. Where a witness throws a declared exception over objects, its expected line now names the frame instead of wrongly saying 'a normal return'.\n\nTests. lib/tests/fixtures/frame-countermodels (README and fc/Framed.java) and the JVM test in lib/tests/frame_countermodels.rs are copied unchanged from synvlnls. The README's checker-side test a_write_set_is_not_proved_where_a_jvm_sees_a_field_it_does_not_name_written is added, adapted to the location frame: rename must be refuted with a JVM replay, and promote and grant must not prove the unaliased frame. The README's version required those two not to be Verified, which none of the options it lists for aliasing (a location frame, or distinct objects in the domain) would give. A second test proves that what the frame names is allowed on either exit and alias. My own countermodel claims.Frames$Linking#link writes its own name only where other is itself, and claims.rs requires it refuted with a JVM replay. Switching off each fix (by mutation) makes a test fail: the exit frame fails the README test, and the alias pairs fail the Linking case. test_costs run --changed: 35 cargo binaries and 5 of 5 default-tier checks pass; estimate, tag and lint agree.\n\nMerge note: lib/tests/frame_countermodels.rs and the fixture are added on both this line and the challenge line, so a merge conflicts on the test file (take this line's). An effect contract (vwktulky) is proved through the same check, so its stub's writes now rest on a frame of locations that holds on every exit the contract allows. Inbox item domain-advances-state-I006 is noted in Progress: lzpqszyo is not on this line yet. The brief is unchanged outside Progress and still right.",
+      "log_sha256": "3e74a3b6d1a8129e7d2b771b732c77db9732c8a2408524ffe1ec1727d4f9e11e"
     }
   ],
   "logs": {
@@ -194,6 +216,12 @@
       "bytes": 5262429,
       "lines": 1802,
       "gzip_bytes": 876630,
+      "url": null
+    },
+    "3e74a3b6d1a8129e7d2b771b732c77db9732c8a2408524ffe1ec1727d4f9e11e": {
+      "bytes": 9246295,
+      "lines": 3183,
+      "gzip_bytes": 1562533,
       "url": null
     },
     "a3ad388bcc53c6d97f04d9927c36b676984c9bcdcf5113a5d45ade9739803514": {
