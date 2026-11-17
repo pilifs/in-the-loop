@@ -202,6 +202,32 @@ class Workspaces(unittest.TestCase):
         self.assertEqual(len(errors), 1)
         self.assertIn("points at log eeeeeeeeeeee that the manifest does not list", errors[0])
 
+    def stamped_by_another_session_under_b(self, listed_in_a: bool) -> tuple[list, list]:
+        """A's change, shared by b's line, stamped in a by session-c, which b's tree has no manifest of (as a
+        session that merged b's change into its own line and stamped it there does): what b's check makes of it."""
+        with self.at(self.a):
+            self.add_session("session-a", "a" * 64, "Made-up A")
+            self.line_a = self.traced("A's change", "session-a", "a" * 64)
+        b = self.base_dir / "b"
+        with self.at(self.a):
+            self.run_jj("workspace", "add", "--name", "b", "-r", self.line_a, str(b))
+            self.add_session("session-c", "c" * 64 if listed_in_a else "d" * 64, "Made-up C")
+            self.run_jj("describe", "-r", self.line_a, "-m", f"A's change\n\n{sync.TRAILER}: session-a sha256:{'a' * 64}\n"
+                                                          f"{sync.TRAILER}: session-c sha256:{'c' * 64}\n")
+        with self.at(b):
+            self.run_jj("workspace", "update-stale")
+            return sync.check_trailers(sync.all_manifests())
+
+    def test_a_shared_change_stamped_by_a_session_this_tree_has_no_manifest_of_is_a_note_while_its_manifest_there_lists_the_log(self):
+        errors, notes = self.stamped_by_another_session_under_b(listed_in_a=True)
+        self.assertEqual(errors, [])
+        self.assertEqual(len([n for n in notes if "this tree has no manifest of: workspace default's copy" in n]), 1, notes)
+
+    def test_a_shared_change_stamped_by_a_session_no_workspace_has_a_manifest_listing_the_log_of_is_still_an_error(self):
+        errors, _ = self.stamped_by_another_session_under_b(listed_in_a=False)
+        self.assertEqual(len(errors), 1)
+        self.assertIn("session session-c has no manifest", errors[0])
+
     # regenerate: the generated files after a merge
 
     def test_the_four_generated_files_conflict_and_regenerating_settles_them(self):

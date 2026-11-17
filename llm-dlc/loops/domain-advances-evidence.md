@@ -142,6 +142,12 @@ Don't change `verification/pipeline.py`.
   286's driver. `domain-advances-evidence-I003` (287's driver has them, preservation stream `oqsnoyom`): taken the
   same way; 287's equivalence branch is the preservation stream's and untouched, and the rerun of `mutant-security`
   uses the shared recipe (the replay's JAR, `1d099295…`).
+- *Finding, the trace check's* (`sync.py check`): the preservation stream's session (`f28025bc`) merged this line's
+  step 2 commit (`rkxyyqwn`) and stamped it with its own trace line, whose manifest only its line holds, so every
+  commit here failed with "session f28025bc has no manifest". The check already made a note of a shared commit
+  restamped elsewhere when the other workspace's manifest lists the log, but only for a session this tree knew; it
+  now does the same for a session it has no manifest of, unless the commit's own tree held one (then a merge lost
+  it, still an error). Two controls in `llm-dlc/tools/test_workspaces.py`.
 - Next: step 4 (the vacuity control) while the step 3 jobs and the lemma job run; then the records and `accept.py`
   for 286, 287, 288 and 290, and the lemma half of step 1, when they are back.
 - Status: working
