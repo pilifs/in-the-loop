@@ -527,6 +527,12 @@ change `oyomlpkklzoo` · [log `b0ef12008f89`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261117-225439-example-286-s-adversarial-fixture-on-5-3: passed: 1 passed step(s) in 3m53s, peak 1.3 GiB (estimated 10m00s, 4.0 GiB) Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
 
+### Record verification results for 1 job(s)
+
+change `vpxltzttrssu` · [log `b0ef12008f89`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/b0ef12008f89c3a580f61ba79aaec00c30364093653b86e6ff301e48bef9e435.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-230459-example-287-preservation-at-the-frozen-b: passed: 1 passed step(s) in 1m50s, peak 2.2 GiB (estimated 10m00s, 6.0 GiB); 4 output file(s) changed; signals: jvmcontract:holds×2 Applied 4 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/b0ef12008f89c3a580f61ba79aaec00c30364093653b86e6ff301e48bef9e435.jsonl.gz) has every step in between: reasoning, tool calls and their results.
