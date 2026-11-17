@@ -1084,7 +1084,14 @@ impl Parser<'_> {
             }
             return match self.next() {
                 Token::Ident(n) if n == "null" => Ok(Expr::Refs(Some(Box::new(path)), None, equal)),
-                other => Err(Error::new(format!("a String is compared by == or != with null alone (its content by equals), found {other:?}"))),
+                // A String field against a String parameter, by identity: what a setter that stores its argument
+                // leaves (`this.name == name`), which an effect contract gives the field at a call.
+                Token::Ident(n) if !path.steps.is_empty() && self.params.iter().any(|p| p.name == n && crate::values::is_string(&p.ty)) => {
+                    let slot = self.params.iter().find(|p| p.name == n).map(|p| p.slot).expect("found");
+                    let other = FieldPath { shown: n.clone(), slot, steps: Vec::new(), ty: path.ty.clone() };
+                    Ok(Expr::Refs(Some(Box::new(path)), Some(Box::new(other)), equal))
+                }
+                other => Err(Error::new(format!("a String is compared by == or != with null alone (its content by equals), or a String field by identity with a String parameter, found {other:?}"))),
             };
         }
         if let Type::Object(class) = &path.ty {
@@ -1911,6 +1918,22 @@ mod tests {
         // Outside the assertion there is no state before the call.
         let e = parse_over_objects("this.name == \\old(this.name)", &params, None, 1, None, &objects).unwrap_err().to_string();
         assert!(e.contains("\\old is only meaningful in the assertion"), "{e}");
+    }
+
+    /// A String field against a String parameter by identity: what a setter leaves that stores its argument, which
+    /// an effect contract gives the field at a call (`this.name == name`). A String parameter alone is not a path.
+    #[test]
+    fn a_string_field_is_compared_with_a_string_parameter_by_identity() {
+        use super::super::{FieldKind, Fields};
+        let bean = Fields { class: "shop/Bean".into(), fields: vec![("name".into(), FieldKind::String)] };
+        let string = Type::Object("java/lang/String".into());
+        let params = vec![Param { name: "this".into(), ty: Type::Object("shop/Bean".into()), slot: 0 }, Param { name: "name".into(), ty: string.clone(), slot: 1 }, Param { name: "count".into(), ty: Type::Int, slot: 2 }];
+        let objects = vec![("this".to_string(), bean)];
+        let parse = |src: &str| parse_over_objects(src, &params, None, 3, None, &objects);
+        let Expr::Refs(Some(l), Some(r), false) = parse("this.name != name").unwrap() else { panic!("an identity") };
+        assert_eq!((l.shown.as_str(), r.shown.as_str(), r.slot, r.steps.len(), &r.ty), ("this.name", "name", 1, 0, &string));
+        let e = parse("this.name == count").unwrap_err().to_string();
+        assert!(e.contains("or a String field by identity with a String parameter, found Ident(\"count\")"), "{e}");
     }
 
     /// An interface's object is read through its accessors, written as the calls they are, and a String by its

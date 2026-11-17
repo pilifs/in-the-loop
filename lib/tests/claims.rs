@@ -719,8 +719,80 @@ fn the_frame_countermodels_are_what_a_jvm_says_they_are() {
     assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
     assert_eq!(
         String::from_utf8_lossy(&out.stdout).trim(),
-        "adversarial.admin=true honest.admin=false restoring.admin=false copying.title.same=false copying.title.equal=true lastName=x audit.writes=1 counting.audit.same=true held.writes=1 seen[0]=1"
+        "adversarial.admin=true honest.admin=false restoring.admin=false copying.title.same=false copying.title.equal=true lastName=x audit.writes=1 counting.audit.same=true held.writes=1 seen[0]=1 rename.admin=true honest.rename=true lengthy.admin=true promoted.admin=true matched.admin=true sneaky.admin=true trusted.admin=true"
     );
+}
+
+/// An effect contract of `bean`'s setter: it writes `displayName` and leaves it the name it is given, plus `more`.
+fn effect_contract(bean: &str, more: &str) -> PathBuf {
+    lemmas(&format!("effect-{bean}.contract"), &format!("claims.Frames${bean}#setDisplayName\n  writes: this.displayName\n  assert: this.displayName == name\n{more}"))
+}
+
+/// The application-level statement through an allowed field name (`claims.Frames`, the state stream's step 5): a
+/// rename makes no account an admin. The honest setter's effect contract is proved and stands in for its call; the
+/// adversarial setter's is refuted, so the check that would rest on it is refused, and without it the statement is
+/// refuted by a rename to `admin:`, which replays.
+#[test]
+fn an_effect_contract_stands_in_for_the_honest_setter_and_the_adversarial_one_is_refuted() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let app = |entry: &str, assertion: &str, contract: Option<PathBuf>, tag: &str| {
+        let mut o = options(classes, &format!("claims.Frames#{entry}"), 8, &format!("effects-{tag}"));
+        o.assert = Some(assertion.into());
+        o.lemmas = contract;
+        run(&o)
+    };
+    let honest = app("honestRename", "result", Some(effect_contract("Honest", "")), "honest");
+    assert_eq!(honest.verdict, Verdict::Verified, "{}", honest.output);
+    assert!(honest.output.contains("effect: ✓ claims.Frames$Honest#setDisplayName satisfies `(this.displayName == name) && this.admin == \\old(this.admin)`"), "{}", honest.output);
+    let stated = honest.stated.as_ref().expect("a statement");
+    assert!(stated.assumptions.iter().any(|a| a.text == "the effect contract of claims.Frames$Honest.setDisplayName(Ljava/lang/String;)V, proved beside this check"), "the contract stood in for the call: {:?}", stated.assumptions);
+    let refuted = app("adminAfterRename", "!result", Some(effect_contract("Adversarial", "")), "adversarial");
+    assert_eq!(refuted.verdict, Verdict::Unverifiable, "{}", refuted.output);
+    assert!(refuted.problem.as_deref().unwrap_or_default().contains("the effect contract of claims.Frames$Adversarial#setDisplayName") && refuted.output.contains("effect: ✗ Property of claims.Frames$Adversarial#setDisplayName violated"), "{}", refuted.output);
+    let app_level = app("adminAfterRename", "!result", None, "adversarial-app");
+    assert_eq!(app_level.verdict, Verdict::Violation, "{}", app_level.output);
+    assert_eq!(app_level.replay.as_ref().map(|r| r.reproduced), Some(true), "{}", app_level.output);
+    assert!(app_level.output.contains("adminAfterRename(name=\"admin:\")"), "{}", app_level.output);
+    // A written String field the assertion gives no parameter: the stub has no object to give it.
+    let copying = lemmas("effect-copying.contract", "claims.Frames$Copying#setDisplayName\n  writes: this.displayName, this.title\n  assert: this.displayName == name\n");
+    let o = app("honestRename", "result", Some(copying), "copying");
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.problem.as_deref().unwrap_or_default().contains("this.title is written and the assertion gives it no parameter's value"), "{}", o.output);
+}
+
+/// The side conditions of an effect contract's use: each setter here grants admin on a JVM (`Frames.main`), through
+/// what the contract's proof did not cover: a name longer than its bound, a field of the receiver a caller set, a
+/// static field, the identity of a literal, a subclass's hook. A `Verified` would be a false proof; each was one with
+/// its rule switched off.
+#[test]
+fn an_effect_contract_is_not_used_where_the_call_is_outside_what_it_was_proved_of() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let app = |entry: &str, bean: &str, more: &str| {
+        let mut o = options(classes, &format!("claims.Frames#{entry}"), 8, &format!("effects-{bean}"));
+        o.assert = Some("!result".into());
+        o.lemmas = Some(effect_contract(bean, more));
+        run(&o)
+    };
+    // Proved within three units, it is used there, and a longer name runs the setter as written.
+    let lengthy = app("lengthyAdminAfterRename", "Lengthy", "  arrays: 3\n");
+    assert_eq!(lengthy.verdict, Verdict::Violation, "{}", lengthy.output);
+    assert_eq!(lengthy.replay.as_ref().map(|r| (r.by.as_str(), r.reproduced)), Some(("jvm", true)), "{}", lengthy.output);
+    // The base's setter, run on a subclass's object, calls the subclass's hook.
+    let sneaky = app("sneakyAfterRename", "Base", "");
+    assert_eq!(sneaky.verdict, Verdict::Violation, "{}", sneaky.output);
+    assert_eq!(sneaky.replay.as_ref().map(|r| (r.by.as_str(), r.reproduced)), Some(("jvm", true)), "{}", sneaky.output);
+    for (entry, bean, why) in [
+        ("promotedAfterRename", "Promoting", "reads the field role of an object that was there before the call"),
+        ("trustedAfterRename", "Trusting", "reads the static field claims.Frames$Switch.trusting"),
+        ("matchedAfterRename", "Matching", "compares an object that was there before the call by identity"),
+    ] {
+        let o = app(entry, bean, "");
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{bean}: {}", o.output);
+        let problem = o.problem.as_deref().unwrap_or_default();
+        assert!(problem.contains("is not proved") && problem.contains(why) && problem.contains("it is not a method an effect contract can stand in for"), "{bean}: {}", o.output);
+    }
 }
 
 /// What the two tests above call false is false on a JVM: the fixture says what each method returns there.

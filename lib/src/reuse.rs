@@ -100,6 +100,7 @@ pub const PROPERTY_OPTIONS: &[(&str, &str)] = &[
     ("previous", "set only by a regression check made as a property of the pair of versions: refused under the cache"),
     ("requested_models", "what the proof rests on, a model run on request: refused under the cache, which does not key it (property::run)"),
     ("writes", "part of the claim, a write set and its frame: refused under the cache, which does not key it"),
+    ("effect", "set only by a check that uses the effect contract, with a write set: refused under the cache"),
 ];
 
 /// The first assumption of every property claim: no regression claim has it, so the two never share a key.

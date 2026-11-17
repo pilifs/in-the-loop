@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.005Z",
-  "ended": "2026-11-17T14:17:12.669Z",
-  "duration_seconds": 4822,
+  "ended": "2026-11-17T14:38:47.065Z",
+  "duration_seconds": 6116,
   "stats": {
-    "turns": 11,
-    "api_calls": 199,
-    "tool_calls": 201,
-    "tool_errors": 3,
-    "compactions": 2,
-    "peak_context_tokens": 231497,
+    "turns": 16,
+    "api_calls": 263,
+    "tool_calls": 265,
+    "tool_errors": 4,
+    "compactions": 3,
+    "peak_context_tokens": 234168,
     "usage": {
-      "input_tokens": 398,
-      "output_tokens": 147810,
-      "cache_read_input_tokens": 24742293,
-      "cache_creation_input_tokens": 498419
+      "input_tokens": 526,
+      "output_tokens": 220264,
+      "cache_read_input_tokens": 33060770,
+      "cache_creation_input_tokens": 670892
     }
   },
   "tools": {
-    "Bash": 193,
-    "Edit": 5,
+    "Bash": 256,
+    "Edit": 6,
     "Write": 3
   },
   "files_touched": [
@@ -72,24 +72,38 @@
     {
       "index": 2,
       "started": "2026-11-17T13:57:46.556Z",
-      "ended": "2026-11-17T14:17:12.669Z",
-      "turns": 4,
-      "api_calls": 75,
+      "ended": "2026-11-17T14:17:52.291Z",
+      "turns": 5,
+      "api_calls": 77,
       "usage": {
-        "input_tokens": 150,
-        "output_tokens": 63341,
-        "cache_read_input_tokens": 11515023,
-        "cache_creation_input_tokens": 218224
+        "input_tokens": 154,
+        "output_tokens": 64384,
+        "cache_read_input_tokens": 11978909,
+        "cache_creation_input_tokens": 220895
       },
-      "peak_context_tokens": 231497
+      "peak_context_tokens": 234168
+    },
+    {
+      "index": 3,
+      "started": "2026-11-17T14:18:50.859Z",
+      "ended": "2026-11-17T14:38:47.065Z",
+      "turns": 4,
+      "api_calls": 62,
+      "usage": {
+        "input_tokens": 124,
+        "output_tokens": 71411,
+        "cache_read_input_tokens": 7854591,
+        "cache_creation_input_tokens": 169802
+      },
+      "peak_context_tokens": 183075
     }
   ],
   "log": {
-    "sha256": "14c3eb3e4b95f2df5bcf919b4d77f270cb17c2f705aa95a9adf8675f63cdc58a",
-    "bytes": 5262429,
-    "lines": 1802,
-    "gzip_bytes": 876630,
-    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/14c3eb3e4b95f2df5bcf919b4d77f270cb17c2f705aa95a9adf8675f63cdc58a.jsonl.gz"
+    "sha256": "c28d60f436bf5c08b90bf77371b4a0f50ab1b0495e513f358b7a4ab0cfc37571",
+    "bytes": 6977477,
+    "lines": 2425,
+    "gzip_bytes": 1149882,
+    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/c28d60f436bf5c08b90bf77371b4a0f50ab1b0495e513f358b7a4ab0cfc37571.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -140,6 +154,14 @@
       "summary": "A write set, a first effect contract: prove --writes refutes the setter that writes a protected field and proves its honest twin",
       "body": "The state stream's steps 4 and 5, the checking side. prove --writes this.displayName (own checker only) states which fields of a method's receiver and object parameters it may write. The check proves the frame with the property: after a normal return every other field of those inputs is unchanged, a primitive by value and a String or object by identity through the new p == \\old(p) term. The frame is conjoined to the assertion, so a write outside the set is refuted by the harness and its witness runs on a JVM. Inside the call the engine refuses, by name, a write to anything else that existed before it: a static field, an array, an object no input is (even one a named field holds), or a class initialization, whose objects would look new to the call. This generalizes Engine::keeps through bmc::Options::frame. The cache refuses such a check, since its key does not read the write set.",
       "log_sha256": "14c3eb3e4b95f2df5bcf919b4d77f270cb17c2f705aa95a9adf8675f63cdc58a"
+    },
+    {
+      "change_id": "vwktulkyvqoxotnsrmywskxnwwuywwxl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "An effect contract at a call: a setter's checked write set stands in for its calls, and the application-level rename statement is proved through the honest setter and refuted through the adversarial one",
+      "body": "A lemma with a writes: line is now an effect contract of a public instance method (prove --lemmas). It is proved first with its frame (the write set of the last commit) and also as reading nothing that was there before the call: no field of the receiver or an object argument, no static field that is not final, no array, no default locale, and no identity comparison of such an object (bmc::Options::closed_frame, which generalizes Engine::reads and Engine::compares as the write set generalized Engine::keeps). What the method writes is then a function of its arguments. In the check, a call on a receiver of exactly the contract's class, with arguments within its bounds, runs a stub of the claim's class (bmc::Effect, the effect intrinsic). A written field takes the parameter the assertion gives it (this.f == p; the expression language now compares a String field with a String parameter by identity), another written primitive takes any value, and nothing else changes. Elsewhere the method runs as written. A written reference field with no parameter, assume:, throws:, array parameters and non-integral results are refused by name.\n\nVerified with lib/tests/fixtures/claims Frames: the honest setter's contract is proved and used (the statement lists it among what the run rests on), and 'an admin stays one under the new name' is proved. The adversarial setter's contract is refuted, so the check that rests on it is refused. Without it, 'a rename makes no account an admin' is refuted by a rename to admin:, and the witness replays. Five use-side countermodels each grant admin on a JVM (Frames.main): a name past the contract's bound, a receiver field a caller set, a static switch, a literal's identity, a subclass hook called through the inherited setter. Each was a false proof with its rule switched off (by mutation: closed_frame off, the exact-class check off, the stub's bounds guard off). New tests: two tool tests in claims.rs and unit tests for the stub, the conjunct split and String identity; test_costs run --changed passes and lint agrees. Inbox item domain-advances-state-I003 is taken in Progress. The brief is not wrong.",
+      "log_sha256": "c28d60f436bf5c08b90bf77371b4a0f50ab1b0495e513f358b7a4ab0cfc37571"
     }
   ],
   "logs": {
@@ -153,6 +175,12 @@
       "bytes": 1048215,
       "lines": 307,
       "gzip_bytes": 194904,
+      "url": null
+    },
+    "c28d60f436bf5c08b90bf77371b4a0f50ab1b0495e513f358b7a4ab0cfc37571": {
+      "bytes": 6977477,
+      "lines": 2425,
+      "gzip_bytes": 1149882,
       "url": null
     },
     "e02c99011dda56df411f19ce57cdc2a5834214ee214a4e0cf6663e5490120468": {

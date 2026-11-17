@@ -137,6 +137,10 @@ pub struct Options {
     /// refuses inside the call a write to anything else that was there before it: a static field, an array, an
     /// object none of the inputs is ([`crate::bmc::Options::frame`]). With `--engine native`.
     pub writes: Option<Vec<String>>,
+    /// Whether the check proves an effect contract (a lemma with `writes:`, [`crate::summary`]): with
+    /// [`Options::writes`], it also shows the method reads nothing that was there before the call
+    /// ([`crate::bmc::Options::closed_frame`]). Set by the check that uses the contract, never by a command line.
+    pub effect: bool,
 }
 
 impl Options {
@@ -179,6 +183,7 @@ impl Options {
             requested_models: Vec::new(),
             previous: None,
             writes: None,
+            effect: false,
         }
     }
 }
@@ -650,11 +655,61 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // The lemmas (`--lemmas`): each proved here first, at this check's bounds, and then the summary of its method
     // ([`crate::summary`]). One that is not proved, or that no summary can state, refuses the check.
     let mut lemmas: Vec<(Declaration, crate::summary::Signature, u32, f64)> = Vec::new();
+    // The effect contracts among them (a declaration with `writes:`): each proved here first, at its own bounds,
+    // with its frame and as reading nothing that was there before the call, and then the stub that stands in for its
+    // method's calls.
+    let mut effects: Vec<(Declaration, crate::summary::EffectSignature, Vec<crate::bmc::EffectWrite>, u32, f64)> = Vec::new();
     if let Some(file) = &options.lemmas {
         if options.engine != crate::Engine::Native {
             return refuse(&mut out, line, "a lemma's summary is the tool's own checker's alone (--engine native): JBMC is not given one".into());
         }
         for (i, declaration) in read_declarations(file)?.into_iter().enumerate() {
+            if let Some(writes) = &declaration.writes {
+                let refused = |problem: String| format!("the effect contract of {} in {} is not one a call can use: {problem}", declaration.target, file.display());
+                let signature = match crate::summary::EffectSignature::of(&cp, &declaration.target) {
+                    Ok(s) => s,
+                    Err(problem) => return refuse(&mut out, line, refused(problem)),
+                };
+                if declaration.assume.is_some() || !declaration.throws.is_empty() || declaration.decreases.is_some() {
+                    return refuse(&mut out, line, refused("it has an `assume:`, a `throws:` or a `decreases:`, and an effect contract states the writes of a call that returns on every argument within its bounds".into()));
+                }
+                let written = match crate::summary::effect_writes(&cp, &signature, writes, declaration.assert.as_deref()) {
+                    Ok(w) => w,
+                    Err(problem) => return refuse(&mut out, line, refused(problem)),
+                };
+                let bound = declaration.max_array_length.unwrap_or(options.max_array_length);
+                let contract = Options {
+                    target: declaration.target.clone(),
+                    assume: None,
+                    assert: declaration.assert.clone(),
+                    throws: Vec::new(),
+                    decreases: None,
+                    lemmas: None,
+                    summary: false,
+                    writes: Some(writes.clone()),
+                    effect: true,
+                    max_array_length: bound,
+                    unwind: declaration.unwind.unwrap_or(options.unwind),
+                    work: Some(work.join(format!("effect-{i}"))),
+                    report: None,
+                    cache: None,
+                    nullable: Vec::new(),
+                    may_alias: Vec::new(),
+                    plan: None,
+                    ..options.clone()
+                };
+                let started = std::time::Instant::now();
+                let proved = run_check(&contract)?;
+                let seconds = started.elapsed().as_secs_f64();
+                for said in proved.output.lines() {
+                    let _ = writeln!(out, "effect: {said}");
+                }
+                if proved.verdict != Verdict::Verified {
+                    return refuse(&mut out, line, format!("the effect contract of {} in {} is not proved ({}), and the check would rest on it", declaration.target, file.display(), proved.problem.unwrap_or_else(|| "it is refuted: see above".into())));
+                }
+                effects.push((declaration, signature, written, bound, seconds));
+                continue;
+            }
             let signature = match crate::summary::Signature::of(&cp, &declaration.target) {
                 Ok(s) => s,
                 Err(problem) => return refuse(&mut out, line, format!("the lemma about {} in {} is not one a summary can state: {problem}", declaration.target, file.display())),
@@ -671,6 +726,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 decreases: declaration.decreases.clone(),
                 lemmas: None,
                 summary: true,
+                writes: None,
+                effect: false,
                 max_array_length: bound,
                 unwind: declaration.unwind.unwrap_or(options.unwind),
                 work: Some(work.join(format!("lemma-{i}"))),
@@ -718,6 +775,14 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             Err(problem) => return refuse(&mut out, line, format!("the lemma about {} is not one a summary can state: {problem}", declaration.target)),
         }
         summaries.push(crate::bmc::Summary { owner: signature.class.clone(), name: signature.name.clone(), descriptor: signature.descriptor.clone(), stub: crate::summary::stub(i) });
+    }
+    let mut stubs: Vec<crate::bmc::Effect> = Vec::new();
+    for (i, (declaration, signature, written, bound, _)) in effects.iter().enumerate() {
+        match crate::summary::effect(i, signature, *bound) {
+            Ok(java) => members.push_str(&java),
+            Err(problem) => return refuse(&mut out, line, format!("the effect contract of {} is not one a call can use: {problem}", declaration.target)),
+        }
+        stubs.push(crate::bmc::Effect { owner: signature.class.clone(), name: signature.name.clone(), descriptor: signature.descriptor.clone(), stub: crate::summary::effect_stub(i), stub_descriptor: signature.stub_descriptor(), writes: written.clone() });
     }
     // What stands in for a call states its result and nothing else: the method a summary is proved of, and one
     // proved by induction (whose hypothesis stands in for its calls of itself), is shown to leave the state as it
@@ -791,6 +856,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 let how = declaration.decreases.as_deref().map(|m| format!(" by induction on `{m}`")).unwrap_or_default();
                 let _ = writeln!(out, "note: lemma, proved above{how} in {seconds:.1} s: {} satisfies `{}`{where_}, on Strings of at most {bound} code units; its calls within that are taken to return what it states, and any other runs the method as written", declaration.target, declaration.assert.as_deref().unwrap_or_default());
             }
+            for (declaration, _, _, bound, seconds) in &effects {
+                let _ = writeln!(out, "note: effect contract, proved above in {seconds:.1} s: {}", effect_text(declaration, *bound));
+            }
             h
         }
         Err(e) => return refuse(&mut out, line, format!("the property is not well-formed: {e}")),
@@ -834,6 +902,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 basis: crate::statement::Basis::Proved,
                 id: None,
             }))
+            .chain(effects.iter().map(|(declaration, _, _, bound, _)| crate::statement::Assumption { kind: crate::statement::AssumptionKind::Summary, text: effect_text(declaration, *bound), basis: crate::statement::Basis::Proved, id: None }))
             .collect(),
         observations: observations.clone(),
         bounds: crate::construction::stated_bounds(&layout, crate::statement::bounds(Some(options.unwind), &stated_domain, options.max_array_length, complete), options.max_array_length),
@@ -932,7 +1001,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             }
         }
         let budget = crate::equivalence::own_budget(&deadline, options.engine);
-        let result = crate::bmc::run_for_proof_with(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, options.max_array_length, budget, &gap_setting, &parameters, &summaries, pure.clone(), own_induction, options.writes.as_ref().map(|_| (class_internal.clone(), method_name.clone(), method.descriptor.clone())), &work)?;
+        let result = crate::bmc::run_for_proof_with(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, options.max_array_length, budget, &gap_setting, &parameters, &summaries, pure.clone(), own_induction, options.writes.as_ref().map(|_| (class_internal.clone(), method_name.clone(), method.descriptor.clone())), options.effect, &stubs, &work)?;
         runs.push(Run::of(&result, "proof", budget));
         if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || crate::equivalence::refuses_gaps(&result) || widened {
             if options.engine == crate::Engine::Auto && result.verdict == Verdict::Unverifiable {
@@ -1444,6 +1513,14 @@ pub(crate) fn reproduced_words(reproduced: Option<bool>) -> &'static str {
     }
 }
 
+/// What an effect contract states, as a check that uses it says.
+fn effect_text(declaration: &Declaration, bound: u32) -> String {
+    let writes = declaration.writes.as_deref().unwrap_or_default();
+    let writes = if writes.is_empty() { "nothing".to_string() } else { writes.join(", ") };
+    let assertion = declaration.assert.as_deref().map(|a| format!(", satisfies `{a}`")).unwrap_or_default();
+    format!("{} writes {writes} and nothing else that was there before the call{assertion}, and reads nothing that was there before it, on Strings of at most {bound} code units: proved beside this check, at its bounds, and applied at the method's calls within that on a receiver of exactly its class, where a written field takes the parameter the assertion gives it (`this.f == p`) or any value of its primitive type; any other call runs the method as written", declaration.target)
+}
+
 /// The file of a module's properties, next to its other contracts.
 pub const FILE_NAME: &str = "properties.contract";
 
@@ -1463,10 +1540,14 @@ pub struct Declaration {
     /// `decreases:` the measure of a proof by induction ([`crate::summary`]): an int expression over the parameters.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub decreases: Option<String>,
+    /// `writes:` the fields of the receiver and object parameters an instance method writes: the declaration is then
+    /// an effect contract ([`crate::summary`]), as `prove --writes` names them.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub writes: Option<Vec<String>>,
 }
 
 /// Reads a properties file: blocks of a target line (`pkg.Class#method`) followed by indented `assume:`,
-/// `assert:`, `throws:`, `decreases:`, `arrays:` and `unwind:` lines; `#` comments and `key: value` headers are
+/// `assert:`, `throws:`, `decreases:`, `writes:`, `arrays:` and `unwind:` lines; `#` comments and `key: value` headers are
 /// skipped.
 pub fn parse_declarations(text: &str, origin: &str) -> Result<Vec<Declaration>, Error> {
     let mut out: Vec<Declaration> = Vec::new();
@@ -1479,7 +1560,7 @@ pub fn parse_declarations(text: &str, origin: &str) -> Result<Vec<Declaration>, 
         let body = line.trim();
         if !indented {
             if body.contains('#') && !body.contains(':') {
-                out.push(Declaration { target: body.to_string(), assume: None, assert: None, throws: Vec::new(), max_array_length: None, unwind: None, decreases: None });
+                out.push(Declaration { target: body.to_string(), assume: None, assert: None, throws: Vec::new(), max_array_length: None, unwind: None, decreases: None, writes: None });
                 continue;
             }
             if body.split_once(':').is_some() {
@@ -1494,6 +1575,7 @@ pub fn parse_declarations(text: &str, origin: &str) -> Result<Vec<Declaration>, 
             Some(("assume", value)) => last.assume = Some(value.trim().to_string()),
             Some(("assert", value)) => last.assert = Some(value.trim().to_string()),
             Some(("decreases", value)) => last.decreases = Some(value.trim().to_string()),
+            Some(("writes", value)) => last.writes = Some(value.split(',').map(str::trim).filter(|w| !w.is_empty()).map(String::from).collect()),
             Some(("throws", value)) => {
                 Signal::parse(value).map_err(|e| Error::new(format!("{origin}:{}: {e}", number + 1)))?;
                 last.throws.push(value.trim().to_string());
@@ -1502,7 +1584,7 @@ pub fn parse_declarations(text: &str, origin: &str) -> Result<Vec<Declaration>, 
                 last.max_array_length = Some(value.trim().parse().map_err(|_| Error::new(format!("{origin}:{}: `arrays:` needs a number of elements, found {:?}", number + 1, value.trim())))?)
             }
             Some(("unwind", value)) => last.unwind = Some(value.trim().parse().map_err(|_| Error::new(format!("{origin}:{}: `unwind:` needs a number of loop iterations, found {:?}", number + 1, value.trim())))?),
-            _ => return Err(Error::new(format!("{origin}:{}: expected `assume:`, `assert:`, `throws:`, `decreases:`, `arrays:` or `unwind:`, found {body:?}", number + 1))),
+            _ => return Err(Error::new(format!("{origin}:{}: expected `assume:`, `assert:`, `throws:`, `decreases:`, `writes:`, `arrays:` or `unwind:`, found {body:?}", number + 1))),
         }
     }
     Ok(out)
@@ -1558,7 +1640,7 @@ mod tests {
         assert_eq!(declarations[0].assert.as_deref(), Some("2L * result > n"));
         assert_eq!(declarations[0].max_array_length, Some(4));
         assert_eq!(declarations[0].unwind, Some(5));
-        assert_eq!(declarations[1], Declaration { target: "net.example.Laws#holds".into(), assume: None, assert: None, throws: Vec::new(), max_array_length: None, unwind: None, decreases: None });
+        assert_eq!(declarations[1], Declaration { target: "net.example.Laws#holds".into(), assume: None, assert: None, throws: Vec::new(), max_array_length: None, unwind: None, decreases: None, writes: None });
         assert!(parse_declarations("net.example.A#b\n  unwind: many\n", "f").is_err(), "a number");
         let signals = parse_declarations("net.example.A#div\n  throws: java.lang.ArithmeticException when b == 0\n  throws: IllegalArgumentException when a < 0\n", "f").unwrap();
         assert_eq!(signals[0].throws, vec!["java.lang.ArithmeticException when b == 0".to_string(), "IllegalArgumentException when a < 0".to_string()]);

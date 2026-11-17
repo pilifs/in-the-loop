@@ -177,6 +177,13 @@ pub struct Options {
     /// to anything else that was there before it, a static field or another object, which the harness does not
     /// read ([`Engine::in_frame`]).
     pub frame: Option<(String, String, String)>,
+    /// Whether the framed method is proved as an effect contract, which stands in for its calls ([`Effect`]): its
+    /// writes must then be a function of its arguments alone, so it reads nothing that was there before the call (a
+    /// field or a cell of such an object, its receiver's included, or a static field that is not final), and
+    /// compares no such object by identity ([`Engine::in_closed_frame`]).
+    pub closed_frame: bool,
+    /// The calls a checked effect contract stands in for ([`Effect`]).
+    pub effects: std::sync::Arc<Vec<Effect>>,
     /// The classes whose initializer the engine does not run, by internal name, each with the static state the
     /// initializer left on a JVM ([`crate::observed`], `--observed-initializer`): a use that initializes one gives
     /// the path that state, and the run states what that rests on ([`Outcome::assumed`]).
@@ -200,9 +207,36 @@ pub struct Summary {
     pub stub: String,
 }
 
+/// An instance method whose calls, made by anything but the harness and the claim's class on a receiver of exactly
+/// its class, run a method of the claim's class instead: a checked effect contract of it ([`crate::summary`]). The
+/// stub (`stub`, of descriptor `stub_descriptor`: the receiver first, then the method's parameters) calls the method
+/// as written where the arguments are outside the bounds the contract was proved at, and elsewhere the intrinsic
+/// `effect`, which makes the writes the contract states ([`EffectWrite`]) and nothing else.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Effect {
+    pub owner: String,
+    pub name: String,
+    pub descriptor: String,
+    pub stub: String,
+    pub stub_descriptor: String,
+    pub writes: Vec<EffectWrite>,
+}
+
+/// A field an effect contract writes: of the object in the stub's local `object` (the receiver at 0, or an object
+/// parameter), the field `field` of type `descriptor`, which the call leaves holding the stub's local `value` (a
+/// parameter the contract's assertion says it equals) or, with none, any value of its primitive type.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct EffectWrite {
+    pub object: usize,
+    pub owner: String,
+    pub field: String,
+    pub descriptor: String,
+    pub value: Option<usize>,
+}
+
 impl Default for Options {
     fn default() -> Self {
-        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, merge_heaps_after: 1024, invariants: true, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured, parameters: Parameters::default(), summaries: Default::default(), pure: None, own_induction: false, frame: None, observed: Default::default(), models: Default::default(), previous: None }
+        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, merge_heaps_after: 1024, invariants: true, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured, parameters: Parameters::default(), summaries: Default::default(), pure: None, own_induction: false, frame: None, closed_frame: false, effects: Default::default(), observed: Default::default(), models: Default::default(), previous: None }
     }
 }
 
@@ -588,6 +622,9 @@ struct Obj {
     made: u64,
     /// Whether the object was there when the method a summary is proved of was entered ([`Engine::in_summary`]).
     given: bool,
+    /// Whether the object was there when the framed method was entered ([`Options::frame`]): an input or not. In
+    /// the proof of an effect contract ([`Options::closed_frame`]) the method reads none of it.
+    before: bool,
     /// Of an array of numbers past a summarized loop ([`loops`]): its cells hold any values, and `array.cells` is
     /// what they were once, which nothing reads. A read of a cell is then any value, a write changes nothing, and
     /// what would read the cells in bulk does not take it for an array ([`Obj::as_array`]) and is refused. A table
@@ -618,7 +655,7 @@ static MADE: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0)
 
 impl Obj {
     fn new(class: &str) -> Obj {
-        Obj { class: class.to_string(), fields: BTreeMap::new(), array: None, limit: None, same: Vec::new(), lambda: None, regex: None, made: MADE.fetch_add(1, std::sync::atomic::Ordering::Relaxed), given: false, unknown: false }
+        Obj { class: class.to_string(), fields: BTreeMap::new(), array: None, limit: None, same: Vec::new(), lambda: None, regex: None, made: MADE.fetch_add(1, std::sync::atomic::Ordering::Relaxed), given: false, before: false, unknown: false }
     }
 
     /// The array the object is, where its cells are known: not a String's content.
@@ -922,6 +959,7 @@ fn alike(o: &Obj, q: &Obj) -> bool {
         && o.lambda == q.lambda
         && o.regex == q.regex
         && o.given == q.given
+        && o.before == q.before
         && o.fields.len() == q.fields.len()
         && o.fields.iter().zip(&q.fields).all(|((k, x), (l, y))| k == l && mergeable(x, y))
         && match (&o.array, &q.array) {
@@ -1171,6 +1209,9 @@ struct Engine<'a> {
     own_induction: bool,
     /// The method a stated write set frames ([`Options::frame`]).
     frame: Option<(String, String, String)>,
+    /// Whether it is proved as an effect contract ([`Options::closed_frame`]).
+    closed_frame: bool,
+    effects: std::sync::Arc<Vec<Effect>>,
     b: Blaster,
     codes: HashMap<(String, String, String), Rc<Decoded>>,
     pending: Vec<Path>,
@@ -1322,6 +1363,8 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         pure: options.pure.clone(),
         own_induction: options.own_induction,
         frame: options.frame.clone(),
+        closed_frame: options.closed_frame,
+        effects: options.effects.clone(),
         applied: BTreeMap::new(),
         hides: HashMap::new(),
         supers: HashMap::new(),
@@ -1617,15 +1660,17 @@ pub fn solver_signature() -> String {
 #[allow(clippy::too_many_arguments)] // the settings a proof driver passes on
 #[allow(clippy::too_many_arguments)]
 pub fn run_for_proof(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &GapSetting, parameters: &Parameters, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
-    run_for_proof_with(entries, models, class, method, unwind, max_array_length, timeout, gaps, parameters, &[], None, false, None, work)
+    run_for_proof_with(entries, models, class, method, unwind, max_array_length, timeout, gaps, parameters, &[], None, false, None, false, &[], work)
 }
 
 /// [`run_for_proof`] with the calls checked summaries stand in for (`summaries`), and the method the check proves a
-/// summary of, or proves by induction (`pure`; `own_induction` says which, [`Options::own_induction`]).
+/// summary of, or proves by induction (`pure`; `own_induction` says which, [`Options::own_induction`]); the method a
+/// write set frames (`frame`), proved as an effect contract where `closed_frame`, and the calls checked effect
+/// contracts stand in for (`effects`).
 #[allow(clippy::too_many_arguments)]
-pub fn run_for_proof_with(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &GapSetting, parameters: &Parameters, summaries: &[Summary], pure: Option<(String, String, String)>, own_induction: bool, frame: Option<(String, String, String)>, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
+pub fn run_for_proof_with(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &GapSetting, parameters: &Parameters, summaries: &[Summary], pure: Option<(String, String, String)>, own_induction: bool, frame: Option<(String, String, String)>, closed_frame: bool, effects: &[Effect], work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
     let cp = crate::witness::classpath(entries.iter().chain(&gaps.class_dir).map(std::path::PathBuf::as_path))?.with_models(models);
-    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps: gaps.mode, contracts: gaps.contracts.clone(), observed: gaps.observed.clone(), models: gaps.models.clone(), previous: gaps.previous.clone(), parameters: parameters.clone(), summaries: std::sync::Arc::new(summaries.to_vec()), pure, own_induction, frame, ..Options::default() })?;
+    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps: gaps.mode, contracts: gaps.contracts.clone(), observed: gaps.observed.clone(), models: gaps.models.clone(), previous: gaps.previous.clone(), parameters: parameters.clone(), summaries: std::sync::Arc::new(summaries.to_vec()), pure, own_induction, frame, closed_frame, effects: std::sync::Arc::new(effects.to_vec()), ..Options::default() })?;
     let log = work.join("bmc.log");
     let _ = std::fs::write(&log, format!("jvmcontract's own checker on {class}.{method}\n{}\n", outcome.summary()));
     Ok(outcome.into_jbmc_result(log))
@@ -2342,6 +2387,7 @@ impl<'a> Engine<'a> {
         for (o, q) in into.objects.iter_mut().zip(&other.objects) {
             // An object that was there before a summarized method was entered, on either path.
             o.given |= q.given;
+            o.before |= q.before;
             for (name, x) in o.fields.iter_mut() {
                 choose(&mut self.b, x, &q.fields[name]);
             }
@@ -2558,7 +2604,7 @@ impl<'a> Engine<'a> {
                     Ok(o) => o,
                     Err(step) => return step,
                 };
-                if path.objects[o].given {
+                if self.there_before(path, o) {
                     self.reads(path, || "reads an array that was there before the call".into())?;
                 }
                 let array = path.objects[o].array.clone().expect("an array");
@@ -2644,7 +2690,7 @@ impl<'a> Engine<'a> {
                     Ok(o) => o,
                     Err(step) => return step,
                 };
-                if path.objects[o].given {
+                if self.there_before(path, o) {
                     self.reads(path, || "reads an array that was there before the call".into())?;
                 }
                 let array = path.objects[o].array.clone().expect("an array");
@@ -3024,7 +3070,7 @@ impl<'a> Engine<'a> {
     /// Refuses, inside a summarized method, a `getfield` of a field that is not final on an object that was there
     /// before the call ([`Engine::reads`]).
     fn reads_field(&self, path: &Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Result<(), Stop> {
-        if path.objects[o].given && self.in_lemma(path) && !self.final_field(owner, name, descriptor) {
+        if self.there_before(path, o) && (self.in_lemma(path) || self.in_closed_frame(path)) && !self.final_field(owner, name, descriptor) {
             self.reads(path, || format!("reads the field {name} of an object that was there before the call"))?;
         }
         Ok(())
@@ -3951,6 +3997,41 @@ impl<'a> Engine<'a> {
             }
             // No run of the call takes the path: what it returned does not satisfy the contract's assertion.
             ("infeasible", []) => return Ok(Some(End::Infeasible)),
+            // A checked effect contract's writes, from the stub's frame ([`Effect`]): each field it writes holds the
+            // parameter its assertion says, or any value of its primitive type; nothing else changes.
+            ("effect", [Val::I(index)]) => {
+                let index = self.b.constant_value(index).ok_or_else(|| Stop::Unsupported("an effect contract's number is not a constant".into()))? as usize;
+                let effect = self.effects.get(index).cloned().ok_or_else(|| Stop::Unsupported(format!("no effect contract {index}")))?;
+                let locals = path.frames.last().expect("the stub's frame").locals.clone();
+                self.assumed.insert(format!("the effect contract of {}.{}{}, proved beside this check", effect.owner.replace('/', "."), effect.name, effect.descriptor));
+                for write in &effect.writes {
+                    let Some(Some(Val::R(Some(o)))) = locals.get(write.object).cloned() else {
+                        return unsupported(format!("an effect contract of {}.{} writes a field of an object the engine does not hold as one", effect.owner.replace('/', "."), effect.name));
+                    };
+                    let value = match write.value {
+                        Some(local) => locals.get(local).cloned().flatten().ok_or_else(|| Stop::Unsupported("an effect contract's value is no local of its stub".into()))?,
+                        None => match write.descriptor.as_str() {
+                            "J" => Val::J(self.b.fresh(64)),
+                            "Z" => {
+                                let bit = self.b.fresh(1);
+                                Val::I(self.b.zext(&bit, 32))
+                            }
+                            "I" => Val::I(self.b.fresh(32)),
+                            "B" | "S" => {
+                                let v = self.b.fresh(if write.descriptor == "B" { 8 } else { 16 });
+                                Val::I(self.b.sext(&v, 32))
+                            }
+                            "C" => {
+                                let v = self.b.fresh(16);
+                                Val::I(self.b.zext(&v, 32))
+                            }
+                            other => return unsupported(format!("an effect contract leaves the field {} of type {other} any value", write.field)),
+                        },
+                    };
+                    let key = self.field_key(path, o, &write.owner, &write.field, &write.descriptor)?;
+                    path.objects[o].fields.insert(key, value);
+                }
+            }
             // An induction hypothesis used where it says nothing ([`crate::summary`]): the proof does not go through.
             ("unproved", []) => {
                 return unsupported("the induction does not go through: a recursive call is reached whose arguments the hypothesis does not cover (outside the property's assumption or its bounds, or the measure not below the call's own and at least zero)");
@@ -4444,6 +4525,22 @@ impl<'a> Engine<'a> {
             if m.code.is_some() {
                 let mut full = vec![Val::R(Some(o))];
                 full.extend(args);
+                // A checked effect contract of the method, in place of a call that is neither the harness's nor the
+                // claim's, on a receiver of exactly the class it was proved of ([`Effect`]): a subclass's object may
+                // read what the proof's never had, and an override is another method.
+                let initialized = path.classes.get(&cf.name) != Some(&ClassState::InProgress);
+                let effect = self.effects.iter().find(|e| e.owner == cf.name && e.name == member.name && e.descriptor == member.descriptor && path.objects[o].class == e.owner).map(|e| (e.stub.clone(), e.stub_descriptor.clone()));
+                if let Some((stub, stub_descriptor)) = effect.filter(|_| initialized && caller != crate::harness::expr::CLAIM_CLASS && path.frames.len() > 1) {
+                    // The instruction runs again once the claim's class is initialized: its operands are on the
+                    // stack while it is.
+                    let depth = path.frames.last().expect("a frame").stack.len();
+                    path.frames.last_mut().expect("a frame").stack.extend(full.iter().cloned());
+                    if let Some(step) = self.initialise(path, crate::harness::expr::CLAIM_CLASS) {
+                        return step;
+                    }
+                    path.frames.last_mut().expect("a frame").stack.truncate(depth);
+                    return self.call(path, crate::harness::expr::CLAIM_CLASS, &stub, &stub_descriptor, full);
+                }
                 return self.call(path, &cf.name, &member.name, &member.descriptor, full);
             }
         }
@@ -4518,6 +4615,7 @@ impl<'a> Engine<'a> {
             let inputs: Vec<usize> = locals.iter().flatten().filter_map(Val::options).flat_map(|options| options.into_iter().filter_map(|(_, t)| t)).collect();
             for (i, o) in path.objects.iter_mut().enumerate() {
                 o.given = o.array.is_some() || !inputs.contains(&i);
+                o.before = true;
             }
         }
         // A model run on request is what the result then rests on.
@@ -4543,6 +4641,27 @@ impl<'a> Engine<'a> {
     /// the harness.
     fn in_frame(&self, path: &Path) -> bool {
         self.frame.as_ref().is_some_and(|(owner, name, _)| path.frames.get(1).is_some_and(|f| f.class.name == *owner && f.method == *name))
+    }
+
+    /// Whether the path is inside the method proved as an effect contract ([`Options::closed_frame`]), called by the
+    /// harness: an effect contract stands in for the method's calls, wherever they are made, by the writes it states,
+    /// so what the method writes may depend on nothing a caller can change before it calls. Inside it a read of
+    /// what was there before the call ([`Obj::before`]: the receiver and the object arguments too, whose fields the
+    /// proof took from their constructors and a caller may have set since), of a static field that is not final or
+    /// of the default locale, and a comparison by identity of such an object, each end the run with no verdict
+    /// ([`Engine::reads`], [`Engine::compares`]).
+    fn in_closed_frame(&self, path: &Path) -> bool {
+        self.closed_frame && self.in_frame(path)
+    }
+
+    /// Whether the object `o` was there before the call that the path's lemma or effect contract is about: before the
+    /// summarized method was entered ([`Obj::given`]), or before the framed one ([`Obj::before`]).
+    fn there_before(&self, path: &Path, o: usize) -> bool {
+        if self.in_closed_frame(path) {
+            path.objects[o].before
+        } else {
+            path.objects[o].given
+        }
     }
 
     /// Refuses, inside a summarized method, a write to the object `o` when it was there before the call (`None`:
@@ -4598,6 +4717,10 @@ impl<'a> Engine<'a> {
     /// call, whatever was written before it, so a result or a statement that depends on such a read is no
     /// function of the arguments.
     fn reads(&self, path: &Path, what: impl FnOnce() -> String) -> Result<(), Stop> {
+        if self.in_closed_frame(path) {
+            let (owner, name, _) = self.frame.as_ref().expect("in a frame");
+            return unsupported(format!("{}.{name} {}, which a caller can change before it calls, and an effect contract states what the method writes as a function of its arguments alone: it is not a method an effect contract can stand in for", owner.replace('/', "."), what()));
+        }
         if self.in_lemma(path) {
             let (owner, name, _) = self.pure.as_ref().expect("in a lemma");
             let reader = if self.in_summary(path) { format!("{}.{name}", owner.replace('/', ".")) } else { format!("the lemma about {}.{name}, in its assumption or its assertion,", owner.replace('/', ".")) };
@@ -4616,11 +4739,15 @@ impl<'a> Engine<'a> {
     /// Refuses, inside a summarized method, a comparison by identity of a reference that may be an object that was
     /// there before the call, a literal aside (which is the same object whoever calls).
     fn compares(&self, path: &Path, v: &Val) -> Result<(), Stop> {
-        if !self.in_summary(path) {
+        if !self.in_summary(path) && !self.in_closed_frame(path) {
             return Ok(());
         }
-        let given = |o: usize| path.objects[o].given && !path.literals.values().any(|&l| l == o);
+        let given = |o: usize| self.there_before(path, o) && !path.literals.values().any(|&l| l == o);
         let may_be_given = v.options().is_some_and(|options| options.iter().filter_map(|(_, t)| *t).any(|o| given(o) || path.objects[o].same.iter().any(|(_, t)| given(*t))));
+        if may_be_given && self.in_closed_frame(path) {
+            let (owner, name, _) = self.frame.as_ref().expect("in a frame");
+            return unsupported(format!("{}.{name} compares an object that was there before the call by identity (==), so what it writes may depend on which objects a caller passes: it is not a method an effect contract can stand in for", owner.replace('/', ".")));
+        }
         if may_be_given {
             let (owner, name, _) = self.pure.as_ref().expect("in a summary");
             let stands_in = if self.own_induction { "it is not a method proved by induction on a measure (--decreases)" } else { "it is not a method a summary can stand in for" };

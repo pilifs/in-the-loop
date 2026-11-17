@@ -725,6 +725,11 @@ struct ProveArgs {
     /// within its assumption and those bounds a call returns what the lemma states, and any other runs the method
     /// as written. Of public static methods over integral and boolean parameters and Strings that change nothing
     /// a caller could see, which the proof of each also shows; with the tool's own checker (`--engine native`).
+    /// A declaration with a `writes:` line is an effect contract of a public instance method: proved first with its
+    /// write set's frame and as reading nothing that was there before the call, and then, at a call on a receiver
+    /// of exactly its class with arguments within its bounds, the call makes the writes it states (a field the
+    /// assertion gives a parameter as `this.f == p` takes it, any other written field any value of its primitive
+    /// type) and nothing else.
     #[arg(long)]
     lemmas: Option<PathBuf>,
     /// A class whose initializer the tool's own checker is not to run, `pkg.Class`; may be repeated. The class is
@@ -962,7 +967,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                     }
                     selected
                 }
-                (None, Some(target)) => vec![property::Declaration { target: target.clone(), assume: args.assume.clone(), assert: args.assert_.clone(), throws: args.throws.clone(), max_array_length: None, unwind: None, decreases: args.decreases.clone() }],
+                (None, Some(target)) => vec![property::Declaration { target: target.clone(), assume: args.assume.clone(), assert: args.assert_.clone(), throws: args.throws.clone(), max_array_length: None, unwind: None, decreases: args.decreases.clone(), writes: args.writes.as_deref().map(|w| w.split(',').map(str::trim).filter(|f| !f.is_empty()).map(String::from).collect()) }],
                 (None, None) => return Err(Error::new("give a target `pkg.Class#method`, or --properties FILE")),
             };
             let mut outcomes = Vec::new();
@@ -1000,7 +1005,8 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.plan = args.plan.as_deref().map(jvmcontract::construction::load).transpose().map_err(|u| Error::new(u.to_string()))?;
                 options.cache = args.cache.clone();
                 options.decreases = declaration.decreases.clone();
-                options.writes = args.writes.as_deref().map(|w| w.split(',').map(str::trim).filter(|f| !f.is_empty()).map(String::from).collect());
+                // A properties file's `writes:` line, or `--writes` for a target given on the command line.
+                options.writes = declaration.writes.clone();
                 options.lemmas = args.lemmas.clone();
                 options.observed_initializers = args.observed_initializer.clone();
                 options.requested_models = args.model.clone();

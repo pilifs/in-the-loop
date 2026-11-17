@@ -5,12 +5,24 @@ package claims;
  * name says, each in a way a frame must see, and the honest one it is told apart from. Each bean is made by its one
  * constructor from any field values, so a frame proved of it holds in every state the bean can be in. {@code main}
  * shows on a JVM what each setter leaves.
+ *
+ * <p>The application's side: a request renames an account ({@code adminAfterRename} and the others), and an effect
+ * contract of the setter stands in for the call. The setters below the honest one each make the contract's use
+ * unsound in one way (outside its bounds, by what it reads of the receiver or of a static field, by identity, through
+ * a subclass): on a JVM each rename grants admin.
  */
 public final class Frames {
     private Frames() {}
 
     /** Where a setter can write that is no field of its receiver: a static field. */
     static String lastName;
+
+    /** A switch a setter reads, false until a caller sets it, in a class with no initializer of its own. */
+    static final class Switch {
+        private Switch() {}
+
+        static boolean trusting;
+    }
 
     /** An object that was there before any setter is called and is none of its inputs. */
     public static final Audit AUDIT = new Audit(0);
@@ -148,6 +160,163 @@ public final class Frames {
         }
     }
 
+    /** Writes the protected field on a name longer than three units: within a bound of three, it writes its own. */
+    public static final class Lengthy {
+        String displayName;
+        boolean admin;
+
+        public Lengthy(String displayName, boolean admin) {
+            this.displayName = displayName;
+            this.admin = admin;
+        }
+
+        public void setDisplayName(String name) {
+            this.displayName = name;
+            if (name.length() > 3) {
+                this.admin = true;
+            }
+        }
+    }
+
+    /**
+     * Grants admin once a role is set, which its constructor never does: from any state the constructor makes, the
+     * setter writes its own field alone.
+     */
+    public static final class Promoting {
+        String displayName;
+        boolean admin;
+        String role;
+
+        public Promoting(String displayName, boolean admin) {
+            this.displayName = displayName;
+            this.admin = admin;
+        }
+
+        public void setRole(String role) {
+            this.role = role;
+        }
+
+        public void setDisplayName(String name) {
+            this.displayName = name;
+            if (this.role != null) {
+                this.admin = true;
+            }
+        }
+    }
+
+    /** Grants admin while a static switch is on, which it is not in a fresh class. */
+    public static final class Trusting {
+        String displayName;
+        boolean admin;
+
+        public Trusting(String displayName, boolean admin) {
+            this.displayName = displayName;
+            this.admin = admin;
+        }
+
+        public void setDisplayName(String name) {
+            this.displayName = name;
+            if (Switch.trusting) {
+                this.admin = true;
+            }
+        }
+    }
+
+    /** Grants admin for the literal itself, by identity: a String a proof makes up is never that object. */
+    public static final class Matching {
+        String displayName;
+        boolean admin;
+
+        public Matching(String displayName, boolean admin) {
+            this.displayName = displayName;
+            this.admin = admin;
+        }
+
+        @SuppressWarnings("StringEquality")
+        public void setDisplayName(String name) {
+            this.displayName = name;
+            if (name == "root") {
+                this.admin = true;
+            }
+        }
+    }
+
+    /** An honest setter that tells its subclasses it renamed: a hook that does nothing here. */
+    public static class Base {
+        String displayName;
+        boolean admin;
+
+        public Base(String displayName, boolean admin) {
+            this.displayName = displayName;
+            this.admin = admin;
+        }
+
+        public void setDisplayName(String name) {
+            this.displayName = name;
+            renamed();
+        }
+
+        protected void renamed() {}
+    }
+
+    /** Inherits the setter and overrides the hook: the setter it runs is the base's, and it grants admin. */
+    public static final class Sneaky extends Base {
+        public Sneaky(String displayName, boolean admin) {
+            super(displayName, admin);
+        }
+
+        @Override
+        protected void renamed() {
+            this.admin = true;
+        }
+    }
+
+    /** The application: a request renames a fresh account, which is no admin; whether it is one after. */
+    public static boolean adminAfterRename(String name) {
+        Adversarial account = new Adversarial("", false);
+        account.setDisplayName(name);
+        return account.admin;
+    }
+
+    /** The same over the honest bean, which is an admin: it is one after, under the new name. */
+    public static boolean honestRename(String name) {
+        Honest account = new Honest("", true);
+        account.setDisplayName(name);
+        return account.admin && account.displayName == name;
+    }
+
+    public static boolean lengthyAdminAfterRename(String name) {
+        Lengthy account = new Lengthy("", false);
+        account.setDisplayName(name);
+        return account.admin;
+    }
+
+    public static boolean promotedAfterRename(String role, String name) {
+        Promoting account = new Promoting("", false);
+        account.setRole(role);
+        account.setDisplayName(name);
+        return account.admin;
+    }
+
+    public static boolean trustedAfterRename(String name) {
+        Switch.trusting = true;
+        Trusting account = new Trusting("", false);
+        account.setDisplayName(name);
+        return account.admin;
+    }
+
+    public static boolean matchedAfterRename(boolean root) {
+        Matching account = new Matching("", false);
+        account.setDisplayName(root ? "root" : "user");
+        return account.admin;
+    }
+
+    public static boolean sneakyAfterRename(boolean sneaky, String name) {
+        Base account = sneaky ? new Sneaky("", false) : new Base("", false);
+        account.setDisplayName(name);
+        return account.admin;
+    }
+
     /** What each setter leaves on a JVM: the fields it does not name, and the state outside its inputs. */
     public static void main(String[] args) {
         StringBuilder out = new StringBuilder();
@@ -175,6 +344,10 @@ public final class Frames {
         int[] seen = {0};
         new Filling("").setDisplayName("x", seen);
         out.append(" seen[0]=").append(seen[0]);
+        out.append(" rename.admin=").append(adminAfterRename("admin:")).append(" honest.rename=").append(honestRename("x"));
+        out.append(" lengthy.admin=").append(lengthyAdminAfterRename("abcd")).append(" promoted.admin=").append(promotedAfterRename("r", "x"));
+        out.append(" matched.admin=").append(matchedAfterRename(true)).append(" sneaky.admin=").append(sneakyAfterRename(true, "x"));
+        out.append(" trusted.admin=").append(trustedAfterRename("x"));
         System.out.println(out);
     }
 }

@@ -134,13 +134,34 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
   `accept.py` compares for every 286 task (its line 326), under the evidence stream's queued jobs, and the
   application-level statement they serve needs the binding path (step 3). Not yet: the reads, allocation and alias
   parts of step 4, and the contract's use at a call.
-- Next: step 4's use side. The write set stands in for a call: the frame's fields keep their values, the written ones
-  take any value the postcondition allows, and the use checks that the contract's reads and frame match the call's
-  state, with an `Effects`-style countermodel per side condition. Then step 3 (which still needs the evidence stream's
-  answer to I006): an introspection contract (property name to write method, sampled on a JVM) and this effect
-  contract at the property accessor, then the adversarial bean and twin beside `ProtectedBean`, with the app-level
-  refutation through `displayName`. Still open from cycle 1: non-ASCII `toLowerCase()` (a Unicode lowering model or an
-  ASCII claim for the user).
+- 2026-11-17, step 4's use side, and step 5 at the application level in the lib fixture (nothing of 286 decided; the
+  frozen claim unchanged). Inbox: `domain-advances-state-I003` taken: step 3 will add the held kinds it needs (an empty
+  `ConcurrentHashMap`, a bean's property descriptors) as new `Object` variants in `observed.rs`, leaving `Slot`, the
+  existing variants and the keying as they are, and will take the evidence stream's `on` record once `mqkqvvmw` is
+  merged; nothing in `observed.rs` changed in this cycle. **An effect contract at a call** (`--lemmas`, a declaration
+  with `writes:`): it is proved first with its frame and *as reading nothing that was there before the call* (no
+  field of the receiver or an object argument, no non-final static, no array, no default locale, no identity
+  comparison of such an object: `Options::closed_frame`, generalizing `Engine::reads` and `Engine::compares` as the
+  write set generalized `keeps`). What it writes is then a function of its arguments. At a call on a receiver of
+  exactly its class, with arguments within its `arrays:` bound, a stub of the claim's class runs instead
+  (`bmc::Effect`, the `effect` intrinsic): a field the assertion gives a parameter (`this.f == p`, now also a String
+  by identity) takes it, another written primitive takes any value, and nothing else changes; elsewhere the method
+  runs as written. The run names the contract among what it rests on. `claims.Frames` gives the application-level
+  statement "a rename makes no account an admin". With the honest setter's contract it is proved ("an admin stays one,
+  under the new name"). The adversarial setter's contract is refuted, so the check resting on it is refused, and
+  without it a rename to `admin:` refutes the statement, a replayed witness through the allowed `displayName`. Each
+  side condition of the use has a countermodel that grants admin on a JVM, and each was a false proof with its rule
+  switched off (by mutation): a name longer than the bound, a receiver field a caller set (`setRole`), a static
+  switch, a literal's identity, a subclass's hook reached through the inherited setter. Not yet: a stated read set,
+  the postcondition beyond parameter equalities, escaping allocations, a second consumer, and the use at a reflective
+  call (`Method.invoke`, how the binder reaches a setter).
+- Next: step 3, now that I003 answers I006: how bind resolves a property name to its write method. That means a held
+  kind for `CachedIntrospectionResults`' empty `strongClassCache` (an `Object` variant), then observing a bean's
+  property descriptors, or an introspection contract sampled on a JVM, and the effect contract applied at
+  `Method.invoke` of the resolved setter. Then the adversarial bean and twin beside `ProtectedBean` (when the evidence
+  stream's 286 jobs no longer hang on the adapter set) and the app-level refutation through `displayName` on the real
+  binder. Still open from cycle 1: non-ASCII `toLowerCase()` (a Unicode lowering model or an ASCII claim for the
+  user).
 - Status: working
 
 ## Loop settings
