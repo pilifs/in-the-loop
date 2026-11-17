@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-17T13:08:59.086Z",
-  "duration_seconds": 157292,
+  "ended": "2026-11-17T13:09:35.589Z",
+  "duration_seconds": 157329,
   "stats": {
     "turns": 159,
-    "api_calls": 1133,
-    "tool_calls": 1041,
+    "api_calls": 1137,
+    "tool_calls": 1045,
     "tool_errors": 20,
     "compactions": 6,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 2574,
-      "output_tokens": 807104,
-      "cache_read_input_tokens": 267443102,
-      "cache_creation_input_tokens": 1938453
+      "input_tokens": 2582,
+      "output_tokens": 809034,
+      "cache_read_input_tokens": 267847374,
+      "cache_creation_input_tokens": 1941318
     }
   },
   "tools": {
-    "Bash": 993,
+    "Bash": 997,
     "ToolSearch": 9,
     "Write": 8,
     "SendMessage": 7,
@@ -143,24 +143,24 @@
     {
       "index": 6,
       "started": "2026-11-17T12:55:11.414Z",
-      "ended": "2026-11-17T13:08:59.086Z",
+      "ended": "2026-11-17T13:09:35.589Z",
       "turns": 7,
-      "api_calls": 32,
+      "api_calls": 36,
       "usage": {
-        "input_tokens": 70,
-        "output_tokens": 11573,
-        "cache_read_input_tokens": 2582417,
-        "cache_creation_input_tokens": 71858
+        "input_tokens": 78,
+        "output_tokens": 13503,
+        "cache_read_input_tokens": 2986689,
+        "cache_creation_input_tokens": 74723
       },
-      "peak_context_tokens": 100240
+      "peak_context_tokens": 103105
     }
   ],
   "log": {
-    "sha256": "368d1e6abb428e19e7fb0d8d879365bdd5c491e73b63e6dbf37cc77d656cbfb2",
-    "bytes": 22333309,
-    "lines": 9328,
-    "gzip_bytes": 3818770,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/368d1e6abb428e19e7fb0d8d879365bdd5c491e73b63e6dbf37cc77d656cbfb2.jsonl.gz"
+    "sha256": "fc315e83cc673fd47c55127f054a5e307599099d778f428e0a6b9d0e07fd9028",
+    "bytes": 22453465,
+    "lines": 9364,
+    "gzip_bytes": 3837143,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/fc315e83cc673fd47c55127f054a5e307599099d778f428e0a6b9d0e07fd9028.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1379,6 +1379,14 @@
       "summary": "The run-streams tests no longer inherit a real run's watcher, so run inside a stream they cannot ask it questions",
       "body": "test_brief_run.py's fixture now drops RUN_STREAMS_*, FEATURE_LOOP_* and LOOP_CONDUCTOR from the environment. A stream of the domain-advances run ran the test of a run 'without a watcher', which built its env from os.environ: inside the stream's loop that carries RUN_STREAMS_WATCHER, so the test's made-up run-streams.sh put two merge questions (streams a and b of made-up) to the real watcher, which answered them leave (run-streams-domain-advances D001, D002). Verified: the 39 tests pass with a decoy RUN_STREAMS_WATCHER and LOOP_CONDUCTOR set, and nothing is written to the decoy.",
       "log_sha256": "368d1e6abb428e19e7fb0d8d879365bdd5c491e73b63e6dbf37cc77d656cbfb2"
+    },
+    {
+      "change_id": "kxvzvywpoqxuvyoxtvkwltuonqrsuork",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The streams of domain-advances are told the leaking run-streams test is not their work",
+      "body": "Each stream's inbox has an item (I001, a failure) saying that test_brief_run.py's no-watcher test may hang or fail in their test runs until they have the fixture fix (smxzwqlr), and that they should not change it or block on it.",
+      "log_sha256": "fc315e83cc673fd47c55127f054a5e307599099d778f428e0a6b9d0e07fd9028"
     }
   ],
   "logs": {
@@ -1747,6 +1755,12 @@
       "lines": 874,
       "gzip_bytes": 445511,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/f720acba22b42aec0b3ce3431e36902d54676d6e2ea5e53f49b4e5bebed98440.jsonl.gz"
+    },
+    "fc315e83cc673fd47c55127f054a5e307599099d778f428e0a6b9d0e07fd9028": {
+      "bytes": 22453465,
+      "lines": 9364,
+      "gzip_bytes": 3837143,
+      "url": null
     },
     "ff8c349b1a7cd7783917560332df5ed502db827588231a735dfbcdc07b8ca76a": {
       "bytes": 14851953,
