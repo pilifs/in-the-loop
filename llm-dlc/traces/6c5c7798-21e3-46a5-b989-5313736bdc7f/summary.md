@@ -1300,6 +1300,20 @@ change `ltkznttykmur` · [log `7b07db6f862a`](https://terminalvalue.net/raw-trac
 
 Evidence blocked on a rerun that needs preservation's zmvkptqz and its own fix on one line, and on the user's freeze of 290's restated claim. The rerun now falls to the preservation stream once evidence is merged into the default line (D022; the merge order is the user's, D021); the freeze is recorded as an open question for the user (D023). Evidence is told through its inbox and run again for its open items I010 and I011.
 
+### Countermodels of the pair of versions: five false proofs of agreement, reproduced and handed to the preservation stream
+
+change `yypzyxmwluyt` · [log `30a05ef3c829`](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f.jsonl.gz)
+
+The challenge stream's item 1. lib/tests/fixtures/pairing-countermodels holds two versions of five methods that differ when each runs alone on a JVM and that RegressionPair.agree (lib/src/pairing.rs) proves agreeing: the previous version sets the default locale the new one lowers under; a library static shared without --before-classpath; two unrelated RuntimeExceptions, and IllegalArgumentException against a subclass, compared by category; a scope that is false everywhere but sets the default locale before both calls. All five were Verified on the checker at lupovnmv. The order of the calls is observable: with the versions' roles swapped, and with --before-classpath, the shared-static case is a violation.
+
+### Countermodels of observed class initializers and of class files the tool read where a JVM reads another: three handed to the evidence stream, two refused
+
+change `mqkqvvmwlxsr` · [log `30a05ef3c829`](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f.jsonl.gz)
+
+Challenge stream, item 2. lib/tests/fixtures/observed-countermodels holds five fixtures, and lib/tests/observed_countermodels.rs holds each to what a JVM prints. Each was a false proof on the checker as it was (yypzyxmw): crossed, the outside review's A.&lt;clinit> { B.x = 1; k = 7; } (result == 0 proved, a JVM gives 1); lowered, "I".toLowerCase() observed in a Turkish JVM (result == 305 proved, and the locale assumption gone from the result); configured, System.getProperty observed with the property set; released, a class of a multi-release JAR (the tool read the base file where a JVM 17+ loads META-INF/versions/17, so result == 1 was proved where a JVM gives 20, and an observation of the versioned class was put on the base file's code); shadowed, a class path copy of the JDK's org.xml.sax.helpers.AttributesImpl (result == 42 proved, a JVM gives 0).
+
+The first three are the evidence stream's to fix (its brief's item 5 binds an observation): the checker-side test is in the fixtures' README and is sent to its inbox as a failure item. The last two are holes in the class path reader, which no stream owns, so they are refused here: ClassPath::refused (lib/src/classpath.rs) refuses by name, on load and when a class is copied for a pair, a class a multi-release JAR holds a versioned file of, and a class an entry holds in a package of the JDK's image, unless its file is the image's own byte for byte or one of the tool's models (the tool puts both on class paths itself; a first, broader version failed 13 tests for that reason). Enumerating every class still reads the first file, so that walks over which classes exist see it. Not covered: an override only a versioned file declares, and resources.
+
 ### Every example's proof driver records identities, ends the run on a mutant that is not the replay's, and marks a trial
 
 change `rkxyyqwnvlqz` · [log `30a05ef3c829`](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f.jsonl.gz)
@@ -1381,20 +1395,6 @@ Progress also answers inbox item I006 before observed.rs changes. Slot and Objec
 change `wowqurkuylvp` · [log `30a05ef3c829`](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f.jsonl.gz)
 
 Job 20261117-133148-example-286-the-three-answers-beside-the passed (36m01s, 1.4 GiB). It reran vulnerable-security, fixed-security and mutant-security at the frozen bound through the shared driver module, which records the JARs, adapter and verifier it ran (evidence.json) and builds the mutant by the route's published-mutant recipe. Each run proved the simpleMatch lemma by induction first. vulnerable-security and mutant-security were refuted, with witnesses run on a JVM; the mutant's JAR is the one the mutant replay ran (48323d21…). fixed-security was verified, not vacuous. The result folder and its work folder were taken from the collector's commit (qzwtllkx) as they are, with no merge. Each task's besideRoute now names that job, and python3 examples/tools/accept.py 286 accepts all three with no limit. Before this, mutant-security was refused and the other two carried the unrecorded-artifacts limit. 286's notes record it, and the brief's Progress has cycle 7. Verified with accept.py 286, validate_example.py 286 and test_costs.py run --changed (26 of 26 passed).
-
-### Countermodels of the pair of versions: five false proofs of agreement, reproduced and handed to the preservation stream
-
-change `yypzyxmwluyt` · [log `30a05ef3c829`](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f.jsonl.gz)
-
-The challenge stream's item 1. lib/tests/fixtures/pairing-countermodels holds two versions of five methods that differ when each runs alone on a JVM and that RegressionPair.agree (lib/src/pairing.rs) proves agreeing: the previous version sets the default locale the new one lowers under; a library static shared without --before-classpath; two unrelated RuntimeExceptions, and IllegalArgumentException against a subclass, compared by category; a scope that is false everywhere but sets the default locale before both calls. All five were Verified on the checker at lupovnmv. The order of the calls is observable: with the versions' roles swapped, and with --before-classpath, the shared-static case is a violation.
-
-### Countermodels of observed class initializers and of class files the tool read where a JVM reads another: three handed to the evidence stream, two refused
-
-change `mqkqvvmwlxsr` · [log `30a05ef3c829`](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f.jsonl.gz)
-
-Challenge stream, item 2. lib/tests/fixtures/observed-countermodels holds five fixtures, and lib/tests/observed_countermodels.rs holds each to what a JVM prints. Each was a false proof on the checker as it was (yypzyxmw): crossed, the outside review's A.&lt;clinit> { B.x = 1; k = 7; } (result == 0 proved, a JVM gives 1); lowered, "I".toLowerCase() observed in a Turkish JVM (result == 305 proved, and the locale assumption gone from the result); configured, System.getProperty observed with the property set; released, a class of a multi-release JAR (the tool read the base file where a JVM 17+ loads META-INF/versions/17, so result == 1 was proved where a JVM gives 20, and an observation of the versioned class was put on the base file's code); shadowed, a class path copy of the JDK's org.xml.sax.helpers.AttributesImpl (result == 42 proved, a JVM gives 0).
-
-The first three are the evidence stream's to fix (its brief's item 5 binds an observation): the checker-side test is in the fixtures' README and is sent to its inbox as a failure item. The last two are holes in the class path reader, which no stream owns, so they are refused here: ClassPath::refused (lib/src/classpath.rs) refuses by name, on load and when a class is copied for a pair, a class a multi-release JAR holds a versioned file of, and a class an entry holds in a package of the JDK's image, unless its file is the image's own byte for byte or one of the tool's models (the tool puts both on class paths itself; a first, broader version failed 13 tests for that reason). Enumerating every class still reads the first file, so that walks over which classes exist see it. Not covered: an override only a versioned file declares, and resources.
 
 ### Merge the challenge stream's countermodels of observed initializers onto the evidence line
 
@@ -1492,6 +1492,12 @@ The observer (lib/src/observed/ObservedInitializer.java, Describe) now describes
 change `uolrlxuwtnwy` · [log `30a05ef3c829`](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f.jsonl.gz)
 
 The stream evidence of the brief llm-dlc/loops/domain-advances.md is finished (done), and the run's watcher merges each stream the moment it is, while the others still run. Its workspace domain-advances-evidence branched from this line, which moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.
+
+### Record the merge of stream evidence in the domain-advances brief's Progress
+
+change `qrxtwtloowtn` · [log `30a05ef3c829`](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/30a05ef3c829108103c1018da7dce1ad7cbdd94d96d460706bd7d8bae5e7c31f.jsonl.gz)
+
+The run's watcher merged stream evidence (vqquvmnmmoqx) into the default line; the brief's status is now working.
 
 ## Conversation
 
