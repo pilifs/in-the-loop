@@ -763,6 +763,13 @@ fn an_effect_contract_stands_in_for_the_honest_setter_and_the_adversarial_one_is
     assert_eq!(app_level.verdict, Verdict::Violation, "{}", app_level.output);
     assert_eq!(app_level.replay.as_ref().map(|r| r.reproduced), Some(true), "{}", app_level.output);
     assert!(app_level.output.contains("adminAfterRename(name=\"admin:\")"), "{}", app_level.output);
+    // A contract over an object parameter of a nested class (`Frames$Honest mentee`), which the stub names as javac
+    // takes it, stands in for a call with an argument of exactly that class.
+    let mentor = lemmas("effect-mentor.contract", "claims.Frames$Mentor#adopt\n  writes: mentee.displayName\n  assert: mentee.displayName == name\n");
+    let adopted = app("adoptedRename", "result", Some(mentor), "mentor");
+    assert_eq!(adopted.verdict, Verdict::Verified, "{}", adopted.output);
+    let stated = adopted.stated.as_ref().expect("a statement");
+    assert!(stated.assumptions.iter().any(|a| a.text.starts_with("the effect contract of claims.Frames$Mentor.adopt(")), "the contract stood in for the call: {:?}", stated.assumptions);
     // A written String field the assertion gives no parameter: the stub has no object to give it.
     let copying = lemmas("effect-copying.contract", "claims.Frames$Copying#setDisplayName\n  writes: this.displayName, this.title\n  assert: this.displayName == name\n");
     let o = app("honestRename", "result", Some(copying), "copying");

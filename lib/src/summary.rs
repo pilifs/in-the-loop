@@ -27,10 +27,12 @@
 //! receiver and object parameters it writes (`prove --writes`, [`crate::property::Options::writes`]), proved with
 //! its frame (every other field of those inputs is what it was, and nothing else that was there before the call is
 //! written) and also shown to read nothing that was there before the call: no field of its receiver or its object
-//! arguments, no static field that is not final, no array, and to compare no such object by identity
+//! arguments, no static field but a compile-time constant (a final one an initializer computed holds what the state
+//! it ran in gave it), no array, and to compare no such object by identity
 //! ([`crate::bmc::Options::closed_frame`]). What it writes is then a function of its arguments alone, so in the check
-//! a call of it, by anything but the harness and the claim, on a receiver of exactly its class and on arguments
-//! within the bounds it was proved at (a String not null and no longer than the bound, an object not null), makes the
+//! a call of it, by anything but the harness and the claim, on a receiver and object arguments each null or of
+//! exactly its declared class (as the proof's were: a subclass's may override what the method calls on it), and on
+//! arguments within the bounds it was proved at (a String not null and no longer than the bound, an object not null), makes the
 //! writes the contract states and nothing else: a field its assertion gives a parameter's value as `this.f == p`
 //! takes it, and any other written field any value of its primitive type ([`crate::bmc::Effect`]). Elsewhere the
 //! method runs as written. A written field of a reference type the assertion gives no parameter's value is refused:
@@ -215,7 +217,8 @@ pub fn effect_stub(i: usize) -> String {
 pub fn effect(i: usize, signature: &EffectSignature, bound: u32) -> Result<String, String> {
     let stub = effect_stub(i);
     let class = signature.class.replace(['/', '$'], ".");
-    let list = std::iter::once(format!("{class} self")).chain(signature.params.iter().map(|p| format!("{} {}", p.ty.java_name(), p.name))).collect::<Vec<_>>().join(", ");
+    // A nested class's source name has a `.` where its binary name has the `$` (`ec.Uses.Pair`, not `ec.Uses$Pair`).
+    let list = std::iter::once(format!("{class} self")).chain(signature.params.iter().map(|p| format!("{} {}", p.ty.java_name().replace('$', "."), p.name))).collect::<Vec<_>>().join(", ");
     let arguments = signature.params.iter().map(|p| p.name.clone()).collect::<Vec<_>>().join(", ");
     let mut within = Vec::new();
     for p in &signature.params {
@@ -418,11 +421,12 @@ mod tests {
     fn an_effect_contract_is_used_within_its_bounds_and_runs_the_method_as_written_elsewhere() {
         let string = Type::Object("java/lang/String".into());
         let names = vec!["name".to_string(), "count".to_string(), "owner".to_string()];
-        let types = vec![string, Type::Long, Type::Object("a/b/Owner".into())];
-        let s = EffectSignature { class: "a/b/Outer$Bean".into(), name: "rename".into(), descriptor: "(Ljava/lang/String;JLa/b/Owner;)V".into(), params: crate::harness::params(&names, &types), ret: Type::Void };
+        let types = vec![string, Type::Long, Type::Object("a/b/Outer$Owner".into())];
+        let s = EffectSignature { class: "a/b/Outer$Bean".into(), name: "rename".into(), descriptor: "(Ljava/lang/String;JLa/b/Outer$Owner;)V".into(), params: crate::harness::params(&names, &types), ret: Type::Void };
         let stub = effect(1, &s, 3).unwrap();
-        assert!(stub.contains("public static void effect1(a.b.Outer.Bean self, java.lang.String name, long count, a.b.Owner owner) {\n        if (!(name != null && name.length() <= 3 && owner != null)) {\n            self.rename(name, count, owner);\n            return;\n        }\n        jvmcontract.GapIntrinsics.effect(1);\n    }"), "{stub}");
-        assert_eq!(s.stub_descriptor(), "(La/b/Outer$Bean;Ljava/lang/String;JLa/b/Owner;)V");
+        assert!(stub.contains("public static void effect1(a.b.Outer.Bean self, java.lang.String name, long count, a.b.Outer.Owner owner) {\n        if (!(name != null && name.length() <= 3 && owner != null)) {\n            self.rename(name, count, owner);\n            return;\n        }\n        jvmcontract.GapIntrinsics.effect(1);\n    }"), "{stub}");
+        // A nested class is named in source with a `.` (javac takes no `$` there), in the descriptor with its `$`.
+        assert_eq!(s.stub_descriptor(), "(La/b/Outer$Bean;Ljava/lang/String;JLa/b/Outer$Owner;)V");
         // The receiver is the stub's first local; a long takes two.
         assert_eq!(s.local("this").map(|(slot, _)| slot), Some(0));
         assert_eq!(s.local("owner").map(|(slot, _)| slot), Some(4));

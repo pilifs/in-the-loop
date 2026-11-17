@@ -728,8 +728,9 @@ struct ProveArgs {
     /// as written. Of public static methods over integral and boolean parameters and Strings that change nothing
     /// a caller could see, which the proof of each also shows; with the tool's own checker (`--engine native`).
     /// A declaration with a `writes:` line is an effect contract of a public instance method: proved first with its
-    /// write set's frame and as reading nothing that was there before the call, and then, at a call on a receiver
-    /// of exactly its class with arguments within its bounds, the call makes the writes it states (a field the
+    /// write set's frame and as reading nothing that was there before the call (a static field only if it is a
+    /// constant), and then, at a call on a receiver and object arguments of exactly their declared classes with
+    /// arguments within its bounds, the call makes the writes it states (a field the
     /// assertion gives a parameter as `this.f == p` takes it, any other written field any value of its primitive
     /// type) and nothing else.
     #[arg(long)]

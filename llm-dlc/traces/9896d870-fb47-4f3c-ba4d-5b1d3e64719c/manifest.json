@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.005Z",
-  "ended": "2026-11-17T15:16:25.006Z",
-  "duration_seconds": 8374,
+  "ended": "2026-11-17T15:25:24.085Z",
+  "duration_seconds": 8913,
   "stats": {
-    "turns": 26,
-    "api_calls": 337,
-    "tool_calls": 338,
+    "turns": 31,
+    "api_calls": 367,
+    "tool_calls": 367,
     "tool_errors": 7,
-    "compactions": 5,
+    "compactions": 6,
     "peak_context_tokens": 234168,
     "usage": {
-      "input_tokens": 674,
-      "output_tokens": 276056,
-      "cache_read_input_tokens": 39898469,
-      "cache_creation_input_tokens": 886079
+      "input_tokens": 734,
+      "output_tokens": 298485,
+      "cache_read_input_tokens": 42330147,
+      "cache_creation_input_tokens": 980282
     }
   },
   "tools": {
-    "Bash": 323,
+    "Bash": 351,
     "Edit": 9,
+    "Read": 3,
     "Write": 3,
-    "Read": 2,
     "Monitor": 1
   },
   "files_touched": [
@@ -117,24 +117,38 @@
     {
       "index": 5,
       "started": "2026-11-17T14:53:32.851Z",
-      "ended": "2026-11-17T15:16:25.006Z",
-      "turns": 4,
-      "api_calls": 41,
+      "ended": "2026-11-17T15:16:56.106Z",
+      "turns": 5,
+      "api_calls": 43,
       "usage": {
-        "input_tokens": 82,
-        "output_tokens": 38481,
-        "cache_read_input_tokens": 4128809,
-        "cache_creation_input_tokens": 127437
+        "input_tokens": 86,
+        "output_tokens": 39492,
+        "cache_read_input_tokens": 4411897,
+        "cache_creation_input_tokens": 130701
       },
-      "peak_context_tokens": 140710
+      "peak_context_tokens": 143974
+    },
+    {
+      "index": 6,
+      "started": "2026-11-17T15:17:41.300Z",
+      "ended": "2026-11-17T15:25:24.085Z",
+      "turns": 4,
+      "api_calls": 28,
+      "usage": {
+        "input_tokens": 56,
+        "output_tokens": 21418,
+        "cache_read_input_tokens": 2148590,
+        "cache_creation_input_tokens": 90939
+      },
+      "peak_context_tokens": 104212
     }
   ],
   "log": {
-    "sha256": "3e74a3b6d1a8129e7d2b771b732c77db9732c8a2408524ffe1ec1727d4f9e11e",
-    "bytes": 9246295,
-    "lines": 3183,
-    "gzip_bytes": 1562533,
-    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/3e74a3b6d1a8129e7d2b771b732c77db9732c8a2408524ffe1ec1727d4f9e11e.jsonl.gz"
+    "sha256": "6111ea7da20fcbc422a8292abcad3c2379581d4ab5e58668eeb8dd28d7b4e03c",
+    "bytes": 10285880,
+    "lines": 3490,
+    "gzip_bytes": 1755255,
+    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/6111ea7da20fcbc422a8292abcad3c2379581d4ab5e58668eeb8dd28d7b4e03c.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -209,6 +223,14 @@
       "summary": "A write set's frame holds on a declared exceptional exit and is of locations over inputs that may be one object: the challenge stream's three false frames are refuted or proved as JML's assignable states them",
       "body": "Inbox item domain-advances-state-I005 (the challenge stream's countermodels, synvlnls, fc.Framed). Before this commit, prove --writes proved a frame in two cases where a JVM sees the protected field written. In the first, a method writes admin and then throws an exception its throws clause declares: the frame was part of the assertion, which was read only after a normal return. The harness now checks the frame after the expected exception too (harness::generate_property_framed, whose \\old reads take their own locals after the assertion's), so rename(\"b\", -1) is refuted with a witness a JVM replays. In the second, one bean is passed as two inputs. The frame is now of locations, as JML's assignable is. Every two inputs of one class may be one object: the check adds the alias choice, and the domain says so. A field that one of them names is framed in the other only where the two differ (this == other || this.admin == \\old(this.admin)). So promote --writes other.admin and grant --writes to.admin are proved with that frame, which a JVM keeps, and never with the unaliased one, which it breaks. A write set with a construction plan over two inputs of one class is refused by name. Where a witness throws a declared exception over objects, its expected line now names the frame instead of wrongly saying 'a normal return'.\n\nTests. lib/tests/fixtures/frame-countermodels (README and fc/Framed.java) and the JVM test in lib/tests/frame_countermodels.rs are copied unchanged from synvlnls. The README's checker-side test a_write_set_is_not_proved_where_a_jvm_sees_a_field_it_does_not_name_written is added, adapted to the location frame: rename must be refuted with a JVM replay, and promote and grant must not prove the unaliased frame. The README's version required those two not to be Verified, which none of the options it lists for aliasing (a location frame, or distinct objects in the domain) would give. A second test proves that what the frame names is allowed on either exit and alias. My own countermodel claims.Frames$Linking#link writes its own name only where other is itself, and claims.rs requires it refuted with a JVM replay. Switching off each fix (by mutation) makes a test fail: the exit frame fails the README test, and the alias pairs fail the Linking case. test_costs run --changed: 35 cargo binaries and 5 of 5 default-tier checks pass; estimate, tag and lint agree.\n\nMerge note: lib/tests/frame_countermodels.rs and the fixture are added on both this line and the challenge line, so a merge conflicts on the test file (take this line's). An effect contract (vwktulky) is proved through the same check, so its stub's writes now rest on a frame of locations that holds on every exit the contract allows. Inbox item domain-advances-state-I006 is noted in Progress: lzpqszyo is not on this line yet. The brief is unchanged outside Progress and still right.",
       "log_sha256": "3e74a3b6d1a8129e7d2b771b732c77db9732c8a2408524ffe1ec1727d4f9e11e"
+    },
+    {
+      "change_id": "nslmqyrypsrvpyoktztmyylyxqrsurrs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "An effect contract stands in for a call only as it was proved: no final static an initializer computed, and object arguments of exactly their classes; the challenge stream's three callers are refuted or refused",
+      "body": "The challenge stream's countermodels (qmtxwupn, inbox domain-advances-state-I007) proved three callers through a proved effect contract where a JVM breaks them. The one bean passed twice was already refuted on this line, since the contract is proved with same-class inputs that may alias. The other two are fixed. An effect contract's proof now refuses a read of any static field that is not a compile-time constant, final ones included: an initializer ran before the call in the caller's state, and the proof's ran in the harness's fresh one (Locked.LOCKED = Config.locked). At a call, the stub stands in only where every object argument other than a String is null or of exactly its declared class, like the receiver: a subclass may override what the method calls on it (Rogue.linked sets admin). linkedAdmin is now refuted, with a witness replayed on a JVM. The stub also writes a nested parameter class with a '.', which javac takes.\\n\\nVerified: the challenge's fixture, README and JVM test are copied unchanged, and its checker-side test an_effect_contract_does_not_prove_a_call_a_jvm_breaks is added and passes. A new claims.Frames case (Mentor#adopt over a nested Honest parameter) is proved through its contract, which is among what it rests on. Each of the three rules, switched off by mutation, fails a test. test_costs run --changed passes (36 binaries, 5 of 5 default tier). Not changed: lemmas may still read a final static an initializer computed (the challenge's item 3, not in this stream's inbox). A merge with the challenge line conflicts on the fixture and test it added: take this line's.\\n\\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>",
+      "log_sha256": "6111ea7da20fcbc422a8292abcad3c2379581d4ab5e58668eeb8dd28d7b4e03c"
     }
   ],
   "logs": {
@@ -222,6 +244,12 @@
       "bytes": 9246295,
       "lines": 3183,
       "gzip_bytes": 1562533,
+      "url": null
+    },
+    "6111ea7da20fcbc422a8292abcad3c2379581d4ab5e58668eeb8dd28d7b4e03c": {
+      "bytes": 10285880,
+      "lines": 3490,
+      "gzip_bytes": 1755255,
       "url": null
     },
     "a3ad388bcc53c6d97f04d9927c36b676984c9bcdcf5113a5d45ade9739803514": {

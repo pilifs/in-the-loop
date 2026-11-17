@@ -292,6 +292,22 @@ public final class Frames {
         }
     }
 
+    /** Renames another bean, of a nested class: an effect contract over it names that class in its stub. */
+    public static final class Mentor {
+        public Mentor() {}
+
+        public void adopt(Honest mentee, String name) {
+            mentee.displayName = name;
+        }
+    }
+
+    /** A mentor renames an admin: it stays one, under the new name. */
+    public static boolean adoptedRename(String name) {
+        Honest account = new Honest("", true);
+        new Mentor().adopt(account, name);
+        return account.admin && account.displayName == name;
+    }
+
     /** The application: a request renames a fresh account, which is no admin; whether it is one after. */
     public static boolean adminAfterRename(String name) {
         Adversarial account = new Adversarial("", false);

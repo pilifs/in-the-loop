@@ -184,6 +184,24 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
   rest on a frame of locations. `domain-advances-state-I006` noted: the observation binding (`lzpqszyo`) is not on
   this line yet; step 3's held kinds will be built on `observed.rs` as it stands there, and an observer line needs its
   `on` record.
+- 2026-11-17, a soundness fix to the effect contract's use (nothing of 286 decided; the frozen claim unchanged).
+  Inbox: `domain-advances-state-I007` taken. The challenge stream's countermodels (`qmtxwupn`, `ec.Uses`) showed
+  three callers proved through a proved contract where a JVM breaks them. The one bean passed twice (`pairedLevel`)
+  was already refuted on this line: since the last cycle the contract is proved with inputs of one class that may be
+  one object, and `Pair#setBoth`'s assertion then fails. The other two are fixed. *A final static an initializer
+  computed* (`Locked.LOCKED = Config.locked`): an effect contract's proof now reads no static field but a constant
+  (final, with a `ConstantValue`), since the initializer ran in whatever state a caller left and the proof's in the
+  harness's fresh one. The contract is refused by name. *An argument of a subclass* (`Rogue`, whose `linked()` sets
+  `admin`): the stub stands in only where each object argument too, a String aside, is null or of exactly its
+  declared class, so `linkedAdmin` runs `link` as written and is refuted, with a witness a JVM replays. The stub also
+  names a nested parameter class as javac takes it (`a.b.Outer.Owner`, not `Outer$Owner`). A new case in
+  `claims.Frames` (`Mentor#adopt(Honest mentee, …)`) is proved through its contract, with the contract among what it
+  rests on. The fixture, its README and its JVM test are copied unchanged from `qmtxwupn`, and the README's
+  `an_effect_contract_does_not_prove_a_call_a_jvm_breaks` is added to `lib/tests/effect_countermodels.rs`. Each of
+  the three rules, switched off by mutation, makes a test fail. Not changed: a lemma (not an effect contract) may
+  still read a final static an initializer computed (`claims.Effects#limit`). The challenge README names that as its
+  item 3's hole, which is not in this inbox. A merge with the challenge line conflicts on the fixture and test files
+  added on both: take this line's.
 - Next: step 3: how bind resolves a property name to its write method. That means taking `lzpqszyo` into this line,
   a held kind for `CachedIntrospectionResults`' empty `strongClassCache` (an `Object` variant, printed
   deterministically by the observer's `Dump.value`), then observing a bean's property descriptors, or an

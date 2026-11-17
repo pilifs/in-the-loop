@@ -1556,7 +1556,7 @@ fn effect_text(declaration: &Declaration, bound: u32) -> String {
     let writes = declaration.writes.as_deref().unwrap_or_default();
     let writes = if writes.is_empty() { "nothing".to_string() } else { writes.join(", ") };
     let assertion = declaration.assert.as_deref().map(|a| format!(", satisfies `{a}`")).unwrap_or_default();
-    format!("{} writes {writes} and nothing else that was there before the call{assertion}, and reads nothing that was there before it, on Strings of at most {bound} code units: proved beside this check, at its bounds, and applied at the method's calls within that on a receiver of exactly its class, where a written field takes the parameter the assertion gives it (`this.f == p`) or any value of its primitive type; any other call runs the method as written", declaration.target)
+    format!("{} writes {writes} and nothing else that was there before the call{assertion}, and reads nothing that was there before it (a static field only if it is a constant), on Strings of at most {bound} code units: proved beside this check, at its bounds, and applied at the method's calls within that on a receiver and object arguments of exactly their declared classes, where a written field takes the parameter the assertion gives it (`this.f == p`) or any value of its primitive type; any other call runs the method as written", declaration.target)
 }
 
 /// The file of a module's properties, next to its other contracts.

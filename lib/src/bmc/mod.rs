@@ -182,7 +182,7 @@ pub struct Options {
     pub frame: Option<(String, String, String)>,
     /// Whether the framed method is proved as an effect contract, which stands in for its calls ([`Effect`]): its
     /// writes must then be a function of its arguments alone, so it reads nothing that was there before the call (a
-    /// field or a cell of such an object, its receiver's included, or a static field that is not final), and
+    /// field or a cell of such an object, its receiver's included, or a static field that is not a constant), and
     /// compares no such object by identity ([`Engine::in_closed_frame`]).
     pub closed_frame: bool,
     /// The calls a checked effect contract stands in for ([`Effect`]).
@@ -3549,6 +3549,12 @@ impl<'a> Engine<'a> {
                 if declaring != crate::harness::expr::CLAIM_CLASS && self.cp.checker_statics(&declaring) && !self.final_field(&declaring, &member.name, &member.descriptor) {
                     self.reads(path, || format!("reads the static field {}.{}", declaring.replace('/', "."), member.name))?;
                 }
+                // An effect contract reads no final static either but a constant: its initializer ran before the
+                // call, in whatever state a caller left (`static final boolean LOCKED = Config.locked`), and the
+                // proof's was the harness's fresh one ([`Engine::in_closed_frame`]).
+                if self.in_closed_frame(path) && declaring != crate::harness::expr::CLAIM_CLASS && self.cp.checker_statics(&declaring) && !self.constant_field(&declaring, &member.name) {
+                    self.reads(path, || format!("reads the static field {}.{}, which its class's initializer computed in the state it ran in (it is no constant)", declaring.replace('/', "."), member.name))?;
+                }
                 let v = match self.application_static(path, &declaring, &member.name, &member.descriptor) {
                     Some(v) => v?,
                     None => self.get_static(&member.owner, &member.name, &member.descriptor)?,
@@ -4529,10 +4535,16 @@ impl<'a> Engine<'a> {
                 let mut full = vec![Val::R(Some(o))];
                 full.extend(args);
                 // A checked effect contract of the method, in place of a call that is neither the harness's nor the
-                // claim's, on a receiver of exactly the class it was proved of ([`Effect`]): a subclass's object may
-                // read what the proof's never had, and an override is another method.
+                // claim's, on a receiver and object arguments of exactly the classes it was proved of ([`Effect`]): a
+                // subclass's object may read what the proof's never had, and an override is another method.
                 let initialized = path.classes.get(&cf.name) != Some(&ClassState::InProgress);
-                let effect = self.effects.iter().find(|e| e.owner == cf.name && e.name == member.name && e.descriptor == member.descriptor && path.objects[o].class == e.owner).map(|e| (e.stub.clone(), e.stub_descriptor.clone()));
+                // Each object argument too, a String aside (a final class), is null or of exactly its parameter's
+                // class, as the proof's were: an argument of a subclass may override what the method calls on it.
+                let exact_arguments = descriptor.params.iter().zip(&full[1..]).all(|(ty, v)| match ty {
+                    Type::Object(class) if class != "java/lang/String" => v.options().is_some_and(|options| options.iter().all(|(_, t)| t.map_or(true, |a| path.objects[a].class == *class))),
+                    _ => true,
+                });
+                let effect = self.effects.iter().find(|e| e.owner == cf.name && e.name == member.name && e.descriptor == member.descriptor && path.objects[o].class == e.owner && exact_arguments).map(|e| (e.stub.clone(), e.stub_descriptor.clone()));
                 if let Some((stub, stub_descriptor)) = effect.filter(|_| initialized && caller != crate::harness::expr::CLAIM_CLASS && path.frames.len() > 1) {
                     // The instruction runs again once the claim's class is initialized: its operands are on the
                     // stack while it is.
@@ -4668,8 +4680,9 @@ impl<'a> Engine<'a> {
     /// harness: an effect contract stands in for the method's calls, wherever they are made, by the writes it states,
     /// so what the method writes may depend on nothing a caller can change before it calls. Inside it a read of
     /// what was there before the call ([`Obj::before`]: the receiver and the object arguments too, whose fields the
-    /// proof took from their constructors and a caller may have set since), of a static field that is not final or
-    /// of the default locale, and a comparison by identity of such an object, each end the run with no verdict
+    /// proof took from their constructors and a caller may have set since), of a static field that is not final
+    /// or a constant (a final one is what its initializer made of the state it ran in), or of the default locale, and
+    /// a comparison by identity of such an object, each end the run with no verdict
     /// ([`Engine::reads`], [`Engine::compares`]).
     fn in_closed_frame(&self, path: &Path) -> bool {
         self.closed_frame && self.in_frame(path)
@@ -4755,6 +4768,12 @@ impl<'a> Engine<'a> {
     fn final_field(&self, owner: &str, name: &str, descriptor: &str) -> bool {
         let declaring = self.cp.resolve_field(owner, name, descriptor).unwrap_or_else(|| owner.to_string());
         matches!(self.cp.load(&declaring), Ok(Some(loaded)) if loaded.class.field(name).is_some_and(|f| f.is_final()))
+    }
+
+    /// Whether the static field `name` of `declaring` is a compile-time constant: final, with a `ConstantValue`
+    /// attribute, so that no initializer computes it.
+    fn constant_field(&self, declaring: &str, name: &str) -> bool {
+        self.cp.checker_class(declaring).and_then(|cf| cf.field(name).filter(|f| f.is_static() && f.is_final()).map(|f| f.attributes.iter().any(|a| a.name == "ConstantValue"))).unwrap_or(false)
     }
 
     /// Refuses, inside a summarized method, a comparison by identity of a reference that may be an object that was
