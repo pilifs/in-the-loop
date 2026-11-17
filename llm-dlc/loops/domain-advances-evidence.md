@@ -413,7 +413,9 @@ Don't change `verification/pipeline.py`.
   answers with no limit. 289's and 290's preservation are still refused for `outside`. `test_accept.py` passes 45 tests,
   `run --changed` 7 of 7.
 - Repeated work measured (step 7): `jbmc::tests::a_jbmc_without_the_solver_asked_for_is_run_again_with_its_own`
-  failed once in `run --changed` and passed on its second run.
+  failed once in `run --changed` and passed on its second run. The trace check warned on a made-up home directory in
+  the new fixture (finding `fa4e66dc`, this session's log). The fixture now uses `/opt/rust/bin/cargo`, and the
+  finding is proposed for the allow list, for the user to approve.
 - Inbox:
   - `domain-advances-evidence-I010` (the step check past `kqxwrwrx`): done here, by the item's first fix option.
   - `domain-advances-evidence-I011` (an observed initializer's binding misses a lambda replaced by another of its

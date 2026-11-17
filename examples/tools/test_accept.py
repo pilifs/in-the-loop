@@ -679,7 +679,7 @@ class StepsPastTheFix(Checkout):
         result["steps"] = [{"index": i, "status": "passed", "run": run, "log": log} for i, run in enumerate(runs, 1)]
         if build:
             result["steps"].insert(0, {"index": 0, "status": "passed", "log": log,
-                                       "run": "/home/someone/.cargo/bin/cargo build --release --manifest-path lib/Cargo.toml"})
+                                       "run": "/opt/rust/bin/cargo build --release --manifest-path lib/Cargo.toml"})
         (self.root / self.paths["job"]).write_text(json.dumps(spec))
         result["job"]["sha256"] = hashlib.sha256(json.dumps(spec, sort_keys=True).encode()).hexdigest()
         (self.root / self.paths["result"]).write_text(json.dumps(result))

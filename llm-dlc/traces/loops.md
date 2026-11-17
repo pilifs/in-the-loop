@@ -17,9 +17,9 @@ loop or not.
 | Category | Loops | Runs | Cycles | With a commit | Commits | Jobs | Active | Tokens written | Cost | Per committed cycle |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | moonshot | 6 | 7 | 56 | 53 | 96 | 64 (57 passed, 7 failed) | 2.3 d | 7,291,647 | $855.37 | $16.14 |
-| brief | 31 | 60 | 322 | 319 | 396 | 210 (165 passed, 45 failed) | 3.4 d | 13,773,055 | $1,155.18 | $3.62 |
+| brief | 31 | 60 | 322 | 319 | 397 | 210 (165 passed, 45 failed) | 3.4 d | 13,775,036 | $1,155.36 | $3.62 |
 | verification | 1 | 62 | 0 | 0 | 242 | 0 | 18 h 17 min | 263,932 | $16.18 | n/a |
-| **all** | 38 | 129 | 378 | 372 | 734 | 274 (222 passed, 52 failed) | 6.5 d | 21,328,634 | $2,026.74 | $5.45 |
+| **all** | 38 | 129 | 378 | 372 | 735 | 274 (222 passed, 52 failed) | 6.5 d | 21,330,615 | $2,026.92 | $5.45 |
 
 The moonshot row includes `examples-by-hand` (3 cycles, $55.22), which a person ran by hand before the script existed. See the note under [Moonshots](#moonshots).
 
@@ -173,7 +173,7 @@ streams for a brief that ran them. The *with its streams* row adds the streams t
 | **`stream-conductor`** | 1 | 3 | 3 | 4 | 0 | `claude-opus-5-5` | 2026-11-14 | 37 min | 32 min | 12 min | 165,911 | $9.54 | $3.30 | $2.39 |
 | **`test-cost`** | 2 | 11 | 11 | 12 | 0 | `claude-opus-5-5` | 2026-11-15 | 2 h 30 min | 1 h 55 min | 9.4 min | 378,927 | $25.69 | $2.34 | $2.14 |
 | **`rehearsal`** | 2 | 2 | 2 | 2 | 0 | `claude-sonnet-5-5` | 2026-11-17 | 3.2 min | 2.3 min | 1.1 min | 8,137 | $0.51 | $0.19 | $0.26 |
-| **`domain-advances-evidence`** | 3 | 15 | 15 | 20 | 5 (5 passed) | `claude-opus-5-5` | 2026-11-17 | 3 h 10 min | 2 h 45 min | 8.7 min | 414,773 | $33.28 | $1.84 | $1.66 |
+| **`domain-advances-evidence`** | 3 | 15 | 15 | 21 | 5 (5 passed) | `claude-opus-5-5` | 2026-11-17 | 3 h 11 min | 2 h 46 min | 8.7 min | 416,754 | $33.46 | $2.02 | $1.59 |
 | **`domain-advances-challenge`** | 1 | 2 | 2 | 2 | 0 | `claude-opus-5-5` | 2026-11-17 | 40 min | 35 min | 18 min | 111,893 | $7.84 | $5.27 | $3.92 |
 
 ## Verification loop
@@ -253,7 +253,7 @@ run before 2026-11-06) is read from its session's prompts and marked *transcript
 | 2026-11-17 12:56 | `2026-11-17-125650-domain-advances-evidence` | brief | `claude-opus-5-5` | 12 | 17 | 2 h 38 min | 2 h 15 min | $26.74 | summarized | transcript |
 | 2026-11-17 12:56 | `2026-11-17-125651-domain-advances-challenge` | brief | `claude-opus-5-5` | 2 | 2 | 40 min | 35 min | $7.84 | no end recorded | transcript |
 | 2026-11-17 16:05 | `2026-11-17-160545-domain-advances-evidence` | brief | `claude-opus-5-5` | 2 | 2 | 25 min | 23 min | $4.70 | summarized | transcript |
-| 2026-11-17 16:31 | `2026-11-17-163151-domain-advances-evidence` | brief | `claude-opus-5-5` | 1 | 1 | 6.7 min | 6.6 min | $1.84 | no end recorded | transcript |
+| 2026-11-17 16:31 | `2026-11-17-163151-domain-advances-evidence` | brief | `claude-opus-5-5` | 1 | 2 | 7.6 min | 7.6 min | $2.02 | no end recorded | transcript |
 
 ## Reading these numbers
 
