@@ -86,7 +86,26 @@ Don't change `verification/pipeline.py`.
 
 ## Progress
 
-- Nothing yet.
+- 2026-11-17, cycle 1. **Step 1** waits: both foundation jobs (`20261117-122454-…-289-…`, `20261117-122546-…-286-and-288-…`)
+  were still pending, not started, so step 2 went first (it needs neither, and the brief asks for it before the
+  owners edit the drivers).
+- **Step 2 done** (the other drivers). `examples/tools/beside_route.py` holds what every driver does the same way,
+  and all five drivers (286 to 290, 289's included) run through it, each keeping its own entry, lemmas, models,
+  observed initializers and verifier arguments: the pinned JARs; the mutant, built by the route's published-mutant
+  recipe and ending the run when its JAR is not the one the newest mutant replay's receipt records; `accept.record`
+  writing `evidence.json`; and `--max-array-length` or `--unwind` (now on every driver) marking the run a trial in
+  the record and on its last line. *Finding*: 286's, 287's and 288's old drivers built their mutant another way
+  (a fixed `--release`, no `-g`/`-parameters`, every entry recompressed), so their JAR was not the replay's bytes;
+  the shared recipe, run offline on the pinned JARs, gives each of the five examples exactly the JAR its mutant
+  replay ran (286 `48323d21…`, 287 `1d099295…`, 288 `5c72df16…`, 289 `a3a3dbff…`, 290 `4ee35d0b…`). Tests:
+  `examples/tools/test_beside_route.py` (trial marking; every driver uses the module; on a made-up example with a
+  real JAR, a mutant with no receipt or another hash ends the run, the replay's one is recorded as constructed, and
+  a run leaves `evidence.json` marked a trial); `validate_example.py` 286 to 290 pass. Announced to the
+  preservation and state inboxes (`--kind interface`).
+- Repeated work measured (step 7): none for the owners yet.
+- Inbox: none at this cycle.
+- Next: step 3, the reruns of 286 and 287 `mutant-security` with the new drivers (independent of step 1), then
+  step 1 when its jobs are back.
 - Status: working
 
 ## Loop settings
