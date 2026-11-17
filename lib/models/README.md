@@ -139,6 +139,20 @@ and so is the iterator's `remove`. A `toArray(T[])` into an array that cannot ho
 `ArrayStoreException` on a JVM, which the checker's array stores do not model. Its conformance is
 `claims.M#collected`, `filled`, `appended` and `swept`.
 
+`java.util.ArrayDeque` and `java.util.HashSet` ([`java/util/lists`](java/util/lists/) too) are models on request
+for the same reason (`--model java.util.ArrayDeque`, `--model java.util.HashSet`): their constructors are JDK gaps
+the contract library and the conformance corpus name, and Spring's binding result makes one of each on every path
+of `DataBinder.bind` (`AbstractErrors`' stack of nested paths, `AbstractBindingResult`'s suppressed fields; example
+286). Both are abstract, as the `HashMap` model is, so that they declare no method they do not keep. The deque is a
+stack over an array: `ArrayDeque()`, `push` with its `NullPointerException` for `null`, `pop` with its
+`NoSuchElementException` when empty, `peek`, `size`, `isEmpty` and `clear`; no capacity. The set is the keys of the
+`HashMap` model, as the JDK's set is of the JDK's map: `HashSet()`, `add`, `contains`, `size` and `isEmpty`, an
+element found by `hashCode` and `equals`; its constructor calls `AbstractSet()`, the JDK's empty constructor, which
+the checker reproduces exactly as it does `AbstractCollection()`'s. Every other method of either is the JDK call it
+names. Their conformance is `claims.Deques` and `claims.Sets` (`tests/claims.rs`): each method the JDK's answer
+against its definition on every input of a bound with the model, the same methods sampled on a JVM, and a method
+left out still the JDK's call.
+
 A model of a class outside the JDK (a widely used library's, say) would work the same way, except that it must come
 *after* the library on the class path and not replace a class the library ships; that is the next step, not taken
 yet.

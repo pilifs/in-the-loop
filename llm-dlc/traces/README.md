@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 137, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-17 13:13 UTC |
-| Prompts | 2,837 |
-| Model calls | 28,878 |
-| Tool calls | 29,877 (531 failed) |
-| Compactions | 421 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-17 13:54 UTC |
+| Prompts | 2,842 |
+| Model calls | 28,957 |
+| Tool calls | 29,957 (531 failed) |
+| Compactions | 422 |
 | Subagents | 21 |
-| Tokens written | 29,144,809 |
-| Tokens read | 4,817,484,686 (98.1% from cache) |
-| Commits with a trace | 894 |
-| Log snapshots | 1,171 (2595.9 MB gzipped, 1,162 uploaded) |
+| Tokens written | 29,197,907 |
+| Tokens read | 4,826,415,644 (98.1% from cache) |
+| Commits with a trace | 895 |
+| Log snapshots | 1,172 (2596.4 MB gzipped, 1,162 uploaded) |
 
 ## Sessions
 
@@ -164,7 +164,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 12 | 21 | 17 | 2 | 2 | 56,861 | 1 |
 | 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | open | 7 min | `claude-opus-5-5` | 2 | 5 | 4 | 0 | 0 | 56,756 | 1 |
 | 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | open | 13 min | `claude-opus-5-5` | 1 | 48 | 49 | 1 | 0 | 148,170 | 1 |
-| 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | open | 16 min | `claude-opus-5-5` | 1 | 36 | 37 | 3 | 0 | 118,431 | 2 |
+| 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | open | 58 min | `claude-opus-5-5` | 6 | 115 | 117 | 3 | 1 | 170,827 | 4 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -310,16 +310,16 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 8,137 | 42 | 87,022 | 814,514 | 90.3% | 111 |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 2,242 | 10 | 28,745 | 226,501 | 88.7% | 114 |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 38,033 | 96 | 136,827 | 4,652,464 | 97.1% | 126 |
-| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 26,018 | 72 | 107,088 | 2,866,971 | 96.4% | 114 |
+| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 79,116 | 230 | 267,153 | 11,637,706 | 97.8% | 150 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 26,521 | 88.8% | 137 |
+| `Bash` | 26,596 | 88.8% | 137 |
 | `Read` | 1,266 | 4.2% | 55 |
-| `Edit` | 946 | 3.2% | 54 |
-| `Write` | 641 | 2.1% | 53 |
+| `Edit` | 949 | 3.2% | 54 |
+| `Write` | 643 | 2.1% | 54 |
 | `ToolSearch` | 163 | 0.5% | 41 |
 | `Monitor` | 119 | 0.4% | 48 |
 | `AskUserQuestion` | 63 | 0.2% | 16 |
@@ -1230,9 +1230,10 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 889 | change `lplouoxu` | Merge the foundation of the domain-advances brief into the line | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/485da70bcb765170eb169d2834f50fdf1093d602f220c87e50df7d8c472f72e1.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/49bbfe573cb72648ae27370de40c936881101879b0b65393313823e4ec3f8cd8.jsonl.gz)), [`b74acbd8`](b74acbd8-95de-40d7-8793-79948e8c27ae/summary.md) ([log](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/728f5d1c9588b8ae8e3cffe6394cbaec4aea15cedce3a404b1811d7e89c710cb.jsonl.gz)) |
 | 890 | change `rqopxxzk` | The verification runner reads the machine's settings from ~/.config/in-the-loop, so a side workspace judges jobs by this machine's limits | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/a706d10aeaedc1ab8d74099548938bbf173415195861cb7657807f77288dd3ad.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/db8426e717da05b1e78c67f4e65b6179a6bf872f0b3f46ae84d4c14b708e5287.jsonl.gz)) |
 | 891 | change `lupovnmv` | Merge the machine-level runner settings into the line | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/a706d10aeaedc1ab8d74099548938bbf173415195861cb7657807f77288dd3ad.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/db8426e717da05b1e78c67f4e65b6179a6bf872f0b3f46ae84d4c14b708e5287.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/887466d85ae2b9a053998b76061340b63451ab145972c3cfaaa378eb63fdfbef.jsonl.gz)) |
-| 892 | change `rkxyyqwn` | Every example's proof driver records identities, ends the run on a mutant that is not the replay's, and marks a trial | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) ([log](https://terminalvalue.net/raw-traces/7ece8184-b148-4351-92d8-d634606b823e/fadef0a55901ed98be485baeba4c8742903eb5ab48c947d75dc6027ef66d3a30.jsonl.gz)) |
+| 892 | change `rkxyyqwn` | Every example's proof driver records identities, ends the run on a mutant that is not the replay's, and marks a trial | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) ([log](https://terminalvalue.net/raw-traces/7ece8184-b148-4351-92d8-d634606b823e/fadef0a55901ed98be485baeba4c8742903eb5ab48c947d75dc6027ef66d3a30.jsonl.gz)), [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/eae4f9d131c064759e27a9e7da4d318804d7fbd64c628d2958fd021db1e8dad0.jsonl.gz)) |
 | 893 | change `tvxyzwqv` | Example 286's driver runs the protected-state tasks and records what it ran; where DataBinder.bind stops now (verification pending) | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/fb11de6676ba0e4fd17e99d6abe495c602e29649035c34de15e48bcd3644b6fe.jsonl.gz)) |
 | 894 | change `mpquxryx` | The router carries example 286's note on its protected-state driver | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/a3ad388bcc53c6d97f04d9927c36b676984c9bcdcf5113a5d45ade9739803514.jsonl.gz)) |
+| 895 | change `kztoupry` | Models on request of ArrayDeque and HashSet take example 286's DataBinder.bind past its binding result, to the reflection | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/eae4f9d131c064759e27a9e7da4d318804d7fbd64c628d2958fd021db1e8dad0.jsonl.gz)) |
 
 ## Logs
 
@@ -1376,7 +1377,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 1 | 1 | 0.3 MB | [`965570933c02`](https://terminalvalue.net/raw-traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/965570933c0206c64a18c5652f4f74be1de3807449c6f9f9a26e20a3211055fc.jsonl.gz) |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 1 | 0 | 0.1 MB | `887466d85ae2`, not uploaded |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 1 | 0 | 0.2 MB | `fadef0a55901`, not uploaded |
-| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 2 | 0 | 0.4 MB | `a3ad388bcc53`, not uploaded |
+| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 3 | 0 | 0.9 MB | `eae4f9d131c0`, not uploaded |
 
 ## Session notes
 

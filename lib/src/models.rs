@@ -77,6 +77,8 @@ pub const MODELS: &[Model] = &[
     model!(checker "java/util/ArrayAsList", "java/util/lists/ArrayAsList.java", "java/util/ArrayAsList.class", "what Arrays.asList(T...) returns: a list that is a view of the array, with size, get and toArray(); not a JDK class; the own checker only"),
     model!(checker "java/util/ArrayList", "java/util/lists/ArrayList.java", "java/util/ArrayList.class", "an ArrayList as an array of its elements and their number: ArrayList() and ArrayList(int), size, isEmpty, get, add, addAll, toArray() and toArray(T[]), and iterator() with its fail-fast iterator; run only for a check that asks for it (--model java.util.ArrayList); the own checker only"),
     model!(checker "java/util/ArrayList$Itr", "java/util/lists/ArrayList.java", "java/util/ArrayList$Itr.class", "the iterator of the ArrayList model: hasNext and next, fail-fast; the own checker only"),
+    model!(checker "java/util/HashSet", "java/util/lists/HashSet.java", "java/util/HashSet.class", "a HashSet as the keys of the HashMap model, as the JDK's: HashSet(), add, contains, size and isEmpty, an element found by hashCode and equals; run only for a check that asks for it (--model java.util.HashSet); the own checker only"),
+    model!(checker "java/util/ArrayDeque", "java/util/lists/ArrayDeque.java", "java/util/ArrayDeque.class", "an ArrayDeque used as a stack, its elements in an array: ArrayDeque(), push (NullPointerException for null), pop (NoSuchElementException when empty), peek, size, isEmpty and clear; run only for a check that asks for it (--model java.util.ArrayDeque); the own checker only"),
     model!(jbmc "java/util/List", "java/util/List.java", "java/util/List.class", "the static factories of and copyOf, step for step as the JDK's: immutable lists, NullPointerException on a null element, copyOf of one of them the list itself; JBMC only"),
     model!(jbmc "java/util/ImmutableCollections", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections.class", "the list factories' helpers and the one empty list; JBMC only"),
     model!(jbmc "java/util/ImmutableCollections$AbstractImmutableList", "java/util/ImmutableCollections.java", "java/util/ImmutableCollections$AbstractImmutableList.class", "an immutable list: every change throws UnsupportedOperationException; iterator, equals, hashCode and contains over the elements; JBMC only"),
@@ -130,8 +132,10 @@ pub const CHECKER_RUNS: &[&str] = &[
 /// otherwise the class is the JDK's, whose constructors and methods are the JDK calls they were (gaps, with their
 /// contracts). `java.util.ArrayList` is one because its constructor `ArrayList(int)` is the gap the contract
 /// library, the conformance corpus and the examples' recorded refusals are written about: a check that needs what
-/// a list holds asks for the model, and its result says so ([`requested_assumption`]).
-pub const ON_REQUEST: &[&str] = &["java/util/ArrayList"];
+/// a list holds asks for the model, and its result says so ([`requested_assumption`]). `java.util.ArrayDeque` is
+/// one for the same reason, and `java.util.HashSet`: their constructors are gaps of every binding result Spring's
+/// `AbstractErrors` and `AbstractBindingResult` make (example 286, `DataBinder.bind`).
+pub const ON_REQUEST: &[&str] = &["java/util/ArrayList", "java/util/ArrayDeque", "java/util/HashSet"];
 
 /// The model on request a class belongs to: the class itself or the one it is nested in.
 pub fn on_request(name: &str) -> Option<&'static str> {

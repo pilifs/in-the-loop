@@ -102,11 +102,30 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
   `String.toLowerCase()` at `DataBinder.isAllowed:828` on a non-ASCII field. The second is a finding about the
   frozen claim: unlike the decision claim it does not restrict `field` to ASCII, and the checker lowers ASCII only.
   Job `20261117-130335-example-286-protected-state-tasks-at-the` records both tasks at bound 8 (expected exit 1).
-- Next: close `ArrayDeque` (a model of the few calls `AbstractErrors` makes, as `ArrayList`'s, sampled against a
-  JVM) and probe on to the reflection; for non-ASCII `toLowerCase()`, either a model of Unicode lowering under the
-  root locale checked exhaustively over the BMP on a JVM, or a corrected formalization restricted to ASCII proposed
-  to the user as a new claim file (the frozen one stays). Step 2's refutation (`Age`, ASCII) needs only the path
-  past `ArrayDeque` and the reflection.
+- 2026-11-17, step 1 continued, to the reflection (nothing decided; the frozen claim unchanged). Inbox:
+  `domain-advances-state-I002` taken: this line is rebased onto `rkxyyqwn`, and 286's driver now runs through
+  `examples/tools/beside_route.py`, keeping only each claim's entry, models, observed initializers and unwinding (the
+  decision claim's runs are as the evidence stream left them: no model, the verifier's unwinding).
+  `domain-advances-state-I001` noted: that test was run with `RUN_STREAMS_WATCHER` unset, not changed. Two models on
+  request, as `ArrayList`'s: `java.util.ArrayDeque` (a stack: `push`, `pop`, `peek`, `size`, `isEmpty`, `clear`) and
+  `java.util.HashSet` (the keys of the `HashMap` model: `add`, `contains`, `size`, `isEmpty`; `AbstractSet()` is now
+  an exact JDK call, as `AbstractCollection()` was), each with a fixture of its definition written out (`claims.Deques`,
+  `claims.Sets`) proved with the model, sampled on a JVM, and shown to fail on a mutated model. **Where bind stops
+  now** (probes at bound 2, trials): past `ArrayDeque.<init>` and `HashSet.<init>` (the binding result's), past
+  `PropertyEditorRegistrySupport`'s initializer (observed), at `CachedIntrospectionResults`: observed, its static
+  `strongClassCache` is a `ConcurrentHashMap` the observation does not hold. That is the reflection: `forClass` misses
+  the empty caches and introspects the bean through `java.beans.Introspector`; the setter is then called by
+  `Method.invoke`, after type conversion by the default editors. Sent `domain-advances-evidence-I006`: coordinate
+  `observed.rs`'s format with the evidence stream's binding change before step 3 adds held kinds. Job
+  `20261117-130335-…` (queued in cycle 1) runs the driver as it now is.
+- Next: step 3 needs the evidence stream's answer on `observed.rs`; meanwhile steps 4 and 5, which do not need the
+  binding path: the adversarial bean beside `ProtectedBean` (a `setDisplayName` that writes `isAdmin`) and its honest
+  twin, and a first effect contract stated over a method (a write set, its frame and the rest of step 4) that the
+  checker establishes on the honest setter and refutes on the adversarial one, generalizing `Engine::keeps`. Then step
+  3's form: an introspection contract (name to write method for the bean, sampled on a JVM) and an effect contract at
+  the property accessor, likely a smaller account than running `Introspector`, `Method.invoke` and the default
+  editors. Still open from cycle 1: non-ASCII `toLowerCase()` (a Unicode lowering model or an ASCII claim for the
+  user).
 - Status: working
 
 ## Loop settings

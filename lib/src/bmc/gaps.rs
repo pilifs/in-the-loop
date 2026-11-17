@@ -498,8 +498,9 @@ pub fn exact_jdk_call(cp: &ClassPath, owner: &str, name: &str, descriptor: &str)
     }
     // `AbstractCollection()` is the JDK's empty protected constructor, which the immutable lists' model
     // (`ImmutableCollections.AbstractImmutableList`, run by the own checker) calls as the JDK's lists do; and so
-    // is `AbstractList()`, which the model of `Arrays.asList`'s list calls.
-    if (owner == "java/lang/Object" || owner == "java/lang/Record" || owner == "java/util/AbstractCollection" || owner == "java/util/AbstractList") && descriptor == "()V" {
+    // is `AbstractList()`, which the model of `Arrays.asList`'s list calls, and `AbstractSet()` (which calls
+    // `AbstractCollection()` alone), which the `HashSet` model calls.
+    if (owner == "java/lang/Object" || owner == "java/lang/Record" || owner == "java/util/AbstractCollection" || owner == "java/util/AbstractList" || owner == "java/util/AbstractSet") && descriptor == "()V" {
         return true;
     }
     matches!(descriptor, "()V" | "(Ljava/lang/String;)V" | "(Ljava/lang/String;Ljava/lang/Throwable;)V") && crate::classpath::is_jdk_name(owner) && cp.is_subtype(owner, "java/lang/Throwable")

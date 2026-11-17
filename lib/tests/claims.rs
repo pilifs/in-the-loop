@@ -345,10 +345,70 @@ fn an_array_list_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_defin
     assert!(left_out.output.contains("java.util.ArrayList.contains(Ljava/lang/Object;)Z"), "{}", left_out.output);
 
     let none = property::run(&asking("claims.M#swept", "M-none", "java.util.Vector")).unwrap_err().to_string();
-    assert!(none.contains("--model java.util.Vector: no model on request of that class; there is one of java.util.ArrayList"), "{none}");
+    assert!(none.contains("--model java.util.Vector: no model on request of that class; there is one of java.util.ArrayList, java.util.ArrayDeque, java.util.HashSet"), "{none}");
     let mut cached = asking("claims.M#swept", "M-cached", "java.util.ArrayList");
     cached.cache = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("claims").join("no-cache"));
     assert!(property::run(&cached).unwrap_err().to_string().contains("--model with --cache"));
+}
+
+/// A stack of `java.util.ArrayDeque`, as Spring's `AbstractErrors` keeps its nested paths (`claims.Deques`, example
+/// 286): the JDK's, its constructor a gap, until a check asks for the model (`--model java.util.ArrayDeque`); then
+/// the model is the definition written out on every input of the bound, and a method it does not keep (`offer`) is
+/// still the JDK call it names. The same methods hold on a JVM, over sampled inputs, on the JDK's deque.
+#[test]
+fn an_array_deque_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_definition_written_out() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let sampled = Command::new("java").arg("-cp").arg(classes).args(["claims.Deques", "5000"]).output().expect("java runs");
+    assert_eq!(String::from_utf8_lossy(&sampled.stdout).trim(), "ok", "{}", String::from_utf8_lossy(&sampled.stderr));
+
+    let unasked = run(&options(classes, "claims.Deques#stacked", 3, "Deques-unasked"));
+    assert_eq!(unasked.verdict, Verdict::Unverifiable, "{}", unasked.output);
+    assert!(unasked.output.contains("java.util.ArrayDeque.<init>()V"), "{}", unasked.output);
+
+    let asking = |method: &str| {
+        let mut o = options(classes, &format!("claims.Deques#{method}"), 3, &format!("Deques-{method}"));
+        o.requested_models = vec!["java.util.ArrayDeque".to_string()];
+        o
+    };
+    for method in ["stacked", "refused", "cleared"] {
+        let o = run(&asking(method));
+        assert_eq!(o.verdict, Verdict::Verified, "{method}: {}", o.output);
+        let stated = o.stated.as_ref().expect("a statement");
+        assert!(stated.assumptions.iter().any(|a| a.text.starts_with("java.util.ArrayDeque is the tool's model of the class wherever the check runs it (--model)")), "{method}: {:?}", stated.assumptions);
+    }
+    let left_out = run(&asking("offered"));
+    assert_eq!(left_out.verdict, Verdict::Unverifiable, "{}", left_out.output);
+    assert!(left_out.output.contains("java.util.Deque.offer(Ljava/lang/Object;)Z") || left_out.output.contains("java.util.ArrayDeque.offer(Ljava/lang/Object;)Z"), "{}", left_out.output);
+}
+
+/// A `java.util.HashSet` of names, as Spring's `AbstractBindingResult` records suppressed fields (`claims.Sets`,
+/// example 286): the JDK's until a check asks for the model (`--model java.util.HashSet`), then the keys of the
+/// `HashMap` model, which is the definition written out over `equals` on every input of the bound; `remove`, which
+/// it does not keep, is still the JDK call it names. The same methods hold on a JVM over sampled names.
+#[test]
+fn a_hash_set_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_definition_written_out() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let sampled = Command::new("java").arg("-cp").arg(classes).args(["claims.Sets", "5000"]).output().expect("java runs");
+    assert_eq!(String::from_utf8_lossy(&sampled.stdout).trim(), "ok", "{}", String::from_utf8_lossy(&sampled.stderr));
+
+    let unasked = run(&options(classes, "claims.Sets#added", 2, "Sets-unasked"));
+    assert_eq!(unasked.verdict, Verdict::Unverifiable, "{}", unasked.output);
+    assert!(unasked.output.contains("java.util.HashSet.<init>()V"), "{}", unasked.output);
+
+    let asking = |method: &str| {
+        let mut o = options(classes, &format!("claims.Sets#{method}"), 2, &format!("Sets-{method}"));
+        o.requested_models = vec!["java.util.HashSet".to_string()];
+        o
+    };
+    let o = run(&asking("added"));
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let stated = o.stated.as_ref().expect("a statement");
+    assert!(stated.assumptions.iter().any(|a| a.text.starts_with("java.util.HashSet is the tool's model of the class wherever the check runs it (--model)")), "{:?}", stated.assumptions);
+    let left_out = run(&asking("removed"));
+    assert_eq!(left_out.verdict, Verdict::Unverifiable, "{}", left_out.output);
+    assert!(left_out.output.contains("remove(Ljava/lang/Object;)Z"), "{}", left_out.output);
 }
 
 /// `toString()`, the class of an object the run made, and an initializer that keeps a method reference for the
