@@ -411,6 +411,13 @@ impl Engine<'_> {
                 return Some(Err(stop));
             }
         }
+        // A builder is no String: a caller can change one it holds (a final static field's, a lambda's captured
+        // one) before it calls, so a lemma reads none that was there before the call ([`Engine::reads`]).
+        if path.objects[o].given {
+            if let Err(stop) = self.reads(path, || format!("reads a StringBuilder that was there before the call ({name})")) {
+                return Some(Err(stop));
+            }
+        }
         let empty = |engine: &mut Self| Array { element: Type::Char, length: engine.b.constant(0, 32), cells: Vec::new(), refs: Vec::new() };
         if name == "<init>" {
             let content = match args {

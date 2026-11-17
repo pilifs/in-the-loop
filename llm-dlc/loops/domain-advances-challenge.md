@@ -151,7 +151,30 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   - The manifest for `f28025bc` exists only on the preservation line, so the error should clear once the lines meet.
   - I have not touched the trace lines or `sync.py`.
   - Any stream that merges another's commits while that stream is still mutable can do the same.
-- Next: item 3, what the foundation's fixes leave (`Engine::reads` and `Engine::keeps`), starting with the final static that an initializer cycle leaves unset at a lemma's call.
+- 2026-11-17, item 3, what the foundation's fixes leave: **seven false proofs reproduced, all refused or now refuted**.
+  - The fixtures are in `lib/tests/fixtures/lemma-countermodels`; its README has the table, what was tried and the audit.
+  - `lib/tests/lemma_countermodels.rs` holds each to a JVM and the checker to its verdict.
+  - Each was **Verified** at `llwznzwm`, where a JVM says otherwise:
+    - *An initializer cycle*: `Base.SEEN = Derived.limit()` before `Base.LIMIT` is written, with the lemma `Derived#limit == 7`. A JVM gives 0. The foundation's guard looked only at the method's own class, which is initialized. The same happens with no inheritance (`Holder`/`Reader`), the class initialized by the lemma's assumption.
+    - *A final static whose initializer reads what a caller changes first*: `Own.LIMIT = Settings.value` (5 against the proved 0), `Lowered.I = "I".toLowerCase()` under a default the caller set to Turkish (305 against 105), and `Copied.FIRST = Table.T[0]` (5 against 0). The proof ran the initializer in the harness's state.
+    - *A StringBuilder a final static holds*: `LOG.length()` directly and through `LOG::length` (1 against 0). The model's reads never asked `Engine::reads`.
+  - **Refused here**: summaries are no stream's this run.
+    - No summary stands in for a call while any class is being initialized; the call runs as written. `seen` and `heldSeen` are now violations, as on a JVM, and the lemma is still used once initialization is over (`derivedLimit`).
+    - A class initializer that a lemma's proof runs is held to what the lemma is held to (`Engine::in_lemma`). Objects that exist when an initializer starts or returns count as there before the call. Its own class's statics, and those of a class being initialized, are exempt.
+    - A lemma reads no StringBuilder that was there before the call.
+    - claims.rs (18 tests, the foundation's worked example included) passes unchanged.
+  - **Tried and guarded**, with the guard named in the README:
+    - a lambda's captured array;
+    - the ArrayList model;
+    - reflection (a gap);
+    - a lemma about a method that calls itself;
+    - two lemmas about methods that call each other (a lemma's proof gets no lemma);
+    - Pattern and Matcher;
+    - a model class's statics (none are mutable);
+    - an induction whose measure reads state (`keeps`).
+  - *Audit*: the only lemma in use is `PatternMatchUtils.simpleMatch` (286, 288). In the pinned JARs its class has no statics and no initializer, it calls only String methods, and nothing calls it from an initializer. 286's decided result is not affected, and 288 has no proof verdict.
+- Inbox: no open items.
+- Next: item 4, loop invariants (`lib/src/bmc/loops.rs`). Then item 5 against the other streams' new commits, starting with the evidence stream's trace-check change (`mktymxvt`) and the drivers that record what they ran (`rkxyyqwn`).
 - Status: working
 
 ## Loop settings
