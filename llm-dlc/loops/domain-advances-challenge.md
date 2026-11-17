@@ -352,12 +352,52 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
     user's.
 - Tests: `test_costs.py run --changed` passed (42 Rust test binaries, 23 Python suites), and
   `validate_example.py` passed for 286, 287 and 307.
+- Sent, each citing `lqvlvwsm`:
+  - the item 5 failures: `domain-advances-state-I008` (`wd`), `domain-advances-evidence-I008` (`ob`) and
+    `domain-advances-preservation-I006` (`lg`);
+  - the item 6 formalizations: `domain-advances-preservation-I007` (287), `domain-advances-preservation-I008` (307)
+    and `domain-advances-state-I009` (286's protected state).
+- **To the watcher**: `sync.py check` here now reports 8 `has no manifest` errors. Besides the three recorded above,
+  session f28025bc is now stamped on `roqtqlpm`, `smnuqrou`, `uktunxxo` and `llwznzwm` too. The cause is the same
+  (`link_commits`: the preservation stream merged them), the manifests are on the other lines, and evidence's
+  `mktymxvt` makes such a stamp a note once the lines meet. I have not touched the trace lines.
+- 2026-11-17, item 5, the state stream's fixes for I005 (`sltlykpk`) and I007 (`nslmqyry`): **both hold, and two new
+  false proofs past the second**, to be handed over.
+  - Built apart at `nslmqyry`, with the sources touched first: `frame_countermodels.rs` and
+    `effect_countermodels.rs` pass. Each of the six earlier cases is refuted, or refused, or proved as JML's
+    `assignable` states it (`this == other || this.admin == \old(this.admin)`).
+  - The new hole: the read gate exempts a **final instance field** of an object that was there before the call. A
+    contract's proof makes the receiver and the arguments with their constructors in the harness's fresh state, and a
+    caller's object was made in another state.
+  - The fixture is `lib/tests/fixtures/contract-countermodels`; its README has the table, the commands, the options,
+    what was tried and the checker-side test. `lib/tests/contract_countermodels.rs` holds it to a JVM.
+  - Each is **Verified** `result == level` at `nslmqyry`, with no assumption stated, where a JVM gives 0 for 5:
+    - `snapshotLevel`: the receiver's `final boolean locked = Config.locked`, made with the setting on and the setting
+      put back before the call;
+    - `scaledLevel`: the same, through an argument's final field.
+  - The README's checker-side test fails on both there, as it should. The effect contract is the state stream's, so
+    nothing in `lib/src` changes here. It goes as a `failure` item to `domain-advances-state`, citing this commit; the
+    id goes in the next entry.
+  - **Tried and guarded**:
+    - a contract whose call starts a class initializer, refused by `Engine::initializes_in_frame`;
+    - a receiver of a class with two constructors, refused by the layout.
+  - *Audit*: no example task has a `writes:` lemma or passes `--writes` on any line. No accepted result rests on the
+    hole, so there is nothing for the watcher.
+- Inbox:
+  - `domain-advances-challenge-I002` (the lemma rule and the write-set rule meet in `Engine::call`): taken on.
+    - Its first case, a framed method or an effect contract whose call starts a class initializer, is tried on
+      state's line above and is guarded there.
+    - The other two need both rules in one tree, and no line has both yet: a lemma whose proof runs a framed method or
+      a call a contract stands in for, and an effect contract inside a summarized method. The default line has
+      neither stream.
+    - Next: a trial merge of this line and state's, built apart with the conflict in `Engine::call` resolved as the
+      inbox item describes, or the default line once the watcher has merged both.
 - Next:
-  - send the three item 5 failures and the three item 6 items;
-  - item 6's entries for the run's other decided claims: 288's `fixed-security` and 289's answers; check 290's,
-    which VF-033 began;
-  - item 5 on what landed during this cycle: state's `sltlykpk` (the fix for I005) and `nslmqyry` (the fix for
-    I007), and whatever lands next.
+  - send the contract failure;
+  - I002's two remaining cases on a trial merge;
+  - item 5 on what landed during this cycle: preservation's `wokytpkz` (the fix for I003 and I005) and evidence's
+    `kqxwrwrx` (the fix for I007), and `nzsypymy` (290's preservation restated, also item 6);
+  - item 6's entries for 288's `fixed-security` and 289's answers.
 - Status: working
 
 ## Loop settings
