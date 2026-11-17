@@ -286,13 +286,78 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
     - 286 and 287 pass the entry check only by the substring route, through the claim's "adapter entry" assumption, so a fix must keep that route.
   - This also reads `mzllzmkq` and `wowqurku` as far as acceptance goes: 288's `fixed-security` and 286's three are among the 13.
 - Inbox: no open items.
+- The acceptance-check controls went to evidence as `domain-advances-evidence-I007`, citing `zwrpkwnl`.
+- 2026-11-17, item 5, the three rules that landed since: state's `qysmsruu`, evidence's `lzpqszyo` and preservation's
+  `unswkkxp`. **Nine false proofs past them**, each **Verified** on its own line built apart, where a JVM says
+  otherwise. To be handed over.
+  - The fixtures are in `lib/tests/fixtures/rule-countermodels`. Its README has the tables, the commands, the options
+    and the checker-side test for each stream. `lib/tests/rule_countermodels.rs` holds the fixtures to a JVM.
+  - *State, `qysmsruu`* (`wd`). Under `--gaps assume`, an assumed object is made of exactly the class its descriptor
+    declares, and the new refusal keys on that class. `HashSet.clone()` and `Date.clone()` are declared to return
+    `Object`, so `copy instanceof HashSet` (`--model java.util.HashSet`), the cast's `size()`, and
+    `copy instanceof Date` are each proved false.
+    - Every assumption the two HashSet results state is true of the JDK.
+    - The Date case reproduces on this line too, with no model: it is the approximation's, older than the run.
+    - The fix itself holds: `a_model_does_not_read_fields_no_constructor_of_it_wrote` passes at `qysmsruu`, so
+      I004's three cases are refused by name. Evidence's I004 test,
+      `an_observed_initializer_is_bound_to_what_it_was_observed_on`, passes at `krptozvm`.
+    - Method note: a lib exported with `git archive` carries the commit's time as its mtime. Built into a target folder
+      that already holds newer artifacts, cargo keeps the old library. The first debug run here "failed" the state
+      fix that way. Every verdict above is from a build whose sources were touched first, checked against the CLI of
+      the release build. The debug-test results of earlier entries (I005 at `vwktulky`, I007) may have come from such
+      a build. Their release-CLI probes stand, and the state stream's fixes (`sltlykpk`, `nslmqyry`) are next to
+      challenge anyway.
+  - *Evidence, `lzpqszyo`* (`ob`):
+    - An initializer that writes its superclass's static (`inherited`) or a superinterface's array (`filled`). The
+      observer leaves supertypes out of the comparison, and the checker initializes them itself. No stated assumption
+      is false.
+    - A property read through `System.getProperties().get` (`bypassed`): the result says "it read no system
+      property". `Recording` overrides `getProperty` alone.
+    - The default time zone (`zoned`) and an environment variable (`environ`): not stated. These are of the kind of
+      I004's `lowered` and `configured`, through settings the binding does not list.
+  - *Preservation, `unswkkxp`* (`lg`). A `LogRecord` subclass passes `confined_record`, yet the default handler's
+    formatting calls its `getMessage`:
+    - one that counts in a field of the record the caller holds (`seen`, 1 against the proved 0; every stated
+      assumption is true of the JDK);
+    - one that throws a `Throwable`, which `StreamHandler.publish`'s `catch (Exception)` lets out of `log`
+      (`escaped`).
+  - Each README test fails on its stream's line: state at `qysmsruu`, evidence at `krptozvm`, preservation at
+    `unswkkxp`. None of these rules is mine, so nothing in `lib/src` changes here. Each goes as a `failure` item to
+    its stream, citing this commit; the ids go in the next entry.
+  - *Audit*: no accepted result rests on these holes, so there is nothing for the watcher.
+    - No example task runs under assume.
+    - 290's five observed classes, read with `javap` from the pinned JARs: each `putstatic` is of the class's own
+      field, and none calls `getenv`, `TimeZone` or `getProperties`. The servlet classes' `getBundle` reads the
+      locale, which is stated.
+    - 287's preservation logs through spring-jcl's `LocationResolvingLogRecord`, which is made inside `JavaUtilLog`
+      and dropped after `log`.
+- 2026-11-17, item 6, the formalizations of 287, 307 and 286's protected state. **Each claim accepts a wrong
+  implementation**. Each mutant is a patch under its example's `controls/`, which no task uses yet; the reasoning is
+  in each example's notes.
+  - **287**, `check-only-guard.patch` on 6.3.8: `if (for_check && passwordb.length > 72)`.
+    - `matches` and both `checkpw` run the fix's code, so all three claims are predicted to say of it what they say
+      of 6.3.8. Its driver lines equal 6.3.8's on all 33 probes, and the oracle says it holds.
+    - But `encode` of 73 bytes returns a hash again, and the 72-byte prefix matches it: the advisory's defect,
+      through the encoder no claim covers.
+  - **307**, `default-charset.patch`: `password.getBytes()`, the platform charset the commit removes.
+    - On JDK 18+ the default is UTF-8, so it equals after on all 45 probes.
+    - Under `-Dfile.encoding=COMPAT` with `LANG=C` it differs on 17 probes. The claim fixes no default charset
+      ("on one and the same JDK").
+  - **286**, `first-suppressed-only.patch` on 5.3.19: `checkAllowedFields` returns after the first suppressed value.
+    - `isAllowed` is the fix's, and the protected-state claim binds one value, so all three claims are predicted to
+      be decided as on 5.3.19.
+    - On a JVM, `age=5, Age=32` binds 32. The probes catch it (`bind-list-upstream`, `bind-map-upstream`); no claim
+      does.
+  - Each goes as an inbox item to its owner: 287 and 307 to preservation, 286 to state. A new claim is theirs and the
+    user's.
+- Tests: `test_costs.py run --changed` passed (42 Rust test binaries, 23 Python suites), and
+  `validate_example.py` passed for 286, 287 and 307.
 - Next:
-  - send item 7 to evidence;
-  - item 5 on the commits that landed since:
-    - state's `qysmsruu` (the fix for I004);
-    - evidence's `lzpqszyo` (an observation bound to what it was observed on, for I004);
-    - preservation's `unswkkxp` (spring-jcl's WARNING line modelled);
-  - item 6.
+  - send the three item 5 failures and the three item 6 items;
+  - item 6's entries for the run's other decided claims: 288's `fixed-security` and 289's answers; check 290's,
+    which VF-033 began;
+  - item 5 on what landed during this cycle: state's `sltlykpk` (the fix for I005) and `nslmqyry` (the fix for
+    I007), and whatever lands next.
 - Status: working
 
 ## Loop settings
