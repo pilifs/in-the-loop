@@ -12,25 +12,25 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T19:24:01.389Z",
-  "ended": "2026-11-17T00:06:54.463Z",
-  "duration_seconds": 103373,
+  "ended": "2026-11-17T00:09:52.345Z",
+  "duration_seconds": 103551,
   "stats": {
-    "turns": 26,
-    "api_calls": 713,
-    "tool_calls": 751,
+    "turns": 27,
+    "api_calls": 716,
+    "tool_calls": 754,
     "tool_errors": 21,
     "compactions": 6,
     "peak_context_tokens": 466382,
     "usage": {
-      "input_tokens": 1456,
-      "output_tokens": 1024775,
-      "cache_read_input_tokens": 176683592,
-      "cache_creation_input_tokens": 2332352
+      "input_tokens": 1462,
+      "output_tokens": 1026886,
+      "cache_read_input_tokens": 177374389,
+      "cache_creation_input_tokens": 2335555
     }
   },
   "tools": {
-    "Bash": 666,
-    "Write": 42,
+    "Bash": 668,
+    "Write": 43,
     "Read": 16,
     "Edit": 8,
     "AskUserQuestion": 6,
@@ -61,6 +61,7 @@
     "examples/schema/target.schema.json",
     "lib/src/congruence.rs",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/prove-java-change-skill.md",
+    "~/.claude/projects/-home-user-code-in-the-loop/memory/run-brief-skill.md",
     "~/code/in-the-loop-prove-java-change/README.md",
     "~/code/in-the-loop-prove-java-change/llm-dlc/prove-plan-template.md",
     "~/code/in-the-loop-prove-java-change/llm-dlc/tools/changes.py",
@@ -162,24 +163,24 @@
     {
       "index": 6,
       "started": "2026-11-16T17:06:47.678Z",
-      "ended": "2026-11-17T00:06:54.463Z",
-      "turns": 2,
-      "api_calls": 39,
+      "ended": "2026-11-17T00:09:52.345Z",
+      "turns": 3,
+      "api_calls": 42,
       "usage": {
-        "input_tokens": 78,
-        "output_tokens": 68694,
-        "cache_read_input_tokens": 6323682,
-        "cache_creation_input_tokens": 200089
+        "input_tokens": 84,
+        "output_tokens": 70805,
+        "cache_read_input_tokens": 7014479,
+        "cache_creation_input_tokens": 203292
       },
-      "peak_context_tokens": 229614
+      "peak_context_tokens": 232817
     }
   ],
   "log": {
-    "sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98",
-    "bytes": 19081848,
-    "lines": 6636,
-    "gzip_bytes": 3257757,
-    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98.jsonl.gz"
+    "sha256": "fa64e2e8a004344cfbffc44ce8bf23c177248204cb7f7a39c3ae9639872cb803",
+    "bytes": 19122186,
+    "lines": 6661,
+    "gzip_bytes": 3262527,
+    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/fa64e2e8a004344cfbffc44ce8bf23c177248204cb7f7a39c3ae9639872cb803.jsonl.gz"
   },
   "subagents": [
     {
@@ -821,6 +822,14 @@
       "summary": "Record verification results: the proof tier after example 290's engine changes passed",
       "body": "Collected 1 job (20261116-231725): every proof-tier Rust test but VF-018's three passed in release (35m32s, peak 3.5 GiB against an estimated 8 GiB).",
       "log_sha256": "8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98"
+    },
+    {
+      "change_id": "qystlsvplrmvtymslznqzolmkzyywlrr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290: vulnerable-security is refuted in a probe at the frozen bound with a model of ArrayList the check asks for, and its job is queued (verification pending)",
+      "body": "5.8.4 collects its matchers in ArrayLists on every path, and jvmcontract's own checker stopped at new ArrayList(int). The checker now has a model of java.util.ArrayList that it runs only for a check that asks for it (prove --model java.util.ArrayList; lib/models/java/util/lists/ArrayList.java, models::ON_REQUEST, ClassPath::runs_model): both constructors, size, isEmpty, get, add, addAll, both toArray and a fail-fast iterator; any other method is the JDK call it names. It is on request and not run for every check because new ArrayList(int) is the gap the contract library, the conformance corpus and the examples' recorded refusals are written about: without the option nothing changes. A result states the model where a path ran it; JBMC, --cache and a class with no model on request are refused. Arrays.copyOf of an array of references, which the model grows by, is modelled for every check, as it was for arrays of numbers.",
+      "log_sha256": "fa64e2e8a004344cfbffc44ce8bf23c177248204cb7f7a39c3ae9639872cb803"
     }
   ],
   "logs": {
@@ -955,6 +964,12 @@
       "lines": 2381,
       "gzip_bytes": 1389216,
       "url": "https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/cb349b4cc63ab90184a8ec7b956d47247e30c9734067a9672e95b9b8c3ee98d9.jsonl.gz"
+    },
+    "fa64e2e8a004344cfbffc44ce8bf23c177248204cb7f7a39c3ae9639872cb803": {
+      "bytes": 19122186,
+      "lines": 6661,
+      "gzip_bytes": 3262527,
+      "url": null
     },
     "ffcc994ed8c0f63567129aca8b4f4d2bb70c750d96908d01b0a4edb469dfc5e4": {
       "bytes": 11683035,

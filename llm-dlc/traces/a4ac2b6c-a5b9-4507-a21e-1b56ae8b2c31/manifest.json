@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T16:13:12.304Z",
-  "ended": "2026-11-17T00:07:09.527Z",
-  "duration_seconds": 114837,
+  "ended": "2026-11-17T00:09:05.840Z",
+  "duration_seconds": 114954,
   "stats": {
     "turns": 37,
-    "api_calls": 1872,
-    "tool_calls": 1925,
+    "api_calls": 1877,
+    "tool_calls": 1930,
     "tool_errors": 17,
     "compactions": 13,
     "peak_context_tokens": 566568,
     "usage": {
-      "input_tokens": 3744,
-      "output_tokens": 2300606,
-      "cache_read_input_tokens": 490836296,
-      "cache_creation_input_tokens": 5534000
+      "input_tokens": 3754,
+      "output_tokens": 2306991,
+      "cache_read_input_tokens": 491835887,
+      "cache_creation_input_tokens": 5544522
     }
   },
   "tools": {
-    "Bash": 1852,
+    "Bash": 1857,
     "Read": 39,
     "Write": 23,
     "ToolSearch": 5,
@@ -246,24 +246,24 @@
     {
       "index": 13,
       "started": "2026-11-16T23:48:03.278Z",
-      "ended": "2026-11-17T00:07:09.527Z",
+      "ended": "2026-11-17T00:09:05.840Z",
       "turns": 4,
-      "api_calls": 46,
+      "api_calls": 51,
       "usage": {
-        "input_tokens": 92,
-        "output_tokens": 57331,
-        "cache_read_input_tokens": 5595340,
-        "cache_creation_input_tokens": 182988
+        "input_tokens": 102,
+        "output_tokens": 63716,
+        "cache_read_input_tokens": 6594931,
+        "cache_creation_input_tokens": 193510
       },
-      "peak_context_tokens": 194447
+      "peak_context_tokens": 204969
     }
   ],
   "log": {
-    "sha256": "4dca36def684da7ed44db7f3306e87d0d9727fad130282a9606050021d9dafb3",
-    "bytes": 41749579,
-    "lines": 15686,
-    "gzip_bytes": 6332305,
-    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/4dca36def684da7ed44db7f3306e87d0d9727fad130282a9606050021d9dafb3.jsonl.gz"
+    "sha256": "7cbf1146fa31559a1f1fd4fce0e55600fdbe360f1faafa549c0b1a5564d2760b",
+    "bytes": 41809792,
+    "lines": 15723,
+    "gzip_bytes": 6339917,
+    "path": "llm-dlc/traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/logs/7cbf1146fa31559a1f1fd4fce0e55600fdbe360f1faafa549c0b1a5564d2760b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -770,6 +770,14 @@
       "summary": "Record verification results: the proof tier after example 290's engine changes passed",
       "body": "Collected 1 job (20261116-231725): every proof-tier Rust test but VF-018's three passed in release (35m32s, peak 3.5 GiB against an estimated 8 GiB).",
       "log_sha256": "4dca36def684da7ed44db7f3306e87d0d9727fad130282a9606050021d9dafb3"
+    },
+    {
+      "change_id": "qystlsvplrmvtymslznqzolmkzyywlrr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290: vulnerable-security is refuted in a probe at the frozen bound with a model of ArrayList the check asks for, and its job is queued (verification pending)",
+      "body": "5.8.4 collects its matchers in ArrayLists on every path, and jvmcontract's own checker stopped at new ArrayList(int). The checker now has a model of java.util.ArrayList that it runs only for a check that asks for it (prove --model java.util.ArrayList; lib/models/java/util/lists/ArrayList.java, models::ON_REQUEST, ClassPath::runs_model): both constructors, size, isEmpty, get, add, addAll, both toArray and a fail-fast iterator; any other method is the JDK call it names. It is on request and not run for every check because new ArrayList(int) is the gap the contract library, the conformance corpus and the examples' recorded refusals are written about: without the option nothing changes. A result states the model where a path ran it; JBMC, --cache and a class with no model on request are refused. Arrays.copyOf of an array of references, which the model grows by, is modelled for every check, as it was for arrays of numbers.",
+      "log_sha256": "7cbf1146fa31559a1f1fd4fce0e55600fdbe360f1faafa549c0b1a5564d2760b"
     }
   ],
   "logs": {
@@ -862,6 +870,12 @@
       "lines": 8290,
       "gzip_bytes": 3254048,
       "url": "https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/75472954f1b9a097cb21483d083874e585027521e9ca53db4a492df209025c86.jsonl.gz"
+    },
+    "7cbf1146fa31559a1f1fd4fce0e55600fdbe360f1faafa549c0b1a5564d2760b": {
+      "bytes": 41809792,
+      "lines": 15723,
+      "gzip_bytes": 6339917,
+      "url": null
     },
     "80cb746f2359ac3ed66640c1646d8f8f01d0b7a7afe43761e17f52d04928d60a": {
       "bytes": 19856474,

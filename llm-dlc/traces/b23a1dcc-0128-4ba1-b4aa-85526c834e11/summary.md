@@ -38,6 +38,12 @@ change `kxkyqntwvlol` · [log `532fb6ea5ac7`](https://terminalvalue.net/raw-trac
 
 Collected 1 job (20261116-231725): every proof-tier Rust test but VF-018's three passed in release (35m32s, peak 3.5 GiB against an estimated 8 GiB).
 
+### Example 290: vulnerable-security is refuted in a probe at the frozen bound with a model of ArrayList the check asks for, and its job is queued (verification pending)
+
+change `qystlsvplrmv` · [log `532fb6ea5ac7`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/532fb6ea5ac743a631dcc724e5a0e6dc5fd060345e72ebe608b1463b32f57e19.jsonl.gz)
+
+5.8.4 collects its matchers in ArrayLists on every path, and jvmcontract's own checker stopped at new ArrayList(int). The checker now has a model of java.util.ArrayList that it runs only for a check that asks for it (prove --model java.util.ArrayList; lib/models/java/util/lists/ArrayList.java, models::ON_REQUEST, ClassPath::runs_model): both constructors, size, isEmpty, get, add, addAll, both toArray and a fail-fast iterator; any other method is the JDK call it names. It is on request and not run for every check because new ArrayList(int) is the gap the contract library, the conformance corpus and the examples' recorded refusals are written about: without the option nothing changes. A result states the model where a path ran it; JBMC, --cache and a class with no model on request are refused. Arrays.copyOf of an array of references, which the model grows by, is modelled for every check, as it was for arrays of numbers.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/532fb6ea5ac743a631dcc724e5a0e6dc5fd060345e72ebe608b1463b32f57e19.jsonl.gz) has every step in between: reasoning, tool calls and their results.

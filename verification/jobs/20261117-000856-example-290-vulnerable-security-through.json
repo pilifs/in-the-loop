@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-000856-example-290-vulnerable-security-through",
+  "title": "Example 290 vulnerable-security through the adapter entry: the frozen claim on 5.8.4, expected refuted",
+  "description": "The frozen claim claims/ambiguous-servlet-configuration-rejected.json, unchanged, run by examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py: jvmcontract prove (own checker, strict gaps). The entry is example290.adapter.MatcherSelectionAdapter#select(int[] servlets, int method, String[] patterns), the one the claim's first assumption names: it fills a LinkedHashMap with one registration per element of servlets (a table of class names: DispatcherServlet, a plain servlet), puts it in carriers for the servlet context and the web application context, and makes one call of the original requestMatchers on a fresh minimal registry. The claim's expressions are passed as they are written (the assumption, assert false, throws IllegalArgumentException when true), compiled by javac and run as bytecode, at the claim's bound of 8; loops are followed exactly for 64 turns. The class path is the release's ten pinned JARs, each checked against its SHA-256. This is a proof beside the example route, which takes no adapter entry (each task's invocation in target.json says so). Nothing is put in a method's place and no lemma is given. As for fixed-security and mutant-security (jobs 20261116-225709-example-290-fixed-security-through-the-a and 20261116-231724-example-290-mutant-security-through-the), three library initializers with no input that the checker does not run are observed on a JVM on the release's class path (prove --observed-initializer), which the outcome states where a path uses one. What is new: 5.8.4 collects its matchers in ArrayLists on every path, and the checker stopped at new ArrayList(int) (AbstractRequestMatcherRegistry.createMvcMatchers:192). The script now asks for the checker's model of java.util.ArrayList (prove --model java.util.ArrayList; lib/models/java/util/lists/ArrayList.java: the two constructors, size, isEmpty, get, add, addAll, both toArray and a fail-fast iterator, any other method the JDK call it names). The model is run only for a check that asks for it: without the option the class is the JDK's and its constructor the gap the contract library and the recorded refusals are about, so no other verdict changes. The outcome states the model where a path ran it. The model is proved to be its definition written out on every input of a bound, and the definitions hold on a JVM (lib/tests/claims.rs: claims.M#collected, filled, appended, swept). Arrays.copyOf of an array of references, which the model grows by, is modelled for every check (claims.M#recopied). Expected refuted: 5.8.4 returns matchers where a DispatcherServlet is registered beside another servlet, where the claim says it throws.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "290"
+    ],
+    "paths": [
+      "examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py",
+      "lib/models/java/util/lists/ArrayList.java",
+      "lib/src/models.rs"
+    ]
+  },
+  "expected": "exits 0: prove.py prints 'verdict: violation (expected violation)', the witness 'run on a JVM' with two or more servlets registered, one of them the DispatcherServlet",
+  "submitted": {
+    "at": "2026-11-17T00:08:56+00:00",
+    "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "5m",
+    "timeout": "1h",
+    "notes": "an inline probe at this bound took 0.7 s (4 paths): select(servlets=[0, 0], method=0, patterns={}) returns 0, run on a JVM. The time besides is the release build of lib/ if its tree isn't cached and the fetch of the JARs"
+  },
+  "steps": [
+    {
+      "name": "the claim at the frozen bound, 8",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py vulnerable-security --timeout 1800 --work verification/.work-290",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-290/vulnerable-security/outcome.json",
+    "verification/.work-290/vulnerable-security/work/harness/PropertyHarness.java",
+    "verification/.work-290/vulnerable-security/work/harness/PropertyClaim.java"
+  ]
+}

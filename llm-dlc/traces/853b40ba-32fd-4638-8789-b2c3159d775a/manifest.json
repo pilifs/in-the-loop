@@ -12,20 +12,20 @@
     "claude-sonnet-5-5"
   ],
   "started": "2026-11-16T23:20:56.965Z",
-  "ended": "2026-11-17T00:06:56.536Z",
-  "duration_seconds": 2760,
+  "ended": "2026-11-17T00:07:24.038Z",
+  "duration_seconds": 2787,
   "stats": {
     "turns": 1,
-    "api_calls": 18,
+    "api_calls": 19,
     "tool_calls": 20,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 47091,
+    "peak_context_tokens": 47471,
     "usage": {
-      "input_tokens": 36,
-      "output_tokens": 3387,
-      "cache_read_input_tokens": 695525,
-      "cache_creation_input_tokens": 33778
+      "input_tokens": 38,
+      "output_tokens": 4021,
+      "cache_read_input_tokens": 742614,
+      "cache_creation_input_tokens": 34158
     }
   },
   "tools": {
@@ -36,24 +36,24 @@
     {
       "index": 0,
       "started": "2026-11-16T23:20:56.965Z",
-      "ended": "2026-11-17T00:06:56.536Z",
+      "ended": "2026-11-17T00:07:24.038Z",
       "turns": 1,
-      "api_calls": 18,
+      "api_calls": 19,
       "usage": {
-        "input_tokens": 36,
-        "output_tokens": 3387,
-        "cache_read_input_tokens": 695525,
-        "cache_creation_input_tokens": 33778
+        "input_tokens": 38,
+        "output_tokens": 4021,
+        "cache_read_input_tokens": 742614,
+        "cache_creation_input_tokens": 34158
       },
-      "peak_context_tokens": 47091
+      "peak_context_tokens": 47471
     }
   ],
   "log": {
-    "sha256": "7cd2cae70c1656fb7682d0dbce28e85dca339d08a8387f0c6c6dab8e26c751b7",
-    "bytes": 441439,
-    "lines": 123,
-    "gzip_bytes": 96589,
-    "path": "llm-dlc/traces/853b40ba-32fd-4638-8789-b2c3159d775a/logs/7cd2cae70c1656fb7682d0dbce28e85dca339d08a8387f0c6c6dab8e26c751b7.jsonl.gz"
+    "sha256": "c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298",
+    "bytes": 450395,
+    "lines": 131,
+    "gzip_bytes": 98566,
+    "path": "llm-dlc/traces/853b40ba-32fd-4638-8789-b2c3159d775a/logs/c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -96,6 +96,14 @@
       "summary": "Record verification results: the proof tier after example 290's engine changes passed",
       "body": "Collected 1 job (20261116-231725): every proof-tier Rust test but VF-018's three passed in release (35m32s, peak 3.5 GiB against an estimated 8 GiB).",
       "log_sha256": "7cd2cae70c1656fb7682d0dbce28e85dca339d08a8387f0c6c6dab8e26c751b7"
+    },
+    {
+      "change_id": "qystlsvplrmvtymslznqzolmkzyywlrr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290: vulnerable-security is refuted in a probe at the frozen bound with a model of ArrayList the check asks for, and its job is queued (verification pending)",
+      "body": "5.8.4 collects its matchers in ArrayLists on every path, and jvmcontract's own checker stopped at new ArrayList(int). The checker now has a model of java.util.ArrayList that it runs only for a check that asks for it (prove --model java.util.ArrayList; lib/models/java/util/lists/ArrayList.java, models::ON_REQUEST, ClassPath::runs_model): both constructors, size, isEmpty, get, add, addAll, both toArray and a fail-fast iterator; any other method is the JDK call it names. It is on request and not run for every check because new ArrayList(int) is the gap the contract library, the conformance corpus and the examples' recorded refusals are written about: without the option nothing changes. A result states the model where a path ran it; JBMC, --cache and a class with no model on request are refused. Arrays.copyOf of an array of references, which the model grows by, is modelled for every check, as it was for arrays of numbers.",
+      "log_sha256": "c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298"
     }
   ],
   "logs": {
@@ -121,6 +129,12 @@
       "bytes": 406360,
       "lines": 101,
       "gzip_bytes": 92265,
+      "url": null
+    },
+    "c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298": {
+      "bytes": 450395,
+      "lines": 131,
+      "gzip_bytes": 98566,
       "url": null
     },
     "e372cf1c5b52bc72cd08eeabe192e115fca0587b1053545da08f23d3811b1468": {
