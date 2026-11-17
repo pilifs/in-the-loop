@@ -23,6 +23,8 @@ REPO = Path(__file__).resolve().parents[2]
 FIXTURES = REPO / "examples/tools/targets/fixtures"
 sys.path.append(str(REPO / "lib/tools"))
 from cost_tier import cost  # noqa: E402
+sys.path.append(str(Path(__file__).resolve().parents[2] / "lib/tools"))
+from cost_tier import cost  # noqa: E402
 
 COMMIT = "c" * 40
 VERDICT = {"established": "verified", "refuted": "violation"}
@@ -44,7 +46,8 @@ def outcome_of(task: dict, claim: dict, answer: str, bound: int | None) -> dict 
                                                                          "value": {"kind": "string", "units": [97, 98]}}]} if refuted else None,
         "search": {"engine": task.get("engine"), "gap_mode": task.get("gaps"), "max_array_length": bound, "unwind": 16},
         "stated": {"bounds": {"unwind": 16, "complete": not refuted},
-                   "vacuity": {} if refuted else {"status": "non-vacuous", "basis": "probe", "witness": "allowed(field=\"\")"},
+                   "vacuity": {} if refuted else {"status": "non-vacuous", "basis": "probe", "witness": "allowed(field=\"\")",
+                                                  **({"outside": task["allowedChange"]} if "allowedChange" in task else {})},
                    "domain": {"parameters": [{"name": n, "null": True} for n in claim.get("nullable") or []]},
                    "assumptions": [{"kind": "precondition", "text": claim.get("assume") or "true", "basis": "stated"},
                                    {"kind": "library", "text": "made up: what the checker assumed", "basis": "engine"}],
@@ -292,6 +295,19 @@ class MissingResult(Checkout):
 
 
 class ChangedArtifact(Checkout):
+    def test_a_preservation_whose_witness_is_not_said_to_lie_outside_the_allowed_change_is_refused(self):
+        """A pair's versions are compared only outside the allowed change: a witness inside it reaches no comparison, so
+        an establishment is accepted only when its outcome says its witness lies outside the task's change."""
+        for change, check, words in (
+                (lambda o: o["stated"]["vacuity"].pop("outside"), "non-vacuous", "does not say whether its witness"),
+                (lambda o: o["stated"]["vacuity"].update(outside="true"), "non-vacuous", "which is not the task's allowed change"),
+                (lambda o: o["stated"].update(vacuity={"status": "vacuous", "text": "inside the allowed change"}), "non-vacuous", "names no input that reaches the property")):
+            with self.subTest(words=words):
+                paths = self.beside("preservation", "established")
+                self.assertTrue(self.check("preservation")["accepted"])
+                rewrite(self.root, paths, change)
+                self.refused("preservation", check, words)
+
     def test_an_outcome_changed_after_the_job_is_refused(self):
         paths = self.beside("regex-probe", "refuted")
         rewrite(self.root, paths, lambda o: o.update(verdict="verified"), as_the_job_wrote_it=False)
@@ -477,6 +493,25 @@ class DriverRecord(Checkout):
         (self.folder / "replay/Adapter.java").write_text("class Adapter { /* changed */ }\n")
         self.refused("fixed-security", "artifacts", "the adapter source examples/900-made-up-change/replay/Adapter.java is not the one it compiled")
 
+    def test_a_constructed_mutants_closure_is_held_to_its_bases_pins(self):
+        """A mutant's class path is its base's with its own JAR built: the driver records the rest under the mutant's
+        revision, and they are the JARs the base pins."""
+        self.edit("target.json", lambda t: t["history"]["revisions"].update(
+            mutant={"mutant": {"base": "after", "patch": "p", "sha256": "0" * 64, "description": "made up"}}))
+        for jar, status in ((b"the pinned JAR", "ok"), (b"another JAR", "fail")):
+            paths = self.recorded("mutant-security", "refuted", jar=jar)
+            file = self.root / "verification/.work-900/mutant-security/evidence.json"
+            data = json.loads(file.read_text())
+            data["artifacts"] = [{"revision": "mutant", "name": "built.jar", "sha256": "1" * 64, "constructed": True},
+                                 *({**a, "revision": "mutant"} for a in data["artifacts"])]
+            file.write_text(json.dumps(data))
+            result = json.loads((self.root / paths["result"]).read_text())
+            next(o for o in result["outputs"] if o["path"].endswith("/evidence.json"))["sha256"] = sha(file)
+            (self.root / paths["result"]).write_text(json.dumps(result))
+            [artifacts] = [c for c in self.check("mutant-security")["checks"] if c["check"] == "artifacts"]
+            self.assertEqual(artifacts["status"], status, artifacts["detail"])
+        self.assertIn("gate-1.0.jar of mutant is not the JAR target.json pins", artifacts["detail"])
+
     def test_a_record_changed_after_the_job_or_of_another_task_is_refused(self):
         self.recorded()
         file = self.root / "verification/.work-900/fixed-security/evidence.json"
@@ -489,20 +524,28 @@ class ThisCheckout(unittest.TestCase):
     @cost("tool")
     def test_example_289s_four_answers_are_accepted_from_their_saved_results(self):
         """The four results an outside review checked by hand (llm-dlc/loop-summaries/prove-change/expert-review.md,
-        c2): the claim files and the allowed change unchanged, eleven outputs at their recorded hashes, bound 8, strict
-        gaps, both refutations reproduced on a JVM, the mutant's JAR the replay's."""
+        c2), run again by the job that recorded what it ran (evidence.json): the claim files and the allowed change
+        unchanged, the outputs at their recorded hashes, bound 8, strict gaps, both refutations reproduced on a JVM,
+        the mutant's JAR the replay's, and every JAR, the adapter and the verifier recorded, so no limit is left.
+        Preservation is refused: its outcome is from before the checker said whether its witness lies outside the
+        allowed change, and a run that says so answers it."""
         source = accept.Source(REPO)
         git = source.git_dir()
-        if not git or subprocess.run([*git, "cat-file", "-e", "3bd0de65d77369a7d94b593b7403a5c11ee5916a^{commit}"], capture_output=True).returncode:
+        if not git or subprocess.run([*git, "cat-file", "-e", "150c4a2557ebd284bbb73f1084e5ac7d6e1d7523^{commit}"], capture_output=True).returncode:
             self.skipTest("the jobs' source commit is not in this checkout (a released copy)")
         tasks = accept.tasks_beside(REPO, "289")
         self.assertEqual(sorted(tasks), ["fixed-security", "mutant-security", "preservation", "vulnerable-security"])
         for task in tasks:
             r = accept.check(REPO, "289", task, source)
-            self.assertFalse(any("is not in this checkout" in limit for limit in r["limits"]), r["limits"])
+            if task == "preservation" and r["job"] == "20261117-122454-example-289-the-four-proof-tasks-again-w":
+                self.assertFalse(r["accepted"])
+                self.assertIn(("non-vacuous", "unbound"), [(c["check"], c["status"]) for c in r["checks"]])
+                continue
             self.assertTrue(r["accepted"], f"{task}: {r.get('why')}")
+            self.assertEqual(r["limits"], [], task)
+            self.assertIn(("artifacts", "ok"), [(c["check"], c["status"]) for c in r["checks"]], task)
             self.assertEqual(r["bound"]["ran"], 8)
-            self.assertEqual(r["identity"]["libTree"], "86246b4cfea2958ad95a2d921b3bd243a42d3cdf")
+            self.assertEqual(r["identity"]["libTree"], "09d2f5bfc7dd3385b28ab233aa4ae671db5d7bea")
 
 
 if __name__ == "__main__":

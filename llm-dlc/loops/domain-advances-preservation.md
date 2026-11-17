@@ -136,6 +136,25 @@ relational result needs a new check (the rule's applications recorded in the out
   `crypt_raw` (pc 165) and `ekskey` (pc 260, pc 60), which a JVM run shows to be no counterexample. 191 of the
   200 s go to the solver, at 3.6 million variables. This is the relational failure the brief describes. 287's
   notes record it. No new inbox items. I001 to I003 were acknowledged above.
+- 2026-11-17, step 4 again (I004 and I005; no step of 287 moved). Merged ymzlyksq (I004: the vacuity check outside
+  the allowed change, which accept.py now asks of a preservation outcome) and roqtqlpm (I005: the challenge stream's
+  `fresh-pair-countermodels`), each with its line. Two more side conditions in the pair (`pairing.rs`), each
+  necessary: with either one undone, its countermodel is Verified again.
+  - The scope `meantToChange` is called on copies of its own of the array arguments, so a scope that writes a cell
+    no longer decides what both versions see (`first`).
+  - An exception is compared by its class's name and those of every class above it up to `Object`
+    (`same(ea, eb)`, recursive over `Class.getSuperclass()`, which the checker and the interpreter now answer
+    for a class literal). So two `app.Failure`s, one extending `IllegalArgumentException` and the other
+    `IllegalStateException`, are two answers (`failing`). The interfaces a class implements are not compared:
+    this is stated in the note, the module and `lib/README.md`.
+  A first try that built the chain as one String ran past the checker's 64-unit cap and left `failing`
+  Unverifiable, not refuted. The README's checker-side test is in `lib/tests/fresh_pair_countermodels.rs` and
+  passes, both as violations. Capped probes at the frozen bounds:
+  - 289 verifies in 55 s, with a witness outside its change;
+  - 290 verifies in about 1 s, with `servlets=[0]`.
+  Job `20261117-151521-examples-289-and-290-preservation-once-m` reruns both and supersedes `20261117-134306-…`,
+  whose statement is no longer the pair's. Evidence stream: accept 289's and 290's preservation from it, not from
+  the earlier one. The default run passed after the merge.
 - Next: step 2. Read `shared.rs`, `equivalence.rs:1800` and `bmc/loops.rs`, and choose the boundary by the
   evidence: the counterexample's three loops are in `crypt_raw` and `ekskey`, which are unchanged between the
   releases.

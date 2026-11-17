@@ -11,6 +11,10 @@
 //!   take it): that class's literal, the one object a class literal of it is (JLS §15.8.2). Of any other object (an
 //!   array, a lambda's, a JDK class's) it is the JDK call it was.
 //! - `Class.getName()` of a class literal: the class's binary name, the interned String (the JVM interns it).
+//! - `Class.getSuperclass()` of a class literal of a class the class path or the JDK has and can load: its direct
+//!   superclass's literal, as its class file names it; null of `Object` and of an interface; `Object`'s of an
+//!   array's. Of a copy in a pair of versions it is the copy's superclass, a copy itself where the previous
+//!   version declared it. Of any other class it is the JDK call it was.
 //! - `Class.getClassLoader()` of the literal of a class of the check's class path: the one loader object of the
 //!   run; of a JDK class, the JDK call it was.
 //! - `Class.forName(String, boolean, ClassLoader)` with that loader, a name that is a constant and `false`
@@ -139,6 +143,7 @@ pub fn models_instance(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!(
         (owner, name, descriptor),
         (CLASS, "getName", "()Ljava/lang/String;")
+            | (CLASS, "getSuperclass", "()Ljava/lang/Class;")
             | (CLASS, "getClassLoader", "()Ljava/lang/ClassLoader;")
             | (CLASS, "isAssignableFrom", "(Ljava/lang/Class;)Z")
             | ("java/lang/Object", "getClass", "()Ljava/lang/Class;")
@@ -176,7 +181,7 @@ impl Engine<'_> {
         s.cells.get(..length)?.iter().map(|c| self.b.constant_value(c).map(|u| u as u16)).collect()
     }
 
-    /// `Class.getName()` and `Class.getClassLoader()` on the object `o`, and `getClass()` on it: see the module's
+    /// `Class.getName()`, `Class.getSuperclass()` and `Class.getClassLoader()` on the object `o`, and `getClass()` on it: see the module's
     /// notes. `None` where the call stays the JDK's.
     pub(super) fn class_method(&mut self, path: &mut Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Option<Step> {
         if (name, descriptor) == ("getClass", "()Ljava/lang/Class;") {
@@ -213,6 +218,21 @@ impl Engine<'_> {
                 let own = self.previous.as_ref().and_then(|p| p.original(&class)).unwrap_or(&class);
                 let units: Vec<u16> = own.replace('/', ".").encode_utf16().collect();
                 self.literal(path, Literal::Str(units), STRING)
+            }
+            "getSuperclass" => {
+                let above = if class.starts_with('[') {
+                    Some("java/lang/Object".to_string())
+                } else {
+                    if !self.cp.loads(&class) {
+                        return None;
+                    }
+                    let interface = matches!(self.cp.load(&class), Ok(Some(l)) if l.class.is_interface());
+                    if interface { None } else { self.cp.superclass(&class) }
+                };
+                let value = above.map(|c| self.literal(path, Literal::Class(c), CLASS));
+                self.push(path, Val::R(value));
+                self.advance(path);
+                return Some(Ok(None));
             }
             _ => {
                 if !self.cp.is_application(&class) {

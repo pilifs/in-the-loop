@@ -2429,7 +2429,12 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 let render = |r: &JbmcResult| r.arguments(&flat_types).ok().map(|found| witness::call_in(&method_name, &layout, &found).0);
                 let (reason, status) = vacuity(&mut out, &harness.probe, harness::CLASS, &entries, options.models, options.unwind, options.max_array_length, deadline.left(), &gap_setting, &checker_parameters, &work, &ways.join(" or "), &render, &mut search)?;
                 vacuous = reason;
-                vacuity_status = Some(status);
+                // The harness returns before the probe's failure on an input inside the allowed change (the scope,
+                // read before or once the objects are made), so the probe's witness lies outside it.
+                vacuity_status = Some(match &options.unchanged_unless {
+                    Some(change) => status.outside_of(change),
+                    None => status,
+                });
             } else {
                 vacuity_status = Some(Vacuity::every_input());
             }

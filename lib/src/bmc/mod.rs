@@ -3449,6 +3449,11 @@ impl<'a> Engine<'a> {
                 }
                 // A `<clinit>` returned: its class is initialized, and the instruction that ran it runs again.
                 if let Some(c) = returned.initializes {
+                    // In a lemma's proof, what it made a caller may change before anything else reads it (an
+                    // initializer that started before it and reads its array): it was there before ([`Engine::in_lemma`]).
+                    if self.pure.is_some() && !self.own_induction {
+                        path.objects.iter_mut().for_each(|o| o.given = true);
+                    }
                     path.classes.insert(c, ClassState::Done);
                     return Ok(None);
                 }
@@ -3488,8 +3493,9 @@ impl<'a> Engine<'a> {
                 }
                 // A lemma reads no static field a caller can write ([`Engine::reads`]): a final one is written
                 // by its class's initializer alone, and the claim's class has only the tool's own (the measure
-                // of the call under proof).
-                if declaring != crate::harness::expr::CLAIM_CLASS && self.cp.checker_statics(&declaring) && !self.final_field(&declaring, &member.name, &member.descriptor) {
+                // of the call under proof). Nor does an initializer the lemma's proof runs, but for the fields of
+                // a class being initialized, which no caller can have written before its initializer began.
+                if declaring != crate::harness::expr::CLAIM_CLASS && self.cp.checker_statics(&declaring) && !self.final_field(&declaring, &member.name, &member.descriptor) && path.classes.get(&declaring) != Some(&ClassState::InProgress) {
                     self.reads(path, || format!("reads the static field {}.{}", declaring.replace('/', "."), member.name))?;
                 }
                 let v = match self.application_static(path, &declaring, &member.name, &member.descriptor) {
@@ -4214,9 +4220,10 @@ impl<'a> Engine<'a> {
             // A summary of the method, or the hypothesis of its own proof, in place of a call that is neither the
             // harness's nor the claim's ([`Summary`]).
             let summary = self.summaries.iter().find(|s| s.owner == member.owner && s.name == member.name && s.descriptor == member.descriptor).map(|s| s.stub.clone());
-            // Not while the method's class is still being initialized: the lemma was proved of the class
-            // initialized, and a final field it reads may not be written yet. The call then runs as written.
-            let initialized = path.classes.get(&declaring) != Some(&ClassState::InProgress);
+            // Not while any class is still being initialized: the lemma was proved of classes initialized, and a
+            // final field it reads, of its method's class or of any other (a superclass whose initializer calls
+            // it, a class its assumption reads), may not be written yet. The call then runs as written.
+            let initialized = !path.classes.values().any(|s| *s == ClassState::InProgress);
             if let Some(stub) = summary.filter(|_| initialized && caller != crate::harness::expr::CLAIM_CLASS && caller != path.frames[0].class.name) {
                 if let Some(step) = self.initialise(path, crate::harness::expr::CLAIM_CLASS) {
                     return step;
@@ -4396,6 +4403,10 @@ impl<'a> Engine<'a> {
         let special = special;
         // An array's `clone`: a new array of the same class, length and elements (JLS §10.7).
         if !special && member.name == "clone" && member.descriptor == "()Ljava/lang/Object;" && path.objects[o].is_array() {
+            // The copy's cells are the array's: a read of them is one of the array.
+            if path.objects[o].given {
+                self.reads(path, || "reads an array that was there before the call (clone)".into())?;
+            }
             let copy = Obj { array: path.objects[o].array.clone(), unknown: path.objects[o].unknown, ..Obj::new(&path.objects[o].class) };
             path.objects.push(copy);
             let r = path.objects.len() - 1;
@@ -4529,6 +4540,11 @@ impl<'a> Engine<'a> {
         if path.frames.len() == 1 && (owner == crate::harness::expr::CLAIM_CLASS && self.pure.is_some() || self.pure.as_ref().is_some_and(|(o, n, d)| o == owner && n == name && d == descriptor)) {
             path.objects.iter_mut().for_each(|o| o.given = true);
         }
+        // And, in a lemma's proof, what is there when a class initializer starts: a caller may initialize the
+        // class later than the proof does, after changing what was there ([`Engine::in_lemma`]).
+        if name == "<clinit>" && self.pure.is_some() && !self.own_induction {
+            path.objects.iter_mut().for_each(|o| o.given = true);
+        }
         // A model run on request is what the result then rests on.
         if let Some(model) = crate::models::on_request(&cf.name).filter(|_| !self.cp.is_application(&cf.name)) {
             self.assumed.insert(crate::models::requested_assumption(model));
@@ -4569,10 +4585,19 @@ impl<'a> Engine<'a> {
 
     /// Whether the path is where a lemma must read nothing a caller can change: inside the method the check proves
     /// a summary of, or inside the lemma's own assumption or assertion, which the harness calls in the claim's
-    /// class and the summary evaluates again at each call it stands in for, in the state that call is made in.
+    /// class and the summary evaluates again at each call it stands in for, in the state that call is made in, or
+    /// inside a class initializer the proof runs (the method's class and its superclasses, which the harness
+    /// initializes, or a class the assumption uses): the lemma may read a final static field such an initializer
+    /// writes, and a caller may initialize the class after changing what the initializer reads (a static field,
+    /// an object, the default locale), so that the field is not what it was in the proof.
     /// Never in a proof by induction alone ([`Options::own_induction`]).
     fn in_lemma(&self, path: &Path) -> bool {
-        self.pure.is_some() && !self.own_induction && (self.in_summary(path) || path.frames.get(1).is_some_and(|f| f.class.name == crate::harness::expr::CLAIM_CLASS))
+        self.pure.is_some() && !self.own_induction && (self.in_summary(path) || path.frames.get(1).is_some_and(|f| f.class.name == crate::harness::expr::CLAIM_CLASS) || self.initializer(path).is_some())
+    }
+
+    /// The class whose initializer the path is innermost in, if any.
+    fn initializer<'p>(&self, path: &'p Path) -> Option<&'p str> {
+        path.frames.iter().rev().find(|f| f.method == "<clinit>").map(|f| f.class.name.as_str())
     }
 
     /// Refuses, in a lemma's proof ([`Engine::in_lemma`]), a read of what a caller can change before it calls: a
@@ -4584,6 +4609,11 @@ impl<'a> Engine<'a> {
     fn reads(&self, path: &Path, what: impl FnOnce() -> String) -> Result<(), Stop> {
         if self.in_lemma(path) {
             let (owner, name, _) = self.pure.as_ref().expect("in a lemma");
+            if !self.in_summary(path) {
+                if let Some(class) = self.initializer(path) {
+                    return unsupported(format!("the initializer of {}, which the proof of the lemma about {}.{name} runs, {}, which a caller can change before it initializes the class, and a summary would state the method's result as one of its arguments only, whatever the final static fields that initializer writes then hold: it is not a method a summary can stand in for", class.replace('/', "."), owner.replace('/', "."), what()));
+                }
+            }
             let reader = if self.in_summary(path) { format!("{}.{name}", owner.replace('/', ".")) } else { format!("the lemma about {}.{name}, in its assumption or its assertion,", owner.replace('/', ".")) };
             return unsupported(format!("{reader} {}, which a caller can change before it calls, and a summary would state the method's result as one of its arguments only: it is not a method a summary can stand in for", what()));
         }

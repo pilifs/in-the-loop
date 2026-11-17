@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 138, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-17 14:44 UTC |
-| Prompts | 2,858 |
-| Model calls | 29,112 |
-| Tool calls | 30,110 (533 failed) |
-| Compactions | 424 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-17 15:18 UTC |
+| Prompts | 2,911 |
+| Model calls | 29,613 |
+| Tool calls | 30,608 (541 failed) |
+| Compactions | 433 |
 | Subagents | 21 |
-| Tokens written | 29,313,025 |
-| Tokens read | 4,845,779,210 (98.1% from cache) |
-| Commits with a trace | 900 |
-| Log snapshots | 1,177 (2605.7 MB gzipped, 1,162 uploaded) |
+| Tokens written | 29,675,917 |
+| Tokens read | 4,899,791,023 (98.1% from cache) |
+| Commits with a trace | 912 |
+| Log snapshots | 1,189 (2614.9 MB gzipped, 1,162 uploaded) |
 
 ## Sessions
 
@@ -163,9 +163,9 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 02:26 UTC | [6da9b537-ecce-46cf-99fa-7cae16e7ce99](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | ended | 6 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 40,446 | 2 |
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 12 | 21 | 17 | 2 | 2 | 56,861 | 1 |
 | 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | ended | 7 min | `claude-opus-5-5` | 2 | 5 | 4 | 0 | 0 | 56,756 | 1 |
-| 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | open | 13 min | `claude-opus-5-5` | 1 | 48 | 49 | 1 | 0 | 148,170 | 1 |
-| 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | open | 17 min | `claude-opus-5-5` | 1 | 47 | 48 | 1 | 0 | 128,411 | 1 |
-| 2026-11-17 12:56 UTC | [f28025bc-e46b-4a87-a943-bfb79dea5465](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | open | 1 h 47 min | `claude-opus-5-5` | 11 | 181 | 183 | 3 | 2 | 182,526 | 9 |
+| 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | open | 1 h 6 min | `claude-opus-5-5` | 25 | 242 | 238 | 4 | 4 | 157,884 | 7 |
+| 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | open | 1 h 19 min | `claude-opus-5-5` | 25 | 293 | 297 | 5 | 4 | 211,368 | 6 |
+| 2026-11-17 12:56 UTC | [f28025bc-e46b-4a87-a943-bfb79dea5465](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | open | 2 h 21 min | `claude-opus-5-5` | 16 | 242 | 243 | 4 | 3 | 182,526 | 21 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -310,20 +310,20 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`6da9b537`](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 1,385 | 12 | 28,987 | 187,799 | 86.6% | 157 |
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 8,137 | 42 | 87,022 | 814,514 | 90.3% | 111 |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 2,242 | 10 | 28,745 | 226,501 | 88.7% | 114 |
-| [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 38,033 | 96 | 136,827 | 4,652,464 | 97.1% | 126 |
-| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 34,460 | 94 | 115,098 | 4,026,126 | 97.2% | 120 |
-| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 144,866 | 362 | 466,582 | 20,759,212 | 97.8% | 147 |
+| [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 136,769 | 492 | 550,483 | 21,416,544 | 97.5% | 161 |
+| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 264,005 | 600 | 740,665 | 34,090,121 | 97.9% | 132 |
+| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 179,477 | 484 | 602,473 | 26,766,812 | 97.8% | 152 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 26,743 | 88.8% | 138 |
-| `Read` | 1,268 | 4.2% | 56 |
-| `Edit` | 952 | 3.2% | 55 |
-| `Write` | 644 | 2.1% | 55 |
-| `ToolSearch` | 163 | 0.5% | 41 |
-| `Monitor` | 119 | 0.4% | 48 |
+| `Bash` | 27,205 | 88.9% | 138 |
+| `Read` | 1,272 | 4.2% | 57 |
+| `Edit` | 969 | 3.2% | 56 |
+| `Write` | 652 | 2.1% | 55 |
+| `ToolSearch` | 167 | 0.5% | 43 |
+| `Monitor` | 122 | 0.4% | 50 |
 | `AskUserQuestion` | 63 | 0.2% | 16 |
 | `TaskStop` | 44 | 0.1% | 18 |
 | `WebFetch` | 29 | 0.1% | 9 |
@@ -1235,12 +1235,24 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 892 | change `pulrzyrl` | Record verification results for 1 job(s) | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/0e425745552df769700f93857d7f089ff2a6d615162d69299a5ce80454264afe.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/db8426e717da05b1e78c67f4e65b6179a6bf872f0b3f46ae84d4c14b708e5287.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de.jsonl.gz)) |
 | 893 | change `smxzwqlr` | The run-streams tests no longer inherit a real run's watcher, so run inside a stream they cannot ask it questions | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/368d1e6abb428e19e7fb0d8d879365bdd5c491e73b63e6dbf37cc77d656cbfb2.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de.jsonl.gz)) |
 | 894 | change `rkxyyqwn` | Every example's proof driver records identities, ends the run on a mutant that is not the replay's, and marks a trial | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) ([log](https://terminalvalue.net/raw-traces/7ece8184-b148-4351-92d8-d634606b823e/fadef0a55901ed98be485baeba4c8742903eb5ab48c947d75dc6027ef66d3a30.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de.jsonl.gz)) |
-| 895 | change `yypzyxmw` | Countermodels of the pair of versions: five false proofs of agreement, reproduced and handed to the preservation stream | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/595fb15ec3335a53e70af61949ac21367d41d014a4e527a122e12810b8f2d017.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de.jsonl.gz)) |
-| 896 | change `oqsnoyom` | Example 287's preservation reaches the checker and stops at java.util.logging's WARNING, not at bcrypt (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/0fa23e6204d9e809227a5e853e2acc187ba89e43f366708997258d2fcb3b2659.jsonl.gz)) |
-| 897 | change `trkpotro` | The examples' router carries example 287's two new notes | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/e41f2c4d702ac713bfe202b895a8b1166472b9b3ac35124558b19988e8a514ab.jsonl.gz)) |
-| 898 | change `kwyxmlns` | Merge the shared driver module, the pairing countermodels and the run-streams test fix into the preservation stream | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de.jsonl.gz)) |
-| 899 | change `zmvkptqz` | The pair of versions compares exceptions by class and starts each version as if it ran alone (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/b17c45752115266256b1c406ca0a71b7f65fbc6938ef86b2a85a06445afee80e.jsonl.gz)) |
-| 900 | change `unswkkxp` | The checker models a line logged at WARNING as spring-jcl logs it, so example 287's preservation reaches both sides' bcrypt | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/fda3769957a6e5d712f818f60dd7bc1e81d57b724b0cdd8b5e28f6cc89e81ea9.jsonl.gz)) |
+| 895 | change `zlxkxlst` | The evidence stream acknowledges inbox item I001 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) ([log](https://terminalvalue.net/raw-traces/7ece8184-b148-4351-92d8-d634606b823e/d5cd4bb1f46a722e14a6d5131d8d6bfe827722ab624a8a511873b254dbfe5c37.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/2eda7e05ab43a907937cdc85d0bd27864bfde026b2c0bcc1c205e8710dd1d3a4.jsonl.gz)) |
+| 896 | change `kynmlzxk` | Example 289's four answers beside the route are accepted from the job that recorded what it ran, with no limit | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) ([log](https://terminalvalue.net/raw-traces/7ece8184-b148-4351-92d8-d634606b823e/7bc6a2b7eb4d304bc6e83eb680cf8e6590b39879fed0aa01e0017219c6131027.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/2eda7e05ab43a907937cdc85d0bd27864bfde026b2c0bcc1c205e8710dd1d3a4.jsonl.gz)) |
+| 897 | change `vsttntoz` | Examples 286, 287, 288 and 290 are rerun at the frozen bound with drivers that record what they ran (verification pending) | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) ([log](https://terminalvalue.net/raw-traces/7ece8184-b148-4351-92d8-d634606b823e/7f5943191c9bef9e4c236655ec4798f06327300d784a2b2b90ec9aaefbd99b1c.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/2eda7e05ab43a907937cdc85d0bd27864bfde026b2c0bcc1c205e8710dd1d3a4.jsonl.gz)) |
+| 898 | change `mktymxvt` | The trace check makes a note, not an error, of a shared commit another stream's session stamped, while that stream's manifest lists the log | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) ([log](https://terminalvalue.net/raw-traces/7ece8184-b148-4351-92d8-d634606b823e/6ade1de90eb641f39165ac150e49b378705f7f66f0329f738bbe72d4c1422b17.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/2eda7e05ab43a907937cdc85d0bd27864bfde026b2c0bcc1c205e8710dd1d3a4.jsonl.gz)) |
+| 899 | change `suuomlux` | Step 1's lemma half is done and example 290's four answers are accepted from the rerun that recorded what it ran | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) ([log](https://terminalvalue.net/raw-traces/7ece8184-b148-4351-92d8-d634606b823e/3e094d753f1148b94c24cb84bb696b57b32dd898b37d93409c7354a7fc3bcdd7.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/2eda7e05ab43a907937cdc85d0bd27864bfde026b2c0bcc1c205e8710dd1d3a4.jsonl.gz)) |
+| 900 | change `ymzlyksq` | A preservation proof is non-vacuous only with a witness outside the allowed change, and accept.py asks the outcome to say so | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) ([log](https://terminalvalue.net/raw-traces/7ece8184-b148-4351-92d8-d634606b823e/170f4ee1b342f5af2dc37922ebbfa2bb9b08ae2d5b12009a3ee882d23afb6c94.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/2eda7e05ab43a907937cdc85d0bd27864bfde026b2c0bcc1c205e8710dd1d3a4.jsonl.gz)) |
+| 901 | change `yypzyxmw` | Countermodels of the pair of versions: five false proofs of agreement, reproduced and handed to the preservation stream | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/595fb15ec3335a53e70af61949ac21367d41d014a4e527a122e12810b8f2d017.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de.jsonl.gz)) |
+| 902 | change `mqkqvvmw` | Countermodels of observed class initializers and of class files the tool read where a JVM reads another: three handed to the evidence stream, two refused | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/0ea0585d20f71c88d526a8d8ee6f820432556208e9f382ff2801538857c8ceb3.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/2eda7e05ab43a907937cdc85d0bd27864bfde026b2c0bcc1c205e8710dd1d3a4.jsonl.gz)) |
+| 903 | change `llwznzwm` | The challenge stream records its evidence inbox item and a trace error the preservation stream's sync.py put on its line | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/63f4bf770be577c9d2ea368fdf96c8282500e4f31323341f3081b972cb0fe6f4.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/2eda7e05ab43a907937cdc85d0bd27864bfde026b2c0bcc1c205e8710dd1d3a4.jsonl.gz)) |
+| 904 | change `uktunxxo` | Countermodels of a checked summary: seven false proofs past the foundation's refusals, refused | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/01f876f4ef950e60e0de2e9fa1ff3e0f41848acf54eb757fd6df84075e368026.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/2eda7e05ab43a907937cdc85d0bd27864bfde026b2c0bcc1c205e8710dd1d3a4.jsonl.gz)) |
+| 905 | change `smnuqrou` | Countermodels of a loop invariant, found guarded; three modelled reads of an array a lemma made no refusal of, refused | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/2cc8a3aadc9fc9c09477b836bf3380650f0310689d66545278b8c4aa98e6bffc.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/2eda7e05ab43a907937cdc85d0bd27864bfde026b2c0bcc1c205e8710dd1d3a4.jsonl.gz)) |
+| 906 | change `roqtqlpm` | Countermodels of the fresh pair of versions: a scope that writes the caller's array, and two exception classes of one name, each proved to agree | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/89db138451df0afb7490d3b366f4306419fb185402ebbbc17776772478383042.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/2eda7e05ab43a907937cdc85d0bd27864bfde026b2c0bcc1c205e8710dd1d3a4.jsonl.gz)) |
+| 907 | change `oqsnoyom` | Example 287's preservation reaches the checker and stops at java.util.logging's WARNING, not at bcrypt (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/0fa23e6204d9e809227a5e853e2acc187ba89e43f366708997258d2fcb3b2659.jsonl.gz)) |
+| 908 | change `trkpotro` | The examples' router carries example 287's two new notes | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/e41f2c4d702ac713bfe202b895a8b1166472b9b3ac35124558b19988e8a514ab.jsonl.gz)) |
+| 909 | change `kwyxmlns` | Merge the shared driver module, the pairing countermodels and the run-streams test fix into the preservation stream | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de.jsonl.gz)) |
+| 910 | change `zmvkptqz` | The pair of versions compares exceptions by class and starts each version as if it ran alone (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/b17c45752115266256b1c406ca0a71b7f65fbc6938ef86b2a85a06445afee80e.jsonl.gz)) |
+| 911 | change `unswkkxp` | The checker models a line logged at WARNING as spring-jcl logs it, so example 287's preservation reaches both sides' bcrypt | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/fda3769957a6e5d712f818f60dd7bc1e81d57b724b0cdd8b5e28f6cc89e81ea9.jsonl.gz)) |
+| 912 | change `wokytpkz` | The pair of versions reads its scope on copies of its own and compares an exception by its class and the classes above it; 289 and 290 rerun (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/2eda7e05ab43a907937cdc85d0bd27864bfde026b2c0bcc1c205e8710dd1d3a4.jsonl.gz)) |
 
 ## Logs
 
@@ -1383,9 +1395,9 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`6da9b537`](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 2 | 2 | 0.2 MB | [`d5b3ff93d2f4`](https://terminalvalue.net/raw-traces/6da9b537-ecce-46cf-99fa-7cae16e7ce99/d5b3ff93d2f464f79d4c2c3b63c435663917ad81d37a274a6519c9da315b7f3d.jsonl.gz) |
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 1 | 1 | 0.3 MB | [`965570933c02`](https://terminalvalue.net/raw-traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/965570933c0206c64a18c5652f4f74be1de3807449c6f9f9a26e20a3211055fc.jsonl.gz) |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 1 | 0 | 0.1 MB | `887466d85ae2`, not uploaded |
-| [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 1 | 0 | 0.2 MB | `fadef0a55901`, not uploaded |
-| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 1 | 0 | 0.2 MB | `595fb15ec333`, not uploaded |
-| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 5 | 0 | 2.3 MB | `fda3769957a6`, not uploaded |
+| [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 7 | 0 | 4.2 MB | `170f4ee1b342`, not uploaded |
+| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 6 | 0 | 4.3 MB | `89db138451df`, not uploaded |
+| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 6 | 0 | 3.5 MB | `2eda7e05ab43`, not uploaded |
 
 ## Session notes
 

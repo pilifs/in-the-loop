@@ -604,6 +604,11 @@ impl Engine<'_> {
                     return None;
                 }
                 let between = self.regex_source(path, delimiter)?;
+                if path.objects[elements].given {
+                    if let Err(stop) = self.reads(path, || "reads an array that was there before the call (join)".into()) {
+                        return Some(Err(stop));
+                    }
+                }
                 let array = path.objects[elements].as_array()?.clone();
                 // A join with no quoted element is text, which this is no model of.
                 let quoted = |r: &Val| r.options().is_some_and(|options| options.iter().any(|(_, e)| e.is_some_and(|e| matches!(path.objects[e].regex.as_deref(), Some(Regex::Source(_))))));

@@ -12,52 +12,113 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:50.868Z",
-  "ended": "2026-11-17T13:10:41.772Z",
-  "duration_seconds": 831,
+  "ended": "2026-11-17T14:03:30.248Z",
+  "duration_seconds": 3999,
   "stats": {
-    "turns": 1,
-    "api_calls": 48,
-    "tool_calls": 49,
-    "tool_errors": 1,
-    "compactions": 0,
-    "peak_context_tokens": 148170,
+    "turns": 25,
+    "api_calls": 242,
+    "tool_calls": 238,
+    "tool_errors": 4,
+    "compactions": 4,
+    "peak_context_tokens": 157884,
     "usage": {
-      "input_tokens": 96,
-      "output_tokens": 38033,
-      "cache_read_input_tokens": 4652464,
-      "cache_creation_input_tokens": 136827
+      "input_tokens": 492,
+      "output_tokens": 136769,
+      "cache_read_input_tokens": 21416544,
+      "cache_creation_input_tokens": 550483
     }
   },
   "tools": {
-    "Bash": 47,
-    "Write": 2
+    "Bash": 230,
+    "Edit": 3,
+    "Write": 2,
+    "Monitor": 1,
+    "Read": 1,
+    "ToolSearch": 1
   },
   "files_touched": [
     "examples/tools/beside_route.py",
-    "examples/tools/test_beside_route.py"
+    "examples/tools/test_beside_route.py",
+    "llm-dlc/loops/domain-advances-evidence.md"
   ],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-17T12:56:50.868Z",
-      "ended": "2026-11-17T13:10:41.772Z",
-      "turns": 1,
-      "api_calls": 48,
+      "ended": "2026-11-17T13:11:39.023Z",
+      "turns": 2,
+      "api_calls": 54,
       "usage": {
-        "input_tokens": 96,
-        "output_tokens": 38033,
-        "cache_read_input_tokens": 4652464,
-        "cache_creation_input_tokens": 136827
+        "input_tokens": 108,
+        "output_tokens": 40692,
+        "cache_read_input_tokens": 5554024,
+        "cache_creation_input_tokens": 142423
       },
-      "peak_context_tokens": 148170
+      "peak_context_tokens": 153766
+    },
+    {
+      "index": 1,
+      "started": "2026-11-17T13:12:35.507Z",
+      "ended": "2026-11-17T13:28:40.442Z",
+      "turns": 9,
+      "api_calls": 52,
+      "usage": {
+        "input_tokens": 110,
+        "output_tokens": 19680,
+        "cache_read_input_tokens": 4228702,
+        "cache_creation_input_tokens": 99397
+      },
+      "peak_context_tokens": 110740
+    },
+    {
+      "index": 2,
+      "started": "2026-11-17T13:29:35.177Z",
+      "ended": "2026-11-17T13:38:52.860Z",
+      "turns": 5,
+      "api_calls": 42,
+      "usage": {
+        "input_tokens": 86,
+        "output_tokens": 27634,
+        "cache_read_input_tokens": 2879152,
+        "cache_creation_input_tokens": 87020
+      },
+      "peak_context_tokens": 100295
+    },
+    {
+      "index": 3,
+      "started": "2026-11-17T13:39:45.106Z",
+      "ended": "2026-11-17T13:47:15.783Z",
+      "turns": 5,
+      "api_calls": 22,
+      "usage": {
+        "input_tokens": 44,
+        "output_tokens": 9242,
+        "cache_read_input_tokens": 1492442,
+        "cache_creation_input_tokens": 77032
+      },
+      "peak_context_tokens": 90305
+    },
+    {
+      "index": 4,
+      "started": "2026-11-17T13:47:59.022Z",
+      "ended": "2026-11-17T14:03:30.248Z",
+      "turns": 4,
+      "api_calls": 72,
+      "usage": {
+        "input_tokens": 144,
+        "output_tokens": 39521,
+        "cache_read_input_tokens": 7262224,
+        "cache_creation_input_tokens": 144611
+      },
+      "peak_context_tokens": 157884
     }
   ],
   "log": {
-    "sha256": "fadef0a55901ed98be485baeba4c8742903eb5ab48c947d75dc6027ef66d3a30",
-    "bytes": 1376070,
-    "lines": 410,
-    "gzip_bytes": 221814,
-    "path": "llm-dlc/traces/7ece8184-b148-4351-92d8-d634606b823e/logs/fadef0a55901ed98be485baeba4c8742903eb5ab48c947d75dc6027ef66d3a30.jsonl.gz"
+    "sha256": "170f4ee1b342f5af2dc37922ebbfa2bb9b08ae2d5b12009a3ee882d23afb6c94",
+    "bytes": 6507488,
+    "lines": 2198,
+    "gzip_bytes": 1125013,
+    "path": "llm-dlc/traces/7ece8184-b148-4351-92d8-d634606b823e/logs/170f4ee1b342f5af2dc37922ebbfa2bb9b08ae2d5b12009a3ee882d23afb6c94.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -68,9 +129,93 @@
       "summary": "Every example's proof driver records identities, ends the run on a mutant that is not the replay's, and marks a trial",
       "body": "The evidence stream's step 2. examples/tools/beside_route.py holds what the five drivers (examples 286 to 290) did each in their own copy: the pinned JARs, the constructed mutant, the record (accept.record's evidence.json) and the verdict. Each driver keeps its own entry, lemmas, models, observed initializers and verifier arguments. What 289's driver alone did, all five now do: the record of the claim, the bound, each JAR, the adapter, the verifier's binary and the driver; a mutant whose JAR is not the one the newest mutant replay's receipt records ends the run; --max-array-length or --unwind (now on every driver) marks the run a trial.\n\nFinding: 286's, 287's and 288's drivers built their mutant by another recipe than the route's (a fixed --release, no -g or -parameters, every entry recompressed), so their JAR was not the bytes the mutant replay ran, which is why acceptance could not tie their mutant-security answers to the replay. The shared module uses the route's published-mutant recipe; run offline on the pinned JARs it gives each of the five examples exactly the JAR its replay ran (286 48323d21, 287 1d099295, 288 5c72df16, 289 a3a3dbff, 290 4ee35d0b).",
       "log_sha256": "fadef0a55901ed98be485baeba4c8742903eb5ab48c947d75dc6027ef66d3a30"
+    },
+    {
+      "change_id": "zlxkxlstvktrsztnrmynsyukqwrokplu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The evidence stream acknowledges inbox item I001",
+      "body": "Progress records domain-advances-evidence-I001 (a test of the brief runner that can hang inside a stream until the watcher's fixture fix is merged): noted, not changed and not blocked on. Nothing else changed.",
+      "log_sha256": "d5cd4bb1f46a722e14a6d5131d8d6bfe827722ab624a8a511873b254dbfe5c37"
+    },
+    {
+      "change_id": "kynmlzxkpzpmpxtpywkkumrpxymwswps",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 289's four answers beside the route are accepted from the job that recorded what it ran, with no limit",
+      "body": "The evidence stream's step 1, 289's half. Job 20261117-122454-example-289-the-four-proof-tasks-again-w passed (the four tasks at the frozen bound 8, the same verdicts, with the driver's evidence.json beside each outcome). The watcher collected it on the default line; this workspace took its result folder and verification/.work-289/recorded from there unchanged (jj restore from pulrzyrl, no merge). Each 289 task's besideRoute now names that job. python3 examples/tools/accept.py 289 says:\n✓ 289 vulnerable-security: refuted, accepted (job 20261117-122454-example-289-the-four-proof-tasks-again-w; 12 checks)\n✓ 289 fixed-security: established, accepted (job 20261117-122454-example-289-the-four-proof-tasks-again-w; 13 checks)\n✓ 289 preservation: established, accepted (job 20261117-122454-example-289-the-four-proof-tasks-again-w; 13 checks)\n✓ 289 mutant-security: refuted, accepted (job 20261117-122454-example-289-the-four-proof-tasks-again-w; 13 checks)\nand --json shows an empty limits list and the artifacts check ok on each: no limit about unrecorded artifacts is left.\n\nFinding, the check's (fixed here): its first run refused mutant-security, 'spring-web-5.3.20.jar of mutant is not the JAR target.json pins' and the same for three more. The driver records the mutant's class path under the revision mutant, which is the class path it ran; target.json pins those JARs under the mutant's base (fixed-release). The artifacts check now looks a constructed mutant's JARs up under its base; the mutant's own JAR stays the mutant check's. test_accept.py has a control for it (fails without the fix) and its checkout test now holds 289 to the new job, its source commit and lib tree, with no limit.",
+      "log_sha256": "7bc6a2b7eb4d304bc6e83eb680cf8e6590b39879fed0aa01e0017219c6131027"
+    },
+    {
+      "change_id": "vsttntoznvymvlwkrpnxpyvuulmnozqu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Examples 286, 287, 288 and 290 are rerun at the frozen bound with drivers that record what they ran (verification pending)",
+      "body": "Step 3 of the evidence stream's brief. Example 286's and 287's mutant-security answers are refused by examples/tools/accept.py, because their old drivers built the mutant with another recipe and its JAR's hash is in no record; every other accepted answer of 286, 287 and 290 carries the limit that the JARs, the compiled adapter and the verifier's binary were not recorded; 288's one verified task (fixed-security) was never recorded at all. Every driver now goes through examples/tools/beside_route.py, which writes evidence.json and ends the run on a mutant that is not the replay's. Four jobs rerun those tasks unchanged at the frozen bound into verification/.work-NNN/recorded, one job per example, every step run whatever the one before gave; estimates come from the earlier jobs' measured steps. When they are back, each task's besideRoute.job is switched to its job and accept.py must accept with no limit; 288's answer is recorded only if accept.py accepts it.\n\nJobs: 20261117-133148-example-286-the-three-answers-beside-the, 20261117-133148-example-287-the-three-answers-beside-the, 20261117-133148-example-288-fixed-security-again-with-th, 20261117-133148-example-290-the-four-answers-beside-the.\n\nInbox items domain-advances-evidence-I002 and I003 (286's and 287's drivers already have the three properties in the state and preservation streams) are acknowledged in Progress: both drivers are built on this stream's shared module, and their security tasks run the same code as this line's. The brief's 'Where it stands' paragraph is out of date since step 2: every driver, not only 289's, now records evidence.json.",
+      "log_sha256": "7f5943191c9bef9e4c236655ec4798f06327300d784a2b2b90ec9aaefbd99b1c"
+    },
+    {
+      "change_id": "mktymxvtmlttkuyrqpsryzsulktxpnvr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The trace check makes a note, not an error, of a shared commit another stream's session stamped, while that stream's manifest lists the log",
+      "body": "The preservation stream's session merged the evidence stream's step 2 commit (rkxyyqwn) into its own line and, by sync.py's stamping of the changes made while a session runs, rewrote that commit's description with its own LLM-Trace line. The session's manifest is only on the preservation line, so sync.py check on the evidence line failed every commit with 'session f28025bc... has no manifest'. check_trailers already treated a shared commit restamped in another workspace as a note when that workspace's working copy holds a manifest listing the log, but only for a session this tree had a manifest of. It now does the same for a session this tree has no manifest of, unless the traced commit's own tree holds that session's manifest, in which case a merge lost it and it stays an error (the existing control for that still passes).",
+      "log_sha256": "6ade1de90eb641f39165ac150e49b378705f7f66f0329f738bbe72d4c1422b17"
+    },
+    {
+      "change_id": "suuomluxkmpxxsnzymutrnkwyyllqoqq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Step 1's lemma half is done and example 290's four answers are accepted from the rerun that recorded what it ran",
+      "body": "The evidence stream's step 1 and part of step 3. Job 20261117-122546-examples-286-and-288-the-simplematch-lem passed: under the checker's tightened lemma checks the simpleMatch lemma is still proved by induction on pattern.length() (286 in 74.2 s, 288 in 108.5 s), and each example's fixed-security is verified with it at the frozen bound (918.0 s and 1037.5 s, 4676 and 4678 paths). Nothing was refused, so the earlier results did not rest on the hole and nothing goes to the challenge stream; 286's and 288's notes say so.\n\nJob 20261117-133148-example-290-the-four-answers-beside-the passed in 45.9 s with the same four verdicts and path counts as 20261117-002240 (preservation 573, vulnerable-security 4, fixed-security 659, mutant-security 708), each with the driver's evidence.json. Each 290 task's besideRoute now names it, and python3 examples/tools/accept.py 290 says:\n✓ 290 vulnerable-security: refuted, accepted (job 20261117-133148-example-290-the-four-answers-beside-the; 12 checks)\n✓ 290 fixed-security: established, accepted (job 20261117-133148-example-290-the-four-answers-beside-the; 13 checks)\n✓ 290 preservation: established, accepted (job 20261117-133148-example-290-the-four-answers-beside-the; 13 checks)\n✓ 290 mutant-security: refuted, accepted (job 20261117-133148-example-290-the-four-answers-beside-the; 13 checks)\nwith an empty limits list and the artifacts check ok on each. The result folders and work folders were taken from the default line as the watcher collected them (jj restore from wwqnnzwp and swltxzml, no merge). The observed initializers' audit (VF-033) is step 5; inbox item I004, which asks for it, is acknowledged in Progress.",
+      "log_sha256": "3e094d753f1148b94c24cb84bb696b57b32dd898b37d93409c7354a7fc3bcdd7"
+    },
+    {
+      "change_id": "ymzlyksqouqqwyoluoqxrvnzonklprtl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A preservation proof is non-vacuous only with a witness outside the allowed change, and accept.py asks the outcome to say so",
+      "body": "Step 4 of the evidence stream's brief. A regression check made as a property of the pair of versions (lib/src/pairing.rs, the route of examples 289's and 290's preservation) proves RegressionPair.agree, which returns true on an input inside the allowed change without calling either version. The property check's vacuity probe asked only for an input of the assumption, so it called a proof non-vacuous even when every assumed input lay inside the change. The control: example 289's preservation through its own driver, with only --unchanged-unless replaced by true, was verified and non-vacuous (a capped 5 s probe). 290's recorded witness, servlets=[], lies inside its own allowed change.\n\nThe fix: a verified pair with an allowed change is checked once more, meantToChange against result over the same assumption, domain and class path. A proof makes the statement vacuous; a witness, replayed as any is, becomes the statement's, with the new stated.vacuity.outside naming the change. The regression harness's own probe sets outside too, since that harness returns before the probe on an input in the scope. Now the true control is vacuous, 289 with its own change is non-vacuous at servletPath=\"\" (0.3 s more) and 290 at servlets=[0] (capped probes, recorded in both examples' notes). accept.py refuses an establishment of a task with an allowed change whose outcome does not say its witness lies outside that change (unbound) or names another (fail). So 289's and 290's accepted preservation answers are refused until a rerun on a checker with this fix; the other six stay accepted.\n\nVerified: lib/tests/pairing.rs a_pairs_proof_is_vacuous_when_the_allowed_change_covers_every_assumed_input (tool tier, fails without the fix with NonVacuous), three new cases in examples/tools/test_accept.py, the 289 checkout test now expecting preservation refused for this reason; test_costs.py run --changed 8 of 8, estimate, tag and lint clean; validate_example.py 289 and 290 pass. lib/README.md describes the check.\n\nThe brief's 'Where it stands' paragraph is out of date: 289's and 290's preservation are refused now, and every accepted answer of 289 and 290 carries no limit about unrecorded artifacts.",
+      "log_sha256": "170f4ee1b342f5af2dc37922ebbfa2bb9b08ae2d5b12009a3ee882d23afb6c94"
     }
   ],
   "logs": {
+    "170f4ee1b342f5af2dc37922ebbfa2bb9b08ae2d5b12009a3ee882d23afb6c94": {
+      "bytes": 6507488,
+      "lines": 2198,
+      "gzip_bytes": 1125013,
+      "url": null
+    },
+    "3e094d753f1148b94c24cb84bb696b57b32dd898b37d93409c7354a7fc3bcdd7": {
+      "bytes": 4836668,
+      "lines": 1541,
+      "gzip_bytes": 860374,
+      "url": null
+    },
+    "6ade1de90eb641f39165ac150e49b378705f7f66f0329f738bbe72d4c1422b17": {
+      "bytes": 3877679,
+      "lines": 1287,
+      "gzip_bytes": 668031,
+      "url": null
+    },
+    "7bc6a2b7eb4d304bc6e83eb680cf8e6590b39879fed0aa01e0017219c6131027": {
+      "bytes": 2678948,
+      "lines": 869,
+      "gzip_bytes": 457107,
+      "url": null
+    },
+    "7f5943191c9bef9e4c236655ec4798f06327300d784a2b2b90ec9aaefbd99b1c": {
+      "bytes": 3510273,
+      "lines": 1148,
+      "gzip_bytes": 618406,
+      "url": null
+    },
+    "d5cd4bb1f46a722e14a6d5131d8d6bfe827722ab624a8a511873b254dbfe5c37": {
+      "bytes": 1484019,
+      "lines": 439,
+      "gzip_bytes": 238631,
+      "url": null
+    },
     "fadef0a55901ed98be485baeba4c8742903eb5ab48c947d75dc6027ef66d3a30": {
       "bytes": 1376070,
       "lines": 410,

@@ -10,17 +10,18 @@
 //! public final class RegressionPair {
 //!     static boolean meantToChange(P...) { try { return SCOPE; } catch (Throwable t) { return false; } }
 //!     static void fresh() { ... }
-//!     static String thrown(Throwable t, boolean previous) { ... t.getClass().getName(), `before.` taken off ... }
+//!     static String named(Class<?> c, boolean previous) { ... c.getName(), `before.` taken off for the previous ... }
+//!     static boolean same(Class<?> a, Class<?> b) { ... one name, and same(a.getSuperclass(), b.getSuperclass()) ... }
 //!     public static boolean agree(P...) {
 //!         fresh();
-//!         if (meantToChange(p...)) { return true; }
+//!         if (meantToChange(COPIES)) { return true; }
 //!         fresh();
-//!         R a = ZERO; String ea = null;
-//!         try { a = before.pkg.Target.method(COPIES); } catch (Throwable t) { ea = thrown(t, true); }
+//!         R a = ZERO; Class<?> ea = null;
+//!         try { a = before.pkg.Target.method(COPIES); } catch (Throwable t) { ea = t.getClass(); }
 //!         fresh();
-//!         R b = ZERO; String eb = null;
-//!         try { b = pkg.Target.method(COPIES); } catch (Throwable t) { eb = thrown(t, false); }
-//!         return ea == null ? eb == null && EQUAL : ea.equals(eb);
+//!         R b = ZERO; Class<?> eb = null;
+//!         try { b = pkg.Target.method(COPIES); } catch (Throwable t) { eb = t.getClass(); }
+//!         return ea == null ? eb == null && EQUAL : eb != null && same(ea, eb);
 //!     }
 //! }
 //! ```
@@ -31,15 +32,23 @@
 //! with everything it has: the tool's own checker, its String and array inputs, lemmas, and a witness run on a
 //! JVM. It is the statement the harness's Java rendering makes (`EquivalenceHarness.java`), with these readings:
 //!
-//! - **the scope** (`--unchanged-unless`) is read on the new version's classes, and an input on which it throws
-//!   is not among those the change is meant for, so the versions are compared on it;
+//! - **the scope** (`--unchanged-unless`) is read on the new version's classes, on copies of its own of the array
+//!   arguments, and an input on which it throws is not among those the change is meant for, so the versions are
+//!   compared on it. A scope that writes a cell of what it is given writes its own copy: until 2026-11-17 it was
+//!   given the caller's arrays, and the versions' copies were taken after it, so a scope that zeroed a cell decided
+//!   what both versions saw (`tests/fixtures/fresh-pair-countermodels`, `first`);
 //! - **an array argument** is each version's own copy (`clone()`), so that neither sees what the other wrote;
 //!   a String is immutable and is passed as it is;
-//! - **an exception** is its class, by name, a copy of the previous version's class (`before.x.E`) being that class
-//!   (`x.E`): the versions agree when they return equal results or throw exceptions of one class. Two subclasses of
-//!   `RuntimeException`, or `IllegalArgumentException` and a subclass of it, are two answers (the countermodels of
+//! - **an exception** is its class and each class above it up to `Object`, by name, a copy of the previous
+//!   version's class (`before.x.E`) being that class (`x.E`): the versions agree when they return equal results or
+//!   throw exceptions whose classes have one name and extend classes of one name, so that every `catch` and every
+//!   `instanceof` of a class takes both or neither. Two subclasses of `RuntimeException`, or
+//!   `IllegalArgumentException` and a subclass of it, are two answers (the countermodels of
 //!   `tests/fixtures/pairing-countermodels`, 2026-11-17, which a comparison by the categories of
-//!   [`crate::harness::EXCEPTIONS`] proved to agree). A method that declares checked exceptions is refused, not yet taken;
+//!   [`crate::harness::EXCEPTIONS`] proved to agree), and so are two classes of one name of which one extends
+//!   `IllegalArgumentException` and the other `IllegalStateException` (`tests/fixtures/fresh-pair-countermodels`,
+//!   `failing`, which a comparison by the class's name alone proved to agree). The interfaces a class implements are
+//!   not compared: an `instanceof` of an interface may tell two such answers apart. A method that declares checked exceptions is refused, not yet taken;
 //! - **the result** is compared by `==` for a primitive and by content for a String, two nulls agreeing;
 //! - **each version starts as if it ran alone** ([`FRESH`]): the scope, the previous version and the new one each
 //!   begin where the checker has given the path a fresh state, the static fields and the classes' initialization
@@ -126,7 +135,6 @@ const RELOCATED: &str = "before.";
 /// The pair's class as Java: see the module's notes.
 pub fn source(class: &str, method: &str, names: &[String], params: &[Type], ret: &Type, scope: Option<&str>) -> String {
     let declared = names.iter().zip(params).map(|(n, t)| format!("{} {n}", t.java_name())).collect::<Vec<_>>().join(", ");
-    let passed = names.join(", ");
     // Each version writes into its own copy of an array.
     let copies = names.iter().zip(params).map(|(n, t)| if matches!(t, Type::Array(_)) { format!("{n} == null ? null : {n}.clone()") } else { n.clone() }).collect::<Vec<_>>().join(", ");
     let (zero, equal) = match ret {
@@ -141,29 +149,31 @@ pub fn source(class: &str, method: &str, names: &[String], params: &[Type], ret:
     let _ = writeln!(s, "    private {CLASS}() {{}}\n");
     if let Some(scope) = scope {
         s.push_str("    /** The inputs the change is meant to affect, read on the new version; an input on which the expression throws is not among them. */\n");
-        let _ = writeln!(s, "    static boolean meantToChange({declared}) {{\n        try {{\n            return {scope};\n        }} catch (Throwable t) {{\n            return false;\n        }}\n    }}\n");
+        let _ = writeln!(s, "    static boolean {SCOPE_METHOD}({declared}) {{\n        try {{\n            return {scope};\n        }} catch (Throwable t) {{\n            return false;\n        }}\n    }}\n");
     }
     s.push_str("    /** The default locale the first version started under. */\n    private static java.util.Locale start;\n\n");
     s.push_str("    /** Where each version starts: the checker and the interpreter give it a fresh state here, as if it ran alone; on a JVM the default locale is set back to the one the first started under. */\n");
     let _ = writeln!(s, "    static void {FRESH}() {{\n        if (start == null) {{\n            start = java.util.Locale.getDefault();\n        }} else {{\n            java.util.Locale.setDefault(start);\n        }}\n    }}\n");
-    s.push_str("    /** The class of what a version threw, by its own name: a copy of the previous version's class is that class. */\n");
-    let _ = writeln!(s, "    static String thrown(Throwable t, boolean previous) {{\n        String name = t.getClass().getName();\n        return previous && name.indexOf(\"{RELOCATED}\") == 0 ? name.substring({}) : name;\n    }}\n", RELOCATED.len());
+    s.push_str("    /** A class's own name: a copy of the previous version's class is that class. */\n");
+    let _ = writeln!(s, "    static String named(Class<?> c, boolean previous) {{\n        String name = c.getName();\n        return previous && name.indexOf(\"{RELOCATED}\") == 0 ? name.substring({}) : name;\n    }}\n", RELOCATED.len());
+    s.push_str("    /** Whether the previous version's class and the new one's have one name, and so do the classes above them, up to Object. */\n");
+    s.push_str("    static boolean same(Class<?> a, Class<?> b) {\n        if (a == null || b == null) {\n            return a == b;\n        }\n        return named(a, true).equals(named(b, false)) && same(a.getSuperclass(), b.getSuperclass());\n    }\n\n");
     let _ = writeln!(s, "    public static boolean {METHOD}({declared}) {{");
     // The first call keeps the state every version is to start in, before the scope can change it.
     let _ = writeln!(s, "        {FRESH}();");
     if scope.is_some() {
-        let _ = writeln!(s, "        if (meantToChange({passed})) {{ return true; }}");
+        let _ = writeln!(s, "        if ({SCOPE_METHOD}({copies})) {{ return true; }}");
     }
-    for (var, owner, previous) in [("a", format!("before.{class}"), true), ("b", class.to_string(), false)] {
+    for (var, owner) in [("a", format!("before.{class}")), ("b", class.to_string())] {
         let call = format!("{owner}.{method}({copies});");
         let _ = writeln!(s, "        {FRESH}();");
         if *ret == Type::Void {
-            let _ = writeln!(s, "        String e{var} = null;\n        try {{ {call} }} catch (Throwable t) {{ e{var} = thrown(t, {previous}); }}");
+            let _ = writeln!(s, "        Class<?> e{var} = null;\n        try {{ {call} }} catch (Throwable t) {{ e{var} = t.getClass(); }}");
         } else {
-            let _ = writeln!(s, "        {} {var} = {zero}; String e{var} = null;\n        try {{ {var} = {call} }} catch (Throwable t) {{ e{var} = thrown(t, {previous}); }}", ret.java_name());
+            let _ = writeln!(s, "        {} {var} = {zero}; Class<?> e{var} = null;\n        try {{ {var} = {call} }} catch (Throwable t) {{ e{var} = t.getClass(); }}", ret.java_name());
         }
     }
-    let _ = writeln!(s, "        return ea == null ? eb == null && {equal} : ea.equals(eb);\n    }}\n}}");
+    let _ = writeln!(s, "        return ea == null ? eb == null && {equal} : eb != null && same(ea, eb);\n    }}\n}}");
     s
 }
 
@@ -227,27 +237,80 @@ pub fn run(options: &Options, work: &Path, relocated_dir: &Path, class: &ClassFi
     property.requested_models = options.requested_models.clone();
     property.observed_initializers = observed.0;
     property.previous = Some((previous, observed.1));
-    let outcome = crate::property::run(&property)?;
+    let mut outcome = crate::property::run(&property)?;
+    if let (crate::Verdict::Verified, Some(change)) = (outcome.verdict, options.unchanged_unless.as_deref()) {
+        compared(&mut outcome, &property, change, work)?;
+    }
     let own = if options.before_classpath.is_some() { ", each on its own dependency closure" } else { "" };
     let scope = match &options.unchanged_unless {
         Some(s) => format!(", outside the inputs the change is meant to affect (`{s}`, read on the new version)"),
         None => String::new(),
     };
     let note = format!(
-        "note: checked as a property of the pair of versions: {CLASS}.{METHOD} ({}) calls the previous version's {target}, relocated under `before`, and then the new one's on the same inputs{own}{scope}, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of one class (a copy's class being its own). Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale",
+        "note: checked as a property of the pair of versions: {CLASS}.{METHOD} ({}) calls the previous version's {target}, relocated under `before`, and then the new one's on the same inputs{own}{scope}, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name that extend classes of one name up to Object (a copy's class being its own; the interfaces are not compared). Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale",
         statement.display(),
         target = options.target,
     );
     Ok(Ok(Paired { outcome, statement, note }))
 }
 
+/// The name of the generated method that says whether an input is inside the allowed change.
+pub const SCOPE_METHOD: &str = "meantToChange";
+
+/// Whether a proof of the pair compares the versions on any input. `agree` returns true on an input inside the
+/// allowed change without calling either version, and the property check's own probe asks only for an input of the
+/// assumption: alone it would call a proof non-vacuous whose every assumed input lies inside the change (with
+/// `--unchanged-unless true`, every proof). So `meantToChange` is checked against `result` over the same assumption,
+/// domain and class path. A proof says every assumed input is inside the change, and the pair's proof is vacuous; a
+/// witness, which the property check replays as it replays any, is an assumed input outside the change, on which
+/// both versions are called, and becomes the statement's witness, said to lie outside the change; no verdict
+/// leaves it unknown. The pair's statement and output say which.
+fn compared(outcome: &mut crate::property::Outcome, property: &crate::property::Options, change: &str, work: &Path) -> Result<(), crate::Error> {
+    use crate::statement::Vacuity;
+    let mut inside = property.clone();
+    inside.target = format!("{CLASS}#{SCOPE_METHOD}");
+    inside.assert = Some("result".into());
+    inside.throws = Vec::new();
+    inside.lemmas = None;
+    inside.work = Some(work.join("pair-outside"));
+    let checked = crate::property::run(&inside)?;
+    let (vacuity, line) = match checked.verdict {
+        crate::Verdict::Violation => {
+            let witness = checked.counterexample.as_ref().map(|c| c.input.replacen(SCOPE_METHOD, METHOD, 1));
+            let line = format!("  outside the allowed change: {} lies outside `{change}`, so both versions are called on it", witness.as_deref().unwrap_or("an input"));
+            (Vacuity::reached(witness).outside_of(change), line)
+        }
+        crate::Verdict::Verified => {
+            let reason = format!("every input in the domain where the assumption holds lies inside the allowed change `{change}`, on which {METHOD} returns true without calling either version; the proof compares the versions on none and says nothing");
+            outcome.vacuous = Some(reason.clone());
+            (Vacuity::vacuous(&reason), format!("  vacuously: {reason}"))
+        }
+        crate::Verdict::Unverifiable => {
+            let problem = checked.problem.clone().unwrap_or_else(|| "no reason".into());
+            let line = format!("  vacuity unknown: whether any input where the assumption holds lies outside the allowed change `{change}` is not known: the check of {SCOPE_METHOD} gave no verdict ({problem})");
+            (Vacuity::unknown(&problem), line)
+        }
+    };
+    let _ = writeln!(outcome.output, "{line}");
+    if let Some(stated) = outcome.stated.as_mut() {
+        stated.vacuity = Some(vacuity);
+    }
+    if let (Some(search), Some(other)) = (outcome.search.as_mut(), checked.search) {
+        search.runs.extend(other.runs.into_iter().map(|mut r| {
+            r.purpose = format!("outside-change {}", r.purpose);
+            r
+        }));
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    /// The statement as Java: a fresh state first, the scope read and a throw in it compared, each version from a
-    /// fresh state on its own copy of an array, an exception by its class with the previous version's copy taken for
-    /// its own class, a String result compared by content.
+    /// The statement as Java: a fresh state first, the scope read on copies of its own and a throw in it compared, each version from a
+    /// fresh state on its own copy of an array, an exception by its class and those above it, the previous version's
+    /// copy taken for its own class, a String result compared by content.
     #[test]
     fn the_pairs_class_calls_both_versions_on_copies_from_fresh_states_and_compares_results_and_classes() {
         let names: Vec<String> = ["k", "patterns", "field"].iter().map(|s| s.to_string()).collect();
@@ -256,15 +319,15 @@ mod tests {
         assert!(java.contains("static boolean meantToChange(int k, java.lang.String[] patterns, java.lang.String field)"), "{java}");
         assert!(java.contains("return k == 2;") && java.contains("catch (Throwable t) {\n            return false;"), "{java}");
         let fresh = |at: &str| java.find(at).unwrap_or_else(|| panic!("{at}: {java}"));
-        let calls = [fresh("public static boolean agree"), fresh("        fresh();\n        if (meantToChange(k, patterns, field)) { return true; }\n        fresh();\n        boolean a"), fresh("a = before.x.Adapter.allowed(k, patterns == null ? null : patterns.clone(), field);"), fresh("        fresh();\n        boolean b"), fresh("b = x.Adapter.allowed(k, patterns == null ? null : patterns.clone(), field);")];
+        let calls = [fresh("public static boolean agree"), fresh("        fresh();\n        if (meantToChange(k, patterns == null ? null : patterns.clone(), field)) { return true; }\n        fresh();\n        boolean a"), fresh("a = before.x.Adapter.allowed(k, patterns == null ? null : patterns.clone(), field);"), fresh("        fresh();\n        boolean b"), fresh("b = x.Adapter.allowed(k, patterns == null ? null : patterns.clone(), field);")];
         assert!(calls.windows(2).all(|w| w[0] < w[1]), "{java}");
-        assert!(java.contains("catch (Throwable t) { ea = thrown(t, true); }") && java.contains("catch (Throwable t) { eb = thrown(t, false); }"), "{java}");
-        assert!(java.contains("return previous && name.indexOf(\"before.\") == 0 ? name.substring(7) : name;"), "{java}");
-        assert!(java.contains("return ea == null ? eb == null && a == b : ea.equals(eb);"), "{java}");
+        assert!(java.contains("Class<?> ea = null;\n        try { a = before.x.Adapter") && java.contains("catch (Throwable t) { ea = t.getClass(); }") && java.contains("catch (Throwable t) { eb = t.getClass(); }"), "{java}");
+        assert!(java.contains("return previous && name.indexOf(\"before.\") == 0 ? name.substring(7) : name;") && java.contains("return named(a, true).equals(named(b, false)) && same(a.getSuperclass(), b.getSuperclass());"), "{java}");
+        assert!(java.contains("return ea == null ? eb == null && a == b : eb != null && same(ea, eb);"), "{java}");
         let text = source("x.A", "name", &names[..1], &params[..1], &Type::Object("java/lang/String".into()), None);
         assert!(!text.contains("meantToChange") && text.contains("(a == null ? b == null : a.equals(b))"), "{text}");
         let nothing = source("x.A", "run", &names[..1], &params[..1], &Type::Void, None);
-        assert!(nothing.contains("try { before.x.A.run(k); }") && nothing.contains("return ea == null ? eb == null && true : ea.equals(eb);"), "{nothing}");
+        assert!(nothing.contains("try { before.x.A.run(k); }") && nothing.contains("return ea == null ? eb == null && true : eb != null && same(ea, eb);"), "{nothing}");
     }
 
     /// Only the tool's own checker is given a String[], a nullable String, an assumption or lemmas: any other

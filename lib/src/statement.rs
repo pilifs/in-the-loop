@@ -62,6 +62,12 @@ pub struct Vacuity {
     /// An input that reaches the calls, as the probe found it (the harness's arguments, as a call).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub witness: Option<String>,
+    /// For a regression statement with an allowed change (`--unchanged-unless`): the change the witness is known to
+    /// lie outside, as the check that found it knows. An input inside it is one the versions need not agree on, so a
+    /// statement whose every assumed input lies inside it compares the versions on none. None when no change was
+    /// allowed, or when the witness is not known to lie outside it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub outside: Option<String>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -90,12 +96,12 @@ pub enum VacuityBasis {
 impl Vacuity {
     /// A statement whose harness skips no input before the calls.
     pub fn every_input() -> Vacuity {
-        Vacuity { status: VacuityStatus::NonVacuous, basis: VacuityBasis::Harness, text: "Nothing skips an input in the domain before the calls, so the verdict is about every one of them.".into(), witness: None }
+        Vacuity { status: VacuityStatus::NonVacuous, basis: VacuityBasis::Harness, text: "Nothing skips an input in the domain before the calls, so the verdict is about every one of them.".into(), witness: None, outside: None }
     }
 
     /// Identical bytecode: the versions agree on every input, intended or not.
     pub fn identical() -> Vacuity {
-        Vacuity { status: VacuityStatus::NonVacuous, basis: VacuityBasis::Identical, text: "The versions' bytecode is identical, so they agree on every input in the domain, among the assumed ones or not.".into(), witness: None }
+        Vacuity { status: VacuityStatus::NonVacuous, basis: VacuityBasis::Identical, text: "The versions' bytecode is identical, so they agree on every input in the domain, among the assumed ones or not.".into(), witness: None, outside: None }
     }
 
     /// The probe found an input that reaches the calls.
@@ -104,17 +110,26 @@ impl Vacuity {
             Some(w) => format!("Some input in the domain reaches the calls: the tool's own checker found {w}."),
             None => "Some input in the domain reaches the calls: the tool's own checker found one.".into(),
         };
-        Vacuity { status: VacuityStatus::NonVacuous, basis: VacuityBasis::Probe, text, witness }
+        Vacuity { status: VacuityStatus::NonVacuous, basis: VacuityBasis::Probe, text, witness, outside: None }
     }
 
     /// The probe was proved: no input reaches the calls. `reason` is the `vacuously:` line.
     pub fn vacuous(reason: &str) -> Vacuity {
-        Vacuity { status: VacuityStatus::Vacuous, basis: VacuityBasis::Probe, text: format!("The verdict is vacuous: {reason}."), witness: None }
+        Vacuity { status: VacuityStatus::Vacuous, basis: VacuityBasis::Probe, text: format!("The verdict is vacuous: {reason}."), witness: None, outside: None }
     }
 
     /// The probe gave no verdict.
     pub fn unknown(problem: &str) -> Vacuity {
-        Vacuity { status: VacuityStatus::Unknown, basis: VacuityBasis::Probe, text: format!("Whether any input in the domain reaches the calls is not known: the tool's own checker gave no verdict on it ({problem})."), witness: None }
+        Vacuity { status: VacuityStatus::Unknown, basis: VacuityBasis::Probe, text: format!("Whether any input in the domain reaches the calls is not known: the tool's own checker gave no verdict on it ({problem})."), witness: None, outside: None }
+    }
+
+    /// A non-vacuous status whose witness is known to lie outside the allowed change `change`; any other is as it is.
+    pub fn outside_of(mut self, change: &str) -> Vacuity {
+        if self.status == VacuityStatus::NonVacuous && self.witness.is_some() {
+            self.text = format!("{} It lies outside the allowed change `{change}`, so both versions are called on it.", self.text);
+            self.outside = Some(change.to_string());
+        }
+        self
     }
 }
 

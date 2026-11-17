@@ -1,0 +1,61 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-151521-examples-289-and-290-preservation-once-m",
+  "title": "Examples 289 and 290: preservation once more, with the scope on copies, exceptions compared up the class chain, and vacuity outside the change",
+  "description": "Supersedes job 20261117-134306-examples-289-and-290-preservation-again, whose statement is no longer the pair's (inbox items I004 and I005 of the preservation stream). Since it was queued, the pair of versions (lib/src/pairing.rs) changed in three ways. First, the evidence stream's ymzlyksq checks after a verified pair that some assumed input lies outside the allowed change and records it as stated.vacuity.outside, which accept.py now requires. Second, the scope meantToChange is called on copies of its own of the array arguments, so a scope that writes a cell no longer decides what both versions see. Third, an exception is compared by its class's name and the names of every class above it up to Object (Class.getSuperclass(), now modelled by the checker and the interpreter), so two classes of one name that extend different classes are two answers. The challenge stream's fixtures lib/tests/fixtures/fresh-pair-countermodels are each refuted now. This reruns both preservation tasks at their frozen bounds on new --work folders, for accept.py to settle them under the exact statement. Capped probes on 2026-11-17 verified both: 289 in 55 s, with the witness outside the change agree(pattern=\".*\", caseInsensitive=true, servletPath=\"\", pathInfo=\"\", query=\"\"); 290 in about 1 s, with agree(servlets=[0], ...).",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "289",
+      "290"
+    ],
+    "paths": [
+      "lib/src/pairing.rs",
+      "lib/src/bmc/runtime.rs"
+    ]
+  },
+  "expected": "exits 0: both drivers print verdict: verified (expected verified) at the frozen bound, not a trial, each with a line 'outside the allowed change: ...'; each outcome.json (with stated.vacuity.outside), evidence.json and work/pair/RegressionPair.java come back, the pair's source with same(ea, eb) and meantToChange called on copies",
+  "submitted": {
+    "at": "2026-11-17T15:15:21+00:00",
+    "session": "f28025bc-e46b-4a87-a943-bfb79dea5465"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "patch",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "10m",
+    "timeout": "1h",
+    "notes": "capped probes: 289 55 s, 290 about 1 s, under 4 GiB; plus the release build and the fetch of the pinned JARs"
+  },
+  "steps": [
+    {
+      "name": "289 preservation at the frozen bound, the pair as of inbox items I004 and I005",
+      "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py preservation --timeout 1800 --work verification/.work-289/class-chain",
+      "cwd": "."
+    },
+    {
+      "name": "290 preservation at the frozen bound, the pair as of inbox items I004 and I005",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py preservation --timeout 1800 --work verification/.work-290/class-chain",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-289/class-chain/preservation/outcome.json",
+    "verification/.work-289/class-chain/preservation/evidence.json",
+    "verification/.work-289/class-chain/preservation/work/pair/RegressionPair.java",
+    "verification/.work-290/class-chain/preservation/outcome.json",
+    "verification/.work-290/class-chain/preservation/evidence.json",
+    "verification/.work-290/class-chain/preservation/work/pair/RegressionPair.java"
+  ]
+}

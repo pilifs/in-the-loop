@@ -25,13 +25,16 @@ when every one of these holds; one that fails, or that the evidence has nothing 
                 that may be null are the claim's
     mode        the engine and the gap mode are the task's
     complete    (established) no unfinished unwinding and no problem
-    non-vacuous (established) some input reaches the property: the probe's witness
+    non-vacuous (established) some input reaches the property: the probe's witness; for a task with an allowed
+                change, one the outcome says lies outside that change (`vacuity.outside`), since the versions are
+                compared on no input inside it
     replay      (refuted) the witness reproduced on a JVM
     mutant      (a constructed mutant's task) the JAR's hash in the step's log is the one the mutant replay's receipt
                 records
     artifacts   the JARs, the adapter sources and the claim the driver recorded beside the outcome (evidence.json)
-                are the ones target.json pins. A driver that records none leaves a limit, not a refusal: the pinned
-                hashes were then checked by the driver's own code and are in no record
+                are the ones target.json pins (a constructed mutant's: its base's, but for its own JAR, which is the
+                `mutant` check's). A driver that records none leaves a limit, not a refusal: the pinned hashes were
+                then checked by the driver's own code and are in no record
 
 `limits` says what an accepted answer still rests on that no record shows; `restsOn` what the checker itself assumed.
 A driver writes evidence.json with `record` below. llm-dlc/tools/changes.py counts an answer beside the route only
@@ -406,8 +409,16 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
         else:
             said("complete", OK, f"no problem, and the unwinding ({bounds.get('unwind')}) is complete")
         vacuity = stated.get("vacuity") or {}
-        if vacuity.get("status") == "non-vacuous" and vacuity.get("witness"):
-            said("non-vacuous", OK, f"{vacuity.get('basis')}: {vacuity.get('witness')}")
+        change = task.get("allowedChange")
+        if vacuity.get("status") == "non-vacuous" and vacuity.get("witness") and change is not None and vacuity.get("outside") != change:
+            # An input inside the allowed change is one the versions need not agree on: the pair's `agree` returns
+            # true on it without calling either. A witness there shows nothing compared.
+            if vacuity.get("outside") is None:
+                said("non-vacuous", UNBOUND, f"the outcome does not say whether its witness, {vacuity.get('witness')}, lies outside the allowed change, where the versions are compared: one inside it reaches no comparison (an outcome from before the checker said so)")
+            else:
+                said("non-vacuous", FAIL, f"the witness is said to lie outside `{vacuity.get('outside')}`, which is not the task's allowed change")
+        elif vacuity.get("status") == "non-vacuous" and vacuity.get("witness"):
+            said("non-vacuous", OK, f"{vacuity.get('basis')}: {vacuity.get('witness')}" + (", outside the allowed change" if change is not None else ""))
         else:
             said("non-vacuous", FAIL if vacuity.get("status") else UNBOUND, f"the outcome names no input that reaches the property (vacuity: {vacuity.get('status') or 'not recorded'})")
     elif actual == "refuted":
@@ -453,9 +464,12 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
                 problems.append("the claim it hashed is not the claim file")
             if (evidence.get("bound") or {}).get("trial") and actual == "established":
                 problems.append("it marks the run a trial at a bound that is not the claim's")
+            # A constructed mutant's class path is its base's, its own JAR built: the rest are pinned under the base.
+            revisions = (target.get("history") or {}).get("revisions") or {}
+            base_of = {r: ((v or {}).get("mutant") or {}).get("base", r) for r, v in revisions.items()}
             seen = set()
             for a in evidence.get("artifacts") or []:
-                key = (a.get("revision"), a.get("name"))
+                key = (base_of.get(a.get("revision"), a.get("revision")), a.get("name"))
                 seen.add(a.get("revision"))
                 if a.get("constructed"):
                     continue  # the mutant's own JAR: the `mutant` check

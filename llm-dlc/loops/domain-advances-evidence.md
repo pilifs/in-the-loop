@@ -103,9 +103,95 @@ Don't change `verification/pipeline.py`.
   a run leaves `evidence.json` marked a trial); `validate_example.py` 286 to 290 pass. Announced to the
   preservation and state inboxes (`--kind interface`).
 - Repeated work measured (step 7): none for the owners yet.
-- Inbox: none at this cycle.
+- Inbox: `domain-advances-evidence-I001` (test_brief_run.py's watcher-inheriting test may hang or fail in a stream):
+  noted; it did not come up in this cycle's `run --changed`, and I will neither change it nor block on it.
 - Next: step 3, the reruns of 286 and 287 `mutant-security` with the new drivers (independent of step 1), then
   step 1 when its jobs are back.
+- 2026-11-17, cycle 2. **Step 1, 289's half, done.** Job `20261117-122454-…-289-…` passed (1m33s, the same four
+  verdicts); the watcher collected it on the default line (`pulrzyrl`), and this workspace took its result folder and
+  `verification/.work-289/recorded` from there as they are (no merge). Each 289 task's `besideRoute.job` names it,
+  and `accept.py 289` accepts all four **with no limit**, the `artifacts` check `ok` on each. *Finding, the check's*:
+  its first run refused `mutant-security`, because the driver records the mutant's class path under the revision
+  `mutant` (rightly: that is the class path it ran) and the check looked the base's JARs up under that revision,
+  where target.json pins none. The check now looks a constructed mutant's JARs up under its base (its own JAR stays
+  the `mutant` check's); `test_accept.py` has a control for it (fails without the fix), and its checkout test now
+  holds 289 to the new job with no limit. The lemma job (`20261117-122546-…-286-and-288-…`) is still pending, not
+  started.
+- Repeated work measured (step 7): none for the owners; the state stream's 286 driver commit (`tvxyzwqv`) builds on
+  the shared module, so nothing there was rebuilt by hand.
+- Inbox: no open items.
+- Next: step 3, the reruns of 286 and 287 `mutant-security` (and the other accepted answers of 286, 287, 290) as
+  jobs with the new drivers; the lemma half of step 1 when its job is back.
+- 2026-11-17, cycle 3. **Step 3 queued.** The lemma job is still pending, so the reruns went first, one job per
+  example, each task at the frozen bound through its new driver into `verification/.work-NNN/recorded` (the earlier
+  outputs stay as their results record them), every step run whatever the one before gave, `outcome.json` and
+  `evidence.json` among the outputs: `20261117-133148-example-286-the-three-answers-beside-the` (vulnerable, fixed
+  with its lemma, mutant), `20261117-133148-example-287-the-three-answers-beside-the` (the same three),
+  `20261117-133148-example-288-fixed-security-again-with-th` (288's one verified task, recorded only if `accept.py`
+  accepts it) and `20261117-133148-example-290-the-four-answers-beside-the` (the four, with the same observed
+  initializers; their audit is step 5). Estimates from the earlier jobs' measured steps (286: 492 to 1015 s at 1.6
+  GiB; 287: 659 to 823 s at 3.0 GiB; 288: 1182 s; 290: under 15 s each). The 286 and 288 runs prove the simpleMatch
+  lemma under the tightened checks too, so they also answer what the lemma job asks, with the record. The other
+  streams' changes to 286's and 287's drivers since step 2 add their own tasks only (no claim or target change), so
+  a rerun from this line's drivers holds after the merge: `accept.py` reads the driver at the job's own commit.
+- Repeated work measured (step 7): none; the state and preservation streams built 286's and 287's new tasks on the
+  shared module rather than beside it.
+- Inbox: `domain-advances-evidence-I002` (286's driver already has the three properties, state stream `tvxyzwqv`):
+  taken; that driver is built on this stream's step 2 (`beside_route`), its security tasks run the same code as this
+  line's, so 286's `mutant-security` is rerun with it as the item asks, and `ENTRIES` and the per-claim models stay in
+  286's driver. `domain-advances-evidence-I003` (287's driver has them, preservation stream `oqsnoyom`): taken the
+  same way; 287's equivalence branch is the preservation stream's and untouched, and the rerun of `mutant-security`
+  uses the shared recipe (the replay's JAR, `1d099295…`).
+- *Finding, the trace check's* (`sync.py check`): the preservation stream's session (`f28025bc`) merged this line's
+  step 2 commit (`rkxyyqwn`) and stamped it with its own trace line, whose manifest only its line holds, so every
+  commit here failed with "session f28025bc has no manifest". The check already made a note of a shared commit
+  restamped elsewhere when the other workspace's manifest lists the log, but only for a session this tree knew; it
+  now does the same for a session it has no manifest of, unless the commit's own tree held one (then a merge lost
+  it, still an error). Two controls in `llm-dlc/tools/test_workspaces.py`.
+- Next: step 4 (the vacuity control) while the step 3 jobs and the lemma job run; then the records and `accept.py`
+  for 286, 287, 288 and 290, and the lemma half of step 1, when they are back.
+- 2026-11-17, cycle 4. **Step 1 done.** The lemma job (`20261117-122546-…-286-and-288-…`) passed: under the tightened
+  lemma checks the simpleMatch lemma is still proved by induction (286 in 74.2 s, 288 in 108.5 s) and each
+  `fixed-security` verified with it (918 s, 1037.5 s); nothing was refused, so nothing goes to the challenge stream.
+  Recorded in 286's and 288's notes. **Step 3, 290's part, done.** `20261117-133148-…-290-…` passed (45.9 s, the same
+  four verdicts and path counts as the earlier job); each 290 task's `besideRoute.job` names it, and `accept.py 290`
+  accepts all four with no limit, `artifacts` ok on each. Both result folders and their work folders came from the
+  default line as they are (`jj restore` from `wwqnnzwp` and `swltxzml`, no merge). Still running: the 286, 287 and
+  288 reruns.
+- Repeated work measured (step 7): none; the lemma job and 290's rerun came in under their estimates (0.71 and 0.08
+  of the duration), so nothing was resubmitted.
+- Inbox: `domain-advances-evidence-I004` (make `an_observed_initializer_is_bound_to_what_it_was_observed_on` pass:
+  refuse or carry the crossed, lowered and configured countermodels of `mqkqvvmw`): taken as step 5's work, which
+  comes after step 4 by the brief's order; its audit of 290 (no other class's static written, the locale read only
+  into a field the observation does not hold) goes into 290's notes with step 5.
+- Next: step 4 (the vacuity control); the records and `accept.py` for 286, 287 and 288 when their jobs are back.
+- 2026-11-17, cycle 5. **Step 4 done: the engine had the hole.** What the probe guarantees for a pair: 289's and 290's
+  preservation go through `lib/src/pairing.rs`, where `RegressionPair.agree` returns true on an input inside the allowed
+  change without calling either version, and the property check's probe asks only for an input of the assumption. So
+  the probe's witness was inside the assumption, not known to be outside the change. The control, 289's preservation
+  through its own driver with only `--unchanged-unless` replaced by `true` (a capped probe, 5 s): verified and
+  *non-vacuous* before the fix. 290's recorded witness, `servlets=[]`, does lie inside its change. The fix (this stream's
+  and the preservation stream's area): a verified pair with an allowed change is checked once more, `meantToChange`
+  against `result` over the same assumption, domain and class path. A proof makes the statement vacuous; a witness, replayed
+  as any is, becomes the statement's, with `stated.vacuity.outside` naming the change. The regression harness's own probe
+  marks `outside` too, since its harness returns before the probe on an input in the scope. Now the `true` control is
+  vacuous; 289 with its own change is non-vacuous with `servletPath=""` (0.3 s more), 290 with `servlets=[0]` (both capped
+  probes, notes in each example). `accept.py` refuses an establishment of a task with an allowed change whose outcome does
+  not say its witness lies outside that change (`unbound`), or names another change (`fail`). Controls:
+  `lib/tests/pairing.rs` `a_pairs_proof_is_vacuous_when_the_allowed_change_covers_every_assumed_input` (fails without the
+  fix: NonVacuous), three cases in `test_accept.py`. *Consequence*: 289's and 290's preservation answers are now refused
+  (their outcomes predate `outside`), and so the Done-when's first row needs them rerun on a checker with this fix.
+- Repeated work measured (step 7): the preservation stream's job `20261117-134306-…-289-and-290-preservation-again` (~10 min)
+  will be refused as its outcomes are written, having run without this fix. One rerun of both after the merge answers
+  both its change and this one.
+- Inbox: `domain-advances-evidence-I005` (accept 289's and 290's preservation from job `20261117-134306`, and perhaps check
+  that the pair has `thrown(t, ...)` and `fresh()`): taken in part. That job's outcomes say nothing of `outside`, so
+  `accept.py` refuses them as this cycle's check stands, and they are not recorded as they are. The answer comes from one
+  rerun of 289's and 290's preservation on a checker with both `zmvkptqz` and this fix, which needs the two lines merged
+  (`zmvkptqz` is on neither this line nor the default one yet). The check on the pair's source waits until `zmvkptqz`
+  is here, so that it is tested against what the generator writes. Sent to the preservation stream's inbox.
+- Next: step 5 (observed initialization, with I004); the records and `accept.py` for 286, 287 and 288 when their jobs
+  are back (still pending, not started); the rerun of 289's and 290's preservation once this line and `zmvkptqz` meet.
 - Status: working
 
 ## Loop settings
