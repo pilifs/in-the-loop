@@ -1,0 +1,139 @@
+{
+ "schema": "mutant-witness/v1",
+ "what": "Candidate inputs for mutant-preservation (after against the US-ASCII mutant), each run through replay/driver's HashpwDriver on the real cipher, on Temurin 21.0.13 and 25.0.5: which are witnesses and which are not. A hand run on hand-compiled classes (the slice's recipe), so a note for whoever searches for the witness, not the task's evidence: that is the checker's witness replayed by the job, with the route's artifacts.",
+ "classes": {
+  "after": "54ae5693a9b80314415670586fbea77624584854d5bfb8542123475fb4c2f6e2",
+  "mutant": "1cae45be58fdfa42603c35812fe05f1abcc2d19885f6581357b52bedecd667ad"
+ },
+ "cases": [
+  {
+   "password": "é",
+   "passwordUnits": "ue9",
+   "salt": "$2a$06$If6bvum7DFjUnE9p2uDeDu",
+   "reading": "the witness: one unit, U+00E9, under the cost-6 salt",
+   "jdk 21": {
+    "after": "$2a$06$If6bvum7DFjUnE9p2uDeDupkPD8vBjYu3BG5XbFtncNiWjjTCgZfW",
+    "mutant": "$2a$06$If6bvum7DFjUnE9p2uDeDuZi5H8lHSGbjxrS8SWUAnS6n3PwA.lHy",
+    "differ": true
+   },
+   "jdk 25": {
+    "after": "$2a$06$If6bvum7DFjUnE9p2uDeDupkPD8vBjYu3BG5XbFtncNiWjjTCgZfW",
+    "mutant": "$2a$06$If6bvum7DFjUnE9p2uDeDuZi5H8lHSGbjxrS8SWUAnS6n3PwA.lHy",
+    "differ": true
+   }
+  },
+  {
+   "password": "?",
+   "passwordUnits": "u3f",
+   "salt": "$2a$06$If6bvum7DFjUnE9p2uDeDu",
+   "reading": "what the mutant's result equals: '?' under the same salt",
+   "jdk 21": {
+    "after": "$2a$06$If6bvum7DFjUnE9p2uDeDuZi5H8lHSGbjxrS8SWUAnS6n3PwA.lHy",
+    "mutant": "$2a$06$If6bvum7DFjUnE9p2uDeDuZi5H8lHSGbjxrS8SWUAnS6n3PwA.lHy",
+    "differ": false
+   },
+   "jdk 25": {
+    "after": "$2a$06$If6bvum7DFjUnE9p2uDeDuZi5H8lHSGbjxrS8SWUAnS6n3PwA.lHy",
+    "mutant": "$2a$06$If6bvum7DFjUnE9p2uDeDuZi5H8lHSGbjxrS8SWUAnS6n3PwA.lHy",
+    "differ": false
+   }
+  },
+  {
+   "password": "é",
+   "passwordUnits": "ue9",
+   "salt": "$2$05$......................",
+   "reading": "the same password under the salt with no minor revision: also a witness",
+   "jdk 21": {
+    "after": "$2$05$......................wibKfMTLFNR5ekAMxydmbl1qLE7iPOS",
+    "mutant": "$2$05$......................ISd/EwRInv7wWUJUMzF6VHdjJVok/qq",
+    "differ": true
+   },
+   "jdk 25": {
+    "after": "$2$05$......................wibKfMTLFNR5ekAMxydmbl1qLE7iPOS",
+    "mutant": "$2$05$......................ISd/EwRInv7wWUJUMzF6VHdjJVok/qq",
+    "differ": true
+   }
+  },
+  {
+   "password": "é",
+   "passwordUnits": "ue9",
+   "salt": null,
+   "reading": "no witness: a null salt throws in the unchanged callee on both sides",
+   "jdk 21": {
+    "after": "java.lang.IllegalArgumentException",
+    "mutant": "java.lang.IllegalArgumentException",
+    "differ": false
+   },
+   "jdk 25": {
+    "after": "java.lang.IllegalArgumentException",
+    "mutant": "java.lang.IllegalArgumentException",
+    "differ": false
+   }
+  },
+  {
+   "password": "é",
+   "passwordUnits": "ue9",
+   "salt": "",
+   "reading": "no witness: an invalid salt",
+   "jdk 21": {
+    "after": "java.lang.IllegalArgumentException",
+    "mutant": "java.lang.IllegalArgumentException",
+    "differ": false
+   },
+   "jdk 25": {
+    "after": "java.lang.IllegalArgumentException",
+    "mutant": "java.lang.IllegalArgumentException",
+    "differ": false
+   }
+  },
+  {
+   "password": null,
+   "passwordUnits": "null",
+   "salt": "$2a$06$If6bvum7DFjUnE9p2uDeDu",
+   "reading": "no witness: a null password throws before the conversion matters",
+   "jdk 21": {
+    "after": "java.lang.NullPointerException",
+    "mutant": "java.lang.NullPointerException",
+    "differ": false
+   },
+   "jdk 25": {
+    "after": "java.lang.NullPointerException",
+    "mutant": "java.lang.NullPointerException",
+    "differ": false
+   }
+  },
+  {
+   "password": "'a' * 72 + 'é'",
+   "passwordUnits": "72 of 61, then e9",
+   "salt": "$2a$06$If6bvum7DFjUnE9p2uDeDu",
+   "reading": "no witness: the bytes differ only past the 72nd, which the key schedule never reads",
+   "jdk 21": {
+    "after": "$2a$06$If6bvum7DFjUnE9p2uDeDu20mxJt2V8br8/qUftJpHQdwUeqiyona",
+    "mutant": "$2a$06$If6bvum7DFjUnE9p2uDeDu20mxJt2V8br8/qUftJpHQdwUeqiyona",
+    "differ": false
+   },
+   "jdk 25": {
+    "after": "$2a$06$If6bvum7DFjUnE9p2uDeDu20mxJt2V8br8/qUftJpHQdwUeqiyona",
+    "mutant": "$2a$06$If6bvum7DFjUnE9p2uDeDu20mxJt2V8br8/qUftJpHQdwUeqiyona",
+    "differ": false
+   }
+  },
+  {
+   "password": "",
+   "passwordUnits": "u",
+   "salt": "$2$05$......................",
+   "reading": "no witness: ArrayIndexOutOfBoundsException on both sides",
+   "jdk 21": {
+    "after": "java.lang.ArrayIndexOutOfBoundsException",
+    "mutant": "java.lang.ArrayIndexOutOfBoundsException",
+    "differ": false
+   },
+   "jdk 25": {
+    "after": "java.lang.ArrayIndexOutOfBoundsException",
+    "mutant": "java.lang.ArrayIndexOutOfBoundsException",
+    "differ": false
+   }
+  }
+ ],
+ "reading": "A check that takes the unchanged callee as one function gets its candidate from the conversion alone: any password with a unit from 0x80 up, with any salt. Four of the seven salts of the claim's assumption are invalid and throw IllegalArgumentException on both sides whatever the password, a null password throws on both sides, and a difference past the 72nd byte never reaches the result. A candidate from the abstraction is a witness only once the real cipher has shown two results, so the search must be able to drop a candidate that does not replay and try another, or prefer a valid salt and a difference within the first 72 bytes."
+}

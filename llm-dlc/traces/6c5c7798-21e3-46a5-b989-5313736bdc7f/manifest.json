@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-17T19:26:36.052Z",
-  "duration_seconds": 179949,
+  "ended": "2026-11-17T19:36:08.331Z",
+  "duration_seconds": 180522,
   "stats": {
-    "turns": 207,
-    "api_calls": 1354,
-    "tool_calls": 1230,
+    "turns": 208,
+    "api_calls": 1360,
+    "tool_calls": 1235,
     "tool_errors": 25,
     "compactions": 6,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 3114,
-      "output_tokens": 900470,
-      "cache_read_input_tokens": 309802197,
-      "cache_creation_input_tokens": 2128901
+      "input_tokens": 3130,
+      "output_tokens": 902905,
+      "cache_read_input_tokens": 311601607,
+      "cache_creation_input_tokens": 2136570
     }
   },
   "tools": {
-    "Bash": 1173,
+    "Bash": 1178,
     "ToolSearch": 11,
     "SendMessage": 8,
     "Write": 8,
@@ -143,24 +143,24 @@
     {
       "index": 6,
       "started": "2026-11-17T12:55:11.414Z",
-      "ended": "2026-11-17T19:26:36.052Z",
-      "turns": 55,
-      "api_calls": 253,
+      "ended": "2026-11-17T19:36:08.331Z",
+      "turns": 56,
+      "api_calls": 259,
       "usage": {
-        "input_tokens": 610,
-        "output_tokens": 104939,
-        "cache_read_input_tokens": 44941512,
-        "cache_creation_input_tokens": 262306
+        "input_tokens": 626,
+        "output_tokens": 107374,
+        "cache_read_input_tokens": 46740922,
+        "cache_creation_input_tokens": 269975
       },
-      "peak_context_tokens": 297772
+      "peak_context_tokens": 305516
     }
   ],
   "log": {
-    "sha256": "d916f23162493445f3381df80d76ade8084ccb6e1d9ffd8f2fe1925d0b97ccad",
-    "bytes": 25972898,
-    "lines": 11144,
-    "gzip_bytes": 4355654,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/d916f23162493445f3381df80d76ade8084ccb6e1d9ffd8f2fe1925d0b97ccad.jsonl.gz"
+    "sha256": "b2339544197ad33e7ea0480ed73458bc5bb2305e91ba77296ac71eca75837c21",
+    "bytes": 26114721,
+    "lines": 11191,
+    "gzip_bytes": 4382142,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/b2339544197ad33e7ea0480ed73458bc5bb2305e91ba77296ac71eca75837c21.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1819,6 +1819,22 @@
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261117-192205-example-286-protected-state-tasks-at-the: passed: 2 passed step(s) in 2m28s, peak 897.8 MiB (estimated 15m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:fails×1 Applied 6 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
       "log_sha256": "d916f23162493445f3381df80d76ade8084ccb6e1d9ffd8f2fe1925d0b97ccad"
+    },
+    {
+      "change_id": "nqturzqlsqnprkzpntqpvzqkmxolupqk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 307 ahead of the preservation stream's step 6: where the checker stops, the callee's footprint, the conversions on the pinned JDKs, and countermodels for the model and the rule",
+      "body": "New files only, for the watcher of the domain-advances run to pass on as guidance within step 6; no claim, note, checker source or stream file is changed. examples/307-*/records/step-6-packet.md is the account. Six capped probes of the preservation stream's rmvpqswzxlyv (step-6-probes.json): 307's preservation stops in 1 s at the previous revision's getBytes(\"UTF-8\"), the mutant's at StandardCharsets.US_ASCII, and with the conversions modelled the claim's unwind 513 leaves no loop summarized, so nothing is tied and the check is killed at 4 GB in 39 s; at the default unwinding it ends at the time limit as 287 does.\n\nrecords/callee-footprint/footprint.py reads class files and says what a callee's closure reads, writes and hands on: hashpw(byte[],String) is the same 13 methods and initializer in before, after and the mutant, writes nothing its caller can see and reads five final tables nothing else writes (hashpw-bytes.json); 287's crypt_raw is the same in 6.3.7 and 6.3.8, whose hashpw differs by nine inserted instructions (287-crypt-raw.json). records/conversion/ runs both getBytes overloads, the US-ASCII conversion and written-out encoders on 4.3 thousand million Strings on Temurin 21.0.13 and 25.0.5 with no difference, and records the overloads' bytecode. records/mutant-witness.json says which candidates the real cipher tells apart.\n\nlib/tests/fixtures/conversion-countermodels (twelve pairs, a prototype model as a patch, the test to add) and callee-countermodels (ten pairs for taking an unchanged callee as one function) each have a harness, check.py, and a README with what a JVM and today's checker say. Verified by running them: the prototype decides its six pairs, a prototype made wrong on purpose is caught on six, today's checker proves none of the seven callee countermodels and proves 307's shape in the miniature. validate_example.py 307 and the test-cost lint pass. Also found: the example route passes no --assume for an equivalence task, a witness a second run undoes is reported as not reproduced, and a parameter named b does not compile in the generated pair.",
+      "log_sha256": "b2339544197ad33e7ea0480ed73458bc5bb2305e91ba77296ac71eca75837c21"
+    },
+    {
+      "change_id": "wpqrtyzvzvvlryzyzznuqksrrzonuvts",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the 307 specialist's scaffold of step 6 into the line",
+      "body": "A session the user brought in to get ahead of the preservation stream's step 6 (example 307) worked in a workspace of its own (307-specialist) and committed new files only (nqturzql): records/step-6-packet.md with where the checker stops on 307, the unchanged callee's footprint read from its bytecode, the two conversions compared on Temurin 8, 21 and 25, the mutant's witness, and countermodel fixtures for a conversion model and a callee rule. Merged so the preservation stream can take it with the default line; nothing in it changes the claim, the checker or any stream's files.",
+      "log_sha256": "b2339544197ad33e7ea0480ed73458bc5bb2305e91ba77296ac71eca75837c21"
     }
   ],
   "logs": {
@@ -2253,6 +2269,12 @@
       "lines": 5759,
       "gzip_bytes": 2260955,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/b0bc0e025047429fa6a0817088ffce3431e910cbca0ce2a1fbc6fbc87f4c5fbe.jsonl.gz"
+    },
+    "b2339544197ad33e7ea0480ed73458bc5bb2305e91ba77296ac71eca75837c21": {
+      "bytes": 26114721,
+      "lines": 11191,
+      "gzip_bytes": 4382142,
+      "url": null
     },
     "b2fed0906cefc1e3dd894c9f45f39959dccafb37e985c5cf4dcf6f88aa0b5920": {
       "bytes": 1006601,

@@ -1,0 +1,129 @@
+--- a/lib/src/bmc/bytes.rs
++++ b/lib/src/bmc/bytes.rs
+@@ -49,19 +49,43 @@
+ 
+ /// Whether the engine models `String.name(descriptor)` here.
+ pub fn models_string(name: &str, descriptor: &str) -> bool {
+-    (name, descriptor) == ("getBytes", "(Ljava/nio/charset/Charset;)[B")
++    name == "getBytes" && matches!(descriptor, "(Ljava/nio/charset/Charset;)[B" | "(Ljava/lang/String;)[B")
+ }
+ 
++/// The one charset name the engine takes for `String.getBytes(String)`: the canonical name of UTF-8, unit for unit.
++/// Its aliases (`UTF8`, `unicode-1-1-utf-8`) and other cases of it name the same charset on a JVM; they stay the
++/// JDK call they were.
++const UTF_8_NAME: &str = "UTF-8";
++
+ impl Engine<'_> {
+     /// `String.getBytes(Charset)` on a String of content `s`: see the module's notes. `None` where the call
+     /// stays the JDK's.
+-    pub(super) fn string_bytes(&mut self, path: &mut Path, s: &Array, args: &[Val]) -> Option<Step> {
++    pub(super) fn string_bytes(&mut self, path: &mut Path, s: &Array, descriptor: &str, args: &[Val]) -> Option<Step> {
+         let [Val::R(charset)] = args else { return None };
++        // Both overloads throw for a null argument: `getBytes(Charset)` itself, `getBytes(String)` in
++        // `lookupCharset` (`Objects.requireNonNull`), each before it reads the String.
+         let Some(charset) = *charset else { return Some(self.raise(path, "java/lang/NullPointerException")) };
+-        if path.literals.get(&Literal::Charset("UTF_8")) != Some(&charset) {
++        let ascii = if descriptor == "(Ljava/lang/String;)[B" {
++            // `getBytes(String)` is `encode(lookupCharset(name), ...)` (JDK 21 and 25): the name is looked up first,
++            // and `UnsupportedEncodingException` comes from the lookup alone. Every Java platform has UTF-8, and
++            // the lookup of its canonical name gives the object `StandardCharsets.UTF_8` is, so the call is the
++            // other overload's with that object. Any other name, or one whose units are not all known, is the JDK
++            // call it was.
++            let name = path.objects[charset].content()?;
++            let units: Option<Vec<i64>> = name.cells.iter().map(|c| self.b.constant_value(c)).collect();
++            let wanted: Vec<i64> = UTF_8_NAME.encode_utf16().map(i64::from).collect();
++            if self.b.constant_value(&name.length) != Some(wanted.len() as i64) || units.as_deref().map(|u| &u[..wanted.len().min(u.len())]) != Some(&wanted[..]) {
++                return None;
++            }
++            false
++        } else if path.literals.get(&Literal::Charset("UTF_8")) == Some(&charset) {
++            false
++        } else if path.literals.get(&Literal::Charset("US_ASCII")) == Some(&charset) {
++            true
++        } else {
+             return None;
+-        }
+-        let (length, cells) = self.utf8(s);
++        };
++        let (length, cells) = if ascii { self.ascii(s) } else { self.utf8(s) };
+         path.objects.push(Obj { array: Some(Array { element: Type::Byte, length, cells, refs: Vec::new() }), ..Obj::new("[B") });
+         let o = path.objects.len() - 1;
+         self.push(path, Val::R(Some(o)));
+@@ -69,6 +93,55 @@
+         Some(Ok(None))
+     }
+ 
++    /// The US-ASCII encoding of the String content `s`, as the JDK writes it (`String.encodeASCII`): a unit below
++    /// `0x80` is itself, any other is the one byte `?`, and a high surrogate followed by a low one is one `?` for the
++    /// two. Its length and its bytes, a cell for every unit.
++    fn ascii(&mut self, s: &Array) -> (Bits, Vec<Bits>) {
++        let n = s.cells.len();
++        let x80 = self.b.constant(0x80, 16);
++        let (mask, high, low) = (self.b.constant(0xFC00, 16), self.b.constant(0xD800, 16), self.b.constant(0xDC00, 16));
++        let question = self.b.constant(i64::from(b'?'), 8);
++        let mut position = self.b.constant(0, 32);
++        let mut written: Vec<Vec<(Lit, Bits)>> = vec![Vec::new(); n];
++        let mut before_high = FALSE;
++        for i in 0..n {
++            let cell = &s.cells[i];
++            let here = self.b.constant(i as i64, 32);
++            let inside = self.b.slt(&here, &s.length);
++            let top = self.b.and_bits(cell, &mask);
++            let (is_high, is_low) = (self.b.eq(&top, &high), self.b.eq(&top, &low));
++            // The low surrogate of a pair writes nothing: the `?` of its high surrogate stands for both.
++            let second = self.b.and(is_low, before_high);
++            let writes = self.b.and(inside, -second);
++            let plain = self.b.ult(cell, &x80);
++            let byte = self.b.ite_bits(plain, &cell[..8].to_vec(), &question);
++            // The bytes before this unit: one for each unit, less one for each pair.
++            for start in i / 2..=i {
++                let at_start = self.b.constant(start as i64, 32);
++                let starts = self.b.eq(&position, &at_start);
++                let at = self.b.and(writes, starts);
++                if at != FALSE {
++                    written[start].push((at, byte.clone()));
++                }
++            }
++            let (one, zero) = (self.b.constant(1, 32), self.b.constant(0, 32));
++            let count = self.b.ite_bits(writes, &one, &zero);
++            position = self.b.add(&position, &count);
++            before_high = self.b.and(is_high, inside);
++        }
++        let cells = written
++            .into_iter()
++            .map(|writers| {
++                let mut value = self.b.constant(0, 8);
++                for (at, byte) in writers {
++                    value = self.b.ite_bits(at, &byte, &value);
++                }
++                value
++            })
++            .collect();
++        (position, cells)
++    }
++
+     /// The UTF-8 encoding of the String content `s`, as the JDK writes it: its length and its bytes, a cell for
+     /// every byte it may have.
+     fn utf8(&mut self, s: &Array) -> (Bits, Vec<Bits>) {
+--- a/lib/src/bmc/mod.rs
++++ b/lib/src/bmc/mod.rs
+@@ -3506,8 +3506,8 @@
+                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
+                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
+                 // The JDK's UTF-8 charset is one object ([`bytes`]).
+-                if (declaring.as_str(), member.name.as_str()) == (bytes::STANDARD_CHARSETS, "UTF_8") {
+-                    let charset = self.literal(path, Literal::Charset("UTF_8"), bytes::CHARSET);
++                if declaring == bytes::STANDARD_CHARSETS && matches!(member.name.as_str(), "UTF_8" | "US_ASCII") {
++                    let charset = self.literal(path, Literal::Charset(if member.name == "UTF_8" { "UTF_8" } else { "US_ASCII" }), bytes::CHARSET);
+                     self.push(path, Val::R(Some(charset)));
+                     self.advance(path);
+                     return Ok(None);
+@@ -3728,7 +3728,7 @@
+             return self.string_matches(path, &s, args);
+         }
+         if bytes::models_string(name, descriptor) {
+-            return self.string_bytes(path, &s, args);
++            return self.string_bytes(path, &s, descriptor, args);
+         }
+         if regex::models_string(name, descriptor) {
+             return Some(self.string_split(path, o, &s, args));
