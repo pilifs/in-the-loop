@@ -113,10 +113,13 @@ pub fn stub(i: usize) -> String {
 
 /// The members of the claim's class for a proof by induction on `measure`: the claim's own `assume` (when
 /// `assumes`) and `holds` are beside them.
-pub fn induction(signature: &Signature, bound: u32, assumes: bool, measure: &str) -> Result<String, String> {
+pub fn induction(signature: &Signature, bound: u32, assumes: bool, thrown: &[String], measure: &str) -> Result<String, String> {
     let (list, arguments, ret) = (signature.list(), signature.arguments(), signature.ret.java_name());
     let within = guard(&signature.params, bound)?;
     let within = if assumes { format!("{within} && assume({arguments})") } else { within };
+    // The hypothesis returns, so it says nothing of a call the property says throws (`thrown`: the claim's methods
+    // for the conditions of its throws clauses): there the proof does not go through.
+    let within = thrown.iter().fold(within, |within, condition| format!("{within} && !{condition}({arguments})"));
     let any = any(&signature.ret)?;
     let holds = signature.arguments_and("$result");
     Ok(format!(
@@ -135,8 +138,9 @@ pub fn induction(signature: &Signature, bound: u32, assumes: bool, measure: &str
 
     /**
      * The induction hypothesis, in place of a call the method makes of itself: on arguments within the assumption
-     * and the bounds, whose measure is at least zero and below the measure of the call under proof, any result the
-     * assertion holds of. On any other arguments the proof does not go through.
+     * and the bounds on which no throws clause says the call throws, whose measure is at least zero and below the
+     * measure of the call under proof, any result the assertion holds of. On any other arguments the proof does
+     * not go through.
      */
     public static {ret} {HYPOTHESIS}({list}) {{
         if (!({within})) {{
@@ -165,13 +169,15 @@ pub fn summary(i: usize, signature: &Signature, bound: u32, assume: Option<&str>
     let holds = signature.arguments_and("$result");
     let original = format!("{}.{}", signature.class.replace(['/', '$'], "."), signature.name);
     let assume = assume.unwrap_or("true");
+    // A method of no parameters has a lemma too: its assertion is over the result alone.
+    let with_result = if list.is_empty() { format!("{ret} {result}", result = crate::harness::RESULT) } else { format!("{list}, {ret} {result}", result = crate::harness::RESULT) };
     Ok(format!(
         r#"
     public static boolean {stub}_assume({list}) {{
         return {assume};
     }}
 
-    public static boolean {stub}_holds({list}, {ret} {result}) {{
+    public static boolean {stub}_holds({with_result}) {{
         return {assertion};
     }}
 
@@ -189,8 +195,7 @@ pub fn summary(i: usize, signature: &Signature, bound: u32, assume: Option<&str>
         }}
         return $result;
     }}
-"#,
-        result = crate::harness::RESULT
+"#
     ))
 }
 
@@ -217,12 +222,24 @@ mod tests {
     #[test]
     fn a_hypothesis_asks_for_the_assumption_the_bounds_and_a_smaller_measure_of_at_least_zero() {
         let s = signature(&[("n", Type::Int)], Type::Long);
-        let members = induction(&s, 8, true, "n").unwrap();
+        let members = induction(&s, 8, true, &[], "n").unwrap();
         assert!(members.contains("if (!(true && assume(n))) {\n            jvmcontract.GapIntrinsics.unproved();"), "{members}");
         assert!(members.contains("if ($measure < 0 || $measure >= $outer) {\n            jvmcontract.GapIntrinsics.unproved();"), "{members}");
         assert!(members.contains("long $result = jvmcontract.GapIntrinsics.anyLong();\n        if (!holds(n, $result)) {"), "{members}");
         // With no assumption the hypothesis asks for the bounds alone.
-        assert!(induction(&s, 8, false, "n").unwrap().contains("if (!(true)) {"));
+        assert!(induction(&s, 8, false, &[], "n").unwrap().contains("if (!(true)) {"));
+        // The hypothesis returns: where a throws clause says the call throws, it does not cover the call.
+        let thrown = ["thrown0".to_string(), "thrown1".to_string()];
+        assert!(induction(&s, 8, true, &thrown, "n").unwrap().contains("if (!(true && assume(n) && !thrown0(n) && !thrown1(n))) {\n            jvmcontract.GapIntrinsics.unproved();"));
+    }
+
+    #[test]
+    fn a_method_of_no_parameters_has_a_summary_over_its_result_alone() {
+        let s = signature(&[], Type::Int);
+        let members = summary(0, &s, 8, None, "result == 7").unwrap();
+        assert!(members.contains("public static boolean lemma0_assume() {"), "{members}");
+        assert!(members.contains("public static boolean lemma0_holds(int result) {\n        return result == 7;"), "{members}");
+        assert!(members.contains("if (!lemma0_holds($result)) {"), "{members}");
     }
 
     #[test]
@@ -230,6 +247,6 @@ mod tests {
         let array = signature(&[("a", Type::Array(Box::new(Type::Int)))], Type::Int);
         assert!(summary(0, &array, 8, None, "result == 0").unwrap_err().contains("parameter a has type int[]"));
         let object = signature(&[("n", Type::Int)], Type::Object("java/lang/String".into()));
-        assert!(induction(&object, 8, false, "n").unwrap_err().contains("the result has type java.lang.String"));
+        assert!(induction(&object, 8, false, &[], "n").unwrap_err().contains("the result has type java.lang.String"));
     }
 }

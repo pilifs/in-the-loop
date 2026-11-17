@@ -31,6 +31,12 @@ public final class Glob {
         return matches(pattern, text);
     }
 
+    /** The same answer, and a mark in a static field that it was asked: a write, with no read before it. */
+    public static boolean marked(String pattern, String text) {
+        calls = 1;
+        return matches(pattern, text);
+    }
+
     /** The same answer where the two are not one object: its result depends on which objects it is given. */
     public static boolean unlessSame(String pattern, String text) {
         return pattern != text && matches(pattern, text);

@@ -301,6 +301,11 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
 }
 
 /// [`run`], whose phases it times.
+/// The name of the claim's method for the condition of the `i`th throws clause.
+fn thrown_name(i: usize) -> String {
+    format!("thrown{i}")
+}
+
 fn run_check(options: &Options) -> Result<Outcome, Error> {
     let work = match &options.work {
         Some(w) => w.clone(),
@@ -633,7 +638,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             Err("it is of a static method over integral and boolean parameters and Strings".to_string())
         } else {
             let signature = crate::summary::Signature { class: class_internal.clone(), name: method_name.clone(), descriptor: method.descriptor.clone(), params: params.clone(), ret: descriptor.ret.clone() };
-            crate::summary::induction(&signature, options.max_array_length, options.assume.is_some(), measure)
+            let thrown: Vec<String> = (0..signals.len()).map(thrown_name).collect();
+            crate::summary::induction(&signature, options.max_array_length, options.assume.is_some(), &thrown, measure)
         };
         match hypothesis {
             Ok(java) => members.push_str(&java),
@@ -648,7 +654,11 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         }
         summaries.push(crate::bmc::Summary { owner: signature.class.clone(), name: signature.name.clone(), descriptor: signature.descriptor.clone(), stub: crate::summary::stub(i) });
     }
-    let pure = options.summary.then(|| (class_internal.clone(), method_name.clone(), method.descriptor.clone()));
+    // What stands in for a call states its result and nothing else: the method a summary is proved of, and one
+    // proved by induction (whose hypothesis stands in for its calls of itself), is shown to leave the state as it
+    // was ([`crate::bmc::Options::pure`]), and a summary's to read nothing a caller can change.
+    let pure = (options.summary || options.decreases.is_some()).then(|| (class_internal.clone(), method_name.clone(), method.descriptor.clone()));
+    let own_induction = !options.summary;
     let generate = |assume: Option<&str>, assertion: Option<&str>, signals: &[Signal]| harness::generate_property_over(&class_internal, &method_name, &layout, &descriptor.ret, assume, assertion, signals, options.max_array_length);
     // With such members the claim's class is needed whatever the expressions are.
     let own = if members.is_empty() { generate(options.assume.as_deref(), options.assert.as_deref(), &signals) } else { Err(Error::new("the check uses a lemma or a proof by induction")) };
@@ -672,7 +682,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             let mut methods: Vec<(&str, &[harness::Param], &str)> = options.assume.iter().map(|a| ("assume", params.as_slice(), a.as_str())).collect();
             methods.extend(assertion.iter().map(|a| ("holds", names.as_slice(), a.as_str())));
             // A throws clause's condition is Java over the parameters too: each is a method of its own.
-            let thrown_names: Vec<String> = (0..signals.len()).map(|i| format!("thrown{i}")).collect();
+            let thrown_names: Vec<String> = (0..signals.len()).map(thrown_name).collect();
             methods.extend(signals.iter().zip(&thrown_names).map(|(signal, name)| (name.as_str(), params.as_slice(), signal.when.as_str())));
             let thrown_calls: Vec<Signal> = signals.iter().zip(&thrown_names).map(|(signal, name)| Signal { class: signal.class.clone(), when: harness::expr::claim_call(name, &params) }).collect();
             let mut entries: Vec<PathBuf> = options.classes.clone();
@@ -857,7 +867,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             }
         }
         let budget = crate::equivalence::own_budget(&deadline, options.engine);
-        let result = crate::bmc::run_for_proof_with(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, options.max_array_length, budget, &gap_setting, &parameters, &summaries, pure.clone(), &work)?;
+        let result = crate::bmc::run_for_proof_with(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, options.max_array_length, budget, &gap_setting, &parameters, &summaries, pure.clone(), own_induction, &work)?;
         runs.push(Run::of(&result, "proof", budget));
         if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || crate::equivalence::refuses_gaps(&result) || widened {
             if options.engine == crate::Engine::Auto && result.verdict == Verdict::Unverifiable {
