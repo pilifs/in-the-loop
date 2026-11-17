@@ -12,31 +12,32 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.021Z",
-  "ended": "2026-11-17T19:12:51.881Z",
-  "duration_seconds": 22561,
+  "ended": "2026-11-17T21:09:13.517Z",
+  "duration_seconds": 29542,
   "stats": {
-    "turns": 36,
-    "api_calls": 587,
-    "tool_calls": 588,
-    "tool_errors": 6,
-    "compactions": 7,
-    "peak_context_tokens": 244847,
+    "turns": 41,
+    "api_calls": 745,
+    "tool_calls": 746,
+    "tool_errors": 7,
+    "compactions": 8,
+    "peak_context_tokens": 459505,
     "usage": {
-      "input_tokens": 1180,
-      "output_tokens": 509851,
-      "cache_read_input_tokens": 76575120,
-      "cache_creation_input_tokens": 1431716
+      "input_tokens": 1496,
+      "output_tokens": 711781,
+      "cache_read_input_tokens": 121283019,
+      "cache_creation_input_tokens": 1884125
     }
   },
   "tools": {
-    "Bash": 568,
+    "Bash": 724,
     "Edit": 13,
-    "Read": 3,
-    "Write": 3,
+    "Read": 4,
+    "Write": 4,
     "ToolSearch": 1
   },
   "files_touched": [
     "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
+    "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/proofs/prove.py",
     "lib/src/bmc/loops.rs",
     "lib/src/bmc/mod.rs",
     "lib/src/bmc/ties.rs",
@@ -146,24 +147,38 @@
     {
       "index": 7,
       "started": "2026-11-17T18:11:26.514Z",
-      "ended": "2026-11-17T19:12:51.881Z",
-      "turns": 4,
-      "api_calls": 99,
+      "ended": "2026-11-17T19:13:47.639Z",
+      "turns": 5,
+      "api_calls": 102,
       "usage": {
-        "input_tokens": 198,
-        "output_tokens": 90204,
-        "cache_read_input_tokens": 15221767,
-        "cache_creation_input_tokens": 227935
+        "input_tokens": 204,
+        "output_tokens": 91904,
+        "cache_read_input_tokens": 15949876,
+        "cache_creation_input_tokens": 234112
       },
-      "peak_context_tokens": 241208
+      "peak_context_tokens": 247385
+    },
+    {
+      "index": 8,
+      "started": "2026-11-17T19:14:52.560Z",
+      "ended": "2026-11-17T21:09:13.517Z",
+      "turns": 4,
+      "api_calls": 155,
+      "usage": {
+        "input_tokens": 310,
+        "output_tokens": 200230,
+        "cache_read_input_tokens": 43979790,
+        "cache_creation_input_tokens": 446232
+      },
+      "peak_context_tokens": 459505
     }
   ],
   "log": {
-    "sha256": "ebf70312a34b97902eaa3834e67b1662a6ee739ce029eb94ff3c870ce3902959",
-    "bytes": 15311858,
-    "lines": 5223,
-    "gzip_bytes": 2553637,
-    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/ebf70312a34b97902eaa3834e67b1662a6ee739ce029eb94ff3c870ce3902959.jsonl.gz"
+    "sha256": "2649b91927799ff47bb2de518cf55b2ab1673577fb71655d09a69fa4c7fd53a3",
+    "bytes": 18851342,
+    "lines": 6332,
+    "gzip_bytes": 3143858,
+    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/2649b91927799ff47bb2de518cf55b2ab1673577fb71655d09a69fa4c7fd53a3.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -742,6 +757,14 @@
       "summary": "Merge the default line and the challenge stream's tie countermodels; the code two versions are taken to share is closed against calls back through the JDK and takes in class initializers; 287 at bound 80, 289 and 290 rerun (verification pending)",
       "body": "Inbox items I010 to I013 of the preservation stream. The merge takes the default line (zmxknqty, with the evidence stream's checker and acceptance changes, I011) and qnlomnmx (the challenge stream's tie countermodels, I010). The notes of 287, 289 and 290 keep both sides', lib/tests/costs.json was re-estimated and the trace pages regenerated. The octopus merge had dropped 289's job 20261117-122454 results and verification/.work-289/recorded, which the challenge line never had; they are restored from the default line.\n\nI010: lib/src/shared.rs's reach, which both the identical-bytecode shortcut (plan.identical) and the own checker's ties (shared::fingerprint) rest on, skipped every call into the JDK. So an application class reached through IntUnaryOperator, its private helper, or the static its code read was in no comparison. The reach is now open where a call into the JDK may come back into the application: an interface or overridable JDK method, an argument whose methods the JDK may call (String.valueOf(Object), a Comparator, a string concatenation of an object), a charset by name, an unknown bootstrap, or a JDK constructor called on an application object as super(...) (but Object, Record and Enum). It also takes in the initializers of the application classes the code uses. Countermodels:\n- the README's test (lib/tests/tie_countermodels.rs) failed on supplied, summed and configured and passes;\n- a_class_initializer_the_code_runs_is_part_of_the_code_compared and a_jdk_method_given_an_application_object_leaves_the_code_compared_open (lib/tests/pairing.rs) were each 'nothing to prove' with their part of the rule taken out.\nbcrypt's loop methods call only an int[]'s clone and new IllegalArgumentException(String), so 287's ties stand: a capped probe at bound 80 still takes over 208 summaries.\n\nJob 20261117-180758 (287 at bound 80, on the checker before the fix) came back unverifiable after 1187 paths: no invariant for the previous release's BCrypt.key loop at pc 39, 'an iteration changes local 1, which holds a reference'. Probes cannot reach that path, and two miniatures of the suspected shape are proved, so that refusal now names what the reference held at the loop's head and back at it (lib/tests/loops.rs follows the longer message). Nothing was accepted from it. Job 20261117-185613-example-287-preservation-at-the-frozen-b reruns 287 at bound 80 on the fixed checker. Job 20261117-185623-examples-289-and-290-preservation-on-one reruns 289's and 290's preservation on one checker with both streams' fixes (I011); capped probes verify both.",
       "log_sha256": "ebf70312a34b97902eaa3834e67b1662a6ee739ce029eb94ff3c870ce3902959"
+    },
+    {
+      "change_id": "uxyusvsvswuskvlvskzutksyllyksqqs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "307 has a driver on the route's slices, and the checker takes a call both versions share as one function of both: preservation verified and the mutant refuted in capped probes at the frozen bound (verification pending)",
+      "body": "Example 307 (Spring Security fe9e4549, BCrypt.hashpw with StandardCharsets.UTF_8) gets proofs/prove.py. It runs preservation and mutant-preservation on the route's own source slices (runtime.prepare), each slice JAR checked against the replay receipt that ran it, at the claim's bound (unwind 513, length 80), with its assumption and nullable password and salt. It keeps beside_route's record, mutant check and trial marking. Its first stop was String.getBytes(String), now modelled for the names the JDK takes for UTF-8, as getBytes(US_ASCII) is for the mutant (String model 7, sampled on the JVM, the interpreter and the checker).\n\nAt unwind 513 every bcrypt loop runs to its end, so the loop ties of 287 never apply (4 GB in 39 s). The checker now takes a call of a static method both versions share as one function of both (lib/src/bmc/ties.rs, shared::one_function). Its outcome is new bits: the result, whether it throws and which class, and the cells it writes. Those are related by congruence to earlier calls of the same code wherever the inputs (arguments, and the statics of the classes it uses) are equal. Side conditions: the same code, numbers, Strings and arrays of numbers only, initialized classes, a loop, no static written, no JDK state read, no lambda or own exception. Eight countermodels (ONCES in lib/tests/pairing.rs) each differ on a JVM, are not proved, and were each proved with their condition taken out. The reach now leaves a followed JDK class's own calls closed and checks the application's call into it, which closes a hole: parseInt(CharSequence) given an application object was 'nothing to prove' (new countermodel). Capped probes: preservation verified in about 100 s, the mutant refuted at a non-ASCII password and reproduced on a JVM, 289 and 290 unchanged. lib/README.md has the rule and its limits (no instance methods, so not 287's crypt_raw; a counterexample through unrelated calls that does not reproduce leaves the check undecided).",
+      "log_sha256": "2649b91927799ff47bb2de518cf55b2ab1673577fb71655d09a69fa4c7fd53a3"
     }
   ],
   "logs": {
@@ -749,6 +772,12 @@
       "bytes": 1318856,
       "lines": 371,
       "gzip_bytes": 237820,
+      "url": null
+    },
+    "2649b91927799ff47bb2de518cf55b2ab1673577fb71655d09a69fa4c7fd53a3": {
+      "bytes": 18851342,
+      "lines": 6332,
+      "gzip_bytes": 3143858,
       "url": null
     },
     "2eda7e05ab43a907937cdc85d0bd27864bfde026b2c0bcc1c205e8710dd1d3a4": {

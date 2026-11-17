@@ -167,8 +167,10 @@ const LIST: &str = "java/util/List";
 /// lowers an ASCII String under the default locale the path set, and under a Locale it is given (`toLowerCase(Locale)`),
 /// Turkish and Azeri among them (for example 288's claims, which make the default locale an input). Model 6 gives
 /// an `int`, a `short` or a `byte` in the compiler's concatenation its decimal digits, where the String it made had
-/// no content before (for example 290, whose registrations are named `"servlet" + i`).
-pub const STRING_MODEL: &str = "jvmcontract String model 6: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr)";
+/// no content before (for example 290, whose registrations are named `"servlet" + i`). Model 7 adds `getBytes(String)`
+/// with a constant name the JDK takes for UTF-8 (for example 307, whose previous version converts so), and
+/// `getBytes(US_ASCII)` (307's mutation control).
+pub const STRING_MODEL: &str = "jvmcontract String model 7: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr)";
 
 /// The JDK whose `java.lang.String` the model was sampled against (`lib/tests/values.rs`, on the JVM).
 pub const STRING_MODEL_JDK: &str = "25.0.5";
@@ -190,7 +192,7 @@ pub fn string_model() -> ModelEvidence {
         jdk: STRING_MODEL_JDK.into(),
         level: EvidenceLevel::Tested,
         leaves_out: vec![
-            "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap".into(),
+            "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap".into(),
             "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits".into(),
             format!("the content of a concatenation that could pass {} code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String", crate::bmc::MAX_STRING_CONTENT),
             "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object".into(),
@@ -1004,12 +1006,23 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         operation: "java.lang.String.getBytes(Ljava/nio/charset/Charset;)[B",
         family: Family::String,
         source: BYTES_SOURCE,
-        admits: "a String with content and StandardCharsets.UTF_8: a new byte array of the String's UTF-8 encoding, one byte for a unit below 0x80, two below 0x800, four for a high surrogate followed by a low one, the one byte '?' for a surrogate in no such pair, three for any other unit",
+        admits: "a String with content and StandardCharsets.UTF_8: a new byte array of the String's UTF-8 encoding, one byte for a unit below 0x80, two below 0x800, four for a high surrogate followed by a low one, the one byte '?' for a surrogate in no such pair, three for any other unit; with StandardCharsets.US_ASCII, its US-ASCII encoding: a unit below 0x80 is that byte, a high surrogate followed by a low one is one '?', and any other unit '?'",
         throws: &[NPE],
-        leaves_out: &["any other charset: the JDK call it names, a gap", "getBytes(), getBytes(String), and a String with no content"],
+        leaves_out: &["any other charset: the JDK call it names, a gap", "getBytes(), and a String with no content"],
         level: EvidenceLevel::Tested,
-        sampled_by: &["getBytes", "getBytesByNull"],
+        sampled_by: &["getBytes", "getBytesByNull", "getBytesAscii"],
         calls: &["getBytes(Ljava/nio/charset/Charset;)[B"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.getBytes(Ljava/lang/String;)[B",
+        family: Family::String,
+        source: BYTES_SOURCE,
+        admits: "a String with content and a constant charset name Charset.forName takes for UTF-8 (UTF-8, UTF8 or unicode-1-1-utf-8, in any case of ASCII letters): the encoding getBytes(UTF_8) gives",
+        throws: &[NPE],
+        leaves_out: &["any other name, and one that is not a constant: the JDK call it names, a gap (a name the JDK has no charset for throws UnsupportedEncodingException)", "a String with no content"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["getBytesNamed", "getBytesNamedNull"],
+        calls: &["getBytes(Ljava/lang/String;)[B"],
     },
     OperationEvidence {
         operation: "java.lang.String.matches(Ljava/lang/String;)Z",
@@ -1259,7 +1272,7 @@ mod tests {
             assert_eq!(json["level"], "tested");
             assert!(json["sampled_by"].as_array().is_some_and(|c| !c.is_empty()), "{}", record.operation);
         }
-        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 22);
+        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 23);
         assert!(OPERATIONS.iter().any(|r| r.family == Family::List && r.throws.contains(&"java.lang.ArrayIndexOutOfBoundsException")));
     }
 

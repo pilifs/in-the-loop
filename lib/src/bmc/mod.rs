@@ -183,6 +183,9 @@ pub struct Options {
     /// The previous version of a pair of versions the check holds in one program ([`crate::pairing`]): what its
     /// code asks by a name it computes is answered as on its own class path ([`runtime`]).
     pub previous: Option<std::sync::Arc<crate::relocate::Previous>>,
+    /// In a pair of versions, whether a call of a static method both versions share may be taken as one function
+    /// of both ([`ties`]). A check it leaves undecided runs again without ([`check`]).
+    pub calls_as_one_function: bool,
 }
 
 /// A static method whose calls run a method of the claim's class ([`crate::harness::expr::CLAIM_CLASS`]) of the same
@@ -198,7 +201,7 @@ pub struct Summary {
 
 impl Default for Options {
     fn default() -> Self {
-        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, merge_heaps_after: 1024, invariants: true, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured, parameters: Parameters::default(), summaries: Default::default(), pure: None, own_induction: false, observed: Default::default(), models: Default::default(), previous: None }
+        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, merge_heaps_after: 1024, invariants: true, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured, parameters: Parameters::default(), summaries: Default::default(), pure: None, own_induction: false, observed: Default::default(), models: Default::default(), previous: None, calls_as_one_function: true }
     }
 }
 
@@ -296,6 +299,13 @@ pub struct Outcome {
     /// were given, and how many summaries were one made before from a state of the same key ([`ties`]).
     pub tied: u64,
     pub summaries_reused: u64,
+    /// In a pair of versions, the calls taken as one function of both, and how many of them were related to an
+    /// earlier call by their inputs ([`ties`]).
+    pub calls_as_one_function: u64,
+    pub calls_related: u64,
+    /// Whether the check ran again with every call as written, after one with calls taken as one function was
+    /// undecided ([`check`]).
+    pub calls_as_written: bool,
     /// Where the run's solver calls were written, when they were ([`Options::transcript`]).
     pub transcript: Option<std::path::PathBuf>,
 }
@@ -359,6 +369,9 @@ impl Outcome {
             loops: self.loops.clone(),
             tied: self.tied,
             summaries_reused: self.summaries_reused,
+            calls_as_one_function: self.calls_as_one_function,
+            calls_related: self.calls_related,
+            calls_as_written: self.calls_as_written,
         }
     }
 
@@ -424,17 +437,34 @@ pub struct Stats {
     pub tied: u64,
     #[serde(skip_serializing_if = "is_zero")]
     pub summaries_reused: u64,
+    /// In a pair of versions, the calls taken as one function of both and the ones related to an earlier call
+    /// ([`Outcome::calls_as_one_function`]); absent when none.
+    #[serde(skip_serializing_if = "is_zero")]
+    pub calls_as_one_function: u64,
+    #[serde(skip_serializing_if = "is_zero")]
+    pub calls_related: u64,
+    /// Whether the check ran again with every call as written ([`Outcome::calls_as_written`]).
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub calls_as_written: bool,
 }
 
 impl Stats {
     /// The words of a verdict for the loops an invariant covers: `; 2 loops beyond the bound covered by invariants
-    /// the checker found and proved (p.C.m at pc 4, p.C.n at pc 9)`, or nothing.
+    /// the checker found and proved (p.C.m at pc 4, p.C.n at pc 9)`, or nothing; then, in a pair of versions, for the
+    /// calls taken as one function of both ([`ties`]), or for a check run again with every call as written.
     pub fn covered_loops(&self) -> String {
-        match self.loops.len() {
+        let mut out = match self.loops.len() {
             0 => String::new(),
             1 => format!("; 1 loop beyond the bound covered by an invariant the checker found and proved ({})", self.loops[0]),
             n => format!("; {n} loops beyond the bound covered by invariants the checker found and proved ({})", self.loops.join(", ")),
+        };
+        if self.calls_as_one_function > 0 {
+            out.push_str(&format!("; {} calls of methods both versions share taken as one function of both, {} of them related to an earlier call by their inputs", self.calls_as_one_function, self.calls_related));
         }
+        if self.calls_as_written {
+            out.push_str("; run again with every call as written, after calls taken as one function left it undecided");
+        }
+        out
     }
 }
 
@@ -801,6 +831,10 @@ struct Path {
     /// invariant at once ([`Engine::summarize_at_entry`]). A run's own history, and not the check's, so that two
     /// versions running the same code summarize the same loops at the same points and their states tie ([`ties`]).
     summarized: Rc<std::collections::BTreeSet<(String, String, u32)>>,
+    /// In a pair of versions, the calls taken as one function on this path ([`ties`]), on either side: a later
+    /// call of the same code takes their outcomes where its inputs are theirs. Facts about the code, so a version's
+    /// fresh start keeps them; two paths that join keep the ones both made.
+    calls: Rc<Vec<ties::Call>>,
 }
 
 /// Where a class is in its initialization (JVMS §5.5).
@@ -1254,6 +1288,8 @@ struct Engine<'a> {
     /// no value of, each with what it was ([`Engine::unheld_static`]).
     observed: std::sync::Arc<crate::observed::Observations>,
     previous: Option<std::sync::Arc<crate::relocate::Previous>>,
+    /// [`Options::calls_as_one_function`].
+    calls_as_one_function: bool,
     unheld: HashMap<(String, String), String>,
     /// The time spent decoding methods, and reading witnesses out of models (their solving and encoding apart).
     decoding: Duration,
@@ -1284,7 +1320,25 @@ fn check_kind(kind: ArrayKind, element: &Type) -> Result<(), Stop> {
 
 /// Checks `class.method` of the harness: every path either returns or is infeasible (verified), or one throws the
 /// `AssertionError` on an input the solver names (violation).
+///
+/// In a pair of versions a call both versions share may be taken as one function of both ([`ties`]): a proof with
+/// such calls is a proof, and a counterexample is run on a JVM before it is believed. A check they leave undecided
+/// (an opaque result a String method asks the content of, a limit, the time) runs again in the time left with every
+/// call as written, and that run's outcome is the check's ([`Outcome::calls_as_written`]).
 pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Result<Outcome, Error> {
+    let started = Instant::now();
+    let first = check_once(cp, class, method, options)?;
+    if first.verdict != Verdict::Unverifiable || first.calls_as_one_function == 0 {
+        return Ok(first);
+    }
+    let left = options.timeout.saturating_sub(started.elapsed());
+    let as_written = Options { calls_as_one_function: false, timeout: left, ..options.clone() };
+    let mut second = check_once(cp, class, method, &as_written)?;
+    second.calls_as_written = true;
+    Ok(second)
+}
+
+fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Result<Outcome, Error> {
     let started = Instant::now();
     let Some(harness) = cp.bytecode(class)? else {
         return Err(Error::new(format!("harness class {class} not found")));
@@ -1347,6 +1401,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         runs: HashMap::new(),
         observed: options.observed.clone(),
         previous: options.previous.clone(),
+        calls_as_one_function: options.calls_as_one_function,
         unheld: HashMap::new(),
         decoding: Duration::ZERO,
         witness: Duration::ZERO,
@@ -1396,6 +1451,9 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         loops: engine.loops.iter().cloned().collect(),
         tied: engine.ties.shared,
         summaries_reused: engine.ties.reused,
+        calls_as_one_function: engine.ties.calls,
+        calls_related: engine.ties.calls_related,
+        calls_as_written: false,
         transcript: engine.b.transcript_path().map(std::path::Path::to_path_buf),
     };
 
@@ -1519,7 +1577,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         }
         let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
         locals.resize(code.max_locals.max(locals.len()), None);
-        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, loose: false, summarized: Default::default() };
+        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, loose: false, summarized: Default::default(), calls: Default::default() };
         engine.pending.push(first);
 
         // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
@@ -2332,6 +2390,10 @@ impl<'a> Engine<'a> {
         into.loose |= other.loose;
         if into.summarized != other.summarized {
             into.summarized = Rc::new(into.summarized.intersection(&other.summarized).cloned().collect());
+        }
+        if !Rc::ptr_eq(&into.calls, &other.calls) {
+            let both: std::collections::BTreeSet<u64> = other.calls.iter().map(|c| c.id).collect();
+            into.calls = Rc::new(into.calls.iter().filter(|c| both.contains(&c.id)).cloned().collect());
         }
         let prefix = into.cond.iter().zip(&other.cond).take_while(|(x, y)| x == y).count();
         let common: Vec<Lit> = into.cond[prefix..].iter().copied().filter(|l| other.cond[prefix..].contains(l)).collect();
@@ -3505,9 +3567,9 @@ impl<'a> Engine<'a> {
             Insn::GetStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
-                // The JDK's UTF-8 charset is one object ([`bytes`]).
-                if (declaring.as_str(), member.name.as_str()) == (bytes::STANDARD_CHARSETS, "UTF_8") {
-                    let charset = self.literal(path, Literal::Charset("UTF_8"), bytes::CHARSET);
+                // The JDK's UTF-8 and US-ASCII charsets are each one object ([`bytes`]).
+                if let Some(name) = bytes::charset_constant(&declaring, &member.name) {
+                    let charset = self.literal(path, Literal::Charset(name), bytes::CHARSET);
                     self.push(path, Val::R(Some(charset)));
                     self.advance(path);
                     return Ok(None);
@@ -3719,6 +3781,20 @@ impl<'a> Engine<'a> {
             self.advance(path);
             return Some(Ok(None));
         }
+        // `equals` of a String a call taken as one function returned ([`ties`]), whose content is not computed: true
+        // of the very object (the JDK's first test), and any value of another such String, which is the result of
+        // a call whose inputs were not equal to this one's (where they were, the call returned this very object).
+        let opaque = |obj: &Obj| obj.limit.as_deref() == Some(ties::ONE_FUNCTION_RESULT);
+        if name == "equals" && opaque(&path.objects[o]) {
+            if let [Val::R(Some(a))] = args {
+                if *a == o || opaque(&path.objects[*a]) {
+                    let truth = if *a == o { self.b.constant(1, 32) } else { let any = self.b.fresh(1); [any, vec![FALSE; 31]].concat() };
+                    self.push(path, Val::I(truth));
+                    self.advance(path);
+                    return Some(Ok(None));
+                }
+            }
+        }
         let limited = |obj: &Obj| obj.limit.clone().map(|why| unsupported(why));
         let Some(s) = path.objects[o].content().cloned() else { return limited(&path.objects[o]) };
         if strings::models(name, descriptor) || locale::models_string(name, descriptor) {
@@ -3728,7 +3804,7 @@ impl<'a> Engine<'a> {
             return self.string_matches(path, &s, args);
         }
         if bytes::models_string(name, descriptor) {
-            return self.string_bytes(path, &s, args);
+            return self.string_bytes(path, &s, descriptor, args);
         }
         if regex::models_string(name, descriptor) {
             return Some(self.string_split(path, o, &s, args));
@@ -4272,6 +4348,10 @@ impl<'a> Engine<'a> {
                 }
                 let args = self.pop_args(path, descriptor.params.len())?;
                 return self.call(path, crate::harness::expr::CLAIM_CLASS, &stub, &member.descriptor, args);
+            }
+            // In a pair of versions, a call of a static method both share, as one function of both ([`ties`]).
+            if let Some(step) = self.call_as_one_function(path, caller, member, &descriptor) {
+                return step;
             }
             let args = self.pop_args(path, descriptor.params.len())?;
             return self.call(path, &member.owner, &member.name, &member.descriptor, args);

@@ -11,6 +11,13 @@ the nullable `String` password (VF-028), so there is no verdict: both claims sta
 (below). The work manifest is [`target.json`](target.json); what was checked upstream,
 and how, is in [`sources.lock.json`](sources.lock.json).
 
+**Since 2026-11-17: a proof beside the route.** VF-028's refusal is gone. [`proofs/prove.py`](proofs/prove.py) runs
+`preservation` and `mutant-preservation` on the route's own slices (each JAR checked against the replay that ran it),
+at the claim's bound, with the job's time rather than the route's ten minutes. The checker takes the unchanged
+`hashpw(byte[], String)` as one function of both versions (`lib/src/bmc/ties.rs`), so the proof compares the two
+conversions' bytes and not the cipher. Capped probes give `preservation` verified and `mutant-preservation` refuted at a
+non-ASCII password, reproduced on a JVM. The jobs `20261117-210114-…` decide both; `example.json`'s notes say more.
+
 ## The change
 
 [fe9e4549](https://github.com/spring-projects/spring-security/commit/fe9e4549780e940c9cef7f2991e75e0b686fc5d1)

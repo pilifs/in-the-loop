@@ -126,7 +126,7 @@ fn a_glob_stated_with_the_regex_library_matches_as_the_matcher_written_out() {
 fn text_as_bytes_and_digits_and_a_hashs_shape_are_the_definitions_written_out() {
     jvmcontract::tool_tier!();
     let Some(classes) = classes() else { return };
-    for method in ["utf8", "equal", "copied", "parsed", "appended", "digits", "excluded"] {
+    for method in ["utf8", "named", "equal", "copied", "parsed", "appended", "digits", "excluded"] {
         proved(classes, &format!("claims.B#{method}"), 3);
     }
     for method in ["shaped", "anchored"] {
@@ -136,7 +136,7 @@ fn text_as_bytes_and_digits_and_a_hashs_shape_are_the_definitions_written_out() 
     assert!(sampled.status.success(), "{}", String::from_utf8_lossy(&sampled.stderr));
     assert_eq!(String::from_utf8_lossy(&sampled.stdout).trim(), "all hold on 20000 samples");
     // What the models do not say stays the JDK's call: another charset's object, a digit outside ASCII.
-    for (method, why) in [("latin", "reads static field java.nio.charset.StandardCharsets.ISO_8859_1"), ("unicodeDigits", "jdk-static-method:java.lang.Integer.parseInt(Ljava/lang/String;)I")] {
+    for (method, why) in [("latin", "reads static field java.nio.charset.StandardCharsets.ISO_8859_1"), ("latinNamed", "java.lang.String.getBytes"), ("unicodeDigits", "jdk-static-method:java.lang.Integer.parseInt(Ljava/lang/String;)I")] {
         let o = run(&options(classes, &format!("claims.B#{method}"), 3, method));
         assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
         assert!(o.output.contains(why), "{}", o.output);

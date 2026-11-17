@@ -252,6 +252,8 @@ fn the_previous_versions_questions_by_name_are_answered_on_its_own_class_path() 
 /// table's length (an exception on one side), and `after` writes a cell past the loop on one side. Their
 /// differences show past round 50, so the bound's sixteen rounds leave the two states the same but for what each
 /// countermodel changes. With that side condition taken out each was proved to agree (checked by hand, 2026-11-17).
+/// `run` takes an `Object` it does not use, a parameter of a type a call taken as one function of both versions may
+/// not have (`bmc/ties.rs`, [`ONCES`]): so the loop runs, and its ties are what these test.
 const MIXES: [&str; 7] = ["same", "callee", "cells", "alias", "mutable", "shorter", "after"];
 
 fn mix(variant: &str, old: bool) -> String {
@@ -271,7 +273,7 @@ fn mix(variant: &str, old: bool) -> String {
     let after = if variant == "after" && old { "t[x & 255] ^= 1;" } else { "" };
     let check = if old { "" } else { "if (x == 12345) { throw new IllegalArgumentException(); }" };
     format!(
-        "package app.{variant};\npublic final class Mix {{\n    static int K = 31;\n{helper}    public static int digest(int x) {{\n        {check}\n        int[] t = new int[{length}];\n        {before}\n        int acc = run(t, {second}, x);\n        {after}\n        return acc + t[x & 127];\n    }}\n    private static int run(int[] a, int[] b, int x) {{\n        int acc = x;\n        for (int r = 0; r < 100; r++) {{\n            if (r >= 50) {{\n                acc = {step} + b[(acc >>> 3) & 255];\n                a[acc & 255] ^= acc;\n            }} else {{\n                acc = acc * 31 + r;\n            }}\n        }}\n        return acc;\n    }}\n}}\n"
+        "package app.{variant};\npublic final class Mix {{\n    static int K = 31;\n{helper}    public static int digest(int x) {{\n        {check}\n        int[] t = new int[{length}];\n        {before}\n        int acc = run(t, {second}, x, null);\n        {after}\n        return acc + t[x & 127];\n    }}\n    private static int run(int[] a, int[] b, int x, Object kept) {{\n        int acc = x;\n        for (int r = 0; r < 100; r++) {{\n            if (r >= 50) {{\n                acc = {step} + b[(acc >>> 3) & 255];\n                a[acc & 255] ^= acc;\n            }} else {{\n                acc = acc * 31 + r;\n            }}\n        }}\n        return acc;\n    }}\n}}\n"
     )
 }
 
@@ -314,6 +316,110 @@ fn no_state_past_a_loop_is_one_of_two_runs_that_may_differ() {
     assert!(proved.is_empty(), "proved to agree, though the versions differ on a JVM: {proved:?}");
 }
 
+/// A call taken as one function of both versions (`bmc/ties.rs`): `run`, a static method with a loop that both
+/// versions share, called with an array, is not run; its outcome is a function of its inputs, the same for both
+/// versions' calls where their inputs are equal. Each variant but `same` is a countermodel, a pair of versions that
+/// differ on a JVM and that the rule would prove to agree without one of its side conditions: `callee` changes a
+/// helper `run` calls (the code compared), `cells` one cell of the array (the inputs compared), `alias` passes the
+/// array as both arguments on one side only and returns what `run` does (which inputs are one object), `mutable` a static field `run` reads (the
+/// static fields among the inputs), `thrown` catches the exception `run` throws on one side only (the exceptions
+/// among the outcomes), `written` reads the cell `run` writes before the call on one side (what the call writes
+/// among the outcomes), `clock` reads the clock in `run` (the JDK methods a callee may call), and `init` makes the
+/// call on one side only, whatever it ends with, where `run` initializes a class whose initializer reads a static
+/// field the caller changes after the call (the classes a call reads the state of are initialized). With that side condition taken out, each
+/// was proved to agree (checked by hand, 2026-11-17).
+const ONCES: [&str; 9] = ["same", "callee", "cells", "alias", "mutable", "thrown", "written", "clock", "init"];
+
+fn once(variant: &str, old: bool) -> String {
+    let step = match variant {
+        "mutable" => "acc * K",
+        "callee" => "step(acc)",
+        _ => "acc * 31",
+    };
+    let helper = if variant == "callee" { format!("    private static int step(int acc) {{ return acc * {}; }}\n", if old { 31 } else { 33 }) } else { String::new() };
+    let clock = if variant == "clock" { " ^ (int) System.nanoTime()" } else { "" };
+    let table = if variant == "init" { " + Table.X" } else { "" };
+    let throwing = if variant == "thrown" { "if (x == 7) { throw new IllegalArgumentException(); }" } else { "" };
+    let before = match variant {
+        "cells" => format!("t[7] = {};", if old { 1 } else { 2 }),
+        "mutable" => format!("K = {};", if old { 31 } else { 33 }),
+        _ => String::new(),
+    };
+    let second = if variant == "alias" && !old { "t.clone()" } else { "t" };
+    let call = format!("run(t, {second}, x)");
+    let body = match (variant, old) {
+        ("thrown", _) => format!("int acc;\n        try {{ acc = {call}; }} catch ({} e) {{ acc = -1; }}\n        return acc + t[x & 15];", if old { "IllegalArgumentException" } else { "IllegalStateException" }),
+        ("written", false) => format!("int kept = t[x & 15];\n        int acc = {call};\n        return acc + kept;"),
+        ("alias", _) => format!("return {call};"),
+        ("init", true) => format!("try {{ {call}; }} catch (Throwable e) {{ }}\n        K = 2;\n        return Table.X;"),
+        ("init", false) => "K = 2;\n        return Table.X;".to_string(),
+        _ => format!("int acc = {call};\n        return acc + t[x & 15];"),
+    };
+    let check = if old { "" } else { "if (x == 12345) { throw new IllegalArgumentException(); }" };
+    format!(
+        "package app.{variant};\npublic final class Once {{\n    static int K = 31;\n    static final class Table {{ static int X = K; }}\n{helper}    public static int digest(int x) {{\n        {check}\n        int[] t = new int[16];\n        {before}\n        {body}\n    }}\n    static int run(int[] a, int[] b, int x) {{\n        {throwing}\n        int acc = x;\n        for (int r = 0; r < 4; r++) {{\n            acc = {step} + b[(acc >>> 3) & 15]{clock}{table};\n            a[acc & 15] ^= acc;\n        }}\n        a[x & 15] ^= acc | 1;\n        return acc;\n    }}\n}}\n"
+    )
+}
+
+/// Every variant, the previous versions in one folder and the new ones in another.
+fn onces() -> &'static (PathBuf, PathBuf) {
+    static ONCED: std::sync::OnceLock<(PathBuf, PathBuf)> = std::sync::OnceLock::new();
+    ONCED.get_or_init(|| {
+        let paths: Vec<String> = ONCES.iter().map(|v| format!("app/{v}/Once.java")).collect();
+        let sources = |old: bool| paths.iter().zip(ONCES).map(|(p, v)| (p.as_str(), once(v, old))).collect::<Vec<_>>();
+        (compile("onces-old", &sources(true), &[]), compile("onces-new", &sources(false), &[]))
+    })
+}
+
+fn onced(variant: &str) -> equivalence::Outcome {
+    let (old, new) = onces();
+    let mut o = equivalence::Options::new(old, new, &format!("app.{variant}.Once#digest"));
+    o.engine = Engine::Native;
+    o.jbmc = NO_JBMC.into();
+    o.assume = Some("x != 12345".into());
+    o.work = Some(tmp(&format!("once-{variant}")));
+    equivalence::run(&o).unwrap()
+}
+
+#[test]
+fn a_call_both_versions_share_is_one_function_of_its_inputs() {
+    jvmcontract::tool_tier!();
+    let o = onced("same");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let native = o.search.as_ref().and_then(|s| s.native.as_ref()).expect("the own checker's account");
+    assert!(native.calls_as_one_function >= 2 && native.calls_related >= 1, "{native:?}");
+    assert!(o.output.contains("taken as one function of both"), "{}", o.output);
+    let stated = o.pair.as_ref().and_then(|p| p.stated.as_ref()).expect("the pair's statement");
+    assert!(stated.assumptions.iter().any(|a| a.text.starts_with("each call of app.same.Once.run taken as one function of both versions")), "{:?}", stated.assumptions);
+}
+
+/// The countermodels are pairs of versions a JVM tells apart, on one of the first 64 inputs (each version in a JVM
+/// of its own, as the pair starts each fresh), and `same` is not.
+#[test]
+fn each_onces_countermodel_differs_on_a_jvm() {
+    jvmcontract::tool_tier!();
+    let (old, new) = onces();
+    let runner = "public class Run {\n    public static void main(String[] variants) throws Exception {\n        for (String v : variants) {\n            StringBuilder out = new StringBuilder();\n            for (int x = 0; x < 64; x++) {\n                Object r;\n                try { r = Class.forName(\"app.\" + v + \".Once\").getMethod(\"digest\", int.class).invoke(null, x); }\n                catch (java.lang.reflect.InvocationTargetException e) { r = e.getCause().getClass().getName(); }\n                out.append(r).append(',');\n            }\n            System.out.println(v + \" \" + out);\n        }\n    }\n}\n";
+    let run_dir = compile("onces-runner", &[("Run.java", runner.to_string())], &[]);
+    let outputs = |version: &Path| {
+        let cp = format!("{}:{}", run_dir.display(), version.display());
+        let out = Command::new("java").args(["-cp", &cp, "Run"]).args(ONCES).output().expect("java runs");
+        assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+        String::from_utf8_lossy(&out.stdout).lines().map(String::from).collect::<Vec<_>>()
+    };
+    let (before, after) = (outputs(old), outputs(new));
+    for (i, v) in ONCES.iter().enumerate() {
+        assert_eq!(before[i] == after[i], *v == "same", "{v}: {} | {}", before[i], after[i]);
+    }
+}
+
+#[test]
+fn no_call_is_one_function_of_two_versions_that_may_differ() {
+    jvmcontract::tool_tier!();
+    let proved: Vec<&str> = ONCES[1..].iter().copied().filter(|v| onced(v).verdict == Verdict::Verified).collect();
+    assert!(proved.is_empty(), "proved to agree, though a JVM tells them apart: {proved:?}");
+}
+
 /// The countermodels are pairs of versions a JVM tells apart, on one of the first 64 inputs, and `same` is not.
 #[test]
 fn each_mixes_countermodel_differs_on_a_jvm() {
@@ -340,14 +446,15 @@ fn each_mixes_countermodel_differs_on_a_jvm() {
 /// version's run on this one. Whether it is summarized at its entry is now this path's own history since its version
 /// began, and the second fork is proved as the first is. When that was the check's history, the new version's
 /// inner loop on the second fork started at its entry, the previous version's past the bound, and nothing tied
-/// (checked by hand, 2026-11-17).
+/// (checked by hand, 2026-11-17). `rounds` takes an `Object` it does not use, so that its call is not taken as one
+/// function of both versions ([`ONCES`]) and its loops run.
 #[test]
 fn two_versions_summarize_a_loop_at_its_entry_alike_on_every_fork() {
     jvmcontract::tool_tier!();
     let source = |old: bool| {
         let check = if old { "" } else { "if (x == 12345) { throw new IllegalArgumentException(); }" };
         format!(
-            "package app.nested;\npublic final class Mix {{\n    public static int digest(int x) {{\n        {check}\n        int[] t = new int[256];\n        int acc = rounds(t, x);\n        if (acc > 0) {{\n            return acc + t[x & 127];\n        }}\n        return acc - t[x & 63];\n    }}\n    private static int rounds(int[] t, int acc) {{\n        for (int i = 0; i < 100; i++) {{\n            acc = acc * 7 + t[(acc >>> 5) & 255];\n            t[i & 255] ^= acc;\n        }}\n        for (int r = 0; r < 40; r++) {{\n            acc = inner(t, acc);\n        }}\n        return acc;\n    }}\n    private static int inner(int[] t, int acc) {{\n        for (int i = 0; i < 100; i++) {{\n            acc = acc * 31 + t[(acc >>> 3) & 255];\n            t[acc & 255] ^= acc;\n        }}\n        return acc;\n    }}\n}}\n"
+            "package app.nested;\npublic final class Mix {{\n    public static int digest(int x) {{\n        {check}\n        int[] t = new int[256];\n        int acc = rounds(t, x, null);\n        if (acc > 0) {{\n            return acc + t[x & 127];\n        }}\n        return acc - t[x & 63];\n    }}\n    private static int rounds(int[] t, int acc, Object kept) {{\n        for (int i = 0; i < 100; i++) {{\n            acc = acc * 7 + t[(acc >>> 5) & 255];\n            t[i & 255] ^= acc;\n        }}\n        for (int r = 0; r < 40; r++) {{\n            acc = inner(t, acc);\n        }}\n        return acc;\n    }}\n    private static int inner(int[] t, int acc) {{\n        for (int i = 0; i < 100; i++) {{\n            acc = acc * 31 + t[(acc >>> 3) & 255];\n            t[acc & 255] ^= acc;\n        }}\n        return acc;\n    }}\n}}\n"
         )
     };
     let old = compile("nested-old", &[("app/nested/Mix.java", source(true))], &[]);
@@ -404,6 +511,29 @@ fn a_jdk_method_given_an_application_object_leaves_the_code_compared_open() {
     let mut o = equivalence::Options::new(&old, &new, "app.shown.Entry#shown");
     o.jbmc = NO_JBMC.into();
     o.work = Some(tmp("shown"));
+    let o = equivalence::run(&o).unwrap();
+    assert!(o.verdict != Verdict::Verified && !o.output.contains("nothing to prove"), "{}", o.output);
+}
+
+/// The same through a JDK class whose own code the comparison follows (`Integer`, [`jvmcontract::shared`]):
+/// `Integer.parseInt(CharSequence, int, int, int)` calls `charAt` of the object it is given, here the application's.
+/// The two versions differ only in that object's private helper. Before 2026-11-17 a call into a followed JDK class
+/// was not checked as other JDK calls are, and the target was "identical in both versions; nothing to prove"
+/// (checked by hand); on a JVM `parsed(1)` is 22 against 11.
+#[test]
+fn a_followed_jdk_method_given_an_application_object_leaves_the_code_compared_open() {
+    jvmcontract::tool_tier!();
+    let source = |digit: char| {
+        vec![
+            ("app/digits/Entry.java", "package app.digits;\npublic final class Entry {\n    public static int parsed(int x) {\n        return Integer.parseInt(new Digits(x), 0, 2, 10);\n    }\n}\n".to_string()),
+            ("app/digits/Digits.java", format!("package app.digits;\nfinal class Digits implements CharSequence {{\n    private final int x;\n    Digits(int x) {{ this.x = x; }}\n    public int length() {{ return 2; }}\n    public char charAt(int i) {{ return digit(); }}\n    private char digit() {{ return x > 0 ? '{digit}' : '0'; }}\n    public CharSequence subSequence(int a, int b) {{ return this; }}\n    @Override public String toString() {{ return \"\"; }}\n}}\n")),
+        ]
+    };
+    let old = compile("digits-old", &source('2'), &[]);
+    let new = compile("digits-new", &source('1'), &[]);
+    let mut o = equivalence::Options::new(&old, &new, "app.digits.Entry#parsed");
+    o.jbmc = NO_JBMC.into();
+    o.work = Some(tmp("digits"));
     let o = equivalence::run(&o).unwrap();
     assert!(o.verdict != Verdict::Verified && !o.output.contains("nothing to prove"), "{}", o.output);
 }

@@ -171,6 +171,32 @@ public final class B {
         return s.getBytes(StandardCharsets.ISO_8859_1).length == s.length();
     }
 
+    /** By a name the JDK takes for UTF-8, in any case, the bytes are those of the charset itself. */
+    public static boolean named(String s) {
+        try {
+            return same(s.getBytes("UTF-8"), s.getBytes(StandardCharsets.UTF_8)) && same(s.getBytes("utf8"), s.getBytes(StandardCharsets.UTF_8));
+        } catch (java.io.UnsupportedEncodingException e) {
+            return false;
+        }
+    }
+
+    private static boolean same(byte[] a, byte[] b) {
+        if (a.length != b.length) return false;
+        for (int i = 0; i < a.length; i++) {
+            if (a[i] != b[i]) return false;
+        }
+        return true;
+    }
+
+    /** The same by the charset's name, which the JDK looks up: no name but UTF-8's is modelled. */
+    public static boolean latinNamed(String s) {
+        try {
+            return s.getBytes("ISO-8859-1").length == s.length();
+        } catch (java.io.UnsupportedEncodingException e) {
+            return false;
+        }
+    }
+
     /** Digits outside ASCII are digits to the JDK ("\u0663" is 3): the model does not say so, and says it does not. */
     public static boolean unicodeDigits(String s) {
         try {

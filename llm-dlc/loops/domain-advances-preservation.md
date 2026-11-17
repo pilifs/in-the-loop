@@ -318,8 +318,94 @@ relational result needs a new check (the rule's applications recorded in the out
       the alternative to the third approach in 287's notes and is weighed when job `20261117-185613-…` returns.
     - I007 and I008 stay the user's questions.
   - I013: job `20261117-180758-…` decided nothing, and nothing was taken from it (above).
-- Next: step 6 (307: the driver, the slice, the seven salts), then the results of jobs `20261117-185613-…` (accept
-  287, or the third approach) and `20261117-185623-…` (record 289's and 290's).
+- 2026-11-17, step 6 (307; *working formalization* and *accepted claim* unchanged; the frozen claim's hash kept).
+  - **The driver.** 307's `proofs/prove.py` runs `preservation` and `mutant-preservation` on the route's own slices
+    (`runtime.prepare`), at the claim's bound, with the claim's assumption and nullable `password` and `salt`. Each
+    slice JAR must be the one its replay ran (before `ea4dfaa1…`, after `f6aec1ce…`, mutant `54a1f226…`). It keeps
+    `beside_route`'s three properties. It is beside the route only for the time: the route gives the verifier ten
+    minutes. Finding against the brief: `beside_route.Run` needs an adapter and pinned JARs, and 307 has neither, so
+    the driver subclasses it for the slices.
+  - **First stop:** `String.getBytes(String)` on before's side. It is now modelled for the names the JDK takes for
+    UTF-8. `getBytes(US_ASCII)`, the mutant's, is modelled too. Both are sampled on the JVM, the interpreter and the
+    checker (String model 7).
+  - **Second stop.** At unwind 513 every loop of bcrypt is followed to its end, so nothing is summarized and the loop
+    ties never apply. A capped probe filled 4 GB in 39 s.
+  - **What the second use showed was accidental in the first:** 287's claim leaves its loops past the bound. So
+    the boundary moved to the brief's first candidate, the unchanged callee as one function of both sides
+    (`bmc/ties.rs`, `shared::one_function`):
+    - a call of a static method both versions share is not run;
+    - its outcome is new bits, related by congruence to every earlier call of the same code on the path;
+    - its inputs (arguments and the statics of the classes it uses) are compared by length and cells;
+    - its outcomes are the result, whether it throws and which class, and the cells of every array it reaches.
+
+    Side conditions:
+    - the same code in both versions;
+    - parameters, statics and result only of numbers, Strings and arrays of numbers;
+    - those classes initialized;
+    - a loop in the code;
+    - no static field written outside an initializer, and none of the JDK's read;
+    - no lambda, and no exception of the application's own class;
+    - JDK calls only from a list that reads no state a run can change.
+
+    The outcome states that each such call is taken to end.
+  - **Countermodels first:** `ONCES` in `lib/tests/pairing.rs`, eight of them:
+    - a changed helper;
+    - an unequal cell;
+    - an alias on one side;
+    - a mutable static;
+    - an exception one caller catches;
+    - a written cell read before the call on one side;
+    - the clock;
+    - an initializer the call would run.
+
+    Each differs on a JVM (`each_onces_countermodel_differs_on_a_jvm`). Each is not proved, and each was proved with
+    its side condition taken out (a temporary switch, removed). `alias` and `init` first had to be reshaped, because
+    another condition covered them. `mix` and the fork test now pass their helper an unused `Object`, so their loops
+    still run and still test the ties.
+  - **The reach (I017, a finding of its own).** Every method calling `Integer.parseInt` had no fingerprint: the reach
+    follows `Integer`'s code, and on JDK 25 `parseInt` builds its message with `String.format(Object[])`. A followed
+    JDK class's own calls into the JDK now leave the reach closed. The application's call into one is checked as any
+    JDK call is, which it was not before. The countermodel is
+    `a_followed_jdk_method_given_an_application_object_leaves_the_code_compared_open`, `parseInt(CharSequence, ...)`
+    given the application's: it was "nothing to prove" without the entry check.
+  - **Probes at the claim's bound on JDK 25:**
+    - `preservation` verified in about 100 s (72 calls taken, 66 related);
+    - `mutant-preservation` refuted at `"\uffc0\ub000"` under a valid salt, reproduced on a JVM with the real cipher;
+    - 289 and 290 still verify at their former path counts.
+
+    Jobs `20261117-210114-example-307-preservation-at-the-frozen-b` and
+    `20261117-210114-example-307-mutant-preservation-after-ag` decide both.
+  - **Limits, stated in `lib/README.md`:**
+    - The rule takes no instance method, so not 287's `crypt_raw`.
+    - A counterexample through calls whose inputs differ may rest on values no run gives. One that does not reproduce
+      leaves the check undecided where the call as written would refute it (`cells`, `alias`, `thrown`).
+    - The mutant's refutation therefore depends on the solver's first candidate, which I018 says can be one that does
+      not replay. A check the rule leaves otherwise undecided runs again as written.
+  - **Name and interface.** The rule has a name in the outcome (`calls_as_one_function`, `calls_related`), in the
+    proof's words, and in `bmc::Options`. It has no flag: in a pair it is the checker's own, and a proof through it is
+    a proof. Whether it deserves one waits for 287.
+  - **For the evidence stream (`accept.py`, three things 307 will meet):**
+    - The outcome's target names `hashpw`'s parameter types (the method is overloaded), and the entry check compares a
+      bare `Class#method`.
+    - The slices are built from source, recorded as constructed, so only the mutant's is checked against a receipt.
+      A slice route would check each against its replay's.
+    - A pair's harness is at `work/pair-work/harness/PropertyHarness.java`, where the refutation's replay check looks
+      for `work/harness/`.
+- 2026-11-17, the inbox read during that cycle (I014 to I019 came in).
+  - I017: done above.
+  - I016: the user's D028 and D029 are recorded in 307's note: the I008 limit stands with the result, and the result
+    holds on the pinned JDK 21 and 25 builds, where the two forms encode alike. The packet's points (1) to (3) are
+    what this entry found.
+  - I014, I015, I018 and I019 are taken next. They need the default line merged: the specialist's packets, the
+    `callee-countermodels` and `reach-countermodels` fixtures, and the two job results.
+- Next:
+  1. Merge the default line.
+  2. I014: 290's relative `-Xlog` path, then rerun 290's step.
+  3. I019: the reach countermodels.
+  4. I018: test the rule against `callee-countermodels`, then the rule at `crypt_raw` (an instance method whose
+     receiver it writes). That is 287's third approach after job `20261117-185613-…` (I015), and it makes 307's
+     mutant refutation independent of the solver's first candidate.
+  5. Then the 307 jobs' results, through `accept.py` once the evidence stream can read them.
 - Status: working
 
 ## Loop settings

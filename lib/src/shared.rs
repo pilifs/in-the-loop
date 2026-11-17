@@ -341,12 +341,24 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
                     if matches!(insn, Insn::InvokeStatic(_)) {
                         out.initialized(cp, &callee.owner, &mut work);
                     }
+                    // A JDK class whose code is followed ([`followed`]: numbers, which hold no reference of the
+                    // application's) calls the JDK with what it was given: what the application gave it was checked
+                    // where it entered, below, so its own calls run no application code.
+                    if !cp.is_application(&class.name) && !cp.is_application(&callee.owner) {
+                        if followed(cp, &callee.owner) {
+                            work.push_back(callee);
+                        }
+                        continue;
+                    }
+                    let call = if matches!(insn, Insn::InvokeStatic(_)) { JdkCall::Static } else { JdkCall::Special };
+                    if followed(cp, &callee.owner) && !cp.is_application(&callee.owner) && !inert_jdk_call(cp, &callee, call, true) {
+                        out.closed = false;
+                    }
                     if !followed(cp, &callee.owner) {
                         // The JDK is the same in both versions, but a call into it may come back into the
                         // application: through an argument, or, from a constructor of the application's own class,
                         // through the object it makes.
                         let on_self = callee.name == "<init>" && reference.name == "<init>" && class.super_class.as_deref() == Some(callee.owner.as_str()) && cp.is_application(&class.name);
-                        let call = if matches!(insn, Insn::InvokeStatic(_)) { JdkCall::Static } else { JdkCall::Special };
                         let inert = JDK_INERT.contains(&(callee.owner.as_str(), callee.name.as_str(), callee.descriptor.as_str()));
                         if (on_self && !inert) || !inert_jdk_call(cp, &callee, call, cp.is_application(&class.name)) {
                             out.closed = false;
@@ -363,6 +375,9 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
                 }
                 Insn::InvokeVirtual(i) | Insn::InvokeInterface(i) => {
                     let Ok(callee) = class.pool.member(i) else { continue };
+                    if !cp.is_application(&class.name) && !cp.is_application(&callee.owner) {
+                        continue; // a followed JDK class's own call, as above
+                    }
                     if !cp.is_application(&callee.owner) {
                         // The JDK is the same in both versions, but an interface or an overridable method may be
                         // the application's, and so may an argument's methods the JDK calls.
@@ -580,6 +595,127 @@ pub(crate) fn fingerprint(cp: &ClassPath, root: &MemberRef, name: &dyn Fn(&str) 
     }
     parts.sort();
     Some((parts.join("\n\n"), reached.classes.keys().cloned().collect()))
+}
+
+/// What a call of a static method taken as one function of both versions rests on, from its code ([`one_function`];
+/// the tool's own checker's ties take the call, [`crate::bmc`]).
+#[derive(Debug, Clone)]
+pub(crate) struct OneFunction {
+    /// The exception classes a call may end with, by internal name: the JDK's that its code makes, and those the JVM
+    /// and the JDK methods it may call throw ([`ONE_FUNCTION_THROWN`]).
+    pub throws: Vec<String>,
+    /// Whether its code stores into an array: then every array a call reaches through its arguments and the static
+    /// fields of its classes holds what the call left, which is part of its outcome.
+    pub writes_arrays: bool,
+}
+
+/// What the JVM and the JDK methods [`one_function`] lets a callee call may throw: a superset, which is sound.
+const ONE_FUNCTION_THROWN: &[&str] = &[
+    "java/lang/NullPointerException",
+    "java/lang/ArrayIndexOutOfBoundsException",
+    "java/lang/StringIndexOutOfBoundsException",
+    "java/lang/IndexOutOfBoundsException",
+    "java/lang/ArithmeticException",
+    "java/lang/NegativeArraySizeException",
+    "java/lang/ClassCastException",
+    "java/lang/ArrayStoreException",
+    "java/lang/NumberFormatException",
+    "java/lang/IllegalArgumentException",
+];
+
+/// The JDK methods, by class and name, that give the same outcome on the same arguments and read no state of the
+/// JDK a run can change (the default locale, a system property, the clock, an identity): a callee taken as one
+/// function calls no other. `String.toLowerCase()` and `format` read the default locale; `Integer.getInteger` a
+/// property; neither is here.
+const ONE_FUNCTION_JDK: &[(&str, &[&str])] = &[
+    ("java/lang/Object", &["<init>"]),
+    ("java/lang/String", &["<init>", "length", "isEmpty", "charAt", "equals", "hashCode", "substring", "indexOf", "lastIndexOf", "startsWith", "endsWith", "getBytes", "toString", "toCharArray", "contains", "concat", "valueOf", "compareTo"]),
+    ("java/lang/StringBuilder", &["<init>", "append", "toString", "charAt", "length", "setLength", "setCharAt", "insert", "reverse", "deleteCharAt", "delete"]),
+    ("java/lang/StringBuffer", &["<init>", "append", "toString", "charAt", "length", "setLength", "setCharAt", "insert", "reverse", "deleteCharAt", "delete"]),
+    ("java/lang/Integer", &["parseInt", "valueOf", "toString", "intValue", "compare", "max", "min", "sum", "signum", "numberOfLeadingZeros", "numberOfTrailingZeros", "bitCount", "rotateLeft", "rotateRight", "toUnsignedLong", "highestOneBit", "lowestOneBit", "reverse", "reverseBytes", "toHexString", "toBinaryString"]),
+    ("java/lang/Long", &["parseLong", "valueOf", "toString", "longValue", "compare", "max", "min", "sum", "signum", "numberOfLeadingZeros", "numberOfTrailingZeros", "bitCount", "rotateLeft", "rotateRight", "highestOneBit", "lowestOneBit", "reverse", "reverseBytes"]),
+    ("java/lang/Character", &["isDigit", "digit", "forDigit", "isLetter", "isLetterOrDigit", "isWhitespace", "isHighSurrogate", "isLowSurrogate", "isSurrogate", "toCodePoint", "valueOf", "charValue"]),
+    ("java/lang/Math", &["abs", "max", "min", "addExact", "subtractExact", "multiplyExact", "negateExact", "incrementExact", "decrementExact", "toIntExact", "floorDiv", "floorMod", "absExact"]),
+    ("java/lang/StrictMath", &["abs", "max", "min", "addExact", "subtractExact", "multiplyExact", "negateExact", "incrementExact", "decrementExact", "toIntExact", "floorDiv", "floorMod", "absExact"]),
+    ("java/util/Arrays", &["copyOf", "copyOfRange", "fill", "equals"]),
+    ("java/lang/System", &["arraycopy"]),
+    ("java/util/Objects", &["requireNonNull"]),
+    ("java/security/MessageDigest", &["isEqual"]),
+];
+
+/// Whether a call of `root` (a static method) may be taken as one function of both versions, by its code: what it
+/// may throw and whether it writes arrays, or why not. The code must be closed ([`reach`]), contain a loop (a callee
+/// without one costs the checker less as written than a counterexample through a function would), write no static
+/// field but in an initializer, read none of the JDK's, make no lambda and no exception of the application's own,
+/// and call nothing of the JDK's but [`ONE_FUNCTION_JDK`], an array's `clone` and an exception's constructor. So
+/// what a call does depends on its arguments, the static fields of the application classes its code uses, and
+/// the objects it makes, and on nothing a run could make otherwise: the same code on the same values gives the same
+/// outcome. The caller checks the rest at the call: the arguments' and the static fields' kinds, and that those
+/// classes are initialized.
+pub(crate) fn one_function(cp: &ClassPath, root: &MemberRef) -> Result<OneFunction, String> {
+    let reached = reach(cp, root);
+    if !reached.closed {
+        return Err("its code may reach code not listed (an overridable method, a call back from the JDK, a native method)".into());
+    }
+    let mut throws: BTreeSet<String> = ONE_FUNCTION_THROWN.iter().map(|s| s.to_string()).collect();
+    let (mut writes_arrays, mut looped) = (false, false);
+    for (m, _) in &reached.methods {
+        if !cp.is_application(&m.owner) {
+            continue;
+        }
+        let Some((class, method)) = cp.find_method(&m.owner, &m.name, &m.descriptor) else { return Err(format!("{m:?} does not load")) };
+        let Some(code) = &method.code else { continue };
+        let insns = code.instructions().map_err(|e| e.to_string())?;
+        for (pc, insn) in insns {
+            let back = |target: &u32| *target <= pc;
+            match &insn {
+                Insn::If(_, t) | Insn::IfICmp(_, t) | Insn::IfACmp(_, t) | Insn::IfNull(t) | Insn::IfNonNull(t) | Insn::Goto(t) if back(t) => looped = true,
+                Insn::TableSwitch { default, targets, .. } if back(default) || targets.iter().any(back) => looped = true,
+                Insn::LookupSwitch { default, pairs } if back(default) || pairs.iter().any(|(_, t)| back(t)) => looped = true,
+                Insn::ArrayStore(_) => writes_arrays = true,
+                Insn::PutStatic(_) if m.name != "<clinit>" => return Err(format!("{}.{} writes a static field", m.owner, m.name)),
+                Insn::GetStatic(i) => {
+                    let field = class.pool.member(*i).map_err(|e| e.to_string())?;
+                    if !cp.is_application(&field.owner) {
+                        return Err(format!("{}.{} reads the JDK's static field {}.{}", m.owner, m.name, field.owner, field.name));
+                    }
+                }
+                Insn::New(i) => {
+                    let made = class.pool.class_name(*i).map_err(|e| e.to_string())?.to_string();
+                    if cp.is_subtype(&made, "java/lang/Throwable") {
+                        if cp.is_application(&made) {
+                            return Err(format!("{}.{} makes an exception of its own class, {made}", m.owner, m.name));
+                        }
+                        throws.insert(made);
+                    }
+                }
+                Insn::InvokeDynamic(i) => {
+                    let (bootstrap_index, _, _) = class.pool.invoke_dynamic(*i).map_err(|e| e.to_string())?;
+                    let bootstraps = class.bootstrap_methods().unwrap_or_default();
+                    if bootstraps.get(bootstrap_index as usize).is_none_or(|b| b.method.member.owner != "java/lang/invoke/StringConcatFactory") {
+                        return Err(format!("{}.{} makes a lambda or another dynamic call", m.owner, m.name));
+                    }
+                }
+                Insn::InvokeStatic(i) | Insn::InvokeSpecial(i) | Insn::InvokeVirtual(i) | Insn::InvokeInterface(i) => {
+                    let callee = class.pool.member(*i).map_err(|e| e.to_string())?;
+                    if cp.is_application(&callee.owner) {
+                        continue;
+                    }
+                    let listed = ONE_FUNCTION_JDK.iter().any(|(owner, names)| *owner == callee.owner && names.contains(&callee.name.as_str()));
+                    let clone = callee.owner.starts_with('[') && callee.name == "clone";
+                    let exception = callee.name == "<init>" && cp.is_subtype(&callee.owner, "java/lang/Throwable");
+                    if !(listed || clone || exception) {
+                        return Err(format!("{}.{} calls {}.{}, which may read state of the JDK's a run can change", m.owner, m.name, callee.owner, callee.name));
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+    if !looped {
+        return Err("its code has no loop".into());
+    }
+    Ok(OneFunction { throws: throws.into_iter().collect(), writes_arrays })
 }
 
 /// Whether a method is declared by the same class with the same code in both versions.

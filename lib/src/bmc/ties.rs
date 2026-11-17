@@ -52,6 +52,31 @@
 //! file holds a fork of the previous version past its loops, on whose second branch the new version's loops tie
 //! only because whether a loop is summarized at its entry is each run's own history.
 //!
+//! **A call taken as one function of both versions.** Where a static method the two versions share (the same code,
+//! [`crate::shared::fingerprint`]) is called with arguments and static state the engine holds as values (numbers,
+//! Strings, arrays of numbers), the call is not run: its outcome is a function of what it reads, as relational
+//! verification takes an unchanged callee. What decides the outcome is its inputs: the arguments, and the static
+//! fields of the application classes its code uses, which must be initialized. [`crate::shared::one_function`]
+//! says from the code that nothing else can: no static field written outside an initializer, none of the JDK's read,
+//! no JDK call that reads state a run can change (the default locale, a property, the clock, an identity), no lambda,
+//! no exception of the application's own. The outcome is new bits: whether the call throws, and which class of the
+//! ones it may throw ([`crate::shared::OneFunction::throws`]); the result, a number or an opaque String; and, where
+//! its code stores into arrays, the cells of every array it reaches. A later call of the same code on the path,
+//! on either side, takes each of these as the earlier call's wherever their inputs are equal (the lengths and
+//! cells of each array and String, each number), and new bits elsewhere: two calls are related by congruence, so
+//! that equal inputs give equal outcomes and unequal ones any. The inputs must have one shape (which references are
+//! null, which are one object, each array's type and cells), or the calls are not related.
+//!
+//! This is sound for a proof, since every outcome a run of the callee has is among the ones the bits allow, and it
+//! is what makes a cipher both versions run on equal inputs (bcrypt's, in example 307) cost nothing. It can be too
+//! coarse for a counterexample, which is run on a JVM before it is believed, as one past a loop's invariant is: one
+//! that does not reproduce leaves the check undecided. A check this leaves undecided is run again with every call
+//! as written ([`super::check`]). A String result's content is not computed: a String method on it ends the path
+//! with no verdict, but `equals` of two, which is true of one object and of the results of two calls whose inputs are
+//! equal. A call that ends no run (a loop that does not stop) is taken to end; two versions that make such a call on
+//! equal inputs are proved to agree, which is the regression check's partial reading. The countermodels are in
+//! `lib/tests/pairing.rs` (`unchanged_callee_*`).
+//!
 //! The ties are made only in a check of a pair of versions, which is where two runs of one code meet.
 
 use super::*;
@@ -81,6 +106,50 @@ pub(super) struct Ties {
     pub(super) summaries: HashMap<u64, loops::Summary>,
     /// How many summaries were a summary made before from a state of the same key.
     pub(super) reused: u64,
+    /// What [`crate::shared::one_function`] said of each static method, by class, name and descriptor.
+    ones: HashMap<(String, String, String), Option<Rc<crate::shared::OneFunction>>>,
+    /// The calls taken as one function, the ones of them related to an earlier call, and the last call's number.
+    pub(super) calls: u64,
+    pub(super) calls_related: u64,
+    last_call: u64,
+}
+
+/// What an opaque String a call taken as one function returned holds as its limit ([`Obj::limit`]).
+pub(super) const ONE_FUNCTION_RESULT: &str = "the String a call taken as one function of both versions returned (lib/src/bmc/ties.rs): its content is not computed";
+
+/// A call taken as one function of both versions, on a path: what decided it and what it gave.
+#[derive(Debug, Clone)]
+pub(super) struct Call {
+    /// Its number, unique in the check.
+    pub(super) id: u64,
+    /// Its code's key ([`Engine::code_key`]), and its inputs' shape.
+    function: i64,
+    shape: Vec<i64>,
+    inputs: Vec<Input>,
+    /// One bit: whether it threw; and the index of the class it threw.
+    threw: Bits,
+    which: Bits,
+    /// What it returned, if anything.
+    result: Option<Val>,
+    /// The cells of each array it reached, after it, in the order its inputs reach them.
+    written: Vec<Vec<Bits>>,
+}
+
+/// A value a call taken as one function reads: a number, or the length and cells of an array or a String.
+#[derive(Debug, Clone)]
+enum Input {
+    Bits(Bits),
+    Content { length: Bits, cells: Vec<Bits> },
+}
+
+/// Whether a parameter of this type is one a call taken as one function may have.
+fn one_function_input(t: &Type) -> bool {
+    match t {
+        Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long => true,
+        Type::Object(c) => c == "java/lang/String",
+        Type::Array(e) => matches!(**e, Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long),
+        _ => false,
+    }
 }
 
 impl Ties {
@@ -363,6 +432,283 @@ impl Engine<'_> {
                 self.ties.bits(&mut self.b, content, place, width).0
             }
             None => self.b.fresh(width),
+        }
+    }
+}
+
+impl Engine<'_> {
+    /// A call of the static method `member` (its arguments on the stack, its class initialized) taken as one
+    /// function of both versions: see the module's notes. `None` where the call runs as written: outside a pair of
+    /// versions, in a lemma's proof, from the pair's own class, or where the method, its code, its inputs or the
+    /// state of its classes is not one the rule takes.
+    pub(super) fn call_as_one_function(&mut self, path: &mut Path, caller: &str, member: &crate::classfile::MemberRef, descriptor: &MethodDescriptor) -> Option<Step> {
+        if !self.calls_as_one_function || self.pure.is_some() || caller == crate::pairing::CLASS {
+            return None;
+        }
+        let previous = self.previous.clone()?;
+        let result_type = matches!(&descriptor.ret, Type::Void | Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long) || descriptor.ret == Type::Object("java/lang/String".into());
+        if !result_type || !descriptor.params.iter().all(one_function_input) {
+            return None;
+        }
+        let (class, method) = self.cp.checker_method(&member.owner, &member.name, &member.descriptor)?;
+        if !method.is_static() || method.code.is_none() || !self.cp.is_application(&class.name) {
+            return None;
+        }
+        let at = (class.name.clone(), member.name.clone(), member.descriptor.clone());
+        let one = match self.ties.ones.get(&at) {
+            Some(known) => known.clone(),
+            None => {
+                let root = crate::classfile::MemberRef::new(&class.name, &member.name, &member.descriptor);
+                let found = crate::shared::one_function(self.cp, &root).ok().map(Rc::new);
+                self.ties.ones.insert(at, found.clone());
+                found
+            }
+        }?;
+        let (function, uses) = self.code_key(&class, &member.name, &member.descriptor, &previous)?;
+        // The other version has the same code: else no call of the other's is ever related to this one.
+        let other = match previous.original(&class.name) {
+            Some(own) => own.to_string(),
+            None if previous.relocated.contains(&class.name) => format!("{}/{}", previous.prefix, class.name),
+            None => class.name.clone(),
+        };
+        if other != class.name {
+            let (theirs, _) = self.cp.checker_method(&other, &member.name, &member.descriptor)?;
+            if self.code_key(&theirs, &member.name, &member.descriptor, &previous)?.0 != function {
+                return None;
+            }
+        }
+        // The classes whose static state the code reads are initialized, or have no initializer to run.
+        for c in uses.iter() {
+            if !matches!(path.classes.get(c), Some(ClassState::Done | ClassState::Assumed)) {
+                let runs = std::iter::once(c.clone()).chain(self.cp.superclasses(c)).any(|s| self.cp.application(&s).ok().flatten().is_some_and(|cf| cf.method("<clinit>", "()V").is_some()));
+                if runs {
+                    return None;
+                }
+            }
+        }
+        // The inputs: the arguments, then the static fields of those classes, by their own names.
+        let n = descriptor.params.len();
+        let stack = &path.frames.last()?.stack;
+        let args: Vec<Val> = stack.get(stack.len().checked_sub(n)?..)?.to_vec();
+        let (mut shape, mut inputs, mut numbers, mut arrays) = (vec![function], Vec::new(), HashMap::new(), Vec::new());
+        for v in &args {
+            self.one_function_input(path, v, &mut shape, &mut inputs, &mut numbers, &mut arrays)?;
+        }
+        let mut statics: Vec<(String, String, Val)> = path.statics.iter().filter(|((c, _), _)| uses.contains(c)).map(|((c, f), v)| (unprefixed(c, &previous), f.clone(), v.clone())).collect();
+        statics.sort_by(|x, y| (&x.0, &x.1).cmp(&(&y.0, &y.1)));
+        shape.push(statics.len() as i64);
+        for (c, f, v) in &statics {
+            let (c, f) = (self.ties.name(c), self.ties.name(f));
+            shape.extend([c, f]);
+            self.one_function_input(path, v, &mut shape, &mut inputs, &mut numbers, &mut arrays)?;
+        }
+        // The earlier calls of the same code with inputs of the same shape, each with whether its inputs are these.
+        let earlier: Vec<(Lit, Call)> = path.calls.iter().filter(|c| c.function == function && c.shape == shape).cloned().collect::<Vec<_>>().into_iter().map(|c| (self.same_inputs(&inputs, &c.inputs), c)).filter(|(same, _)| *same != FALSE).collect();
+        let k = one.throws.len();
+        let width = (usize::BITS - (k.max(2) - 1).leading_zeros()) as usize;
+        let mut threw = self.b.fresh(1);
+        let mut which = self.b.fresh(width);
+        for (same, c) in earlier.iter().rev() {
+            threw = self.b.ite_bits(*same, &c.threw, &threw);
+            which = self.b.ite_bits(*same, &c.which, &which);
+        }
+        let mut written = Vec::new();
+        if one.writes_arrays {
+            for (j, &o) in arrays.iter().enumerate() {
+                let array = path.objects[o].array.as_ref()?;
+                let w = cell_width(&array.element);
+                let mut cells: Vec<Bits> = (0..array.cells.len()).map(|_| self.b.fresh(w)).collect();
+                // Where the inputs are equal, the cells below the length are the earlier call's; the length is
+                // within both arrays' cells, so a cell one has and the other doesn't is past it.
+                for (same, c) in earlier.iter().rev() {
+                    let theirs = c.written.get(j)?;
+                    for (mine, theirs) in cells.iter_mut().zip(theirs) {
+                        *mine = self.b.ite_bits(*same, theirs, mine);
+                    }
+                }
+                written.push(cells);
+            }
+        }
+        // From here the call is taken: the path changes.
+        let result = match &descriptor.ret {
+            Type::Void => None,
+            Type::Object(_) => {
+                let o = self.alloc(path, "java/lang/String");
+                path.objects[o].limit = Some(ONE_FUNCTION_RESULT.to_string());
+                let mut v = Val::R(Some(o));
+                for (same, c) in earlier.iter().rev() {
+                    v = c.result.as_ref().and_then(|theirs| choose(&mut self.b, *same, theirs, &v)).unwrap_or(v);
+                }
+                Some(v)
+            }
+            t => {
+                let fresh = self.typed_fresh(t);
+                let mut v = if *t == Type::Long { Val::J(fresh) } else { Val::I(fresh) };
+                for (same, c) in earlier.iter().rev() {
+                    v = c.result.as_ref().and_then(|theirs| choose(&mut self.b, *same, theirs, &v)).unwrap_or(v);
+                }
+                Some(v)
+            }
+        };
+        self.assumed.insert(format!("each call of {}.{} taken as one function of both versions (lib/src/bmc/ties.rs) ends: two versions that make it on equal inputs are taken to agree, so what is proved holds of the runs in which it ends", unprefixed(&class.name, &previous).replace('/', "."), member.name));
+        self.ties.last_call += 1;
+        self.ties.calls += 1;
+        if !earlier.is_empty() {
+            self.ties.calls_related += 1;
+        }
+        let call = Call { id: self.ties.last_call, function, shape, inputs, threw: threw.clone(), which: which.clone(), result: result.clone(), written: written.clone() };
+        Rc::make_mut(&mut path.calls).push(call);
+        for (&o, cells) in arrays.iter().zip(written) {
+            if let Some(array) = path.objects[o].array.as_mut() {
+                array.cells = cells;
+            }
+        }
+        if let Err(e) = self.pop_args(path, n) {
+            return Some(Err(e));
+        }
+        let mut thrown = Vec::with_capacity(k);
+        for (i, class) in one.throws.iter().enumerate() {
+            let index = self.b.constant(i as i64, width);
+            let picked = if i + 1 == k { -self.b.ult(&which, &index) } else { self.b.eq(&which, &index) };
+            thrown.push((self.b.and(threw[0], picked), class.clone()));
+        }
+        Some(self.one_function_outcome(path, thrown, result))
+    }
+
+    /// Adds the value `v` to a call's inputs and their shape; `None` where it is not one the rule takes.
+    fn one_function_input(&mut self, path: &Path, v: &Val, shape: &mut Vec<i64>, inputs: &mut Vec<Input>, numbers: &mut HashMap<usize, i64>, arrays: &mut Vec<usize>) -> Option<()> {
+        match v {
+            Val::I(b) => {
+                shape.push(1);
+                inputs.push(Input::Bits(b.clone()));
+            }
+            Val::J(b) => {
+                shape.push(2);
+                inputs.push(Input::Bits(b.clone()));
+            }
+            Val::R(None) => shape.push(3),
+            Val::R(Some(o)) => {
+                if let Some(&n) = numbers.get(o) {
+                    shape.extend([4, n]);
+                    return Some(());
+                }
+                let n = numbers.len() as i64;
+                numbers.insert(*o, n);
+                let obj = &path.objects[*o];
+                let string = obj.class == "java/lang/String";
+                let array = obj.array.as_ref()?;
+                let numeric = matches!(array.element, Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long);
+                if obj.lambda.is_some() || obj.unknown || obj.limit.is_some() || !array.refs.is_empty() || !numeric || !(string || obj.class.starts_with('[')) {
+                    return None;
+                }
+                if !string {
+                    arrays.push(*o);
+                }
+                let element = self.ties.name(&array.element.descriptor());
+                // Not the number of cells: two encodings of one String may have room for different numbers of
+                // bytes, and are equal where their lengths and the cells below them are.
+                shape.extend([5, n, string as i64, element, array.length.len() as i64]);
+                inputs.push(Input::Content { length: array.length.clone(), cells: array.cells.clone() });
+            }
+            Val::C(_) => return None,
+        }
+        Some(())
+    }
+
+    /// Whether two calls' inputs of one shape are equal: each number, and each array's or String's length and its
+    /// cells below the length.
+    fn same_inputs(&mut self, x: &[Input], y: &[Input]) -> Lit {
+        let mut lits = Vec::new();
+        for (a, b) in x.iter().zip(y) {
+            match (a, b) {
+                (Input::Bits(p), Input::Bits(q)) if p.len() == q.len() => lits.push(self.b.eq(p, q)),
+                (Input::Content { length: lp, cells: cp }, Input::Content { length: lq, cells: cq }) if lp.len() == lq.len() => {
+                    lits.push(self.b.eq(lp, lq));
+                    // Both lengths within the cells both have, so that the cells compared are all there are.
+                    let room = self.b.constant(cp.len().min(cq.len()) as i64, lp.len());
+                    let within = self.b.slt(&room, lp);
+                    lits.push(-within);
+                    for (i, (c, d)) in cp.iter().zip(cq).enumerate() {
+                        let here = self.b.constant(i as i64, lp.len());
+                        let inside = self.b.slt(&here, lp);
+                        let same = self.b.eq(c, d);
+                        lits.push(self.b.or(-inside, same));
+                    }
+                }
+                _ => return FALSE,
+            }
+            if lits.last() == Some(&FALSE) {
+                return FALSE;
+            }
+        }
+        self.b.all(&lits)
+    }
+
+    /// New bits for a result of the type `t`, within its range as an `int` holds it (a `boolean` is 0 or 1).
+    fn typed_fresh(&mut self, t: &Type) -> Bits {
+        let extend = |mut bits: Bits, signed: bool, to: usize| {
+            let top = if signed { *bits.last().expect("a bit") } else { FALSE };
+            bits.resize(to, top);
+            bits
+        };
+        match t {
+            Type::Boolean => extend(self.b.fresh(1), false, 32),
+            Type::Byte => extend(self.b.fresh(8), true, 32),
+            Type::Char => extend(self.b.fresh(16), false, 32),
+            Type::Short => extend(self.b.fresh(16), true, 32),
+            Type::Long => self.b.fresh(64),
+            _ => self.b.fresh(32),
+        }
+    }
+
+    /// A call taken as one function ends: it throws each class of `thrown` where its literal holds, and returns
+    /// `result` (or nothing) on the rest. A side no input takes is not run.
+    fn one_function_outcome(&mut self, path: &mut Path, mut thrown: Vec<(Lit, String)>, result: Option<Val>) -> Step {
+        let rest = thrown.split_off(thrown.len().min(1));
+        let Some((lit, class)) = thrown.pop() else {
+            if let Some(v) = result {
+                self.push(path, v);
+            }
+            self.advance(path);
+            return Ok(None);
+        };
+        let raise = |engine: &mut Self, twin: &mut Path| -> Result<(), Stop> {
+            match engine.raise(twin, &class)? {
+                None => Ok(()),
+                Some(_) => Err(Stop::Unsupported("an exception a call taken as one function threw left the harness".into())),
+            }
+        };
+        match self.sides(path, lit)? {
+            Sides::Then => {
+                path.cond.push(lit);
+                raise(self, path)?;
+                Ok(None)
+            }
+            Sides::Else => {
+                path.cond.push(-lit);
+                self.one_function_outcome(path, rest, result)
+            }
+            Sides::Both { then_models, else_models } => {
+                let mut twin = self.split(path, lit, then_models, else_models, true);
+                raise(self, &mut twin)?;
+                self.pending.push(twin);
+                self.one_function_outcome(path, rest, result)
+            }
+            Sides::Undecided { model_takes_then: true } => {
+                let mut twin = self.split_undecided(path, lit, true);
+                self.one_function_outcome(&mut twin, rest, result)?;
+                self.pending.push(twin);
+                raise(self, path)?;
+                Ok(None)
+            }
+            Sides::Undecided { model_takes_then: false } => {
+                let twin = self.split_undecided(path, lit, false);
+                if let Some(mut twin) = self.settle(twin)? {
+                    raise(self, &mut twin)?;
+                    self.pending.push(twin);
+                }
+                self.one_function_outcome(path, rest, result)
+            }
         }
     }
 }
