@@ -316,11 +316,18 @@ elif (( fresh == ${#STREAMS[@]} )); then
   (( PIPESTATUS[0] == 0 )) || { log "the compact failed; nothing started"; exit 1; }
 fi
 
+# A new workspace has none of the session logs this one stores and has not uploaded yet, and every commit's check
+# there would report each as an error: it takes them from here (sync.py adopt-logs).
+adopt_logs() {
+  (cd "$1" && python3 llm-dlc/tools/sync.py adopt-logs >/dev/null 2>&1) || log "the workspace at $1 could not take the session logs it lacks (sync.py adopt-logs there)"
+}
+
 for s in "${STREAMS[@]}"; do
   if [[ -z "${DIR[$s]}" ]]; then
     DIR[$s]=$(dirname "$ROOT")/$(basename "$ROOT")-${WS[$s]}
     log "adding jj workspace ${WS[$s]} at ${DIR[$s]}"
     jj workspace add --name "${WS[$s]}" -r @- "${DIR[$s]}" >/dev/null || { log "could not add workspace ${WS[$s]}"; exit 1; }
+    adopt_logs "${DIR[$s]}"
   fi
 done
 
@@ -484,6 +491,7 @@ if [[ -n "$INTEGRATION" ]]; then
     INTEGRATION_DIR=$(dirname "$ROOT")/$(basename "$ROOT")-$INTEGRATION_WS
     log "adding jj workspace $INTEGRATION_WS at $INTEGRATION_DIR, for the integration check"
     jj workspace add --name "$INTEGRATION_WS" -r @- "$INTEGRATION_DIR" >/dev/null || { log "could not add workspace $INTEGRATION_WS"; exit 1; }
+    adopt_logs "$INTEGRATION_DIR"
   fi
   INTEGRATION_REPORT=$ROOT/llm-dlc/loop-summaries/$(basename "$BRIEF" .md)-integration.md
   INTEGRATION_SCOPE=feature-loop-$(basename "$BRIEF" .md)-integration

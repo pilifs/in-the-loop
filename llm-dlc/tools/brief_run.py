@@ -374,6 +374,9 @@ def cmd_foundation(run: Run, model: str | None, effort: str | None, memory: str 
         r = jj(run.root, "workspace", "add", "--name", ws, "-r", "@-", str(folder))
         if r.returncode != 0:
             raise Problem(f"could not add the workspace {ws}: {r.stderr.strip()}")
+        # the session logs the default workspace stores and has not uploaded: without them every commit's check
+        # in the new workspace reports each as an error, which the session would then try to fix
+        subprocess.run([sys.executable, "llm-dlc/tools/sync.py", "adopt-logs"], cwd=folder, capture_output=True, text=True)
     before = run.read().get("foundation") or {}
     session = before.get("session") or str(uuid.uuid4())
     command = ["claude", "-p", foundation_prompt(run, prompt), "--model", model or FOUNDATION["model"],

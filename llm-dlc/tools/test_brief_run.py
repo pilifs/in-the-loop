@@ -41,6 +41,10 @@ COPIED = ("run-streams.sh", "loop-common.sh", "streams_status.py", "run_records.
 FAKE_SYNC = textwrap.dedent('''\
     import subprocess, sys
     from pathlib import Path
+    if sys.argv[1] == "adopt-logs":
+        import os
+        open(os.environ["STATUSES"] + "/adopted", "a").write(os.getcwd() + "\\n")
+        sys.exit(0)
     Path("generated.txt").write_text("".join(sorted(p.name + "\\n" for p in Path("sessions").glob("*"))))
     if sys.argv[1] == "commit":
         sys.exit(subprocess.run(["jj", "commit", "-m", sys.argv[3]]).returncode)
@@ -291,6 +295,7 @@ class TheFoundation(Fixture):
         self.assertIn("the foundation: a shared piece", out["commit"])
         self.assertIn("brief_run.py land made-up", out["next"])
         self.assertFalse((self.root / "lib-foundation.txt").exists())  # nothing of it is in the default workspace yet
+        self.assertEqual((self.statuses / "adopted").read_text(), f"{folder}\n")  # the new workspace took the logs it lacked
 
     @cost("tool")
     def test_a_session_that_committed_nothing_is_said_so_and_a_second_run_keeps_the_session(self):
