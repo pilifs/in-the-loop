@@ -42,15 +42,17 @@ change `kxvzvywpoqxu` · [log `6de8d275b253`](https://terminalvalue.net/raw-trac
 
 Each stream's inbox has an item (I001, a failure) saying that test_brief_run.py's no-watcher test may hang or fail in their test runs until they have the fixture fix (smxzwqlr), and that they should not change it or block on it.
 
-### (in progress)
-
-change `tkooxsmsstzq`, not yet described
-
 ### Record verification results for 1 job(s)
 
 change `kkytrqkutopl` · [log `6de8d275b253`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/6de8d275b253a5abf6ba904479de1d8d2722a71b177640c5e631c1e18d98c565.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261117-130445-example-287-preservation-through-the-ada: passed: 1 passed step(s) in 15.8s, peak 817.1 MiB (estimated 5m00s, 4.0 GiB); 4 output file(s) changed; signals: jvmcontract:fails×2 Applied 4 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `yoqtxvqqztzn` · [log `6de8d275b253`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/6de8d275b253a5abf6ba904479de1d8d2722a71b177640c5e631c1e18d98c565.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-130335-example-286-protected-state-tasks-at-the: passed: 2 passed step(s) in 3m30s, peak 218.5 MiB (estimated 20m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:fails×1 Applied 6 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
 
 ## Conversation
 

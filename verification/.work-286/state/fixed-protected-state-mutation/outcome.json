@@ -1,0 +1,229 @@
+[
+  {
+    "verdict": "unverifiable",
+    "target": "example286.adapter.BindingAdapter#ageAfterBinding",
+    "domain": "upperCasePattern: boolean × field: String of ≤ 8 code units, not null",
+    "assume": "field != null && field.indexOf('.') < 0 && field.indexOf('[') < 0 && field.indexOf(']') < 0",
+    "assert": "result == 0",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the tool's own checker met 3 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.util.ArrayDeque.<init>()V@jdk-25.0.5 (java.util.ArrayDeque.<init>() at org.springframework.validation.AbstractErrors.<init>:44); jdk-reference-method:java.lang.String.toLowerCase()Ljava/lang/String;@jdk-25.0.5 (java.lang.String.toLowerCase() at org.springframework.validation.DataBinder.isAllowed:828); jdk-primitive-method:java.util.List.remove(Ljava/lang/Object;)Z@jdk-25.0.5 (java.util.List.remove(java.lang.Object) at org.springframework.beans.MutablePropertyValues.removePropertyValue:239). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption, except where a gap has no approximation",
+    "statement": "verification/.work-286/state/fixed-protected-state-mutation/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "example286.adapter.BindingAdapter#ageAfterBinding cannot be verified: the tool's own checker met 3 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.util.ArrayDeque.<init>()V@jdk-25.0.5 (java.util.ArrayDeque.<init>() at org.springframework.validation.AbstractErrors.<init>:44); jdk-reference-method:java.lang.String.toLowerCase()Ljava/lang/String;@jdk-25.0.5 (java.lang.String.toLowerCase() at org.springframework.validation.DataBinder.isAllowed:828); jdk-primitive-method:java.util.List.remove(Ljava/lang/Object;)Z@jdk-25.0.5 (java.util.List.remove(java.lang.Object) at org.springframework.beans.MutablePropertyValues.removePropertyValue:239). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption, except where a gap has no approximation",
+        "uri": null,
+        "line": 38
+      }
+    ],
+    "output": "lemma: note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target\nlemma: note: by induction on `pattern.length()`: a call simpleMatch makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with no verdict\nlemma: ✓ org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` on every input where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128) && str.chars().allMatch(c -> c < 128) (jvmcontract's own checker (CaDiCaL): 1 properties proved over pattern: String of ≤ 8 code units, not null × str: String of ≤ 8 code units, not null in 91.1 s; loops unwound 16 times with unwinding assertions)\nlemma:   not vacuous: simpleMatch(pattern=\"\", str=\"\") reaches the calls\nnote: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target\nnote: lemma, proved above by induction on `pattern.length()` in 92.4 s: org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128) && str.chars().allMatch(c -> c < 128), on Strings of at most 8 code units; its calls within that are taken to return what it states, and any other runs the method as written\n✗ example286.adapter.BindingAdapter#ageAfterBinding cannot be verified: the tool's own checker met 3 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.util.ArrayDeque.<init>()V@jdk-25.0.5 (java.util.ArrayDeque.<init>() at org.springframework.validation.AbstractErrors.<init>:44); jdk-reference-method:java.lang.String.toLowerCase()Ljava/lang/String;@jdk-25.0.5 (java.lang.String.toLowerCase() at org.springframework.validation.DataBinder.isAllowed:828); jdk-primitive-method:java.util.List.remove(Ljava/lang/Object;)Z@jdk-25.0.5 (java.util.List.remove(java.lang.Object) at org.springframework.beans.MutablePropertyValues.removePropertyValue:239). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption, except where a gap has no approximation\n",
+    "work": "verification/.work-286/state/fixed-protected-state-mutation/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.088028177,
+      "properties": 1,
+      "unwind": 16,
+      "max_array_length": 8,
+      "stage": null,
+      "native": {
+        "paths": 43,
+        "merges": 0,
+        "solver_calls": 100,
+        "solving_seconds": 0.039093871,
+        "gates_evaluated": 6341,
+        "evaluating_seconds": 0.000181792,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 4075,
+        "clauses": 12909,
+        "seconds": 0.084768153,
+        "loading_seconds": 0.004276223,
+        "decoding_seconds": 0.000538043,
+        "encoding_seconds": 0.02083168,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "java.util.ArrayList is the tool's model of the class wherever the check runs it (--model), not the JDK's code: an ArrayList as an array of its elements and their number: ArrayList() and ArrayList(int), size, isEmpty, get, add, addAll, toArray() and toArray(T[]), and iterator() with its fail-fast iterator (lib/models/java/util/lists/ArrayList.java); a constructor or method the model does not keep is the JDK call it names",
+          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+          "the default locale's language is not Turkish, Azeri or Lithuanian (tr, az, lt): String.toLowerCase() reads Locale.getDefault(), and only those three change how an ASCII letter is lowered"
+        ]
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "jdk-constructor:java.util.ArrayDeque.<init>()V@jdk-25.0.5",
+          "kind": "jdk-constructor",
+          "call": "java.util.ArrayDeque.<init>()",
+          "sites": [
+            "org.springframework.validation.AbstractErrors.<init>:44"
+          ],
+          "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+          "treatment": "refused"
+        },
+        {
+          "id": "jdk-reference-method:java.lang.String.toLowerCase()Ljava/lang/String;@jdk-25.0.5",
+          "kind": "jdk-reference-method",
+          "call": "java.lang.String.toLowerCase()",
+          "sites": [
+            "org.springframework.validation.DataBinder.isAllowed:828"
+          ],
+          "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
+          "treatment": "refused"
+        },
+        {
+          "id": "jdk-primitive-method:java.util.List.remove(Ljava/lang/Object;)Z@jdk-25.0.5",
+          "kind": "jdk-primitive-method",
+          "call": "java.util.List.remove(java.lang.Object)",
+          "sites": [
+            "org.springframework.beans.MutablePropertyValues.removePropertyValue:239"
+          ],
+          "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 1700.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 1700.0,
+          "seconds": 0.085,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.004,
+            "lowering": 0.001,
+            "symbolic": 0.02,
+            "encoding": 0.021,
+            "solving": 0.039,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 4075,
+            "clauses": 12909
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 93.702,
+        "setup": 0.002,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.085,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 93.615
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "upperCasePattern",
+            "type": "boolean",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "field",
+            "type": "java.lang.String",
+            "kind": "value",
+            "null": false,
+            "max_length": 8
+          }
+        ],
+        "shared_arrays": false,
+        "text": "upperCasePattern: boolean × field: String of ≤ 8 code units, not null"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "field != null && field.indexOf('.') < 0 && field.indexOf('[') < 0 && field.indexOf(']') < 0",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "java.util.ArrayList is the tool's model of the class wherever the check runs it (--model), not the JDK's code: an ArrayList as an array of its elements and their number: ArrayList() and ArrayList(int), size, isEmpty, get, add, addAll, toArray() and toArray(T[]), and iterator() with its fail-fast iterator (lib/models/java/util/lists/ArrayList.java); a constructor or method the model does not keep is the JDK call it names",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the default locale's language is not Turkish, Azeri or Lithuanian (tr, az, lt): String.toLowerCase() reads Locale.getDefault(), and only those three change how an ASCII letter is lowered",
+          "basis": "engine"
+        },
+        {
+          "kind": "summary",
+          "text": "org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128) && str.chars().allMatch(c -> c < 128), on Strings of at most 8 code units, by induction on `pattern.length()`: proved beside this check, at its bounds, and applied at the method's calls within that; any other call runs the method as written",
+          "basis": "proved"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 0",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 16,
+        "max_array_length": null,
+        "complete": false,
+        "max_value_length": 8
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:d3cb60427833314ef7f913b8bc6ef4ca4c79b923fd15a09a6224d63099b17d02",
+        "classes": 31,
+        "jdk": "25.0.5",
+        "values": [
+          {
+            "source": "jvmcontract String model 6: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
+            "jdk": "25.0.5",
+            "level": "tested",
+            "leaves_out": [
+              "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
+              "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
+              "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
+              "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
+            ]
+          }
+        ]
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]
