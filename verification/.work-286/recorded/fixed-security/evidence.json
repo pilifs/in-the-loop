@@ -1,0 +1,58 @@
+{
+ "schema": "beside-route-evidence/v1",
+ "example": "286",
+ "task": "fixed-security",
+ "claim": {
+  "file": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/claims/disallowed-field-denied-ignoring-case.json",
+  "sha256": "1da0be590804016ec54d23da6dea98dd030faf008037ce8b93796363f9e84abf"
+ },
+ "bound": {
+  "maxArrayLength": 8,
+  "unwind": null,
+  "trial": false
+ },
+ "artifacts": [
+  {
+   "revision": "fixed-release",
+   "name": "spring-context-5.3.19.jar",
+   "sha256": "74e575519bd7b5ccb5eea7309b3fb17d2032ed8cf99f0bf33781bbd54c501410"
+  },
+  {
+   "revision": "fixed-release",
+   "name": "spring-beans-5.3.19.jar",
+   "sha256": "fe80777b5d5aea9fd92bdb697616058d551c751a98f19bf9b5e725a43274a8fe"
+  },
+  {
+   "revision": "fixed-release",
+   "name": "spring-core-5.3.19.jar",
+   "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992"
+  },
+  {
+   "revision": "fixed-release",
+   "name": "spring-jcl-5.3.19.jar",
+   "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8"
+  }
+ ],
+ "adapter": {
+  "sources": {
+   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/replay/adapter/example286/adapter/ProtectedBean.java": "cd7f42dec19cc30e12dc287f9282cabc2997762fc8ee010d3cb486cf2d6550c9",
+   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/replay/adapter/example286/adapter/ExposedDataBinder.java": "7078b9eeab977262bbddf456a5a98a31051e5f320c6c6b21fdb98ccaceab2621",
+   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/replay/adapter/example286/adapter/BinderDecisionAdapter.java": "3c751a2c1a30171944022746cd321990f98c0b3b2be16d4960f2f83433a98975",
+   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/replay/adapter/example286/adapter/BindingAdapter.java": "708dd4126be7b4051ddde0ac44bdecd5b65f5513179a55573de60a580b40aaf5"
+  },
+  "classes": [
+   {
+    "folder": "adapter-fixed-release",
+    "sha256": "7454b6c4ddc3deedb301bb115874ad02df2b22aa1b3b7c064c5e2295e9d38246"
+   }
+  ]
+ },
+ "jvmcontract": {
+  "path": "jvmcontract",
+  "sha256": "14673718807c819f960679dfb66dc55d07b233b5195b4c835ff75cf4496baa8f"
+ },
+ "driver": {
+  "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
+  "sha256": "035cce88373f0ed08303c0b029defbc32cd76d52de32a85593a2b2265bb89e3a"
+ }
+}

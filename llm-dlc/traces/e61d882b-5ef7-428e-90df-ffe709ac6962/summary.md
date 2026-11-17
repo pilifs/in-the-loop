@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (ended) |
+| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (open) |
 | When | 2026-11-17 12:37 UTC to 2026-11-17 13:43 UTC (65 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.326 |
@@ -77,6 +77,12 @@ Outputs applied for 1 of the 1 job(s). 20261117-133148-example-290-the-four-answ
 change `pmnryttwnlxu` · [log `960a57323376`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/960a57323376cb1f5a65fd1a1f8fd0788409448e6f410d81968cdcf02552f60f.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261117-134306-examples-289-and-290-preservation-again: passed: 2 passed step(s) in 1m32s, peak 551.7 MiB (estimated 10m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:holds×2 Applied 6 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `qzwtllkxtrwx` · [log `960a57323376`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/960a57323376cb1f5a65fd1a1f8fd0788409448e6f410d81968cdcf02552f60f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-133148-example-286-the-three-answers-beside-the: passed: 3 passed step(s) in 36m01s, peak 1.4 GiB (estimated 40m00s, 4.0 GiB); 22 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1 Applied 22 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
 
 ## Conversation
 
