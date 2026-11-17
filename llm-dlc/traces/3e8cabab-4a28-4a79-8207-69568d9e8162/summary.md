@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (ended) |
+| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (open) |
 | When | 2026-11-15 19:24 UTC to 2026-11-17 13:35 UTC (2531 min) |
 | Models | `claude-fable-5-2` |
 | Client | claude-code 2.1.325 |
@@ -1164,6 +1164,12 @@ Outputs applied for 1 of the 1 job(s). 20261117-133148-example-288-fixed-securit
 change `xqxvxrmxqwsn` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
 
 The 307 specialist found that since the I010 fix the unchanged callee hashpw(byte[],String) has no fingerprint on JDK 25, where Integer.parseInt reaches String.format(String, Object[]); preservation's 307 probe was dying at 4 GB while it traced where its new rule declines. Passed on as optional guidance (I017, under D030), with the two ways out the specialist sees.
+
+### Record verification results for 1 job(s)
+
+change `ptxnxsulpwqx` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261117-235132-example-288-s-binding-under-its-locales: passed: 1 passed step(s) in 2m59s, peak 2.6 GiB (estimated 10m00s, 2.0 GiB) Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
 
 ## Conversation
 

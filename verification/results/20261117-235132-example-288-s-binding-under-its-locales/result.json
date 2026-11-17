@@ -1,0 +1,165 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261117-235132-example-288-s-binding-under-its-locales",
+  "title": "Example 288's binding under its locales, through the permitted setters' effect contracts: kept on 6.1.14, refuted on 6.1.13 (the state stream's second consumer)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m59s, peak 2.6 GiB (estimated 10m00s, 2.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261117-235132-example-288-s-binding-under-its-locales.json",
+    "sha256": "cf817c5948af934e2b3c2e1cee3ab0ed13606702dc0e14ab89e10b5ecd4b7639",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261117-235132-example-288-s-binding-under-its-locales",
+      "title": "Example 288's binding under its locales, through the permitted setters' effect contracts: kept on 6.1.14, refuted on 6.1.13 (the state stream's second consumer)",
+      "description": "The state stream of the domain-advances brief, step 6: the second consumer of the permitted setters' effect contracts (example 286's proofs/beans/protected-setters.contract is the first, on 5.3.19). Example 288's proofs/beans/example288/adapter/ProtectedBinding#protectedKept binds one property value {field, value} onto a fresh ProtectedBean with id and admin disallowed by the patterns \"id\" and \"ADMIN\", the binder configured under LOCALES[configLocale] and binding under LOCALES[bindLocale] (root, en-US, tr-TR, az-AZ, lt-LT), and returns whether id is 0 and admin false. proofs/beans.py runs it on each release's four pinned JARs at bound 8, over ASCII simple names and any value, through the bean wrapper's stand-in (proofs/beans/org/springframework/beans/ProtectedBeanStandIn.java, sampled against the release's AbstractNestablePropertyAccessor.setPropertyValue(PropertyValue) before each run: 741,600 samples under the five locales, all equal on both releases) and the effect contracts of ProtectedBean#setName and #setTitle (proofs/beans/protected-setters.contract), which the run proves first and applies at the stand-in's setter calls, with example 286's models and observed initializers. Capped probes: 6.1.14 proved in 86 s (830 MB peak), resting on both contracts; 6.1.13 refuted at protectedKept(2, 2, \"Id\", \"-9\"), run on a JVM. Nothing of target.json or 288's adapter set changes.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "288"
+        ],
+        "paths": [
+          "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/beans.py"
+        ]
+      },
+      "expected": "exit 0, two lines each '(expected X)' with the verdict X: bind-fixed verified (naming setName's effect contract), bind-vulnerable violation (run on a JVM)",
+      "submitted": {
+        "at": "2026-11-17T23:51:32+00:00",
+        "session": "9896d870-fb47-4f3c-ba4d-5b1d3e64719c"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "10m",
+        "memoryLimit": "4G",
+        "timeout": "1h",
+        "notes": "each check took about 90 s in a capped probe, peak 830 MB (the simpleMatch lemma's proof is most of it); the stand-in's sampler prints about 230 MB, which the tool reads per sub-run"
+      },
+      "steps": [
+        {
+          "name": "example 288's binding at bound 8 on both releases",
+          "run": "python3 examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/beans.py --work verification/.work-288/state-beans",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "99de6da61c6df0e8763388f3f488c0c749ddb202",
+  "startedAt": "2026-11-17T23:55:46+00:00",
+  "finishedAt": "2026-11-17T23:58:47+00:00",
+  "wallSeconds": 181.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 488304,
+    "workers": 10,
+    "cpus": 20.0,
+    "memoryBudgetBytes": 47244640256,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 600.0,
+    "notes": "each check took about 90 s in a capped probe, peak 830 MB (the simpleMatch lemma's proof is most of it); the stand-in's sampler prints about 230 MB, which the tool reads per sub-run"
+  },
+  "usage": {
+    "peakMemoryBytes": 2806784000,
+    "wallSeconds": 179.8,
+    "cpuSeconds": 179.1,
+    "memoryOfEstimate": 1.31,
+    "durationOfEstimate": 0.3
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 288's binding at bound 8 on both releases",
+      "run": "python3 examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/beans.py --work verification/.work-288/state-beans",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 179.839,
+      "cpuSeconds": 179.079,
+      "cpuThrottledSeconds": 30.096,
+      "peakMemoryBytes": 2806784000,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-288-s-binding-at-bound.log",
+        "lines": 2,
+        "bytes": 917,
+        "sha256": "357117af3e15ab034265835bd963155d89c24a43c9650847ef038caf39ef8538",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "bind-fixed: verified (expected verified): ✓ example288.adapter.ProtectedBinding#protectedKept satisfies `result` on every input where configLocale >= 0 && configLocale < 5 && bindLocale >= 0 && bindLocale < 5 && field.indexOf('.') < 0 && field.indexOf('[') < 0 && field.indexOf(']') < 0 && field.char",
+        "bind-vulnerable: violation (expected violation): ✗ Property of example288.adapter.ProtectedBinding#protectedKept violated: `result` where configLocale >= 0 && configLocale < 5 && bindLocale >= 0 && bindLocale < 5 && field.indexOf('.') < 0 && field.indexOf('[') < 0 && field.indexOf(']') < 0 && field."
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-17T23:59:10+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "cfd89a23621293907f61b80a909667cc3d96dd20",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cfd89a23621293907f61b80a909667cc3d96dd20/jvmcontract",
+    "built": false
+  }
+}
