@@ -73,6 +73,14 @@
       "summary": "VF-034 is closed by the user's decision: two default runs in one cargo target directory, fixed by the lock, and not worth pursuing before pipeline jobs are refactored",
       "body": "The user's decision on 2026-11-17: VF-034 (the default run at the prove-setup merge failing three Rust tests, twice) is closed. Its likely cause is two default runs at once sharing one warm cargo target directory, whose tmp/ holds the tests' work folders and proof caches; since kzwsnszx a run holds a lock, and the run at the merge of prove-setup's finished line (job 20261117-015957, at ksyktoyyrtyn) passed 49 of 49. The entry also says why the passed job was run again (its result commit was left off the main line by a jj new in the same second, since merged as part of ksyktoyy) and lists the sharp edges left for the refactoring of how the pipeline handles jobs, which the user plans, rather than for fixes now. It moves from Open to Decided and closed.",
       "log_sha256": "608f2d4e4c2abb5e5b99981e900ba19111998b2b05dea6ee1de0f3689e599799"
+    },
+    {
+      "change_id": "qymxztlpqwulkuwrppoosworxqymlryn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The user's review of the watcher's last two answers to the run of 288-290",
+      "body": "Accepted D010 (290 finished; the proof-tier rerun it waited on passed) and D011 (stop after 290, as the user asked; 288 left for a later run, VF-031). No answer of the run is left unreviewed.",
+      "log_sha256": "608f2d4e4c2abb5e5b99981e900ba19111998b2b05dea6ee1de0f3689e599799"
     }
   ],
   "logs": {

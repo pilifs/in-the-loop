@@ -30,6 +30,12 @@ change `omnplrmzrpwy` · [log `91e380501066`](https://terminalvalue.net/raw-trac
 
 The user's decision on 2026-11-17: VF-034 (the default run at the prove-setup merge failing three Rust tests, twice) is closed. Its likely cause is two default runs at once sharing one warm cargo target directory, whose tmp/ holds the tests' work folders and proof caches; since kzwsnszx a run holds a lock, and the run at the merge of prove-setup's finished line (job 20261117-015957, at ksyktoyyrtyn) passed 49 of 49. The entry also says why the passed job was run again (its result commit was left off the main line by a jj new in the same second, since merged as part of ksyktoyy) and lists the sharp edges left for the refactoring of how the pipeline handles jobs, which the user plans, rather than for fixes now. It moves from Open to Decided and closed.
 
+### The user's review of the watcher's last two answers to the run of 288-290
+
+change `qymxztlpqwul` · [log `91e380501066`](https://terminalvalue.net/raw-traces/7a0043cd-fc61-48d4-bca1-fdef53364800/91e38050106609f142c9305166b9db06bbbfd1d7e40ebd10113b293fa339b9f4.jsonl.gz)
+
+Accepted D010 (290 finished; the proof-tier rerun it waited on passed) and D011 (stop after 290, as the user asked; 288 left for a later run, VF-031). No answer of the run is left unreviewed.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/7a0043cd-fc61-48d4-bca1-fdef53364800/91e38050106609f142c9305166b9db06bbbfd1d7e40ebd10113b293fa339b9f4.jsonl.gz) has every step in between: reasoning, tool calls and their results.
