@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 137, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-17 22:41 UTC |
-| Prompts | 2,966 |
-| Model calls | 29,982 |
-| Tool calls | 30,941 (539 failed) |
-| Compactions | 440 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-17 23:08 UTC |
+| Prompts | 2,972 |
+| Model calls | 30,027 |
+| Tool calls | 30,986 (541 failed) |
+| Compactions | 441 |
 | Subagents | 21 |
-| Tokens written | 29,982,370 |
-| Tokens read | 4,956,232,713 (98.1% from cache) |
-| Commits with a trace | 915 |
-| Log snapshots | 1,192 (2654.4 MB gzipped, 1,162 uploaded) |
+| Tokens written | 30,020,484 |
+| Tokens read | 4,961,484,116 (98.1% from cache) |
+| Commits with a trace | 916 |
+| Log snapshots | 1,193 (2659.9 MB gzipped, 1,162 uploaded) |
 
 ## Sessions
 
@@ -164,7 +164,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 12 | 21 | 17 | 2 | 2 | 56,861 | 1 |
 | 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | open | 7 min | `claude-opus-5-5` | 2 | 5 | 4 | 0 | 0 | 56,756 | 1 |
 | 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | open | 13 min | `claude-opus-5-5` | 1 | 48 | 49 | 1 | 0 | 148,170 | 1 |
-| 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | open | 9 h 44 min | `claude-opus-5-5` | 130 | 1,140 | 1,101 | 11 | 19 | 270,181 | 24 |
+| 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | open | 10 h 11 min | `claude-opus-5-5` | 136 | 1,185 | 1,146 | 13 | 20 | 273,336 | 25 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -310,16 +310,16 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 8,137 | 42 | 87,022 | 814,514 | 90.3% | 111 |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 2,242 | 10 | 28,745 | 226,501 | 88.7% | 114 |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 38,033 | 96 | 136,827 | 4,652,464 | 97.1% | 126 |
-| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 863,579 | 2,360 | 2,801,874 | 138,917,924 | 98.0% | 164 |
+| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 901,693 | 2,452 | 2,933,915 | 144,037,194 | 98.0% | 163 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 27,531 | 89.0% | 137 |
-| `Read` | 1,285 | 4.2% | 56 |
-| `Edit` | 961 | 3.1% | 54 |
-| `Write` | 652 | 2.1% | 54 |
+| `Bash` | 27,572 | 89.0% | 137 |
+| `Read` | 1,287 | 4.2% | 56 |
+| `Edit` | 962 | 3.1% | 54 |
+| `Write` | 653 | 2.1% | 54 |
 | `ToolSearch` | 168 | 0.5% | 42 |
 | `Monitor` | 123 | 0.4% | 49 |
 | `AskUserQuestion` | 63 | 0.2% | 16 |
@@ -1254,6 +1254,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 913 | change `txzyyurs` | Example 286's protected-state claim is refuted on 5.3.18 beside the route and accepted: binding Age writes the protected age | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/552daf62b5b2419fad5ff09327c3dff186bc20353cea375fe4d42602de5455af.jsonl.gz)) |
 | 914 | change `vwrmzmst` | Example 286's someMap mismatch path runs to its end: a JDK exception keeps its message and cause, and the fixed task is proved over ASCII names in a probe (verification pending) | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/0164458bb4f28ceaa09bbc9fc53953a60695d3d9c30298083a24edb4a9c84281.jsonl.gz)) |
 | 915 | change `plplrxrt` | A check through a lemma states what the lemma's proof rested on: a stand-in, a model on request, an assumed gap or a contract | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/442eb57b58cffc14fa10d14bdc94970e996703c9ec279708eba1be8b356f1f98.jsonl.gz)) |
+| 916 | change `srxyxsns` | Example 286's adversarial fixture on 5.3.19: a setter that writes the protected flag is told from its honest twin, by its effect contract and through the binder (verification pending) | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/6ff3b4df9e88fdd65b404c24dd9e12a3e4a1472a4cc41d32cf412ef24c1e9663.jsonl.gz)) |
 
 ## Logs
 
@@ -1397,7 +1398,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 1 | 1 | 0.3 MB | [`965570933c02`](https://terminalvalue.net/raw-traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/965570933c0206c64a18c5652f4f74be1de3807449c6f9f9a26e20a3211055fc.jsonl.gz) |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 1 | 0 | 0.1 MB | `887466d85ae2`, not uploaded |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 1 | 0 | 0.2 MB | `fadef0a55901`, not uploaded |
-| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 23 | 0 | 58.9 MB | `442eb57b58cf`, not uploaded |
+| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 24 | 0 | 64.4 MB | `6ff3b4df9e88`, not uploaded |
 
 ## Session notes
 

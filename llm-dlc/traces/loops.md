@@ -17,9 +17,9 @@ loop or not.
 | Category | Loops | Runs | Cycles | With a commit | Commits | Jobs | Active | Tokens written | Cost | Per committed cycle |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | moonshot | 6 | 7 | 56 | 53 | 96 | 64 (57 passed, 7 failed) | 2.3 d | 7,291,647 | $855.37 | $16.14 |
-| brief | 31 | 58 | 326 | 323 | 399 | 209 (161 passed, 45 failed, 3 pending) | 3.7 d | 14,148,001 | $1,184.33 | $3.67 |
+| brief | 31 | 58 | 327 | 324 | 400 | 210 (161 passed, 45 failed, 4 pending) | 3.7 d | 14,186,115 | $1,187.17 | $3.66 |
 | verification | 1 | 62 | 0 | 0 | 242 | 0 | 18 h 17 min | 263,932 | $16.18 | n/a |
-| **all** | 38 | 127 | 382 | 376 | 737 | 273 (218 passed, 52 failed, 3 pending) | 6.8 d | 21,703,580 | $2,055.88 | $5.47 |
+| **all** | 38 | 127 | 383 | 377 | 738 | 274 (218 passed, 52 failed, 4 pending) | 6.8 d | 21,741,694 | $2,058.73 | $5.46 |
 
 The moonshot row includes `examples-by-hand` (3 cycles, $55.22), which a person ran by hand before the script existed. See the note under [Moonshots](#moonshots).
 
@@ -174,11 +174,11 @@ streams for a brief that ran them. The *with its streams* row adds the streams t
 | **`test-cost`** | 2 | 11 | 11 | 12 | 0 | `claude-opus-5-5` | 2026-11-15 | 2 h 30 min | 1 h 55 min | 9.4 min | 378,927 | $25.69 | $2.34 | $2.14 |
 | **`rehearsal`** | 2 | 2 | 2 | 2 | 0 | `claude-sonnet-5-5` | 2026-11-17 | 3.2 min | 2.3 min | 1.1 min | 8,137 | $0.51 | $0.19 | $0.26 |
 | **`domain-advances-evidence`** | 1 | 1 | 1 | 1 | 0 | `claude-opus-5-5` | 2026-11-17 | 14 min | 14 min | 14 min | 38,033 | $2.79 | $2.79 | $2.79 |
-| **`domain-advances-state`** | 1 | 20 | 20 | 24 | 4 (1 passed, 3 pending) | `claude-opus-5-5` | 2026-11-17 | 9 h 45 min | 9 h 09 min | 19 min | 863,579 | $67.48 | $2.98 | $2.81 |
+| **`domain-advances-state`** | 1 | 21 | 21 | 25 | 5 (1 passed, 4 pending) | `claude-opus-5-5` | 2026-11-17 | 10 h 11 min | 9 h 34 min | 19 min | 901,693 | $70.32 | $2.72 | $2.81 |
 
 ## Verification loop
 
-62 runs from 2026-11-03 to 11-17, on `claude-sonnet-5-5`: 18 h 17 min active, 242 commits, 263,932 tokens written, $16.18 ($0.26 a run). Of the 333 verification jobs on record, 273 are tied to the loop cycle that submitted them.
+62 runs from 2026-11-03 to 11-17, on `claude-sonnet-5-5`: 18 h 17 min active, 242 commits, 263,932 tokens written, $16.18 ($0.26 a run). Of the 334 verification jobs on record, 274 are tied to the loop cycle that submitted them.
 
 ## Runs
 
@@ -251,7 +251,7 @@ run before 2026-11-06) is read from its session's prompts and marked *transcript
 | 2026-11-17 02:54 | [`2026-11-17-025420-rehearsal`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/runs/2026-11-17-025420-rehearsal.md) | brief | `claude-sonnet-5-5` | 1 | 1 | 1.6 min | 1.3 min | $0.22 | blocked | record |
 | 2026-11-17 02:56 | [`2026-11-17-025646-rehearsal`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/runs/2026-11-17-025646-rehearsal.md) | brief | `claude-sonnet-5-5` | 1 | 1 | 1.5 min | 1.1 min | $0.29 | work done | record |
 | 2026-11-17 12:56 | `2026-11-17-125650-domain-advances-evidence` | brief | `claude-opus-5-5` | 1 | 1 | 14 min | 14 min | $2.79 | no end recorded | transcript |
-| 2026-11-17 12:56 | `2026-11-17-125651-domain-advances-state` | brief | `claude-opus-5-5` | 20 | 24 | 9 h 45 min | 9 h 09 min | $67.48 | no end recorded | transcript |
+| 2026-11-17 12:56 | `2026-11-17-125651-domain-advances-state` | brief | `claude-opus-5-5` | 21 | 25 | 10 h 11 min | 9 h 34 min | $70.32 | no end recorded | transcript |
 
 ## Reading these numbers
 

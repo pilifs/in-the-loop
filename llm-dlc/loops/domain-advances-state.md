@@ -476,11 +476,41 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
       `lib/tests/stand_in.rs`. It also requires the lemma's name and the text note.
     - It fails with the carry-over switched off (by mutation).
   - **The audit holds.** 286's `simpleMatch` lemma calls only String methods, so its statements lose nothing.
+- 2026-11-17, step 5 on 286's real binder: the adversarial fixture, and the effect contract at the stand-in's
+  setter call (frozen claim unchanged; the accepted refutation unaffected). Inbox: nothing open. Job 222610 has no
+  result yet.
+  - **The beans**, beside `ProtectedBean` in files of their own (`proofs/beans/example286/adapter/`):
+    - `AccountBean`: its admin flag is protected by the disallowed pattern `admin`, and its permitted `setName`
+      also sets `admin` when the name starts `admin:`.
+    - `HonestAccountBean`, its honest twin.
+    - `AccountBinding`: `DataBinder.bind` of one value `{field, value}` onto a fresh account, then its admin flag.
+    - The property is `name`, not `displayName`, so that the field fits the claim's bound 8.
+  - **`AccountBeanStandIn`**: the bean wrapper's write on these two beans, as `ProtectedBeanStandIn` is on
+    `ProtectedBean`. It calls the bean's own `setName`; a write of `admin` goes back to the method.
+    - 462,336 samples, all equal on 5.3.19.
+    - With the capitalized lookup dropped (by mutation), 292 differ.
+  - **`proofs/beans.py`** runs five checks on 5.3.19 at bound 8 for both Strings. Each ran inline as a capped
+    probe, in about a minute, and gave its expected answer:
+    - the setter's effect contract (`--writes this.name`, `this.name == name`) is refuted on `AccountBean`
+      (`setName("admin:")`, replayed on a JVM) and established on the twin;
+    - the application-level statement `!result` is refuted on `AccountBean` through the allowed field name `Name`
+      (`adminAfterBinding(field="Name", value="admin:ﺠ")`). The witness was run on a JVM, so the refutation
+      rests on no model or stand-in;
+    - on the twin it is established **through the honest setter's effect contract**. The contract is proved first,
+      and its stub stands in for the `setName` call the stand-in makes. The result names it among what it rests on;
+    - with the adversarial setter's contract the check is refused, since that contract is refuted.
+  - The statements' domain is the frozen claim's and also an ASCII `field`, the `toLowerCase()` item below.
+  - None of these files is in `target.json`'s adapter set or under `proofs/stand-ins`. `accept.py 286
+    vulnerable-protected-state-mutation` still accepts, with 12 checks.
+  - **What it answers.** Binding writes only what the permitted setter it resolves to writes. The protected state is
+    kept exactly where that setter's contract frames it. So the brief's composed statement is the one this
+    capability can carry: the binder's part (sampled stand-in) and each setter's part (a proved effect contract).
+  - Job `20261117-225439-example-286-s-adversarial-fixture-on-5-3` runs the five checks for the record.
 - Next:
-  - Step 5: the adversarial and honest beans beside `ProtectedBean`, in files of their own, and the
-    application-level refutation through `displayName`. The adapter set and the stand-in sources stay as they are,
-    or the acceptance breaks. Then the effect contract at the stand-in's setter call.
-  - Job 222610's result: record the fixed task's blocker under the frozen claim, and the ASCII trial.
+  - Step 6: the contract on 286's real path (`ProtectedBean`'s setters through `ProtectedBeanStandIn` on 5.3.19),
+    then 288's binding task as the second consumer.
+  - Job 222610's result: record the fixed task's blocker under the frozen claim, and the ASCII trial. Job 225439's
+    result.
   - Still open from cycle 1:
     - non-ASCII `toLowerCase()`, the fixed task's one blocker under the frozen claim;
     - the corrected formalization: I009's two values and an ASCII `field`. It is a new claim file, the user's

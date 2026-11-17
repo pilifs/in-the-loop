@@ -12,31 +12,32 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.005Z",
-  "ended": "2026-11-17T22:41:31.136Z",
-  "duration_seconds": 35080,
+  "ended": "2026-11-17T23:08:07.244Z",
+  "duration_seconds": 36676,
   "stats": {
-    "turns": 130,
-    "api_calls": 1140,
-    "tool_calls": 1101,
-    "tool_errors": 11,
-    "compactions": 19,
-    "peak_context_tokens": 270181,
+    "turns": 136,
+    "api_calls": 1185,
+    "tool_calls": 1146,
+    "tool_errors": 13,
+    "compactions": 20,
+    "peak_context_tokens": 273336,
     "usage": {
-      "input_tokens": 2360,
-      "output_tokens": 863579,
-      "cache_read_input_tokens": 138917924,
-      "cache_creation_input_tokens": 2801874
+      "input_tokens": 2452,
+      "output_tokens": 901693,
+      "cache_read_input_tokens": 144037194,
+      "cache_creation_input_tokens": 2933915
     }
   },
   "tools": {
-    "Bash": 1046,
-    "Read": 19,
-    "Edit": 16,
-    "Write": 11,
+    "Bash": 1087,
+    "Read": 21,
+    "Edit": 17,
+    "Write": 12,
     "ToolSearch": 5,
     "Monitor": 4
   },
   "files_touched": [
+    "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/beans.py",
     "lib/models/java/util/joiner/StringJoiner.java",
     "lib/models/java/util/lists/ArrayDeque.java",
     "lib/models/java/util/lists/LinkedHashSet.java",
@@ -323,24 +324,38 @@
     {
       "index": 19,
       "started": "2026-11-17T21:12:40.495Z",
-      "ended": "2026-11-17T22:41:31.136Z",
-      "turns": 4,
-      "api_calls": 128,
+      "ended": "2026-11-17T22:41:56.093Z",
+      "turns": 6,
+      "api_calls": 130,
       "usage": {
-        "input_tokens": 258,
-        "output_tokens": 96134,
-        "cache_read_input_tokens": 22163516,
-        "cache_creation_input_tokens": 256908
+        "input_tokens": 264,
+        "output_tokens": 97425,
+        "cache_read_input_tokens": 22705177,
+        "cache_creation_input_tokens": 260061
       },
-      "peak_context_tokens": 270181
+      "peak_context_tokens": 273336
+    },
+    {
+      "index": 20,
+      "started": "2026-11-17T22:42:57.416Z",
+      "ended": "2026-11-17T23:08:07.244Z",
+      "turns": 4,
+      "api_calls": 43,
+      "usage": {
+        "input_tokens": 86,
+        "output_tokens": 36823,
+        "cache_read_input_tokens": 4577609,
+        "cache_creation_input_tokens": 128888
+      },
+      "peak_context_tokens": 142161
     }
   ],
   "log": {
-    "sha256": "442eb57b58cffc14fa10d14bdc94970e996703c9ec279708eba1be8b356f1f98",
-    "bytes": 29957680,
-    "lines": 10589,
-    "gzip_bytes": 5235430,
-    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/442eb57b58cffc14fa10d14bdc94970e996703c9ec279708eba1be8b356f1f98.jsonl.gz"
+    "sha256": "6ff3b4df9e88fdd65b404c24dd9e12a3e4a1472a4cc41d32cf412ef24c1e9663",
+    "bytes": 31356022,
+    "lines": 11032,
+    "gzip_bytes": 5511466,
+    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/6ff3b4df9e88fdd65b404c24dd9e12a3e4a1472a4cc41d32cf412ef24c1e9663.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -535,6 +550,14 @@
       "summary": "A check through a lemma states what the lemma's proof rested on: a stand-in, a model on request, an assumed gap or a contract",
       "body": "Inbox domain-advances-state-I017 (the challenge stream's mnwtrnrp): a check that used a lemma or an effect contract stated it as proved and nothing of what its proof rested on, so sn.Use#viaLemma was proved through a lemma whose proof took a narrow stand-in, with no word of the stand-in, where a JVM gives 32. property.rs now carries each lemma's and effect contract's engine, gap and contract assumptions into the using check's statement, marked with the lemma's name, wherever the check's own run does not state them already, and adds a text note.\n\nVerified: the fixture, its README and JVM test are copied unchanged from mnwtrnrp. The README's checker-side test, a_check_through_a_lemma_states_the_stand_in_the_lemmas_proof_rested_on (lib/tests/stand_in.rs), passes, and fails with the carry-over switched off (by mutation). test_costs run --changed passes. Example 286 loses nothing, since its simpleMatch lemma calls only String methods. The brief is current.",
       "log_sha256": "442eb57b58cffc14fa10d14bdc94970e996703c9ec279708eba1be8b356f1f98"
+    },
+    {
+      "change_id": "srxyxsnsxltkkwzqkxnvxokurmzsztmo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 286's adversarial fixture on 5.3.19: a setter that writes the protected flag is told from its honest twin, by its effect contract and through the binder (verification pending)",
+      "body": "The state stream's step 5, on the real binder. The frozen protected-state claim binds onto ProtectedBean, whose setters are all honest, so it cannot tell the binder's guarantee (about field names) from the bean's. proofs/beans/ adds, beside ProtectedBean in files of their own, an account whose admin flag is protected by the disallowed pattern \"admin\": AccountBean, whose permitted setName also sets admin when the name starts \"admin:\", its honest twin HonestAccountBean, the entry AccountBinding (DataBinder.bind of one value {field, value}, then the admin flag), and AccountBeanStandIn, the bean wrapper's write on the two beans as ProtectedBeanStandIn is on ProtectedBean. It was sampled against 5.3.19's method: 462,336 samples, all equal, and 292 differ with the capitalized lookup dropped (by mutation).\n\nproofs/beans.py runs five checks on 5.3.19 at bound 8, and each gave its expected answer as a capped inline probe in about a minute. The setter's effect contract (--writes this.name, this.name == name) is refuted on AccountBean, with a witness replayed on a JVM, and established on the twin. The application-level statement \"binding one value leaves the account no admin\" is refuted on AccountBean through the allowed field name Name (value \"admin:\\ufea0\"); the witness ran on a JVM, so the refutation rests on no model or stand-in. On the twin it is established through the honest setter's effect contract, whose stub stands in for the setName call the stand-in makes. With the adversarial setter's contract the check is refused. The field is also ASCII there, as 5.3.19's isAllowed lowers it (the frozen claim's open item).\n\nNone of these files is in target.json's adapter set or under proofs/stand-ins, and accept.py 286 vulnerable-protected-state-mutation still accepts (12 checks). validate_example 286 and test_costs run --changed (22 of 22) pass. Job 20261117-225439-example-286-s-adversarial-fixture-on-5-3 runs the five checks for the record. The brief's step 5 names the property displayName; the fixture uses name so the field fits the claim's bound 8.",
+      "log_sha256": "6ff3b4df9e88fdd65b404c24dd9e12a3e4a1472a4cc41d32cf412ef24c1e9663"
     }
   ],
   "logs": {
@@ -596,6 +619,12 @@
       "bytes": 10285880,
       "lines": 3490,
       "gzip_bytes": 1755255,
+      "url": null
+    },
+    "6ff3b4df9e88fdd65b404c24dd9e12a3e4a1472a4cc41d32cf412ef24c1e9663": {
+      "bytes": 31356022,
+      "lines": 11032,
+      "gzip_bytes": 5511466,
       "url": null
     },
     "7e98b42bc2a888a7ac6faf5e863857e0dc7d65a8f009572be5680944fc46636f": {
