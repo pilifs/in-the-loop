@@ -772,6 +772,12 @@ change `yuuvzuvykswq` · [log `ecc1eb3d68bd`](https://terminalvalue.net/raw-trac
 
 Job 20261117-005759-default-test-run-at-xunroyyopkuq: the default run at the merge commit, in the pipeline's clean export, which nobody waits for; the watcher reads its result.
 
+### Record verification results: the proof tier after example 290's second round of engine changes passed
+
+change `rlzwzoqoqyzy` · [log `ecc1eb3d68bd`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/ecc1eb3d68bde95235d6693d63840fed64f2cdc40060c431705ef1afb5210b49.jsonl.gz)
+
+Job 20261117-002240-the-proof-tier-after-example-290-s-secon passed: 1 step in 37m24s, peak 3.5 GiB (estimated 40m, 8 GiB). No outputs to apply. Collected by the unattended run-verification loop on vm-1.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/ecc1eb3d68bde95235d6693d63840fed64f2cdc40060c431705ef1afb5210b49.jsonl.gz) has every step in between: reasoning, tool calls and their results.
