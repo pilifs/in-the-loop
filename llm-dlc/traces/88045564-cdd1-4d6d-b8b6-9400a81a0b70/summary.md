@@ -118,6 +118,12 @@ change `wtlwyxyqyxko` · [log `a6cec13f811f`](https://terminalvalue.net/raw-trac
 
 The specialist's second commit (qtxkqsmt, its own files only): records/step-6-call-level.md and its probes, where a prototype relation at crypt_raw verifies 307's preservation at the frozen parameters on JDK 25 in 79 s and refutes mutant-preservation with a JVM-replayed witness; a prototype patch to read; and callee countermodel rows, with a new one (parsed) that shows a fingerprint-keyed rule declining on JDK 25. Merged so the preservation and challenge streams can take it with the default line.
 
+### The 307 specialist's call-level prototype goes to the preservation stream as guidance and to the challenge stream as countermodels
+
+change `okuplpysxvlu` · [log `a6cec13f811f`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/a6cec13f811f04dff808c61123c0a2195e8173fd446476e3239f2129ee8fb78c.jsonl.gz)
+
+Merged as wtlwyxyq: a prototype relation at crypt_raw closes both of 307's tasks at the frozen parameters on JDK 25. Preservation's item I018 points at its record and the fixtures to test its own rule against; challenge's item I004 points at the same fixture rows as a floor for its attack on preservation's rule.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/a6cec13f811f04dff808c61123c0a2195e8173fd446476e3239f2129ee8fb78c.jsonl.gz) has every step in between: reasoning, tool calls and their results.

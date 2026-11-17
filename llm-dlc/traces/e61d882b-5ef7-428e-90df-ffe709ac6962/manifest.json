@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-17T20:20:48.072Z",
-  "duration_seconds": 27785,
+  "ended": "2026-11-17T20:27:47.458Z",
+  "duration_seconds": 28204,
   "stats": {
-    "turns": 18,
-    "api_calls": 138,
-    "tool_calls": 130,
+    "turns": 19,
+    "api_calls": 139,
+    "tool_calls": 132,
     "tool_errors": 2,
     "compactions": 1,
     "peak_context_tokens": 288290,
     "usage": {
-      "input_tokens": 304,
-      "output_tokens": 104371,
-      "cache_read_input_tokens": 19788082,
-      "cache_creation_input_tokens": 507995
+      "input_tokens": 308,
+      "output_tokens": 104824,
+      "cache_read_input_tokens": 19918636,
+      "cache_creation_input_tokens": 508031
     }
   },
   "tools": {
-    "Bash": 121,
+    "Bash": 123,
     "Read": 5,
     "Edit": 3,
     "Write": 1
@@ -56,24 +56,24 @@
     {
       "index": 1,
       "started": "2026-11-17T19:59:47.700Z",
-      "ended": "2026-11-17T20:20:48.072Z",
-      "turns": 4,
-      "api_calls": 41,
+      "ended": "2026-11-17T20:27:47.458Z",
+      "turns": 5,
+      "api_calls": 42,
       "usage": {
-        "input_tokens": 86,
-        "output_tokens": 29791,
-        "cache_read_input_tokens": 3947061,
-        "cache_creation_input_tokens": 95527
+        "input_tokens": 90,
+        "output_tokens": 30244,
+        "cache_read_input_tokens": 4077615,
+        "cache_creation_input_tokens": 95563
       },
-      "peak_context_tokens": 129644
+      "peak_context_tokens": 130594
     }
   ],
   "log": {
-    "sha256": "06ba1b4f1103ea7e9ad67e320baf772c7a68e945e117a3e51f64f3bcfbc65f6f",
-    "bytes": 3281808,
-    "lines": 1046,
-    "gzip_bytes": 612337,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/06ba1b4f1103ea7e9ad67e320baf772c7a68e945e117a3e51f64f3bcfbc65f6f.jsonl.gz"
+    "sha256": "e0cec466eef9e030324d4c63b2cf7368f009ad03594c9a94e27da303d04d05d0",
+    "bytes": 3326009,
+    "lines": 1057,
+    "gzip_bytes": 620673,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/e0cec466eef9e030324d4c63b2cf7368f009ad03594c9a94e27da303d04d05d0.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -598,12 +598,28 @@
       "log_sha256": "8f62256b957f5a02e768f81ba665e62c35d7158998d8cd06cf5c0743f69abe5d"
     },
     {
+      "change_id": "qtxkqsmtopqzrznlvpusvouzsovtrprx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 307: a prototype of the relation at the unchanged callee closes both tasks at crypt_raw on JDK 25, and the callee's code has no fingerprint there at hashpw(byte[], String)",
+      "body": "A second delivery from the session the user brought in ahead of the preservation stream's step 6, for the stream to compare its own call-level rule against. New files, and edits to this session's own fixture; no checker source and no test changes.\n\nexamples/307-*/records/step-6-call-level.md is the note and step-6-call-level-probes.json the runs. lib/tests/fixtures/callee-countermodels/prototype-one-function.patch (against kskmpmny, git 10b5d9c0, after prototype-model.patch) names a callee's outcome by the key of the state at its entry, as a loop's state past the bound is named, and checks no side condition. With it, at the claim's frozen parameters and assumption, in capped probes (4 GB, 300 s): with the relation at crypt_raw on JDK 25, preservation is verified in 79 s (878 MB) and the mutant is a violation in 58 s, replayed on a JVM; with it at hashpw(byte[], String), preservation is verified in 53 s on JDK 21 and the run is killed at 4 GB on JDK 25, and the mutant has no verdict under the claim's seven salts (the first candidate has salt = null) and is a violation under one valid salt. Without a relation the runs die at 4 GB.\n\nThe JDK 25 difference: hashpw(byte[], String) calls Integer.parseInt, whose bytecode the checker follows, and JDK 25's parseInt(String, int) calls String.format(String, Object[]), which shared::reach takes as a way back into the application since kskmpmny. The fixture gains the row parsed (Parsing.java, a callee that calls Integer.parseInt): verified on JDK 21 and no verdict on JDK 25 on kskmpmny, in under a second.\n\nThe prototype against the fixture's rows: by formula it falsely proves wiped and counted (what the callee writes is not in its outcome); with a relation by content added it falsely proves table, seeded, helped and aliased too. No other row turns. So the rows separate a rule with its side conditions from one without.",
+      "log_sha256": "e0cec466eef9e030324d4c63b2cf7368f009ad03594c9a94e27da303d04d05d0"
+    },
+    {
       "change_id": "wtlwyxyqyxkonukwkvnkltmlumwzlsoz",
       "commit_id": null,
       "immutable": false,
       "summary": "Merge the 307 specialist's call-level prototype into the line",
       "body": "The specialist's second commit (qtxkqsmt, its own files only): records/step-6-call-level.md and its probes, where a prototype relation at crypt_raw verifies 307's preservation at the frozen parameters on JDK 25 in 79 s and refutes mutant-preservation with a JVM-replayed witness; a prototype patch to read; and callee countermodel rows, with a new one (parsed) that shows a fingerprint-keyed rule declining on JDK 25. Merged so the preservation and challenge streams can take it with the default line.",
       "log_sha256": "06ba1b4f1103ea7e9ad67e320baf772c7a68e945e117a3e51f64f3bcfbc65f6f"
+    },
+    {
+      "change_id": "okuplpysxvlusznoznpmsrprnwoqtxsv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The 307 specialist's call-level prototype goes to the preservation stream as guidance and to the challenge stream as countermodels",
+      "body": "Merged as wtlwyxyq: a prototype relation at crypt_raw closes both of 307's tasks at the frozen parameters on JDK 25. Preservation's item I018 points at its record and the fixtures to test its own rule against; challenge's item I004 points at the same fixture rows as a floor for its attack on preservation's rule.",
+      "log_sha256": "e0cec466eef9e030324d4c63b2cf7368f009ad03594c9a94e27da303d04d05d0"
     }
   ],
   "logs": {
@@ -659,6 +675,12 @@
       "bytes": 3002430,
       "lines": 962,
       "gzip_bytes": 572291,
+      "url": null
+    },
+    "e0cec466eef9e030324d4c63b2cf7368f009ad03594c9a94e27da303d04d05d0": {
+      "bytes": 3326009,
+      "lines": 1057,
+      "gzip_bytes": 620673,
       "url": null
     }
   },
