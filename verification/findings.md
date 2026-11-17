@@ -46,22 +46,56 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   loop ended in its cycle 17 with `claude exited with status 137` and no commit.
 - **Found**: each stream runs in a systemd scope capped at 12G with no swap (`feature-loop-NAME.scope`). The challenge
   session ran `python3 lib/tools/test_costs.py run --changed` on a change touching `lib/tests/costs.json` and a new
-  Rust test file. That ran several Rust test binaries side by side (`application_core`, `values`, `summaries`,
-  `application_core_joint`) and a dozen `javac`s, and the scope reached its 12G peak. The kernel's OOM killer chose the
+  Rust test file. `--changed` takes `cargo test` whenever anything under `lib/` changed, a `costs.json` row included,
+  four binaries at a time by default (`--rust-jobs`). That ran several Rust test binaries side by side
+  (`application_core`, `values`, `summaries`, `application_core_joint`) and a dozen `javac`s, and the scope reached its 12G peak. The kernel's OOM killer chose the
   `claude` process, the largest single one, so the tests went on as orphans holding 10G in the scope. run-streams.sh then
   ran the loop again at once, which refused to start beside them ("the scope is active"); two stops in a row counted the
   stream as blocked and put it to the watcher to merge, with its uncommitted work (new countermodels,
   `lib/tests/setting_countermodels.rs`) left in its workspace. The watcher stopped the scope by hand (17:14).
   run-streams.sh's supervision of the stream had ended, so nothing in the run would restart it: at the user's word
-  (run-streams-domain-advances-D031) the watcher restarted its feature-loop.sh by hand at 20:35, in a tmux window of
+  (run-streams-domain-advances-D031) the watcher restarted its feature-loop.sh by hand, in a tmux window of
   its own, its output tagged into the run's `streams.log`. Both steps, stopping the scope and restarting the loop,
   are what a loop that ends this way should do for itself.
-- **Needs**: one of: the test run inside a loop takes fewer binaries at a time, or a cap of its own below the
-  loop's (`systemd-run --scope -p MemoryMax=` around it), so the OOM killer meets the tests, not the session; or
-  `claude` gets a lower `OOMScoreAdjust` than its children; and a loop that ends this way stops its scope before it is
-  run again, so the rerun is not refused.
-- **Tracked in**: nowhere else.
-- **Closes when**: a changed-test run that needs more than the cap fails on its own, and the loop's session goes on.
+
+  What it cost, and what the run lacks (from a read-only review of the run at 20:15, beside the watcher):
+
+  - **One failure counted twice.** The second of the two stops that counted the stream blocked was the refusal
+    beside the first one's orphans. It says nothing about the stream, but it spent the loop's second try.
+  - **No way to start one stream again inside a run.** `brief_run.py` has `stop` and `start` for the whole run
+    only. `start` refuses while a run is under way ("a run of streams is already under way"). `stop` ends every
+    loop after its cycle under way: preservation's was over an hour at the time, and the other streams wait idle
+    until the slowest ends. So the watcher's first answer (17:14) was to continue the stream with `start` after the
+    run, and the stream sat idle for over three hours. For the challenge stream that is most of its value: its item
+    5 attacks the other streams' rules as they land, and in that time preservation wrote its I010 reach fix and
+    its call-level rule (an unchanged callee as one function), the riskiest soundness changes of the run.
+  - **A loop restarted by hand is outside run-streams.sh's bookkeeping.** Nothing puts it to the watcher to merge
+    when it finishes. Its phase file in `llm-dlc/loop-summaries/run-streams-NAME/` is written by hand. A
+    `brief_run.py start` while it runs is refused by its active scope and counts it blocked again. `wait` can
+    return `ended` while it still works. A blocked stop is not put to the watcher to run again. The watcher has to
+    do each of these by hand, and keep D021's merge order (challenge before state) the same way.
+- **Needs**:
+  - For the session: one of these, so the OOM killer meets the tests, not the session:
+    - the test run inside a loop takes fewer binaries at a time;
+    - it gets a cap of its own below the loop's (`systemd-run --scope -p MemoryMax=` around it);
+    - `claude` gets a lower `OOMScoreAdjust` than its children.
+
+    And a loop that ends this way stops its scope before it is run again, so the rerun is not refused. Meanwhile
+    (inbox item domain-advances-challenge-I003), a stream runs its changed tests under a cap of their own:
+    `systemd-run --user --scope -q -p MemoryMax=8G -p MemorySwapMax=0 python3 lib/tools/test_costs.py run --changed
+    --rust-jobs 1`.
+  - For the run (run-streams.sh and brief_run.py, with the env-leak fix in the same files):
+    - a refusal because of an active scope that holds only the killed session's orphans does not count as one of
+      the stream's stops: the loop stops the scope and runs again;
+    - `brief_run.py` can start one finished or blocked stream again inside a running run (say `rerun BRIEF
+      STREAM`), and run-streams.sh supervises it as before: its phase, the merge question, its reruns. Then a
+      watcher never launches a loop by hand.
+  - For the run-brief skill: a challenge stream left unmerged in the middle of a run is started again, not held
+    until the run ends, since its input is the other streams' commits as they land.
+- **Tracked in**: nowhere else. The run-streams.sh change belongs with the strategic fix of the
+  `RUN_STREAMS_WATCHER` leak, deferred to after the domain-advances run.
+- **Closes when**: a changed-test run that needs more than the cap fails on its own and the loop's session goes on,
+  and a stream that ended this way in the middle of a run is started again inside it without a hand launch.
 
 ### VF-036: equivalence checks and the Terminal-Value tests leave their temp folders in `/tmp`, which ran out of inodes
 

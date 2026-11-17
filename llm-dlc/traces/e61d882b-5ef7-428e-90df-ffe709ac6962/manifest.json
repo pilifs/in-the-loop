@@ -12,28 +12,30 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-17T20:17:37.239Z",
-  "duration_seconds": 27594,
+  "ended": "2026-11-17T20:20:22.495Z",
+  "duration_seconds": 27759,
   "stats": {
-    "turns": 17,
-    "api_calls": 127,
-    "tool_calls": 118,
+    "turns": 18,
+    "api_calls": 136,
+    "tool_calls": 129,
     "tool_errors": 2,
     "compactions": 1,
     "peak_context_tokens": 288290,
     "usage": {
-      "input_tokens": 280,
-      "output_tokens": 95460,
-      "cache_read_input_tokens": 18456457,
-      "cache_creation_input_tokens": 492825
+      "input_tokens": 300,
+      "output_tokens": 103136,
+      "cache_read_input_tokens": 19531552,
+      "cache_creation_input_tokens": 505626
     }
   },
   "tools": {
-    "Bash": 113,
-    "Read": 4,
+    "Bash": 120,
+    "Read": 5,
+    "Edit": 3,
     "Write": 1
   },
   "files_touched": [
+    "verification/findings.md",
     "~/code/docs/preservation-gap-scan-2026-11-17.md"
   ],
   "context_windows": [
@@ -54,24 +56,24 @@
     {
       "index": 1,
       "started": "2026-11-17T19:59:47.700Z",
-      "ended": "2026-11-17T20:17:37.239Z",
-      "turns": 3,
-      "api_calls": 30,
+      "ended": "2026-11-17T20:20:22.495Z",
+      "turns": 4,
+      "api_calls": 39,
       "usage": {
-        "input_tokens": 62,
-        "output_tokens": 20880,
-        "cache_read_input_tokens": 2615436,
-        "cache_creation_input_tokens": 80357
+        "input_tokens": 82,
+        "output_tokens": 28556,
+        "cache_read_input_tokens": 3690531,
+        "cache_creation_input_tokens": 93158
       },
-      "peak_context_tokens": 111440
+      "peak_context_tokens": 127275
     }
   ],
   "log": {
-    "sha256": "b5af6cc1f94e94095b8ebc94b74a0a2e59d82f678515beac1b1434da5afa9e76",
-    "bytes": 3002430,
-    "lines": 962,
-    "gzip_bytes": 572291,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/b5af6cc1f94e94095b8ebc94b74a0a2e59d82f678515beac1b1434da5afa9e76.jsonl.gz"
+    "sha256": "8f62256b957f5a02e768f81ba665e62c35d7158998d8cd06cf5c0743f69abe5d",
+    "bytes": 3142469,
+    "lines": 1029,
+    "gzip_bytes": 588866,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/8f62256b957f5a02e768f81ba665e62c35d7158998d8cd06cf5c0743f69abe5d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -586,6 +588,14 @@
       "summary": "The challenge stream is restarted by hand, at the user's word, with an inbox item for its interrupted step",
       "body": "D031: challenge's loop ended at 17:11 when the OOM killer took its session (VF-037) and run-streams.sh no longer supervises it; the user asked to restart it now rather than after the run, so it attacks preservation's call-level rule while that is written. Its inbox item I003 says how to finish the interrupted setting-countermodels step with the tests under a memory cap of their own, then to attack the call-level rule. VF-037 records the hand restart.",
       "log_sha256": "b5af6cc1f94e94095b8ebc94b74a0a2e59d82f678515beac1b1434da5afa9e76"
+    },
+    {
+      "change_id": "rwomprmzwrsnpqxluwnkmmuznrvoswqw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-037: what the challenge stream's OOM kill cost the run, and what run-streams.sh lacks to start one stream again",
+      "body": "Amended from a read-only review of the domain-advances run, beside its watcher. The second of the two stops that counted challenge blocked was only the refusal beside the killed session's orphans. brief_run.py can stop and start a whole run but not one stream, so challenge sat idle for over three hours while preservation wrote its riskiest rules. A loop restarted by hand is outside run-streams.sh's bookkeeping (merge question, phase, reruns, start and wait). Needs now names the interim test-run cap (I003), a rerun of one stream inside a run, and not counting a scope refusal as a stop, together with the deferred RUN_STREAMS_WATCHER leak fix. Also removed the restart time the entry gave (20:35): at 20:19 UTC no challenge loop was running yet. No code changed; nothing to test.",
+      "log_sha256": "8f62256b957f5a02e768f81ba665e62c35d7158998d8cd06cf5c0743f69abe5d"
     }
   ],
   "logs": {
@@ -617,6 +627,12 @@
       "bytes": 476320,
       "lines": 75,
       "gzip_bytes": 119009,
+      "url": null
+    },
+    "8f62256b957f5a02e768f81ba665e62c35d7158998d8cd06cf5c0743f69abe5d": {
+      "bytes": 3142469,
+      "lines": 1029,
+      "gzip_bytes": 588866,
       "url": null
     },
     "960a57323376cb1f5a65fd1a1f8fd0788409448e6f410d81968cdcf02552f60f": {
