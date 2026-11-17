@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `88045564-cdd1-4d6d-b8b6-9400a81a0b70` (ended) |
+| Session | `88045564-cdd1-4d6d-b8b6-9400a81a0b70` (open) |
 | When | 2026-11-17 18:37 UTC to 2026-11-17 21:23 UTC (165 min) |
 | Models | `claude-fable-5-2` |
 | Client | claude-code 2.1.326 |
@@ -159,6 +159,12 @@ The user's answer to the preservation stream's I007 (D032): defer, recorded as a
 change `uztvymnlnnoy` · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261117-222610-example-286-s-fixed-protected-state-task: passed: 2 passed step(s) in 11m13s, peak 2.1 GiB (estimated 40m00s, 6.0 GiB); 6 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1 Applied 6 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `kpsszpoxouzm` · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-233000-example-286-s-fixed-protected-state-task: passed: 1 passed step(s) in 4m28s, peak 2.6 GiB (estimated 15m00s, 4.0 GiB); 3 output file(s) changed; signals: jvmcontract:holds×1 Applied 3 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
 
 ## Conversation
 
