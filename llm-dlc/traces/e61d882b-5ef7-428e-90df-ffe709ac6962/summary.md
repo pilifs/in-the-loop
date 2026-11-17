@@ -397,6 +397,12 @@ change `vxxpmtltlmvt` · [log `2d880c8187c0`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261117-185623-examples-289-and-290-preservation-on-one: failed: 1 passed, 1 failed step(s) in 1m06s, peak 551.1 MiB (estimated 10m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:holds×2 Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
 
+### Job 20261117-185623's 290 failure goes to the preservation stream: the same relative -Xlog path as state's 286 job
+
+change `rtllkuzmporr` · [log `2d880c8187c0`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/2d880c8187c0ecb5eaa7ef48c34a1a70f48fe089833a751ccbb079c61c179390.jsonl.gz)
+
+289's preservation passed on one checker with the pair's and evidence's fixes; 290's step stopped before the check, in the initializer observer that runs its JVM in another folder than the relative --work assumes. Told to preservation, with the note that state is fixing the same code.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/2d880c8187c0ecb5eaa7ef48c34a1a70f48fe089833a751ccbb079c61c179390.jsonl.gz) has every step in between: reasoning, tool calls and their results.
