@@ -56,6 +56,12 @@ change `ksyktoyyrtyn` · [log `32021d84567f`](https://terminalvalue.net/raw-trac
 
 Brings the tests session's finished line (prove-setup, kzwsnszx through rkmqvurp): an exclusive lock so only one default test run runs at a time, superseding that also counts a newer finished run, the runner counting a result recorded on any head as done (so a passed job whose commit was left off the main line is not run again), cutting a release requiring a passed default run as a push does, seven expensive or solver-running tests moved to the proof tier behind proxies, CLAUDE.md and runtime.md stating the new rule for the default run, and VF-034 naming its likely cause (two default runs at once in one cargo target directory). Also merges slquqtpy, the verification loop's commit of job 20261117-005759's first run, which passed (8m32s) and was left off the main line when the watcher moved the main working copy while that commit was being made. The job's results directory and the results index keep the main line's record (the second run, which failed beside job 010456, and is what VF-034 is about); the first run's record stays in history through this merge's parent. The generated trace files are regenerated. Verified: the test-cost lint agrees, test_default_tests.py and test_pipeline.py pass on the merged tree, check reports 0 errors and 0 warnings.
 
+### Queue the default test run at the merge of prove-setup's finished line (verification pending)
+
+change `wxqzmmswyzvy` · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
+
+Job 20261117-015957-default-test-run-at-ksyktoyyrtyn: the first default run with the one-at-a-time lock, the release gate and the seven retiered tests all in. If it passes on its own, it is the clean run VF-034 needs, and it covers the main line's tip for a push.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz) has every step in between: reasoning, tool calls and their results.

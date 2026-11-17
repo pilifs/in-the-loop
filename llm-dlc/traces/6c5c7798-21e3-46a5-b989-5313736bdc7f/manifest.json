@@ -12,8 +12,8 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-17T01:59:43.705Z",
-  "duration_seconds": 117137,
+  "ended": "2026-11-17T02:00:02.509Z",
+  "duration_seconds": 117156,
   "stats": {
     "turns": 105,
     "api_calls": 764,
@@ -98,7 +98,7 @@
     {
       "index": 3,
       "started": "2026-11-16T23:07:53.833Z",
-      "ended": "2026-11-17T01:59:43.705Z",
+      "ended": "2026-11-17T02:00:02.509Z",
       "turns": 22,
       "api_calls": 166,
       "usage": {
@@ -111,11 +111,11 @@
     }
   ],
   "log": {
-    "sha256": "051ee11748d91b5d3c54960de9759a4061093fc708b9aa97887be830b0dc52dc",
-    "bytes": 14243635,
-    "lines": 6233,
-    "gzip_bytes": 2418907,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/051ee11748d91b5d3c54960de9759a4061093fc708b9aa97887be830b0dc52dc.jsonl.gz"
+    "sha256": "610929773d1b714929260829c24a707adba30ae8ac3eabe72241a7ef910d8afc",
+    "bytes": 14323772,
+    "lines": 6243,
+    "gzip_bytes": 2432370,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/610929773d1b714929260829c24a707adba30ae8ac3eabe72241a7ef910d8afc.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1000,6 +1000,22 @@
       "log_sha256": "d3c4ab83f9d384001aca53e04db6f7f61d9857211d258b2906ac443a1f846844"
     },
     {
+      "change_id": "pnlwkqxtxlzsuvvoktmquroryvnkupmr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: the seven proof-tier tests and the default test run at pqlvmnrruzsw passed",
+      "body": "Two jobs collected. 20261113-013604 (the seven tests moved to the proof tier) passed in 7m29s. The default test run at pqlvmnrruzsw passed in 7m03s and its one output was applied. The first run of the runner was cut off by the tool's 10-minute limit while the default run was in progress; the job was returned to the queue and rerun cleanly. No verdicts, no new findings.",
+      "log_sha256": "051ee11748d91b5d3c54960de9759a4061093fc708b9aa97887be830b0dc52dc"
+    },
+    {
+      "change_id": "slquqtpylozmsxrqtqrqprxqqtsmmovy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: the default test run at xunroyyopkuq passed",
+      "body": "Job 20261117-005759-default-test-run-at-xunroyyopkuq passed. No outputs to apply. Collected by the unattended run-verification loop on vm-1.",
+      "log_sha256": "051ee11748d91b5d3c54960de9759a4061093fc708b9aa97887be830b0dc52dc"
+    },
+    {
       "change_id": "kzwsnszxrwttokwmnsyzwolxyzwnzomx",
       "commit_id": null,
       "immutable": false,
@@ -1056,28 +1072,20 @@
       "log_sha256": "051ee11748d91b5d3c54960de9759a4061093fc708b9aa97887be830b0dc52dc"
     },
     {
-      "change_id": "slquqtpylozmsxrqtqrqprxqqtsmmovy",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results: the default test run at xunroyyopkuq passed",
-      "body": "Job 20261117-005759-default-test-run-at-xunroyyopkuq passed. No outputs to apply. Collected by the unattended run-verification loop on vm-1.",
-      "log_sha256": "051ee11748d91b5d3c54960de9759a4061093fc708b9aa97887be830b0dc52dc"
-    },
-    {
-      "change_id": "pnlwkqxtxlzsuvvoktmquroryvnkupmr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results: the seven proof-tier tests and the default test run at pqlvmnrruzsw passed",
-      "body": "Two jobs collected. 20261113-013604 (the seven tests moved to the proof tier) passed in 7m29s. The default test run at pqlvmnrruzsw passed in 7m03s and its one output was applied. The first run of the runner was cut off by the tool's 10-minute limit while the default run was in progress; the job was returned to the queue and rerun cleanly. No verdicts, no new findings.",
-      "log_sha256": "051ee11748d91b5d3c54960de9759a4061093fc708b9aa97887be830b0dc52dc"
-    },
-    {
       "change_id": "ksyktoyyrtynllmuntvwxtloswkuwzsz",
       "commit_id": null,
       "immutable": false,
       "summary": "Merge prove-setup's last eight commits and the orphaned first result of 005759: one default run at a time, a re-run of a passed job prevented, a release gate, and seven tests moved to the proof tier",
       "body": "Brings the tests session's finished line (prove-setup, kzwsnszx through rkmqvurp): an exclusive lock so only one default test run runs at a time, superseding that also counts a newer finished run, the runner counting a result recorded on any head as done (so a passed job whose commit was left off the main line is not run again), cutting a release requiring a passed default run as a push does, seven expensive or solver-running tests moved to the proof tier behind proxies, CLAUDE.md and runtime.md stating the new rule for the default run, and VF-034 naming its likely cause (two default runs at once in one cargo target directory). Also merges slquqtpy, the verification loop's commit of job 20261117-005759's first run, which passed (8m32s) and was left off the main line when the watcher moved the main working copy while that commit was being made. The job's results directory and the results index keep the main line's record (the second run, which failed beside job 010456, and is what VF-034 is about); the first run's record stays in history through this merge's parent. The generated trace files are regenerated. Verified: the test-cost lint agrees, test_default_tests.py and test_pipeline.py pass on the merged tree, check reports 0 errors and 0 warnings.",
       "log_sha256": "051ee11748d91b5d3c54960de9759a4061093fc708b9aa97887be830b0dc52dc"
+    },
+    {
+      "change_id": "wxqzmmswyzvyvqrxnllokunzstnmqtky",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue the default test run at the merge of prove-setup's finished line (verification pending)",
+      "body": "Job 20261117-015957-default-test-run-at-ksyktoyyrtyn: the first default run with the one-at-a-time lock, the release gate and the seven retiered tests all in. If it passes on its own, it is the clean run VF-034 needs, and it covers the main line's tip for a push.",
+      "log_sha256": "610929773d1b714929260829c24a707adba30ae8ac3eabe72241a7ef910d8afc"
     }
   ],
   "logs": {
@@ -1205,6 +1213,12 @@
       "bytes": 13985842,
       "lines": 6122,
       "gzip_bytes": 2371292,
+      "url": null
+    },
+    "610929773d1b714929260829c24a707adba30ae8ac3eabe72241a7ef910d8afc": {
+      "bytes": 14323772,
+      "lines": 6243,
+      "gzip_bytes": 2432370,
       "url": null
     },
     "67aa385c55918b961b0b294f7e5ebcd2d06a756199dcbc88dddf8c1469b42d4e": {

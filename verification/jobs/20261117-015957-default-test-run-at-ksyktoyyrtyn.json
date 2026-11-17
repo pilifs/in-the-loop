@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-015957-default-test-run-at-ksyktoyyrtyn",
+  "title": "Default test run at ksyktoyyrtyn",
+  "description": "The default test run (python3 lib/tools/test_costs.py run: cargo test and every Python suite, the unit and tool tiers) at change ksyktoyyrtyn, \"Merge prove-setup's last eight commits and the orphaned first result of 005759: one default run at a time, a re-run of a\", queued at the merge of prove-setup's finished line: the first run with the lock, the release gate and the retiered tests. Nobody waits for it: the watcher or the next session reads the result, and sync.py push requires a passed run that covers the commit it pushes (verification/default_tests.py).",
+  "kind": "other",
+  "capabilities": [
+    "tests:default"
+  ],
+  "links": {
+    "commits": [
+      "ksyktoyyrtyn"
+    ]
+  },
+  "expected": "exits 0: every test of the default run passes",
+  "submitted": {
+    "at": "2026-11-17T01:59:57+00:00",
+    "session": "6c5c7798-21e3-46a5-b989-5313736bdc7f"
+  },
+  "revision": "e1d891817acb63ccd765faa158a086984beddc9f",
+  "requires": [
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 6.0,
+    "memory": "4G",
+    "duration": "12m",
+    "timeout": "1h",
+    "notes": "as a job on six CPUs the run took 19.5 minutes one test file after another, 14.5 with Rust beside Python and 8.6 with the Rust binaries and Python files several at a time (2026-11-17), longer beside proof jobs; its cargo target directory is kept warm between runs"
+  },
+  "steps": [
+    {
+      "name": "default tests",
+      "run": "nice -n 10 python3 verification/default_tests.py step",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/default-tests-unread.txt"
+  ]
+}

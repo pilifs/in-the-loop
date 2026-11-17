@@ -340,6 +340,14 @@
       "summary": "Merge prove-setup's last eight commits and the orphaned first result of 005759: one default run at a time, a re-run of a passed job prevented, a release gate, and seven tests moved to the proof tier",
       "body": "Brings the tests session's finished line (prove-setup, kzwsnszx through rkmqvurp): an exclusive lock so only one default test run runs at a time, superseding that also counts a newer finished run, the runner counting a result recorded on any head as done (so a passed job whose commit was left off the main line is not run again), cutting a release requiring a passed default run as a push does, seven expensive or solver-running tests moved to the proof tier behind proxies, CLAUDE.md and runtime.md stating the new rule for the default run, and VF-034 naming its likely cause (two default runs at once in one cargo target directory). Also merges slquqtpy, the verification loop's commit of job 20261117-005759's first run, which passed (8m32s) and was left off the main line when the watcher moved the main working copy while that commit was being made. The job's results directory and the results index keep the main line's record (the second run, which failed beside job 010456, and is what VF-034 is about); the first run's record stays in history through this merge's parent. The generated trace files are regenerated. Verified: the test-cost lint agrees, test_default_tests.py and test_pipeline.py pass on the merged tree, check reports 0 errors and 0 warnings.",
       "log_sha256": "104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a"
+    },
+    {
+      "change_id": "wxqzmmswyzvyvqrxnllokunzstnmqtky",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue the default test run at the merge of prove-setup's finished line (verification pending)",
+      "body": "Job 20261117-015957-default-test-run-at-ksyktoyyrtyn: the first default run with the one-at-a-time lock, the release gate and the seven retiered tests all in. If it passes on its own, it is the clean run VF-034 needs, and it covers the main line's tip for a push.",
+      "log_sha256": "104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a"
     }
   ],
   "logs": {

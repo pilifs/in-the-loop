@@ -842,6 +842,12 @@ change `pnlwkqxtxlzs` · [log `650c6e49bf29`](https://terminalvalue.net/raw-trac
 
 Two jobs collected. 20261113-013604 (the seven tests moved to the proof tier) passed in 7m29s. The default test run at pqlvmnrruzsw passed in 7m03s and its one output was applied. The first run of the runner was cut off by the tool's 10-minute limit while the default run was in progress; the job was returned to the queue and rerun cleanly. No verdicts, no new findings.
 
+### Record verification results: the default test run at xunroyyopkuq passed
+
+change `slquqtpylozm` · [log `a814a49bd6ed`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/a814a49bd6ed8f2a657d70d814f58f5a489e0530aa5039adca537aa140949ce9.jsonl.gz)
+
+Job 20261117-005759-default-test-run-at-xunroyyopkuq passed. No outputs to apply. Collected by the unattended run-verification loop on vm-1.
+
 ### Only one default test run runs at a time, and a job started again after a newer run finished is superseded
 
 change `kzwsnszxrwtt` · [log `a814a49bd6ed`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/a814a49bd6ed8f2a657d70d814f58f5a489e0530aa5039adca537aa140949ce9.jsonl.gz)
@@ -892,17 +898,17 @@ Why job 20261117-005759 ran twice, from jj's operation log: its first pass was c
 
 pipeline.py: done_ids also counts every job whose result.json is in the tree of a visible head (jj's visible_heads(), git's branches outside jj; a commit's listing is read once), prints a note naming the commit, and status lists such a job under 'recorded on another head' and not as pending. default_tests.py's superseding reads that row too. VF-034 records the cause. Checked with a new test that reproduces it in a git repository (a result committed, the branch moved back, the job is not run a second time) and test_costs.py run --changed: 20 of 20 passed.
 
-### Record verification results: the default test run at xunroyyopkuq passed
-
-change `slquqtpylozm` · [log `a814a49bd6ed`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/a814a49bd6ed8f2a657d70d814f58f5a489e0530aa5039adca537aa140949ce9.jsonl.gz)
-
-Job 20261117-005759-default-test-run-at-xunroyyopkuq passed. No outputs to apply. Collected by the unattended run-verification loop on vm-1.
-
 ### Merge prove-setup's last eight commits and the orphaned first result of 005759: one default run at a time, a re-run of a passed job prevented, a release gate, and seven tests moved to the proof tier
 
 change `ksyktoyyrtyn` · [log `a814a49bd6ed`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/a814a49bd6ed8f2a657d70d814f58f5a489e0530aa5039adca537aa140949ce9.jsonl.gz)
 
 Brings the tests session's finished line (prove-setup, kzwsnszx through rkmqvurp): an exclusive lock so only one default test run runs at a time, superseding that also counts a newer finished run, the runner counting a result recorded on any head as done (so a passed job whose commit was left off the main line is not run again), cutting a release requiring a passed default run as a push does, seven expensive or solver-running tests moved to the proof tier behind proxies, CLAUDE.md and runtime.md stating the new rule for the default run, and VF-034 naming its likely cause (two default runs at once in one cargo target directory). Also merges slquqtpy, the verification loop's commit of job 20261117-005759's first run, which passed (8m32s) and was left off the main line when the watcher moved the main working copy while that commit was being made. The job's results directory and the results index keep the main line's record (the second run, which failed beside job 010456, and is what VF-034 is about); the first run's record stays in history through this merge's parent. The generated trace files are regenerated. Verified: the test-cost lint agrees, test_default_tests.py and test_pipeline.py pass on the merged tree, check reports 0 errors and 0 warnings.
+
+### Queue the default test run at the merge of prove-setup's finished line (verification pending)
+
+change `wxqzmmswyzvy` · [log `a814a49bd6ed`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/a814a49bd6ed8f2a657d70d814f58f5a489e0530aa5039adca537aa140949ce9.jsonl.gz)
+
+Job 20261117-015957-default-test-run-at-ksyktoyyrtyn: the first default run with the one-at-a-time lock, the release gate and the seven retiered tests all in. If it passes on its own, it is the clean run VF-034 needs, and it covers the main line's tip for a push.
 
 ## Conversation
 
