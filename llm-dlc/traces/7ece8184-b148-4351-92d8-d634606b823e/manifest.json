@@ -12,29 +12,29 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:50.868Z",
-  "ended": "2026-11-17T15:13:34.703Z",
-  "duration_seconds": 8204,
+  "ended": "2026-11-17T15:22:34.959Z",
+  "duration_seconds": 8744,
   "stats": {
-    "turns": 51,
-    "api_calls": 435,
-    "tool_calls": 429,
-    "tool_errors": 7,
-    "compactions": 9,
+    "turns": 56,
+    "api_calls": 474,
+    "tool_calls": 468,
+    "tool_errors": 8,
+    "compactions": 10,
     "peak_context_tokens": 186120,
     "usage": {
-      "input_tokens": 886,
-      "output_tokens": 269856,
-      "cache_read_input_tokens": 40732531,
-      "cache_creation_input_tokens": 1058842
+      "input_tokens": 966,
+      "output_tokens": 288478,
+      "cache_read_input_tokens": 43831043,
+      "cache_creation_input_tokens": 1153070
     }
   },
   "tools": {
-    "Bash": 404,
-    "Edit": 9,
-    "Read": 5,
+    "Bash": 439,
+    "Edit": 11,
+    "Read": 6,
+    "ToolSearch": 4,
     "Write": 4,
     "Monitor": 3,
-    "ToolSearch": 3,
     "TaskStop": 1
   },
   "files_touched": [
@@ -45,7 +45,8 @@
     "examples/tools/test_accept.py",
     "examples/tools/test_beside_route.py",
     "lib/src/observed/ObservedInitializer.java",
-    "llm-dlc/loops/domain-advances-evidence.md"
+    "llm-dlc/loops/domain-advances-evidence.md",
+    "verification/findings.md"
   ],
   "context_windows": [
     {
@@ -177,24 +178,38 @@
     {
       "index": 9,
       "started": "2026-11-17T14:56:21.391Z",
-      "ended": "2026-11-17T15:13:34.703Z",
-      "turns": 4,
-      "api_calls": 48,
+      "ended": "2026-11-17T15:14:24.402Z",
+      "turns": 5,
+      "api_calls": 51,
       "usage": {
-        "input_tokens": 96,
-        "output_tokens": 36978,
-        "cache_read_input_tokens": 4472597,
-        "cache_creation_input_tokens": 116512
+        "input_tokens": 102,
+        "output_tokens": 38214,
+        "cache_read_input_tokens": 4867226,
+        "cache_creation_input_tokens": 120938
       },
-      "peak_context_tokens": 129785
+      "peak_context_tokens": 134211
+    },
+    {
+      "index": 10,
+      "started": "2026-11-17T15:15:11.652Z",
+      "ended": "2026-11-17T15:22:34.959Z",
+      "turns": 4,
+      "api_calls": 36,
+      "usage": {
+        "input_tokens": 74,
+        "output_tokens": 17386,
+        "cache_read_input_tokens": 2703883,
+        "cache_creation_input_tokens": 89802
+      },
+      "peak_context_tokens": 103075
     }
   ],
   "log": {
-    "sha256": "66f58b950abdd62c6c92328a8ccdd7d149e10f972e87cb10a7f62c56e599534e",
-    "bytes": 12431266,
-    "lines": 3906,
-    "gzip_bytes": 2245586,
-    "path": "llm-dlc/traces/7ece8184-b148-4351-92d8-d634606b823e/logs/66f58b950abdd62c6c92328a8ccdd7d149e10f972e87cb10a7f62c56e599534e.jsonl.gz"
+    "sha256": "96185023a5f7c5001e2cdc50fa00f956d727e5b0a3e89b10df15428486d5094b",
+    "bytes": 13420342,
+    "lines": 4283,
+    "gzip_bytes": 2431596,
+    "path": "llm-dlc/traces/7ece8184-b148-4351-92d8-d634606b823e/logs/96185023a5f7c5001e2cdc50fa00f956d727e5b0a3e89b10df15428486d5094b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -205,6 +220,22 @@
       "summary": "Every example's proof driver records identities, ends the run on a mutant that is not the replay's, and marks a trial",
       "body": "The evidence stream's step 2. examples/tools/beside_route.py holds what the five drivers (examples 286 to 290) did each in their own copy: the pinned JARs, the constructed mutant, the record (accept.record's evidence.json) and the verdict. Each driver keeps its own entry, lemmas, models, observed initializers and verifier arguments. What 289's driver alone did, all five now do: the record of the claim, the bound, each JAR, the adapter, the verifier's binary and the driver; a mutant whose JAR is not the one the newest mutant replay's receipt records ends the run; --max-array-length or --unwind (now on every driver) marks the run a trial.\n\nFinding: 286's, 287's and 288's drivers built their mutant by another recipe than the route's (a fixed --release, no -g or -parameters, every entry recompressed), so their JAR was not the bytes the mutant replay ran, which is why acceptance could not tie their mutant-security answers to the replay. The shared module uses the route's published-mutant recipe; run offline on the pinned JARs it gives each of the five examples exactly the JAR its replay ran (286 48323d21, 287 1d099295, 288 5c72df16, 289 a3a3dbff, 290 4ee35d0b).",
       "log_sha256": "fadef0a55901ed98be485baeba4c8742903eb5ab48c947d75dc6027ef66d3a30"
+    },
+    {
+      "change_id": "yypzyxmwluytmwrouqvxqkpppqzpqszn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of the pair of versions: five false proofs of agreement, reproduced and handed to the preservation stream",
+      "body": "The challenge stream's item 1. lib/tests/fixtures/pairing-countermodels holds two versions of five methods that differ when each runs alone on a JVM and that RegressionPair.agree (lib/src/pairing.rs) proves agreeing: the previous version sets the default locale the new one lowers under; a library static shared without --before-classpath; two unrelated RuntimeExceptions, and IllegalArgumentException against a subclass, compared by category; a scope that is false everywhere but sets the default locale before both calls. All five were Verified on the checker at lupovnmv. The order of the calls is observable: with the versions' roles swapped, and with --before-classpath, the shared-static case is a violation.",
+      "log_sha256": "4a1a4eb9d1ff372f58176e88f4316e96774b43cfe8b8e05ad268678065e72744"
+    },
+    {
+      "change_id": "mqkqvvmwlxsrznyvuxsotztpnkkptwqp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of observed class initializers and of class files the tool read where a JVM reads another: three handed to the evidence stream, two refused",
+      "body": "Challenge stream, item 2. lib/tests/fixtures/observed-countermodels holds five fixtures, and lib/tests/observed_countermodels.rs holds each to what a JVM prints. Each was a false proof on the checker as it was (yypzyxmw): crossed, the outside review's A.<clinit> { B.x = 1; k = 7; } (result == 0 proved, a JVM gives 1); lowered, \"I\".toLowerCase() observed in a Turkish JVM (result == 305 proved, and the locale assumption gone from the result); configured, System.getProperty observed with the property set; released, a class of a multi-release JAR (the tool read the base file where a JVM 17+ loads META-INF/versions/17, so result == 1 was proved where a JVM gives 20, and an observation of the versioned class was put on the base file's code); shadowed, a class path copy of the JDK's org.xml.sax.helpers.AttributesImpl (result == 42 proved, a JVM gives 0).\n\nThe first three are the evidence stream's to fix (its brief's item 5 binds an observation): the checker-side test is in the fixtures' README and is sent to its inbox as a failure item. The last two are holes in the class path reader, which no stream owns, so they are refused here: ClassPath::refused (lib/src/classpath.rs) refuses by name, on load and when a class is copied for a pair, a class a multi-release JAR holds a versioned file of, and a class an entry holds in a package of the JDK's image, unless its file is the image's own byte for byte or one of the tool's models (the tool puts both on class paths itself; a first, broader version failed 13 tests for that reason). Enumerating every class still reads the first file, so that walks over which classes exist see it. Not covered: an override only a versioned file declares, and resources.",
+      "log_sha256": "4a1a4eb9d1ff372f58176e88f4316e96774b43cfe8b8e05ad268678065e72744"
     },
     {
       "change_id": "zlxkxlstvktrsztnrmynsyukqwrokplu",
@@ -271,22 +302,6 @@
       "log_sha256": "f24a0e1d746486229f9a25338d10d6150bf8f1c7400b9ea3a94b4cf379df5a71"
     },
     {
-      "change_id": "yypzyxmwluytmwrouqvxqkpppqzpqszn",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Countermodels of the pair of versions: five false proofs of agreement, reproduced and handed to the preservation stream",
-      "body": "The challenge stream's item 1. lib/tests/fixtures/pairing-countermodels holds two versions of five methods that differ when each runs alone on a JVM and that RegressionPair.agree (lib/src/pairing.rs) proves agreeing: the previous version sets the default locale the new one lowers under; a library static shared without --before-classpath; two unrelated RuntimeExceptions, and IllegalArgumentException against a subclass, compared by category; a scope that is false everywhere but sets the default locale before both calls. All five were Verified on the checker at lupovnmv. The order of the calls is observable: with the versions' roles swapped, and with --before-classpath, the shared-static case is a violation.",
-      "log_sha256": "4a1a4eb9d1ff372f58176e88f4316e96774b43cfe8b8e05ad268678065e72744"
-    },
-    {
-      "change_id": "mqkqvvmwlxsrznyvuxsotztpnkkptwqp",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Countermodels of observed class initializers and of class files the tool read where a JVM reads another: three handed to the evidence stream, two refused",
-      "body": "Challenge stream, item 2. lib/tests/fixtures/observed-countermodels holds five fixtures, and lib/tests/observed_countermodels.rs holds each to what a JVM prints. Each was a false proof on the checker as it was (yypzyxmw): crossed, the outside review's A.<clinit> { B.x = 1; k = 7; } (result == 0 proved, a JVM gives 1); lowered, \"I\".toLowerCase() observed in a Turkish JVM (result == 305 proved, and the locale assumption gone from the result); configured, System.getProperty observed with the property set; released, a class of a multi-release JAR (the tool read the base file where a JVM 17+ loads META-INF/versions/17, so result == 1 was proved where a JVM gives 20, and an observation of the versioned class was put on the base file's code); shadowed, a class path copy of the JDK's org.xml.sax.helpers.AttributesImpl (result == 42 proved, a JVM gives 0).\n\nThe first three are the evidence stream's to fix (its brief's item 5 binds an observation): the checker-side test is in the fixtures' README and is sent to its inbox as a failure item. The last two are holes in the class path reader, which no stream owns, so they are refused here: ClassPath::refused (lib/src/classpath.rs) refuses by name, on load and when a class is copied for a pair, a class a multi-release JAR holds a versioned file of, and a class an entry holds in a package of the JDK's image, unless its file is the image's own byte for byte or one of the tool's models (the tool puts both on class paths itself; a first, broader version failed 13 tests for that reason). Enumerating every class still reads the first file, so that walks over which classes exist see it. Not covered: an override only a versioned file declares, and resources.",
-      "log_sha256": "4a1a4eb9d1ff372f58176e88f4316e96774b43cfe8b8e05ad268678065e72744"
-    },
-    {
       "change_id": "tswurxzvswpolvlvyslzrpmwruroupvy",
       "commit_id": null,
       "immutable": false,
@@ -317,6 +332,14 @@
       "summary": "Example 290's preservation claim restated to compare what the matchers are, prepared for the user to freeze",
       "body": "VF-033's option B, the user's choice: claims/lone-dispatcher-matchers-preserved.json keeps the old claim's table, assumption, allowed change and bound, and compares each returned matcher's exact class, pattern, HTTP method and servlet path, in order, for both overloads of requestMatchers, rather than the count of matchers by type. Its entry is a new adapter class, MatcherDescriptionAdapter#describe, which reports each matcher's exact class and the library's own rendering of it. The old adapter and claim are unchanged, since the frozen claims and the accepted answers name them. Run on a JVM against both releases' pinned closures, describe agrees on all 28 probes with the DispatcherServlet alone and differs on 132 of the other 140, where the fix changes the selection by design. The claim states the rendering's one blind spot: a null pattern and \"null\" render alike in an MvcRequestMatcher.\n\nTwo capped probes in a scratch copy where the task points at the new claim: at bound 1 (a trial) the checker stops at a gap, StringBuilder.append(Object) in MvcRequestMatcher.toString; at the frozen bound it reached the 4 GiB cap after 133 s. So the proof needs that gap closed, then one job. Freezing is the user's, as VF-033 and 290's notes record: the hash in a claims ledger, the task pointed at the file, and the adapter source listed. proofs/prove.py then picks the entry by the task's claim. accept.py's task check now compares the adapter sources listed at the job's commit, the ones it compiled. A source listed since is reported, not refused, so 290's three security answers stay accepted after the freeze. The control in test_accept.py fails on the old check. Verified: test_costs.py run --changed (27 of 27), validate_example.py 290, accept.py 286-290 unchanged (the 289/290 preservation answers still await their rerun).",
       "log_sha256": "66f58b950abdd62c6c92328a8ccdd7d149e10f972e87cb10a7f62c56e599534e"
+    },
+    {
+      "change_id": "nosxvuntumnmpmvzpqmvvsrmxmzsmnys",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-030's Python half was empty and the default run covers it; the Rust proof tier is queued after the foundation's checker changes (verification pending)",
+      "body": "Job 20261117-152112-the-rust-proof-tier-after-the-domain-adv runs every ignored Rust test in release with --no-fail-fast. It covers the own checker's changes since the last proof-tier jobs: the domain-advances foundation's (qkqpsmqk, in bmc/mod.rs, bmc/strings.rs, property.rs and summary.rs) and this line's (pairing.rs, statement.rs, observed.rs, classpath.rs, equivalence.rs). Unlike the jobs after examples 287 to 290, it keeps VF-018's three heap tests, since VF-018 is closed and they run the own checker under auto --confirm. It also includes the seven tests wvvtwkos moved to the proof tier. About 55 minutes, 4 CPUs, 8 GiB.\n\nThe estimate counts 0 Python proof tests because there are none. No Python test is tagged @cost(\"proof\"), now or at VF-030's own job (8594e6b7adb1); the tag occurs only in the tier tools and the lint's fixtures. So test_costs.py run --tier proof --only python runs nothing, and it was not queued. The brief's step 6 is out of date in asking for it. Every Python test is in the default run, which passed inline at this line's head (tree bc1caa8a8827, 54 of 54). VF-030 is updated to say this and closes when the Rust job passes.\n\nThe brief's Progress records cycle 11 and acknowledges inbox item domain-advances-evidence-I007: accept.py's seven holes, the next cycle's work. Checked with test_costs.py run --changed (4 files passed).",
+      "log_sha256": "96185023a5f7c5001e2cdc50fa00f956d727e5b0a3e89b10df15428486d5094b"
     }
   ],
   "logs": {
@@ -366,6 +389,12 @@
       "bytes": 3510273,
       "lines": 1148,
       "gzip_bytes": 618406,
+      "url": null
+    },
+    "96185023a5f7c5001e2cdc50fa00f956d727e5b0a3e89b10df15428486d5094b": {
+      "bytes": 13420342,
+      "lines": 4283,
+      "gzip_bytes": 2431596,
       "url": null
     },
     "9d5ad02c63d36046cd3e76f8335d23aa0132368d0a6062eb48795c354a53cc0e": {

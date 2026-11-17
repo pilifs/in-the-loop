@@ -177,6 +177,19 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   ignored Rust test passed (`conformance` 2, `heap` 6, `preparation` 1; no binary after `heap` has an ignored test left), none
   hidden by a failure, with example 287's engine changes. The Python proof-tier tests are still not covered: that job
   ran `cargo test` only. The entry stays open for them; the submitter should queue them as a job of their own.
+- **Update 2026-11-17** (the domain-advances evidence stream, step 6): **the Python half was empty, and is settled.** No
+  Python test is tagged `@cost("proof")`, now or at this entry's job (`8594e6b7adb1`: 787 unit and 70 tool rows in
+  `lib/tests/costs.json`, none proof; today 1019 unit, 176 tool). The tag appears only in `test_costs.py`, `cost_tier.py`
+  and the lint's own fixtures. That is why the estimate counts 0 Python proof tests, and
+  `test_costs.py run --tier proof --only python` prints "python: no proof-tier tests" and runs nothing, so it was not
+  queued. Every Python test, those that reach the verifier included, is in the default run. That run passed inline at
+  the evidence line's head after the foundation's checker changes (tree `bc1caa8a8827`, 54 of 54). Python files tagged
+  unit that start processes the inventory does not see are VF-035's. **The Rust half** is queued again for the checker
+  changes since the last proof-tier jobs: the foundation's (`qkqpsmqk`: `bmc/mod.rs`, `bmc/strings.rs`, `property.rs`,
+  `summary.rs`) and the evidence line's (`pairing.rs`, `statement.rs`, `observed.rs`, `classpath.rs`, `equivalence.rs`).
+  Job `20261117-152112-the-rust-proof-tier-after-the-domain-adv` runs the whole tier with `--no-fail-fast`. It includes
+  VF-018's three, since VF-018 is closed and they run the own checker under `auto --confirm`, and the seven tests
+  `wvvtwkos` moved. **Closes when** that job passes. A failure there is a new finding about these changes, not this entry.
 
 ### VF-023: under `--engine auto --confirm`, the own checker proves `listSizes` and `listChange` and JBMC refutes them with a witness the interpreter says holds
 

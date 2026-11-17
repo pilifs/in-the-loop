@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-152112-the-rust-proof-tier-after-the-domain-adv",
+  "title": "The Rust proof tier after the domain-advances foundation's checker changes and the evidence line's pair and observation checks: every ignored Rust test in release, none hidden by a failure",
+  "description": "VF-030 asks for the proof tier at a commit with the latest engine changes. Since the last proof-tier jobs (20261117-002240 and 20261117-013604, both before the foundation), the own checker changed in lib/src/bmc/mod.rs, bmc/strings.rs, property.rs and summary.rs (the foundation, qkqpsmqk: a proof by induction and a lemma's summary no longer stand in for a call that writes, throws or reads what a caller can change), and on this line in pairing.rs and statement.rs (a pair's vacuity witness must lie outside the allowed change), observed.rs and classpath.rs (an observed initializer is bound to what it was observed on), and equivalence.rs. The own checker runs in nearly every proof-tier test (auto --confirm, the own checker's corpus, application-core, compare, observations, summaries), so this runs the whole tier, with cargo's --no-fail-fast. Unlike the jobs after examples 287 to 290 it does not skip VF-018's three heap tests: VF-018 was closed by 20261116-144006 (the heap tier passed whole in 12 min), and those tests run the own checker under auto --confirm. It includes the seven tests moved to the proof tier by wvvtwkos. The default test run passed inline at this line's head (tree bc1caa8a8827), which holds every Python test: no Python test is tagged proof tier.",
+  "kind": "library",
+  "capabilities": [
+    "tests:proof"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/mod.rs",
+      "lib/src/summary.rs",
+      "lib/src/property.rs",
+      "lib/src/pairing.rs",
+      "lib/src/observed.rs"
+    ]
+  },
+  "expected": "exits 0: every ignored Rust test passes",
+  "submitted": {
+    "at": "2026-11-17T15:21:12+00:00",
+    "session": "7ece8184-b148-4351-92d8-d634606b823e"
+  },
+  "requires": [
+    "cargo",
+    "javac",
+    "java",
+    "jbmc",
+    "tlc"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "8G",
+    "duration": "55m",
+    "timeout": "4h",
+    "notes": "the tier without VF-018's three took 35 to 67 min (peak 3.3 GiB); the heap tier alone took 12 min after VF-018's fix; the seven moved tests about 5 min"
+  },
+  "steps": [
+    {
+      "name": "proof tier, whole, no fail fast",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 JVMCONTRACT_HEAP_TIME_LIMIT=1800 JVMCONTRACT_TEST_TIER=proof TEST_COST=proof cargo test --manifest-path lib/Cargo.toml --release --no-fail-fast -- --ignored --test-threads 4",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

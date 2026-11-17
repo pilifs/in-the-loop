@@ -288,6 +288,24 @@ Don't change `verification/pipeline.py`.
 - Next: step 6 (VF-030: the Python proof tier as a job, the Rust proof tier for the tests the foundation's checker
   changes touched, and why the estimate counts 0 Python proof tests); the 289/290 preservation rerun once this line and
   `zmvkptqz` meet.
+- 2026-11-17, cycle 11. **Step 6: the Python half is settled and the Rust half is queued.**
+  - *Why the estimate counts 0 Python proof tests*: there are none. No Python test is tagged `@cost("proof")`, now or at
+    VF-030's own job (`8594e6b7adb1`). The tag appears only in the tier tools and the lint's fixtures, so
+    `run --tier proof --only python` runs nothing and was not queued; the brief's step 6 assumed otherwise.
+  - Every Python test is in the default run. I ran it inline at this line's head and it passed (tree `bc1caa8a8827`,
+    54 of 54), after the foundation's checker changes and this line's.
+  - The Rust proof tier, for the own checker's changes since the last proof-tier jobs (the foundation's `qkqpsmqk`, this
+    line's pair and observation checks), is job `20261117-152112-the-rust-proof-tier-after-the-domain-adv`. It runs the
+    whole tier with `--no-fail-fast`, including VF-018's three (closed; they run the own checker) and the seven tests
+    `wvvtwkos` moved; ~55 min.
+  - VF-030 is updated: it closes when that job passes.
+- Repeated work measured (step 7): none.
+- Inbox: `domain-advances-evidence-I007` (seven controls in which `accept.py` accepts an answer the evidence does not
+  give: `entry` by substring, `step` by any word ending in the driver's path, `domain` not holding the witness to
+  `nullable`, the assumption or the claim's bound, `expressions` with no allowed change). Taken as the next cycle's work,
+  since it is this stream's own check and none of the 13 accepted answers rests on these holes (per the item's audit).
+- Next: I007 (the controls from `zwrpkwnl`'s README into `test_accept.py`, and `accept.py` refusing or leaving each
+  unbound); VF-030 when its job is back; the 289/290 preservation rerun once this line and `zmvkptqz` meet.
 - Status: working
 
 ## Loop settings
