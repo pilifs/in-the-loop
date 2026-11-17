@@ -731,6 +731,12 @@ change `rlzwzoqoqyzy` · [log `4742b15c6bca`](https://terminalvalue.net/raw-trac
 
 Job 20261117-002240-the-proof-tier-after-example-290-s-secon passed: 1 step in 37m24s, peak 3.5 GiB (estimated 40m, 8 GiB). No outputs to apply. Collected by the unattended run-verification loop on vm-1.
 
+### Example 290's results are stated at their exact scope, and VF-033 queues a stronger preservation claim and an audit of the observed initializers for a later run
+
+change `ymvkprpwxrrw` · [log `4742b15c6bca`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/4742b15c6bca1452a2ada08f549dd989d1da9947643134e5a5daf9359a05a89a.jsonl.gz)
+
+The user's decision on reviewing D005 (the watcher's acceptance of 290's claims in their place): keep the claims and their verdicts, say exactly what they cover, and queue the rest. 290's page and example.json notes now say that preservation is established for the count of matchers by type in the lone-DispatcherServlet configuration, not for the matchers themselves or what they match, and that fixed-security and preservation hold under the observation of library initializers on a JVM: two of them load resource bundles, so 'no input' is that observation's assumption until the state read is audited (points 1 and 2 of the outside expert's c3 review); the refutations replay on a JVM and do not rest on it. VF-033 (open) records both, with the chosen follow-up (restate preservation to compare each matcher's type, pattern, HTTP method and servlet path: a setup and about one proof cycle) and the one not chosen (compare matches(), which needs HandlerMappingIntrospector modelled). Verified: validate_example.py 290 passes.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/4742b15c6bca1452a2ada08f549dd989d1da9947643134e5a5daf9359a05a89a.jsonl.gz) has every step in between: reasoning, tool calls and their results.
