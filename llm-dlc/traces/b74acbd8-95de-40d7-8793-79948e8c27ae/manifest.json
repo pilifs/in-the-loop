@@ -1,0 +1,80 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "b74acbd8-95de-40d7-8793-79948e8c27ae",
+  "status": "open",
+  "title": "Window 11 verification loop",
+  "first_prompt": "<command-name>/model</command-name>\n            <command-message>model</command-message>\n            <command-args></command-args>",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.326"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-17T02:13:32.150Z",
+  "ended": "2026-11-17T02:18:06.087Z",
+  "duration_seconds": 274,
+  "stats": {
+    "turns": 5,
+    "api_calls": 20,
+    "tool_calls": 17,
+    "tool_errors": 1,
+    "compactions": 0,
+    "peak_context_tokens": 72181,
+    "usage": {
+      "input_tokens": 46,
+      "output_tokens": 7437,
+      "cache_read_input_tokens": 1188614,
+      "cache_creation_input_tokens": 45245
+    }
+  },
+  "tools": {
+    "Bash": 16,
+    "ToolSearch": 1
+  },
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-17T02:13:32.150Z",
+      "ended": "2026-11-17T02:18:06.087Z",
+      "turns": 5,
+      "api_calls": 20,
+      "usage": {
+        "input_tokens": 46,
+        "output_tokens": 7437,
+        "cache_read_input_tokens": 1188614,
+        "cache_creation_input_tokens": 45245
+      },
+      "peak_context_tokens": 72181
+    }
+  ],
+  "log": {
+    "sha256": "feb1181ae1ed5ed3aa4ec53f4fd0ed0d42ba14aebb4e9f5636905e9649fdf40b",
+    "bytes": 703050,
+    "lines": 179,
+    "gzip_bytes": 169059,
+    "path": "llm-dlc/traces/b74acbd8-95de-40d7-8793-79948e8c27ae/logs/feb1181ae1ed5ed3aa4ec53f4fd0ed0d42ba14aebb4e9f5636905e9649fdf40b.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "xmkxynyvkropxlwsxtrmzzmrqvxzspno",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: two default test runs passed (ksyktoyyrtyn, sttksmqyyznx)",
+      "body": "Both default runs (unit and tool tiers) passed. The first's output, the unread-files list, was applied; the second's differs from the file the first changed, so it is kept under its result's outputs and not applied. It is not resubmitted: a rerun would only queue another default run. The second was first cancelled when this session's runner hit its background time limit and was run again in full.",
+      "log_sha256": "feb1181ae1ed5ed3aa4ec53f4fd0ed0d42ba14aebb4e9f5636905e9649fdf40b"
+    }
+  ],
+  "logs": {
+    "feb1181ae1ed5ed3aa4ec53f4fd0ed0d42ba14aebb4e9f5636905e9649fdf40b": {
+      "bytes": 703050,
+      "lines": 179,
+      "gzip_bytes": 169059,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}
