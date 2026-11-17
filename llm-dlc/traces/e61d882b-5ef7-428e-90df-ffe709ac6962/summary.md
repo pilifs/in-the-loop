@@ -102,6 +102,12 @@ change `mrxtsuuurwzm` · [log `5fdbc05d089c`](https://terminalvalue.net/raw-trac
 
 At the user's word (decision run-streams-domain-advances-D021). A trial merge showed state's line conflicting with challenge's in lib/src/bmc/mod.rs, where challenge's tightened lemma rule and state's write-set rule both mark which objects were there before a call; the challenge stream's inbox has an item (interface) asking for countermodels of the two rules together once state is merged. Also records the leave answers to further questions the leaked run-streams test asked.
 
+### The challenge stream is asked for countermodels of the lemma and write-set rules together
+
+change `woznkxzlpnso` · [log `5fdbc05d089c`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/5fdbc05d089c8341bdc0b2c1e0ddfd20fe18222609a7f6f3a52da36f83c56979.jsonl.gz)
+
+Applies the user's answer to run-streams-domain-advances-D021 (merge order evidence, challenge, state, preservation) and records the inbox item (interface) that asks the challenge stream for countermodels of its lemma rule and state's write-set rule, which meet in lib/src/bmc/mod.rs once state is merged.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/5fdbc05d089c8341bdc0b2c1e0ddfd20fe18222609a7f6f3a52da36f83c56979.jsonl.gz) has every step in between: reasoning, tool calls and their results.
