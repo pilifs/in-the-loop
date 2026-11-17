@@ -1,0 +1,547 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261117-122454-example-289-the-four-proof-tasks-again-w",
+  "title": "Example 289: the four proof tasks again, with the driver's record of identities (evidence.json)",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 1m33s, peak 551.4 MiB (estimated 20m00s, 4.0 GiB); 15 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1; jvmcontract:holds×2",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261117-122454-example-289-the-four-proof-tasks-again-w.json",
+    "sha256": "ca4b4a03c650bbee5c376365cfd11bc99da7e2aff43d383c71975396b479ea53",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261117-122454-example-289-the-four-proof-tasks-again-w",
+      "title": "Example 289: the four proof tasks again, with the driver's record of identities (evidence.json)",
+      "description": "Example 289's four answers beside the route are accepted by the new acceptance check (examples/tools/accept.py) from their saved results, with one limit: nothing the jobs left says which JARs, adapter classes and verifier binary were used; that rested on the driver's own hash checks. proofs/prove.py now writes evidence.json beside each outcome (the claim file's hash, the bound and whether it is the claim's, each JAR of the class path with its revision and hash, the adapter's sources and compiled classes, the verifier's binary, the driver), and ends the run when the mutant's JAR is not the one the mutant replay ran. This job reruns the four tasks unchanged at the frozen bound into a work folder of their own (verification/.work-289/recorded), so the earlier jobs' outputs stay as their results record them. It also runs the claims on the checker after its soundness fixes of 2026-11-17 (no lemma and no induction is used here, so nothing should change). When it has passed, whoever switches each task's besideRoute to this job runs python3 examples/tools/accept.py 289, which must accept all four with no limit about unrecorded artifacts.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "B9",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "289"
+        ],
+        "paths": [
+          "examples/tools/accept.py",
+          "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py"
+        ]
+      },
+      "expected": "exits 0: prove.py prints verdict: violation, verified, verified and violation, each the expected one, at bound 8; each task's outcome.json and evidence.json come back",
+      "submitted": {
+        "at": "2026-11-17T12:24:54+00:00",
+        "session": "3e8cabab-4a28-4a79-8207-69568d9e8162"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "patch",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "20m",
+        "timeout": "1h30m",
+        "notes": "the four earlier jobs took 5 s, 3m46s, 4m13s (with the release build) and about 10 s; peak 1.8 GiB (preservation). Plus the release build of lib/ and the fetch of the pinned JARs"
+      },
+      "steps": [
+        {
+          "name": "vulnerable-security at the frozen bound, 8",
+          "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py vulnerable-security --timeout 1800 --work verification/.work-289/recorded",
+          "cwd": "."
+        },
+        {
+          "name": "fixed-security at the frozen bound, 8",
+          "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py fixed-security --timeout 1800 --work verification/.work-289/recorded",
+          "cwd": "."
+        },
+        {
+          "name": "preservation at the frozen bound, 8",
+          "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py preservation --timeout 1800 --work verification/.work-289/recorded",
+          "cwd": "."
+        },
+        {
+          "name": "mutant-security at the frozen bound, 8",
+          "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py mutant-security --timeout 1800 --work verification/.work-289/recorded",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/.work-289/recorded/vulnerable-security/outcome.json",
+        "verification/.work-289/recorded/vulnerable-security/evidence.json",
+        "verification/.work-289/recorded/vulnerable-security/work/harness/PropertyHarness.java",
+        "verification/.work-289/recorded/vulnerable-security/work/harness/PropertyClaim.java",
+        "verification/.work-289/recorded/fixed-security/outcome.json",
+        "verification/.work-289/recorded/fixed-security/evidence.json",
+        "verification/.work-289/recorded/fixed-security/work/harness/PropertyHarness.java",
+        "verification/.work-289/recorded/fixed-security/work/harness/PropertyClaim.java",
+        "verification/.work-289/recorded/mutant-security/outcome.json",
+        "verification/.work-289/recorded/mutant-security/evidence.json",
+        "verification/.work-289/recorded/mutant-security/work/harness/PropertyHarness.java",
+        "verification/.work-289/recorded/mutant-security/work/harness/PropertyClaim.java",
+        "verification/.work-289/recorded/preservation/outcome.json",
+        "verification/.work-289/recorded/preservation/evidence.json",
+        "verification/.work-289/recorded/preservation/work/pair/RegressionPair.java"
+      ]
+    }
+  },
+  "sourceCommit": "150c4a2557ebd284bbb73f1084e5ac7d6e1d7523",
+  "startedAt": "2026-11-17T12:55:40+00:00",
+  "finishedAt": "2026-11-17T12:59:48+00:00",
+  "wallSeconds": 248.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1451051,
+    "workers": 10,
+    "cpus": 20.0,
+    "memoryBudgetBytes": 47244640256,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 5400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1200.0,
+    "notes": "the four earlier jobs took 5 s, 3m46s, 4m13s (with the release build) and about 10 s; peak 1.8 GiB (preservation). Plus the release build of lib/ and the fetch of the pinned JARs"
+  },
+  "usage": {
+    "peakMemoryBytes": 578224128,
+    "wallSeconds": 93.4,
+    "cpuSeconds": 97.8,
+    "memoryOfEstimate": 0.13,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 153.782,
+      "cpuSeconds": 153.94,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1939222528,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "cf6f3af5ecc6854014eb7769f70f78d3050668f4ebfba0ac1f801e1b5c3a886c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261117-122454-example-289-the-four-proof-tasks-again-w/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 33s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "vulnerable-security at the frozen bound, 8",
+      "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py vulnerable-security --timeout 1800 --work verification/.work-289/recorded",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5400.0,
+      "cancelled": false,
+      "wallSeconds": 3.81,
+      "cpuSeconds": 4.681,
+      "cpuThrottledSeconds": 0.3,
+      "peakMemoryBytes": 117100544,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-vulnerable-security-at-the-fro.log",
+        "lines": 9,
+        "bytes": 2017,
+        "sha256": "2c48188755cc04c4e64ffaf4587311a933f4a692cd4fe8bbd5046068889fbfe6",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 2,
+          "text": "✗ Property of example289.adapter.RegexMatchAdapter#matches violated: `result || !((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathIn",
+          "groups": [
+            "Property of example289.adapter.RegexMatchAdapter#matches violated: `result || !((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) ^ 32) == pattern.charAt(i))))` where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null:"
+          ]
+        }
+      ],
+      "tail": [
+        "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unexpected character '\\'' in expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target",
+        "✗ Property of example289.adapter.RegexMatchAdapter#matches violated: `result || !((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathIn",
+        "  matches(pattern=\".*\", caseInsensitive=false, servletPath=\"\", pathInfo=\"\\u07ff\\ufea0\\u2028\", query=null)",
+        "    outcome: false",
+        "  (found by jvmcontract's own checker (CaDiCaL) in 1.6 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: S",
+        "",
+        "The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.",
+        "",
+        "verdict: violation (expected violation); paths 67, solver calls 220, variables 76984; outcome in verification/.work-289/recorded/vulnerable-security/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "fixed-security at the frozen bound, 8",
+      "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py fixed-security --timeout 1800 --work verification/.work-289/recorded",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5400.0,
+      "cancelled": false,
+      "wallSeconds": 30.471,
+      "cpuSeconds": 31.263,
+      "cpuThrottledSeconds": 0.303,
+      "peakMemoryBytes": 278335488,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-fixed-security-at-the-frozen-b.log",
+        "lines": 5,
+        "bytes": 1771,
+        "sha256": "df638049e69c17fa197d04d6f5564ecb214a676f8dca889b934cdddead3d174e",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 2,
+          "text": "✓ example289.adapter.RegexMatchAdapter#matches satisfies `result || !((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ?",
+          "groups": [
+            "example289.adapter.RegexMatchAdapter#matches satisfies `result || !((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) ^ 32) == pattern.charAt(i))))` on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null (jvmcontract's own checker (CaDiCaL): 1 properties proved over pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null in 28.6 s; loops unwound 26 times with unwinding assertions)"
+          ]
+        }
+      ],
+      "tail": [
+        "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unexpected character '\\'' in expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target",
+        "✓ example289.adapter.RegexMatchAdapter#matches satisfies `result || !((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ?",
+        "  not vacuous: matches(pattern=\".*\", caseInsensitive=true, servletPath=\"\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\", pathInfo=null, query=null) reaches the calls",
+        "",
+        "verdict: verified (expected verified); paths 1003, solver calls 2589, variables 322652; outcome in verification/.work-289/recorded/fixed-security/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "preservation at the frozen bound, 8",
+      "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py preservation --timeout 1800 --work verification/.work-289/recorded",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5400.0,
+      "cancelled": false,
+      "wallSeconds": 54.919,
+      "cpuSeconds": 56.404,
+      "cpuThrottledSeconds": 0.409,
+      "peakMemoryBytes": 578224128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-preservation-at-the-frozen-bou.log",
+        "lines": 7,
+        "bytes": 3642,
+        "sha256": "1bde3e3812ef0b3e124ba5f141d5909f9d46a99180d7df34f4730019dc2f6a36",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 2
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 2,
+          "text": "✓ example289.adapter.RegexMatchAdapter#matches: the two versions agree on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-'",
+          "groups": [
+            "example289.adapter.RegexMatchAdapter#matches: the two versions agree on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null, outside `((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) ^ 32) == pattern.charAt(i)))) && (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).chars().anyMatch(c -> c == '\\n' || c == '\\r' || c == 0x85 || c == 0x2028 || c == 0x2029)` (the pair's property, below)"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 4,
+          "text": "✓ RegressionPair#agree satisfies `result` on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath ",
+          "groups": [
+            "RegressionPair#agree satisfies `result` on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null (jvmcontract's own checker (CaDiCaL): 1 properties proved over pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null in 51.9 s; loops unwound 26 times with unwinding assertions)"
+          ]
+        }
+      ],
+      "tail": [
+        "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-289/recorded/preservation/work/pair/RegressionPair.java) calls the previous version's example289.adapter.RegexMatchAdapter#matches, relocated under `before`, and then the new one's on the same inputs, each ",
+        "✓ example289.adapter.RegexMatchAdapter#matches: the two versions agree on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-'",
+        "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unexpected character '\\'' in expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target",
+        "✓ RegressionPair#agree satisfies `result` on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath ",
+        "  not vacuous: agree(pattern=\".*\", caseInsensitive=true, servletPath=\"\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\", pathInfo=null, query=null) reaches the calls",
+        "",
+        "verdict: verified (expected verified); paths 1373, solver calls 2194, variables 415833; outcome in verification/.work-289/recorded/preservation/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "mutant-security at the frozen bound, 8",
+      "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py mutant-security --timeout 1800 --work verification/.work-289/recorded",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5400.0,
+      "cancelled": false,
+      "wallSeconds": 4.21,
+      "cpuSeconds": 5.405,
+      "cpuThrottledSeconds": 0.294,
+      "peakMemoryBytes": 124440576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-mutant-security-at-the-frozen.log",
+        "lines": 10,
+        "bytes": 2255,
+        "sha256": "66d78ac7a9ff3f101bf195029bc8109ff24049bb7432d5642cf0dcdd2c344757",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 3,
+          "text": "✗ Property of example289.adapter.RegexMatchAdapter#matches violated: `result || !((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathIn",
+          "groups": [
+            "Property of example289.adapter.RegexMatchAdapter#matches violated: `result || !((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) ^ 32) == pattern.charAt(i))))` where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null:"
+          ]
+        }
+      ],
+      "tail": [
+        "mutant: spring-security-web-5.6.4.jar with RegexRequestMatcher recompiled (--release 8 -g -parameters), sha256 a3a3dbff86c14e75ebcdfd6302069d42abe859c1ceb82416aff1d4c8feeb0847: the JAR the mutant replay ran",
+        "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unexpected character '\\'' in expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target",
+        "✗ Property of example289.adapter.RegexMatchAdapter#matches violated: `result || !((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathIn",
+        "  matches(pattern=\".*\", caseInsensitive=true, servletPath=\"\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\", pathInfo=\"\\u2029\\ufea0\\ufea0\\ufea0\", query=null)",
+        "    outcome: false",
+        "  (found by jvmcontract's own checker (CaDiCaL) in 1.7 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: S",
+        "",
+        "The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.",
+        "",
+        "verdict: violation (expected violation); paths 71, solver calls 238, variables 77002; outcome in verification/.work-289/recorded/mutant-security/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-289/recorded/vulnerable-security/outcome.json",
+      "change": "added",
+      "bytes": 15863,
+      "sha256": "e9ca22dbfc2a173084ce606c12af82da788f90b517ff92ae02785a783a67d600",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-289/recorded/vulnerable-security/evidence.json",
+      "change": "added",
+      "bytes": 2172,
+      "sha256": "218434775832b6f688791cd921514c53ada1b13bc0a71c3af8f783f8629af459",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-289/recorded/vulnerable-security/work/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 2272,
+      "sha256": "292831ae41878133d400c66bc3a787a495115cd1bbbfc897c01104323e0cb710",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-289/recorded/vulnerable-security/work/harness/PropertyClaim.java",
+      "change": "added",
+      "bytes": 1333,
+      "sha256": "0ac2c79bfaa31d4a14431ccc99b2962178efa0631ed2853b885574fba4f26a7e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-289/recorded/fixed-security/outcome.json",
+      "change": "added",
+      "bytes": 12734,
+      "sha256": "3c6f4347aea80e75afb924d9f38a712f6174dff1767158204ea74c3c9fb692c0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-289/recorded/fixed-security/evidence.json",
+      "change": "added",
+      "bytes": 2137,
+      "sha256": "3d94ef3c3747082e0d2e120ecb697ec2c075072b24b58f409e8de0fc0a447479",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-289/recorded/fixed-security/work/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 2272,
+      "sha256": "292831ae41878133d400c66bc3a787a495115cd1bbbfc897c01104323e0cb710",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-289/recorded/fixed-security/work/harness/PropertyClaim.java",
+      "change": "added",
+      "bytes": 1333,
+      "sha256": "0ac2c79bfaa31d4a14431ccc99b2962178efa0631ed2853b885574fba4f26a7e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-289/recorded/mutant-security/outcome.json",
+      "change": "added",
+      "bytes": 16298,
+      "sha256": "a797db4ac39c5ad5db03e6ac484ab2edca72d1333f1900e3d6fe242b1f8a03ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-289/recorded/mutant-security/evidence.json",
+      "change": "added",
+      "bytes": 2359,
+      "sha256": "228439bbd9bcf50bbdfdd50feb08408c59aadd98007eda1a8860e630d777e2a1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-289/recorded/mutant-security/work/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 2272,
+      "sha256": "292831ae41878133d400c66bc3a787a495115cd1bbbfc897c01104323e0cb710",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-289/recorded/mutant-security/work/harness/PropertyClaim.java",
+      "change": "added",
+      "bytes": 1333,
+      "sha256": "0ac2c79bfaa31d4a14431ccc99b2962178efa0631ed2853b885574fba4f26a7e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-289/recorded/preservation/outcome.json",
+      "change": "added",
+      "bytes": 23666,
+      "sha256": "2f87b1c6a43589d1cc736a1b63a616618537d554abfd1e757f3601316f2756aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-289/recorded/preservation/evidence.json",
+      "change": "added",
+      "bytes": 3079,
+      "sha256": "2a75c281db30760035ff431c9caf019c80892baf166e5d76b38f8e7a2e4d4524",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-289/recorded/preservation/work/pair/RegressionPair.java",
+      "change": "added",
+      "bytes": 3717,
+      "sha256": "6a66ab1faba705e315d9d2f243e3f8e8f229b51ecb08e82d6a6b17ec247f79ae",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-17T13:00:06+00:00",
+    "applied": [
+      "verification/.work-289/recorded/vulnerable-security/outcome.json",
+      "verification/.work-289/recorded/vulnerable-security/evidence.json",
+      "verification/.work-289/recorded/vulnerable-security/work/harness/PropertyHarness.java",
+      "verification/.work-289/recorded/vulnerable-security/work/harness/PropertyClaim.java",
+      "verification/.work-289/recorded/fixed-security/outcome.json",
+      "verification/.work-289/recorded/fixed-security/evidence.json",
+      "verification/.work-289/recorded/fixed-security/work/harness/PropertyHarness.java",
+      "verification/.work-289/recorded/fixed-security/work/harness/PropertyClaim.java",
+      "verification/.work-289/recorded/mutant-security/outcome.json",
+      "verification/.work-289/recorded/mutant-security/evidence.json",
+      "verification/.work-289/recorded/mutant-security/work/harness/PropertyHarness.java",
+      "verification/.work-289/recorded/mutant-security/work/harness/PropertyClaim.java",
+      "verification/.work-289/recorded/preservation/outcome.json",
+      "verification/.work-289/recorded/preservation/evidence.json",
+      "verification/.work-289/recorded/preservation/work/pair/RegressionPair.java"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "09d2f5bfc7dd3385b28ab233aa4ae671db5d7bea",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/09d2f5bfc7dd3385b28ab233aa4ae671db5d7bea/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

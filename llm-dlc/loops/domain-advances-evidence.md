@@ -107,6 +107,21 @@ Don't change `verification/pipeline.py`.
   noted; it did not come up in this cycle's `run --changed`, and I will neither change it nor block on it.
 - Next: step 3, the reruns of 286 and 287 `mutant-security` with the new drivers (independent of step 1), then
   step 1 when its jobs are back.
+- 2026-11-17, cycle 2. **Step 1, 289's half, done.** Job `20261117-122454-…-289-…` passed (1m33s, the same four
+  verdicts); the watcher collected it on the default line (`pulrzyrl`), and this workspace took its result folder and
+  `verification/.work-289/recorded` from there as they are (no merge). Each 289 task's `besideRoute.job` names it,
+  and `accept.py 289` accepts all four **with no limit**, the `artifacts` check `ok` on each. *Finding, the check's*:
+  its first run refused `mutant-security`, because the driver records the mutant's class path under the revision
+  `mutant` (rightly: that is the class path it ran) and the check looked the base's JARs up under that revision,
+  where target.json pins none. The check now looks a constructed mutant's JARs up under its base (its own JAR stays
+  the `mutant` check's); `test_accept.py` has a control for it (fails without the fix), and its checkout test now
+  holds 289 to the new job with no limit. The lemma job (`20261117-122546-…-286-and-288-…`) is still pending, not
+  started.
+- Repeated work measured (step 7): none for the owners; the state stream's 286 driver commit (`tvxyzwqv`) builds on
+  the shared module, so nothing there was rebuilt by hand.
+- Inbox: no open items.
+- Next: step 3, the reruns of 286 and 287 `mutant-security` (and the other accepted answers of 286, 287, 290) as
+  jobs with the new drivers; the lemma half of step 1 when its job is back.
 - Status: working
 
 ## Loop settings

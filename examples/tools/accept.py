@@ -30,8 +30,9 @@ when every one of these holds; one that fails, or that the evidence has nothing 
     mutant      (a constructed mutant's task) the JAR's hash in the step's log is the one the mutant replay's receipt
                 records
     artifacts   the JARs, the adapter sources and the claim the driver recorded beside the outcome (evidence.json)
-                are the ones target.json pins. A driver that records none leaves a limit, not a refusal: the pinned
-                hashes were then checked by the driver's own code and are in no record
+                are the ones target.json pins (a constructed mutant's: its base's, but for its own JAR, which is the
+                `mutant` check's). A driver that records none leaves a limit, not a refusal: the pinned hashes were
+                then checked by the driver's own code and are in no record
 
 `limits` says what an accepted answer still rests on that no record shows; `restsOn` what the checker itself assumed.
 A driver writes evidence.json with `record` below. llm-dlc/tools/changes.py counts an answer beside the route only
@@ -453,9 +454,12 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
                 problems.append("the claim it hashed is not the claim file")
             if (evidence.get("bound") or {}).get("trial") and actual == "established":
                 problems.append("it marks the run a trial at a bound that is not the claim's")
+            # A constructed mutant's class path is its base's, its own JAR built: the rest are pinned under the base.
+            revisions = (target.get("history") or {}).get("revisions") or {}
+            base_of = {r: ((v or {}).get("mutant") or {}).get("base", r) for r, v in revisions.items()}
             seen = set()
             for a in evidence.get("artifacts") or []:
-                key = (a.get("revision"), a.get("name"))
+                key = (base_of.get(a.get("revision"), a.get("revision")), a.get("name"))
                 seen.add(a.get("revision"))
                 if a.get("constructed"):
                     continue  # the mutant's own JAR: the `mutant` check

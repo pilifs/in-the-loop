@@ -1,0 +1,1736 @@
+--- /dev/null
++++ b/verification/.work-289/recorded/vulnerable-security/outcome.json
+@@ -0,0 +1,321 @@
++[
++  {
++    "verdict": "violation",
++    "target": "example289.adapter.RegexMatchAdapter#matches",
++    "domain": "pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null",
++    "assume": "pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null",
++    "assert": "result || !((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) ^ 32) == pattern.charAt(i))))",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "matches(pattern=\".*\", caseInsensitive=false, servletPath=\"\", pathInfo=\"\\u07ff\\ufea0\\u2028\", query=null)",
++      "outcome": "false",
++      "values": [
++        "\".*\"",
++        "false",
++        "\"\"",
++        "\"\\u07ff\\ufea0\\u2028\"",
++        "null"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "pattern",
++          "type": "java.lang.String",
++          "value": {
++            "kind": "string",
++            "units": [
++              46,
++              42
++            ]
++          }
++        },
++        {
++          "name": "caseInsensitive",
++          "type": "boolean",
++          "value": false
++        },
++        {
++          "name": "servletPath",
++          "type": "java.lang.String",
++          "value": {
++            "kind": "string",
++            "units": []
++          }
++        },
++        {
++          "name": "pathInfo",
++          "type": "java.lang.String",
++          "value": {
++            "kind": "string",
++            "units": [
++              2047,
++              65184,
++              8232
++            ]
++          }
++        },
++        {
++          "name": "query",
++          "type": "java.lang.String",
++          "value": null
++        }
++      ],
++      "call": {
++        "class": "example289.adapter.RegexMatchAdapter",
++        "class_file": "example289/adapter/RegexMatchAdapter.class",
++        "classes": "after",
++        "method": "matches",
++        "descriptor": "(Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z",
++        "static": true,
++        "arguments": [
++          {
++            "name": "pattern",
++            "type": "java.lang.String",
++            "value": {
++              "kind": "string",
++              "units": [
++                46,
++                42
++              ]
++            },
++            "from": "pattern"
++          },
++          {
++            "name": "caseInsensitive",
++            "type": "boolean",
++            "value": false,
++            "from": "caseInsensitive"
++          },
++          {
++            "name": "servletPath",
++            "type": "java.lang.String",
++            "value": {
++              "kind": "string",
++              "units": []
++            },
++            "from": "servletPath"
++          },
++          {
++            "name": "pathInfo",
++            "type": "java.lang.String",
++            "value": {
++              "kind": "string",
++              "units": [
++                2047,
++                65184,
++                8232
++              ]
++            },
++            "from": "pathInfo"
++          },
++          {
++            "name": "query",
++            "type": "java.lang.String",
++            "value": null,
++            "from": "query"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 1.6 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null",
++    "problem": null,
++    "statement": "verification/.work-289/recorded/vulnerable-security/work/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of example289.adapter.RegexMatchAdapter#matches violated: `result || !((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) ^ 32) == pattern.charAt(i))))` where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null:\n  matches(pattern=\".*\", caseInsensitive=false, servletPath=\"\", pathInfo=\"\\u07ff\\ufea0\\u2028\", query=null)\n    outcome: false",
++        "uri": null,
++        "line": 23
++      }
++    ],
++    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unexpected character '\\'' in expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✗ Property of example289.adapter.RegexMatchAdapter#matches violated: `result || !((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) ^ 32) == pattern.charAt(i))))` where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null:\n  matches(pattern=\".*\", caseInsensitive=false, servletPath=\"\", pathInfo=\"\\u07ff\\ufea0\\u2028\", query=null)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 1.6 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "verification/.work-289/recorded/vulnerable-security/work",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 1.611414852,
++      "properties": 1,
++      "unwind": 26,
++      "max_array_length": 8,
++      "stage": "[-100000:100000]",
++      "native": {
++        "paths": 67,
++        "merges": 0,
++        "solver_calls": 220,
++        "solving_seconds": 1.356999471,
++        "gates_evaluated": 137580,
++        "evaluating_seconds": 0.002978794,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 76984,
++        "clauses": 256934,
++        "seconds": 1.5889998109999999,
++        "loading_seconds": 0.002637724,
++        "decoding_seconds": 0.000243007,
++        "encoding_seconds": 0.166980408,
++        "witness_seconds": 0.006475815,
++        "assumed": [
++          "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL)",
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 1800.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 1800.0,
++          "seconds": 1.589,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.0,
++            "symbolic": 0.056,
++            "encoding": 0.167,
++            "solving": 1.357,
++            "trace": 0.006,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 76984,
++            "clauses": 256934
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 2.414,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 1.589,
++        "replay": 0.0,
++        "jvm": 0.139,
++        "other": 0.684
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "pattern",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": false,
++            "max_length": 8
++          },
++          {
++            "name": "caseInsensitive",
++            "type": "boolean",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "servletPath",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": false,
++            "max_length": 8
++          },
++          {
++            "name": "pathInfo",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": true,
++            "max_length": 8
++          },
++          {
++            "name": "query",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": true,
++            "max_length": 8
++          }
++        ],
++        "shared_arrays": false,
++        "text": "pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL)",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result || !((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) ^ 32) == pattern.charAt(i))))",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 26,
++        "max_array_length": null,
++        "complete": false,
++        "max_value_length": 8
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d3cb60427833314ef7f913b8bc6ef4ca4c79b923fd15a09a6224d63099b17d02",
++        "classes": 31,
++        "jdk": "25.0.5",
++        "values": [
++          {
++            "source": "jvmcontract String model 6: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++            "jdk": "25.0.5",
++            "level": "tested",
++            "leaves_out": [
++              "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++              "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++              "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++              "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
++            ]
++          }
++        ]
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/.work-289/recorded/vulnerable-security/evidence.json
+@@ -0,0 +1,61 @@
++{
++ "schema": "beside-route-evidence/v1",
++ "example": "289",
++ "task": "vulnerable-security",
++ "claim": {
++  "file": "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/claims/protected-prefix-matched-across-line-terminators.json",
++  "sha256": "8f1c7824373d005251ada1dec6abd54f8a406a1d81cd9e90e9e3017eede48af0"
++ },
++ "bound": {
++  "maxArrayLength": 8,
++  "unwind": 26,
++  "trial": false
++ },
++ "artifacts": [
++  {
++   "revision": "vulnerable-release",
++   "name": "spring-security-web-5.6.3.jar",
++   "sha256": "fa572e891ffae92c4806e29f3789146e4b43085b95834a181a6d98a03622cd36"
++  },
++  {
++   "revision": "vulnerable-release",
++   "name": "spring-web-5.3.19.jar",
++   "sha256": "df65b8ce1066d2f640a547c5adade2625ff2a58371db60d50f89e1168b1fe08b"
++  },
++  {
++   "revision": "vulnerable-release",
++   "name": "spring-core-5.3.19.jar",
++   "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992"
++  },
++  {
++   "revision": "vulnerable-release",
++   "name": "spring-jcl-5.3.19.jar",
++   "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8"
++  },
++  {
++   "revision": "vulnerable-release",
++   "name": "javax.servlet-api-4.0.1.jar",
++   "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
++  }
++ ],
++ "adapter": {
++  "sources": {
++   "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/replay/carrier/example289/carrier/PathOnlyRequest.java": "4fd25981e050fef0cd5df36c9ebd954e7597a455460edfebb593e3790b762a18",
++   "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/replay/adapter/example289/adapter/RegexMatchAdapter.java": "36395f81038c2764ebd82f8f58ae833c94ef2ce6eda45816c544d2d7a25ad3cf"
++  },
++  "classes": [
++   {
++    "folder": "adapter-vulnerable-release",
++    "sha256": "5203b45eef81e22428bfa57fba78d307b49ec3deb5c9a464135e840664ca04de"
++   }
++  ]
++ },
++ "jvmcontract": {
++  "path": "jvmcontract",
++  "sha256": "14673718807c819f960679dfb66dc55d07b233b5195b4c835ff75cf4496baa8f"
++ },
++ "driver": {
++  "path": "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py",
++  "sha256": "af0dd1d1f7f72485008a57d90e5b59c1f0f2c05e21d83bcfbc6bbc00db9ca027"
++ }
++}
+--- /dev/null
++++ b/verification/.work-289/recorded/vulnerable-security/work/harness/PropertyHarness.java
+@@ -0,0 +1,10 @@
++/** Generated by jvmcontract: asserts a property of a method on every input. The class file JBMC checks is generated directly; this is the same statement, for readers. */
++public final class PropertyHarness {
++    public static void check(java.lang.String pattern, boolean caseInsensitive, java.lang.String servletPath, java.lang.String pathInfo, java.lang.String query) {
++        if (!(pattern != null && pattern.endsWith(".*") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null)) { return; } // the inputs the property is about
++        boolean result = false;
++        int e = 0;
++        try { result = example289.adapter.RegexMatchAdapter.matches(pattern, caseInsensitive, servletPath, pathInfo, query); } catch (java.lang.NumberFormatException t) { e = 1; } catch (java.lang.ArithmeticException t) { e = 2; } catch (java.lang.NullPointerException t) { e = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { e = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { e = 5; } catch (java.lang.IndexOutOfBoundsException t) { e = 6; } catch (java.lang.NegativeArraySizeException t) { e = 7; } catch (java.lang.ClassCastException t) { e = 8; } catch (java.lang.IllegalStateException t) { e = 9; } catch (java.lang.IllegalArgumentException t) { e = 10; } catch (java.lang.UnsupportedOperationException t) { e = 11; } catch (java.util.NoSuchElementException t) { e = 12; } catch (java.util.ConcurrentModificationException t) { e = 13; } catch (java.lang.RuntimeException t) { e = 14; } catch (java.lang.Error t) { e = 15; }
++        assert e == 0 && (result || !((servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).charAt(i) ^ 32) == pattern.charAt(i))))); // no exception, and the property
++    }
++}
+--- /dev/null
++++ b/verification/.work-289/recorded/vulnerable-security/work/harness/PropertyClaim.java
+@@ -0,0 +1,13 @@
++/** Generated by jvmcontract: the expressions of a claim, compiled by javac as they are written. */
++public final class PropertyClaim {
++    private PropertyClaim() {
++    }
++
++    public static boolean assume(java.lang.String pattern, boolean caseInsensitive, java.lang.String servletPath, java.lang.String pathInfo, java.lang.String query) {
++        return pattern != null && pattern.endsWith(".*") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null;
++    }
++
++    public static boolean holds(java.lang.String pattern, boolean caseInsensitive, java.lang.String servletPath, java.lang.String pathInfo, java.lang.String query, boolean result) {
++        return result || !((servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).charAt(i) ^ 32) == pattern.charAt(i))));
++    }
++}
+--- /dev/null
++++ b/verification/.work-289/recorded/fixed-security/outcome.json
+@@ -0,0 +1,228 @@
++[
++  {
++    "verdict": "verified",
++    "target": "example289.adapter.RegexMatchAdapter#matches",
++    "domain": "pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null",
++    "assume": "pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null",
++    "assert": "result || !((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) ^ 32) == pattern.charAt(i))))",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null in 28.6 s; loops unwound 26 times with unwinding assertions",
++    "problem": null,
++    "statement": "verification/.work-289/recorded/fixed-security/work/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unexpected character '\\'' in expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ example289.adapter.RegexMatchAdapter#matches satisfies `result || !((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) ^ 32) == pattern.charAt(i))))` on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null (jvmcontract's own checker (CaDiCaL): 1 properties proved over pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null in 28.6 s; loops unwound 26 times with unwinding assertions)\n  not vacuous: matches(pattern=\".*\", caseInsensitive=true, servletPath=\"\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\", pathInfo=null, query=null) reaches the calls\n",
++    "work": "verification/.work-289/recorded/fixed-security/work",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 28.63362796,
++      "properties": 1,
++      "unwind": 26,
++      "max_array_length": 8,
++      "stage": null,
++      "native": {
++        "paths": 1003,
++        "merges": 433,
++        "solver_calls": 2589,
++        "solving_seconds": 26.105580458,
++        "gates_evaluated": 1306539,
++        "evaluating_seconds": 0.033327442,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 322652,
++        "clauses": 1231598,
++        "seconds": 28.548639811,
++        "loading_seconds": 0.002440128,
++        "decoding_seconds": 0.000196113,
++        "encoding_seconds": 1.6817681709999999,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL)",
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 1800.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 1800.0,
++          "seconds": 28.549,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.002,
++            "lowering": 0.0,
++            "symbolic": 0.759,
++            "encoding": 1.682,
++            "solving": 26.106,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 322652,
++            "clauses": 1231598
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 1771.366,
++          "seconds": 0.036,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.005,
++            "encoding": 0.003,
++            "solving": 0.026,
++            "trace": 0.001,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 6163,
++            "clauses": 18766
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 29.299,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 28.585,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.713
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "pattern",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": false,
++            "max_length": 8
++          },
++          {
++            "name": "caseInsensitive",
++            "type": "boolean",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "servletPath",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": false,
++            "max_length": 8
++          },
++          {
++            "name": "pathInfo",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": true,
++            "max_length": 8
++          },
++          {
++            "name": "query",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": true,
++            "max_length": 8
++          }
++        ],
++        "shared_arrays": false,
++        "text": "pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL)",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result || !((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) ^ 32) == pattern.charAt(i))))",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 26,
++        "max_array_length": null,
++        "complete": true,
++        "max_value_length": 8
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d3cb60427833314ef7f913b8bc6ef4ca4c79b923fd15a09a6224d63099b17d02",
++        "classes": 31,
++        "jdk": "25.0.5",
++        "values": [
++          {
++            "source": "jvmcontract String model 6: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++            "jdk": "25.0.5",
++            "level": "tested",
++            "leaves_out": [
++              "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++              "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++              "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++              "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
++            ]
++          }
++        ]
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found matches(pattern=\".*\", caseInsensitive=true, servletPath=\"\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\", pathInfo=null, query=null).",
++        "witness": "matches(pattern=\".*\", caseInsensitive=true, servletPath=\"\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\", pathInfo=null, query=null)"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/verification/.work-289/recorded/fixed-security/evidence.json
+@@ -0,0 +1,61 @@
++{
++ "schema": "beside-route-evidence/v1",
++ "example": "289",
++ "task": "fixed-security",
++ "claim": {
++  "file": "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/claims/protected-prefix-matched-across-line-terminators.json",
++  "sha256": "8f1c7824373d005251ada1dec6abd54f8a406a1d81cd9e90e9e3017eede48af0"
++ },
++ "bound": {
++  "maxArrayLength": 8,
++  "unwind": 26,
++  "trial": false
++ },
++ "artifacts": [
++  {
++   "revision": "fixed-release",
++   "name": "spring-security-web-5.6.4.jar",
++   "sha256": "68c1909c90e2e79f30ab8e0674fe11a5ef6461428019f51abaac259204867193"
++  },
++  {
++   "revision": "fixed-release",
++   "name": "spring-web-5.3.20.jar",
++   "sha256": "d6db8d7a8239a0403f4fc2066b765f5209e1b14af58b5bb8215482188ef640bc"
++  },
++  {
++   "revision": "fixed-release",
++   "name": "spring-core-5.3.20.jar",
++   "sha256": "42d70d78b8822601a3b61c88dadf4be6a0021dde169a772c3fd4a6b8b2b61c90"
++  },
++  {
++   "revision": "fixed-release",
++   "name": "spring-jcl-5.3.20.jar",
++   "sha256": "fb6c6bf524b19a03103812e0104eaf0bcbc178ae8f425db8b547963b13483e28"
++  },
++  {
++   "revision": "fixed-release",
++   "name": "javax.servlet-api-4.0.1.jar",
++   "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
++  }
++ ],
++ "adapter": {
++  "sources": {
++   "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/replay/carrier/example289/carrier/PathOnlyRequest.java": "4fd25981e050fef0cd5df36c9ebd954e7597a455460edfebb593e3790b762a18",
++   "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/replay/adapter/example289/adapter/RegexMatchAdapter.java": "36395f81038c2764ebd82f8f58ae833c94ef2ce6eda45816c544d2d7a25ad3cf"
++  },
++  "classes": [
++   {
++    "folder": "adapter-fixed-release",
++    "sha256": "5203b45eef81e22428bfa57fba78d307b49ec3deb5c9a464135e840664ca04de"
++   }
++  ]
++ },
++ "jvmcontract": {
++  "path": "jvmcontract",
++  "sha256": "14673718807c819f960679dfb66dc55d07b233b5195b4c835ff75cf4496baa8f"
++ },
++ "driver": {
++  "path": "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py",
++  "sha256": "af0dd1d1f7f72485008a57d90e5b59c1f0f2c05e21d83bcfbc6bbc00db9ca027"
++ }
++}
+--- /dev/null
++++ b/verification/.work-289/recorded/fixed-security/work/harness/PropertyHarness.java
+@@ -0,0 +1,10 @@
++/** Generated by jvmcontract: asserts a property of a method on every input. The class file JBMC checks is generated directly; this is the same statement, for readers. */
++public final class PropertyHarness {
++    public static void check(java.lang.String pattern, boolean caseInsensitive, java.lang.String servletPath, java.lang.String pathInfo, java.lang.String query) {
++        if (!(pattern != null && pattern.endsWith(".*") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null)) { return; } // the inputs the property is about
++        boolean result = false;
++        int e = 0;
++        try { result = example289.adapter.RegexMatchAdapter.matches(pattern, caseInsensitive, servletPath, pathInfo, query); } catch (java.lang.NumberFormatException t) { e = 1; } catch (java.lang.ArithmeticException t) { e = 2; } catch (java.lang.NullPointerException t) { e = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { e = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { e = 5; } catch (java.lang.IndexOutOfBoundsException t) { e = 6; } catch (java.lang.NegativeArraySizeException t) { e = 7; } catch (java.lang.ClassCastException t) { e = 8; } catch (java.lang.IllegalStateException t) { e = 9; } catch (java.lang.IllegalArgumentException t) { e = 10; } catch (java.lang.UnsupportedOperationException t) { e = 11; } catch (java.util.NoSuchElementException t) { e = 12; } catch (java.util.ConcurrentModificationException t) { e = 13; } catch (java.lang.RuntimeException t) { e = 14; } catch (java.lang.Error t) { e = 15; }
++        assert e == 0 && (result || !((servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).charAt(i) ^ 32) == pattern.charAt(i))))); // no exception, and the property
++    }
++}
+--- /dev/null
++++ b/verification/.work-289/recorded/fixed-security/work/harness/PropertyClaim.java
+@@ -0,0 +1,13 @@
++/** Generated by jvmcontract: the expressions of a claim, compiled by javac as they are written. */
++public final class PropertyClaim {
++    private PropertyClaim() {
++    }
++
++    public static boolean assume(java.lang.String pattern, boolean caseInsensitive, java.lang.String servletPath, java.lang.String pathInfo, java.lang.String query) {
++        return pattern != null && pattern.endsWith(".*") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null;
++    }
++
++    public static boolean holds(java.lang.String pattern, boolean caseInsensitive, java.lang.String servletPath, java.lang.String pathInfo, java.lang.String query, boolean result) {
++        return result || !((servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).charAt(i) ^ 32) == pattern.charAt(i))));
++    }
++}
+--- /dev/null
++++ b/verification/.work-289/recorded/mutant-security/outcome.json
+@@ -0,0 +1,335 @@
++[
++  {
++    "verdict": "violation",
++    "target": "example289.adapter.RegexMatchAdapter#matches",
++    "domain": "pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null",
++    "assume": "pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null",
++    "assert": "result || !((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) ^ 32) == pattern.charAt(i))))",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "matches(pattern=\".*\", caseInsensitive=true, servletPath=\"\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\", pathInfo=\"\\u2029\\ufea0\\ufea0\\ufea0\", query=null)",
++      "outcome": "false",
++      "values": [
++        "\".*\"",
++        "true",
++        "\"\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\"",
++        "\"\\u2029\\ufea0\\ufea0\\ufea0\"",
++        "null"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "pattern",
++          "type": "java.lang.String",
++          "value": {
++            "kind": "string",
++            "units": [
++              46,
++              42
++            ]
++          }
++        },
++        {
++          "name": "caseInsensitive",
++          "type": "boolean",
++          "value": true
++        },
++        {
++          "name": "servletPath",
++          "type": "java.lang.String",
++          "value": {
++            "kind": "string",
++            "units": [
++              65184,
++              65184,
++              65184,
++              65184,
++              65184
++            ]
++          }
++        },
++        {
++          "name": "pathInfo",
++          "type": "java.lang.String",
++          "value": {
++            "kind": "string",
++            "units": [
++              8233,
++              65184,
++              65184,
++              65184
++            ]
++          }
++        },
++        {
++          "name": "query",
++          "type": "java.lang.String",
++          "value": null
++        }
++      ],
++      "call": {
++        "class": "example289.adapter.RegexMatchAdapter",
++        "class_file": "example289/adapter/RegexMatchAdapter.class",
++        "classes": "after",
++        "method": "matches",
++        "descriptor": "(Ljava/lang/String;ZLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)Z",
++        "static": true,
++        "arguments": [
++          {
++            "name": "pattern",
++            "type": "java.lang.String",
++            "value": {
++              "kind": "string",
++              "units": [
++                46,
++                42
++              ]
++            },
++            "from": "pattern"
++          },
++          {
++            "name": "caseInsensitive",
++            "type": "boolean",
++            "value": true,
++            "from": "caseInsensitive"
++          },
++          {
++            "name": "servletPath",
++            "type": "java.lang.String",
++            "value": {
++              "kind": "string",
++              "units": [
++                65184,
++                65184,
++                65184,
++                65184,
++                65184
++              ]
++            },
++            "from": "servletPath"
++          },
++          {
++            "name": "pathInfo",
++            "type": "java.lang.String",
++            "value": {
++              "kind": "string",
++              "units": [
++                8233,
++                65184,
++                65184,
++                65184
++              ]
++            },
++            "from": "pathInfo"
++          },
++          {
++            "name": "query",
++            "type": "java.lang.String",
++            "value": null,
++            "from": "query"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 1.7 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null",
++    "problem": null,
++    "statement": "verification/.work-289/recorded/mutant-security/work/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of example289.adapter.RegexMatchAdapter#matches violated: `result || !((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) ^ 32) == pattern.charAt(i))))` where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null:\n  matches(pattern=\".*\", caseInsensitive=true, servletPath=\"\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\", pathInfo=\"\\u2029\\ufea0\\ufea0\\ufea0\", query=null)\n    outcome: false",
++        "uri": null,
++        "line": 23
++      }
++    ],
++    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unexpected character '\\'' in expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✗ Property of example289.adapter.RegexMatchAdapter#matches violated: `result || !((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) ^ 32) == pattern.charAt(i))))` where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null:\n  matches(pattern=\".*\", caseInsensitive=true, servletPath=\"\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\", pathInfo=\"\\u2029\\ufea0\\ufea0\\ufea0\", query=null)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 1.7 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "verification/.work-289/recorded/mutant-security/work",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 1.704567691,
++      "properties": 1,
++      "unwind": 26,
++      "max_array_length": 8,
++      "stage": "[-100000:100000]",
++      "native": {
++        "paths": 71,
++        "merges": 0,
++        "solver_calls": 238,
++        "solving_seconds": 1.415402891,
++        "gates_evaluated": 109930,
++        "evaluating_seconds": 0.003006043,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 77002,
++        "clauses": 257018,
++        "seconds": 1.680433296,
++        "loading_seconds": 0.002809378,
++        "decoding_seconds": 0.00022897,
++        "encoding_seconds": 0.19930124,
++        "witness_seconds": 0.004793343,
++        "assumed": [
++          "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL)",
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 1800.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 1800.0,
++          "seconds": 1.68,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.0,
++            "symbolic": 0.058,
++            "encoding": 0.199,
++            "solving": 1.415,
++            "trace": 0.005,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 77002,
++            "clauses": 257018
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 2.503,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 1.68,
++        "replay": 0.0,
++        "jvm": 0.165,
++        "other": 0.657
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "pattern",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": false,
++            "max_length": 8
++          },
++          {
++            "name": "caseInsensitive",
++            "type": "boolean",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "servletPath",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": false,
++            "max_length": 8
++          },
++          {
++            "name": "pathInfo",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": true,
++            "max_length": 8
++          },
++          {
++            "name": "query",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": true,
++            "max_length": 8
++          }
++        ],
++        "shared_arrays": false,
++        "text": "pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL)",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result || !((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) ^ 32) == pattern.charAt(i))))",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 26,
++        "max_array_length": null,
++        "complete": false,
++        "max_value_length": 8
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d3cb60427833314ef7f913b8bc6ef4ca4c79b923fd15a09a6224d63099b17d02",
++        "classes": 31,
++        "jdk": "25.0.5",
++        "values": [
++          {
++            "source": "jvmcontract String model 6: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++            "jdk": "25.0.5",
++            "level": "tested",
++            "leaves_out": [
++              "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++              "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++              "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++              "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
++            ]
++          }
++        ]
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/.work-289/recorded/mutant-security/evidence.json
+@@ -0,0 +1,67 @@
++{
++ "schema": "beside-route-evidence/v1",
++ "example": "289",
++ "task": "mutant-security",
++ "claim": {
++  "file": "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/claims/protected-prefix-matched-across-line-terminators.json",
++  "sha256": "8f1c7824373d005251ada1dec6abd54f8a406a1d81cd9e90e9e3017eede48af0"
++ },
++ "bound": {
++  "maxArrayLength": 8,
++  "unwind": 26,
++  "trial": false
++ },
++ "artifacts": [
++  {
++   "revision": "mutant",
++   "name": "spring-security-web-5.6.4.jar",
++   "sha256": "a3a3dbff86c14e75ebcdfd6302069d42abe859c1ceb82416aff1d4c8feeb0847",
++   "constructed": true
++  },
++  {
++   "revision": "mutant",
++   "name": "spring-web-5.3.20.jar",
++   "sha256": "d6db8d7a8239a0403f4fc2066b765f5209e1b14af58b5bb8215482188ef640bc"
++  },
++  {
++   "revision": "mutant",
++   "name": "spring-core-5.3.20.jar",
++   "sha256": "42d70d78b8822601a3b61c88dadf4be6a0021dde169a772c3fd4a6b8b2b61c90"
++  },
++  {
++   "revision": "mutant",
++   "name": "spring-jcl-5.3.20.jar",
++   "sha256": "fb6c6bf524b19a03103812e0104eaf0bcbc178ae8f425db8b547963b13483e28"
++  },
++  {
++   "revision": "mutant",
++   "name": "javax.servlet-api-4.0.1.jar",
++   "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
++  }
++ ],
++ "adapter": {
++  "sources": {
++   "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/replay/carrier/example289/carrier/PathOnlyRequest.java": "4fd25981e050fef0cd5df36c9ebd954e7597a455460edfebb593e3790b762a18",
++   "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/replay/adapter/example289/adapter/RegexMatchAdapter.java": "36395f81038c2764ebd82f8f58ae833c94ef2ce6eda45816c544d2d7a25ad3cf"
++  },
++  "classes": [
++   {
++    "folder": "adapter-mutant",
++    "sha256": "5203b45eef81e22428bfa57fba78d307b49ec3deb5c9a464135e840664ca04de"
++   }
++  ]
++ },
++ "jvmcontract": {
++  "path": "jvmcontract",
++  "sha256": "14673718807c819f960679dfb66dc55d07b233b5195b4c835ff75cf4496baa8f"
++ },
++ "driver": {
++  "path": "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py",
++  "sha256": "af0dd1d1f7f72485008a57d90e5b59c1f0f2c05e21d83bcfbc6bbc00db9ca027"
++ },
++ "mutant": {
++  "sha256": "a3a3dbff86c14e75ebcdfd6302069d42abe859c1ceb82416aff1d4c8feeb0847",
++  "replayed": "a3a3dbff86c14e75ebcdfd6302069d42abe859c1ceb82416aff1d4c8feeb0847",
++  "patch": "controls/case-insensitive-without-dotall.patch"
++ }
++}
+--- /dev/null
++++ b/verification/.work-289/recorded/mutant-security/work/harness/PropertyHarness.java
+@@ -0,0 +1,10 @@
++/** Generated by jvmcontract: asserts a property of a method on every input. The class file JBMC checks is generated directly; this is the same statement, for readers. */
++public final class PropertyHarness {
++    public static void check(java.lang.String pattern, boolean caseInsensitive, java.lang.String servletPath, java.lang.String pathInfo, java.lang.String query) {
++        if (!(pattern != null && pattern.endsWith(".*") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null)) { return; } // the inputs the property is about
++        boolean result = false;
++        int e = 0;
++        try { result = example289.adapter.RegexMatchAdapter.matches(pattern, caseInsensitive, servletPath, pathInfo, query); } catch (java.lang.NumberFormatException t) { e = 1; } catch (java.lang.ArithmeticException t) { e = 2; } catch (java.lang.NullPointerException t) { e = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { e = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { e = 5; } catch (java.lang.IndexOutOfBoundsException t) { e = 6; } catch (java.lang.NegativeArraySizeException t) { e = 7; } catch (java.lang.ClassCastException t) { e = 8; } catch (java.lang.IllegalStateException t) { e = 9; } catch (java.lang.IllegalArgumentException t) { e = 10; } catch (java.lang.UnsupportedOperationException t) { e = 11; } catch (java.util.NoSuchElementException t) { e = 12; } catch (java.util.ConcurrentModificationException t) { e = 13; } catch (java.lang.RuntimeException t) { e = 14; } catch (java.lang.Error t) { e = 15; }
++        assert e == 0 && (result || !((servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).charAt(i) ^ 32) == pattern.charAt(i))))); // no exception, and the property
++    }
++}
+--- /dev/null
++++ b/verification/.work-289/recorded/mutant-security/work/harness/PropertyClaim.java
+@@ -0,0 +1,13 @@
++/** Generated by jvmcontract: the expressions of a claim, compiled by javac as they are written. */
++public final class PropertyClaim {
++    private PropertyClaim() {
++    }
++
++    public static boolean assume(java.lang.String pattern, boolean caseInsensitive, java.lang.String servletPath, java.lang.String pathInfo, java.lang.String query) {
++        return pattern != null && pattern.endsWith(".*") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null;
++    }
++
++    public static boolean holds(java.lang.String pattern, boolean caseInsensitive, java.lang.String servletPath, java.lang.String pathInfo, java.lang.String query, boolean result) {
++        return result || !((servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).charAt(i) ^ 32) == pattern.charAt(i))));
++    }
++}
+--- /dev/null
++++ b/verification/.work-289/recorded/preservation/outcome.json
+@@ -0,0 +1,437 @@
++{
++  "verdict": "verified",
++  "target": "example289.adapter.RegexMatchAdapter#matches",
++  "domain": "pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null",
++  "counterexample": null,
++  "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null in 51.9 s; loops unwound 26 times with unwinding assertions",
++  "problem": null,
++  "statement": "verification/.work-289/recorded/preservation/work/pair/RegressionPair.java",
++  "findings": [],
++  "output": "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-289/recorded/preservation/work/pair/RegressionPair.java) calls the previous version's example289.adapter.RegexMatchAdapter#matches, relocated under `before`, and then the new one's on the same inputs, each on its own dependency closure, outside the inputs the change is meant to affect (`((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) ^ 32) == pattern.charAt(i)))) && (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).chars().anyMatch(c -> c == '\\n' || c == '\\r' || c == 0x85 || c == 0x2028 || c == 0x2029)`, read on the new version), each array argument a copy of its own, and returns whether they returned equal results or threw in the same category. The two share the JDK and its state (a default locale one sets is the other's to start under); the previous version runs first\n✓ example289.adapter.RegexMatchAdapter#matches: the two versions agree on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null, outside `((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) ^ 32) == pattern.charAt(i)))) && (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).chars().anyMatch(c -> c == '\\n' || c == '\\r' || c == 0x85 || c == 0x2028 || c == 0x2029)` (the pair's property, below)\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: unexpected character '\\'' in expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ RegressionPair#agree satisfies `result` on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null (jvmcontract's own checker (CaDiCaL): 1 properties proved over pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null in 51.9 s; loops unwound 26 times with unwinding assertions)\n  not vacuous: agree(pattern=\".*\", caseInsensitive=true, servletPath=\"\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\", pathInfo=null, query=null) reaches the calls\n",
++  "work": "verification/.work-289/recorded/preservation/work",
++  "search": {
++    "engine": "native",
++    "checker": "jvmcontract's own checker (CaDiCaL)",
++    "seconds": 51.853449055,
++    "properties": 1,
++    "unwind": 26,
++    "max_array_length": 8,
++    "stage": null,
++    "native": {
++      "paths": 1373,
++      "merges": 858,
++      "solver_calls": 2194,
++      "solving_seconds": 48.190006845,
++      "gates_evaluated": 4241266,
++      "evaluating_seconds": 0.085558328,
++      "divisions": 0,
++      "divisions_built": 0,
++      "multiplications": 0,
++      "multiplications_built": 0,
++      "variables": 415833,
++      "clauses": 1574995,
++      "seconds": 51.833438208,
++      "loading_seconds": 0.003620698,
++      "decoding_seconds": 0.000366007,
++      "encoding_seconds": 2.32682838,
++      "witness_seconds": 0.0,
++      "assumed": [
++        "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL)",
++        "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++      ]
++    },
++    "gap_mode": "strict",
++    "deadline_seconds": 1800.0,
++    "runs": [
++      {
++        "checker": "native",
++        "purpose": "proof",
++        "stage": null,
++        "budget_seconds": 1800.0,
++        "seconds": 51.833,
++        "ended": "verified",
++        "ending": "verified",
++        "phases": {
++          "loading": 0.004,
++          "lowering": 0.0,
++          "symbolic": 1.313,
++          "encoding": 2.327,
++          "solving": 48.19,
++          "trace": 0.0,
++          "other": 0.0
++        },
++        "formula": {
++          "variables": 415833,
++          "clauses": 1574995
++        }
++      },
++      {
++        "checker": "native",
++        "purpose": "probe",
++        "stage": null,
++        "budget_seconds": 1748.146,
++        "seconds": 0.038,
++        "ended": "violation",
++        "ending": "counterexample",
++        "phases": {
++          "loading": 0.0,
++          "lowering": 0.0,
++          "symbolic": 0.005,
++          "encoding": 0.003,
++          "solving": 0.028,
++          "trace": 0.001,
++          "other": 0.0
++        },
++        "formula": {
++          "variables": 6163,
++          "clauses": 18766
++        }
++      }
++    ]
++  },
++  "stated": {
++    "kind": "property",
++    "domain": {
++      "parameters": [
++        {
++          "name": "pattern",
++          "type": "java.lang.String",
++          "kind": "value",
++          "null": false,
++          "max_length": 8
++        },
++        {
++          "name": "caseInsensitive",
++          "type": "boolean",
++          "kind": "primitive",
++          "null": false
++        },
++        {
++          "name": "servletPath",
++          "type": "java.lang.String",
++          "kind": "value",
++          "null": false,
++          "max_length": 8
++        },
++        {
++          "name": "pathInfo",
++          "type": "java.lang.String",
++          "kind": "value",
++          "null": true,
++          "max_length": 8
++        },
++        {
++          "name": "query",
++          "type": "java.lang.String",
++          "kind": "value",
++          "null": true,
++          "max_length": 8
++        }
++      ],
++      "shared_arrays": false,
++      "text": "pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null"
++    },
++    "assumptions": [
++      {
++        "kind": "precondition",
++        "text": "pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null",
++        "basis": "stated"
++      },
++      {
++        "kind": "initialization",
++        "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++        "basis": "engine"
++      },
++      {
++        "kind": "library",
++        "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL)",
++        "basis": "engine"
++      },
++      {
++        "kind": "library",
++        "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++        "basis": "engine"
++      }
++    ],
++    "observations": {
++      "result": "the result and the parameters, against result",
++      "exceptions": "none may be thrown"
++    },
++    "bounds": {
++      "unwind": 26,
++      "max_array_length": null,
++      "complete": true,
++      "max_value_length": 8
++    },
++    "models": {
++      "used": true,
++      "digest": "sha256:d3cb60427833314ef7f913b8bc6ef4ca4c79b923fd15a09a6224d63099b17d02",
++      "classes": 31,
++      "jdk": "25.0.5",
++      "values": [
++        {
++          "source": "jvmcontract String model 6: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++          "jdk": "25.0.5",
++          "level": "tested",
++          "leaves_out": [
++            "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++            "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++            "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++            "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
++          ]
++        }
++      ]
++    },
++    "checker": {
++      "engine": "native",
++      "name": "jvmcontract's own checker (CaDiCaL)",
++      "solver": "CaDiCaL 1.9.5 (bundled)",
++      "fallback": null,
++      "sat": {
++        "solver": "CaDiCaL",
++        "version": "1.9.5",
++        "source": "bundled by the Rust crate cadical 0.1.16",
++        "configuration": [
++          "CaDiCaL's default options",
++          "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++          "the run's deadline through CaDiCaL's terminate callback",
++          "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++        ]
++      }
++    },
++    "gap_mode": "strict",
++    "confirmation": null,
++    "vacuity": {
++      "status": "non-vacuous",
++      "basis": "probe",
++      "text": "Some input in the domain reaches the calls: the tool's own checker found agree(pattern=\".*\", caseInsensitive=true, servletPath=\"\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\", pathInfo=null, query=null).",
++      "witness": "agree(pattern=\".*\", caseInsensitive=true, servletPath=\"\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\", pathInfo=null, query=null)"
++    }
++  },
++  "pair": {
++    "verdict": "verified",
++    "target": "RegressionPair#agree",
++    "domain": "pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null",
++    "assume": "pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null",
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null in 51.9 s; loops unwound 26 times with unwinding assertions",
++    "problem": null,
++    "statement": "verification/.work-289/recorded/preservation/work/pair-work/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unexpected character '\\'' in expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ RegressionPair#agree satisfies `result` on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null (jvmcontract's own checker (CaDiCaL): 1 properties proved over pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null in 51.9 s; loops unwound 26 times with unwinding assertions)\n  not vacuous: agree(pattern=\".*\", caseInsensitive=true, servletPath=\"\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\", pathInfo=null, query=null) reaches the calls\n",
++    "work": "verification/.work-289/recorded/preservation/work/pair-work",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 51.853449055,
++      "properties": 1,
++      "unwind": 26,
++      "max_array_length": 8,
++      "stage": null,
++      "native": {
++        "paths": 1373,
++        "merges": 858,
++        "solver_calls": 2194,
++        "solving_seconds": 48.190006845,
++        "gates_evaluated": 4241266,
++        "evaluating_seconds": 0.085558328,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 415833,
++        "clauses": 1574995,
++        "seconds": 51.833438208,
++        "loading_seconds": 0.003620698,
++        "decoding_seconds": 0.000366007,
++        "encoding_seconds": 2.32682838,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL)",
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 1800.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 1800.0,
++          "seconds": 51.833,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.004,
++            "lowering": 0.0,
++            "symbolic": 1.313,
++            "encoding": 2.327,
++            "solving": 48.19,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 415833,
++            "clauses": 1574995
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 1748.146,
++          "seconds": 0.038,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.005,
++            "encoding": 0.003,
++            "solving": 0.028,
++            "trace": 0.001,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 6163,
++            "clauses": 18766
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 52.481,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 51.871,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.609
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "pattern",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": false,
++            "max_length": 8
++          },
++          {
++            "name": "caseInsensitive",
++            "type": "boolean",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "servletPath",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": false,
++            "max_length": 8
++          },
++          {
++            "name": "pathInfo",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": true,
++            "max_length": 8
++          },
++          {
++            "name": "query",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": true,
++            "max_length": 8
++          }
++        ],
++        "shared_arrays": false,
++        "text": "pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL)",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 26,
++        "max_array_length": null,
++        "complete": true,
++        "max_value_length": 8
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d3cb60427833314ef7f913b8bc6ef4ca4c79b923fd15a09a6224d63099b17d02",
++        "classes": 31,
++        "jdk": "25.0.5",
++        "values": [
++          {
++            "source": "jvmcontract String model 6: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++            "jdk": "25.0.5",
++            "level": "tested",
++            "leaves_out": [
++              "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++              "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++              "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++              "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
++            ]
++          }
++        ]
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found agree(pattern=\".*\", caseInsensitive=true, servletPath=\"\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\", pathInfo=null, query=null).",
++        "witness": "agree(pattern=\".*\", caseInsensitive=true, servletPath=\"\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\", pathInfo=null, query=null)"
++      }
++    }
++  }
++}
+--- /dev/null
++++ b/verification/.work-289/recorded/preservation/evidence.json
+@@ -0,0 +1,90 @@
++{
++ "schema": "beside-route-evidence/v1",
++ "example": "289",
++ "task": "preservation",
++ "claim": {
++  "file": "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/claims/prefix-classification-preserved.json",
++  "sha256": "028ca683ec89bd34000f260c1d872dd028ffc0f262029465a6d9ee3732b859ef"
++ },
++ "bound": {
++  "maxArrayLength": 8,
++  "unwind": 26,
++  "trial": false
++ },
++ "artifacts": [
++  {
++   "revision": "vulnerable-release",
++   "name": "spring-security-web-5.6.3.jar",
++   "sha256": "fa572e891ffae92c4806e29f3789146e4b43085b95834a181a6d98a03622cd36"
++  },
++  {
++   "revision": "vulnerable-release",
++   "name": "spring-web-5.3.19.jar",
++   "sha256": "df65b8ce1066d2f640a547c5adade2625ff2a58371db60d50f89e1168b1fe08b"
++  },
++  {
++   "revision": "vulnerable-release",
++   "name": "spring-core-5.3.19.jar",
++   "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992"
++  },
++  {
++   "revision": "vulnerable-release",
++   "name": "spring-jcl-5.3.19.jar",
++   "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8"
++  },
++  {
++   "revision": "vulnerable-release",
++   "name": "javax.servlet-api-4.0.1.jar",
++   "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
++  },
++  {
++   "revision": "fixed-release",
++   "name": "spring-security-web-5.6.4.jar",
++   "sha256": "68c1909c90e2e79f30ab8e0674fe11a5ef6461428019f51abaac259204867193"
++  },
++  {
++   "revision": "fixed-release",
++   "name": "spring-web-5.3.20.jar",
++   "sha256": "d6db8d7a8239a0403f4fc2066b765f5209e1b14af58b5bb8215482188ef640bc"
++  },
++  {
++   "revision": "fixed-release",
++   "name": "spring-core-5.3.20.jar",
++   "sha256": "42d70d78b8822601a3b61c88dadf4be6a0021dde169a772c3fd4a6b8b2b61c90"
++  },
++  {
++   "revision": "fixed-release",
++   "name": "spring-jcl-5.3.20.jar",
++   "sha256": "fb6c6bf524b19a03103812e0104eaf0bcbc178ae8f425db8b547963b13483e28"
++  },
++  {
++   "revision": "fixed-release",
++   "name": "javax.servlet-api-4.0.1.jar",
++   "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
++  }
++ ],
++ "adapter": {
++  "sources": {
++   "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/replay/carrier/example289/carrier/PathOnlyRequest.java": "4fd25981e050fef0cd5df36c9ebd954e7597a455460edfebb593e3790b762a18",
++   "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/replay/adapter/example289/adapter/RegexMatchAdapter.java": "36395f81038c2764ebd82f8f58ae833c94ef2ce6eda45816c544d2d7a25ad3cf"
++  },
++  "classes": [
++   {
++    "folder": "adapter-vulnerable-release",
++    "sha256": "5203b45eef81e22428bfa57fba78d307b49ec3deb5c9a464135e840664ca04de"
++   },
++   {
++    "folder": "adapter-fixed-release",
++    "sha256": "5203b45eef81e22428bfa57fba78d307b49ec3deb5c9a464135e840664ca04de"
++   }
++  ]
++ },
++ "jvmcontract": {
++  "path": "jvmcontract",
++  "sha256": "14673718807c819f960679dfb66dc55d07b233b5195b4c835ff75cf4496baa8f"
++ },
++ "driver": {
++  "path": "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py",
++  "sha256": "af0dd1d1f7f72485008a57d90e5b59c1f0f2c05e21d83bcfbc6bbc00db9ca027"
++ }
++}
+--- /dev/null
++++ b/verification/.work-289/recorded/preservation/work/pair/RegressionPair.java
+@@ -0,0 +1,22 @@
++/** Generated by jvmcontract: both versions of a method called on the same inputs, as one method that says whether they agree (lib/src/pairing.rs). */
++public final class RegressionPair {
++    private RegressionPair() {}
++
++    /** The inputs the change is meant to affect, read on the new version; an input on which the expression throws is not among them. */
++    static boolean meantToChange(java.lang.String pattern, boolean caseInsensitive, java.lang.String servletPath, java.lang.String pathInfo, java.lang.String query) {
++        try {
++            return ((servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).charAt(i) ^ 32) == pattern.charAt(i)))) && (servletPath + (pathInfo == null ? "" : pathInfo) + (query == null ? "" : "?" + query)).chars().anyMatch(c -> c == '\n' || c == '\r' || c == 0x85 || c == 0x2028 || c == 0x2029);
++        } catch (Throwable t) {
++            return false;
++        }
++    }
++
++    public static boolean agree(java.lang.String pattern, boolean caseInsensitive, java.lang.String servletPath, java.lang.String pathInfo, java.lang.String query) {
++        if (meantToChange(pattern, caseInsensitive, servletPath, pathInfo, query)) { return true; }
++        boolean a = false; int ea = 0;
++        try { a = before.example289.adapter.RegexMatchAdapter.matches(pattern, caseInsensitive, servletPath, pathInfo, query); } catch (java.lang.NumberFormatException t) { ea = 1; } catch (java.lang.ArithmeticException t) { ea = 2; } catch (java.lang.NullPointerException t) { ea = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { ea = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { ea = 5; } catch (java.lang.IndexOutOfBoundsException t) { ea = 6; } catch (java.lang.NegativeArraySizeException t) { ea = 7; } catch (java.lang.ClassCastException t) { ea = 8; } catch (java.lang.IllegalStateException t) { ea = 9; } catch (java.lang.IllegalArgumentException t) { ea = 10; } catch (java.lang.UnsupportedOperationException t) { ea = 11; } catch (java.util.NoSuchElementException t) { ea = 12; } catch (java.util.ConcurrentModificationException t) { ea = 13; } catch (java.lang.RuntimeException t) { ea = 14; } catch (java.lang.Error t) { ea = 15; } catch (Throwable t) { ea = 16; }
++        boolean b = false; int eb = 0;
++        try { b = example289.adapter.RegexMatchAdapter.matches(pattern, caseInsensitive, servletPath, pathInfo, query); } catch (java.lang.NumberFormatException t) { eb = 1; } catch (java.lang.ArithmeticException t) { eb = 2; } catch (java.lang.NullPointerException t) { eb = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { eb = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { eb = 5; } catch (java.lang.IndexOutOfBoundsException t) { eb = 6; } catch (java.lang.NegativeArraySizeException t) { eb = 7; } catch (java.lang.ClassCastException t) { eb = 8; } catch (java.lang.IllegalStateException t) { eb = 9; } catch (java.lang.IllegalArgumentException t) { eb = 10; } catch (java.lang.UnsupportedOperationException t) { eb = 11; } catch (java.util.NoSuchElementException t) { eb = 12; } catch (java.util.ConcurrentModificationException t) { eb = 13; } catch (java.lang.RuntimeException t) { eb = 14; } catch (java.lang.Error t) { eb = 15; } catch (Throwable t) { eb = 16; }
++        return ea == eb && (ea != 0 || a == b);
++    }
++}
