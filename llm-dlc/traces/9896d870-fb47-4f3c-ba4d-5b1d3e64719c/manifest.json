@@ -12,34 +12,35 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.005Z",
-  "ended": "2026-11-17T23:36:48.629Z",
-  "duration_seconds": 38398,
+  "ended": "2026-11-17T23:55:07.462Z",
+  "duration_seconds": 39496,
   "stats": {
-    "turns": 141,
-    "api_calls": 1271,
-    "tool_calls": 1233,
-    "tool_errors": 13,
-    "compactions": 21,
+    "turns": 146,
+    "api_calls": 1333,
+    "tool_calls": 1294,
+    "tool_errors": 14,
+    "compactions": 22,
     "peak_context_tokens": 273336,
     "usage": {
-      "input_tokens": 2628,
-      "output_tokens": 951612,
-      "cache_read_input_tokens": 155609701,
-      "cache_creation_input_tokens": 3122839
+      "input_tokens": 2754,
+      "output_tokens": 999278,
+      "cache_read_input_tokens": 163033782,
+      "cache_creation_input_tokens": 3276286
     }
   },
   "tools": {
-    "Bash": 1165,
-    "Read": 22,
+    "Bash": 1221,
+    "Read": 24,
     "Edit": 17,
-    "Write": 13,
-    "Monitor": 8,
-    "ToolSearch": 7,
+    "Write": 14,
+    "Monitor": 9,
+    "ToolSearch": 8,
     "TaskStop": 1
   },
   "files_touched": [
     "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/beans.py",
     "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/beans/protected-setters.contract",
+    "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/beans.py",
     "lib/models/java/util/joiner/StringJoiner.java",
     "lib/models/java/util/lists/ArrayDeque.java",
     "lib/models/java/util/lists/LinkedHashSet.java",
@@ -354,24 +355,38 @@
     {
       "index": 21,
       "started": "2026-11-17T23:09:29.835Z",
-      "ended": "2026-11-17T23:36:48.629Z",
-      "turns": 4,
-      "api_calls": 84,
+      "ended": "2026-11-17T23:37:26.246Z",
+      "turns": 5,
+      "api_calls": 87,
       "usage": {
-        "input_tokens": 172,
-        "output_tokens": 48797,
-        "cache_read_input_tokens": 11286808,
-        "cache_creation_input_tokens": 185827
+        "input_tokens": 178,
+        "output_tokens": 50140,
+        "cache_read_input_tokens": 11888878,
+        "cache_creation_input_tokens": 190172
       },
-      "peak_context_tokens": 199100
+      "peak_context_tokens": 203445
+    },
+    {
+      "index": 22,
+      "started": "2026-11-17T23:38:25.347Z",
+      "ended": "2026-11-17T23:55:07.462Z",
+      "turns": 4,
+      "api_calls": 59,
+      "usage": {
+        "input_tokens": 120,
+        "output_tokens": 46323,
+        "cache_read_input_tokens": 6822011,
+        "cache_creation_input_tokens": 149102
+      },
+      "peak_context_tokens": 162533
     }
   ],
   "log": {
-    "sha256": "bd4447fd1eb4d2f6b3690950fe8d4ba86c35aacf2ef61fd247eeefe330cd96ad",
-    "bytes": 33414676,
-    "lines": 11768,
-    "gzip_bytes": 5868352,
-    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/bd4447fd1eb4d2f6b3690950fe8d4ba86c35aacf2ef61fd247eeefe330cd96ad.jsonl.gz"
+    "sha256": "5f25c399fbf96bc9b53d1ffb9e6290ee553ce767f16d09261a695fe12e79f421",
+    "bytes": 34943125,
+    "lines": 12301,
+    "gzip_bytes": 6139205,
+    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/5f25c399fbf96bc9b53d1ffb9e6290ee553ce767f16d09261a695fe12e79f421.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -582,6 +597,14 @@
       "summary": "Example 286's fixed protected-state task runs through its permitted setters' effect contracts, and a write set frames a field of a type the check makes no object of by identity (verification pending)",
       "body": "Step 6 of the state stream (llm-dlc/loops/domain-advances-state.md), the contract on 286's real path. proofs/beans/protected-setters.contract states, for ProtectedBean's permitted setters (setName, setFavouriteColour, setTouchy), that each writes its own field and nothing else that was there before the call, reads nothing that was, and leaves the String it is given. proofs/prove.py --contracts FILE puts them beside the simpleMatch lemma and records the file in evidence.json. The check proves each contract first and uses it where ProtectedBeanStandIn calls the setter, so the fixed task rests on the setters' contracts, not their bodies. That is the composed statement: binding writes only what the permitted setter it resolves to writes (the sampled stand-in), and each permitted setter writes only its own field (a proved contract).\n\nThe second use showed what the first had hidden. ProtectedBean.someMap is a java.util.Map, and a property check made no receiver with such a field; the adversarial fixture's AccountBean had String and boolean fields only. A write set's check, and so an effect contract's proof, now frames such a field by identity (harness::FieldKind::Reference, through equivalence::made_of_framed and construction::receiver_framed): this.someMap == \\old(this.someMap). Expressions compare it with null or with itself before the call only. A write into its object, and a read of it in a contract's proof, are refused as before, and every other check still refuses the field by name.\n\nTests: claims.Frames gains Mapped (proved; its contract stands in for the call in mappedRename), Remapping (refuted on the frame, the witness replayed on a JVM), Stashing (refused for its write into the map) and Peeking (its contract is refused, since it reads the map a caller filled). a_write_set_frames_a_field_of_a_type_the_check_makes_no_object_of_by_identity covers them, and Frames.main shows each on a JVM. The test fails with the identity fields left out of the frame (by mutation). run --changed passes 26 of 26, validate_example 286 passes, and accept.py 286 vulnerable-protected-state-mutation still accepts with 12 checks.\n\nA capped probe (the ASCII trial at bound 7) proved the fixed task through the contracts in 93 s, naming the contracts of setName and setTouchy among what it rests on. favouriteColour (15 units) is beyond the bound, so its contract is proved but never used. Job 20261117-233000-example-286-s-fixed-protected-state-task runs it at bound 8. Job 222610's result is recorded in Progress: under the frozen claim, non-ASCII toLowerCase() is the one blocker, and the ASCII trial is proved at bound 8. The brief's step 6 calls 288's binding a task, but 288 has no binding task: its BindingAdapter serves the replay's bind probes. The second consumer will be an entry of its own beside 288's adapter set.",
       "log_sha256": "bd4447fd1eb4d2f6b3690950fe8d4ba86c35aacf2ef61fd247eeefe330cd96ad"
+    },
+    {
+      "change_id": "ownxunnxzvxpkpmmvktvukvsutkloyyq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 288's binding under its locales runs through the permitted setters' effect contracts in 286's form: kept on 6.1.14, refuted on 6.1.13 through Id under tr-TR (verification pending)",
+      "body": "The state stream's step 6, its second consumer. examples/288-.../proofs/beans/example288/adapter/ProtectedBinding#protectedKept binds one property value {field, value} onto 288's own ProtectedBean. id and admin are disallowed by \"id\" and \"ADMIN\". The binder is configured under one locale of 288's table (root, en-US, tr-TR, az-AZ, lt-LT) and binds under another. The entry returns whether id is 0 and admin false. proofs/beans/org/springframework/beans/ProtectedBeanStandIn.java is the bean wrapper's write on that bean, written as 286's is. It was sampled against each release's setPropertyValue(PropertyValue): 741,600 samples under the five locales, all equal on 6.1.14 and 6.1.13; with U+0130 dropped from its lookup (by mutation), 785 differ. proofs/beans/protected-setters.contract gives setName and setTitle the effect contract 286's setters have. proofs/beans.py runs both releases at bound 8 over ASCII simple names and any value, with 286's models and observed initializers. In capped probes, 6.1.14 is proved in 86 s (peak 830 MB), resting on both contracts and the sampled stand-in. 6.1.13 is refuted at protectedKept(2, 2, \"Id\", \"-9\"), and the witness ran on a JVM. Nothing of 288's target.json, adapter set or claims changes. validate_example 288 passes, and run --changed passes 22 of 22. accept.py 286 vulnerable-protected-state-mutation still accepts (12 checks).\n\nWhat the second use shows: the contract's form carried over unchanged, the class name aside. It is applied where the path has set the default locale to tr-TR or az-AZ, and needs no use-site condition for that, since a contract's proof reads nothing that was there before the call. What was particular to 286 was the binder's part: the stand-in's lookup took only A-Z to lower-case to a property's first unit, but U+0130 lowers to the i of id. So the setters' part transfers as a proved contract, and the binder's part is per bean and sampled. A cost found on the way: prove --stand-in holds the sampler's whole output in memory, then joins it again for the hash, in each sub-run. A first sampler of 2 million lines (600 MB) made the bound-8 check go past the 4 GB probe cap. The sampler was cut to 230 MB; streaming the samples into an incremental hash is left in the brief's Next.\n\nJob 20261117-235132-example-288-s-binding-under-its-locales runs both checks at bound 8. Job 20261117-225439 (286's adversarial fixture) passed. The brief is out of date in one respect: 286's records/refusals packets for the protected-state tasks still record the 2026-11-14 route refusal, and the brief's Done-when first item reads them as the record of blockers. They are the next piece.",
+      "log_sha256": "5f25c399fbf96bc9b53d1ffb9e6290ee553ce767f16d09261a695fe12e79f421"
     }
   ],
   "logs": {
@@ -637,6 +660,12 @@
       "bytes": 23871139,
       "lines": 8289,
       "gzip_bytes": 4258686,
+      "url": null
+    },
+    "5f25c399fbf96bc9b53d1ffb9e6290ee553ce767f16d09261a695fe12e79f421": {
+      "bytes": 34943125,
+      "lines": 12301,
+      "gzip_bytes": 6139205,
       "url": null
     },
     "6111ea7da20fcbc422a8292abcad3c2379581d4ab5e58668eeb8dd28d7b4e03c": {

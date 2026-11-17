@@ -537,17 +537,53 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
     - The result names the contracts of `setName` and `setTouchy` among what it rests on.
     - `favouriteColour` (15 units) is beyond the bound, so its contract is proved but never used.
   - Job `20261117-233000-example-286-s-fixed-protected-state-task` runs it at bound 8.
+- 2026-11-17, step 6's second consumer: example 288's binding under its locales, through the same contract form
+  (frozen claims of 286 and 288 unchanged; the accepted refutation unaffected). Inbox: nothing open.
+  - **Job 225439 passed:** the adversarial fixture's five checks on 5.3.19 gave their expected answers at bound 8.
+    Job 233000 has no result yet.
+  - **The entry.** `examples/288-…/proofs/beans/example288/adapter/ProtectedBinding#protectedKept` binds one value
+    `{field, value}` onto 288's own `ProtectedBean`:
+    - `id` and `admin` are disallowed by `"id"` and `"ADMIN"` (the bind probes' lower-case and upper-case patterns);
+    - the binder is configured under `LOCALES[configLocale]` and binds under `LOCALES[bindLocale]`;
+    - it returns whether `id` is 0 and `admin` false.
+    - It sits beside 288's adapter set, not in it, and compiles its `ProtectedBean` and `LocaleDecisionAdapter`.
+  - **The stand-in.** `proofs/beans/org/springframework/beans/ProtectedBeanStandIn.java` is the bean wrapper's write
+    on that bean, written as 286's is.
+    - `admin`, and an `id` text that is not decimal, go back to the method.
+    - 741,600 samples (names and values under all five locales, every char as a first unit under tr-TR), all equal
+      on 6.1.14 and on 6.1.13.
+  - **The contracts.** `proofs/beans/protected-setters.contract` gives `setName` and `setTitle` the form 286's setters
+    have.
+  - **`proofs/beans.py`** runs two checks at bound 8, over ASCII simple names and any value, with 286's models and
+    observed initializers. Capped probes:
+    - `bind-fixed`, 6.1.14: **proved** in 86 s (peak 830 MB), resting on both contracts and the sampled stand-in;
+    - `bind-vulnerable`, 6.1.13: **refuted** at `protectedKept(2, 2, "Id", "-9")`, run on a JVM.
+    - 288's `example.json` has a note; `validate_example 288` passes.
+  - **What the second use shows.**
+    - *The contract's form carried over unchanged*, the class name aside. The contracts are applied where the path
+      has set the default locale to tr-TR or az-AZ. That needs no use-site condition, since a contract's proof reads
+      nothing that was there before the call, the default locale included. So step 6 adds nothing to the form.
+    - *What was particular to 286 was the binder's part, the stand-in.* Its lookup took only `A`–`Z` to lower-case to
+      a property's first unit. That held for 286's names, but `U+0130` lowers to `i` (288's
+      `bind-dotted-capital-i-root` finding).
+      - The sweep of every first unit shows it: with `U+0130` dropped (by mutation), 785 samples differ.
+      - So of the composed statement, the setters' part transfers as a proved contract, and the binder's part is per
+        bean, sampled.
+    - *A cost:* `prove --stand-in` reads the sampler's whole output, then joins it for the hash, in each sub-run. The
+      first sampler printed 2 million lines (600 MB): the check at bound 8 went past the 4 GB cap and was killed, while
+      at bound 2 it passed. Streaming the samples into an incremental SHA-256 (`stand_in.rs`, `digest.rs`) would keep
+      the same hash; not done.
+  - Job `20261117-235132-example-288-s-binding-under-its-locales` runs both checks at bound 8.
 - Next:
-  - Step 6's second consumer: 288's binding (6.1.14, whose `setPropertyValue(PropertyValue)` has 5.3.19's shape),
-    with 288's own `ProtectedBean` (`id` and `admin` protected, `name` and `title` permitted). It needs a stand-in
-    sampled against 6.1.14 and an entry of its own beside 288's adapter set. The question is whether the same
-    contract form carries over under 288's locales.
-  - Job 225439's and job 233000's results.
-  - Still open from cycle 1:
-    - non-ASCII `toLowerCase()`, the fixed task's one blocker under the frozen claim (job 222610 confirms it is the
-      only one);
-    - the corrected formalization: I009's two values and an ASCII `field`. It is a new claim file, the user's
-      decision; the trial (proved at bound 8 by job 222610) is its evidence.
+  - Jobs 233000's and 235132's results.
+  - "Done when", first item: 286's `records/refusals/fixed-protected-state-mutation.json` and
+    `vulnerable-protected-state-mutation.json` still record the 2026-11-14 route refusal (the `DataBinder` receiver).
+    - The vulnerable one is decided and accepted (job 192205): close it.
+    - The fixed one's observed blocker is now non-ASCII `toLowerCase()` (job 222610): record it, with the test that
+      closes it.
+    - The packet format is the evidence stream's (`workflow_handoff.py`), so read how 285's packets were closed first.
+  - "Done when", third item: the corrected formalization (I009's two values and an ASCII `field`), proposed to the
+    user as a new claim file. The ASCII trial proved at bound 8 by job 222610 is its evidence.
 - Status: working
 
 ## Loop settings
