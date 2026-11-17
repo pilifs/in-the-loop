@@ -16,7 +16,7 @@ result when it comes in, and a push is where it is required.
                                                       what to do otherwise
     default_tests.py failures JOB                     the files a collected run failed at, one per line
     default_tests.py unread JOB                       what a collected run left unread, one path per line (a folder,
-                                                      `name/`, stands for everything under it)
+                                                      `name/`, stands for everything under it), from UNREAD_FILE
     default_tests.py flaky [--json]                   the tests that failed and then passed on their second run, over
                                                       every collected run: how often each, and in which runs
 
@@ -26,10 +26,13 @@ says so and exits at once (its log says `default tests: superseded by ID`).
 
 What a run read: the step runs in a fresh export of its commit, so afterwards a file's access time says whether
 anything in the run (a test, a script or a JVM it started) opened it, and a folder's whether anything listed it. The
-step prints the files and whole folders nothing touched (`default tests: unread zlib:...`, the list packed; `default_tests.py unread JOB` prints it), and a run then also covers a
-later commit that only modifies such files, or adds and removes files inside such folders: a page no test reads no
-longer costs a push another run. lib/ always counts as read (cargo's warm build looks at dates, not contents), and
-a filesystem that doesn't keep access times records nothing, which leaves the UNTESTED list alone.
+step writes the files and whole folders nothing touched to UNREAD_FILE, one path a line under the job's id, as a
+declared output of the job: the pipeline applies it to the working copy when it collects a passed run (and keeps a
+failed or late run's under the result's outputs/), and the log says only how many (`default tests: unread 580 paths
+(FILE)`). A run then also covers a later commit that only modifies such files, or adds and removes files inside such
+folders: a page no test reads no longer costs a push another run. lib/ always counts as read (cargo's warm build looks
+at dates, not contents), and a filesystem that doesn't keep access times leaves the list empty, which leaves the
+UNTESTED list alone. `default_tests.py unread JOB` prints a run's list.
 
 Standard library only.
 """
@@ -48,8 +51,10 @@ TITLE = "Default test run at "
 CAPABILITY = "tests:default"
 MARK = "default tests:"  # the step's verdict line, which `last` reads from a result's log
 # Paths whose changes no test reads: a run at an ancestor still covers a commit that differs from it only here.
+# What the latest passed run left unread: its job's id, then one path a line. Written by the step, a declared output.
+UNREAD_FILE = "verification/default-tests-unread.txt"
 UNTESTED = ("llm-dlc/traces/", "llm-dlc/index.json", "llm-dlc/decisions/", "verification/results/",
-            "verification/jobs/", "verification/findings.md", "llm-dlc/loop-summaries/")
+            "verification/jobs/", "verification/findings.md", "llm-dlc/loop-summaries/", UNREAD_FILE)
 ALWAYS_READ = ("lib/",)  # cargo's warm build decides from dates what to rebuild, without opening an unchanged source
 CARGO_TARGET = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "in-the-loop" / "default-tests-target"
 
@@ -82,6 +87,7 @@ def cmd_queue(rev: str, why: str | None) -> int:
             "--description", description, "--kind", "other", "--capability", CAPABILITY, "--revision", commit,
             "--link", f"commit:{change}", "--expected", "exits 0: every test of the default run passes",
             "--cpus", "6", "--memory", "4G", "--duration", "12m", "--timeout", "1h", "--requires", "cargo",
+            "--output", UNREAD_FILE,
             "--estimate-notes", "as a job on six CPUs the run took 19.5 minutes one test file after another, 14.5 with "
                                 "Rust beside Python and 8.6 with the Rust binaries and Python files several at a "
                                 "time (2026-11-17), longer beside proof jobs; its cargo target directory is kept "
@@ -125,10 +131,10 @@ def cmd_step() -> int:
         lines.append(line)
     code, output = p.wait(), "".join(lines)
     tally = re.findall(r"^default tier: .*$", output, re.M)
-    if code == 0 and os.environ.get("VERIFY_SOURCE_COMMIT"):  # in the pipeline's export: what the run left unread
-        left = unread(Path.cwd())
-        if left is not None:
-            print(f"{MARK} unread {pack(left)}", flush=True)
+    if os.environ.get("VERIFY_SOURCE_COMMIT"):  # in the pipeline's export: what the run left unread, as an output
+        left = unread(Path.cwd()) or []
+        Path(UNREAD_FILE).write_text("".join(f"{line}\n" for line in [me or "no job", *left]))
+        print(f"{MARK} unread {len(left)} paths ({UNREAD_FILE})", flush=True)
     print(f"{MARK} {'passed' if code == 0 else 'failed'}: {tally[-1] if tally else 'no tally'}", flush=True)
     if code and os.environ.get("VERIFY_SOURCE_COMMIT"):
         bisect(runner_root, os.environ["VERIFY_SOURCE_COMMIT"], output, env)
@@ -184,28 +190,6 @@ def unread(root: Path) -> list[str] | None:
 
     # Listing a folder here moves its access time too, but each folder is judged (stat) before it is listed.
     return walk(root, "")[1]
-
-
-def pack(paths: list[str]) -> str:
-    """A list of paths as one short word for a log line: a real run leaves some 500 unread, 40 kB as they stand and
-    a quarter of that so. `default_tests.py unread JOB` prints them."""
-    import base64
-    import zlib
-    return "zlib:" + base64.b64encode(zlib.compress(json.dumps(paths).encode(), 9)).decode()
-
-
-def unpack(word: str) -> list[str]:
-    """The paths `pack` wrote; nothing from anything else."""
-    import base64
-    import binascii
-    import zlib
-    if not word.startswith("zlib:"):
-        return []
-    try:
-        paths = json.loads(zlib.decompress(base64.b64decode(word[5:], validate=True)))
-    except (ValueError, zlib.error, binascii.Error):
-        return []
-    return [p for p in paths if isinstance(p, str)] if isinstance(paths, list) else []
 
 
 def left_unread(unread_paths: list[str], status: str, path: str) -> bool:
@@ -320,15 +304,23 @@ def runs(root: Path = ROOT) -> list[dict]:
                     "failed": failures_in(text),
                     "flaky": flaky_in(text),
                     "flakyTests": flaky_tests_in(text),
-                    "unread": unread_in(text),
+                    "unread": unread_of(root, d.name),
                     "culprits": dict(re.findall(rf"^{re.escape(MARK)} culprit (.+?): (.+)$", text, re.M))})
     return out
 
 
-def unread_in(text: str) -> list[str]:
-    """What a run's step said it left unread; nothing when it said nothing, or nothing `unpack` reads."""
-    found = re.findall(rf"^{re.escape(MARK)} unread (\S+)$", text, re.M)
-    return unpack(found[-1]) if found else []
+def unread_of(root: Path, job: str) -> list[str]:
+    """What run JOB left unread: from the copy kept with its result (a run that failed, or one collected after a
+    newer run's list was applied), else from UNREAD_FILE when its first line names this job. Nothing otherwise: an
+    older run's list has been replaced, and it then covers by the UNTESTED list alone."""
+    for path in (root / "verification/results" / job / "outputs" / UNREAD_FILE, root / UNREAD_FILE):
+        try:
+            lines = path.read_text().splitlines()
+        except OSError:
+            continue
+        if lines and lines[0] == job:
+            return [line for line in lines[1:] if line]
+    return []
 
 
 def flaky_in(text: str) -> list[str]:

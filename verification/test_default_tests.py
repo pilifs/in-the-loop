@@ -145,14 +145,42 @@ class ResultsTest(unittest.TestCase):
             self.assertEqual(default_tests.unread(root), ["docs/unread.md", "listed/c.md", "papers/"])
 
     def test_a_collected_run_says_what_it_left_unread_and_then_covers_a_change_to_it(self):
+        passed = "default tests: unread 2 paths (verification/default-tests-unread.txt)\ndefault tests: passed: default tier: 49 of 49 passed\n"
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            result(root, MINE, "c1", f'default tests: unread {default_tests.pack(["docs/notes.md", "papers/"])}\n'
-                                     "default tests: passed: default tier: 49 of 49 passed\n")
-            result(root, NEWER, "c0", "default tests: unread zlib:not-packed\ndefault tests: passed: default tier: 49 of 49 passed\n")
-            newer, mine = default_tests.runs(root)
-            self.assertEqual(mine["unread"], ["docs/notes.md", "papers/"])
-            self.assertEqual(newer["unread"], [])
+            older = "20261116-220000-default-test-run-at-cccc"
+            for job in (older, MINE, NEWER):
+                result(root, job, "c1", passed)
+            # The newest run's list was applied to the working copy; MINE's came in late and was kept with its result.
+            (root / default_tests.UNREAD_FILE).write_text(f"{NEWER}\ndocs/notes.md\npapers/\n")
+            kept = root / "verification/results" / MINE / "outputs" / default_tests.UNREAD_FILE
+            kept.parent.mkdir(parents=True)
+            kept.write_text(f"{MINE}\ndocs/other.md\n")
+            unread = {r["job"]: r["unread"] for r in default_tests.runs(root)}
+        self.assertEqual(unread, {NEWER: ["docs/notes.md", "papers/"], MINE: ["docs/other.md"], older: []})
+        self.assertIn(default_tests.UNREAD_FILE, default_tests.UNTESTED, "the list itself changes with every collected run")
+
+    def test_the_step_writes_what_it_left_unread_as_the_jobs_output_and_its_log_says_only_how_many(self):
+        import os
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / "verification").mkdir()
+            out, here = io.StringIO(), os.getcwd()
+            run = mock.Mock(stdout=iter(["default tier: 49 of 49 passed\n"]), wait=mock.Mock(return_value=0))
+            os.chdir(tmp)
+            try:
+                with mock.patch.dict(os.environ, {"VERIFY_JOB_ID": MINE, "VERIFY_SOURCE_COMMIT": "c1"}), \
+                        mock.patch.object(default_tests, "queue_status", return_value={}), \
+                        mock.patch.object(default_tests.subprocess, "Popen", return_value=run), \
+                        mock.patch.object(default_tests, "unread", return_value=["docs/notes.md", "papers/"]), \
+                        mock.patch.object(default_tests, "CARGO_TARGET", Path(tmp) / "target"), \
+                        contextlib.redirect_stdout(out):
+                    self.assertEqual(default_tests.cmd_step(), 0)
+                written = Path(default_tests.UNREAD_FILE).read_text()
+            finally:
+                os.chdir(here)
+        self.assertEqual(written, f"{MINE}\ndocs/notes.md\npapers/\n")
+        self.assertIn("default tests: unread 2 paths (verification/default-tests-unread.txt)\n", out.getvalue())
+        self.assertNotIn("docs/notes.md", out.getvalue())
 
     def test_the_flaky_tests_are_counted_over_the_runs_that_ran(self):
         flaky_x = ("FLAKY tools/test_x.py: Ran 3 tests in 1.0s, FAILED (failures=1) (failed, then passed on a second run)\n"
