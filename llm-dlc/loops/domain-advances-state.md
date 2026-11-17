@@ -400,9 +400,30 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
   - **Where the path stops now** (capped probe, `field` restricted to `someMap`/`SomeMap`, bound 7):
     `resolveMessageCodes` runs to its end, and the next stop is `PropertyAccessException.getLocalizedMessage()` in
     `DefaultBindingErrorProcessor.processPropertyAccessException:79`, the error's default message.
+- 2026-11-17, step 2 done: the refutation accepted (the frozen claim is the accepted statement for 5.3.18). Inbox:
+  nothing open.
+  - **Job 192205 passed.** `vulnerable-protected-state-mutation` is refuted at the claim's own bound 8.
+    - The witness: `ageAfterBinding(false, "Age")` returns 32 on a JVM.
+    - So the refutation rests on none of the models, observed initializers or stand-ins the run used.
+  - **Recorded and accepted.** The task's `besideRoute` is in 286's `target.json`, and `accept.py 286
+    vulnerable-protected-state-mutation` accepts it with 12 checks, every one ok.
+  - **The job's files on this line.** `accept.py` reads the job's result and outputs from the checkout. The result
+    collector's commit (`lsuuqtnq`) is not on this line, so its result folder and `verification/.work-286/state-stand-in/`
+    are restored from it unchanged (`jj restore --from`). A merge adds the same bytes on both sides.
+  - **The fixed task in the same job:** no verdict, at two strict gaps.
+    - `LinkedHashSet.<init>()` (since modelled, cycle 18).
+    - Non-ASCII `toLowerCase()` (`isAllowed:828`).
+  - **The example.** The README's table row, a paragraph under the decision claim's results, the open item, the
+    verdict label (the router regenerated) and a note.
+  - `validate_example 286` and `run --changed` (26 of 26) pass.
+  - `mutant-security` is still not accepted, as before: its driver recorded no mutant JAR hash. That is the evidence
+    stream's.
+  - **What the acceptance pins.** `accept.py` compares the tree's files with the job:
+    - target.json's adapter set, with the commit the job ran;
+    - every source in `evidence.json` (the adapter and both stand-ins), by hash.
+    - So changing any of them, or adding a bean to the adapter set, un-accepts the refutation until the task runs
+      again. Step 5's beans go beside them, in files of their own.
 - Next:
-  - Once job 192205 passes, record `besideRoute` on `vulnerable-protected-state-mutation` and check
-    `accept.py 286 vulnerable-protected-state-mutation`.
   - The rest of the mismatch path, the exception's message:
     - exceptions built by the JDK's `(String)` and `(String, Throwable)` constructors keep their message and cause
       (today `gaps::exact_jdk_call` drops them, as no proof read them), with `getMessage` and `getCause` on them;

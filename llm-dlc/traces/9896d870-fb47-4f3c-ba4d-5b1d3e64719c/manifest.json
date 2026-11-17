@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.005Z",
-  "ended": "2026-11-17T21:03:58.255Z",
-  "duration_seconds": 29227,
+  "ended": "2026-11-17T21:11:31.618Z",
+  "duration_seconds": 29681,
   "stats": {
-    "turns": 120,
-    "api_calls": 982,
-    "tool_calls": 942,
+    "turns": 125,
+    "api_calls": 1010,
+    "tool_calls": 970,
     "tool_errors": 9,
-    "compactions": 17,
+    "compactions": 18,
     "peak_context_tokens": 252174,
     "usage": {
-      "input_tokens": 2040,
-      "output_tokens": 752506,
-      "cache_read_input_tokens": 114008864,
-      "cache_creation_input_tokens": 2441515
+      "input_tokens": 2096,
+      "output_tokens": 766485,
+      "cache_read_input_tokens": 116531448,
+      "cache_creation_input_tokens": 2542350
     }
   },
   "tools": {
-    "Bash": 896,
+    "Bash": 922,
+    "Read": 17,
     "Edit": 15,
-    "Read": 15,
     "Write": 9,
     "ToolSearch": 4,
     "Monitor": 3
@@ -293,24 +293,38 @@
     {
       "index": 17,
       "started": "2026-11-17T19:23:43.848Z",
-      "ended": "2026-11-17T21:03:58.255Z",
-      "turns": 4,
-      "api_calls": 105,
+      "ended": "2026-11-17T21:04:34.545Z",
+      "turns": 5,
+      "api_calls": 107,
       "usage": {
-        "input_tokens": 212,
-        "output_tokens": 69588,
-        "cache_read_input_tokens": 14520712,
-        "cache_creation_input_tokens": 196718
+        "input_tokens": 216,
+        "output_tokens": 70796,
+        "cache_read_input_tokens": 14942014,
+        "cache_creation_input_tokens": 200052
       },
-      "peak_context_tokens": 209991
+      "peak_context_tokens": 213325
+    },
+    {
+      "index": 18,
+      "started": "2026-11-17T21:05:28.122Z",
+      "ended": "2026-11-17T21:11:31.618Z",
+      "turns": 4,
+      "api_calls": 26,
+      "usage": {
+        "input_tokens": 52,
+        "output_tokens": 12771,
+        "cache_read_input_tokens": 2101282,
+        "cache_creation_input_tokens": 97501
+      },
+      "peak_context_tokens": 110774
     }
   ],
   "log": {
-    "sha256": "9c447dca2aa4caa3a2a7f5fae56f654107df27751214c2227737f43faa935c6e",
-    "bytes": 26059603,
-    "lines": 9171,
-    "gzip_bytes": 4599868,
-    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/9c447dca2aa4caa3a2a7f5fae56f654107df27751214c2227737f43faa935c6e.jsonl.gz"
+    "sha256": "552daf62b5b2419fad5ff09327c3dff186bc20353cea375fe4d42602de5455af",
+    "bytes": 27195737,
+    "lines": 9488,
+    "gzip_bytes": 4822743,
+    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/552daf62b5b2419fad5ff09327c3dff186bc20353cea375fe4d42602de5455af.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -481,6 +495,14 @@
       "summary": "Example 286's someMap mismatch path runs through the message codes: LinkedHashSet and StringJoiner models on request, String.lastIndexOf(int) and Class.isArray() of a class literal",
       "body": "The state stream's step 3 continued. Binding \"32\" to someMap records a binding error, and DefaultMessageCodesResolver.resolveMessageCodes now runs to its end in the own checker. Two models on request: java.util.LinkedHashSet (the HashSet model with its elements in the order first added: add, toArray(), toArray(T[]); asking for it also runs the HashSet model, models::BRINGS, and the result names both) and java.util.StringJoiner (add, toString; an empty join is the JDK's new String(), a gap, since the checker's builder gives the literal \"\" where the JDK's join makes a new String). Each is proved against its definition written out (claims.LinkedSets, claims.Joiners), sampled on a JVM, shows a left-out method still the JDK's call, and fails under mutation (no null after the elements, reversed order, no delimiter, \"\" for an empty join, \"nul\" for null). String.lastIndexOf(int) is modelled (claims.T#lastIndexOfPoint, and an evidence record whose ten boundary cases agree on the JVM, the interpreter and the checker), and Class.isArray() of a class literal (claims.Arrayed).\n\nA fix found on the way: a Class method with a primitive result on a class the engine holds no literal of (isAssignableFrom, now isArray) was met under --gaps assume as an assumable reference gap that pushed no value, ending in 'operand stack underflow' with no verdict (never a false one). It is now a primitive gap, refused by name in both modes; the test fails with the old kind. The new tests run their JVMs with -XX:-UsePerfData after a parallel run printed an hsperfdata warning into the sampled output.\n\n286's driver gives the protected-state tasks both new models; a capped probe still refutes 5.3.18 at trial bound 3. A capped probe with field restricted to someMap/SomeMap (not the frozen claim) now stops at PropertyAccessException.getLocalizedMessage() in DefaultBindingErrorProcessor.processPropertyAccessException:79: the exception's message and cause, which the JDK's exception constructors drop today. Verified: test_costs run --changed (26 of 26), validate_example 286, the mutations above. Job 20261117-192205 still has no result; ProtectedBeanStandIn.java is unchanged.",
       "log_sha256": "9c447dca2aa4caa3a2a7f5fae56f654107df27751214c2227737f43faa935c6e"
+    },
+    {
+      "change_id": "txzyyursolzzvntxrxwzotvlppmyspoq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 286's protected-state claim is refuted on 5.3.18 beside the route and accepted: binding Age writes the protected age",
+      "body": "Job 20261117-192205 ran examples/286-…/proofs/prove.py vulnerable-protected-state-mutation at the frozen claim's own bound 8 (claims/protected-age-not-mutated.json, unchanged). It was refuted with the witness ageAfterBinding(false, \"Age\"), which returns 32 when run on a JVM, so the refutation rests on none of the models, observed initializers or stand-ins the run used. The task's besideRoute is now recorded in 286's target.json, and examples/tools/accept.py 286 vulnerable-protected-state-mutation accepts it, with all 12 checks ok: the claim and task as at the job's commit, the bound, the witness replayed, and the pinned JARs and adapter sources. accept.py reads a job's result and outputs from the checkout, and the result collector's commit is not on this stream's line. So the job's result folder and its outputs under verification/.work-286/state-stand-in/ are restored from that commit unchanged; a merge adds the same bytes on both sides. The same job left fixed-protected-state-mutation with no verdict, at two strict gaps: LinkedHashSet.<init>(), modelled since, and String.toLowerCase() on a non-ASCII field. The example's README (its verdict row, a results paragraph and the open item), its verdict label (with the router regenerated) and a note say so. Verified with validate_example.py 286 and test_costs.py run --changed (26 of 26). Step 2 of llm-dlc/loops/domain-advances-state.md is done. The brief's step list is otherwise current.",
+      "log_sha256": "552daf62b5b2419fad5ff09327c3dff186bc20353cea375fe4d42602de5455af"
     }
   ],
   "logs": {
@@ -506,6 +528,12 @@
       "bytes": 22874767,
       "lines": 7992,
       "gzip_bytes": 4048806,
+      "url": null
+    },
+    "552daf62b5b2419fad5ff09327c3dff186bc20353cea375fe4d42602de5455af": {
+      "bytes": 27195737,
+      "lines": 9488,
+      "gzip_bytes": 4822743,
       "url": null
     },
     "59a978ebae41f83dd51f046b07d362ccc2eb4015c6893eada0b5da9c1c513010": {
