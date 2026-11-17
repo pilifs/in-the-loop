@@ -35,6 +35,7 @@ Tests: `python3 verification/test_pipeline.py` (about 30 s; the systemd tests ru
 | Path | What it is | Written by |
 |---|---|---|
 | [`README.md`](README.md) | this page: the lifecycle, [submitting a job](#for-agents-making-changes-submitting-a-job), [managing the pipeline](#for-the-agent-managing-the-pipeline), [reading results](#reading-results), [the runner's resources](#running-resources-isolation-configuration), [other backends](#backends-other-machines-and-the-cloud) | |
+| [`default_tests.py`](default_tests.py) | the default test run as a job: queue one, which run covers a commit, and the push's gate | |
 | [`pipeline.py`](pipeline.py) | every command: `submit`, `status`, `run`, `prioritize`, `collect`, `report`, `resubmit`, `validate`; [`test_pipeline.py`](test_pipeline.py) tests it | |
 | [`/run-verification`](../.claude/skills/run-verification/SKILL.md) | the procedure of the agent that manages the pipeline, as a skill; [`llm-dlc/tools/verification-loop.sh`](../llm-dlc/tools/verification-loop.sh) runs it unattended | |
 | [`schema/job.schema.json`](schema/job.schema.json) | the job format | |
@@ -155,11 +156,34 @@ result says so. Measured here: examples 052 (B11) and 076 (D1) each peaked at ab
 | D1 example, up to about 100,000 states | 2 | 1G | 1m |
 | D1 example, about a million states, or liveness | 2 | 2G to 3G | 10m to 30m |
 | the proof tier, `test_costs.py run --tier proof` (see `lib/README.md`) | 4 | 8G | 1h30m |
+| the default test run, `default_tests.py queue` (below) | 6 | 4G | 12m |
 | one proof-tier test, by its row in `lib/tests/costs.json` | 1 | 2G | its recorded time: heap's up to about an hour |
 | a jvmcontract build, when `lib/` changed | counted by the runner, not by you | | |
 
 A job that asks for more memory than a runner allows (4 GB a job here) is deferred, not run: it waits for a bigger
 machine. Say so in the description if you know.
+
+**The default test run as a job.** `python3 verification/default_tests.py queue [--rev REV] [--why TEXT]` writes a job
+that runs `lib/tools/test_costs.py run` at commit REV (`@-` by default), at low priority and with its cargo target
+directory kept warm between runs. Commit the job file like any other, from any workspace. Nobody waits for it: a run
+of `/prove-java-change` queues one when an example is done and at each merge, and its watcher triages the result.
+Of several waiting together only the newest runs; the others' step says `default tests: superseded by ID` and exits.
+`default_tests.py last` says which run covers a commit (one at it, or at an ancestor that differs from it only in
+files no test reads), and `sync.py push` refuses without a passed one (`default_tests.py gate`).
+
+Which files no test reads is partly a fixed list (the traces, the decisions, job files and results) and partly
+what a passed run saw for itself. The job runs in a fresh export, so when it ends a file's access time says whether
+anything in the run opened it (a test, or a script or JVM a test started), and a folder's whether anything listed
+it. The step prints what was left untouched as one packed line, `default tests: unread zlib:...`
+(`default_tests.py unread JOB` lists it), and the run then also covers
+a later commit that only modifies those files, or adds and removes files inside folders the run never listed. A
+file added to a folder a test walks is not covered, nor is a rename, nor anything under `lib/`, which always counts
+as read because cargo's warm build decides from dates without opening a source. A run on a filesystem that keeps no
+access times prints no such line, and covers by the fixed list alone.
+
+`default_tests.py flaky` counts, over the collected runs, the tests that failed and then passed on their second run
+(a Python test file, or a Rust test by name). One that appears in more than one run is no longer noise: fix it, or
+ask for it to be marked.
 
 ## For the agent managing the pipeline
 

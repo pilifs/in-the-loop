@@ -52,25 +52,36 @@ fn builds() -> &'static Path {
     DIR.get_or_init(|| {
         let root = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("application-core-joint-builds");
         let _ = std::fs::remove_dir_all(&root);
+        // The builds are independent (each its own sources and its own folder), so their compilers run four at a
+        // time and not one after another: enough to shorten the wait, few enough JVMs to stay small beside the
+        // other test binaries.
+        let mut builds = Vec::new();
         for family in ["quote", "throttle", "basket"] {
             let dir = fixtures().join(family);
             let mut names = vec!["before".to_string(), "after".to_string()];
             names.extend(std::fs::read_dir(dir.join("defects")).unwrap().map(|e| e.unwrap().file_name().to_string_lossy().into_owned()));
-            for name in names {
-                let base = dir.join(if name == "before" { "before" } else { "after" });
-                let mut files = std::collections::BTreeMap::new();
-                for f in java_files(&base) {
-                    files.insert(f.strip_prefix(&base).unwrap().to_path_buf(), f.clone());
-                }
-                let overlay = dir.join("defects").join(&name);
-                for f in java_files(&overlay) {
-                    files.insert(f.strip_prefix(&overlay).unwrap().to_path_buf(), f.clone());
-                }
-                let out = root.join(family).join(&name);
-                let status = Command::new("javac").args(["-g", "-parameters", "-proc:none", "-nowarn", "-d"]).arg(&out).args(files.values()).status().expect("the joint acceptance needs javac");
-                assert!(status.success(), "{family}/{name} compiles");
-            }
+            builds.extend(names.into_iter().map(|name| (family, dir.clone(), name)));
         }
+        let builds = std::sync::Mutex::new(builds);
+        std::thread::scope(|scope| {
+            for _ in 0..4 {
+                scope.spawn(|| loop {
+                    let Some((family, dir, name)) = builds.lock().unwrap().pop() else { break };
+                    let base = dir.join(if name == "before" { "before" } else { "after" });
+                    let mut files = std::collections::BTreeMap::new();
+                    for f in java_files(&base) {
+                        files.insert(f.strip_prefix(&base).unwrap().to_path_buf(), f.clone());
+                    }
+                    let overlay = dir.join("defects").join(&name);
+                    for f in java_files(&overlay) {
+                        files.insert(f.strip_prefix(&overlay).unwrap().to_path_buf(), f.clone());
+                    }
+                    let out = root.join(family).join(&name);
+                    let status = Command::new("javac").args(["-g", "-parameters", "-proc:none", "-nowarn", "-d"]).arg(&out).args(files.values()).status().expect("the joint acceptance needs javac");
+                    assert!(status.success(), "{family}/{name} compiles");
+                });
+            }
+        });
         root
     })
 }

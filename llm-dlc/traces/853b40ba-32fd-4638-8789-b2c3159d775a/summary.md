@@ -66,6 +66,16 @@ change `onkqouutwkor` · [log `c8ab0ad3ad4d`](https://terminalvalue.net/raw-trac
 
 Job 20261117-000856-example-290-vulnerable-security-through passed on vm-1 (1 step, 3.4 s, peak 187 MiB against an estimate of 5 min and 4 GiB): the frozen claim on 5.8.4 is refuted as the job expected. Outputs applied: the work folder's outcome and harness. No findings.
 
+### The default run takes 4.6 minutes where it took 16: Rust's test binaries and the Python files run several at a time, and a passed run covers what it left unread
+
+change `lptpzxuplxky` · [log `c8ab0ad3ad4d`](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298.jsonl.gz)
+
+test_costs.py run: cargo only builds the Rust test binaries (--no-run), and they then run several at a time (--rust-jobs, by default half the CPUs, at most 4, and one per 1.5 GB of a job's memory limit), the longest first by what each took the last time (kept in the target directory). The Python test files run several at a time too (--python-jobs, 3 by default, 2 in a job); a file that fails has its second run alone after the others, so two files that disturbed each other show as flaky. The proof tier still runs one binary at a time, and --rust-jobs 1 --python-jobs 1 is the run as it was. Measured on this machine: the Rust binaries 707 s one after another in the first job, 403 s three at a time under a six-CPU limit beside another test job (peak 3.4 GB), 230 s four at a time; the whole default run 276 s, 49 of 49 passed, nothing flaky.
+
+Three Rust test files prepare their fixtures together and not one after another, with the same assertions: observations.rs's Box Office examples test builds its ten patched examples four at a time (the binary went from 146 s to 71 s alone) and keeps the Gradle build between runs under a hash of its sources, tasks and JDK; application_core.rs and application_core_joint.rs compile their nineteen fixture builds four at a time.
+
+default_tests.py: a run in the pipeline's fresh export records which files nothing opened and which folders nothing listed, from their access times (one packed line in its log; 'default_tests.py unread JOB' lists it), and a passed run then covers a later commit that only modifies those files or adds and removes files inside those folders. lib/ always counts as read, a rename is never covered, and a filesystem without access times records nothing. A probe of the Python half in an export left 546 entries unread, among them the example pages, CLAUDE.md and the runtime page. 'default_tests.py flaky' counts flaky tests over the collected runs. sync.py adopt-logs takes a log as a hard link where it can. Verified by the default run above, which includes the new tests of each piece (stand-in cargo and made-up runs); the inventory has the eight new Python rows, added by hand as the handoff note says.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298.jsonl.gz) has every step in between: reasoning, tool calls and their results.

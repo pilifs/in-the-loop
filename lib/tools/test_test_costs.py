@@ -219,7 +219,7 @@ class RunningATier(unittest.TestCase):
             runs = tc.tier_runs(tier, self.DOC, self.root)
             self.assertEqual([r[0] for r in runs], ["cargo test", "tools/targets/test_x.py", "tools/test_y.py"])
             label, argv, env, cwd = runs[0]
-            self.assertEqual(argv, ["cargo", "test", "--manifest-path", "lib/Cargo.toml"])
+            self.assertEqual(argv, ["cargo", "test", "--manifest-path", "lib/Cargo.toml", "--profile", "test-fast"])
             self.assertEqual((env, cwd), ({"JVMCONTRACT_TEST_TIER": value, "TEST_COST": value}, self.root))
             _, argv, env, _ = runs[1]
             self.assertEqual(argv[1:], ["-m", "unittest", "targets.test_x"])
@@ -258,6 +258,180 @@ class RunningATier(unittest.TestCase):
         self.assertTrue(lines[1].startswith("FAIL tools/test_y.py: Ran 1 test in"), lines)
         self.assertIn("AssertionError: made up", out.stdout)
         self.assertEqual(lines[-1], "unit tier: 1 of 2 passed; failed: tools/test_y.py")
+
+
+    def run_both(self, cargo_body, *flags):
+        """run_tier over a stand-in cargo on PATH (cargo_body is its Python) and the two files the test writes."""
+        bin = self.root / "bin"
+        bin.mkdir(exist_ok=True)
+        (bin / "cargo").write_text("#!" + sys.executable + "\nimport os, sys, time\n" + cargo_body)
+        (bin / "cargo").chmod(0o755)
+        inventory = self.root / "costs.json"
+        inventory.write_text(json.dumps(self.DOC))
+        env = {**os.environ, "PATH": f"{bin}:{os.environ['PATH']}", "MARKS": str(self.root)}
+        only = dict(flags).get("only", "None")
+        call = (f"'unit', {str(inventory)!r}, __import__('pathlib').Path({str(self.root)!r}), {only}"
+                + "".join(f", {f}={v}" for f, v in flags if f != "only"))
+        return subprocess.run([sys.executable, "-c", f"import sys, test_costs as tc; sys.exit(tc.run_tier({call}))"],
+                              cwd=HERE, capture_output=True, text=True, env=env)
+
+    @cost("tool")
+    def test_cargo_runs_beside_the_python_files_and_what_passes_on_a_second_run_is_flaky(self):
+        body = "import os, unittest\nclass {c}(unittest.TestCase):\n    def test_{t}(self):\n        {b}\n"
+        flaky = ("import pathlib, time; m = pathlib.Path(os.environ['MARKS']) / 'x-ran'; first = not m.exists(); "
+                 "m.write_text(''); time.sleep(0.5); self.assertFalse(first, 'made-up flake')")
+        (self.root / "tools/targets/test_x.py").write_text(body.format(c="X", t="unit", b=flaky))
+        (self.root / "tools/test_y.py").write_text(body.format(c="Y", t="tool", b="pass"))
+        cargo = ("m = os.path.join(os.environ['MARKS'], 'cargo-ran')\nfirst = not os.path.exists(m)\nopen(m, 'a').write(str(time.time()) + '\\n')\n"
+                 "if first:\n    print('test a::b ... FAILED'); sys.exit(101)\nprint('test a::b ... ok'); sys.exit(0)\n")
+        out = self.run_both(cargo)
+        self.assertEqual(out.returncode, 0, out.stdout + out.stderr)
+        self.assertIn("FLAKY tools/targets/test_x.py", out.stdout)
+        self.assertIn("FLAKY cargo test: a::b", out.stdout)
+        self.assertEqual(out.stdout.splitlines()[-1], "unit tier: 3 of 3 passed; flaky: tools/targets/test_x.py, cargo test")
+        started = float((self.root / "cargo-ran").read_text().split()[0])
+        self.assertLess(started, (self.root / "x-ran").stat().st_mtime, "cargo started before the first Python file ended")
+        (self.root / "cargo-ran").unlink()
+        (self.root / "x-ran").unlink()
+        out = self.run_both(cargo, ("retry", "False"), ("serial", "True"))
+        self.assertEqual(out.returncode, 1)
+        self.assertEqual(out.stdout.splitlines()[-1], "unit tier: 1 of 3 passed; failed: cargo test, tools/targets/test_x.py")
+
+
+    @cost("tool")
+    def test_rust_test_binaries_run_several_at_a_time_the_longest_first_and_a_failing_one_is_shown_whole(self):
+        # A stand-in cargo: --no-run names three binaries as cargo's JSON does, --doc runs the doctests, and each
+        # binary is a script that notes when it started and ended.
+        binary = ("#!" + sys.executable + "\nimport os, sys, time\nname = os.path.basename(sys.argv[0])\n"
+                  "open(os.path.join(os.environ['MARKS'], name + '.began'), 'w').write(str(time.time()))\n"
+                  "time.sleep(0.6)\nopen(os.path.join(os.environ['MARKS'], name + '.cwd'), 'w').write(os.getcwd() + ' ' + ' '.join(sys.argv[1:]))\n"
+                  "bad = name == 'slow' and not os.path.exists(os.path.join(os.environ['MARKS'], 'again'))\n"
+                  "print('test t::of_' + name + ' ... ' + ('FAILED' if bad else 'ok'))\n"
+                  "print('test result: ' + ('FAILED' if bad else 'ok') + '. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.60s')\n"
+                  "sys.exit(101 if bad else 0)\n")
+        (self.root / "lib/tests").mkdir(parents=True)
+        deps = self.root / "target/debug/deps"  # where cargo puts them: the target directory is two folders up
+        deps.mkdir(parents=True)
+        for name in ("quick", "slow", "other"):
+            (deps / name).write_text(binary)
+            (deps / name).chmod(0o755)
+        cargo = ("import json\nroot = os.environ['MARKS']\n"
+                 "if '--no-run' in sys.argv:\n"
+                 "    print('   Compiling made-up', file=sys.stderr)\n"
+                 "    for name in ('quick', 'slow', 'other'):\n"
+                 "        print(json.dumps({'reason': 'compiler-artifact', 'profile': {'test': True}, 'executable': os.path.join(root, 'target', 'debug', 'deps', name),\n"
+                 "                          'manifest_path': os.path.join(root, 'lib', 'Cargo.toml'),\n"
+                 "                          'target': {'src_path': os.path.join(root, 'lib', 'tests', name + '.rs')}}))\n"
+                 "    print(json.dumps({'reason': 'compiler-artifact', 'profile': {'test': False}, 'executable': os.path.join(root, 'main'), 'target': {'src_path': 'x'}}))\n"
+                 "elif '--doc' in sys.argv:\n    print('test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s')\n"
+                 "else:\n    open(os.path.join(root, 'again'), 'w').write(' '.join(sys.argv[1:]))\n"
+                 "    print('test t::of_slow ... ok')\n")
+        doc = dict(self.DOC, rust=[{"file": "lib/tests/slow.rs", "name": "t::of_slow", "cost": {"seconds": 9}},
+                                   {"file": "lib/tests/other.rs", "name": "t::of_other", "cost": {"seconds": 2}}])
+        self.DOC, kept_doc = doc, self.DOC
+        try:
+            for name in ("test_x.py", "test_y.py"):
+                where = self.root / ("tools/targets" if name == "test_x.py" else "tools") / name
+                where.write_text("import unittest\nclass T(unittest.TestCase):\n    def test_it(self):\n        pass\n")
+            out = self.run_both(cargo, ("rust_jobs", "2"), ("test_threads", "3"))
+        finally:
+            self.DOC = kept_doc
+        self.assertEqual(out.returncode, 0, out.stdout + out.stderr)
+        began = {n: float((self.root / f"{n}.began").read_text()) for n in ("quick", "slow", "other")}
+        self.assertLess(began["slow"], began["quick"], "the longest by the inventory starts first")
+        self.assertLess(began["other"] - began["slow"], 0.5, "two at a time: the second starts while the first runs")
+        self.assertGreater(began["quick"] - began["slow"], 0.5, "and the third waits for a place")
+        self.assertEqual((self.root / "slow.cwd").read_text(), f"{self.root / 'lib'} --test-threads 3",
+                         "a binary runs in its package's folder with the arguments after --, as under cargo")
+        self.assertIn("     Running lib/tests/slow.rs (", out.stdout)
+        self.assertIn("test t::of_slow ... FAILED", out.stdout, "a failing binary's output is shown whole")
+        self.assertIn("error: test failed, to rerun pass `--test slow`", out.stdout)
+        self.assertNotIn("test t::of_quick ... ok", out.stdout, "a passing binary is its result line alone")
+        self.assertRegex(out.stdout, r"test result: ok\. 1 passed; .* \[\d+s with the others\]")
+        self.assertIn("cargo test: 4 test binaries, 2 at a time", out.stdout)
+        self.assertIn("--exact t::of_slow", (self.root / "again").read_text(), "what failed is retried by name, through cargo")
+        self.assertIn("FLAKY cargo test: t::of_slow", out.stdout)
+        self.assertEqual(out.stdout.splitlines()[-1], "unit tier: 3 of 3 passed; flaky: cargo test")
+        # What each took is kept where the binaries are, and orders the next run, whatever the inventory says.
+        kept = self.root / "target" / tc.BINARY_SECONDS
+        self.assertEqual(sorted(json.loads(kept.read_text())), ["lib/tests/other.rs", "lib/tests/quick.rs", "lib/tests/slow.rs"])
+        kept.write_text(json.dumps({"lib/tests/quick.rs": 99, "lib/tests/slow.rs": 1, "lib/tests/other.rs": 2}))
+        self.DOC = doc
+        try:
+            out = self.run_both(cargo, ("rust_jobs", "2"))
+        finally:
+            self.DOC = kept_doc
+        self.assertEqual(out.returncode, 0, out.stdout + out.stderr)
+        began = {n: float((self.root / f"{n}.began").read_text()) for n in ("quick", "slow", "other")}
+        self.assertEqual(max(began, key=began.get), "slow", "the shortest by the last run starts last")
+
+    def test_binaries_at_a_time_are_half_the_cpus_at_most_four_and_one_per_gigabyte_and_a_half_of_a_jobs_memory(self):
+        self.assertEqual(tc._rust_jobs({}, cpus=30), 4)
+        self.assertEqual(tc._rust_jobs({}, cpus=2), 1)
+        self.assertEqual(tc._rust_jobs({"VERIFY_CPUS": "6"}), 3)
+        self.assertEqual(tc._rust_jobs({"VERIFY_CPUS": "6", "VERIFY_MEMORY_LIMIT_MB": "4096"}), 2)
+        self.assertEqual(tc._rust_jobs({"VERIFY_CPUS": "6", "VERIFY_MEMORY_LIMIT_MB": "1024"}), 1)
+
+    @cost("tool")
+    def test_python_files_run_several_at_a_time_and_a_failed_ones_second_run_is_alone_after_the_others(self):
+        body = ("import os, pathlib, time, unittest\nclass T(unittest.TestCase):\n    def test_it(self):\n"
+                "        marks = pathlib.Path(os.environ['MARKS'])\n"
+                "        runs = len(list(marks.glob('{n}.began*')))\n"
+                "        (marks / ('{n}.began' + str(runs))).write_text(str(time.time()))\n"
+                "        time.sleep(0.6)\n"
+                "        (marks / ('{n}.ended' + str(runs))).write_text(str(time.time()))\n"
+                "        {more}\n")
+        (self.root / "tools/targets/test_x.py").write_text(body.format(n="x", more="self.assertTrue(runs, 'made-up clash')"))
+        (self.root / "tools/test_y.py").write_text(body.format(n="y", more="pass"))
+        out = self.run_both("print('test result: ok.')\n", ("python_jobs", "2"), ("only", "'python'"))
+        self.assertEqual(out.returncode, 0, out.stdout + out.stderr)
+        at = {p.name: float(p.read_text()) for p in self.root.glob("*.*[0-9]")}
+        self.assertLess(at["y.began0"], at["x.ended0"], "two at a time: the second starts while the first runs")
+        self.assertLess(at["x.began0"], at["y.ended0"])
+        self.assertGreater(at["x.began1"], at["y.ended0"], "the second run of the one that failed waits for the others")
+        self.assertIn("FLAKY tools/targets/test_x.py", out.stdout)
+        self.assertEqual(out.stdout.splitlines()[-1], "unit tier: 2 of 2 passed; flaky: tools/targets/test_x.py")
+
+    @cost("tool")
+    def test_a_build_that_fails_is_cargos_own_words_and_a_failure(self):
+        cargo = ("import json\nprint(json.dumps({'reason': 'compiler-message', 'message': {'rendered': 'error[E0425]: made up'}}))\n"
+                 "print('error: could not compile', file=sys.stderr)\nsys.exit(101)\n")
+        for name in ("tools/targets/test_x.py", "tools/test_y.py"):
+            (self.root / name).write_text("import unittest\nclass T(unittest.TestCase):\n    def test_it(self):\n        pass\n")
+        out = self.run_both(cargo, ("rust_jobs", "2"))
+        self.assertEqual(out.returncode, 1, out.stdout + out.stderr)
+        self.assertIn("error[E0425]: made up", out.stdout)
+        self.assertIn("error: could not compile", out.stdout)
+        self.assertEqual(out.stdout.splitlines()[-1], "unit tier: 2 of 3 passed; failed: cargo test")
+
+
+class Changed(unittest.TestCase):
+    """run --changed: the tests a change asks for, chosen statically from the files alone."""
+
+    def test_a_test_is_chosen_by_changing_by_importing_what_changed_or_by_naming_it_in_code(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            files = {
+                "tools/helper.py": "def f():\n    return 1\n",
+                "tools/test_imports.py": "import helper\n",
+                "tools/test_reads.py": '"""It reads schema/thing.schema.json, says the docstring."""\nPATH = "data/thing.json"\n',
+                "tools/test_docstring_only.py": '"""See schema/thing.schema.json and pages/guide.md."""\n',
+                "tools/test_other.py": "x = 1\n",
+                "tools/test_edited.py": "y = 2\n",
+                "tools/cost_tier.py": 'INVENTORY = "lib/tests/costs.json"\n',
+                "tools/test_with_costs.py": "import cost_tier\n",
+            }
+            for rel, text in files.items():
+                (root / rel).parent.mkdir(parents=True, exist_ok=True)
+                (root / rel).write_text(text)
+            doc = {"python": [{"file": rel, "name": "T.test", "tier": "unit"} for rel in files if "/test_" in rel]}
+            rust, chosen = tc.changed_selection(root, doc, ["tools/helper.py", "data/thing.json", "tools/test_edited.py",
+                                                            "schema/thing.schema.json", "lib/tests/costs.json"])
+            self.assertEqual(chosen, {"tools/test_edited.py": "it changed", "tools/test_imports.py": "it imports tools/helper.py",
+                                      "tools/test_reads.py": "it names data/thing.json"})
+            self.assertEqual(rust, [], "the inventory is read by the Rust tier test: all of cargo test")
+            self.assertEqual(tc.changed_selection(root, doc, ["lib/tests/pairing.rs"])[0], ["pairing"])
+            self.assertIsNone(tc.changed_selection(root, doc, ["lib/README.md", "tools/helper.py"])[0])
 
 
 class Watching(unittest.TestCase):

@@ -42,6 +42,30 @@ change `mrtuvsowozvn` · [log `ff46495ca136`](https://terminalvalue.net/raw-trac
 
 Reviewed with the watcher on 2026-11-17: the user accepted all nine answers so far (D001-D009). The three claim acceptances made in the user's place under --unattended (288, 289, 290) stand; the known gaps are in how the proofs meet the claims (288: exception categories and array aliasing; 290: observed initializers and a preservation claim that compares the count of matchers by type), not in the claims' wording. D010: 290 is finished, at medium confidence while the proof-tier rerun after its engine changes is out.
 
+### Queue a default test run at the parallel run's commit, its first under the job's limits and the first to record what it left unread (verification pending)
+
+change `kqtsqtzvmvvs` · [log `ff46495ca136`](https://terminalvalue.net/raw-traces/587c234b-0915-4213-816f-e502a741da0a/ff46495ca13678287c21649f3b46efe3ab105cd841e6496d7640eae8f38330ad.jsonl.gz)
+
+Job 20261117-003114-default-test-run-at-lptpzxuplxky runs the default test run at change lptpzxup in the pipeline, with six CPUs and 4 GB: there the run takes two Rust test binaries and two Python files at a time. It shows the run's time under those limits (the first job took 19.5 minutes) and writes the first 'default tests: unread' line, which the push gate reads. Nobody waits for it.
+
+### The default run builds Rust's tests in a lightly optimised profile and takes 3.4 minutes: the engine's own tests are several times faster for a build twice as long
+
+change `nmskpkrkukuy` · [log `ff46495ca136`](https://terminalvalue.net/raw-traces/587c234b-0915-4213-816f-e502a741da0a/ff46495ca13678287c21649f3b46efe3ab105cd841e6496d7640eae8f38330ad.jsonl.gz)
+
+lib/Cargo.toml gains the profile test-fast (dev with its checks, opt-level 1, line tables only, the SAT solver at 3 as in dev), and test_costs.py run uses it for the default and unit tiers; the proof tier stays in release and plain cargo test stays dev, each in its own folder of target/. Measured on this machine on 2026-11-17, each binary alone: tests/alignment.rs 94 s as dev and 10 s in test-fast, summaries 13 s and 5 s, conformance 45 s and 36 s, application_core_joint 147 s and 123 s, integration and heap unchanged; the profile's first build 69 s, and a build after an edit in src/bmc/mod.rs 14 s where dev takes 7 s. The whole default run with it: 201 s, 49 of 49 passed, the Rust binaries 163 s of it (276 s and 230 s in the commit before). The job queued in the commit before, 20261117-003114, passed in 518 s on six CPUs without this profile, where the first job took 1170 s.
+
+### Queue a default test run at the test-fast profile's commit, and the job's estimate is 12 minutes (verification pending)
+
+change `mwspmmlwtymy` · [log `ff46495ca136`](https://terminalvalue.net/raw-traces/587c234b-0915-4213-816f-e502a741da0a/ff46495ca13678287c21649f3b46efe3ab105cd841e6496d7640eae8f38330ad.jsonl.gz)
+
+Job 20261117-004852-default-test-run-at-nmskpkrkukuy runs the default test run at change nmskpkrk on six CPUs: the first job with Rust's tests in the test-fast profile, which its warm target directory has to build once. The estimate default_tests.py queue writes goes from 25 to 12 minutes, after the job at the commit before took 8.6 (its notes and verification/README.md's table say so). Checked with test_costs.py run --changed: 13 of 13 test files passed. Nobody waits for the job.
+
+### Merge prove-setup: the default test run as a job nobody waits for, run in parallel, with tests of what changed, a flaky retry, bisecting and a push gate; logs taken across workspaces
+
+change `xunroyyopkuq` · [log `ff46495ca136`](https://terminalvalue.net/raw-traces/587c234b-0915-4213-816f-e502a741da0a/ff46495ca13678287c21649f3b46efe3ab105cd841e6496d7640eae8f38330ad.jsonl.gz)
+
+Brings the prove-setup workspace's line into the loop's: conductor.py's unreadable-queue fix; verification/default_tests.py (the default run as a pipeline job, superseded by a newer one, triaged by the watcher, bisected on a failure) and the sync.py push gate that requires a passed run covering the pushed commit; test_costs.py run --changed, Rust beside Python, the retry of what fails, parallel Python and Rust jobs and the test-fast Cargo profile (from the session in tmux window tests, in-the-loop-10); sync.py adopt-logs, which regenerate runs after a merge. Conflicts: examples/tools/targets/test_runtime.py, where both lines fixed VF-032, takes prove-setup's side (the test sets JVMCONTRACT_JBMC_MEMORY_MB itself, expects it and checks it passes through); lib/tests/costs.json keeps the loop's new pairing row and prove-setup's two rows' calls; the generated trace files are regenerated. Verified: test_runtime.py and test_watch.py pass on the merged tree, the test-cost lint agrees, check reports 0 errors. The prove-setup line's last default-run job passed 49 of 49 at its own tip; one more is queued at this merge.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/587c234b-0915-4213-816f-e502a741da0a/ff46495ca13678287c21649f3b46efe3ab105cd841e6496d7640eae8f38330ad.jsonl.gz) has every step in between: reasoning, tool calls and their results.

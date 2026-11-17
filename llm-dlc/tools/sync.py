@@ -43,11 +43,17 @@ Commands:
   sync.py regenerate            after a merge: rewrite index.json, traces/README.md, traces/metrics.json,
                                 traces/loops.json, traces/loops.md, README.md's index table and the decision
                                 views from the session files and decision records, which settles their
-                                conflicts; lists any other conflict and exits 1 if one is left
+                                conflicts; lists any other conflict and exits 1 if one is left. It also
+                                takes from the repository's other workspaces the logs of the merged sessions
+                                that are stored only there (adopt-logs)
+  sync.py adopt-logs            take each log a manifest names and this workspace lacks from the workspace that
+                                stores it, checked against its sha256 before it is kept
   sync.py upload                upload logs that commits point at to the CDN, verify, record URLs
   sync.py push [JJ PUSH ARGS]   record outstanding traces in a last commit, upload, check, then `jj git push`,
                                 moving any --bookmark to it, once the revision to push is shown to hold
-                                exactly the checked files and uploaded logs; leaves @ empty (alias: jj trace-push)
+                                exactly the checked files and uploaded logs; leaves @ empty (alias: jj trace-push).
+                                It first requires a passed default test run covering @- (verification/
+                                default_tests.py gate); --skip-tests REASON is the user's word to push without
   sync.py check [--remote] [--full]
                                 verify hashes, trailers and redaction (--remote: re-download uploads);
                                 a log already scanned under these rules is not scanned again, --full
@@ -2103,7 +2109,7 @@ HOOK_LOCK_WAIT = 15  # seconds hook-commit waits for another operation (its hook
 # only its Langfuse cursor, and hook-commit takes it itself, once it knows the call was a commit.
 LOCKING = {"check": "shared", "scan": "shared", "sync": "exclusive", "commit": "exclusive", "push": "exclusive",
            "upload": "exclusive", "unpublish": "exclusive", "stamp": "exclusive", "allow": "exclusive",
-           "review": "exclusive", "init": "exclusive", "regenerate": "exclusive"}
+           "review": "exclusive", "init": "exclusive", "regenerate": "exclusive", "adopt-logs": "exclusive"}
 
 
 def _terminated(signum, frame) -> None:
@@ -3259,8 +3265,45 @@ def cmd_push(args: list[str]) -> int:
     if work := uncommitted_work():
         print("uncommitted work in @; commit it first with `sync.py commit`:\n  " + "\n  ".join(work), file=sys.stderr)
         return 1
+    args, skipped = without_skip_tests(args)
+    if not tests_gate(skipped):
+        return 1
     with journaled("publish", stage="sync") as step:
         return publish(args, step)
+
+
+def without_skip_tests(args: list[str]) -> tuple[list[str], str | None]:
+    """ARGS without `--skip-tests REASON`, and the reason: the user's word that a push goes out without a passed
+    default run covering it. An agent doesn't pass it."""
+    out, reason, rest = [], None, iter(args)
+    for a in rest:
+        if a == "--skip-tests":
+            reason = next(rest, "") or "no reason given"
+        elif a.startswith("--skip-tests="):
+            reason = a.split("=", 1)[1] or "no reason given"
+        else:
+            out.append(a)
+    return out, reason
+
+
+def tests_gate(skipped: str | None) -> bool:
+    """The default test run runs as a job nobody waits for (verification/default_tests.py), so a push is where it is
+    required: a passed run at the commit pushed, or at an ancestor that differs from it only in files no test reads.
+    Any merge or change after the last run may have broken what the suite is there to catch."""
+    tool = REPO / "verification/default_tests.py"
+    if not tool.exists():
+        return True
+    if skipped is not None:
+        print(f"pushing without a passed default test run, as asked: {skipped}", file=sys.stderr)
+        return True
+    r = subprocess.run([sys.executable, str(tool), "gate", "--rev", "@-"], cwd=REPO, capture_output=True, text=True)
+    sys.stderr.write(r.stderr)
+    if r.returncode:
+        print("not pushing: the default test run is required before a push (CLAUDE.md, Tests). "
+              "`--skip-tests REASON` is for the user alone.", file=sys.stderr)
+        return False
+    print(r.stdout.strip())
+    return True
 
 
 def publish(args: list[str], step: str | None) -> int:
@@ -3575,6 +3618,60 @@ def conflicted_paths() -> list[str]:
     return [m[1] for line in r.stdout.splitlines() if (m := RESOLVE_LIST_RE.match(line))] if r.returncode == 0 else []
 
 
+def workspace_roots() -> list[Path]:
+    """The folders of this repository's other jj workspaces."""
+    listed = jj("workspace", "list", "-T", 'name ++ "\\n"')
+    out = []
+    for name in (listed.stdout.split() if listed.returncode == 0 else []):
+        r = jj("workspace", "root", "--name", name)
+        if r.returncode == 0 and r.stdout.strip() and Path(r.stdout.strip()).resolve() != REPO.resolve():
+            out.append(Path(r.stdout.strip()))
+    return out
+
+
+def adopt_logs() -> list[str]:
+    """After a merge of another workspace's line: the logs its sessions' manifests name that aren't stored here, copied
+    from the workspace that stores them. One not uploaded would be an error in check; one uploaded is still an input of
+    the session's metrics, which a workspace holding fewer of its logs would compute otherwise. A snapshot is named by the sha256 of its uncompressed
+    content, so each copy is checked against its name before it is kept, and one that doesn't match is left out:
+    nothing is taken on trust, and nothing already here is touched. A log taken is a hard link where the filesystem
+    allows one (it costs no space; a hundred sessions' logs are over a gigabyte), and a copy where it doesn't."""
+    roots, adopted = workspace_roots(), []
+    for sid, m in all_manifests().items():
+        for sha, info in (m.get("logs") or {}).items():
+            dest = log_path(sid, sha)
+            if dest.exists() or info.get("withdrawn"):
+                continue
+            for root in roots:
+                src = root / dest.relative_to(REPO)
+                try:
+                    data = src.read_bytes()
+                    if hashlib.sha256(gzip.decompress(data)).hexdigest() != sha:
+                        continue
+                except (OSError, EOFError, gzip.BadGzipFile):
+                    continue
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                tmp = dest.with_name(dest.name + ".tmp")
+                tmp.unlink(missing_ok=True)
+                try:
+                    os.link(src, tmp)  # one file under two names: workspaces share a filesystem, and a log is
+                except OSError:        # never rewritten in place (it is named by its content), so no copy is needed
+                    tmp.write_bytes(data)
+                os.replace(tmp, dest)
+                adopted.append(f"{sid}: log {sha[:12]}, from {root}")
+                break
+    return adopted
+
+
+def cmd_adopt_logs(args: list[str]) -> int:
+    if args:
+        print("usage: sync.py adopt-logs", file=sys.stderr)
+        return 2
+    for line in adopt_logs() or ["no log to take from another workspace"]:
+        print(line)
+    return 0
+
+
 def cmd_regenerate(args: list[str]) -> int:
     """After a merge: rewrite the files generated from the per-session files (index.json,
     traces/README.md, traces/metrics.json, traces/loops.json, traces/loops.md, and README.md's
@@ -3606,6 +3703,8 @@ def cmd_regenerate(args: list[str]) -> int:
         if 0 <= start < end and all(start < at < end for at in hunks):
             atomic_write(CHANGES_README, text[:start + len(INDEX_BEGIN)] + "\n" + text[end:])  # write_index fills it
     write_index()
+    for line in adopt_logs():  # the merged sessions' logs, stored only in the workspace they ran in
+        print(f"took {line}")
     left = conflicted_paths()
     resolved = [p for p in conflicted if p not in left]
     for p in resolved:
@@ -3860,6 +3959,8 @@ def run(cmd: str, args: list[str]) -> int:
         return cmd_stamp(args)
     elif cmd == "regenerate":
         return cmd_regenerate(args)
+    elif cmd == "adopt-logs":
+        return cmd_adopt_logs(args)
     elif cmd == "langfuse":
         return cmd_langfuse(args)
     elif cmd == "perf":

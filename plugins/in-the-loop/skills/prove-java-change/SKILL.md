@@ -198,6 +198,9 @@ proof loop detached, continuing the fixed session at high effort, and returns at
 - **Between two examples**, merge whatever workspace the user has queued, then answer `stop` if they asked the loop
   to end there, else `continue`.
 - **A compaction with no commit**: `continue` while the work is moving, `stop` when it is stuck.
+- **A default test run that has come in** (`"kind": "default-tests"`): nobody waited on it. On a failure, fix what
+  is small and mechanical yourself in the side workspace, write what lies in the loop's area to `test-findings.md`
+  in the run's state for its next cycle, and tell the user the rest.
 - **A setup that has ended** (`"kind": "setup"`): check it as step 4 says, and for one in a workspace queue its
   merge. **A setup gone quiet** (`"kind": "setup-quiet"`): look at its stream before acting; a build or a replay
   often takes long.

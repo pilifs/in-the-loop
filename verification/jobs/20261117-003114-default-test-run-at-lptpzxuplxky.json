@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-003114-default-test-run-at-lptpzxuplxky",
+  "title": "Default test run at lptpzxuplxky",
+  "description": "The default test run (python3 lib/tools/test_costs.py run: cargo test and every Python suite, the unit and tool tiers) at change lptpzxuplxky, \"The default run takes 4.6 minutes where it took 16: Rust's test binaries and the Python files run several at a time, and\", queued after the run was made parallel: its first run under the job's six CPUs and 4 GB, and the first to record what it left unread. Nobody waits for it: the watcher or the next session reads the result, and sync.py push requires a passed run that covers the commit it pushes (verification/default_tests.py).",
+  "kind": "other",
+  "capabilities": [
+    "tests:default"
+  ],
+  "links": {
+    "commits": [
+      "lptpzxuplxky"
+    ]
+  },
+  "expected": "exits 0: every test of the default run passes",
+  "submitted": {
+    "at": "2026-11-17T00:31:14+00:00",
+    "session": "b23a1dcc-0128-4ba1-b4aa-85526c834e11"
+  },
+  "revision": "2c5f0e496b1a6df485b2021ad1f75351049a8cae",
+  "requires": [
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 6.0,
+    "memory": "4G",
+    "duration": "25m",
+    "timeout": "1h",
+    "notes": "the default run took about 16 minutes inline in 2026-11 (11 Rust, 5 Python), longer beside proof jobs; its cargo target directory is kept warm between runs"
+  },
+  "steps": [
+    {
+      "name": "default tests",
+      "run": "nice -n 10 python3 verification/default_tests.py step",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}
