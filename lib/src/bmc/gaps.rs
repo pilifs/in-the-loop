@@ -394,6 +394,8 @@ pub struct GapSetting {
     pub observed: std::sync::Arc<crate::observed::Observations>,
     /// The models on request the engine runs ([`crate::models::ON_REQUEST`]), by internal name, in any mode.
     pub models: std::sync::Arc<BTreeSet<String>>,
+    /// The previous version of a pair the check holds beside the new one ([`crate::relocate::Previous`]).
+    pub previous: Option<std::sync::Arc<crate::relocate::Previous>>,
 }
 
 impl From<GapMode> for GapSetting {
@@ -544,14 +546,14 @@ pub enum JdkCall {
 
 /// Whether the own checker models an instance call of the JDK on an object whose content it holds: a
 /// `StringBuilder`'s constructors and methods ([`super::strings`]), a class literal's name and loader, whether a
-/// Logger logs a level below `INFO`, and `new ArrayList()` ([`super::runtime`]). They are the own checker's alone: to JBMC the same calls are its stubs
+/// Logger logs a level below `INFO`, `new ArrayList()` and a `ConcurrentHashMap` made empty ([`super::runtime`]). They are the own checker's alone: to JBMC the same calls are its stubs
 /// ([`crate::jbmc_gaps`] asks [`exact_jdk_call`], never this), and a contract for one is still a contract for a gap
 /// ([`unmodelled_instance_call`]), which the engine applies in place of its model where one is given.
 pub fn modelled_jdk_call(owner: &str, name: &str, descriptor: &str) -> bool {
     super::strings::models_builder(owner, name, descriptor)
         || super::runtime::models_instance(owner, name, descriptor)
         || super::runtime::models_logger(owner, name, descriptor)
-        || (name == "<init>" && super::runtime::plain_constructor(owner, descriptor))
+        || (name == "<init>" && (super::runtime::plain_constructor(owner, descriptor) || super::runtime::capacity_constructor(owner, descriptor)))
 }
 
 /// How the engine treats an instance call `owner.name(descriptor)` that runs JDK code: the one classification the

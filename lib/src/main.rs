@@ -546,6 +546,16 @@ struct EquivalenceArgs {
     /// versions run on --classpath. Checked by the tool's own checker (--engine native or auto).
     #[arg(long = "before-classpath", value_name = "PATH")]
     before_classpath: Vec<String>,
+    /// As prove's: a class whose initializer the tool's own checker is not to run, `pkg.Class`; may be repeated.
+    /// For a check made as a property of the pair of versions. The class is initialized on a JVM in each version
+    /// that has it, on that version's own class path, and the checker takes the static state it left there; the
+    /// result states it.
+    #[arg(long = "observed-initializer")]
+    observed_initializer: Vec<String>,
+    /// As prove's: a JDK class the tool's own checker is to run its model of (java.util.ArrayList); may be
+    /// repeated. For a check made as a property of the pair of versions.
+    #[arg(long = "model")]
+    model: Vec<String>,
     /// A working directory for the harness, relocated classes and JBMC logs (a temporary one by default).
     #[arg(long)]
     work: Option<PathBuf>,
@@ -888,6 +898,8 @@ fn run(cli: Cli) -> Result<i32, Error> {
             if !args.before_classpath.is_empty() {
                 options.before_classpath = Some(args.before_classpath.iter().flat_map(|s| std::env::split_paths(s).collect::<Vec<_>>()).collect());
             }
+            options.observed_initializers = args.observed_initializer;
+            options.requested_models = args.model;
             options.work = args.work;
             options.report = args.report;
             options.sources = args.sources;

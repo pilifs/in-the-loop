@@ -312,7 +312,8 @@ fn an_observed_initializer_gives_the_state_a_jvm_left_and_the_result_says_so() {
 /// each of its calls a gap, until a check asks for the model (`--model java.util.ArrayList`): then the model is
 /// its definition written out on every input of the bound, the result says what it rests on, and a method the
 /// model does not keep is still the JDK call it names. `Arrays.copyOf` of an array of references, which the model
-/// grows by, is modelled for every check.
+/// grows by, is modelled for every check, and so is a `ConcurrentHashMap` made empty, the cache a matcher's
+/// constructor makes and these paths never ask.
 #[test]
 fn an_array_list_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_definition_written_out() {
     jvmcontract::tool_tier!();
@@ -333,6 +334,7 @@ fn an_array_list_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_defin
         assert!(stated.assumptions.iter().any(|a| a.text.starts_with("java.util.ArrayList is the tool's model of the class wherever the check runs it (--model), not the JDK's code")), "{method}: {:?}", stated.assumptions);
     }
     proved(classes, "claims.M#recopied", 3);
+    proved(classes, "claims.M#cached", 3);
     // A check that asks for the model and runs none of it does not rest on it.
     let unused = run(&asking("claims.M#recopied", "M-recopied-asking", "java.util.ArrayList"));
     assert_eq!(unused.verdict, Verdict::Verified, "{}", unused.output);

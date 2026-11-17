@@ -124,6 +124,11 @@ pub struct Options {
     /// The models on request the tool's own checker runs for their classes (`--model CLASS`,
     /// [`crate::models::ON_REQUEST`]). The result states each.
     pub requested_models: Vec<String>,
+    /// For a regression check made as a property of the pair of versions ([`crate::pairing`]): the previous
+    /// version the class path holds copies of, and the classes of it whose initializer is observed
+    /// ([`Options::observed_initializers`] are the new version's), by their own names, each on the previous
+    /// version's class path ([`crate::observed::observe_previous`]). Set by that check, never by a command line.
+    pub previous: Option<(crate::relocate::Previous, Vec<String>)>,
 }
 
 impl Options {
@@ -164,6 +169,7 @@ impl Options {
             summary: false,
             observed_initializers: Vec::new(),
             requested_models: Vec::new(),
+            previous: None,
         }
     }
 }
@@ -257,6 +263,10 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
     if options.cache.is_some() && !options.observed_initializers.is_empty() {
         crate::phases::end(0.0);
         return Err(Error::new("--observed-initializer with --cache: a claim's key does not hold an observation, so such a result is not stored"));
+    }
+    if options.cache.is_some() && options.previous.is_some() {
+        crate::phases::end(0.0);
+        return Err(Error::new("a pair of versions with --cache: a claim's key does not hold the previous version"));
     }
     if options.cache.is_some() && !options.requested_models.is_empty() {
         crate::phases::end(0.0);
@@ -799,8 +809,14 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     if !options.observed_initializers.is_empty() && options.engine == crate::Engine::Jbmc {
         return Err(Error::new("--observed-initializer is for the tool's own checker (--engine native or auto): JBMC runs no observation"));
     }
-    let observed = std::sync::Arc::new(crate::observed::observe_for(&options.observed_initializers, &entries, &work)?);
+    let mut observed = crate::observed::observe_for(&options.observed_initializers, &entries, &work)?;
+    if let Some((previous, classes)) = &options.previous {
+        observed.extend(crate::observed::observe_previous(classes, previous, &work)?);
+    }
+    let observed = std::sync::Arc::new(observed);
+    let previous = options.previous.as_ref().map(|(p, _)| std::sync::Arc::new(p.clone()));
     gap_setting.observed = observed.clone();
+    gap_setting.previous = previous.clone();
     // The models on request: the own checker's alone.
     if !options.requested_models.is_empty() && options.engine == crate::Engine::Jbmc {
         return Err(Error::new("--model is for the tool's own checker (--engine native or auto): JBMC has its own class path"));
@@ -832,6 +848,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         gap_setting = setting;
         gap_setting.observed = observed.clone();
         gap_setting.models = requested.clone();
+        gap_setting.previous = previous.clone();
         out.push_str(&notes);
         if options.gaps == crate::bmc::gaps::GapMode::Advised {
             let (cp, scan) = scanned.as_ref().expect("scanned under advised");

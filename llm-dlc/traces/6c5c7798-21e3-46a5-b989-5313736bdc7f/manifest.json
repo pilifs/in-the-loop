@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "6c5c7798-21e3-46a5-b989-5313736bdc7f",
-  "status": "ended",
+  "status": "open",
   "title": "Moonshot loop status",
   "first_prompt": "Inspect the state of the currently running moonshot loop -- share # of turns, tokens used so far, and summarize changes / issues",
   "client": {
@@ -12,32 +12,32 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-16T23:57:37.824Z",
-  "duration_seconds": 109811,
+  "ended": "2026-11-17T00:23:21.496Z",
+  "duration_seconds": 111355,
   "stats": {
-    "turns": 92,
-    "api_calls": 668,
-    "tool_calls": 618,
+    "turns": 95,
+    "api_calls": 682,
+    "tool_calls": 630,
     "tool_errors": 11,
     "compactions": 3,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 1528,
-      "output_tokens": 502625,
-      "cache_read_input_tokens": 162804307,
-      "cache_creation_input_tokens": 1154091
+      "input_tokens": 1560,
+      "output_tokens": 509004,
+      "cache_read_input_tokens": 166028752,
+      "cache_creation_input_tokens": 1170520
     }
   },
   "tools": {
-    "Bash": 584,
+    "Bash": 593,
+    "ToolSearch": 8,
     "Write": 8,
-    "ToolSearch": 7,
     "SendMessage": 6,
     "ListAgents": 5,
+    "AskUserQuestion": 3,
     "Edit": 3,
     "Monitor": 2,
-    "TaskStop": 2,
-    "AskUserQuestion": 1
+    "TaskStop": 2
   },
   "files_touched": [
     "CLAUDE.md",
@@ -98,24 +98,24 @@
     {
       "index": 3,
       "started": "2026-11-16T23:07:53.833Z",
-      "ended": "2026-11-16T23:57:37.824Z",
-      "turns": 9,
-      "api_calls": 70,
+      "ended": "2026-11-17T00:23:21.496Z",
+      "turns": 12,
+      "api_calls": 84,
       "usage": {
-        "input_tokens": 158,
-        "output_tokens": 44108,
-        "cache_read_input_tokens": 12265292,
-        "cache_creation_input_tokens": 188706
+        "input_tokens": 190,
+        "output_tokens": 50487,
+        "cache_read_input_tokens": 15489737,
+        "cache_creation_input_tokens": 205135
       },
-      "peak_context_tokens": 221625
+      "peak_context_tokens": 238056
     }
   ],
   "log": {
-    "sha256": "0432c8015551e034e24631c77b60979878dd733df92598b12731fdf0ebc4a2fd",
-    "bytes": 12528799,
-    "lines": 5377,
-    "gzip_bytes": 2163507,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/0432c8015551e034e24631c77b60979878dd733df92598b12731fdf0ebc4a2fd.jsonl.gz"
+    "sha256": "528d90f0cae18e8cdc8eafc1f3c9787b2d0746cc099c11c19a9223cd4586a84b",
+    "bytes": 12780353,
+    "lines": 5505,
+    "gzip_bytes": 2197589,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/528d90f0cae18e8cdc8eafc1f3c9787b2d0746cc099c11c19a9223cd4586a84b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -758,6 +758,30 @@
       "summary": "Record verification results: the proof tier after example 290's engine changes passed",
       "body": "Collected 1 job (20261116-231725): every proof-tier Rust test but VF-018's three passed in release (35m32s, peak 3.5 GiB against an estimated 8 GiB).",
       "log_sha256": "0432c8015551e034e24631c77b60979878dd733df92598b12731fdf0ebc4a2fd"
+    },
+    {
+      "change_id": "qystlsvplrmvtymslznqzolmkzyywlrr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290: vulnerable-security is refuted in a probe at the frozen bound with a model of ArrayList the check asks for, and its job is queued (verification pending)",
+      "body": "5.8.4 collects its matchers in ArrayLists on every path, and jvmcontract's own checker stopped at new ArrayList(int). The checker now has a model of java.util.ArrayList that it runs only for a check that asks for it (prove --model java.util.ArrayList; lib/models/java/util/lists/ArrayList.java, models::ON_REQUEST, ClassPath::runs_model): both constructors, size, isEmpty, get, add, addAll, both toArray and a fail-fast iterator; any other method is the JDK call it names. It is on request and not run for every check because new ArrayList(int) is the gap the contract library, the conformance corpus and the examples' recorded refusals are written about: without the option nothing changes. A result states the model where a path ran it; JBMC, --cache and a class with no model on request are refused. Arrays.copyOf of an array of references, which the model grows by, is modelled for every check, as it was for arrays of numbers.",
+      "log_sha256": "528d90f0cae18e8cdc8eafc1f3c9787b2d0746cc099c11c19a9223cd4586a84b"
+    },
+    {
+      "change_id": "onkqouutwkoryzmluwqkymmqwqkmwpzp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: example 290 vulnerable-security through the adapter entry is refuted at the frozen bound, as expected",
+      "body": "Job 20261117-000856-example-290-vulnerable-security-through passed on vm-1 (1 step, 3.4 s, peak 187 MiB against an estimate of 5 min and 4 GiB): the frozen claim on 5.8.4 is refuted as the job expected. Outputs applied: the work folder's outcome and harness. No findings.",
+      "log_sha256": "528d90f0cae18e8cdc8eafc1f3c9787b2d0746cc099c11c19a9223cd4586a84b"
+    },
+    {
+      "change_id": "lxywqktlwtqvrrzqxuoykyrqkmlpruut",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290: preservation is established in a probe at the frozen bound, the previous version's questions by name answered on its own class path; one job for all four tasks is queued (verification pending)",
+      "body": "preservation (the release pair 5.8.4 to 5.8.5 through the adapter entry) needed four things of the verifier, each now there. (1) In a regression check made as a property of the pair of versions the previous version's classes are copies under the package before, and a question its code asks by a name it computes was answered from the program's class path, the new version's: Class.forName called by a copy now finds the copy of the class named and no class only the new version has, and a copy's getName() is the class's own name (lib/src/relocate.rs Previous, lib/src/bmc/runtime.rs). 5.8.4's initializer asks this way whether Spring MVC is present. (2) jvmcontract equivalence takes --observed-initializer and --model for such a check; an initializer is observed in each version that has the class, on that version's own class path, and the result says which. (3) new ConcurrentHashMap() and new ConcurrentHashMap(int) make an object with no content, a negative capacity refused: the caches an AntPathMatcher's constructor makes. (4) proofs/prove.py observes two more library initializers, UrlPathHelper's and AntPathMatcher's, met only where a release goes on to make MvcRequestMatchers.\n\nVerified inline: tests/pairing.rs has two versions of a library that return the same number only if each one's lookup by name, class name and observed initializer are its own, both ways round (verified), with the refusals; claims.M#cached proves the map's constructors against their definition and claims.Samples runs it on a JVM; the unit tests (288), claims (15), pairing (4), values, conformance, loops, object_strings and value_parameters pass; test_costs lint agrees; validate_example.py 290 passes. At the frozen bound of 8, proofs/prove.py preservation was established in 2.1 s (573 paths), and a control with a wider region that must agree was refuted on select(servlets=[1], ...), run on a JVM, where the fix changes the selection by design. The other three tasks give their recorded verdicts with the final script (4, 659 and 708 paths). Jobs: 20261117-012215-example-290-the-four-proof-tasks-through (all four tasks at one commit) and 20261117-012216-the-proof-tier-after-example-290-s-secon. vulnerable-security's own job, 20261117-000856-example-290-vulnerable-security-through, passed in 3.4 s (collected in onkqouut); its record in target.json follows with the others'. The commit also holds four allow-list proposals for scratch file names this session printed.",
+      "log_sha256": "528d90f0cae18e8cdc8eafc1f3c9787b2d0746cc099c11c19a9223cd4586a84b"
     }
   ],
   "logs": {
@@ -837,6 +861,12 @@
       "bytes": 11767274,
       "lines": 5008,
       "gzip_bytes": 2041088,
+      "url": null
+    },
+    "528d90f0cae18e8cdc8eafc1f3c9787b2d0746cc099c11c19a9223cd4586a84b": {
+      "bytes": 12780353,
+      "lines": 5505,
+      "gzip_bytes": 2197589,
       "url": null
     },
     "5ba60ac0a27f107bab9a938f838cb76c9e7618d17d55a0f84d86a98b39b55f8b": {

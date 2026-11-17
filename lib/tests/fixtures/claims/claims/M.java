@@ -359,6 +359,17 @@ public final class M {
         }
     }
 
+    /** A {@code ConcurrentHashMap} made empty, with or without a capacity: a negative one is refused. */
+    public static boolean cached(int capacity) {
+        Object plain = new java.util.concurrent.ConcurrentHashMap<String, At>();
+        try {
+            return new java.util.concurrent.ConcurrentHashMap<String, At>(capacity) != plain && capacity >= 0;
+        }
+        catch (IllegalArgumentException e) {
+            return capacity < 0;
+        }
+    }
+
     /** {@code Collections.emptyMap()}: one map, never null. */
     public static boolean emptied() {
         return Collections.emptyMap() != null && Collections.emptyMap() == Collections.emptyMap();

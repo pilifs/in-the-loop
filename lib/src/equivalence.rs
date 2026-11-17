@@ -124,6 +124,12 @@ pub struct Options {
     /// with its build ([`crate::relocate::with_closure`]), and [`Options::classpath`] is the new version's alone.
     /// Without it, both versions run on [`Options::classpath`].
     pub before_classpath: Option<Vec<PathBuf>>,
+    /// The classes whose initializer the tool's own checker does not run (`--observed-initializer CLASS`, as
+    /// `prove`'s): for a check made as a property of the pair of versions, each observed on a JVM in each version
+    /// that has the class, on that version's own class path.
+    pub observed_initializers: Vec<String>,
+    /// The models on request the own checker runs (`--model CLASS`, as `prove`'s), for such a check.
+    pub requested_models: Vec<String>,
     /// The previous version's method, `pkg.Class#method`, when it is not the target's: renamed or moved.
     pub before_target: Option<String>,
     /// The previous version's arguments as expressions over the new parameters, separated by commas, when its
@@ -202,6 +208,8 @@ impl Options {
             confirm: false,
             shared_callees: true,
             before_classpath: None,
+            observed_initializers: Vec::new(),
+            requested_models: Vec::new(),
             before_target: None,
             before_arguments: None,
             results_agree_when: None,
@@ -1077,13 +1085,39 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let names = method.parameter_names(&class.pool);
     // A check over what a property check takes and the harness does not (a String[], a nullable String), or with
     // an assumption or lemmas, is made as a property of the pair of versions ([`crate::pairing`]).
+    if !crate::pairing::asked(options, &method, &names) && !(options.observed_initializers.is_empty() && options.requested_models.is_empty()) {
+        return refuse(&mut out, line, "--observed-initializer and --model are for a regression check made as a property of the pair of versions (one with --assume or --lemmas, a String[] parameter or a nullable String), which this is not".to_string());
+    }
     if crate::pairing::asked(options, &method, &names) {
         let previous = before_cp.application(&class_internal)?.and_then(|c| crate::verifier::select_method(&c, &options.target).ok().cloned());
         let own_checker = options.engine != crate::Engine::Jbmc && !options.confirm;
         if let Some(problem) = crate::pairing::refusal(options, &method, previous.as_ref(), own_checker) {
             return refuse(&mut out, line, problem);
         }
-        let paired = match crate::pairing::run(options, &work, &before_dir, &class, &method, &names)? {
+        // The previous version as the pair's program holds it: its classes copied, its class path whole.
+        let previous = crate::relocate::Previous {
+            prefix: "before".to_string(),
+            relocated: relocated.clone(),
+            classes: before_cp.application_class_names()?.into_iter().collect(),
+            shared: options.before_classpath.is_none(),
+            classpath: std::iter::once(options.before.clone()).chain(options.before_entries().iter().cloned()).collect(),
+        };
+        // An initializer to observe is observed in each version that has the class.
+        let mut observed = (Vec::new(), Vec::new());
+        for class in &options.observed_initializers {
+            let internal = class.replace('.', "/");
+            let (now, before) = (after_cp.application(&internal)?.is_some(), previous.relocated.contains(&internal));
+            if !now && !before {
+                return refuse(&mut out, line, format!("--observed-initializer {class}: neither version's class path has the class (the previous version's as far as the check holds a copy of it)"));
+            }
+            if now {
+                observed.0.push(class.clone());
+            }
+            if before {
+                observed.1.push(class.clone());
+            }
+        }
+        let paired = match crate::pairing::run(options, &work, &before_dir, &class, &method, &names, previous, observed)? {
             Ok(paired) => paired,
             Err(problem) => return refuse(&mut out, line, problem),
         };

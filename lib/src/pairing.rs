@@ -156,7 +156,7 @@ pub struct Paired {
 
 /// Writes and compiles the pair's class and proves `agree` of it: see the module's notes. `relocated_dir` holds the
 /// previous version under `before`, `class` and `method` are the new version's. `Err` is a refusal, in its words.
-pub fn run(options: &Options, work: &Path, relocated_dir: &Path, class: &ClassFile, method: &Method, names: &[String]) -> Result<Result<Paired, String>, crate::Error> {
+pub fn run(options: &Options, work: &Path, relocated_dir: &Path, class: &ClassFile, method: &Method, names: &[String], previous: crate::relocate::Previous, observed: (Vec<String>, Vec<String>)) -> Result<Result<Paired, String>, crate::Error> {
     let descriptor = method.parsed_descriptor()?;
     let dir = work.join("pair");
     std::fs::create_dir_all(&dir)?;
@@ -199,6 +199,12 @@ pub fn run(options: &Options, work: &Path, relocated_dir: &Path, class: &ClassFi
     property.contracts = options.contracts.clone();
     property.contract_library = options.contract_library;
     property.max_trust = options.max_trust;
+    // What the previous version's code asks by name is answered as on its own class path, and an initializer to
+    // observe is observed in each version on that version's (`observed`: the new version's classes, then the
+    // previous version's).
+    property.requested_models = options.requested_models.clone();
+    property.observed_initializers = observed.0;
+    property.previous = Some((previous, observed.1));
     let outcome = crate::property::run(&property)?;
     let own = if options.before_classpath.is_some() { ", each on its own dependency closure" } else { "" };
     let scope = match &options.unchanged_unless {

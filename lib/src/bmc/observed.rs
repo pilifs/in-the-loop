@@ -39,7 +39,7 @@ impl Engine<'_> {
                 }
             }
         }
-        self.assumed.insert(crate::observed::assumption(class, &observed.jdk));
+        self.assumed.insert(crate::observed::assumption(class, observed));
         Ok(())
     }
 

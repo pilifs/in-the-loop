@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-002240-the-proof-tier-after-example-290-s-secon",
+  "title": "The proof tier after example 290's second round of engine changes, VF-018's three tests apart: every other ignored Rust test in release, none hidden by a failure",
+  "description": "Runs the proof tier's command with cargo's --no-fail-fast and without the three heap tests VF-018 tracks (JBMC's timeouts, which no change here touches), as the jobs after examples 287 to 290 did. The change behind it is in the own checker (lib/src/bmc), which nearly every proof-tier test runs: Arrays.copyOf of an array of references is modelled where it was refused for its array result; new ConcurrentHashMap() and new ConcurrentHashMap(int) make an object with no content where each was a gap; a model of java.util.ArrayList is run only for a check that asks for it (--model), so the class is as it was for every test of the tier; a regression check made as a property of the pair of versions answers the previous version's Class.forName and getName on its own class path, and takes --observed-initializer and --model. The tests of what changed (the unit tests, claims, values, conformance, pairing, object_strings, loops, value_parameters) pass inline.",
+  "kind": "library",
+  "capabilities": [
+    "tests:proof"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/runtime.rs",
+      "lib/src/bmc/bytes.rs",
+      "lib/src/relocate.rs",
+      "lib/src/models.rs",
+      "lib/models/java/util/lists/ArrayList.java"
+    ]
+  },
+  "expected": "exits 0: every proof-tier test but VF-018's three passes",
+  "submitted": {
+    "at": "2026-11-17T00:22:40+00:00",
+    "session": "a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31"
+  },
+  "priority": -1,
+  "requires": [
+    "cargo",
+    "javac",
+    "java",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "8G",
+    "duration": "40m",
+    "timeout": "4h",
+    "notes": "the same job after example 290's first round took about 35 minutes"
+  },
+  "steps": [
+    {
+      "name": "proof tier, no fail fast, VF-018's three skipped",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 JVMCONTRACT_HEAP_TIME_LIMIT=1800 JVMCONTRACT_TEST_TIER=proof TEST_COST=proof cargo test --manifest-path lib/Cargo.toml --release --no-fail-fast -- --ignored --test-threads 4 --skip the_output_relations_have_the_same_verdicts_under_jbmc_and_auto_confirm --skip the_other_object_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm --skip the_parameter_reads_have_the_same_verdicts_under_jbmc_and_auto_confirm",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}
