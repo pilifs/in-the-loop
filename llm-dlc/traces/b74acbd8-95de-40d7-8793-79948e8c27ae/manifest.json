@@ -115,15 +115,15 @@
     {
       "change_id": "pnysnkmzllotvlspxyqrnrpzvxnlypkz",
       "commit_id": "1ba6d2ed715c2904ed95251654c87de604d76406",
-      "immutable": false,
+      "immutable": true,
       "summary": "The default test run runs inline again, never as a verification job, and a passed run is recorded for the push and release gates",
       "body": "The user decided to take the default run out of the verification pipeline: as a job it overlapped other runs in one cargo target directory (VF-034), was cut off with its runner at the Bash tool's 10-minute limit, and skipped the one-at-a-time lock when queued from a line that predated it. verification/default_tests.py (queue, step, supersede, bisect, the unread-file list, flaky counts) and its tests are removed, with verification/default-tests-unread.txt and the watcher's default-tests event.\n\nNew lib/tools/default_run.py: a whole default run (test_costs.py run) that passes records the git tree it tested, as jj snapshots the working copy, and only when no file changed during the run, in ~/.cache/in-the-loop/default-runs.jsonl. The record covers a commit of the same tree, or one differing only in traces, decisions and job records. sync.py push and release.py cut ask default_run.py gate --run, which runs the default run inline when no record covers @-; --skip-tests stays the user's alone. Every test_costs.py run holds a lock in the workspace's cargo target directory, so two runs in one workspace take turns.\n\nDocs follow: CLAUDE.md (Verification jobs exempts the default run; Tests says inline, the record and the gate; the tests: queued brief bullet is gone), runtime.md (merges run the default run inline, the watcher's default-tests row and the release gate), the prove-java-change skill, verification/README.md, lib/README.md, llm-dlc/README.md, brief-template.md (one inline test rule replaces the Inline/Queued policy, which also settles the mismatch left by the run-brief merge), validate_example.py's docstring, and a line in VF-034.",
       "log_sha256": "8a758c81b7e2381c1664737b0b6c6c57f3e2b913ba15b4eb6af7f4e8bcfb6812"
     },
     {
       "change_id": "mxnsvkvwqoswsvumosrvquwnuwwuzlwl",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "647485f1118ea4db45caef43130f4067fa7125dc",
+      "immutable": true,
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "8d65665e5879a89b319b3b48c5a2e80b08caf9dcc3b3194e59065e9cd326490e"

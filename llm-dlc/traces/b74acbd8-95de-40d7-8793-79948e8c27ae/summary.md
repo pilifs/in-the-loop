@@ -66,7 +66,7 @@ Docs follow: CLAUDE.md (Verification jobs exempts the default run; Tests says in
 
 ### Record session traces
 
-change `mxnsvkvwqosw` · [log `8d65665e5879`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/8d65665e5879a89b319b3b48c5a2e80b08caf9dcc3b3194e59065e9cd326490e.jsonl.gz)
+[`647485f1118e`](https://github.com/pilifs/in-the-loop/commit/647485f1118ea4db45caef43130f4067fa7125dc) · [log `8d65665e5879`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/8d65665e5879a89b319b3b48c5a2e80b08caf9dcc3b3194e59065e9cd326490e.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

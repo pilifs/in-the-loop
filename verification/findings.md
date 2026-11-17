@@ -18,6 +18,26 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-036: equivalence checks and the Terminal-Value tests leave their temp folders in `/tmp`, which ran out of inodes
+
+- **Status**: open, minor, to revisit if it recurs (the user's decision on 2026-11-17: they raised `/tmp`'s inode
+  limit and cleaned it by hand; nothing to change now).
+- **Raised**: 2026-11-17 on `vm-1`, by the watcher session of the rehearsals, when a command could not start
+  (`ENOSPC` on `/tmp`) with 160 GB free on `/`.
+- **Found**: `/tmp` is a tmpfs (53 GB, 20% used), but 1,046,553 of its 1,048,576 inodes were used. About 640,000 of
+  them were 18,276 folders `jvmcontract-equivalence-PID-NANOS-N`, back to 2026-11-15: `equivalence::run_check`
+  (`lib/src/equivalence.rs`, the `None =>` arm of `options.work`) makes a work folder with
+  `tla::tempfile_path` whenever no `--work` is given and never removes it, and the default test run calls it many
+  times. About 321,000 more were `sf-case-*`, `sf-build-*` and `sf-m*` folders from
+  `Terminal-Value/blog/software-factory/test/fixtures/cases.mjs`, another repository's tests. Anything that
+  creates a file then fails, a test run included, for a reason unrelated to its code. The user raised the limit to
+  8,388,608 inodes, since RAM is plentiful and `/tmp` on tmpfs speeds runs up, and removed the old folders.
+- **Needs**: if it recurs, the verifier removes a work folder that nobody asked to keep (no `--work`) once the
+  outcome no longer needs it, or the test run gives each run a `TMPDIR` of its own and removes it at the end;
+  Terminal-Value's tests remove their fixtures' folders. Whoever takes it up: the user decides when.
+- **Tracked in**: nowhere else.
+- **Closes when**: a whole default test run leaves no `jvmcontract-*` folder behind in `/tmp`.
+
 ### VF-035: whole Python test files are tagged unit tier and take minutes, because the inventory doesn't see the processes their tests start
 
 - **Status**: open, to revisit later (the user's decision on 2026-11-17: note it, don't retag now).

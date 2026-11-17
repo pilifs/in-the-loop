@@ -29,7 +29,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record session traces
 
-change `mxnsvkvwqosw` · [log `965570933c02`](https://terminalvalue.net/raw-traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/965570933c0206c64a18c5652f4f74be1de3807449c6f9f9a26e20a3211055fc.jsonl.gz)
+[`647485f1118e`](https://github.com/pilifs/in-the-loop/commit/647485f1118ea4db45caef43130f4067fa7125dc) · [log `965570933c02`](https://terminalvalue.net/raw-traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/965570933c0206c64a18c5652f4f74be1de3807449c6f9f9a26e20a3211055fc.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
