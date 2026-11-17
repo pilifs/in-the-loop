@@ -4375,6 +4375,10 @@ impl<'a> Engine<'a> {
         let special = special;
         // An array's `clone`: a new array of the same class, length and elements (JLS §10.7).
         if !special && member.name == "clone" && member.descriptor == "()Ljava/lang/Object;" && path.objects[o].is_array() {
+            // The copy's cells are the array's: a read of them is one of the array.
+            if path.objects[o].given {
+                self.reads(path, || "reads an array that was there before the call (clone)".into())?;
+            }
             let copy = Obj { array: path.objects[o].array.clone(), unknown: path.objects[o].unknown, ..Obj::new(&path.objects[o].class) };
             path.objects.push(copy);
             let r = path.objects.len() - 1;

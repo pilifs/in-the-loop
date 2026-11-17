@@ -50,6 +50,9 @@ fn each_entry_point_is_what_a_jvm_says_it_is() {
         "setThenOwn",
         "turkishThenLowered",
         "setThenCopied",
+        "setThenCloned",
+        "setThenCopiedOf",
+        "setThenZeroKey",
         "appendThenLogged",
         "appendThenLoggedThroughLambda",
         "setThenBoxed",
@@ -67,7 +70,7 @@ fn each_entry_point_is_what_a_jvm_says_it_is() {
     .collect();
     assert_eq!(
         said.join(" "),
-        "seen=0 heldSeen=0 derivedLimit=7 setThenOwn=5 turkishThenLowered=305 setThenCopied=5 appendThenLogged=1 appendThenLoggedThroughLambda=1 setThenBoxed=5 addThenItems=1 setThenReflected=5 once=StackOverflowError pinged=StackOverflowError"
+        "seen=0 heldSeen=0 derivedLimit=7 setThenOwn=5 turkishThenLowered=305 setThenCopied=5 setThenCloned=5 setThenCopiedOf=5 setThenZeroKey=0 appendThenLogged=1 appendThenLoggedThroughLambda=1 setThenBoxed=5 addThenItems=1 setThenReflected=5 once=StackOverflowError pinged=StackOverflowError"
     );
 }
 
@@ -153,6 +156,30 @@ fn a_lemma_reads_no_builder_a_caller_can_change() {
         assert_eq!(o.verdict, Verdict::Unverifiable, "{name}: {}", o.output);
         assert!(o.problem.as_deref().unwrap_or_default().contains("reads a StringBuilder that was there before the call (length)"), "{name}: {}", o.output);
     }
+}
+
+/// An array a final static field holds is there before the call, and a caller writes its cells; an array load of
+/// it was refused, but a call the engine models read its cells unasked: a copy's (`clone()`, `Arrays.copyOf`) and
+/// `MessageDigest.isEqual`'s. Each lemma was proved (`result == 0`, `result`) and stood in where a JVM says 5, 5 and
+/// 0 (found at `uktunxxo`, item 4's cycle). Now a lemma reads no array that was there before the call by any of
+/// those models, nor by `String.join`.
+#[test]
+fn a_lemma_reads_no_array_a_caller_can_change_through_a_modelled_call() {
+    jvmcontract::tool_tier!();
+    if classes().is_none() {
+        return;
+    }
+    for (name, target, lemma, call) in [
+        ("cloned", "lc.M#setThenCloned", "lc.Cloned#cloned\n  assert: result == 0\n", "clone"),
+        ("copiedOf", "lc.M#setThenCopiedOf", "lc.Cloned#copiedOf\n  assert: result == 0\n", "copyOf"),
+    ] {
+        let o = check(name, target, 0, lemma);
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{name}: {}", o.output);
+        assert!(o.problem.as_deref().unwrap_or_default().contains(&format!("reads an array that was there before the call ({call})")), "{name}: {}", o.output);
+    }
+    let o = check("zeroKey", "lc.M#setThenZeroKey", 1, "lc.Cloned#zeroKey\n  assert: result\n");
+    assert_eq!(o.verdict, Verdict::Unverifiable, "zeroKey: {}", o.output);
+    assert!(o.problem.as_deref().unwrap_or_default().contains("reads an array that was there before the call (isEqual)"), "zeroKey: {}", o.output);
 }
 
 /// Tried and found guarded, with the code that guards each: an array a lambda captured (`Engine::reads` on an

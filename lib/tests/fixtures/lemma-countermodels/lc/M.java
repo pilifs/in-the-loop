@@ -63,6 +63,23 @@ public final class M {
         return Copied.first();
     }
 
+    /** Writes Cloned's array, then asks for a copy's first cell. */
+    public static int setThenCloned(int v) {
+        Cloned.T[0] = v;
+        return Cloned.cloned();
+    }
+
+    public static int setThenCopiedOf(int v) {
+        Cloned.T[0] = v;
+        return Cloned.copiedOf();
+    }
+
+    /** Writes Cloned's key, then asks whether it is {0}: 1 if so. */
+    public static int setThenZeroKey(int v) {
+        Cloned.KEY[0] = (byte) v;
+        return Cloned.zeroKey() ? 1 : 0;
+    }
+
     public static int pinged() {
         return Mutual.ping(0);
     }
@@ -82,6 +99,9 @@ public final class M {
             case "setThenOwn" -> out.append(setThenOwn(5));
             case "turkishThenLowered" -> out.append(turkishThenLowered());
             case "setThenCopied" -> out.append(setThenCopied(5));
+            case "setThenCloned" -> out.append(setThenCloned(5));
+            case "setThenCopiedOf" -> out.append(setThenCopiedOf(5));
+            case "setThenZeroKey" -> out.append(setThenZeroKey(5));
             case "pinged" -> {
                 try {
                     out.append(pinged());

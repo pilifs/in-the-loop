@@ -174,7 +174,33 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
     - an induction whose measure reads state (`keeps`).
   - *Audit*: the only lemma in use is `PatternMatchUtils.simpleMatch` (286, 288). In the pinned JARs its class has no statics and no initializer, it calls only String methods, and nothing calls it from an initializer. 286's decided result is not affected, and 288 has no proof verdict.
 - Inbox: no open items.
-- Next: item 4, loop invariants (`lib/src/bmc/loops.rs`). Then item 5 against the other streams' new commits, starting with the evidence stream's trace-check change (`mktymxvt`) and the drivers that record what they ran (`rkxyyqwn`).
+- 2026-11-17, item 4, loop invariants: **tried and found guarded**, no false proof. Reading the engine's array models for it turned up **three more false proofs of item 3's kind**, now refused.
+  - The loop fixtures are in `lib/tests/fixtures/loop-countermodels`; its README has the table and what guards each.
+  - `lib/tests/loop_countermodels.rs` holds them to a JVM and the checker to its verdicts.
+  - Seven loops, each with a late iteration that does what the first ones do not, read after the loop:
+    - a local written once another reaches 5;
+    - two statics a callee writes;
+    - an array under two names;
+    - a relation between two cells;
+    - an object reached through an array's cell;
+    - a loop inside a loop;
+    - a table of 100 cells written at a computed index.
+  - At `--unwind 2` none is proved: each is no verdict, its witness spurious and the loop named. At `--unwind 7`, `late` is refuted.
+  - What guards them, all in `covered`/`differences` in `loops.rs`:
+    - The iteration is rerun from the state with what it wrote set to any value, until it writes nothing new.
+    - What is written is read off the states, by each object's allocation, so a write through a callee or a second name counts.
+    - Candidates are of one number each.
+    - A changed reference, a builder's content, a newly initialized class and a non-empty stack are each refused.
+    - A table of more than 64 cells is any value past the loop (`Obj::unknown`), and every bulk reader of cells goes through `Obj::as_array`.
+  - **Refused here** (the new item 3 holes):
+    - A lemma read the cells of an array that was there before the call through `clone()`, `Arrays.copyOf` and `MessageDigest.isEqual`; `Engine::reads` was asked of an array load only.
+    - `Cloned#cloned` and `#copiedOf` (`result == 0`) and `#zeroKey` (`result`) were each **Verified** for a caller that writes the final static array first; a JVM gives 5, 5 and 0.
+    - Each is now refused by name, as is `String.join`'s array (`mod.rs`, `bytes.rs`, `regex.rs`).
+    - The fixtures are in `lemma-countermodels` (`Cloned`), with a new test in `lemma_countermodels.rs`.
+  - *Audit*:
+    - The results resting on a loop invariant are 287's (`fixed-guard`, `fixed-security`). No attempt gave a false proof, so they are not affected.
+    - The only lemma in use, `simpleMatch` (286, 288), reads no array, so the new refusal touches no result.
+- Next: item 5 against the other streams' new commits, starting with the evidence stream's trace-check change (`mktymxvt`) and the drivers that record what they ran (`rkxyyqwn`). Items 6 and 7 after.
 - Status: working
 
 ## Loop settings
