@@ -52,6 +52,43 @@ class UnitTest(unittest.TestCase):
 
 
 @cost("tool")
+class GateTest(unittest.TestCase):
+    """A release needs a passed default test run for the commit it is cut on; the gate itself is stood in for."""
+
+    def gate(self, code, skipped=None):
+        import contextlib
+        import io
+        from unittest import mock
+        answer = mock.Mock(returncode=code, stdout="the default run passed for @-: JOB at abc\n", stderr="no passed default run covers @-\n")
+        with mock.patch.object(release.subprocess, "run", return_value=answer) as run, \
+                contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()) as err:
+            return release.tests_gate(skipped), run, err.getvalue()
+
+    def test_a_release_is_refused_without_a_passed_default_run_and_cut_with_one(self):
+        refusal, run, _ = self.gate(1)
+        self.assertIn("no passed default run covers @-", refusal)
+        self.assertIn("required before a release", refusal)
+        self.assertEqual(run.call_args.args[0][-3:], ["gate", "--rev", "@-"], "the commit a release is cut on")
+        self.assertIsNone(self.gate(0)[0])
+
+    def test_only_a_stated_reason_skips_the_gate_and_it_is_said(self):
+        refusal, run, err = self.gate(1, skipped="the user: a docs-only release")
+        self.assertIsNone(refusal)
+        run.assert_not_called()
+        self.assertIn("without a passed default test run, as asked: the user: a docs-only release", err)
+
+    def test_cut_stops_at_the_gate_before_it_writes_anything(self):
+        from unittest import mock
+        with mock.patch.object(release.mode, "mode", return_value="development"), \
+                mock.patch.object(release, "uncommitted", return_value=[]), \
+                mock.patch.object(release, "tests_gate", return_value="no release cut: made up"), \
+                mock.patch.object(release, "write_json") as write:
+            with self.assertRaises(SystemExit) as stopped:
+                release.cut(None, None)
+        self.assertEqual(str(stopped.exception), "no release cut: made up")
+        write.assert_not_called()
+
+
 class ReleaseTest(unittest.TestCase):
     """A made-up repository with the skill in it, released and installed."""
 

@@ -703,6 +703,10 @@ python3 llm-dlc/tools/release.py verify
   itself, which can't hold its own hash, and the files `sync.py` regenerates on every commit (`llm-dlc/traces/`,
   `llm-dlc/index.json`, `llm-dlc/README.md`), listed in the pin. It is of content only, so the trace lines added to a
   commit's message later don't move it.
+- **A release needs a passed default test run** covering the commit it is cut on: `cut` asks
+  `verification/default_tests.py gate` first, as a push does, and refuses without one (`--skip-tests REASON` is for
+  the user alone). The release commit changes only the version files and the pin, which no test reads, so the same
+  run covers its push.
 - **Cutting** writes the version into the plugin and the marketplace, then the pin from `@`'s tree, commits with
   `sync.py commit`, and verifies the commit. It refuses while `@` holds other uncommitted work. It can be run at any
   commit, as often as wanted: a version is only a name for a digest.
