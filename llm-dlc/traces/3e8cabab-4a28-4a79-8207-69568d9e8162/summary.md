@@ -1060,48 +1060,6 @@ change `smxzwqlrvzxm` · [log `2ab16d90235b`](https://terminalvalue.net/raw-trac
 
 test_brief_run.py's fixture now drops RUN_STREAMS_*, FEATURE_LOOP_* and LOOP_CONDUCTOR from the environment. A stream of the domain-advances run ran the test of a run 'without a watcher', which built its env from os.environ: inside the stream's loop that carries RUN_STREAMS_WATCHER, so the test's made-up run-streams.sh put two merge questions (streams a and b of made-up) to the real watcher, which answered them leave (run-streams-domain-advances D001, D002). Verified: the 39 tests pass with a decoy RUN_STREAMS_WATCHER and LOOP_CONDUCTOR set, and nothing is written to the decoy.
 
-### The streams of domain-advances are told the leaking run-streams test is not their work
-
-change `kxvzvywpoqxu` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
-
-Each stream's inbox has an item (I001, a failure) saying that test_brief_run.py's no-watcher test may hang or fail in their test runs until they have the fixture fix (smxzwqlr), and that they should not change it or block on it.
-
-### Record verification results for 1 job(s)
-
-change `kkytrqkutopl` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261117-130445-example-287-preservation-through-the-ada: passed: 1 passed step(s) in 15.8s, peak 817.1 MiB (estimated 5m00s, 4.0 GiB); 4 output file(s) changed; signals: jvmcontract:fails×2 Applied 4 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `yoqtxvqqztzn` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261117-130335-example-286-protected-state-tasks-at-the: passed: 2 passed step(s) in 3m30s, peak 218.5 MiB (estimated 20m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:fails×1 Applied 6 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `swltxzmlzrpl` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261117-122546-examples-286-and-288-the-simplematch-lem: passed: 2 passed step(s) in 35m42s, peak 1.4 GiB (estimated 50m00s, 4.0 GiB); 2 output file(s) changed; signals: jvmcontract:holds×1 Applied 2 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
-
-### The watcher answers leave to the questions a leaked test put to the domain-advances run
-
-change `synxurtvrlmx` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
-
-Streams that ran test_brief_run.py before the fixture fix (smxzwqlr) put their test's made-up streams a and b to the real watcher; each is answered leave and recorded (run-streams-domain-advances D004 onward). Nothing was merged.
-
-### Record verification results for 1 job(s)
-
-change `wwqnnzwplzlr` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261117-133148-example-290-the-four-answers-beside-the: passed: 4 passed step(s) in 45.9s, peak 188.6 MiB (estimated 10m00s, 4.0 GiB); 22 output file(s) changed; signals: jvmcontract:holds×2; jvmcontract:fails×1; jvmcontract:holds×1 Applied 22 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `vyspnsorlxnr` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261117-133148-example-288-fixed-security-again-with-th: passed: 1 passed step(s) in 20m39s, peak 1.4 GiB (estimated 25m00s, 4.0 GiB); 10 output file(s) changed; signals: jvmcontract:holds×1 Applied 10 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
-
 ### Countermodels of the pair of versions: five false proofs of agreement, reproduced and handed to the preservation stream
 
 change `yypzyxmwluyt` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
@@ -1158,6 +1116,48 @@ Inbox items domain-advances-evidence-I002 and I003 (286's and 287's drivers alre
 change `mktymxvtmltt` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
 
 The preservation stream's session merged the evidence stream's step 2 commit (rkxyyqwn) into its own line and, by sync.py's stamping of the changes made while a session runs, rewrote that commit's description with its own LLM-Trace line. The session's manifest is only on the preservation line, so sync.py check on the evidence line failed every commit with 'session f28025bc... has no manifest'. check_trailers already treated a shared commit restamped in another workspace as a note when that workspace's working copy holds a manifest listing the log, but only for a session this tree had a manifest of. It now does the same for a session this tree has no manifest of, unless the traced commit's own tree holds that session's manifest, in which case a merge lost it and it stays an error (the existing control for that still passes).
+
+### The streams of domain-advances are told the leaking run-streams test is not their work
+
+change `kxvzvywpoqxu` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
+
+Each stream's inbox has an item (I001, a failure) saying that test_brief_run.py's no-watcher test may hang or fail in their test runs until they have the fixture fix (smxzwqlr), and that they should not change it or block on it.
+
+### Record verification results for 1 job(s)
+
+change `kkytrqkutopl` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-130445-example-287-preservation-through-the-ada: passed: 1 passed step(s) in 15.8s, peak 817.1 MiB (estimated 5m00s, 4.0 GiB); 4 output file(s) changed; signals: jvmcontract:fails×2 Applied 4 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `yoqtxvqqztzn` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-130335-example-286-protected-state-tasks-at-the: passed: 2 passed step(s) in 3m30s, peak 218.5 MiB (estimated 20m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:fails×1 Applied 6 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `swltxzmlzrpl` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-122546-examples-286-and-288-the-simplematch-lem: passed: 2 passed step(s) in 35m42s, peak 1.4 GiB (estimated 50m00s, 4.0 GiB); 2 output file(s) changed; signals: jvmcontract:holds×1 Applied 2 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
+### The watcher answers leave to the questions a leaked test put to the domain-advances run
+
+change `synxurtvrlmx` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
+
+Streams that ran test_brief_run.py before the fixture fix (smxzwqlr) put their test's made-up streams a and b to the real watcher; each is answered leave and recorded (run-streams-domain-advances D004 onward). Nothing was merged.
+
+### Record verification results for 1 job(s)
+
+change `wwqnnzwplzlr` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-133148-example-290-the-four-answers-beside-the: passed: 4 passed step(s) in 45.9s, peak 188.6 MiB (estimated 10m00s, 4.0 GiB); 22 output file(s) changed; signals: jvmcontract:holds×2; jvmcontract:fails×1; jvmcontract:holds×1 Applied 22 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `vyspnsorlxnr` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-133148-example-288-fixed-security-again-with-th: passed: 1 passed step(s) in 20m39s, peak 1.4 GiB (estimated 25m00s, 4.0 GiB); 10 output file(s) changed; signals: jvmcontract:holds×1 Applied 10 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
 
 ## Conversation
 

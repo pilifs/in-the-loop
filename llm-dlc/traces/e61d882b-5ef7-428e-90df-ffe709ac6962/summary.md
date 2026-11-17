@@ -36,78 +36,6 @@ change `smxzwqlrvzxm` · [log `6de8d275b253`](https://terminalvalue.net/raw-trac
 
 test_brief_run.py's fixture now drops RUN_STREAMS_*, FEATURE_LOOP_* and LOOP_CONDUCTOR from the environment. A stream of the domain-advances run ran the test of a run 'without a watcher', which built its env from os.environ: inside the stream's loop that carries RUN_STREAMS_WATCHER, so the test's made-up run-streams.sh put two merge questions (streams a and b of made-up) to the real watcher, which answered them leave (run-streams-domain-advances D001, D002). Verified: the 39 tests pass with a decoy RUN_STREAMS_WATCHER and LOOP_CONDUCTOR set, and nothing is written to the decoy.
 
-### The streams of domain-advances are told the leaking run-streams test is not their work
-
-change `kxvzvywpoqxu` · [log `6de8d275b253`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/6de8d275b253a5abf6ba904479de1d8d2722a71b177640c5e631c1e18d98c565.jsonl.gz)
-
-Each stream's inbox has an item (I001, a failure) saying that test_brief_run.py's no-watcher test may hang or fail in their test runs until they have the fixture fix (smxzwqlr), and that they should not change it or block on it.
-
-### Record verification results for 1 job(s)
-
-change `kkytrqkutopl` · [log `6de8d275b253`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/6de8d275b253a5abf6ba904479de1d8d2722a71b177640c5e631c1e18d98c565.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261117-130445-example-287-preservation-through-the-ada: passed: 1 passed step(s) in 15.8s, peak 817.1 MiB (estimated 5m00s, 4.0 GiB); 4 output file(s) changed; signals: jvmcontract:fails×2 Applied 4 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `yoqtxvqqztzn` · [log `6de8d275b253`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/6de8d275b253a5abf6ba904479de1d8d2722a71b177640c5e631c1e18d98c565.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261117-130335-example-286-protected-state-tasks-at-the: passed: 2 passed step(s) in 3m30s, peak 218.5 MiB (estimated 20m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:fails×1 Applied 6 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `swltxzmlzrpl` · [log `960a57323376`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/960a57323376cb1f5a65fd1a1f8fd0788409448e6f410d81968cdcf02552f60f.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261117-122546-examples-286-and-288-the-simplematch-lem: passed: 2 passed step(s) in 35m42s, peak 1.4 GiB (estimated 50m00s, 4.0 GiB); 2 output file(s) changed; signals: jvmcontract:holds×1 Applied 2 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
-
-### The watcher answers leave to the questions a leaked test put to the domain-advances run
-
-change `synxurtvrlmx` · [log `960a57323376`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/960a57323376cb1f5a65fd1a1f8fd0788409448e6f410d81968cdcf02552f60f.jsonl.gz)
-
-Streams that ran test_brief_run.py before the fixture fix (smxzwqlr) put their test's made-up streams a and b to the real watcher; each is answered leave and recorded (run-streams-domain-advances D004 onward). Nothing was merged.
-
-### Record verification results for 1 job(s)
-
-change `wwqnnzwplzlr` · [log `960a57323376`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/960a57323376cb1f5a65fd1a1f8fd0788409448e6f410d81968cdcf02552f60f.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261117-133148-example-290-the-four-answers-beside-the: passed: 4 passed step(s) in 45.9s, peak 188.6 MiB (estimated 10m00s, 4.0 GiB); 22 output file(s) changed; signals: jvmcontract:holds×2; jvmcontract:fails×1; jvmcontract:holds×1 Applied 22 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `pmnryttwnlxu` · [log `960a57323376`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/960a57323376cb1f5a65fd1a1f8fd0788409448e6f410d81968cdcf02552f60f.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261117-134306-examples-289-and-290-preservation-again: passed: 2 passed step(s) in 1m32s, peak 551.7 MiB (estimated 10m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:holds×2 Applied 6 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `vyspnsorlxnr` · [log `5fdbc05d089c`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/5fdbc05d089c8341bdc0b2c1e0ddfd20fe18222609a7f6f3a52da36f83c56979.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261117-133148-example-288-fixed-security-again-with-th: passed: 1 passed step(s) in 20m39s, peak 1.4 GiB (estimated 25m00s, 4.0 GiB); 10 output file(s) changed; signals: jvmcontract:holds×1 Applied 10 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `qzwtllkxtrwx` · [log `960a57323376`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/960a57323376cb1f5a65fd1a1f8fd0788409448e6f410d81968cdcf02552f60f.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261117-133148-example-286-the-three-answers-beside-the: passed: 3 passed step(s) in 36m01s, peak 1.4 GiB (estimated 40m00s, 4.0 GiB); 22 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1 Applied 22 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
-
-### Record verification results for 1 job(s)
-
-change `lwoqsztzkqwu` · [log `960a57323376`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/960a57323376cb1f5a65fd1a1f8fd0788409448e6f410d81968cdcf02552f60f.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261117-133148-example-287-the-three-answers-beside-the: passed: 3 passed step(s) in 44m48s, peak 3.0 GiB (estimated 45m00s, 6.0 GiB); 18 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1 Applied 18 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
-
-### The domain-advances streams are merged in the order evidence, challenge, state, preservation, and the challenge stream plans countermodels of the lemma and write-set rules together
-
-change `mrxtsuuurwzm` · [log `5fdbc05d089c`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/5fdbc05d089c8341bdc0b2c1e0ddfd20fe18222609a7f6f3a52da36f83c56979.jsonl.gz)
-
-At the user's word (decision run-streams-domain-advances-D021). A trial merge showed state's line conflicting with challenge's in lib/src/bmc/mod.rs, where challenge's tightened lemma rule and state's write-set rule both mark which objects were there before a call; the challenge stream's inbox has an item (interface) asking for countermodels of the two rules together once state is merged. Also records the leave answers to further questions the leaked run-streams test asked.
-
-### The challenge stream is asked for countermodels of the lemma and write-set rules together
-
-change `woznkxzlpnso` · [log `5fdbc05d089c`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/5fdbc05d089c8341bdc0b2c1e0ddfd20fe18222609a7f6f3a52da36f83c56979.jsonl.gz)
-
-Applies the user's answer to run-streams-domain-advances-D021 (merge order evidence, challenge, state, preservation) and records the inbox item (interface) that asks the challenge stream for countermodels of its lemma rule and state's write-set rule, which meet in lib/src/bmc/mod.rs once state is merged.
-
 ### Countermodels of the pair of versions: five false proofs of agreement, reproduced and handed to the preservation stream
 
 change `yypzyxmwluyt` · [log `5fdbc05d089c`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/5fdbc05d089c8341bdc0b2c1e0ddfd20fe18222609a7f6f3a52da36f83c56979.jsonl.gz)
@@ -295,6 +223,78 @@ The challenge stream's binding countermodels (klqnuoxw, inbox item I011) showed 
 
 The observer (lib/src/observed/ObservedInitializer.java, Describe) now describes in full each value it does not hold, in each class initialized besides the observed one and in that class initialized alone. An object of the application is described by every field its classes declare. A lambda is described by the method it calls, read from its class's constant pool (the observer's JVM gets --add-exports for that), and by the values it captured. A JDK collection is described by its elements, sorted where the class keeps no order, and a float by its bits. observe (lib/src/observed.rs) compares these descriptions and refuses a value with none, with why. The observer also reads the default locale, the time zone and the system properties again after the initialization, and a change is refused with the setting. The format gains on.changed, plus d or why beside u; Slot, Object and the identity are unchanged.
 
+### The streams of domain-advances are told the leaking run-streams test is not their work
+
+change `kxvzvywpoqxu` · [log `6de8d275b253`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/6de8d275b253a5abf6ba904479de1d8d2722a71b177640c5e631c1e18d98c565.jsonl.gz)
+
+Each stream's inbox has an item (I001, a failure) saying that test_brief_run.py's no-watcher test may hang or fail in their test runs until they have the fixture fix (smxzwqlr), and that they should not change it or block on it.
+
+### Record verification results for 1 job(s)
+
+change `kkytrqkutopl` · [log `6de8d275b253`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/6de8d275b253a5abf6ba904479de1d8d2722a71b177640c5e631c1e18d98c565.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-130445-example-287-preservation-through-the-ada: passed: 1 passed step(s) in 15.8s, peak 817.1 MiB (estimated 5m00s, 4.0 GiB); 4 output file(s) changed; signals: jvmcontract:fails×2 Applied 4 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `yoqtxvqqztzn` · [log `6de8d275b253`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/6de8d275b253a5abf6ba904479de1d8d2722a71b177640c5e631c1e18d98c565.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-130335-example-286-protected-state-tasks-at-the: passed: 2 passed step(s) in 3m30s, peak 218.5 MiB (estimated 20m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:fails×1 Applied 6 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `swltxzmlzrpl` · [log `960a57323376`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/960a57323376cb1f5a65fd1a1f8fd0788409448e6f410d81968cdcf02552f60f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-122546-examples-286-and-288-the-simplematch-lem: passed: 2 passed step(s) in 35m42s, peak 1.4 GiB (estimated 50m00s, 4.0 GiB); 2 output file(s) changed; signals: jvmcontract:holds×1 Applied 2 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
+### The watcher answers leave to the questions a leaked test put to the domain-advances run
+
+change `synxurtvrlmx` · [log `960a57323376`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/960a57323376cb1f5a65fd1a1f8fd0788409448e6f410d81968cdcf02552f60f.jsonl.gz)
+
+Streams that ran test_brief_run.py before the fixture fix (smxzwqlr) put their test's made-up streams a and b to the real watcher; each is answered leave and recorded (run-streams-domain-advances D004 onward). Nothing was merged.
+
+### Record verification results for 1 job(s)
+
+change `wwqnnzwplzlr` · [log `960a57323376`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/960a57323376cb1f5a65fd1a1f8fd0788409448e6f410d81968cdcf02552f60f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-133148-example-290-the-four-answers-beside-the: passed: 4 passed step(s) in 45.9s, peak 188.6 MiB (estimated 10m00s, 4.0 GiB); 22 output file(s) changed; signals: jvmcontract:holds×2; jvmcontract:fails×1; jvmcontract:holds×1 Applied 22 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `pmnryttwnlxu` · [log `960a57323376`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/960a57323376cb1f5a65fd1a1f8fd0788409448e6f410d81968cdcf02552f60f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-134306-examples-289-and-290-preservation-again: passed: 2 passed step(s) in 1m32s, peak 551.7 MiB (estimated 10m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:holds×2 Applied 6 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `vyspnsorlxnr` · [log `5fdbc05d089c`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/5fdbc05d089c8341bdc0b2c1e0ddfd20fe18222609a7f6f3a52da36f83c56979.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-133148-example-288-fixed-security-again-with-th: passed: 1 passed step(s) in 20m39s, peak 1.4 GiB (estimated 25m00s, 4.0 GiB); 10 output file(s) changed; signals: jvmcontract:holds×1 Applied 10 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `qzwtllkxtrwx` · [log `960a57323376`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/960a57323376cb1f5a65fd1a1f8fd0788409448e6f410d81968cdcf02552f60f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-133148-example-286-the-three-answers-beside-the: passed: 3 passed step(s) in 36m01s, peak 1.4 GiB (estimated 40m00s, 4.0 GiB); 22 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1 Applied 22 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `lwoqsztzkqwu` · [log `960a57323376`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/960a57323376cb1f5a65fd1a1f8fd0788409448e6f410d81968cdcf02552f60f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-133148-example-287-the-three-answers-beside-the: passed: 3 passed step(s) in 44m48s, peak 3.0 GiB (estimated 45m00s, 6.0 GiB); 18 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1 Applied 18 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
+### The domain-advances streams are merged in the order evidence, challenge, state, preservation, and the challenge stream plans countermodels of the lemma and write-set rules together
+
+change `mrxtsuuurwzm` · [log `5fdbc05d089c`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/5fdbc05d089c8341bdc0b2c1e0ddfd20fe18222609a7f6f3a52da36f83c56979.jsonl.gz)
+
+At the user's word (decision run-streams-domain-advances-D021). A trial merge showed state's line conflicting with challenge's in lib/src/bmc/mod.rs, where challenge's tightened lemma rule and state's write-set rule both mark which objects were there before a call; the challenge stream's inbox has an item (interface) asking for countermodels of the two rules together once state is merged. Also records the leave answers to further questions the leaked run-streams test asked.
+
+### The challenge stream is asked for countermodels of the lemma and write-set rules together
+
+change `woznkxzlpnso` · [log `5fdbc05d089c`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/5fdbc05d089c8341bdc0b2c1e0ddfd20fe18222609a7f6f3a52da36f83c56979.jsonl.gz)
+
+Applies the user's answer to run-streams-domain-advances-D021 (merge order evidence, challenge, state, preservation) and records the inbox item (interface) that asks the challenge stream for countermodels of its lemma rule and state's write-set rule, which meet in lib/src/bmc/mod.rs once state is merged.
+
 ### Record verification results for 1 job(s)
 
 change `vzovllprprlk` · [log `735bb0ae7c6a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d.jsonl.gz)
@@ -390,6 +390,12 @@ I016 restates the one sentence of I015 that lost words to a backtick expansion i
 change `msusklystoqw` · [log `2d880c8187c0`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/2d880c8187c0ecb5eaa7ef48c34a1a70f48fe089833a751ccbb079c61c179390.jsonl.gz)
 
 The user decided (D028) to defer I008's companion claim under a non-UTF-8 default to after the run, and (D029) to keep 307's frozen claim with a finding for its wrong citation, restating the wording after the run in one freeze with the companion claim if there is one. The premise of the assumption holds on the pinned OpenJDK 21 and 25 by implementation; a 307 result is read as holding there.
+
+### Record verification results for 1 job(s)
+
+change `vxxpmtltlmvt` · [log `2d880c8187c0`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/2d880c8187c0ecb5eaa7ef48c34a1a70f48fe089833a751ccbb079c61c179390.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261117-185623-examples-289-and-290-preservation-on-one: failed: 1 passed, 1 failed step(s) in 1m06s, peak 551.1 MiB (estimated 10m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:holds×2 Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
 
 ## Conversation
 
