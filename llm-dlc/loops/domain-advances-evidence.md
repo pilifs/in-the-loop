@@ -263,6 +263,31 @@ Don't change `verification/pipeline.py`.
 - Inbox: no open items.
 - Next: step 5's last piece, 290's restated preservation claim (option B), prepared with its freeze recorded as the
   user's; then step 6 (VF-030); the 289/290 preservation rerun once this line and `zmvkptqz` meet.
+- 2026-11-17, cycle 10. **Step 5 done as far as it is mine: 290's restated preservation claim is prepared, its freeze the
+  user's.** `claims/lone-dispatcher-matchers-preserved.json` (sha256 `4185eea3…`) keeps the old claim's table, assumption,
+  allowed change, observations and bound and compares what the matchers are: the same exact classes in the same order, each
+  with the same pattern, HTTP method and servlet path, for both overloads, or the same exception category. Its entry is a
+  new adapter class, `MatcherDescriptionAdapter#describe`, one line per matcher: its exact class, then the library's own
+  `toString()` with its length (an `MvcRequestMatcher`'s pattern and method are private, so the rendering is the only way
+  to read them). `MatcherSelectionAdapter` is unchanged, since the frozen claims and the accepted answers name it. On a
+  JVM, both releases on 168 probes: all 28 with the DispatcherServlet alone agree, 132 of the rest differ where the fix
+  changes the selection by design. The claim states that a null pattern and `"null"` render alike, which the same probes
+  show. Two capped probes through the driver in a scratch copy, with the task pointed at the new claim:
+  - at bound 1, a trial, the checker stops at its first gap, `StringBuilder.append(Object)` in `MvcRequestMatcher.toString`
+    (the HTTP method), unverifiable;
+  - at the frozen bound 8 it reached the 4 GiB cap after 133 s.
+
+  So the proof needs that gap closed in the checker (an enum constant appended), and then one job. The freeze is recorded as
+  the user's in VF-033 and in 290's notes: the hash in a claims ledger, the task's `claim` pointed at the file, and the
+  adapter source added to `preparation.adapters`. `proofs/prove.py` picks `describe` by the task's claim (`ENTRIES`).
+  `accept.py`'s task check now compares the adapter sources listed at the job's commit, the ones it compiled. A source
+  listed since is reported, not refused, so the freeze leaves 290's three security answers accepted. The control
+  (`test_accept.py`) fails on the old check.
+- Repeated work measured (step 7): none.
+- Inbox: no open items.
+- Next: step 6 (VF-030: the Python proof tier as a job, the Rust proof tier for the tests the foundation's checker
+  changes touched, and why the estimate counts 0 Python proof tests); the 289/290 preservation rerun once this line and
+  `zmvkptqz` meet.
 - Status: working
 
 ## Loop settings

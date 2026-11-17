@@ -373,6 +373,13 @@ class ChangedArtifact(Checkout):
         r = self.check("fixed-security", committed)
         self.assertTrue(r["accepted"], r.get("why"))
         self.assertFalse(any("is not in this checkout" in limit for limit in r["limits"]), "the commit is there: nothing left uncompared")
+        # An adapter source listed since, for another claim's entry, is not one the job compiled: the answer stands, and
+        # the check says so. The sources it did compile are still compared.
+        (self.folder / "replay/Other.java").write_text("class Other {}\n")
+        self.edit("target.json", lambda t: t["preparation"].update(adapters=["replay/Adapter.java", "replay/Other.java"]))
+        r = self.check("fixed-security", committed)
+        self.assertTrue(r["accepted"], r.get("why"))
+        self.assertIn("1 listed since, which the job did not compile: replay/Other.java", next(c["detail"] for c in r["checks"] if c["check"] == "task"))
         (self.folder / "replay/Adapter.java").write_text("class Adapter { /* changed */ }\n")
         self.refused("fixed-security", "task", "the adapter is not the one the job compiled", committed)
         committed = AsCommitted(self.root)

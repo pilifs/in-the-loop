@@ -99,7 +99,16 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   (left as it is alone, else refused: the countermodel `A.<clinit> { B.x = 1; k = 7; }`), a default locale the check's
   lowering agrees with, and the properties read, stated with their values; `lib/tests/observed_countermodels.rs`
   holds it. A capped probe verified 290's fixed-security and preservation again under it.
-- **Left**: the restated preservation claim (B), prepared by the evidence stream and frozen by the user.
+- **Prepared** (2026-11-17, the evidence stream): the restated claim (B),
+  `claims/lone-dispatcher-matchers-preserved.json` (sha256 `4185eea3f4ef…`), with its entry
+  `MatcherDescriptionAdapter#describe` (each matcher's exact class and the library's rendering of its pattern, servlet
+  path and HTTP method, for both overloads). On a JVM both releases describe the same matchers on every probe with the
+  DispatcherServlet alone; the claim states that a null pattern and `"null"` render alike in an `MvcRequestMatcher`.
+  `proofs/prove.py` runs it once the task names it, and `accept.py` keeps the security answers accepted then.
+- **Left**: (1) the freeze, the user's: the claim's hash in a claims ledger, the preservation task's `claim` pointed at
+  it, the adapter source added to `preparation.adapters` (290's notes say how). (2) The checker: capped probes stop at
+  `StringBuilder.append(Object)` in `MvcRequestMatcher.toString` (an enum constant appended), and at the frozen bound
+  reach the 4 GiB cap after 133 s, so after that gap is closed the proof is one job.
 - **Tracked in**: `examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/example.json`
   (notes); decision `prove-change-D005` (`llm-dlc/decisions/prove-change.md`).
 - **Closes when**: a restated preservation claim is decided at the frozen bound, and the initializer audit is recorded

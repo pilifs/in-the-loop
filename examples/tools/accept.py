@@ -325,14 +325,18 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
             said("task", FAIL, f"the task is not what it was at {commit[:12]}: " + (", ".join(moved) if then_task else "it was not there"))
         else:
             pins = lambda t: ((t.get("preparation") or {}).get("artifacts"), (t.get("history") or {}).get("revisions"))  # noqa: E731
-            adapters = (target.get("preparation") or {}).get("adapters") or []
+            # The sources the job compiled are the ones listed at its commit; each must be here as it was. One listed
+            # since (an entry for another claim) is not one it compiled, so it changes nothing the answer rests on.
+            adapters = ((then or {}).get("preparation") or {}).get("adapters") or []
+            added = [a for a in (target.get("preparation") or {}).get("adapters") or [] if a not in adapters]
             changed = [a for a in adapters if source(commit, f"{rel}/{a}") != ((root / rel / a).read_bytes() if (root / rel / a).is_file() else None)]
             if pins(then) != pins(target):
                 said("task", FAIL, f"target.json's pinned artifacts or revisions are not what they were at {commit[:12]}")
             elif changed:
                 said("task", FAIL, f"the adapter is not the one the job compiled at {commit[:12]}: {', '.join(changed)}")
             else:
-                said("task", OK, f"the task, the pinned artifacts and {len(adapters)} adapter source(s) are as at {commit[:12]}")
+                said("task", OK, f"the task, the pinned artifacts and {len(adapters)} adapter source(s) are as at {commit[:12]}"
+                     + (f" ({len(added)} listed since, which the job did not compile: {', '.join(added)})" if added else ""))
         driver = source(commit, f"{rel}/proofs/prove.py")
         identity["driver"] = {"path": f"{rel}/proofs/prove.py", "sha256": sha256(driver) if driver else None, "at": commit}
 

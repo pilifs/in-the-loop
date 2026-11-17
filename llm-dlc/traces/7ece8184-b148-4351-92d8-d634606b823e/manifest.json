@@ -12,34 +12,37 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:50.868Z",
-  "ended": "2026-11-17T14:55:09.877Z",
-  "duration_seconds": 7099,
+  "ended": "2026-11-17T15:13:34.703Z",
+  "duration_seconds": 8204,
   "stats": {
-    "turns": 46,
-    "api_calls": 384,
-    "tool_calls": 377,
+    "turns": 51,
+    "api_calls": 435,
+    "tool_calls": 429,
     "tool_errors": 7,
-    "compactions": 8,
+    "compactions": 9,
     "peak_context_tokens": 186120,
     "usage": {
-      "input_tokens": 784,
-      "output_tokens": 231993,
-      "cache_read_input_tokens": 36024326,
-      "cache_creation_input_tokens": 939182
+      "input_tokens": 886,
+      "output_tokens": 269856,
+      "cache_read_input_tokens": 40732531,
+      "cache_creation_input_tokens": 1058842
     }
   },
   "tools": {
-    "Bash": 357,
-    "Edit": 6,
-    "Read": 4,
+    "Bash": 404,
+    "Edit": 9,
+    "Read": 5,
+    "Write": 4,
     "Monitor": 3,
     "ToolSearch": 3,
-    "Write": 3,
     "TaskStop": 1
   },
   "files_touched": [
     "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/target.json",
+    "examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/replay/adapter/example290/adapter/MatcherDescriptionAdapter.java",
+    "examples/tools/accept.py",
     "examples/tools/beside_route.py",
+    "examples/tools/test_accept.py",
     "examples/tools/test_beside_route.py",
     "lib/src/observed/ObservedInitializer.java",
     "llm-dlc/loops/domain-advances-evidence.md"
@@ -160,24 +163,38 @@
     {
       "index": 8,
       "started": "2026-11-17T14:50:19.038Z",
-      "ended": "2026-11-17T14:55:09.877Z",
-      "turns": 4,
-      "api_calls": 14,
+      "ended": "2026-11-17T14:55:36.233Z",
+      "turns": 5,
+      "api_calls": 17,
       "usage": {
-        "input_tokens": 28,
-        "output_tokens": 6163,
-        "cache_read_input_tokens": 846991,
-        "cache_creation_input_tokens": 64158
+        "input_tokens": 34,
+        "output_tokens": 7048,
+        "cache_read_input_tokens": 1082599,
+        "cache_creation_input_tokens": 67306
       },
-      "peak_context_tokens": 77431
+      "peak_context_tokens": 80579
+    },
+    {
+      "index": 9,
+      "started": "2026-11-17T14:56:21.391Z",
+      "ended": "2026-11-17T15:13:34.703Z",
+      "turns": 4,
+      "api_calls": 48,
+      "usage": {
+        "input_tokens": 96,
+        "output_tokens": 36978,
+        "cache_read_input_tokens": 4472597,
+        "cache_creation_input_tokens": 116512
+      },
+      "peak_context_tokens": 129785
     }
   ],
   "log": {
-    "sha256": "b092a6a1dcf4412bb1a3c4de70052afa9c5382e1765eeceb3e910bd1f09be9c0",
-    "bytes": 11129788,
-    "lines": 3474,
-    "gzip_bytes": 2005264,
-    "path": "llm-dlc/traces/7ece8184-b148-4351-92d8-d634606b823e/logs/b092a6a1dcf4412bb1a3c4de70052afa9c5382e1765eeceb3e910bd1f09be9c0.jsonl.gz"
+    "sha256": "66f58b950abdd62c6c92328a8ccdd7d149e10f972e87cb10a7f62c56e599534e",
+    "bytes": 12431266,
+    "lines": 3906,
+    "gzip_bytes": 2245586,
+    "path": "llm-dlc/traces/7ece8184-b148-4351-92d8-d634606b823e/logs/66f58b950abdd62c6c92328a8ccdd7d149e10f972e87cb10a7f62c56e599534e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -292,6 +309,14 @@
       "summary": "Example 287's three answers beside the route are accepted with no limit from the rerun that recorded what it ran",
       "body": "Job 20261117-133148-example-287-the-three-answers-beside-the (the evidence stream's step 3) reran 287's vulnerable-security, fixed-security and mutant-security unchanged at the frozen bound through the shared driver module, which records the JARs, adapter, claim and verifier it ran (evidence.json) and builds the mutant by the route's published-mutant recipe. It passed in 44m48s at 3.0 GiB: vulnerable and mutant refuted at a 25-character, 73-byte candidate against a valid hash (matches returns false where the claim asks for IllegalArgumentException), each witness run on a JVM, the mutant's JAR the one the mutant replay ran (sha256 1d099295...); fixed verified and not vacuous. Its result folder and work folder were taken from the default line's collector commit as they are. Each task's besideRoute now names the job, and python3 examples/tools/accept.py 287 accepts all three with no limit (12, 13 and 13 checks); before, mutant-security was refused because the old driver's mutant JAR was in no record. Verified with validate_example.py 287 and test_costs.py run --changed (26 of 26). Progress updated: step 3 now waits only on the 289/290 preservation rerun, which needs the preservation stream's zmvkptqz.",
       "log_sha256": "b092a6a1dcf4412bb1a3c4de70052afa9c5382e1765eeceb3e910bd1f09be9c0"
+    },
+    {
+      "change_id": "nzsypymyqxtwvnwnsvuvulwmsyuqlkss",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290's preservation claim restated to compare what the matchers are, prepared for the user to freeze",
+      "body": "VF-033's option B, the user's choice: claims/lone-dispatcher-matchers-preserved.json keeps the old claim's table, assumption, allowed change and bound, and compares each returned matcher's exact class, pattern, HTTP method and servlet path, in order, for both overloads of requestMatchers, rather than the count of matchers by type. Its entry is a new adapter class, MatcherDescriptionAdapter#describe, which reports each matcher's exact class and the library's own rendering of it. The old adapter and claim are unchanged, since the frozen claims and the accepted answers name them. Run on a JVM against both releases' pinned closures, describe agrees on all 28 probes with the DispatcherServlet alone and differs on 132 of the other 140, where the fix changes the selection by design. The claim states the rendering's one blind spot: a null pattern and \"null\" render alike in an MvcRequestMatcher.\n\nTwo capped probes in a scratch copy where the task points at the new claim: at bound 1 (a trial) the checker stops at a gap, StringBuilder.append(Object) in MvcRequestMatcher.toString; at the frozen bound it reached the 4 GiB cap after 133 s. So the proof needs that gap closed, then one job. Freezing is the user's, as VF-033 and 290's notes record: the hash in a claims ledger, the task pointed at the file, and the adapter source listed. proofs/prove.py then picks the entry by the task's claim. accept.py's task check now compares the adapter sources listed at the job's commit, the ones it compiled. A source listed since is reported, not refused, so 290's three security answers stay accepted after the freeze. The control in test_accept.py fails on the old check. Verified: test_costs.py run --changed (27 of 27), validate_example.py 290, accept.py 286-290 unchanged (the 289/290 preservation answers still await their rerun).",
+      "log_sha256": "66f58b950abdd62c6c92328a8ccdd7d149e10f972e87cb10a7f62c56e599534e"
     }
   ],
   "logs": {
@@ -317,6 +342,12 @@
       "bytes": 9262484,
       "lines": 2897,
       "gzip_bytes": 1673087,
+      "url": null
+    },
+    "66f58b950abdd62c6c92328a8ccdd7d149e10f972e87cb10a7f62c56e599534e": {
+      "bytes": 12431266,
+      "lines": 3906,
+      "gzip_bytes": 2245586,
       "url": null
     },
     "6ade1de90eb641f39165ac150e49b378705f7f66f0329f738bbe72d4c1422b17": {
