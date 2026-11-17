@@ -12,32 +12,33 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:50.898Z",
-  "ended": "2026-11-17T14:31:15.247Z",
-  "duration_seconds": 5664,
+  "ended": "2026-11-17T14:46:52.131Z",
+  "duration_seconds": 6601,
   "stats": {
-    "turns": 30,
-    "api_calls": 346,
-    "tool_calls": 349,
-    "tool_errors": 5,
-    "compactions": 5,
+    "turns": 35,
+    "api_calls": 391,
+    "tool_calls": 393,
+    "tool_errors": 6,
+    "compactions": 6,
     "peak_context_tokens": 211368,
     "usage": {
-      "input_tokens": 706,
-      "output_tokens": 303791,
-      "cache_read_input_tokens": 39023272,
-      "cache_creation_input_tokens": 869720
+      "input_tokens": 796,
+      "output_tokens": 340457,
+      "cache_read_input_tokens": 43420780,
+      "cache_creation_input_tokens": 995534
     }
   },
   "tools": {
-    "Bash": 315,
+    "Bash": 357,
     "Edit": 15,
-    "Write": 10,
-    "Read": 4,
+    "Write": 11,
+    "Read": 5,
     "ToolSearch": 3,
     "Monitor": 2
   },
   "files_touched": [
     "lib/src/classpath.rs",
+    "lib/tests/fixtures/frame-countermodels/README.md",
     "lib/tests/fixtures/fresh-pair-countermodels/README.md",
     "lib/tests/fixtures/lemma-countermodels/README.md",
     "lib/tests/fixtures/model-countermodels/README.md",
@@ -124,24 +125,38 @@
     {
       "index": 5,
       "started": "2026-11-17T14:17:51.505Z",
-      "ended": "2026-11-17T14:31:15.247Z",
-      "turns": 4,
-      "api_calls": 49,
+      "ended": "2026-11-17T14:32:12.297Z",
+      "turns": 5,
+      "api_calls": 54,
       "usage": {
-        "input_tokens": 98,
-        "output_tokens": 37835,
-        "cache_read_input_tokens": 4434888,
-        "cache_creation_input_tokens": 123659
+        "input_tokens": 108,
+        "output_tokens": 40778,
+        "cache_read_input_tokens": 5136901,
+        "cache_creation_input_tokens": 130899
       },
-      "peak_context_tokens": 136932
+      "peak_context_tokens": 144172
+    },
+    {
+      "index": 6,
+      "started": "2026-11-17T14:32:51.937Z",
+      "ended": "2026-11-17T14:46:52.131Z",
+      "turns": 4,
+      "api_calls": 40,
+      "usage": {
+        "input_tokens": 80,
+        "output_tokens": 33723,
+        "cache_read_input_tokens": 3695495,
+        "cache_creation_input_tokens": 118574
+      },
+      "peak_context_tokens": 131847
     }
   ],
   "log": {
-    "sha256": "e7cc80720c2b531529faa0817c20b45f9db89bed6b2ec48ef18e0a2fef1ad6b2",
-    "bytes": 8526219,
-    "lines": 3105,
-    "gzip_bytes": 1451132,
-    "path": "llm-dlc/traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/logs/e7cc80720c2b531529faa0817c20b45f9db89bed6b2ec48ef18e0a2fef1ad6b2.jsonl.gz"
+    "sha256": "93ccaec8d6582589c0d740e1e2a5691d548e78d907bc8046833523054c52c076",
+    "bytes": 9745115,
+    "lines": 3520,
+    "gzip_bytes": 1667785,
+    "path": "llm-dlc/traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/logs/93ccaec8d6582589c0d740e1e2a5691d548e78d907bc8046833523054c52c076.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -200,6 +215,14 @@
       "summary": "Countermodels of the models on request under assumed gaps: three collections a gap makes, each proved empty where a JVM finds one element",
       "body": "Item 5 of the challenge stream, against the state stream's models on request of ArrayDeque and HashSet (kztoupry). Under --gaps assume, a constructor or method a model does not keep makes an object with no field written. The model's size() then reads those fields, though without the model that call has no assume form. The fixture mc.Gapped (lib/tests/fixtures/model-countermodels) has three cases: ArrayDeque.clone(), whose stated assumptions are all true of the JDK; ArrayDeque(Collection); and ArrayList(Collection), which also reproduces on this line. Each is Verified as result == 0 on the state stream's checker (qrqtplwq), and a JVM gives 1. lib/tests/model_countermodels.rs holds the fixture to a JVM. The checker-side test is in the README, where it fails on all three on the state stream's line, and goes to that stream through its inbox, since the models are its this run. The README also lists what was tried and found guarded: the left-out methods under strict, HashSet(int) under advised, a key whose hash changes, a lemma over a deque, and the exception classes. Audit: no example task runs under --gaps assume, so no accepted result is affected. Verified with test_costs.py run --changed (it passed) and the checker-side test run on a copy of the state stream's tree.",
       "log_sha256": "e7cc80720c2b531529faa0817c20b45f9db89bed6b2ec48ef18e0a2fef1ad6b2"
+    },
+    {
+      "change_id": "synvlnlsowtxputokxmmzpuponxoqkry",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of a write set: a protected field written before a declared exception, and through one bean passed twice, each proved unchanged",
+      "body": "Challenge stream, item 5, against the state stream's write set (qrqtplwq, prove --writes). The frame is conjoined to the assertion, so it is read only after a normal return and only on distinct object inputs. lib/tests/fixtures/frame-countermodels/fc/Framed.java has three methods that a JVM sees writing the protected admin field, each Verified on the state checker built apart at qrqtplwq and at vwktulky. Bean#rename, under --throws 'java.lang.IllegalArgumentException when length < 0', sets admin and then throws. Bean#promote(other), with the write set other.admin, does it when called as b.promote(b). Static grant(from, to), with the write set to.admin, does it when called as grant(b, b). lib/tests/frame_countermodels.rs holds the fixture to a JVM. The README has the table, the commands, the fix options and the checker-side test, which fails on all three on the state line. That test goes to domain-advances-state as a failure item, since the write set is its rule this run, so no refusal is committed here.\n\nTried and found guarded: a write through a callee, a lambda or a recursion (refuted by the frame); Locale.setDefault (refused by name); a StringBuilder parameter (not taken); an inherited field (fields_of refuses a subclass). The identity of a String field after 16 String operations matches JDK 25 or is a gap. Audit: no example task passes --writes on any line, so no accepted result rests on these holes. Verified with test_costs.py run --changed (passed) and the checker-side test run on both state commits (fails, as it should). Progress also records state-I004, and the evidence session's trace stamps on mqkqvvmw and yypzyxmw for the watcher.",
+      "log_sha256": "93ccaec8d6582589c0d740e1e2a5691d548e78d907bc8046833523054c52c076"
     }
   ],
   "logs": {
@@ -237,6 +260,12 @@
       "bytes": 7224095,
       "lines": 2675,
       "gzip_bytes": 1225570,
+      "url": null
+    },
+    "93ccaec8d6582589c0d740e1e2a5691d548e78d907bc8046833523054c52c076": {
+      "bytes": 9745115,
+      "lines": 3520,
+      "gzip_bytes": 1667785,
       "url": null
     },
     "e7cc80720c2b531529faa0817c20b45f9db89bed6b2ec48ef18e0a2fef1ad6b2": {

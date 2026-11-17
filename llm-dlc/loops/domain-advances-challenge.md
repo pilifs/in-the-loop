@@ -235,11 +235,29 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
     - A lemma reading a deque from before the call is refused by `Engine::reads`.
     - The exception classes match JDK 25.
   - *Audit*: no example task runs under `--gaps assume`. 286's and 290's drivers ask for the models under strict, and 147 to 149, the only `advised` tasks, ask for none. Nothing for the watcher.
+- The models failure went to state as `domain-advances-state-I004`, citing `lqyqxwqv`.
+- **To the watcher**: since the evidence stream (session 7ece8184) merged `mqkqvvmw` and `yypzyxmw` into its line, `sync.py check` here reports `session 7ece8184 has no manifest` on both, beside the known f28025bc one on `yypzyxmw`. The cause is the one recorded above (`link_commits`). The manifest is on the evidence line, so the errors should clear once the lines meet. I have not touched the trace lines.
+- 2026-11-17, item 5, the state stream's write set (`qrqtplwq`, `prove --writes`): **three false proofs**, to be handed over.
+  - The fixtures are in `lib/tests/fixtures/frame-countermodels`; its README has the table, the commands, what was tried, the audit and the checker-side test.
+  - `lib/tests/frame_countermodels.rs` holds the fixtures to a JVM.
+  - The frame is part of the assertion, so it is read only after a normal return, and only on distinct object inputs. A JVM sees the protected field written in each of these, all **Verified**:
+    - `Bean#rename`, with `--throws 'java.lang.IllegalArgumentException when length < 0'`, sets `admin` and then throws. Without the throws clause, the same exit is a violation.
+    - `Bean#promote(other)` with the write set `other.admin`, when `b.promote(b)`.
+    - static `grant(from, to)` with the write set `to.admin`, when `grant(b, b)`. Nothing in the domain says the two beans are distinct objects.
+  - Reproduced on the state checker at `qrqtplwq` and at its next commit `vwktulky`, each built apart. The README's checker-side test fails on all three at both, as it should.
+  - The write set is the state stream's this run, so no refusal is committed here. The test goes as a `failure` item to `domain-advances-state`, citing this commit; its id goes in the next entry.
+  - **Tried and guarded**:
+    - a write through a callee, a lambda, or a recursion is refuted by the frame;
+    - `Locale.setDefault` is refused by name;
+    - a StringBuilder parameter is not taken;
+    - an inherited field cannot occur, since `fields_of` refuses a subclass;
+    - the identity of a String field after 16 String operations matches JDK 25, or is a gap.
+  - *Audit*: no example task passes `--writes` on any line, so no accepted result rests on these holes. Nothing for the watcher. Both holes bear on 286's protected state, the claim the write set is for.
 - Inbox: no open items.
 - Next, item 5:
-  - the state stream's write set (`qrqtplwq`, `prove --writes`): its brief's side conditions;
+  - `vwktulky`, the write set standing in for a setter's calls: a contract used in a state its reads differ in, and whether the holes above carry into a caller's proof;
   - the drivers' records (`rkxyyqwn`) and the vacuity witness outside the change (`ymzlyksq`), as item 7 controls;
-  - then the evidence stream's `mzllzmkq`.
+  - then the evidence stream's `mzllzmkq` and `wowqurku`.
 - Items 6 and 7 after.
 - Status: working
 
