@@ -459,10 +459,138 @@ fn a_lemma_is_proved_first_and_its_summary_stands_in_for_the_calls_of_its_method
     assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
     assert!(o.problem.as_deref().unwrap_or_default().contains("is not proved"), "{}", o.output);
 
-    // A method that writes a static field, or compares its arguments by identity, is no method a summary states.
-    for (target, why) in [("claims.Glob#counted", "writes a static field"), ("claims.Glob#unlessSame", "compares an object it was given by identity")] {
+    // A method that counts in a static field (which it reads first, to add one), writes one, or compares its
+    // arguments by identity, is no method a summary states.
+    for (target, why) in [("claims.Glob#counted", "reads the static field claims.Glob.calls"), ("claims.Glob#marked", "writes a static field"), ("claims.Glob#unlessSame", "compares an object it was given by identity")] {
         let o = run(&claim(&format!("any-{}", &target[12..]), lemma_file(&format!("{}.contract", &target[12..]), target, "result == result")));
         assert_eq!(o.verdict, Verdict::Unverifiable, "{target}: {}", o.output);
         assert!(o.problem.as_deref().unwrap_or_default().contains(why), "{target}: {}", o.output);
     }
+}
+
+fn lemmas(name: &str, text: &str) -> PathBuf {
+    let dir = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("claims").join("lemmas");
+    std::fs::create_dir_all(&dir).unwrap();
+    let file = dir.join(name);
+    std::fs::write(&file, text).unwrap();
+    file
+}
+
+/// The countermodels of `claims.Effects`: each property below is false on a JVM (`Effects.main`), so a `Verified`
+/// here is a false proof.
+#[test]
+fn a_proof_by_induction_is_not_of_a_method_whose_calls_of_itself_write_or_throw() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    // The hypothesis states a result: a call it stands in for must leave nothing else behind. `counting(1)` is 2.
+    let mut counting = options(classes, "claims.Effects#counting", 3, "effects-counting");
+    counting.assume = Some("n >= 0 && n <= 3".into());
+    counting.assert = Some("result == 1".into());
+    counting.decreases = Some("n".into());
+    let o = run(&counting);
+    assert_ne!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.problem.as_deref().unwrap_or_default().contains("writes a static field"), "{}", o.output);
+
+    // The hypothesis returns: where the property says a call throws, it does not stand in for the call.
+    // `throwing(1)` throws, and the property says it returns 1.
+    let mut throwing = options(classes, "claims.Effects#throwing", 3, "effects-throwing");
+    throwing.assume = Some("n >= 0 && n <= 3".into());
+    throwing.assert = Some("result == n".into());
+    throwing.throws = vec!["java.lang.IllegalStateException when n == 0".into()];
+    throwing.decreases = Some("n".into());
+    let o = run(&throwing);
+    assert_ne!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.problem.as_deref().unwrap_or_default().contains("the induction does not go through"), "{}", o.output);
+
+    // A throws clause no call of the method by itself meets leaves the induction as it was.
+    let mut checked = options(classes, "claims.Effects#checked", 3, "effects-checked");
+    checked.assume = Some("n <= 3".into());
+    checked.assert = Some("result == n".into());
+    checked.throws = vec!["java.lang.IllegalArgumentException when n < 0".into()];
+    checked.decreases = Some("n".into());
+    let o = run(&checked);
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+
+    // What the method reads is no obstacle to its own induction: its calls of itself are made in the state of the
+    // call under proof, which nothing it runs may write. (A summary of it would be refused: the test below.)
+    let mut depth = options(classes, "claims.Effects#depth", 3, "effects-depth");
+    depth.assume = Some("n >= 0 && n <= 3".into());
+    depth.assert = Some("result == n".into());
+    depth.decreases = Some("n".into());
+    let o = run(&depth);
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let mut as_lemma = options(classes, "claims.Effects#setThenLevel", 3, "effects-depth-lemma");
+    as_lemma.assert = Some("result == v".into());
+    as_lemma.lemmas = Some(lemmas("depth.contract", "claims.Effects#depth\n  assume: n >= 0 && n <= 3\n  assert: result == n\n  decreases: n\n"));
+    let o = run(&as_lemma);
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.problem.as_deref().unwrap_or_default().contains("reads the static field claims.Effects.level"), "{}", o.output);
+}
+
+#[test]
+fn a_summary_is_not_of_a_method_that_reads_what_a_caller_can_change() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    // Each getter returns 0 from the state its lemma is proved in, and the caller writes before it calls.
+    for (caller, getter, why) in [
+        ("setThenLevel", "level", "reads the static field claims.Effects.level"),
+        ("setThenLevelIndirectly", "levelIndirectly", "reads the static field claims.Effects.level"),
+        ("setThenFirst", "first", "reads the static field claims.Effects.table"),
+        ("setThenFixedFirst", "fixedFirst", "reads an array that was there before the call"),
+    ] {
+        let mut o = options(classes, &format!("claims.Effects#{caller}"), 3, &format!("effects-{caller}"));
+        o.assert = Some("result == 0".into());
+        o.lemmas = Some(lemmas(&format!("{getter}.contract"), &format!("claims.Effects#{getter}\n  assert: result == 0\n")));
+        let o = run(&o);
+        assert_ne!(o.verdict, Verdict::Verified, "{caller}: {}", o.output);
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{caller}: {}", o.output);
+        let problem = o.problem.as_deref().unwrap_or_default();
+        assert!(problem.contains(why) && problem.contains("which a caller can change before it calls"), "{caller}: {}", o.output);
+    }
+
+    // The lemma's own words are read again at every call the summary stands in for, in the state of that call:
+    // `zero()` returns 0 and the field is 0 where the lemma is proved, so "the result is the field" holds there,
+    // and after the caller's write it would make the call return what was written.
+    let mut worded = options(classes, "claims.Effects#setThenZero", 3, "effects-worded");
+    worded.assert = Some("result == v".into());
+    worded.lemmas = Some(lemmas("zero.contract", "claims.Effects#zero\n  assert: result == claims.Effects.level()\n"));
+    let o = run(&worded);
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.problem.as_deref().unwrap_or_default().contains("in its assumption or its assertion, reads the static field claims.Effects.level"), "{}", o.output);
+
+    // The default locale is such a state too: the lemma holds where no default was set, and the caller sets one.
+    let mut turkish = options(classes, "claims.Effects#turkishThenLowers", 3, "effects-turkish");
+    turkish.assert = Some("result".into());
+    turkish.lemmas = Some(lemmas("lowers.contract", "claims.Effects#lowersToI\n  assume: text.equals(\"I\")\n  assert: result\n"));
+    let o = run(&turkish);
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.problem.as_deref().unwrap_or_default().contains("reads the default locale"), "{}", o.output);
+    // Without the lemma the checker runs the call in the state the caller left, and refutes the claim.
+    turkish.lemmas = None;
+    turkish.work = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("claims").join("effects-turkish-run"));
+    let o = run(&turkish);
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+
+    // A final static field of a primitive is written by its class's initializer alone: a summary may read it.
+    let mut limit = options(classes, "claims.Effects#twiceLimit", 3, "effects-limit");
+    limit.assert = Some("result == 14".into());
+    limit.lemmas = Some(lemmas("limit.contract", "claims.Effects#limit\n  assert: result == 7\n"));
+    let o = run(&limit);
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    assert!(o.output.contains("lemma: ✓ claims.Effects#limit"), "{}", o.output);
+}
+
+/// What the two tests above call false is false on a JVM: the fixture says what each method returns there.
+#[test]
+fn the_countermodels_are_what_a_jvm_says_they_are() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let out = Command::new("java").arg("-cp").arg(classes).arg("claims.Effects").output().expect("java runs");
+    assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+    assert_eq!(
+        String::from_utf8_lossy(&out.stdout).trim(),
+        "counting(1)=2 throwing(1)=IllegalStateException checked(2)=2 depth(3)=3 setThenLevel(7)=7 setThenLevelIndirectly(8)=8 setThenFirst(9)=9 setThenFixedFirst(10)=10 twiceLimit()=14 lowersToI(I)=true turkishThenLowers()=false"
+    );
 }

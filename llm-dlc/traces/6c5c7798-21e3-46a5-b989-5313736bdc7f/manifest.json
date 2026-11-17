@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-17T12:27:37.551Z",
-  "duration_seconds": 154811,
+  "ended": "2026-11-17T12:37:14.222Z",
+  "duration_seconds": 155388,
   "stats": {
-    "turns": 147,
-    "api_calls": 1055,
-    "tool_calls": 968,
-    "tool_errors": 18,
+    "turns": 148,
+    "api_calls": 1068,
+    "tool_calls": 980,
+    "tool_errors": 19,
     "compactions": 5,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 2404,
-      "output_tokens": 768336,
-      "cache_read_input_tokens": 251031704,
-      "cache_creation_input_tokens": 1800163
+      "input_tokens": 2432,
+      "output_tokens": 778506,
+      "cache_read_input_tokens": 254646567,
+      "cache_creation_input_tokens": 1821635
     }
   },
   "tools": {
-    "Bash": 922,
+    "Bash": 934,
     "ToolSearch": 9,
     "Write": 8,
     "SendMessage": 7,
@@ -128,24 +128,24 @@
     {
       "index": 5,
       "started": "2026-11-17T04:59:29.263Z",
-      "ended": "2026-11-17T12:27:37.551Z",
-      "turns": 22,
-      "api_calls": 132,
+      "ended": "2026-11-17T12:37:14.222Z",
+      "turns": 23,
+      "api_calls": 145,
       "usage": {
-        "input_tokens": 300,
-        "output_tokens": 83146,
-        "cache_read_input_tokens": 25565379,
-        "cache_creation_input_tokens": 233418
+        "input_tokens": 328,
+        "output_tokens": 93316,
+        "cache_read_input_tokens": 29180242,
+        "cache_creation_input_tokens": 254890
       },
-      "peak_context_tokens": 268087
+      "peak_context_tokens": 290121
     }
   ],
   "log": {
-    "sha256": "495548afdb7ec73bd48e8b52b608490cfd1ae944a2bfce7bb3002260e45f97da",
-    "bytes": 20467586,
-    "lines": 8664,
-    "gzip_bytes": 3482310,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/495548afdb7ec73bd48e8b52b608490cfd1ae944a2bfce7bb3002260e45f97da.jsonl.gz"
+    "sha256": "485da70bcb765170eb169d2834f50fdf1093d602f220c87e50df7d8c472f72e1",
+    "bytes": 20705390,
+    "lines": 8769,
+    "gzip_bytes": 3517612,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/485da70bcb765170eb169d2834f50fdf1093d602f220c87e50df7d8c472f72e1.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1271,19 +1271,67 @@
     },
     {
       "change_id": "tzropvstylovslmoqprywvqvwywzqsyt",
-      "commit_id": "af570e1471d2ad354eefb9f66c25648afa0d5f8e",
-      "immutable": false,
+      "commit_id": "e40b6a02d95f17d089c4827223c74b8bdedc2a49",
+      "immutable": true,
       "summary": "Record VF-036: equivalence checks and the Terminal-Value tests leave temp folders that exhausted /tmp's inodes",
       "body": "A command failed with ENOSPC on /tmp while / had 160 GB free: /tmp is a tmpfs, and 1,046,553 of its 1,048,576 inodes were used, about 640,000 by jvmcontract-equivalence work folders the verifier makes for every check run without --work and never removes, and about 321,000 by the Terminal-Value software-factory tests' fixture folders. The user raised the limit to 8,388,608 inodes and cleaned /tmp by hand; the entry is a minor one, to take up if it recurs, with what a fix would be and the check that closes it.",
       "log_sha256": "87dcf6d6fdbf45b7fffeea8f336b0940f97361b67c1eadf3270dd4c98b2ce17d"
     },
     {
       "change_id": "qowquqnszyoqvkwnluvnksuuxkstttml",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "674f67ec4800a2bee913ee536e0bf7014f90d80c",
+      "immutable": true,
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "495548afdb7ec73bd48e8b52b608490cfd1ae944a2bfce7bb3002260e45f97da"
+    },
+    {
+      "change_id": "qkqpsmqkswqluopmpzkxxqtnzwowmkpy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A proof by induction and a lemma's summary no longer stand in for a call that writes, throws, or reads what a caller can change",
+      "body": "Three false proofs, each reproduced first on the checker as it was (lib/tests/fixtures/claims/claims/Effects.java, whose main prints what a JVM says): (1) prove --decreases on a method that counts its calls in a static field proved 'result == 1' where a JVM returns 2, because the induction hypothesis replaced the inner call and dropped its write; (2) with a throws clause, the hypothesis returned a value for an inner call the property itself says throws, and proved 'result == n' of a method that never returns; (3) a lemma about a getter, proved in the fresh state where its static field is 0, was used as a summary after the caller wrote the field, and proved 'result == 0' of a method that returns what it wrote. The same held through a callee, through an array a static field holds, for the default locale, and for a lemma whose own assertion reads a field.\n\nNow: a method proved by induction is held to the write checks a summary's method already had (Options::own_induction says the proof is by induction alone, where reads are sound because the inner calls are made in the state of the call under proof); the hypothesis does not cover arguments on which a throws clause says the call throws (the induction then does not go through); a lemma's method, and the lemma's assumption and assertion, may read no static field that is not final, no non-final field or cell of an object that was there before the call, and not the default locale (Engine::reads); a summary is not used while its method's class is still being initialized. A lemma about a method of no parameters now compiles (its assertion is over the result alone).\n\nWhich existing results rest on these mechanisms: none uses prove --decreases directly; examples 286 and 288 use lemmas about PatternMatchUtils.simpleMatch(String,String), whose bytecode in the pinned 5.3.19 JAR reads no field and no array (javap), so their results did not rest on the hole; that the tightened checks still prove those lemmas is for a job to confirm. Verified by lib/tests/claims.rs (18 passed, among them the three new tests and the changed lemma test: a method that counts with calls++ is now refused at its read, one that only writes at its write), the summary unit tests, and test_costs.py run --changed (8 of 8 passed: cargo test's 33 binaries and three Python files).",
+      "log_sha256": "485da70bcb765170eb169d2834f50fdf1093d602f220c87e50df7d8c472f72e1"
+    },
+    {
+      "change_id": "vqntqptvslosoqwkqrlvzykkymkryzml",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A test run keeps what its tests leave in a temporary folder of its own, and removes it",
+      "body": "On 2026-11-17 no command could start on the machine: /tmp, a 52 GB volume held in memory with 1,048,576 inodes, had none left. 640,000 of them were in 18,000 folders named jvmcontract-equivalence-PID-..., which a check run without a work folder makes in the temporary directory and keeps for whoever reads its outcome; a test that runs such a check has no reader, and every test run since the machine started had left its folders there. test_costs.py run now gives each run a folder under lib/target/test-tmp as TMPDIR for all its commands (Rust and Python tests alike), removes it when the run ends, and removes one a killed run left. What is already in /tmp is for the user to clear: it is not this change's to delete.",
+      "log_sha256": "485da70bcb765170eb169d2834f50fdf1093d602f220c87e50df7d8c472f72e1"
+    },
+    {
+      "change_id": "rlxvppwyvsqqmmysuqqvkqyozzsynkuo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Take the test run's own temporary folder back out: the user settled VF-036 with nothing to change now",
+      "body": "The change before this one gave test_costs.py run a TMPDIR of its own. While it was being written, the watcher of the rehearsals recorded the same problem as VF-036 and the user decided it: they raised /tmp's inode limit to 8,388,608, cleared it by hand, and nothing changes for now; who takes it up, and when, is theirs to say. So the folder is removed again here. It had also made two tests fail (test_claude_setup.py and test_performance.py look in the folders above a temporary project for CLAUDE.md, and found the checkout's when the folder was under lib/target), which a later attempt would avoid by putting it in the user's cache. The change stays in the history (vqntqptvslos) for whoever takes VF-036 up.",
+      "log_sha256": "485da70bcb765170eb169d2834f50fdf1093d602f220c87e50df7d8c472f72e1"
+    },
+    {
+      "change_id": "zonotvopnmrykspzkowlvqvynslmpqrs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "An answer given beside the route counts only when what its job left gives it: the acceptance check (verification pending)",
+      "body": "Until now llm-dlc/tools/changes.py counted a task's besideRoute answer when its job had passed and named the example. That says a script exited 0: one passed job supported either answer, example 290's one job confirmed four, and a trial run at a smaller bound was told from the full claim by nothing. examples/tools/accept.py now derives the answer from the evidence and accepts the recorded one only when every check holds (its first lines list them): the job's result and the job file it is of; the step that ran the example's driver on this task; the outcome that step wrote, among the collected outputs with the bytes the result records; the outcome's own verdict; the claim file as frozen and as the job ran it at its source commit; the task, the pinned artifacts and the adapter sources as they were then; the outcome's assumption, assertion and throws clauses, and a preservation task's allowed change; the entry; the bound (a proof at a smaller bound establishes nothing, a witness found at one refutes when it lies in the claim's domain); the engine and gap mode; for an establishment, complete bounds and an input that reaches the property; for a refutation, a witness reproduced on a JVM; for a constructed mutant, that its JAR is the one the mutant replay ran. changes.py uses it, and says which check refuses an answer.\n\nOn the saved results: example 289's four answers and 290's four are accepted, as an outside review found by hand for 289 on 2026-11-16. Examples 286's and 287's mutant-security are not: their drivers neither print nor record the mutant JAR's hash, so nothing says it was the JAR the mutant replay ran; changes.py lists both claims as open again (both examples were already 'prepared', so no example changes state), and their notes say what closes it. Every accepted answer carries one limit, that the jobs recorded no identity of the JARs, the compiled adapter or the verifier's binary. Example 289's driver now writes evidence.json beside its outcome with those (accept.record), ends the run when the mutant's JAR is not the replay's (it only printed both hashes), and marks a run at another bound a trial; one capped inline probe of its shortest task (vulnerable-security, 5 s) showed the record written and the verdict unchanged.\n\nTwo jobs are queued. 20261117-122454-example-289-the-four-proof-tasks-again-w reruns 289's four tasks with the recording driver into verification/.work-289/recorded, so the earlier jobs' outputs stay as their results record them; the tasks' besideRoute still name the earlier jobs until it has passed. 20261117-122546-examples-286-and-288-the-simplematch-lem reruns fixed-security of 286 and 288 on the checker after the lemma checks of the commit before last were tightened, to confirm the simpleMatch lemma is still proved (its bytecode reads no field and no array).\n\nVerified by examples/tools/test_accept.py (28 tests: the controls for a wrong conclusion, a missing result, a changed artifact and a trial bound, the driver's record, and this checkout's own example 289), llm-dlc/tools/test_changes.py (22, with the answer a job's outcome contradicts), validate_example.py 289, and test_costs.py run --changed: 38 of 38 passed (cargo test and 37 Python files).",
+      "log_sha256": "485da70bcb765170eb169d2834f50fdf1093d602f220c87e50df7d8c472f72e1"
+    },
+    {
+      "change_id": "qnrqxsutvrwrypxtrmzzplomvnxvoqys",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The brief for Phase 2, domain-owned advances in Java change verification, as four streams for /run-brief",
+      "body": "The user's plan for Phase 2 (domain-owned advances: credible acceptance, relational reasoning for a preservation claim, effects through a real application path) as a brief, llm-dlc/loops/domain-advances.md, after a foundation stage the user asked this session to do itself: the plan's correctness prerequisites (three false proofs closed in the checker) and its acceptance check are done and the brief starts from them. Four streams, each with its brief: preservation (decide example 287's BCrypt preservation by relating the two sides' unchanged cryptography, then transfer to 307, then 288), state (example 286's protected-state claims through the actual DataBinder.bind path, and a first effect contract an adversarial setter fails), evidence (every driver records identities, the two refused mutant answers rerun, a preservation result that cannot pass vacuously, observed initializers bound to what they were observed on, VF-030), and challenge (an independent stream that writes countermodels against each mechanism and each formalization).\n\nThe brief keeps the plan's rules of work: an owner owns an outcome across the stack, not a layer; the user's intent, a working formalization and an accepted claim are three things; an answer is recorded only through examples/tools/accept.py; two failed attempts at one hypothesis are recorded and the approach changes; a reusable interface follows a second consumer. What the foundation left open is assigned: the pairing's shared state and exception categories to preservation, observed initialization to evidence. Checked with brief_run.py preflight domain-advances, which reads the four streams, their workspaces and sessions and reports nothing blocking but that it was run outside the default workspace. Not run: the user starts it.",
+      "log_sha256": "485da70bcb765170eb169d2834f50fdf1093d602f220c87e50df7d8c472f72e1"
+    },
+    {
+      "change_id": "lplouoxuqunwuqpplxxstrwmwuuywxzp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the foundation of the domain-advances brief into the line",
+      "body": "The foundation of the brief llm-dlc/loops/domain-advances.md (the checker's three soundness fixes, the acceptance check examples/tools/accept.py with changes.py on it, example 289's driver recording identities, two queued jobs, and the brief with its four stream briefs) was built in the workspace domain-advances-foundation by the user's own session while this line moved on (VF-036 was recorded here), so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "485da70bcb765170eb169d2834f50fdf1093d602f220c87e50df7d8c472f72e1"
     }
   ],
   "logs": {
@@ -1388,6 +1436,12 @@
       "lines": 5700,
       "gzip_bytes": 2241935,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/45f1d9267c66e8317c6ef296de50e809df62f250ad48754840441996f650c928.jsonl.gz"
+    },
+    "485da70bcb765170eb169d2834f50fdf1093d602f220c87e50df7d8c472f72e1": {
+      "bytes": 20705390,
+      "lines": 8769,
+      "gzip_bytes": 3517612,
+      "url": null
     },
     "495548afdb7ec73bd48e8b52b608490cfd1ae944a2bfce7bb3002260e45f97da": {
       "bytes": 20467586,

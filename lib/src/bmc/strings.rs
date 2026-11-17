@@ -341,7 +341,10 @@ impl Engine<'_> {
                 let dotless = match args {
                     [Val::R(None)] => return self.raise(path, "java/lang/NullPointerException"),
                     [Val::R(Some(given))] => self.argument_dotless(path, *given),
-                    _ => self.default_dotless(path),
+                    _ => {
+                        self.reads(path, || "reads the default locale (toLowerCase())".into())?;
+                        self.default_dotless(path)
+                    }
                 };
                 let Some(dotless) = dotless else {
                     return match self.meet(path, GapKind::JdkReferenceMethod, STRING, name, descriptor) {

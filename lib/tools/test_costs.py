@@ -848,7 +848,7 @@ def rust_seconds(doc):
     """Each Rust source file's tests' recorded seconds, summed: what orders the test binaries, longest first."""
     out = {}
     for r in doc.get("rust", []):
-        out[r["file"]] = out.get(r["file"], 0) + (r.get("cost") or {}).get("seconds", 0)
+        out[r["file"]] = out.get(r["file"], 0) + ((r.get("cost") or {}).get("seconds") or 0)  # a new test has no time yet
     return out
 
 

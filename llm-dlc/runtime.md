@@ -123,9 +123,18 @@ records it in the sidecar, on the task:
                 "recorded": "2026-11-15"}
 ```
 
-The record alone decides nothing. `changes.py` counts the answer only while that job's result is in the checkout
-(`verification/results/`), `passed`, and the job names the example in its `links.examples`; otherwise the claim
-stays open and the row says what is missing. A receipt of the route, once there is one, outranks it. A claim that
+The record alone decides nothing, and neither does a job that passed: that says a script exited 0, and would
+support either answer. `changes.py` counts the answer only while the acceptance check derives the same one from
+what the job left (`python3 examples/tools/accept.py NNN`, whose first lines list its checks): the job's result is in
+the checkout (`verification/results/`), `passed`, and names the example; one of its steps ran the example's driver
+on this task, and the outcome that step wrote is a collected output with the bytes the result records; the outcome's
+own verdict is the answer; its expressions are the claim file's, which is the file as frozen and as the job ran it;
+the bound is the claim's (a proof at a smaller, trial bound establishes nothing, while a witness found at one refutes);
+an establishment is complete and names an input that reaches the property, and a refutation's witness reproduced on
+a JVM; a constructed mutant's JAR is the one the mutant replay ran. Otherwise the claim stays open and the row says
+which check refuses it. A driver should also write `evidence.json` beside its outcome (`accept.record`: the JARs,
+the adapter and the verifier's binary by hash, as example 289's `proofs/prove.py` does) and name both files among
+the job's outputs; without it an accepted answer carries the limit that those identities are in no record. A receipt of the route, once there is one, outranks it. A claim that
 is still open also carries `blocked`: the kinds of the observed gaps of the verifier its task stops at. An example
 whose open claims all stop at such a gap is still `prepared`: whether a loop has anything left to do on it is a
 judgement, [the watcher's](#watching-the-loop).

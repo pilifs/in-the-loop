@@ -166,6 +166,11 @@ pub struct Options {
     /// The method the check proves a summary of (its class, name and descriptor): the run then also shows that it
     /// leaves the state as it was, and refuses one it can't show it of ([`Engine::in_summary`]).
     pub pure: Option<(String, String, String)>,
+    /// Whether the method of [`Options::pure`] is proved by induction alone (`prove --decreases`), with no summary
+    /// made of it: its calls of itself are then the only calls a statement of its result stands in for, and they
+    /// are made in the state of the call under proof, which nothing it runs may write. So what it reads is not
+    /// refused, where a summary's method may read nothing a caller can change ([`Engine::reads`]).
+    pub own_induction: bool,
     /// The classes whose initializer the engine does not run, by internal name, each with the static state the
     /// initializer left on a JVM ([`crate::observed`], `--observed-initializer`): a use that initializes one gives
     /// the path that state, and the run states what that rests on ([`Outcome::assumed`]).
@@ -191,7 +196,7 @@ pub struct Summary {
 
 impl Default for Options {
     fn default() -> Self {
-        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, merge_heaps_after: 1024, invariants: true, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured, parameters: Parameters::default(), summaries: Default::default(), pure: None, observed: Default::default(), models: Default::default(), previous: None }
+        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, merge_heaps_after: 1024, invariants: true, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured, parameters: Parameters::default(), summaries: Default::default(), pure: None, own_induction: false, observed: Default::default(), models: Default::default(), previous: None }
     }
 }
 
@@ -1157,6 +1162,7 @@ struct Engine<'a> {
     cp: &'a ClassPath,
     summaries: std::sync::Arc<Vec<Summary>>,
     pure: Option<(String, String, String)>,
+    own_induction: bool,
     b: Blaster,
     codes: HashMap<(String, String, String), Rc<Decoded>>,
     pending: Vec<Path>,
@@ -1306,6 +1312,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         contracts: options.contracts.clone(),
         summaries: options.summaries.clone(),
         pure: options.pure.clone(),
+        own_induction: options.own_induction,
         applied: BTreeMap::new(),
         hides: HashMap::new(),
         supers: HashMap::new(),
@@ -1601,15 +1608,15 @@ pub fn solver_signature() -> String {
 #[allow(clippy::too_many_arguments)] // the settings a proof driver passes on
 #[allow(clippy::too_many_arguments)]
 pub fn run_for_proof(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &GapSetting, parameters: &Parameters, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
-    run_for_proof_with(entries, models, class, method, unwind, max_array_length, timeout, gaps, parameters, &[], None, work)
+    run_for_proof_with(entries, models, class, method, unwind, max_array_length, timeout, gaps, parameters, &[], None, false, work)
 }
 
 /// [`run_for_proof`] with the calls checked summaries stand in for (`summaries`), and the method the check proves a
-/// summary of (`pure`).
+/// summary of, or proves by induction (`pure`; `own_induction` says which, [`Options::own_induction`]).
 #[allow(clippy::too_many_arguments)]
-pub fn run_for_proof_with(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &GapSetting, parameters: &Parameters, summaries: &[Summary], pure: Option<(String, String, String)>, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
+pub fn run_for_proof_with(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &GapSetting, parameters: &Parameters, summaries: &[Summary], pure: Option<(String, String, String)>, own_induction: bool, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
     let cp = crate::witness::classpath(entries.iter().chain(&gaps.class_dir).map(std::path::PathBuf::as_path))?.with_models(models);
-    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps: gaps.mode, contracts: gaps.contracts.clone(), observed: gaps.observed.clone(), models: gaps.models.clone(), previous: gaps.previous.clone(), parameters: parameters.clone(), summaries: std::sync::Arc::new(summaries.to_vec()), pure, ..Options::default() })?;
+    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps: gaps.mode, contracts: gaps.contracts.clone(), observed: gaps.observed.clone(), models: gaps.models.clone(), previous: gaps.previous.clone(), parameters: parameters.clone(), summaries: std::sync::Arc::new(summaries.to_vec()), pure, own_induction, ..Options::default() })?;
     let log = work.join("bmc.log");
     let _ = std::fs::write(&log, format!("jvmcontract's own checker on {class}.{method}\n{}\n", outcome.summary()));
     Ok(outcome.into_jbmc_result(log))
@@ -2542,6 +2549,9 @@ impl<'a> Engine<'a> {
                     Ok(o) => o,
                     Err(step) => return step,
                 };
+                if path.objects[o].given {
+                    self.reads(path, || "reads an array that was there before the call".into())?;
+                }
                 let array = path.objects[o].array.clone().expect("an array");
                 if !holds_references(&array.element) {
                     return unsupported(format!("an aaload from a {}[]", array.element.java_name()));
@@ -2625,6 +2635,9 @@ impl<'a> Engine<'a> {
                     Ok(o) => o,
                     Err(step) => return step,
                 };
+                if path.objects[o].given {
+                    self.reads(path, || "reads an array that was there before the call".into())?;
+                }
                 let array = path.objects[o].array.clone().expect("an array");
                 check_kind(*kind, &array.element)?;
                 let width = cell_width(&array.element);
@@ -2980,6 +2993,7 @@ impl<'a> Engine<'a> {
             match t {
                 None => null.push(g),
                 Some(o) => {
+                    self.reads_field(path, o, owner, name, descriptor)?;
                     let key = self.field_key(path, o, owner, name, descriptor)?;
                     let v = match path.objects[o].fields.get(&key) {
                         Some(v) => v.clone(),
@@ -2996,6 +3010,15 @@ impl<'a> Engine<'a> {
         }
         let null = self.any(&null);
         self.branch_throw(path, null, "java/lang/NullPointerException", value)
+    }
+
+    /// Refuses, inside a summarized method, a `getfield` of a field that is not final on an object that was there
+    /// before the call ([`Engine::reads`]).
+    fn reads_field(&self, path: &Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Result<(), Stop> {
+        if path.objects[o].given && self.in_lemma(path) && !self.final_field(owner, name, descriptor) {
+            self.reads(path, || format!("reads the field {name} of an object that was there before the call"))?;
+        }
+        Ok(())
     }
 
     /// `putfield` through a symbolic reference: each object it may be gets the value where its guard holds and keeps
@@ -3462,6 +3485,12 @@ impl<'a> Engine<'a> {
                 if let Some(step) = self.initialise(path, &declaring) {
                     return step;
                 }
+                // A lemma reads no static field a caller can write ([`Engine::reads`]): a final one is written
+                // by its class's initializer alone, and the claim's class has only the tool's own (the measure
+                // of the call under proof).
+                if declaring != crate::harness::expr::CLAIM_CLASS && self.cp.checker_statics(&declaring) && !self.final_field(&declaring, &member.name, &member.descriptor) {
+                    self.reads(path, || format!("reads the static field {}.{}", declaring.replace('/', "."), member.name))?;
+                }
                 let v = match self.application_static(path, &declaring, &member.name, &member.descriptor) {
                     Some(v) => v?,
                     None => self.get_static(&member.owner, &member.name, &member.descriptor)?,
@@ -3495,6 +3524,7 @@ impl<'a> Engine<'a> {
                     Ok(o) => o.expect("checked"),
                     Err(step) => return step,
                 };
+                self.reads_field(path, o, &member.owner, &member.name, &member.descriptor)?;
                 let key = self.field_key(path, o, &member.owner, &member.name, &member.descriptor)?;
                 let v = match path.objects[o].fields.get(&key) {
                     Some(v) => v.clone(),
@@ -3994,7 +4024,7 @@ impl<'a> Engine<'a> {
         };
         if self.is_observed(class) {
             if self.in_summary(path) {
-                return unsupported(format!("a summary's method initializes the class {}, whose initializer is observed: it is not a method a summary can stand in for", class.replace('/', ".")));
+                return unsupported(format!("the method initializes the class {}, whose initializer is observed, {}", class.replace('/', "."), self.result_only()));
             }
             self.take_observed(path, class)?;
             path.classes.insert(class.to_string(), ClassState::Done);
@@ -4014,7 +4044,7 @@ impl<'a> Engine<'a> {
         };
         if self.in_summary(path) {
             let (owner, name, _) = self.pure.as_ref().expect("in a summary");
-            return unsupported(format!("{}.{name} initializes the class {}, and a summary of it would state its result only: it is not a method a summary can stand in for", owner.replace('/', "."), class.replace('/', ".")));
+            return unsupported(format!("{}.{name} initializes the class {}, {}", owner.replace('/', "."), class.replace('/', "."), self.result_only()));
         }
         if runs {
             self.call(path, class, "<clinit>", "()V", Vec::new())?;
@@ -4173,7 +4203,10 @@ impl<'a> Engine<'a> {
             // A summary of the method, or the hypothesis of its own proof, in place of a call that is neither the
             // harness's nor the claim's ([`Summary`]).
             let summary = self.summaries.iter().find(|s| s.owner == member.owner && s.name == member.name && s.descriptor == member.descriptor).map(|s| s.stub.clone());
-            if let Some(stub) = summary.filter(|_| caller != crate::harness::expr::CLAIM_CLASS && caller != path.frames[0].class.name) {
+            // Not while the method's class is still being initialized: the lemma was proved of the class
+            // initialized, and a final field it reads may not be written yet. The call then runs as written.
+            let initialized = path.classes.get(&declaring) != Some(&ClassState::InProgress);
+            if let Some(stub) = summary.filter(|_| initialized && caller != crate::harness::expr::CLAIM_CLASS && caller != path.frames[0].class.name) {
                 if let Some(step) = self.initialise(path, crate::harness::expr::CLAIM_CLASS) {
                     return step;
                 }
@@ -4461,7 +4494,9 @@ impl<'a> Engine<'a> {
             }
         }
         locals.resize(code.max_locals.max(locals.len()), None);
-        if path.frames.len() == 1 && self.pure.as_ref().is_some_and(|(o, n, d)| o == owner && n == name && d == descriptor) {
+        // What is there when the harness calls the method was there before the call; and so was what is there
+        // when it calls the lemma's assumption, before that.
+        if path.frames.len() == 1 && (owner == crate::harness::expr::CLAIM_CLASS && self.pure.is_some() || self.pure.as_ref().is_some_and(|(o, n, d)| o == owner && n == name && d == descriptor)) {
             path.objects.iter_mut().for_each(|o| o.given = true);
         }
         // A model run on request is what the result then rests on.
@@ -4488,9 +4523,48 @@ impl<'a> Engine<'a> {
     fn keeps(&self, path: &Path, o: Option<usize>, what: &str) -> Result<(), Stop> {
         if self.in_summary(path) && o.map_or(true, |o| path.objects[o].given) {
             let (owner, name, _) = self.pure.as_ref().expect("in a summary");
-            return unsupported(format!("{}.{name} {what}, and a summary of it would state its result only: it is not a method a summary can stand in for", owner.replace('/', ".")));
+            return unsupported(format!("{}.{name} {what}, {}", owner.replace('/', "."), self.result_only()));
         }
         Ok(())
+    }
+
+    /// Why a method that does more than return is refused: what would stand in for its calls states a result.
+    fn result_only(&self) -> &'static str {
+        if self.own_induction {
+            "and the induction hypothesis states the result of its calls of itself only: it is not a method proved by induction on a measure (--decreases)"
+        } else {
+            "and a summary of it would state its result only: it is not a method a summary can stand in for"
+        }
+    }
+
+    /// Whether the path is where a lemma must read nothing a caller can change: inside the method the check proves
+    /// a summary of, or inside the lemma's own assumption or assertion, which the harness calls in the claim's
+    /// class and the summary evaluates again at each call it stands in for, in the state that call is made in.
+    /// Never in a proof by induction alone ([`Options::own_induction`]).
+    fn in_lemma(&self, path: &Path) -> bool {
+        self.pure.is_some() && !self.own_induction && (self.in_summary(path) || path.frames.get(1).is_some_and(|f| f.class.name == crate::harness::expr::CLAIM_CLASS))
+    }
+
+    /// Refuses, in a lemma's proof ([`Engine::in_lemma`]), a read of what a caller can change before it calls: a
+    /// static field that is not final, a field that is not final or a cell of an object that was there before the
+    /// call ([`Obj::given`]: with arguments that are primitives and Strings, one a static field leads to), the
+    /// default locale. The lemma is proved from the state the harness starts in and its summary is used at every
+    /// call, whatever was written before it, so a result or a statement that depends on such a read is no
+    /// function of the arguments.
+    fn reads(&self, path: &Path, what: impl FnOnce() -> String) -> Result<(), Stop> {
+        if self.in_lemma(path) {
+            let (owner, name, _) = self.pure.as_ref().expect("in a lemma");
+            let reader = if self.in_summary(path) { format!("{}.{name}", owner.replace('/', ".")) } else { format!("the lemma about {}.{name}, in its assumption or its assertion,", owner.replace('/', ".")) };
+            return unsupported(format!("{reader} {}, which a caller can change before it calls, and a summary would state the method's result as one of its arguments only: it is not a method a summary can stand in for", what()));
+        }
+        Ok(())
+    }
+
+    /// Whether the field `name` of `owner` (or of the class it inherits it from) is final; a field not found is
+    /// taken not to be.
+    fn final_field(&self, owner: &str, name: &str, descriptor: &str) -> bool {
+        let declaring = self.cp.resolve_field(owner, name, descriptor).unwrap_or_else(|| owner.to_string());
+        matches!(self.cp.load(&declaring), Ok(Some(loaded)) if loaded.class.field(name).is_some_and(|f| f.is_final()))
     }
 
     /// Refuses, inside a summarized method, a comparison by identity of a reference that may be an object that was
@@ -4503,7 +4577,8 @@ impl<'a> Engine<'a> {
         let may_be_given = v.options().is_some_and(|options| options.iter().filter_map(|(_, t)| *t).any(|o| given(o) || path.objects[o].same.iter().any(|(_, t)| given(*t))));
         if may_be_given {
             let (owner, name, _) = self.pure.as_ref().expect("in a summary");
-            return unsupported(format!("{}.{name} compares an object it was given by identity (==), so its result may depend on which objects its arguments are: it is not a method a summary can stand in for", owner.replace('/', ".")));
+            let stands_in = if self.own_induction { "it is not a method proved by induction on a measure (--decreases)" } else { "it is not a method a summary can stand in for" };
+            return unsupported(format!("{}.{name} compares an object it was given by identity (==), so its result may depend on which objects its arguments are: {stands_in}", owner.replace('/', ".")));
         }
         Ok(())
     }
