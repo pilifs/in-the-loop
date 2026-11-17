@@ -18,6 +18,26 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-038: 307's frozen claim justifies its encoding assumption by a specification that says no such thing for `getBytes(String)`
+
+- **Status**: open, minor (the user's decision on 2026-11-17, run-streams-domain-advances-D029: keep the frozen claim and
+  its hash, record this, and fold a restated wording into the decision on a companion claim for I008 after the run).
+- **Raised**: 2026-11-17 by Codex, in an outside review the user asked for of example 307 during the domain-advances run.
+- **Found**: `examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/claims/hashpw-preservation.json`'s
+  assumption reads: "Both revisions run on the same JDK, whose String.getBytes(String) and String.getBytes(Charset) for
+  UTF-8 encode alike, malformed input and all: both are specified to 'always replace malformed-input and
+  unmappable-character sequences with this charset's default replacement byte array'". Only `getBytes(Charset)`
+  specifies that; `getBytes(String)` leaves the behaviour on unencodable input unspecified (the JDK 25 `String`
+  documentation). The premise, that the two encode alike, holds on the pinned OpenJDK 21 and 25 by implementation (both
+  reach `String.encode`; the named form looks the charset up first) and the replay checks it on both; the error is in its
+  justification, not in what a proof assumes or claims.
+- **Needs**: a result of 307 is read as holding on the JDK builds the replay pins (21 and 25), where the two methods
+  encode alike by implementation, not on every conforming JDK; 307's notes say so with the result. A restated claim
+  whose assumption cites the implementation of the pinned builds is prepared after the run, together with the companion
+  claim under a non-UTF-8 default if the user chooses one (I008, deferred: D028), so that one freeze covers both.
+- **Tracked in**: run-streams-domain-advances-D028 and D029; the preservation stream's item I008.
+- **Closes when**: the user freezes a restated claim, or decides to keep the wording with this finding as its record.
+
 ### VF-037: a stream's `test_costs.py run --changed` filled its loop's 12G cap, and the OOM killer killed the session instead of the tests
 
 - **Status**: open, minor (raised by the watcher of the domain-advances run; how loops and test runs share the cap is
