@@ -216,10 +216,220 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   - Also read for item 5:
     - `mktymxvt` changes only `sync.py`'s trace check, which is not a rule of the run's results. Nothing to attack under this brief.
     - `rkxyyqwn` and `ymzlyksq` go with item 7, the acceptance check.
-- Next, item 5:
-  - the state stream's ArrayDeque and HashSet models (`kztoupry`): whether their reads and writes pass `Engine::reads` and `Engine::keeps`, and their exception classes against a JVM's;
-  - the drivers' records (`rkxyyqwn`) and the vacuity witness outside the change (`ymzlyksq`), as item 7 controls.
-- Items 6 and 7 after.
+- The fresh-pair failure went to preservation as `domain-advances-preservation-I005`, citing `roqtqlpm`.
+- 2026-11-17, item 5, the state stream's models on request of ArrayDeque and HashSet (`kztoupry`): **three false
+  proofs under `--gaps assume`**, to be handed over.
+  - The fixtures are in `lib/tests/fixtures/model-countermodels`; its README has the table, the commands, what was tried, the audit and the checker-side test.
+  - `lib/tests/model_countermodels.rs` holds the fixtures to a JVM.
+  - The hole: under assume, a gap's object is `Obj::new(class)`, with no field written. A gap is a constructor or a method the model does not keep. When the check runs a model of that class, the model's `size()` reads those fields. Without the model, `size()` is a gap that has no assume form.
+  - Each was **Verified** `result == 0` on `domain-advances-state@-` (`qrqtplwq`, built apart), where a JVM gives 1:
+    - `cloned`: `ArrayDeque.clone()` returns an `ArrayDeque`. Every assumption the result states is true of the JDK.
+    - `copied`: `ArrayDeque(Collection)`.
+    - `listed`: `ArrayList(Collection)`, which also reproduces on this line, since the ArrayList model is older than the run.
+    - The last two state "keeps nothing of its arguments", which is false of the JDK, but nothing tells the reader it became a value.
+  - The README's checker-side test fails on all three there, as it should. The models on request are the state stream's this run, so no refusal is committed here. The test goes as a `failure` item to `domain-advances-state`, citing this commit; its id goes in the next entry.
+  - **Tried and guarded**:
+    - Under strict, `clone`, `equals`, `hashCode` and `toString` of either class, and a set as a map key: each is a gap refused by name, with no fall-through to `Object`'s.
+    - `HashSet(int)` under advised: the library's contract says "modifies nothing", which would leave `map` null, but the run reports the model's methods as gaps with no contract and solves nothing.
+    - An element whose hash changes after `add`: proved not found, as on the JDK. The interpreter's set looks up by `equals` alone (`interp/natives.rs`), a refusal, not a false result.
+    - A lemma reading a deque from before the call is refused by `Engine::reads`.
+    - The exception classes match JDK 25.
+  - *Audit*: no example task runs under `--gaps assume`. 286's and 290's drivers ask for the models under strict, and 147 to 149, the only `advised` tasks, ask for none. Nothing for the watcher.
+- The models failure went to state as `domain-advances-state-I004`, citing `lqyqxwqv`.
+- **To the watcher**: since the evidence stream (session 7ece8184) merged `mqkqvvmw` and `yypzyxmw` into its line, `sync.py check` here reports `session 7ece8184 has no manifest` on both, beside the known f28025bc one on `yypzyxmw`. The cause is the one recorded above (`link_commits`). The manifest is on the evidence line, so the errors should clear once the lines meet. I have not touched the trace lines.
+- 2026-11-17, item 5, the state stream's write set (`qrqtplwq`, `prove --writes`): **three false proofs**, to be handed over.
+  - The fixtures are in `lib/tests/fixtures/frame-countermodels`; its README has the table, the commands, what was tried, the audit and the checker-side test.
+  - `lib/tests/frame_countermodels.rs` holds the fixtures to a JVM.
+  - The frame is part of the assertion, so it is read only after a normal return, and only on distinct object inputs. A JVM sees the protected field written in each of these, all **Verified**:
+    - `Bean#rename`, with `--throws 'java.lang.IllegalArgumentException when length < 0'`, sets `admin` and then throws. Without the throws clause, the same exit is a violation.
+    - `Bean#promote(other)` with the write set `other.admin`, when `b.promote(b)`.
+    - static `grant(from, to)` with the write set `to.admin`, when `grant(b, b)`. Nothing in the domain says the two beans are distinct objects.
+  - Reproduced on the state checker at `qrqtplwq` and at its next commit `vwktulky`, each built apart. The README's checker-side test fails on all three at both, as it should.
+  - The write set is the state stream's this run, so no refusal is committed here. The test goes as a `failure` item to `domain-advances-state`, citing this commit; its id goes in the next entry.
+  - **Tried and guarded**:
+    - a write through a callee, a lambda, or a recursion is refuted by the frame;
+    - `Locale.setDefault` is refused by name;
+    - a StringBuilder parameter is not taken;
+    - an inherited field cannot occur, since `fields_of` refuses a subclass;
+    - the identity of a String field after 16 String operations matches JDK 25, or is a gap.
+  - *Audit*: no example task passes `--writes` on any line, so no accepted result rests on these holes. Nothing for the watcher. Both holes bear on 286's protected state, the claim the write set is for.
+- Inbox: no open items.
+- The write-set failure went to state as `domain-advances-state-I005`, citing `synvlnls`.
+- 2026-11-17, item 5, the state stream's effect contract at a call (`vwktulky`): **three false proofs of a caller's property**, to be handed over.
+  - The fixtures are in `lib/tests/fixtures/effect-countermodels`; its README has the table, the commands, the contracts, what was tried, the audit and the checker-side test.
+  - `lib/tests/effect_countermodels.rs` holds them to a JVM.
+  - Each contract is proved, and the caller's property through it is **Verified** on `vwktulky` (built apart), where a JVM breaks it:
+    - `lockedLevel`: the setter reads a final static that its class's initializer takes from a setting the caller changed first. The contract's proof initialized the class in a fresh state. A JVM gives 0 for 5.
+    - `pairedLevel`: `bean.setBoth(bean, mine, theirs)`. The method writes the argument's field and then the receiver's, while the stub writes in the `writes:` order. The contract's proof never passes one object twice. A JVM gives 1 where the proof says 2.
+    - `linkedAdmin`: an argument of a subclass whose override, called by the setter, grants admin. Only the receiver's class is checked to be exact.
+  - The README's checker-side test fails on all three there. The effect contract is the state stream's, so no refusal is committed here. The test goes as a `failure` item to `domain-advances-state`, citing this commit; its id goes in the next entry.
+  - Whether I005's holes carry into a caller: an exceptional exit does not (`throws:` is refused, and an undeclared throw refutes the contract, tried). Aliasing does, through `pairedLevel`. `prove --may-alias this,other` already makes the frame refute I005's `promote`, so it is a ready fix.
+  - Also found: the stub names a nested object-parameter class with its `$`, which javac rejects. That is a refusal, not a false result.
+  - *Audit*: no example task has a `writes:` lemma or passes `--writes` on any line, so no accepted result rests on these holes. Nothing for the watcher. All three bear on 286's protected state.
+- The effect-contract failure went to state as `domain-advances-state-I007`, citing `qmtxwupn`.
+- 2026-11-17, item 7, the acceptance check (`examples/tools/accept.py` on the evidence line at `krptozvm`, through `rkxyyqwn`, `ymzlyksq`, `mzllzmkq` and `wowqurku`): **seven controls it accepts**, to be handed over.
+  - Written in `lib/tests/fixtures/accept-countermodels/README.md`, which has the table, the controls' code, what was tried, the fix options and the audit.
+  - The controls are tests on `test_accept.py`'s own made-up checkout. All 7 fail on the evidence line's `accept.py` (10 failures with subtests), each because the answer is accepted:
+    - *entry*: the outcome's target is matched as a substring of the invocation's entry or of an assumption's text. An outcome about `GateAdapter#allowed`, or about the same class name in another package, stands for `GateAdapter#allowedTwice`, and so does a method an assumption mentions.
+    - *step*: a driver word is any word ending in `proofs/prove.py` that contains the folder. A driver of another checkout counts, and so does `echo`.
+    - *domain*:
+      - a witness's null inputs are not held to the claim's `nullable`;
+      - nothing holds a witness to the claim's assumption;
+      - a task's `bounds` lower the claim's.
+    - *expressions*: a task with no allowed change accepts a pair that ran with one.
+  - A vacuity witness inside the allowed change is guarded where the task has one, since `vacuity.outside` must be the task's change. A prefix of the change is caught there too.
+  - `accept.py` is the evidence stream's, so nothing is changed here. The controls go as a `failure` item to `domain-advances-evidence`, citing this commit; its id goes in the next entry.
+  - *Audit*: with the source commits, the evidence line accepts 13 answers, and none rests on these holes. Nothing for the watcher. The 13 are 286's and 287's three each, 288's `fixed-security`, and 289's and 290's security answers.
+    - Every outcome is about the entry named, every step runs the example's driver, and every recorded driver hash is the source commit's.
+    - Null witness inputs are of nullable parameters.
+    - Every equivalence task has an allowed change, and no task has bounds.
+    - 286 and 287 pass the entry check only by the substring route, through the claim's "adapter entry" assumption, so a fix must keep that route.
+  - This also reads `mzllzmkq` and `wowqurku` as far as acceptance goes: 288's `fixed-security` and 286's three are among the 13.
+- Inbox: no open items.
+- The acceptance-check controls went to evidence as `domain-advances-evidence-I007`, citing `zwrpkwnl`.
+- 2026-11-17, item 5, the three rules that landed since: state's `qysmsruu`, evidence's `lzpqszyo` and preservation's
+  `unswkkxp`. **Nine false proofs past them**, each **Verified** on its own line built apart, where a JVM says
+  otherwise. To be handed over.
+  - The fixtures are in `lib/tests/fixtures/rule-countermodels`. Its README has the tables, the commands, the options
+    and the checker-side test for each stream. `lib/tests/rule_countermodels.rs` holds the fixtures to a JVM.
+  - *State, `qysmsruu`* (`wd`). Under `--gaps assume`, an assumed object is made of exactly the class its descriptor
+    declares, and the new refusal keys on that class. `HashSet.clone()` and `Date.clone()` are declared to return
+    `Object`, so `copy instanceof HashSet` (`--model java.util.HashSet`), the cast's `size()`, and
+    `copy instanceof Date` are each proved false.
+    - Every assumption the two HashSet results state is true of the JDK.
+    - The Date case reproduces on this line too, with no model: it is the approximation's, older than the run.
+    - The fix itself holds: `a_model_does_not_read_fields_no_constructor_of_it_wrote` passes at `qysmsruu`, so
+      I004's three cases are refused by name. Evidence's I004 test,
+      `an_observed_initializer_is_bound_to_what_it_was_observed_on`, passes at `krptozvm`.
+    - Method note: a lib exported with `git archive` carries the commit's time as its mtime. Built into a target folder
+      that already holds newer artifacts, cargo keeps the old library. The first debug run here "failed" the state
+      fix that way. Every verdict above is from a build whose sources were touched first, checked against the CLI of
+      the release build. The debug-test results of earlier entries (I005 at `vwktulky`, I007) may have come from such
+      a build. Their release-CLI probes stand, and the state stream's fixes (`sltlykpk`, `nslmqyry`) are next to
+      challenge anyway.
+  - *Evidence, `lzpqszyo`* (`ob`):
+    - An initializer that writes its superclass's static (`inherited`) or a superinterface's array (`filled`). The
+      observer leaves supertypes out of the comparison, and the checker initializes them itself. No stated assumption
+      is false.
+    - A property read through `System.getProperties().get` (`bypassed`): the result says "it read no system
+      property". `Recording` overrides `getProperty` alone.
+    - The default time zone (`zoned`) and an environment variable (`environ`): not stated. These are of the kind of
+      I004's `lowered` and `configured`, through settings the binding does not list.
+  - *Preservation, `unswkkxp`* (`lg`). A `LogRecord` subclass passes `confined_record`, yet the default handler's
+    formatting calls its `getMessage`:
+    - one that counts in a field of the record the caller holds (`seen`, 1 against the proved 0; every stated
+      assumption is true of the JDK);
+    - one that throws a `Throwable`, which `StreamHandler.publish`'s `catch (Exception)` lets out of `log`
+      (`escaped`).
+  - Each README test fails on its stream's line: state at `qysmsruu`, evidence at `krptozvm`, preservation at
+    `unswkkxp`. None of these rules is mine, so nothing in `lib/src` changes here. Each goes as a `failure` item to
+    its stream, citing this commit; the ids go in the next entry.
+  - *Audit*: no accepted result rests on these holes, so there is nothing for the watcher.
+    - No example task runs under assume.
+    - 290's five observed classes, read with `javap` from the pinned JARs: each `putstatic` is of the class's own
+      field, and none calls `getenv`, `TimeZone` or `getProperties`. The servlet classes' `getBundle` reads the
+      locale, which is stated.
+    - 287's preservation logs through spring-jcl's `LocationResolvingLogRecord`, which is made inside `JavaUtilLog`
+      and dropped after `log`.
+- 2026-11-17, item 6, the formalizations of 287, 307 and 286's protected state. **Each claim accepts a wrong
+  implementation**. Each mutant is a patch under its example's `controls/`, which no task uses yet; the reasoning is
+  in each example's notes.
+  - **287**, `check-only-guard.patch` on 6.3.8: `if (for_check && passwordb.length > 72)`.
+    - `matches` and both `checkpw` run the fix's code, so all three claims are predicted to say of it what they say
+      of 6.3.8. Its driver lines equal 6.3.8's on all 33 probes, and the oracle says it holds.
+    - But `encode` of 73 bytes returns a hash again, and the 72-byte prefix matches it: the advisory's defect,
+      through the encoder no claim covers.
+  - **307**, `default-charset.patch`: `password.getBytes()`, the platform charset the commit removes.
+    - On JDK 18+ the default is UTF-8, so it equals after on all 45 probes.
+    - Under `-Dfile.encoding=COMPAT` with `LANG=C` it differs on 17 probes. The claim fixes no default charset
+      ("on one and the same JDK").
+  - **286**, `first-suppressed-only.patch` on 5.3.19: `checkAllowedFields` returns after the first suppressed value.
+    - `isAllowed` is the fix's, and the protected-state claim binds one value, so all three claims are predicted to
+      be decided as on 5.3.19.
+    - On a JVM, `age=5, Age=32` binds 32. The probes catch it (`bind-list-upstream`, `bind-map-upstream`); no claim
+      does.
+  - Each goes as an inbox item to its owner: 287 and 307 to preservation, 286 to state. A new claim is theirs and the
+    user's.
+- Tests: `test_costs.py run --changed` passed (42 Rust test binaries, 23 Python suites), and
+  `validate_example.py` passed for 286, 287 and 307.
+- Sent, each citing `lqvlvwsm`:
+  - the item 5 failures: `domain-advances-state-I008` (`wd`), `domain-advances-evidence-I008` (`ob`) and
+    `domain-advances-preservation-I006` (`lg`);
+  - the item 6 formalizations: `domain-advances-preservation-I007` (287), `domain-advances-preservation-I008` (307)
+    and `domain-advances-state-I009` (286's protected state).
+- **To the watcher**: `sync.py check` here now reports 8 `has no manifest` errors. Besides the three recorded above,
+  session f28025bc is now stamped on `roqtqlpm`, `smnuqrou`, `uktunxxo` and `llwznzwm` too. The cause is the same
+  (`link_commits`: the preservation stream merged them), the manifests are on the other lines, and evidence's
+  `mktymxvt` makes such a stamp a note once the lines meet. I have not touched the trace lines.
+- 2026-11-17, item 5, the state stream's fixes for I005 (`sltlykpk`) and I007 (`nslmqyry`): **both hold, and two new
+  false proofs past the second**, to be handed over.
+  - Built apart at `nslmqyry`, with the sources touched first: `frame_countermodels.rs` and
+    `effect_countermodels.rs` pass. Each of the six earlier cases is refuted, or refused, or proved as JML's
+    `assignable` states it (`this == other || this.admin == \old(this.admin)`).
+  - The new hole: the read gate exempts a **final instance field** of an object that was there before the call. A
+    contract's proof makes the receiver and the arguments with their constructors in the harness's fresh state, and a
+    caller's object was made in another state.
+  - The fixture is `lib/tests/fixtures/contract-countermodels`; its README has the table, the commands, the options,
+    what was tried and the checker-side test. `lib/tests/contract_countermodels.rs` holds it to a JVM.
+  - Each is **Verified** `result == level` at `nslmqyry`, with no assumption stated, where a JVM gives 0 for 5:
+    - `snapshotLevel`: the receiver's `final boolean locked = Config.locked`, made with the setting on and the setting
+      put back before the call;
+    - `scaledLevel`: the same, through an argument's final field.
+  - The README's checker-side test fails on both there, as it should. The effect contract is the state stream's, so
+    nothing in `lib/src` changes here. It goes as a `failure` item to `domain-advances-state`, citing this commit; the
+    id goes in the next entry.
+  - **Tried and guarded**:
+    - a contract whose call starts a class initializer, refused by `Engine::initializes_in_frame`;
+    - a receiver of a class with two constructors, refused by the layout.
+  - *Audit*: no example task has a `writes:` lemma or passes `--writes` on any line. No accepted result rests on the
+    hole, so there is nothing for the watcher.
+- Inbox:
+  - `domain-advances-challenge-I002` (the lemma rule and the write-set rule meet in `Engine::call`): taken on.
+    - Its first case, a framed method or an effect contract whose call starts a class initializer, is tried on
+      state's line above and is guarded there.
+    - The other two need both rules in one tree, and no line has both yet: a lemma whose proof runs a framed method or
+      a call a contract stands in for, and an effect contract inside a summarized method. The default line has
+      neither stream.
+    - Next: a trial merge of this line and state's, built apart with the conflict in `Engine::call` resolved as the
+      inbox item describes, or the default line once the watcher has merged both.
+- The contract failure went to state as `domain-advances-state-I010`, citing `ukukylmu`.
+- 2026-11-17, item 5, preservation's `wokytpkz`, its fix for I003 and I005: **both hold, and three false proofs
+  past the exception comparison**, to be handed over.
+  - The fix:
+    - the scope is read on copies of its own;
+    - an exception is its class's name and the names of every class above it up to `Object`.
+  - Built apart at `wokytpkz` (sources touched first), `pairing_countermodels.rs` and `fresh_pair_countermodels.rs`
+    pass, their checker-side tests included.
+  - The fixture is `lib/tests/fixtures/thrown-pair-countermodels`; its README has the table, the commands, the
+    options, what was tried and the checker-side test. `lib/tests/thrown_pair_countermodels.rs` holds it to a JVM.
+  - Each is **Verified** "agree on every input where k >= 0 && k < 4", non-vacuous, with no assumption stated, where
+    a caller's handler tells the versions apart on a JVM:
+    - `marked`: an interface the previous version's exception implements. The module says interfaces are not
+      compared, so this one is the documented limit, reproduced.
+    - `messaged`: the message.
+    - `coded`: a field of the exception's own class (403 against 404).
+  - The README's checker-side test fails on exactly these three there.
+  - **Tried and guarded**:
+    - a superclass's superclass that changed under kept names, refuted;
+    - a cause, a gap under strict;
+    - a shallow copy for the scope, which is whole for the arrays the pair takes.
+  - The pairing is preservation's, so nothing in `lib/src` changes here. The test goes as a `failure` item to
+    `domain-advances-preservation`, citing this commit; the id goes in the next entry.
+  - *Audit*:
+    - 289's and 290's `preservation` say "throw the same exception". The rerun on this checker reads that as one class
+      name and one chain of superclass names.
+    - Across the releases' pinned JARs (hashes checked), no class named `*Exception` or `*Error` differs in what it
+      extends, what it implements or its members (`javap -p`; 101 classes for 289, 191 for 290). So `marked` and
+      `coded` cannot occur there.
+    - Messages were not compared.
+    - A note in both examples records this; it is also their item 6 entry for preservation. Nothing for the watcher.
+- Inbox: no open items.
+- Next:
+  - send the exception failure;
+  - I002's two remaining cases on a trial merge;
+  - item 5: evidence's `kqxwrwrx` (the fix for I007), state's `llyzwmyp` (the observation binding on the state line,
+    and a lambda's per-run name), and `nzsypymy` (290's preservation restated, also item 6);
+  - item 6's entries for 288's `fixed-security` and 289's other answers.
 - Status: working
 
 ## Loop settings
