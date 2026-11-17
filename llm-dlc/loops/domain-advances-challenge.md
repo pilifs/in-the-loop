@@ -200,7 +200,26 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   - *Audit*:
     - The results resting on a loop invariant are 287's (`fixed-guard`, `fixed-security`). No attempt gave a false proof, so they are not affected.
     - The only lemma in use, `simpleMatch` (286, 288), reads no array, so the new refusal touches no result.
-- Next: item 5 against the other streams' new commits, starting with the evidence stream's trace-check change (`mktymxvt`) and the drivers that record what they ran (`rkxyyqwn`). Items 6 and 7 after.
+- 2026-11-17, item 5, the preservation stream's fresh pair (`zmvkptqz`): **two false proofs reproduced on its checker**, to be handed over.
+  - The rule: each version starts from a fresh state (`fresh()`), and an exception is compared by its class's name.
+  - The fixtures are in `lib/tests/fixtures/fresh-pair-countermodels`. Its README has the table, the commands, the audit and the checker-side test.
+  - `lib/tests/fresh_pair_countermodels.rs` holds the fixtures to a JVM.
+  - Both are **Verified** and non-vacuous on `domain-advances-preservation@-` (built apart):
+    - `first`, with the scope `app.Entry.zeroed(cells)`. `meantToChange` is called on the caller's own arrays, and each version's copy is taken after it, so a scope that writes a cell decides what both see. Alone on `{5}`, the versions give 5 and 0. This was also Verified on this line's checker: it is older than the fresh state.
+    - `failing`: two classes named `app.Failure`, one an `IllegalArgumentException` and the other an `IllegalStateException`, are one answer by name. A caller's handler catches one and not the other.
+  - The README's checker-side test fails on both cases there, as it should. No refusal is committed here, since the pairing is the preservation stream's.
+  - The test goes as a `failure` item to `domain-advances-preservation`, citing this commit once it is in. Its id goes in the next entry.
+  - *Audit*:
+    - The allowed changes of 288 to 290 only read, so the scope hole affects none of them.
+    - Exceptions by name: 289's and 290's accepted preservation answers are already refused by the evidence stream's `ymzlyksq` until a rerun. Whether a class the adapters reach changes its superclass between releases was not checked, so the check belongs with the fix, before that rerun is accepted.
+    - Nothing for the watcher.
+  - Also read for item 5:
+    - `mktymxvt` changes only `sync.py`'s trace check, which is not a rule of the run's results. Nothing to attack under this brief.
+    - `rkxyyqwn` and `ymzlyksq` go with item 7, the acceptance check.
+- Next, item 5:
+  - the state stream's ArrayDeque and HashSet models (`kztoupry`): whether their reads and writes pass `Engine::reads` and `Engine::keeps`, and their exception classes against a JVM's;
+  - the drivers' records (`rkxyyqwn`) and the vacuity witness outside the change (`ymzlyksq`), as item 7 controls.
+- Items 6 and 7 after.
 - Status: working
 
 ## Loop settings
