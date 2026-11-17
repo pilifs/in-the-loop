@@ -1,0 +1,580 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261117-133148-example-290-the-four-answers-beside-the",
+  "title": "Example 290: the four answers beside the route again, with the driver's record of what it ran (evidence.json)",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 45.9s, peak 188.6 MiB (estimated 10m00s, 4.0 GiB); 22 output file(s) changed; signals: jvmcontract:holds×2; jvmcontract:fails×1; jvmcontract:holds×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261117-133148-example-290-the-four-answers-beside-the.json",
+    "sha256": "6b35b0612537cd6085f1a937de970ab8ec610b592c41a5125750ad0f766e01ee",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261117-133148-example-290-the-four-answers-beside-the",
+      "title": "Example 290: the four answers beside the route again, with the driver's record of what it ran (evidence.json)",
+      "description": "The evidence stream's acceptance check (examples/tools/accept.py) accepts an answer given beside the route only with no limit when the driver recorded what it ran: the JARs of the class path with their hashes, the adapter's sources and compiled classes, the claim file, the bound and the verifier's binary (evidence.json, written by accept.record). Every example's proofs/prove.py now does this through examples/tools/beside_route.py, and ends the run when the mutant's JAR is not the one the mutant replay's receipt records. Example 290's four answers are accepted today with the limit that nothing the job left says which JARs, adapter classes and verifier binary were used. This job reruns the four tasks unchanged at the frozen bound (with the same observed initializers) into a work folder of its own (verification/.work-290/recorded), so the earlier job's outputs stay as its result records them. When it has passed, each task's besideRoute.job is switched to it and python3 examples/tools/accept.py 290 must accept all four with no limit about unrecorded artifacts. The audit of the observed initializers (VF-033) is separate work.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "B9",
+        "B11",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "290"
+        ],
+        "paths": [
+          "examples/tools/beside_route.py",
+          "examples/tools/accept.py",
+          "examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py"
+        ]
+      },
+      "expected": "exits 0: prove.py prints verified, violation, verified and violation, each the expected one, at the frozen bound; each task's outcome.json and evidence.json come back",
+      "submitted": {
+        "at": "2026-11-17T13:31:48+00:00",
+        "session": "7ece8184-b148-4351-92d8-d634606b823e"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "patch",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "10m",
+        "timeout": "1h",
+        "notes": "the earlier job's four tasks took 8, 5, 13 and 13 s at under 0.2 GiB; the rest is the release build of lib/ (about 3.5 min, 1.9 GiB) and the fetch of the pinned JARs"
+      },
+      "steps": [
+        {
+          "name": "preservation at the frozen bound",
+          "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py preservation --timeout 1800 --work verification/.work-290/recorded",
+          "cwd": "."
+        },
+        {
+          "name": "vulnerable-security at the frozen bound",
+          "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py vulnerable-security --timeout 1800 --work verification/.work-290/recorded",
+          "cwd": "."
+        },
+        {
+          "name": "fixed-security at the frozen bound",
+          "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py fixed-security --timeout 1800 --work verification/.work-290/recorded",
+          "cwd": "."
+        },
+        {
+          "name": "mutant-security at the frozen bound",
+          "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py mutant-security --timeout 1800 --work verification/.work-290/recorded",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/.work-290/recorded/preservation/outcome.json",
+        "verification/.work-290/recorded/preservation/evidence.json",
+        "verification/.work-290/recorded/preservation/work/pair",
+        "verification/.work-290/recorded/vulnerable-security/outcome.json",
+        "verification/.work-290/recorded/vulnerable-security/evidence.json",
+        "verification/.work-290/recorded/vulnerable-security/work/harness",
+        "verification/.work-290/recorded/fixed-security/outcome.json",
+        "verification/.work-290/recorded/fixed-security/evidence.json",
+        "verification/.work-290/recorded/fixed-security/work/harness",
+        "verification/.work-290/recorded/mutant-security/outcome.json",
+        "verification/.work-290/recorded/mutant-security/evidence.json",
+        "verification/.work-290/recorded/mutant-security/work/harness"
+      ]
+    }
+  },
+  "sourceCommit": "0835cfd01e0bdd7a8a58bd549fd5fec2f151ab1c",
+  "startedAt": "2026-11-17T13:32:29+00:00",
+  "finishedAt": "2026-11-17T13:37:17+00:00",
+  "wallSeconds": 288.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1451051,
+    "workers": 10,
+    "cpus": 20.0,
+    "memoryBudgetBytes": 47244640256,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 600.0,
+    "notes": "the earlier job's four tasks took 8, 5, 13 and 13 s at under 0.2 GiB; the rest is the release build of lib/ (about 3.5 min, 1.9 GiB) and the fetch of the pinned JARs"
+  },
+  "usage": {
+    "peakMemoryBytes": 197746688,
+    "wallSeconds": 45.9,
+    "cpuSeconds": 53.9,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "preservation at the frozen bound",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py preservation --timeout 1800 --work verification/.work-290/recorded",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 10.636,
+      "cpuSeconds": 13.255,
+      "cpuThrottledSeconds": 0.351,
+      "peakMemoryBytes": 153833472,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-preservation-at-the-frozen-bou.log",
+        "lines": 11,
+        "bytes": 2691,
+        "sha256": "fde6be52b26b50fd293dfe7b1013f2466f184c39a2dec2df69c8cb8005a206c1",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 2
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 6,
+          "text": "✓ example290.adapter.MatcherSelectionAdapter#select: the two versions agree on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8, outside `!(servlets.length == 1 && servlets[0] == 0)` (the pair's property, below)",
+          "groups": [
+            "example290.adapter.MatcherSelectionAdapter#select: the two versions agree on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8, outside `!(servlets.length == 1 && servlets[0] == 0)` (the pair's property, below)"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 8,
+          "text": "✓ RegressionPair#agree satisfies `result` on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8 (jvmcontract's own checker (CaDiCaL): 1 properties proved over servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of ",
+          "groups": [
+            "RegressionPair#agree satisfies `result` on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8 (jvmcontract's own checker (CaDiCaL): 1 properties proved over servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array in 3.8 s; loops unwound 64 times with unwinding assertions)"
+          ]
+        }
+      ],
+      "tail": [
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261117-133148-example-290-the-four-answers-beside-the/examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/replay/adapter/example290/adapter/SelectionRegistry.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261117-133148-example-290-the-four-answers-beside-the/examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/replay/adapter/example290/adapter/SelectionRegistry.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-290/recorded/preservation/work/pair/RegressionPair.java) calls the previous version's example290.adapter.MatcherSelectionAdapter#select, relocated under `before`, and then the new one's on the same inputs, ",
+        "✓ example290.adapter.MatcherSelectionAdapter#select: the two versions agree on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8, outside `!(servlets.length == 1 && servlets[0] == 0)` (the pair's property, below)",
+        "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"java\"; the names are servlets, method, patterns); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target",
+        "✓ RegressionPair#agree satisfies `result` on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8 (jvmcontract's own checker (CaDiCaL): 1 properties proved over servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of ",
+        "  not vacuous: agree(servlets=[], method=4, patterns={null, null, null, null, null, null, null, null}) reaches the calls",
+        "",
+        "verdict: verified (expected verified); paths 573, solver calls 1087, variables 7907; outcome in verification/.work-290/recorded/preservation/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "vulnerable-security at the frozen bound",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py vulnerable-security --timeout 1800 --work verification/.work-290/recorded",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 5.212,
+      "cpuSeconds": 6.965,
+      "cpuThrottledSeconds": 0.263,
+      "peakMemoryBytes": 194695168,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-vulnerable-security-at-the-fro.log",
+        "lines": 11,
+        "bytes": 1693,
+        "sha256": "287b255a4d1710b54f581c5da0eb751bfe76dd98c8dfb7c32560c3775d28cbe2",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 4,
+          "text": "✗ Property of example290.adapter.MatcherSelectionAdapter#select violated: `false` where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalArgum",
+          "groups": [
+            "Property of example290.adapter.MatcherSelectionAdapter#select violated: `false` where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalArgumentException when true:"
+          ]
+        }
+      ],
+      "tail": [
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261117-133148-example-290-the-four-answers-beside-the/examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/replay/adapter/example290/adapter/SelectionRegistry.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"java\"; the names are servlets, method, patterns); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target",
+        "✗ Property of example290.adapter.MatcherSelectionAdapter#select violated: `false` where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalArgum",
+        "  select(servlets=[0, 0], method=0, patterns={})",
+        "    outcome: 0",
+        "  (found by jvmcontract's own checker (CaDiCaL) in 1.4 s searching inputs in [0:20], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of i",
+        "",
+        "The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.",
+        "",
+        "verdict: violation (expected violation); paths 4, solver calls 17, variables 6041; outcome in verification/.work-290/recorded/vulnerable-security/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "fixed-security at the frozen bound",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py fixed-security --timeout 1800 --work verification/.work-290/recorded",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 16.037,
+      "cpuSeconds": 17.13,
+      "cpuThrottledSeconds": 0.145,
+      "peakMemoryBytes": 135720960,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-fixed-security-at-the-frozen-b.log",
+        "lines": 7,
+        "bytes": 1540,
+        "sha256": "5b3dcbe1f56e739d7b1775e0d552c7265b197989842310b27fe841772ce892fa",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 4,
+          "text": "✓ example290.adapter.MatcherSelectionAdapter#select satisfies `false` on every input where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalAr",
+          "groups": [
+            "example290.adapter.MatcherSelectionAdapter#select satisfies `false` on every input where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalArgumentException when true (jvmcontract's own checker (CaDiCaL): 1 properties proved over servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array in 12.8 s; loops unwound 64 times with unwinding assertions)"
+          ]
+        }
+      ],
+      "tail": [
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261117-133148-example-290-the-four-answers-beside-the/examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/replay/adapter/example290/adapter/SelectionRegistry.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"java\"; the names are servlets, method, patterns); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target",
+        "✓ example290.adapter.MatcherSelectionAdapter#select satisfies `false` on every input where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalAr",
+        "  not vacuous: select(servlets=[0, 0], method=4, patterns={null, null, null, null, null, null, null, null}) reaches the calls",
+        "",
+        "verdict: verified (expected verified); paths 659, solver calls 1699, variables 8509; outcome in verification/.work-290/recorded/fixed-security/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "mutant-security at the frozen bound",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py mutant-security --timeout 1800 --work verification/.work-290/recorded",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 14.04,
+      "cpuSeconds": 16.552,
+      "cpuThrottledSeconds": 0.667,
+      "peakMemoryBytes": 197746688,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-mutant-security-at-the-frozen.log",
+        "lines": 14,
+        "bytes": 2175,
+        "sha256": "64d9ad13cc8c78ee7d54597f5ed8a3e4c397a64df03bd65316a4f72b20407643",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 7,
+          "text": "✗ Property of example290.adapter.MatcherSelectionAdapter#select violated: `false` where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalArgum",
+          "groups": [
+            "Property of example290.adapter.MatcherSelectionAdapter#select violated: `false` where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalArgumentException when true:"
+          ]
+        }
+      ],
+      "tail": [
+        "Note: verification/.work-290/recorded/mutant-security/jars/mutant-src/org/springframework/security/config/annotation/web/AbstractRequestMatcherRegistry.java uses unchecked or unsafe operations.",
+        "Note: Recompile with -Xlint:unchecked for details.",
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261117-133148-example-290-the-four-answers-beside-the/examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/replay/adapter/example290/adapter/SelectionRegistry.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "mutant: spring-security-config-5.8.5.jar with 2 class(es) of AbstractRequestMatcherRegistry recompiled (--release 8 -g -parameters), sha256 4ee35d0bb11bf24489c77e85efb2cfe1ae6514547ee677529c6750c2a955857e: the JAR the mutant replay ran",
+        "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"java\"; the names are servlets, method, patterns); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target",
+        "✗ Property of example290.adapter.MatcherSelectionAdapter#select violated: `false` where servlets.length > 1 && java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && java.util.Arrays.stream(servlets).anyMatch(s -> s == 0) && method >= -1 && method < 8, and throws java.lang.IllegalArgum",
+        "  select(servlets=[1, 0], method=0, patterns={})",
+        "    outcome: 0",
+        "  (found by jvmcontract's own checker (CaDiCaL) in 9.5 s searching inputs in [0:20], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of i",
+        "",
+        "The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.",
+        "",
+        "verdict: violation (expected violation); paths 708, solver calls 1758, variables 15905; outcome in verification/.work-290/recorded/mutant-security/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-290/recorded/preservation/outcome.json",
+      "change": "added",
+      "bytes": 35863,
+      "sha256": "c44026113ca80d199ffaa9eb9c794dc7515766ca63e4d72331aeceecf4e65680",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/preservation/evidence.json",
+      "change": "added",
+      "bytes": 6070,
+      "sha256": "563d73862574eab2b0d531cb93da4629c9ce54cc606a2160da5f374a15d95af7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/preservation/work/pair/RegressionPair.class",
+      "change": "added",
+      "bytes": 3380,
+      "sha256": "78ca041c8a20708a1d6bf3c9f6cb2be0b19c8216ee2be1c172a6c62b02ed2e45",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/preservation/work/pair/RegressionPair.java",
+      "change": "added",
+      "bytes": 2968,
+      "sha256": "07b1e13819104b088748e0556e95ebcbf7f00f3664f238abccd786fee5563deb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/vulnerable-security/outcome.json",
+      "change": "added",
+      "bytes": 12765,
+      "sha256": "fade2394fb6ec6a61c52b31ed24c3f5a4ab9125bc913d957782657eb12aa12b9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/vulnerable-security/evidence.json",
+      "change": "added",
+      "bytes": 4335,
+      "sha256": "c7284fe7880788257dff5f5ca7ec43176ce04f474d85ac94743d5d81d12d3402",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/vulnerable-security/work/harness/PropertyClaim.class",
+      "change": "added",
+      "bytes": 1677,
+      "sha256": "abb92620e1bdbc825d82d1ac9fb2ff7aca3180e588e78da5f82040bbf714a35f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/vulnerable-security/work/harness/PropertyClaim.java",
+      "change": "added",
+      "bytes": 719,
+      "sha256": "194ea7bb389dcd5f4a992d6a67d08c05ba35b08f1f209ed510e3225d075e28d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/vulnerable-security/work/harness/PropertyHarness.class",
+      "change": "added",
+      "bytes": 1550,
+      "sha256": "51174f0d878423567f06a99a2a81cde47c1429620f9a1f2b6085fea585d3c7e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/vulnerable-security/work/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1902,
+      "sha256": "8143fdcd73d1027377ffd381b68653156c8d58675b4598cea72b8edf3e842a07",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/fixed-security/outcome.json",
+      "change": "added",
+      "bytes": 12801,
+      "sha256": "109544c8c46f76232def0cb3997f1b536e4d21f19011ab8b266110d19619d560",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/fixed-security/evidence.json",
+      "change": "added",
+      "bytes": 4275,
+      "sha256": "aff33f9dec7d774354a0a2bf1905946dc39d9e62a46b3b61286a4bfb22313d0d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/fixed-security/work/harness/PropertyClaim.class",
+      "change": "added",
+      "bytes": 1677,
+      "sha256": "abb92620e1bdbc825d82d1ac9fb2ff7aca3180e588e78da5f82040bbf714a35f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/fixed-security/work/harness/PropertyClaim.java",
+      "change": "added",
+      "bytes": 719,
+      "sha256": "194ea7bb389dcd5f4a992d6a67d08c05ba35b08f1f209ed510e3225d075e28d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/fixed-security/work/harness/PropertyHarness.class",
+      "change": "added",
+      "bytes": 1550,
+      "sha256": "51174f0d878423567f06a99a2a81cde47c1429620f9a1f2b6085fea585d3c7e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/fixed-security/work/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1902,
+      "sha256": "8143fdcd73d1027377ffd381b68653156c8d58675b4598cea72b8edf3e842a07",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/mutant-security/outcome.json",
+      "change": "added",
+      "bytes": 14528,
+      "sha256": "68f93a7c344041c62b70598664258a4f8164270202c9ba5a0b5f4f6f1180bf82",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/mutant-security/evidence.json",
+      "change": "added",
+      "bytes": 4454,
+      "sha256": "81def7ab36686dae473223305ce873f88da89143c89029acc00996aa3067e8a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/mutant-security/work/harness/PropertyClaim.class",
+      "change": "added",
+      "bytes": 1677,
+      "sha256": "abb92620e1bdbc825d82d1ac9fb2ff7aca3180e588e78da5f82040bbf714a35f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/mutant-security/work/harness/PropertyClaim.java",
+      "change": "added",
+      "bytes": 719,
+      "sha256": "194ea7bb389dcd5f4a992d6a67d08c05ba35b08f1f209ed510e3225d075e28d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/mutant-security/work/harness/PropertyHarness.class",
+      "change": "added",
+      "bytes": 1550,
+      "sha256": "51174f0d878423567f06a99a2a81cde47c1429620f9a1f2b6085fea585d3c7e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/recorded/mutant-security/work/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1902,
+      "sha256": "8143fdcd73d1027377ffd381b68653156c8d58675b4598cea72b8edf3e842a07",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-17T13:37:25+00:00",
+    "applied": [
+      "verification/.work-290/recorded/preservation/outcome.json",
+      "verification/.work-290/recorded/preservation/evidence.json",
+      "verification/.work-290/recorded/preservation/work/pair/RegressionPair.class",
+      "verification/.work-290/recorded/preservation/work/pair/RegressionPair.java",
+      "verification/.work-290/recorded/vulnerable-security/outcome.json",
+      "verification/.work-290/recorded/vulnerable-security/evidence.json",
+      "verification/.work-290/recorded/vulnerable-security/work/harness/PropertyClaim.class",
+      "verification/.work-290/recorded/vulnerable-security/work/harness/PropertyClaim.java",
+      "verification/.work-290/recorded/vulnerable-security/work/harness/PropertyHarness.class",
+      "verification/.work-290/recorded/vulnerable-security/work/harness/PropertyHarness.java",
+      "verification/.work-290/recorded/fixed-security/outcome.json",
+      "verification/.work-290/recorded/fixed-security/evidence.json",
+      "verification/.work-290/recorded/fixed-security/work/harness/PropertyClaim.class",
+      "verification/.work-290/recorded/fixed-security/work/harness/PropertyClaim.java",
+      "verification/.work-290/recorded/fixed-security/work/harness/PropertyHarness.class",
+      "verification/.work-290/recorded/fixed-security/work/harness/PropertyHarness.java",
+      "verification/.work-290/recorded/mutant-security/outcome.json",
+      "verification/.work-290/recorded/mutant-security/evidence.json",
+      "verification/.work-290/recorded/mutant-security/work/harness/PropertyClaim.class",
+      "verification/.work-290/recorded/mutant-security/work/harness/PropertyClaim.java",
+      "verification/.work-290/recorded/mutant-security/work/harness/PropertyHarness.class",
+      "verification/.work-290/recorded/mutant-security/work/harness/PropertyHarness.java"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "78d61eac5020f98d4be95dcfd3045225c9847cb5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/78d61eac5020f98d4be95dcfd3045225c9847cb5/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

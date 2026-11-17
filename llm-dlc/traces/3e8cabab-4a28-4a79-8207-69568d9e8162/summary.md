@@ -1090,6 +1090,12 @@ change `synxurtvrlmx` · [log `2ab16d90235b`](https://terminalvalue.net/raw-trac
 
 Streams that ran test_brief_run.py before the fixture fix (smxzwqlr) put their test's made-up streams a and b to the real watcher; each is answered leave and recorded (run-streams-domain-advances D004 onward). Nothing was merged.
 
+### Record verification results for 1 job(s)
+
+change `wwqnnzwplzlr` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-133148-example-290-the-four-answers-beside-the: passed: 4 passed step(s) in 45.9s, peak 188.6 MiB (estimated 10m00s, 4.0 GiB); 22 output file(s) changed; signals: jvmcontract:holds×2; jvmcontract:fails×1; jvmcontract:holds×1 Applied 22 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz) has every step in between: reasoning, tool calls and their results.
