@@ -18,6 +18,27 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-037: a stream's `test_costs.py run --changed` filled its loop's 12G cap, and the OOM killer killed the session instead of the tests
+
+- **Status**: open, minor (raised by the watcher of the domain-advances run; how loops and test runs share the cap is
+  for the user to decide).
+- **Raised**: 2026-11-17 17:11 UTC on `vm-1`, by the watcher of the domain-advances run, when the challenge stream's
+  loop ended in its cycle 17 with `claude exited with status 137` and no commit.
+- **Found**: each stream runs in a systemd scope capped at 12G with no swap (`feature-loop-NAME.scope`). The challenge
+  session ran `python3 lib/tools/test_costs.py run --changed` on a change touching `lib/tests/costs.json` and a new
+  Rust test file. That ran several Rust test binaries side by side (`application_core`, `values`, `summaries`,
+  `application_core_joint`) and a dozen `javac`s, and the scope reached its 12G peak. The kernel's OOM killer chose the
+  `claude` process, the largest single one, so the tests went on as orphans holding 10G in the scope. run-streams.sh then
+  ran the loop again at once, which refused to start beside them ("the scope is active"); two stops in a row counted the
+  stream as blocked and put it to the watcher to merge, with its uncommitted work (new countermodels,
+  `lib/tests/setting_countermodels.rs`) left in its workspace. The watcher stopped the scope by hand.
+- **Needs**: one of: the test run inside a loop takes fewer binaries at a time, or a cap of its own below the
+  loop's (`systemd-run --scope -p MemoryMax=` around it), so the OOM killer meets the tests, not the session; or
+  `claude` gets a lower `OOMScoreAdjust` than its children; and a loop that ends this way stops its scope before it is
+  run again, so the rerun is not refused.
+- **Tracked in**: nowhere else.
+- **Closes when**: a changed-test run that needs more than the cap fails on its own, and the loop's session goes on.
+
 ### VF-036: equivalence checks and the Terminal-Value tests leave their temp folders in `/tmp`, which ran out of inodes
 
 - **Status**: open, minor, to revisit if it recurs (the user's decision on 2026-11-17: they raised `/tmp`'s inode
