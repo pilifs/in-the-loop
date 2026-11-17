@@ -216,6 +216,17 @@ Don't change `verification/pipeline.py`.
   same record.
 - Next: merge `mqkqvvmw` onto this line, then step 5 (the binding, I004's test, the countermodel); 286's and 287's
   records when their jobs are back; the 289/290 preservation rerun once this line and `zmvkptqz` meet.
+- 2026-11-17, cycle 7. **Step 3, 286's part, done.** `20261117-133148-…-286-…` passed (36m01s, 1.4 GiB, under its 40 min
+  estimate): each run proved the simpleMatch lemma by induction first (87.6 to 111.1 s); vulnerable-security refuted
+  (414.6 s), fixed-security verified and not vacuous (1060.3 s), mutant-security refuted (373.6 s) on the JAR the mutant
+  replay ran (`48323d21…`), both witnesses run on a JVM. Its result folder and `verification/.work-286/recorded` came
+  from the default line as they are (`jj restore` from `qzwtllkx`, no merge). Each 286 task's `besideRoute` names that
+  job, and `accept.py 286` accepts all three with no limit (12, 13 and 13 checks ok); 286's notes say so. Step 3 still
+  waits on 287's rerun (`20261117-133148-…-287-…`, pending, not started) and the 289/290 preservation rerun.
+- Repeated work measured (step 7): none.
+- Inbox: no open items.
+- Next: merge `mqkqvvmw` onto this line, then step 5 (the binding, I004's test, the countermodel); 287's records when
+  its job is back; the 289/290 preservation rerun once this line and `zmvkptqz` meet.
 - Status: working
 
 ## Loop settings
