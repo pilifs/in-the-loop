@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:50.898Z",
-  "ended": "2026-11-17T16:42:35.215Z",
-  "duration_seconds": 13544,
+  "ended": "2026-11-17T16:57:35.602Z",
+  "duration_seconds": 14445,
   "stats": {
-    "turns": 77,
-    "api_calls": 780,
-    "tool_calls": 785,
-    "tool_errors": 13,
-    "compactions": 14,
+    "turns": 82,
+    "api_calls": 830,
+    "tool_calls": 834,
+    "tool_errors": 15,
+    "compactions": 15,
     "peak_context_tokens": 294636,
     "usage": {
-      "input_tokens": 1586,
-      "output_tokens": 667649,
-      "cache_read_input_tokens": 90971514,
-      "cache_creation_input_tokens": 2146804
+      "input_tokens": 1686,
+      "output_tokens": 711709,
+      "cache_read_input_tokens": 96267809,
+      "cache_creation_input_tokens": 2284405
     }
   },
   "tools": {
-    "Bash": 715,
-    "Edit": 27,
-    "Write": 21,
-    "Read": 14,
+    "Bash": 760,
+    "Edit": 28,
+    "Write": 23,
+    "Read": 15,
     "ToolSearch": 5,
     "Monitor": 3
   },
@@ -51,12 +51,14 @@
     "lib/tests/fixtures/observed-countermodels/README.md",
     "lib/tests/fixtures/rule-countermodels/README.md",
     "lib/tests/fixtures/thrown-pair-countermodels/README.md",
+    "lib/tests/fixtures/tie-countermodels/README.md",
     "lib/tests/fresh_pair_countermodels.rs",
     "lib/tests/lemma_countermodels.rs",
     "lib/tests/loop_countermodels.rs",
     "lib/tests/observed_countermodels.rs",
     "lib/tests/pairing_countermodels.rs",
     "lib/tests/rule_countermodels.rs",
+    "lib/tests/tie_countermodels.rs",
     "lib/tools/cost_inventory.py",
     "llm-dlc/loops/domain-advances-challenge.md",
     "~/.claude/projects/-home-user-code-in-the-loop/memory/apart-builds-need-touch.md",
@@ -262,24 +264,38 @@
     {
       "index": 14,
       "started": "2026-11-17T16:31:00.233Z",
-      "ended": "2026-11-17T16:42:35.215Z",
-      "turns": 4,
-      "api_calls": 32,
+      "ended": "2026-11-17T16:43:33.044Z",
+      "turns": 5,
+      "api_calls": 36,
       "usage": {
-        "input_tokens": 64,
-        "output_tokens": 26152,
-        "cache_read_input_tokens": 2751987,
-        "cache_creation_input_tokens": 103169
+        "input_tokens": 72,
+        "output_tokens": 28296,
+        "cache_read_input_tokens": 3225457,
+        "cache_creation_input_tokens": 108419
       },
-      "peak_context_tokens": 116442
+      "peak_context_tokens": 121692
+    },
+    {
+      "index": 15,
+      "started": "2026-11-17T16:44:09.656Z",
+      "ended": "2026-11-17T16:57:35.602Z",
+      "turns": 4,
+      "api_calls": 46,
+      "usage": {
+        "input_tokens": 92,
+        "output_tokens": 41916,
+        "cache_read_input_tokens": 4822825,
+        "cache_creation_input_tokens": 132351
+      },
+      "peak_context_tokens": 145624
     }
   ],
   "log": {
-    "sha256": "22c578f35043d23d28be6779b6e944767d1187fd3cf767df23b8dd87eaedb59f",
-    "bytes": 20785588,
-    "lines": 6954,
-    "gzip_bytes": 3698092,
-    "path": "llm-dlc/traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/logs/22c578f35043d23d28be6779b6e944767d1187fd3cf767df23b8dd87eaedb59f.jsonl.gz"
+    "sha256": "9e917f0041d3856829e33339f6139eebd15644b9b6172a6a4b80fd3f3f42eea0",
+    "bytes": 22129011,
+    "lines": 7384,
+    "gzip_bytes": 3946382,
+    "path": "llm-dlc/traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/logs/9e917f0041d3856829e33339f6139eebd15644b9b6172a6a4b80fd3f3f42eea0.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -410,6 +426,14 @@
       "summary": "Countermodels of an effect contract's stub inside a proof that limits writes: a proof by induction and an empty write set, each proved where a JVM writes what they rule out",
       "body": "Answers the challenge stream's inbox item I002 (where the lemma rule and the state stream's write-set rule meet in Engine::call). The two cases it names cannot occur: a lemma's proof and an effect contract's proof are given no lemma and no contract (lemmas: None in property.rs), so a framed or contracted call inside them runs as written and Engine::keeps sees it. What does occur is a check's own --decreases or --writes with an effect contract in --lemmas: the stub's effect intrinsic puts each written field into the object directly, without asking keeps.\n\nlib/tests/fixtures/stub-countermodels holds two: Store.f, proved by induction on k, writes a static's bean through a contracted setter, calls itself and reads the bean, and result == 0 is Verified while a JVM gives f(2) == -1 (the hypothesis drops the call's write); Touch.touch with --writes '' writes a static's bean through the setter and is Verified, with a statement that says nothing of the write set. Both are Verified on state's twtuqvvr and on a trial merge of this line with state's vvpxytqs, each built apart, and both are refused there without the contract. lib/tests/stub_countermodels.rs holds the fixture to a JVM; the README has the checker-side test for the state stream, which owns effect contracts, so nothing in lib/src changes here. Audit: no example's decreases: is in a check that takes a contract, and none has writes: or --writes. test_costs.py run --changed passed.",
       "log_sha256": "22c578f35043d23d28be6779b6e944767d1187fd3cf767df23b8dd87eaedb59f"
+    },
+    {
+      "change_id": "qnlomnmxruxlnpwnovvnpouqoxylnwut",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of what the pair of versions takes as the same code: a loop's ties and the identical-bytecode shortcut, each proved where a JVM tells the versions apart",
+      "body": "Item 5 of the challenge brief, against the preservation stream's owrsowqm (lib/src/bmc/ties.rs). In a pair of versions, two summaries of one loop take one set of free bits where the code and the state are the same. Both rest on reach in lib/src/shared.rs, and so does the older shortcut that verifies a target identical in both versions with nothing to prove. reach follows no call whose owner is a JDK class or interface, so an application class's code run through IntUnaryOperator is in no fingerprint. A class's surface for the key also leaves out its private methods, and a class only that code reads is not in uses, so its statics are not in the key.\n\nlib/tests/fixtures/tie-countermodels: the old and new versions differ only in Step's private helper and Config's initializer, and a JVM gives 2 against 1 past 1000 (lib/tests/tie_countermodels.rs). At preservation's lmyvttyt, built apart, summed and configured are each Verified to agree on k < 2000 at --unwind 2, non-vacuous and with no assumption. On this line, without the ties, both get no verdict. supplied under the defaults is 'behaves as before on every input (identical in both versions; nothing to prove)' on every line, this one included. The README's checker-side test fails on all three at lmyvttyt. The pairing and shared.rs are preservation's this run, so nothing in lib/src changes here; the test goes to it as a failure item.",
+      "log_sha256": "9e917f0041d3856829e33339f6139eebd15644b9b6172a6a4b80fd3f3f42eea0"
     }
   ],
   "logs": {
@@ -483,6 +507,12 @@
       "bytes": 9745115,
       "lines": 3520,
       "gzip_bytes": 1667785,
+      "url": null
+    },
+    "9e917f0041d3856829e33339f6139eebd15644b9b6172a6a4b80fd3f3f42eea0": {
+      "bytes": 22129011,
+      "lines": 7384,
+      "gzip_bytes": 3946382,
       "url": null
     },
     "e7cc80720c2b531529faa0817c20b45f9db89bed6b2ec48ef18e0a2fef1ad6b2": {

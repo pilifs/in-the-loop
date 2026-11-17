@@ -517,8 +517,39 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   - preservation's `owrsowqm` (a pair's two runs of one loop past the bound go on from one state).
 - Tests: `test_costs.py run --changed` passed.
 - Inbox: no open items.
+- The stub failure went to state as `domain-advances-state-I013`, citing `uqrzluvx`.
+- 2026-11-17, item 5, preservation's `owrsowqm` (a pair's two summaries of one loop take one set of bits where the
+  code and the state are the same): **two false proofs past the ties, and one older false proof by the same cause**,
+  to be handed over.
+  - The cause is in `reach` (`lib/src/shared.rs`), which both rest on. It follows no call whose owner is a JDK class
+    or interface, so an application class's code run through `IntUnaryOperator` is in no fingerprint.
+  - The fixture is `lib/tests/fixtures/tie-countermodels`; its README has the table, the commands, the options, what
+    was tried, the checker-side test and the audit. `lib/tests/tie_countermodels.rs` holds it to a JVM.
+  - `old` and `new` differ only in `Step`'s private helper and in `Config`'s initializer. A JVM gives 2 against 1
+    past 1000:
+    - `summed` and `configured` are each **Verified** at `lmyvttyt` (preservation's line, built apart), non-vacuous,
+      with no assumption, `k < 2000`, `--unwind 2`. The class surface leaves out private methods, and a class that
+      only the operator reads is not in `uses`, so its static is not in the key. On this line, without the ties,
+      both get no verdict.
+    - `supplied`, under the defaults without `--assume`: "behaves as before on every input (... identical in both
+      versions; nothing to prove)". This is on every line, this one included: the shortcut `plan.identical` is older
+      than the run.
+  - The pairing and `shared.rs` are preservation's this run, so nothing in `lib/src` changes here. The test goes as
+    a `failure` item to `domain-advances-preservation`, citing this commit; the id goes in the next entry.
+  - *Audit*:
+    - The ties are on preservation's line only. They are made for 287's preservation, which is open, and its loops
+      call only `BCrypt`'s own statics.
+    - The shortcut is not taken with `--before-classpath`, which every decided pair of the run (289, 290) passes.
+    - Nothing for the watcher.
+- **To the watcher**: `sync.py check` on this line reports 15 `has no manifest` errors, up from 8. Preservation's
+  merge `lmyvttyt` stamped session f28025bc on seven more of my commits (`pklttqzw`, `ukukylmu`, `lqvlvwsm`,
+  `zwrpkwnl`, `qmtxwupn`, `synvlnls` and `lqyqxwqv`). The cause is the one recorded above (`link_commits`). I have
+  not touched the trace lines.
+- New on the other lines since the last cycle, not yet challenged: evidence's `wxpoysws` (its fix for I010, the step
+  check) and state's `uxomquou` (the binding of `mmnoqopr` taken whole).
+- Inbox: no open items.
 - Next:
-  - item 5: preservation's `owrsowqm`, then evidence's `mmnoqopr` and state's `twtuqvvr`;
+  - item 5: evidence's `mmnoqopr` and `wxpoysws`, state's `twtuqvvr`;
   - item 5: `nzsypymy` (290's preservation restated, also item 6);
   - item 6's entries for 288's `fixed-security` and 289's other answers.
 - Status: working
