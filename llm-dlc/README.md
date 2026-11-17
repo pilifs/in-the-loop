@@ -249,8 +249,8 @@ under way (`brief_run.py status NAME` first). The watcher does none of the brief
    it is known to have reached it.
 3. **The run** (`brief_run.py start NAME`): `run-streams.sh`, detached, with the run's directory as its watcher.
    The watcher blocks in `brief_run.py wait NAME`, which returns only what needs it: a stream that is finished,
-   to merge (below), a loop that ended blocked (below), an integration check that stopped passing, a decision open for the user, a verification loop it had
-   to start because none ran while jobs waited, a summary every 30 minutes, and the end of the run.
+   to merge (below), a loop that ended blocked (below), an integration check that stopped passing, a decision
+   open for the user, results that came back (below), a summary every 30 minutes, and the end of the run.
 4. **The report**: each loop's status, and whether it is merged, against the brief's `Done when`, what was deferred or is blocked on the
    user, the watcher's decisions still to review, the cost, and what is left on the machine.
 
@@ -270,6 +270,21 @@ having. Without a watcher nothing is merged, and the end of the run names the co
 first rehearsal (`/run-brief rehearsal`, 2026-11-17) it took the streams for empty because their notes were not in
 its working copy's files, and a finished stream sat waiting for the slowest one. A brief's own work after its
 streams is now a brief of its own, run after them; a brief that names no streams still runs as its own loop.
+
+**The watcher keeps the verification queue itself, and is the one session committing in the default working copy
+while the run is under way.** With a watcher, `run-streams.sh` starts no verification loop. At each look at the
+queue, `brief_run.py wait` collects the results that are back and commits them with the paths a commit of results
+holds and nothing else (`pipeline.py collect`, `sync.py commit --only $(pipeline.py commit-paths)`), starts the
+runner (`pipeline.py run`, no model) when jobs wait and none is at work, and records the inbox items the streams'
+committed Progress acknowledges. Its merges and its collections take turns, by a lock. It returns to the watcher
+only what needs it: results that came back, with the ones to triage in `attention` (a job that did not pass,
+outputs not applied), which the watcher triages as the run-verification skill says. Before, a verification loop's
+Sonnet sessions collected and committed in the same working copy as the watcher's merges, with nothing to keep
+the two apart. A verification loop already running when the run starts keeps the queue as it did, and `wait`
+leaves the results to it. Merging itself holds `sync.py`'s lock across its jj steps, and trace output left
+uncommitted in the working copy (sync.py writes it on every run, for any session) neither holds a merge back
+nor comes along: it is dropped and written again by the next `sync.py` run. In the first rehearsal it was there
+after the foundation landed, and a second merge would have waited for a commit no session was going to make.
 
 **A stream no longer waits for the end of the run for an answer.** Without a watcher, a stream that stops
 `blocked:` is finished, as it stands. With one, `run-streams.sh` asks before it counts the

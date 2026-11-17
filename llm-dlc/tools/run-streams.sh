@@ -39,7 +39,10 @@
 #     that path, such as a forgotten workspace's, stops the run before anything
 #     starts.
 #  3. It starts verification-loop.sh, unless one already runs here, so the jobs
-#     the loops submit are run, collected and committed.
+#     the loops submit are run, collected and committed. With a watcher it starts
+#     none: the watcher keeps the queue itself (brief_run.py wait starts the
+#     runner when jobs wait, and collects and commits each result), so that it
+#     is the one session committing in this workspace while the run is under way.
 #  4. It runs each stream's loop, feature-loop.sh NAME-STREAM, from its
 #     workspace, side by side, and looks after each until it is finished.
 #     If the brief's Loop settings name "- integration: SCRIPT", it also runs
@@ -51,7 +54,7 @@
 #     and the end of the run names the command that merges each stream.
 #     A brief with no streams instead runs its own loop, feature-loop.sh NAME,
 #     here, in a fresh session of its own.
-#  6. It stops the verification loop after its run under way, and exits.
+#  6. It stops the verification loop it started, if any, after its run under way, and exits.
 #
 # A stream brief's "- fork:" is optional: without one in any of them, each stream starts a session of its own,
 # nothing is compacted, and the brief each cycle reads is all a stream starts from.
@@ -626,6 +629,8 @@ if [[ "$VERIFICATION" == separate ]]; then
   log "verification is separate for this brief: no verification loop is started, and nothing waits for a job"
 elif verification_running; then
   log "a verification loop already runs here: the loops' jobs are left to it"
+elif [[ -n "${RUN_STREAMS_WATCHER:-}" ]]; then
+  log "the watcher keeps the queue: it starts the runner when jobs wait and collects each result; no verification loop is started"
 else
   log "starting verification-loop.sh, for the jobs the loops submit"
   llm-dlc/tools/verification-loop.sh </dev/null > >(sed -u "s/^/[verify] /") 2>&1 &

@@ -52,8 +52,9 @@ Put these under the brief's `## How to work through it`, adjusted to its own wor
 ### Verification mode
 
 Say in the brief which of the two modes it runs in:
-- **With the pipeline** (the default): `run-streams.sh` starts `verification-loop.sh`, and a loop whose remaining work
-  waits on jobs stops with `- Status: waiting on jobs ID ...` and is run again when they are back.
+- **With the pipeline** (the default): the jobs are run and their results collected and committed (by the watcher of
+  `/run-brief`, or by `verification-loop.sh`, which `run-streams.sh` starts when it runs without one), and a loop whose
+  remaining work waits on jobs stops with `- Status: waiting on jobs ID ...` and is run again when they are back.
 - **Separate** (`- verification: separate` in Loop settings): no verification loop is started and no loop stops to wait.
   A quick job (a few minutes or less) is submitted with `--priority 10` and may be awaited inside a cycle for a bounded
   time (15 minutes after submitting, polling `pipeline.py status`); every other job is listed under Progress for review

@@ -38,14 +38,15 @@ from cost_tier import cost  # noqa: E402
 COPIED = ("run-streams.sh", "loop-common.sh", "streams_status.py", "run_records.py", "conductor.py", "decisions.py",
           "mode.py")
 
-# sync.py's stand-in: llm-dlc/generated.txt lists the session files, as the trace files list sessions; `commit` commits.
+# sync.py's stand-in: llm-dlc/index.json (one of the files it generates) lists the session files, as the trace files
+# list sessions; `commit` commits.
 FAKE_SYNC = textwrap.dedent('''\
     import os, subprocess, sys
     from pathlib import Path
     if sys.argv[1] == "adopt-logs":
         open(os.environ["STATUSES"] + "/adopted", "a").write(os.getcwd() + "\\n")
         sys.exit(0)
-    Path("llm-dlc/generated.txt").write_text("".join(sorted(p.name + "\\n" for p in Path("sessions").glob("*"))))
+    Path("llm-dlc/index.json").write_text("".join(sorted(p.name + "\\n" for p in Path("sessions").glob("*"))))
     if os.environ.get("STANDIN_LATE") == "1":  # another session writes into the working copy meanwhile
         Path("verification").mkdir(exist_ok=True)
         Path("verification/late.txt").write_text("a result collected during the merge\\n")
@@ -54,6 +55,39 @@ FAKE_SYNC = textwrap.dedent('''\
         paths = args[1:args.index("-m")] if args[0] == "--only" else []
         message = args[args.index("-m") + 1]
         sys.exit(subprocess.run(["jj", "commit", "-m", message, *paths]).returncode)
+''')
+
+# verification/pipeline.py's stand-in: the runner's state is STATUSES/pipeline, a finished job a folder of results/
+# with its result.json, and the jobs waiting the lines of pending; `run` only says it ran.
+FAKE_PIPELINE = textwrap.dedent('''\
+    import json, os, shutil, sys
+    from pathlib import Path
+    state = Path(os.environ["STATUSES"]) / "pipeline"
+    results = state / "results"
+    done = sorted(p.name for p in results.iterdir()) if results.exists() else []
+    cmd = sys.argv[1]
+    if cmd == "status":
+        pending = (state / "pending").read_text().splitlines() if (state / "pending").exists() else []
+        print(json.dumps({"pending": pending, "running": [], "finished, not collected": [f"{d} made up" for d in done]}))
+    elif cmd == "collect":
+        for name in done:
+            r = json.loads((results / name / "result.json").read_text())
+            dest = Path("verification/results") / name
+            dest.mkdir(parents=True, exist_ok=True)
+            (dest / "result.json").write_text(json.dumps({**r, "collected": {"conflicts": []}}))
+            shutil.rmtree(results / name)
+            print(f"{name}: {r['status']}: applied 0, conflicts 0, kept 0")
+        print("\\nFor the commit message (python3 llm-dlc/tools/sync.py commit -m ... -m ...):")
+        print(f"  Record verification results for {len(done)} job(s)")
+        print(f"  Outputs applied for 0 of the {len(done)} job(s).")
+    elif cmd == "commit-paths":
+        print("verification")
+    elif cmd == "wait":
+        print("no runner is at work, and nothing waits to be collected")
+    elif cmd == "run":
+        (state / "ran").write_text("ran\\n")
+    elif cmd == "nudge":
+        print("nudged")
 ''')
 
 # feature-loop.sh's stand-in: each run of a brief takes the next status of the list in STATUSES/BRIEF-NAME (the
@@ -78,7 +112,7 @@ CLAUDE = textwrap.dedent('''\
     if os.environ.get("STANDIN_COMMITS") == "1":
         open("lib-foundation.txt", "w").write("shared\\n")
         open("sessions/foundation", "w").write("")
-        open("llm-dlc/generated.txt", "w").write("base\\nfoundation\\n")
+        open("llm-dlc/index.json", "w").write("base\\nfoundation\\n")
         subprocess.run(["jj", "commit", "-m", "the foundation: a shared piece"], check=True, capture_output=True)
     print(json.dumps({"type": "result", "subtype": "success", "total_cost_usd": 1.5, "result": "Built the shared piece."}))
 ''')
@@ -110,13 +144,13 @@ class Fixture(unittest.TestCase):
         self.log = base / "claude.jsonl"
         env = {"JJ_USER": "Made Up", "JJ_EMAIL": "made-up@example.com", "JJ_CONFIG": str(base / "jj-config.toml"),
                "PATH": f"{base / 'bin'}:{os.environ['PATH']}", "STANDIN_LOG": str(self.log), "STATUSES": str(self.statuses),
-               "CLAUDE_CONFIG_DIR": str(base / "claude")}
+               "CLAUDE_CONFIG_DIR": str(base / "claude"), "XDG_STATE_HOME": str(base / "state")}
         self.env = mock.patch.dict(os.environ, env)
         self.env.start()
         for key in ("TMUX", "TMUX_PANE"):
             os.environ.pop(key, None)
-        files = {".gitignore": "llm-dlc/loop-summaries/\nverification/pipeline.local.toml\n", "llm-dlc/tools/sync.py": FAKE_SYNC, "sessions/base": "",
-                 "llm-dlc/generated.txt": "base\n", "lib.txt": "one\n",
+        files = {".gitignore": "llm-dlc/loop-summaries/\nverification/pipeline.local.toml\n", "llm-dlc/tools/sync.py": FAKE_SYNC, "verification/pipeline.py": FAKE_PIPELINE, "sessions/base": "",
+                 "llm-dlc/index.json": "base\n", "lib.txt": "one\n",
                  "llm-dlc/loops/made-up.md": brief(self.STREAMS)}
         for s in self.STREAMS:
             files[f"llm-dlc/loops/made-up-{s}.md"] = brief(workspace=f"made-up-{s}")
@@ -265,7 +299,7 @@ class BeforeTheRun(Fixture):
     @cost("tool")
     def test_a_budget_over_what_is_left_is_lowered_for_the_run_and_put_back_after_it(self):
         local = self.root / brief_run.LOCAL
-        local.parent.mkdir()
+        local.parent.mkdir(exist_ok=True)
         local.write_text('# a comment\n[runner]\nmachine_name = "vm"\nworkers = 13\ncpus = 26  # of 30\nmemory = "80G"\n[other]\nmemory = "1G"\n')
         with mock.patch.object(doctor, "machine", lambda: {"memory": 105 * doctor.GIB, "cpus": 30}):
             self.assertIn("memory 80G > 68G", " ".join(json.loads(self.run_tool("preflight", "made-up")[1])["notes"]))
@@ -334,11 +368,11 @@ class TheFoundation(Fixture):
     def test_a_line_that_moved_takes_them_by_a_merge_with_the_generated_files_regenerated(self):
         self.foundation()
         self.write("sessions/collector", "")
-        self.write("llm-dlc/generated.txt", "base\ncollector\n", message="the line moves: a result is collected")
+        self.write("llm-dlc/index.json", "base\ncollector\n", message="the line moves: a result is collected")
         code, out, err = self.run_tool("land", "made-up")
         self.assertEqual(code, 0, err)
         self.assertIn("merged", json.loads(out)["landed"])
-        self.assertEqual((self.root / "llm-dlc/generated.txt").read_text(), "base\ncollector\nfoundation\n")
+        self.assertEqual((self.root / "llm-dlc/index.json").read_text(), "base\ncollector\nfoundation\n")
         self.assertIn("Merge the foundation of the made-up run", self.jj(self.root, "log", "--no-graph", "-r", "@-", "-T", "description"))
         self.assertEqual(self.jj(self.root, "diff", "-r", "@", "--name-only"), "")
 
@@ -373,6 +407,120 @@ class TheFoundation(Fixture):
         code, _, err = self.run_tool("land", "made-up")
         self.assertEqual(code, 1)
         self.assertIn("uncommitted changes (theirs.txt)", err)
+
+    @cost("tool")
+    def test_trace_output_left_uncommitted_neither_holds_a_merge_back_nor_comes_along(self):
+        self.foundation()
+        self.write("lib.txt", "two\n", message="the line moves")
+        self.write("llm-dlc/index.json", "stale\n")  # what a sync.py run left here, nobody's work
+        self.write("llm-dlc/traces/sessions/made-up/summary.md", "a summary\n")
+        self.jj(self.root, "describe", "-m", "Record session traces")
+        code, out, err = self.run_tool("land", "made-up")
+        self.assertEqual(code, 0, err)
+        out = json.loads(out)
+        self.assertIn("merged", out["landed"])
+        self.assertEqual(sorted(out["dropped"]), ["llm-dlc/index.json", "llm-dlc/traces/sessions/made-up/summary.md"])
+        self.assertEqual((self.root / "llm-dlc/index.json").read_text(), "base\nfoundation\n")  # written again
+        self.assertEqual(self.jj(self.root, "diff", "-r", "@", "--name-only"), "")
+        self.assertEqual(self.jj(self.root, "log", "--no-graph", "-r", 'heads(all()) & description("Record session traces")',
+                                 "-T", "change_id"), "")  # the working copy it emptied is not left behind
+
+    @cost("tool")
+    def test_a_move_forward_drops_trace_output_and_is_taken_back_when_anothers_files_conflict(self):
+        self.foundation()
+        before = self.jj(self.root, "log", "--no-graph", "-r", "@-", "-T", "commit_id")
+        self.write("llm-dlc/traces/loops.md", "stale\n")
+        self.write("lib-foundation.txt", "another session's, uncommitted\n")  # the foundation added it too
+        code, _, err = self.run_tool("land", "made-up")
+        self.assertEqual(code, 1)
+        self.assertIn("conflict with made-up-foundation's line in lib-foundation.txt: the line is left where it was", err)
+        self.assertEqual(self.jj(self.root, "log", "--no-graph", "-r", "@-", "-T", "commit_id"), before)
+        self.assertEqual((self.root / "lib-foundation.txt").read_text(), "another session's, uncommitted\n")
+        (self.root / "lib-foundation.txt").unlink()
+        code, out, err = self.run_tool("land", "made-up")
+        self.assertEqual(code, 0, err)
+        self.assertIn("moved forward", json.loads(out)["landed"])
+        self.assertNotIn("dropped", json.loads(out))  # dropped the first time
+        self.assertFalse((self.root / "llm-dlc/traces/loops.md").exists())
+        self.assertEqual((self.root / "lib-foundation.txt").read_text(), "shared\n")
+
+    @cost("tool")
+    def test_of_llm_dlc_readme_only_a_change_to_its_session_table_is_trace_output(self):
+        table = f"# Changes\n\n{brief_run.INDEX_BEGIN}\n| a session |\n{brief_run.INDEX_END}\n\nWritten by people.\n"
+        self.write("llm-dlc/README.md", table, message="the page with its table")
+        self.write("llm-dlc/README.md", table.replace("| a session |", "| a session |\n| another |"))
+        self.assertTrue(brief_run.regenerable(self.root, "llm-dlc/README.md"))
+        self.write("llm-dlc/README.md", table.replace("Written by people.", "Edited by a session."))
+        self.assertFalse(brief_run.regenerable(self.root, "llm-dlc/README.md"))
+        self.assertTrue(brief_run.regenerable(self.root, "llm-dlc/decisions/made-up.md"))
+        self.assertFalse(brief_run.regenerable(self.root, "llm-dlc/decisions/made-up.jsonl"))
+        self.assertFalse(brief_run.regenerable(self.root, "llm-dlc/loops/made-up.md"))
+
+
+class KeepingTheQueue(Fixture):
+    JOB = "20260101-000000-made-up"
+
+    def back(self, job: str, status: str, attention: list[str] = ()) -> None:
+        folder = self.statuses / "pipeline" / "results" / job
+        folder.mkdir(parents=True)
+        (folder / "result.json").write_text(json.dumps({"status": status, "summary": f"{job} {status}",
+                                                        "attention": list(attention)}))
+
+    @cost("tool")
+    def test_the_watcher_collects_what_is_back_commits_it_alone_and_names_what_needs_triage(self):
+        self.back(self.JOB, "passed")
+        self.back("20260101-000001-made-up", "failed", ["out of memory at 2G"])
+        (self.root / "theirs.txt").write_text("another session's, uncommitted\n")
+        code, out, err = self.run_tool("collect", "made-up")
+        self.assertEqual(code, 0, err)
+        out = json.loads(out)
+        self.assertEqual([r["id"] for r in out["collected"]], [self.JOB, "20260101-000001-made-up"])
+        self.assertEqual([(r["id"], r["attention"]) for r in out["attention"]], [("20260101-000001-made-up", ["out of memory at 2G"])])
+        committed = self.jj(self.root, "diff", "-r", "@-", "--name-only").split()
+        self.assertEqual(committed, [f"verification/results/{self.JOB}/result.json",
+                                     "verification/results/20260101-000001-made-up/result.json"])
+        self.assertIn("Record verification results for 2 job(s)", self.jj(self.root, "log", "--no-graph", "-r", "@-", "-T", "description"))
+        self.assertEqual(self.jj(self.root, "diff", "-r", "@", "--name-only").split(), ["theirs.txt"])  # left where it was
+        self.assertEqual(self.run_tool("collect", "made-up")[1].strip(), "nothing to collect")
+
+    @cost("tool")
+    def test_jobs_waiting_with_no_runner_start_one_and_a_verification_loop_keeps_the_queue_while_it_runs(self):
+        (self.statuses / "pipeline").mkdir()
+        (self.statuses / "pipeline" / "pending").write_text(f"{self.JOB} made up, est. 1 min\n")
+        run = self.run_of()
+        with mock.patch.object(watch, "verification_running", return_value=None):
+            thing = brief_run.tend(run)
+        self.assertEqual((thing["kind"], thing["jobs"]), ("verification", [self.JOB]))
+        end = time.time() + 20
+        while not (self.statuses / "pipeline" / "ran").exists():
+            self.assertLess(time.time(), end, "the runner was not started")
+            time.sleep(0.1)
+        self.back(self.JOB, "passed")
+        with mock.patch.object(watch, "verification_running", return_value=4242), \
+                mock.patch.object(watch, "tend_queue", return_value=None) as tend_queue:
+            self.assertIsNone(brief_run.tend(run))
+        tend_queue.assert_called_once()
+        self.assertTrue((self.statuses / "pipeline" / "results" / self.JOB).exists())  # left to that loop
+
+    @cost("tool")
+    def test_each_look_at_the_queue_takes_the_streams_acknowledgements_and_tends_the_queue(self):
+        self.write("llm-dlc/loops/made-up.md", brief(self.STREAMS, separate=False), message="the brief runs with the pipeline")
+        run = self.run_of()
+        run.update(run={"pid": None, "started": "2026-01-01T00:00:00Z"})
+        with mock.patch.object(brief_run, "next_thing", return_value=None), \
+                mock.patch.object(brief_run.inbox, "collect", return_value=[]) as collect, \
+                mock.patch.object(brief_run, "tend", return_value=None) as tend:
+            self.assertEqual(self.run_tool("wait", "made-up", "--timeout", "0")[0], 3)
+        self.assertEqual([c.args[0] for c in collect.call_args_list], ["made-up-a", "made-up-b"])
+        tend.assert_called_once()
+
+
+class TheSyncLock(unittest.TestCase):
+    def test_it_is_the_lock_sync_py_takes_on_the_repository(self):
+        sys.path.insert(0, str(TOOLS))
+        import sync
+        with mock.patch.dict(os.environ, {"XDG_STATE_HOME": str(sync.STATE.parent)}):
+            self.assertEqual(brief_run.sync_lock_path(sync.REPO), sync.Operation("check").lock_path)
 
 
 class Watching(Fixture):
@@ -575,6 +723,7 @@ class ARunOfStreams(Fixture):
             self.assertTrue(json.loads(self.run_tool("status", "made-up")[1])["stopping"])
             self.until(lambda: not self.alive(), log)
             self.assertIn("stopped at a boundary, every loop after its cycle under way", log.read_text())
+            self.assertIn("the watcher keeps the queue", log.read_text())  # no verification loop of its own
             self.assertEqual(sorted(self.runs()), ["made-up-a", "made-up-b"])  # a was not run again
             self.assertNotIn("[a] asking the watcher to merge", log.read_text())  # nor put to the watcher to merge
             thing = json.loads(self.run_tool("wait", "made-up", "--timeout", "0")[1])

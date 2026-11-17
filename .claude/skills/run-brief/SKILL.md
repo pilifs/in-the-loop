@@ -22,8 +22,8 @@ there is no merge loop. Everything you run is
   lives in your context. It is all in files (`llm-dlc/loop-summaries/run-streams-NAME/`), so a session that was
   compacted, or a new one that takes a run over, reads where the run stands and goes on (see "A run under
   way"). While you are the watcher, leave the default workspace's files alone but for what this skill has you
-  do (the merges included): the result collector commits there, and a brief without streams runs its own loop
-  there.
+  do (the merges and the collection of results included): while the run is under way you are the one session
+  that commits there, and a brief without streams runs its own loop there.
 - **Read first**: "A brief's run" in `llm-dlc/README.md`, the brief itself, and Designs 2 and 3 of
   `llm-dlc/loops/stream-conductor.md` (inboxes, and which decisions are yours). They outrank your memory of them.
 - **Decide what you can, and record it.** A decision is yours when it is cheap to take back and you are sure
@@ -77,9 +77,11 @@ It prints what the run would start and what stands in its way.
   old values for `--restore`.
 - A brief whose status is `done` is not run: say so and stop.
 
-Then start the verification loop, unless the brief says `verification: separate`
-(`python3 llm-dlc/tools/brief_run.py verification BRIEF start`, which leaves one that is running alone), and tell the user
-in a few lines what will run: the streams, each one's workspace and model, and the budget.
+You keep the verification queue yourself, unless the brief says `verification: separate`: `wait` starts the
+runner when jobs wait, and collects and commits each result as it comes back (below). Start no verification loop.
+If one is already running here (`brief_run.py verification BRIEF status`), it keeps the queue instead, as it did,
+and commits in the default working copy beside your merges: tell the user, who may stop it. Then tell the user in
+a few lines what will run: the streams, each one's workspace and model, and the budget.
 
 ## 2. The foundation
 
@@ -152,12 +154,19 @@ as a background task, act on what it returns, and run it again, until it returns
   this way twice at most: the third time it ends blocked it is left without a question.
 - **`attention`**: the integration check stopped passing, or a decision is open. The check has already told the
   streams it concerns. Read what it names and decide what is yours, as above.
-- **`verification`**: no verification loop was running while jobs waited, and one was started. Say so, and go on.
+- **`results`**: results came back, and `wait` collected and committed them (`--only` the paths a commit of
+  results holds). Say what came back in a line. Triage each one in `attention` as the run-verification skill's
+  step 4 says, and record what needs a person in `verification/findings.md` (its step 5): a verdict also goes to
+  the stream it concerns, through its inbox; a job out of time or memory is resubmitted (`pipeline.py resubmit`).
+  Commit what you changed with `sync.py commit --only $(python3 verification/pipeline.py commit-paths)`. A stream
+  waiting on a job goes on by itself once the job's result is collected.
+- **`verification`**: jobs waited and no runner was at work, and one was started (`pipeline.py run`, no model).
+  Say so in a line, and go on. With a verification loop running here, it says that none ran and one was started.
 - **`ended`**: go to stage 4.
 
 The user may ask about the run at any time: answer from `brief_run.py status BRIEF`, the run's output
 (`llm-dlc/loop-summaries/run-streams-NAME/streams.log`) and the queue (`python3 verification/pipeline.py status`).
-Fix what is small yourself (a verification loop that died, a job that hangs, a workspace jj calls stale:
+Fix what is small yourself (a runner that died, a job that hangs, a workspace jj calls stale:
 `python3 llm-dlc/tools/unstale.py` from that workspace), say what you did, and leave the
 rest to the user. `brief_run.py stop BRIEF` stops the run at a boundary: every loop ends after its cycle under way,
 nothing is run again and no stream is put to you to merge, so nothing is cut off; `wait` returns `ended` when it has, and
@@ -166,9 +175,8 @@ interrupts mid-cycle instead: only when the run is doing damage.
 
 ## 4. Report
 
-When the run has ended, put the budget back (`brief_run.py budget BRIEF --restore`), stop the verification loop
-once the queue is clear (`brief_run.py verification BRIEF stop`, which ends only one this run started), and tell
-the user:
+When the run has ended, put the budget back (`brief_run.py budget BRIEF --restore`), collect what is back
+(`brief_run.py collect BRIEF`, as `wait` did), triage it as above, and tell the user:
 
 - each loop's last status and whether it is merged, and for the brief its `Done when` table, criterion by
   criterion: met, not met, or waiting on which jobs;
