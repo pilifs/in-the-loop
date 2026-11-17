@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Example 290: fixed-security is established beside the route at the frozen bound, mutant-security is queued after its probe refuted it, and the page says where the other two stand (verification pending)
 
-change `mqoqmvttwklv` · [log `e372cf1c5b52`](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/e372cf1c5b52bc72cd08eeabe192e115fca0587b1053545da08f23d3811b1468.jsonl.gz)
+[`7a411e39daba`](https://github.com/pilifs/in-the-loop/commit/7a411e39dabab7180f8873e2277c8015c0b245f0) · [log `e372cf1c5b52`](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/e372cf1c5b52bc72cd08eeabe192e115fca0587b1053545da08f23d3811b1468.jsonl.gz)
 
 Example 290 (CVE-2023-34035, Spring Security 5.8.4 to 5.8.5). Job 20261116-225709-example-290-fixed-security-through-the-a passed: the frozen security claim is established on 5.8.5 at the bound of 8, through the adapter entry, in 6.9 s (659 paths, 8,509 variables, 131 MiB). target.json records it as the task's besideRoute answer; changes.py still lists the example as to prove, since three tasks are open. The verdict rests on three library initializers observed on a JVM in place of run by the checker (Spring's ClassUtils, the servlet API's GenericServlet and HttpServlet), which the outcome states and the page explains: weaker evidence than an initializer the checker ran, and said so.
 
@@ -30,13 +30,13 @@ vulnerable-security has no verdict: the checker stops, by name, at new ArrayList
 
 ### Record verification results: example 290 mutant-security passed
 
-change `zklwynpumvln` · [log `3e47ff599455`](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/3e47ff599455f52e65237ce43adcec5f04b83c7c34742a2f131fd0da1ac95872.jsonl.gz)
+[`3e8b8d0de562`](https://github.com/pilifs/in-the-loop/commit/3e8b8d0de562c518ab4e5d46446058e19eed69f9) · [log `3e47ff599455`](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/3e47ff599455f52e65237ce43adcec5f04b83c7c34742a2f131fd0da1ac95872.jsonl.gz)
 
 Collected 1 job (20261116-231724, example 290 mutant-security through the adapter entry): passed, 3 outputs applied. Others are still running.
 
 ### Example 290: mutant-security is refuted beside the route at the frozen bound, on a servlet registered before the DispatcherServlet
 
-change `snpkzvoozwwv` · [log `8499d2ee8251`](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/8499d2ee8251a43182f5ef4f1f488e0087846e92301fc21f5f248c1cae33795f.jsonl.gz)
+[`99a6307ea00c`](https://github.com/pilifs/in-the-loop/commit/99a6307ea00c7481a562be214e65974f75be4d8f) · [log `8499d2ee8251`](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/8499d2ee8251a43182f5ef4f1f488e0087846e92301fc21f5f248c1cae33795f.jsonl.gz)
 
 Job 20261116-231724-example-290-mutant-security-through-the passed: the frozen security claim of example 290 (CVE-2023-34035) is refuted on the constructed mutant of Spring Security 5.8.5, which looks at the first registration only, in 5.9 s (708 paths, 15,905 variables, 190 MiB). The witness is select(servlets=[1, 0], method=0, patterns={}), which returns 0 and throws nothing, run in the harness on a JVM; the mutant's JAR is byte for byte the one the mutant replay ran. target.json records it as the task's besideRoute answer, and the page, the verdict label and the notes say two of the four proof tasks are decided: the claim established on 5.8.5 and refuted on the mutant, both through the adapter entry, beside the route. vulnerable-security (no verdict: the checker has no model of ArrayList, which 5.8.4 collects its matchers in) and preservation (not attempted) stay open, as the page and target.json's handoff describe.
 
@@ -44,31 +44,31 @@ Verified by: validate_example.py 290 (passed); changes.py 290 (the example stays
 
 ### Record verification results: the default test run at qnmttuprxxym passed, closing VF-032
 
-change `kxsppxvzquup` · [log `a014aa07f016`](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/a014aa07f016b3f0b6999bc6cb3125e461b6ff9290ed8abbada044efccb806f1.jsonl.gz)
+[`5b401414646b`](https://github.com/pilifs/in-the-loop/commit/5b401414646ba2eab081523a511df2df97ca63f1) · [log `a014aa07f016`](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/a014aa07f016b3f0b6999bc6cb3125e461b6ff9290ed8abbada044efccb806f1.jsonl.gz)
 
 Collected 1 job (20261116-232054): the default tier passed 49 of 49 under the runner (14m32s, peak 2.7 GiB), which is the check VF-032 named; the entry is closed. The proof-tier job for example 290 is still running.
 
 ### Record verification results: the proof tier after example 290's engine changes passed
 
-change `kxkyqntwvlol` · [log `7cd2cae70c16`](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/7cd2cae70c1656fb7682d0dbce28e85dca339d08a8387f0c6c6dab8e26c751b7.jsonl.gz)
+[`cee8ea2541e3`](https://github.com/pilifs/in-the-loop/commit/cee8ea2541e35662c97c06089ddd972683266b4c) · [log `7cd2cae70c16`](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/7cd2cae70c1656fb7682d0dbce28e85dca339d08a8387f0c6c6dab8e26c751b7.jsonl.gz)
 
 Collected 1 job (20261116-231725): every proof-tier Rust test but VF-018's three passed in release (35m32s, peak 3.5 GiB against an estimated 8 GiB).
 
 ### Example 290: vulnerable-security is refuted in a probe at the frozen bound with a model of ArrayList the check asks for, and its job is queued (verification pending)
 
-change `qystlsvplrmv` · [log `c8ab0ad3ad4d`](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298.jsonl.gz)
+[`a5fa1c82be2b`](https://github.com/pilifs/in-the-loop/commit/a5fa1c82be2bfaf86ac435bbaa5aca2c2d3ac8e6) · [log `c8ab0ad3ad4d`](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298.jsonl.gz)
 
 5.8.4 collects its matchers in ArrayLists on every path, and jvmcontract's own checker stopped at new ArrayList(int). The checker now has a model of java.util.ArrayList that it runs only for a check that asks for it (prove --model java.util.ArrayList; lib/models/java/util/lists/ArrayList.java, models::ON_REQUEST, ClassPath::runs_model): both constructors, size, isEmpty, get, add, addAll, both toArray and a fail-fast iterator; any other method is the JDK call it names. It is on request and not run for every check because new ArrayList(int) is the gap the contract library, the conformance corpus and the examples' recorded refusals are written about: without the option nothing changes. A result states the model where a path ran it; JBMC, --cache and a class with no model on request are refused. Arrays.copyOf of an array of references, which the model grows by, is modelled for every check, as it was for arrays of numbers.
 
 ### Record verification results: example 290 vulnerable-security through the adapter entry is refuted at the frozen bound, as expected
 
-change `onkqouutwkor` · [log `c8ab0ad3ad4d`](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298.jsonl.gz)
+[`48524f07fe88`](https://github.com/pilifs/in-the-loop/commit/48524f07fe88cefb99429adc83b6aa2a0da4ca89) · [log `c8ab0ad3ad4d`](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298.jsonl.gz)
 
 Job 20261117-000856-example-290-vulnerable-security-through passed on vm-1 (1 step, 3.4 s, peak 187 MiB against an estimate of 5 min and 4 GiB): the frozen claim on 5.8.4 is refuted as the job expected. Outputs applied: the work folder's outcome and harness. No findings.
 
 ### The default run takes 4.6 minutes where it took 16: Rust's test binaries and the Python files run several at a time, and a passed run covers what it left unread
 
-change `lptpzxuplxky` · [log `c8ab0ad3ad4d`](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298.jsonl.gz)
+[`34462882a648`](https://github.com/pilifs/in-the-loop/commit/34462882a648a155d920636d154b3e06e7a8d9bb) · [log `c8ab0ad3ad4d`](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298.jsonl.gz)
 
 test_costs.py run: cargo only builds the Rust test binaries (--no-run), and they then run several at a time (--rust-jobs, by default half the CPUs, at most 4, and one per 1.5 GB of a job's memory limit), the longest first by what each took the last time (kept in the target directory). The Python test files run several at a time too (--python-jobs, 3 by default, 2 in a job); a file that fails has its second run alone after the others, so two files that disturbed each other show as flaky. The proof tier still runs one binary at a time, and --rust-jobs 1 --python-jobs 1 is the run as it was. Measured on this machine: the Rust binaries 707 s one after another in the first job, 403 s three at a time under a six-CPU limit beside another test job (peak 3.4 GB), 230 s four at a time; the whole default run 276 s, 49 of 49 passed, nothing flaky.
 
@@ -78,7 +78,7 @@ default_tests.py: a run in the pipeline's fresh export records which files nothi
 
 ### /run-brief: a watcher runs a feature brief on command, with a foundation stage on Fable 5.2 before its streams
 
-change `xppmwwppknky` · [log `c8ab0ad3ad4d`](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298.jsonl.gz)
+[`c5cd267103fe`](https://github.com/pilifs/in-the-loop/commit/c5cd267103fe08eacbf1610f8ef59ae6a1b3a43c) · [log `c8ab0ad3ad4d`](https://terminalvalue.net/raw-traces/853b40ba-32fd-4638-8789-b2c3159d775a/c8ab0ad3ad4d33d4d4223a430c2d96f247b6a642eebcba02d4137eaac45e5298.jsonl.gz)
 
 A brief of llm-dlc/loops/ was started by hand, and its run was known to run-streams.sh only through a list of five names in the script. A local skill, /run-brief (.claude/skills/run-brief, not part of the plugin), now runs any brief with a watcher session on Opus 5.5, as /prove-java-change runs a proof. Its tool is llm-dlc/tools/brief_run.py: a preflight that finds what run-streams.sh would stop at before anything starts and says what the verification runner may keep beside this many loops (budget --apply lowers verification/pipeline.local.toml for the run); a foundation stage, one Fable 5.2 session at high effort given the user's instruction to start the work itself, build the foundation it sees fit and update the brief for the agents that take over, in a workspace of its own so no other session's uncommitted files meet its commits; land, which brings its commits to the default line, moved forward or by a merge with the generated trace files regenerated, and takes back a merge that conflicts in real work; start, which runs run-streams.sh detached; and wait, which returns only what needs the watcher (a blocked loop, a failing integration check, an open decision, a missing verification loop, a summary every 30 minutes, the end).
 

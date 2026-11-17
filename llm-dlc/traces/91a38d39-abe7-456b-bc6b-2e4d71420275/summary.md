@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Example 289 (CVE-2022-22978) set up from its catalog entry: line-terminator prefix claim and preservation frozen, replays pass
 
-change `rronuyxosqyz` · [log `84e370011685`](https://terminalvalue.net/raw-traces/91a38d39-abe7-456b-bc6b-2e4d71420275/84e370011685237f0f5255ba180b2cc52ddd6f5f71473d83f6d64884144af88d.jsonl.gz)
+[`38202ae8fb42`](https://github.com/pilifs/in-the-loop/commit/38202ae8fb429023ac76049c23f8f4389769dfd3) · [log `84e370011685`](https://terminalvalue.net/raw-traces/91a38d39-abe7-456b-bc6b-2e4d71420275/84e370011685237f0f5255ba180b2cc52ddd6f5f71473d83f6d64884144af88d.jsonl.gz)
 
 Example 289 was a catalog entry (revisions pinned, no tasks). It is now a deep negative packet, set up as llm-dlc/runtime.md's catalog entry brief asks, with 288 (the packet's shape) and 285 (its HttpServletRequest carrier) as models. The release pair is Spring Security 5.6.3 -> 5.6.4, from published JARs. Each release's RegexRequestMatcher.java is the exact-fix pair's blob (9264b56f, a334afc7). Every other class the matcher reaches is byte-identical in the two closures (Spring Framework 5.3.19 and 5.3.20). The release pair also hardens StrictHttpFirewall, in a commit before the fix; that is outside the matcher and the claims. sources.lock.json records the tags, blobs, ancestry and JAR hashes against Maven Central.
 
@@ -28,7 +28,7 @@ There are two claims and six tasks. The security claim covers a matcher built as
 
 ### A /prove-java-change run checks what a commit changed, not the default test run, and a prepared example needs no edit to the packet tests
 
-change `lxvynzvoqsll` · [log `ed83e0c2f2ff`](https://terminalvalue.net/raw-traces/91a38d39-abe7-456b-bc6b-2e4d71420275/ed83e0c2f2ffea60a98c3f5ed75e7dc0227a442b4fa7b69c7ee57871edbd766b.jsonl.gz)
+[`e385fcbf8a44`](https://github.com/pilifs/in-the-loop/commit/e385fcbf8a44fb02f37b6e4a0759d166f82addf4) · [log `ed83e0c2f2ff`](https://terminalvalue.net/raw-traces/91a38d39-abe7-456b-bc6b-2e4d71420275/ed83e0c2f2ffea60a98c3f5ed75e7dc0227a442b4fa7b69c7ee57871edbd766b.jsonl.gz)
 
 The setup sessions of 288 and 289 each spent about 16 minutes on the default test run before committing, and each added its example by hand to test_packets.py's list. Following a review of the live run, CLAUDE.md (Tests), lib/README.md and runtime.md's briefs now say that a session of a /prove-java-change run checks a commit by what it changed: examples/tools/validate_example.py NNN for an example's own files (the router regenerated first, since the tests read examples/index.json and a stale one failed two checks of the live run; then the form, each task's plan, the oracle's self-test, with --replay the replays on a JVM, and the four test files that read every example), and the tests of any shared code it touched. The default run comes once an example is done and before anything is published. test_packets.py now discovers each packet from its sidecar's mutant revision instead of a hand-kept list; the expected outcomes of each replay stay written by hand. Verified: validate_example.py 288 289 passes in 40 s; the discovered packets equal the old list exactly; test_packets.py 22 tests pass; test_costs.py estimate changed only the new test's row and the lint agrees.
 

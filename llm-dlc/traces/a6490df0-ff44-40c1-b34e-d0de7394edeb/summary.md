@@ -20,25 +20,25 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### The watcher's decisions on the run of 288-290 so far
 
-change `krmvzrytnpwv` · [log `1bc8b4637326`](https://terminalvalue.net/raw-traces/a6490df0-ff44-40c1-b34e-d0de7394edeb/1bc8b463732618b46a0b51cbef6210bc10e0bbb8e90f0321fcbd624a2e14bf84.jsonl.gz)
+[`a09752c02483`](https://github.com/pilifs/in-the-loop/commit/a09752c024838dcb116861d3cdfbc76dc5c551c2) · [log `1bc8b4637326`](https://terminalvalue.net/raw-traces/a6490df0-ff44-40c1-b34e-d0de7394edeb/1bc8b463732618b46a0b51cbef6210bc10e0bbb8e90f0321fcbd624a2e14bf84.jsonl.gz)
 
 The decision record of the /prove-java-change run (llm-dlc/decisions/prove-change.*): the claims of 288 accepted in the user's place under --unattended (D001, flagged for review), continue at cycle 1's compaction (D002), and 288 waiting on its five jobs after cycle 1 (D003). Committed before merging the workspace prove-setup between examples.
 
 ### Record verification result: example 288 fixed-security through the adapter entry passed
 
-change `urqorxxswwuu` · [log `114407a27007`](https://terminalvalue.net/raw-traces/a6490df0-ff44-40c1-b34e-d0de7394edeb/114407a270075ea341448541fbb213d5f3acf24fdff82d92b13558d9d00c5596.jsonl.gz)
+[`4585e66f26ad`](https://github.com/pilifs/in-the-loop/commit/4585e66f26add64610b3fbb80bc4a157ad3f72a3) · [log `114407a27007`](https://terminalvalue.net/raw-traces/a6490df0-ff44-40c1-b34e-d0de7394edeb/114407a270075ea341448541fbb213d5f3acf24fdff82d92b13558d9d00c5596.jsonl.gz)
 
 Job 20261116-201436-example-288-fixed-security-through-the-a passed in 19m42s (peak 1.4 GiB, estimated 25m, 6 GiB) on vm-1, jvmcontract holds as expected; 3 outputs applied.
 
 ### The watcher accepts the claims of 289 and 290 in the user's place, and records the merge of prove-setup
 
-change `nvlyyytuquxx` · [log `25fc11442e75`](https://terminalvalue.net/raw-traces/a6490df0-ff44-40c1-b34e-d0de7394edeb/25fc11442e75d6066778d617bdb8366dc05951f96c7aeb98b9bc8ff25738dec1.jsonl.gz)
+[`067a07071f06`](https://github.com/pilifs/in-the-loop/commit/067a07071f068f68ec8a0e99c44e51cd537c998e) · [log `25fc11442e75`](https://terminalvalue.net/raw-traces/a6490df0-ff44-40c1-b34e-d0de7394edeb/25fc11442e75d6066778d617bdb8366dc05951f96c7aeb98b9bc8ff25738dec1.jsonl.gz)
 
 The workspace prove-setup (the repairs of 289 and 290's setup from stage 2's plan, and watch.py's per-turn cost and the briefs' single replay run) was merged into the loop's line between examples: jj new krmvzryt rlosmoxo, sync.py regenerate for the four generated trace files that conflicted, validate_example.py 289 290 and the default test run (48 of 48) on the merged tree. The verification loop's commit of 288's fixed-security result (urqorxxs) took the merge with it while the default run was going, so that commit, whose description is the result's, is also the merge. The claims of 289 and 290 are accepted in the user's place under --unattended (decisions flagged for review), and both are added to the running loop after 288, which waits on its jobs.
 
 ### Example 289: a pattern that is an input is modelled where the own checker shows it is a literal followed by .*, and the four frozen claims are queued through the adapter entry (verification pending)
 
-change `olnsqxznyoyr` · [log `d9327317b7c7`](https://terminalvalue.net/raw-traces/a6490df0-ff44-40c1-b34e-d0de7394edeb/d9327317b7c7d6f1c076ccc152befd76fe6aa68c9996773325512797574775ea.jsonl.gz)
+[`296188cfbf1f`](https://github.com/pilifs/in-the-loop/commit/296188cfbf1f4654ba4a688f15d27cca335fb864) · [log `d9327317b7c7`](https://terminalvalue.net/raw-traces/a6490df0-ff44-40c1-b34e-d0de7394edeb/d9327317b7c7d6f1c076ccc152befd76fe6aa68c9996773325512797574775ea.jsonl.gz)
 
 Example 289 is CVE-2022-22978 (Spring Security 5.6.3 to 5.6.4): RegexRequestMatcher compiled the rule it was given without Pattern.DOTALL, so /admin/.* did not match /admin/ followed by a line feed. Its two frozen claims quantify over the pattern (a literal prefix and .*), the case mode and every request String, so java.util.regex is on the proof's path with a pattern that is an input. The claims are unchanged.
 
@@ -56,7 +56,7 @@ Also in this commit, collected by the pipeline's runner and found uncommitted in
 
 ### Example 289 is decided beside the route: the security claim refuted on 5.6.3 and on the mutant, established on 5.6.4, and preservation established, each at the frozen bound
 
-change `ukstuotlooko` · [log `9d53ea8eb68a`](https://terminalvalue.net/raw-traces/a6490df0-ff44-40c1-b34e-d0de7394edeb/9d53ea8eb68adcb8610ea0d9f7863151e6319c6828f145d6dde9f9822e9066fc.jsonl.gz)
+[`46e115e76840`](https://github.com/pilifs/in-the-loop/commit/46e115e768406db2621a889dc006644e2aeb2c41) · [log `9d53ea8eb68a`](https://terminalvalue.net/raw-traces/a6490df0-ff44-40c1-b34e-d0de7394edeb/9d53ea8eb68adcb8610ea0d9f7863151e6319c6828f145d6dde9f9822e9066fc.jsonl.gz)
 
 The four proof jobs queued in the commit before this one passed, each with its expected verdict on the unchanged claim files, through the adapter entry on the releases' own bytecode (examples/289-.../proofs/prove.py), at the frozen bound of 8 code units for each String, strict gaps, loops followed for 26 turns. fixed-security (job 20261116-214343-example-289-fixed-security-through-the-a): established on Spring Security 5.6.4 in 36 s, 1,003 paths, 265 MiB, not vacuous. vulnerable-security (20261116-214344-example-289-vulnerable-security-through): refuted on 5.6.3 in 2 s at matches(pattern=".*", caseInsensitive=false, servletPath="", pathInfo="\u07ff\ufea0\u2028", query=null), which returns false. mutant-security (20261116-214344-example-289-mutant-security-through-the): refuted on the mutant in 2 s at a witness with caseInsensitive true and U+2029 in the path info; the mutant the job built has the SHA-256 the mutant replay's receipt records. Each witness was run on a JVM. preservation (20261116-214344-example-289-preservation-through-the-ada): established on the release pair in 61 s, 1,373 paths, 551 MiB.
 
@@ -64,9 +64,15 @@ Recorded: each task's besideRoute in target.json (answer, job, by, recorded), th
 
 ### Record verification results for examples 288 and 289 and the two proof-tier jobs; VF-031 for example 288's timeouts
 
-change `wwqnoqtlktty` · [log `0820afb573db`](https://terminalvalue.net/raw-traces/a6490df0-ff44-40c1-b34e-d0de7394edeb/0820afb573db451a5726cc0e8916ef8eb7e0db9f92528a92529ec0c217c59225.jsonl.gz)
+[`4674e1f27676`](https://github.com/pilifs/in-the-loop/commit/4674e1f276766e225e6bc6dd0bf8e057eea7f13b) · [log `0820afb573db`](https://terminalvalue.net/raw-traces/a6490df0-ff44-40c1-b34e-d0de7394edeb/0820afb573db451a5726cc0e8916ef8eb7e0db9f92528a92529ec0c217c59225.jsonl.gz)
 
 Collected on vm-1: 288 fixed-security passed (verified), 288 vulnerable/mutant-security and preservation ran out of the engine's own --timeout with no verdict (VF-031, not resubmitted since the fix is a step change); 289 vulnerable/mutant/fixed/preservation passed; the proof-tier jobs after 288's and 289's engine changes passed (33 cargo tests each).
+
+### Record session traces
+
+change `qkzwyzzpwtlo` · [log `7c3b8dc3162d`](https://terminalvalue.net/raw-traces/a6490df0-ff44-40c1-b34e-d0de7394edeb/7c3b8dc3162d3493c00923d998cc100c6c3525f9faad0468f853b497a2d705de.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 

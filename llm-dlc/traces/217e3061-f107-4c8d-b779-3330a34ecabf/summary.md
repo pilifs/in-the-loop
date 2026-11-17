@@ -20,31 +20,31 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results: the seven proof-tier tests and the default test run at pqlvmnrruzsw passed
 
-change `pnlwkqxtxlzs` · [log `7e58fec40eea`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/7e58fec40eea7c7ed1012fe25d857a31da53e5f74f9a2e02be8078448e6b13e8.jsonl.gz)
+[`4b2872491565`](https://github.com/pilifs/in-the-loop/commit/4b2872491565d95b5747d4616ccbe94947c8965c) · [log `7e58fec40eea`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/7e58fec40eea7c7ed1012fe25d857a31da53e5f74f9a2e02be8078448e6b13e8.jsonl.gz)
 
 Two jobs collected. 20261113-013604 (the seven tests moved to the proof tier) passed in 7m29s. The default test run at pqlvmnrruzsw passed in 7m03s and its one output was applied. The first run of the runner was cut off by the tool's 10-minute limit while the default run was in progress; the job was returned to the queue and rerun cleanly. No verdicts, no new findings.
 
 ### CLAUDE.md and runtime.md state the new rule for the default test run: the tests of a change before a commit, the whole run before a release and a push
 
-change `yqxosmuoxuws` · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
+[`c41ec887c6cf`](https://github.com/pilifs/in-the-loop/commit/c41ec887c6cf02f1acc09964f826fc3dcdfe1fbc) · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
 
 By the user's decision on 2026-11-17, in line with the READMEs: before a commit an agent runs the tests of what it changed (test_costs.py run --changed, validate_example.py for an example's files), in every session and not only in a /prove-java-change run. The default run is required before a release and before anything is published, and worth queuing as a job once an example is done and after a merge; it may still be run inline. The stated 16 minutes is gone from both files. CLAUDE.md also says that the push gate counts the files a run left unread, and that the retier-pending tests stay in the default run by the user's decision the same day (most run JBMC in a few seconds and are its only real JBMC coverage). The skill states no per-commit rule and is unchanged. Checked with test_costs.py run --changed: 11 of 11 test files passed.
 
 ### VF-034 names its likely cause: two default runs at once in one cargo target directory
 
-change `wvuulmqkqxvr` · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
+[`03eab0eca429`](https://github.com/pilifs/in-the-loop/commit/03eab0eca429d380d307c293bad49dbcd75bc56b) · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
 
 verification/findings.md: the three Rust failures of the default run at the prove-setup merge are each a test finding another run's work folders or proof cache under the shared target directory's tmp/, while a second default run ran beside it; the lock of change kzwsnszx keeps two from overlapping. The entry says the cause was not reproduced on purpose and that the runner starting a passed job again is still unexplained. This workspace's four commits were also rebased onto the main line's kpstymvo, with VF-035 placed above VF-034 and the trace files regenerated.
 
 ### Cutting a release requires a passed default test run for the commit it is cut on, as a push does
 
-change `pvqrosuvxsnr` · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
+[`5f8a317e0a5f`](https://github.com/pilifs/in-the-loop/commit/5f8a317e0a5f63bc55ab29a59fe63caad3ee8a38) · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
 
 By the user's decision on 2026-11-17: release.py cut asks verification/default_tests.py gate --rev @- before it writes anything and refuses without a passed run covering that commit; --skip-tests REASON is for the user alone. The release commit changes only the plugin's and the marketplace's version and the pin, which the default run leaves unread (the last run's list names all three), so the run that allowed the cut also covers the push of the release. runtime.md's Releases section says so. Checked with three new unit tests (refused without a run, cut with one, the stated skip, nothing written before the gate) and the 10 Python test files test_costs.py run --changed chose.
 
 ### The runner counts a result recorded on any head as done, so a passed job whose commit was left behind is not run again
 
-change `rkmqvurpkynu` · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
+[`5e0e7d0d2da6`](https://github.com/pilifs/in-the-loop/commit/5e0e7d0d2da6f9a88dc5b22d134f478eaa6d41a3) · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
 
 Why job 20261117-005759 ran twice, from jj's operation log: its first pass was collected and committed in the default workspace at 01:06:45 (change slquqtpy), and in the same second a jj new lzvyqmsy there, the fast-forward to prove-setup's rebased commits, moved the working copy off that commit. The runner looks for results in its state folder and in the working copy, saw neither, and started the job again at 01:07:12. Nothing is wrong in collecting. Change slquqtpy is still a visible head with the result in it and is not on the main line: it needs merging there, by whoever owns that workspace.
 
@@ -52,19 +52,19 @@ pipeline.py: done_ids also counts every job whose result.json is in the tree of 
 
 ### Merge prove-setup's last eight commits and the orphaned first result of 005759: one default run at a time, a re-run of a passed job prevented, a release gate, and seven tests moved to the proof tier
 
-change `ksyktoyyrtyn` · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
+[`e1d891817acb`](https://github.com/pilifs/in-the-loop/commit/e1d891817acb63ccd765faa158a086984beddc9f) · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
 
 Brings the tests session's finished line (prove-setup, kzwsnszx through rkmqvurp): an exclusive lock so only one default test run runs at a time, superseding that also counts a newer finished run, the runner counting a result recorded on any head as done (so a passed job whose commit was left off the main line is not run again), cutting a release requiring a passed default run as a push does, seven expensive or solver-running tests moved to the proof tier behind proxies, CLAUDE.md and runtime.md stating the new rule for the default run, and VF-034 naming its likely cause (two default runs at once in one cargo target directory). Also merges slquqtpy, the verification loop's commit of job 20261117-005759's first run, which passed (8m32s) and was left off the main line when the watcher moved the main working copy while that commit was being made. The job's results directory and the results index keep the main line's record (the second run, which failed beside job 010456, and is what VF-034 is about); the first run's record stays in history through this merge's parent. The generated trace files are regenerated. Verified: the test-cost lint agrees, test_default_tests.py and test_pipeline.py pass on the merged tree, check reports 0 errors and 0 warnings.
 
 ### Queue the default test run at the merge of prove-setup's finished line (verification pending)
 
-change `wxqzmmswyzvy` · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
+[`1481c0cc044f`](https://github.com/pilifs/in-the-loop/commit/1481c0cc044fbe21bc981af0136fa2233a929547) · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
 
 Job 20261117-015957-default-test-run-at-ksyktoyyrtyn: the first default run with the one-at-a-time lock, the release gate and the seven retiered tests all in. If it passes on its own, it is the clean run VF-034 needs, and it covers the main line's tip for a push.
 
 ### /run-brief: a commit takes only its own files, a run stops at a boundary, the foundation's report reaches each stream's inbox, and a summary says where the time went
 
-change `pqlvmnrruzsw` · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
+[`574a3e6198dc`](https://github.com/pilifs/in-the-loop/commit/574a3e6198dc0e906c5bc5c7fae696ec38e2d347) · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
 
 Four additions the user chose before the first run of a brief through its watcher. (1) sync.py commit --only PATH ... commits the named files and folders alone: every other file changed in the working copy is set aside in a change below, and put back uncommitted after the commit, so the files on disk never change. The result collector commits with the paths pipeline.py commit-paths names (verification/, the examples table, the outputs it applied), and the loops' instruction names --only in place of a procedure to follow by hand; on 2026-11-16 a commit of results took a watcher's unfinished merge with it. A collector in a workspace of its own was the plan's wording and is not what this does: every reader of results reads them on the default line, so its commits would have to be landed there one by one, which brings the shared working copy back. (2) brief_run.py stop NAME stops a run at a boundary: run-streams.sh gives each loop a directory for command lines, each running loop is told to end after its cycle, a loop waiting on jobs stops waiting, nothing is run again and the merge is not started; start continues, and stop --now interrupts as before. (3) Landing the foundation puts its closing report into each stream's inbox as an item of a new kind, foundation, which the stream acknowledges. (4) run-streams.sh logs each change of a loop's phase with its time, and a summary says per loop how long it worked, waited on jobs, was blocked, and sat finished while another stream still ran.
 
@@ -72,13 +72,13 @@ Verified by test_commit_only.py on a real jj repository (the named paths committ
 
 ### Queue a default test run at run-brief's four additions (verification pending)
 
-change `smplsyrurprl` · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
+[`3ef0f8a92a4e`](https://github.com/pilifs/in-the-loop/commit/3ef0f8a92a4e8c5d6ca2c19db49e3fb6bafbe20f) · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
 
 The job README.md runs the default test run at the commit that added commit --only, the boundary stop, the foundation hand-off and the time lines to /run-brief. Nobody waits for it.
 
 ### A workspace a brief's run makes takes the session logs it lacks
 
-change `zvqqklkpkzky` · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
+[`7547586d9884`](https://github.com/pilifs/in-the-loop/commit/7547586d9884373e19bd3faf29f6b5e13e581eee) · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
 
 A new jj workspace has none of the session logs the default workspace stores and has not uploaded, and the check after every commit there reported each as an error (58 of them in the run-brief workspace itself), which a foundation or stream session would have tried to fix. run-streams.sh, for a stream's workspace and the integration check's, and brief_run.py, for the foundation's, now run sync.py adopt-logs in a workspace they have just made.
 

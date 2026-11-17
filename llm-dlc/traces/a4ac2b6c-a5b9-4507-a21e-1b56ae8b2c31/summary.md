@@ -399,7 +399,7 @@ At the user's request, for later: a session outside a moonshot loop judges each 
 
 ### Example 288 (CVE-2024-38820) set up from its catalog entry: locale-table decision claim and preservation frozen, replays pass
 
-change `pruvstkqurrs` · [log `ce9f8355d880`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/ce9f8355d8800861bb2e0ba60efe41e7db26899dd824cc70a73b3146e38b2d2e.jsonl.gz)
+[`21b8a920222f`](https://github.com/pilifs/in-the-loop/commit/21b8a920222f78688034440ac837e1c013f03c84) · [log `ce9f8355d880`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/ce9f8355d8800861bb2e0ba60efe41e7db26899dd824cc70a73b3146e38b2d2e.jsonl.gz)
 
 Example 288 was a catalog entry (revisions pinned, no tasks). It is now a deep negative packet, prepared as llm-dlc/runtime.md's catalog entry brief asks, with example 286 (CVE-2022-22968, the fix this one corrects) as the model. The release pair is Spring Framework 6.1.13 -> 6.1.14, from published JARs. Each release's DataBinder.java is the exact-fix pair's blob (c7af62b5, 98157756). Every other class the decision and the bind reach is byte-identical in the two closures. sources.lock.json records the tags, blobs, ancestry, JAR hashes against Maven Central, and a hand sweep of every JDK 21/25 locale: only tr and az lowercase an ASCII letter apart from the root locale, and only I.
 
@@ -407,7 +407,7 @@ There are two claims and six tasks. The decision claim is 286's assertion and AS
 
 ### Example 289 (CVE-2022-22978) set up from its catalog entry: line-terminator prefix claim and preservation frozen, replays pass
 
-change `rronuyxosqyz` · [log `ce9f8355d880`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/ce9f8355d8800861bb2e0ba60efe41e7db26899dd824cc70a73b3146e38b2d2e.jsonl.gz)
+[`38202ae8fb42`](https://github.com/pilifs/in-the-loop/commit/38202ae8fb429023ac76049c23f8f4389769dfd3) · [log `ce9f8355d880`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/ce9f8355d8800861bb2e0ba60efe41e7db26899dd824cc70a73b3146e38b2d2e.jsonl.gz)
 
 Example 289 was a catalog entry (revisions pinned, no tasks). It is now a deep negative packet, set up as llm-dlc/runtime.md's catalog entry brief asks, with 288 (the packet's shape) and 285 (its HttpServletRequest carrier) as models. The release pair is Spring Security 5.6.3 -> 5.6.4, from published JARs. Each release's RegexRequestMatcher.java is the exact-fix pair's blob (9264b56f, a334afc7). Every other class the matcher reaches is byte-identical in the two closures (Spring Framework 5.3.19 and 5.3.20). The release pair also hardens StrictHttpFirewall, in a commit before the fix; that is outside the matcher and the claims. sources.lock.json records the tags, blobs, ancestry and JAR hashes against Maven Central.
 
@@ -415,25 +415,25 @@ There are two claims and six tasks. The security claim covers a matcher built as
 
 ### A /prove-java-change run checks what a commit changed, not the default test run, and a prepared example needs no edit to the packet tests
 
-change `lxvynzvoqsll` · [log `ce9f8355d880`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/ce9f8355d8800861bb2e0ba60efe41e7db26899dd824cc70a73b3146e38b2d2e.jsonl.gz)
+[`e385fcbf8a44`](https://github.com/pilifs/in-the-loop/commit/e385fcbf8a44fb02f37b6e4a0759d166f82addf4) · [log `ce9f8355d880`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/ce9f8355d8800861bb2e0ba60efe41e7db26899dd824cc70a73b3146e38b2d2e.jsonl.gz)
 
 The setup sessions of 288 and 289 each spent about 16 minutes on the default test run before committing, and each added its example by hand to test_packets.py's list. Following a review of the live run, CLAUDE.md (Tests), lib/README.md and runtime.md's briefs now say that a session of a /prove-java-change run checks a commit by what it changed: examples/tools/validate_example.py NNN for an example's own files (the router regenerated first, since the tests read examples/index.json and a stale one failed two checks of the live run; then the form, each task's plan, the oracle's self-test, with --replay the replays on a JVM, and the four test files that read every example), and the tests of any shared code it touched. The default run comes once an example is done and before anything is published. test_packets.py now discovers each packet from its sidecar's mutant revision instead of a hand-kept list; the expected outcomes of each replay stay written by hand. Verified: validate_example.py 288 289 passes in 40 s; the discovered packets equal the old list exactly; test_packets.py 22 tests pass; test_costs.py estimate changed only the new test's row and the lint agrees.
 
 ### /prove-java-change: stage 2 runs on every run and designs or reviews the claims, hands off plan.json, and the setup writes them with scaffold_example.py and records how each proof is invoked
 
-change `lrkmlooyrrxk` · [log `ce9f8355d880`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/ce9f8355d8800861bb2e0ba60efe41e7db26899dd824cc70a73b3146e38b2d2e.jsonl.gz)
+[`c3def6c48942`](https://github.com/pilifs/in-the-loop/commit/c3def6c489423d74e9a48869d04b3189b9ffeaf0) · [log `ce9f8355d880`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/ce9f8355d8800861bb2e0ba60efe41e7db26899dd824cc70a73b3146e38b2d2e.jsonl.gz)
 
 Following a review of the live run of 288-290: examples named by number skipped stage 2, so a catalog entry's setup session interpreted the advisory, chose the domain and froze the claims itself. Now stage 2 runs on every run, in the fixed session at high effort (was medium), on changes and on examples by number alike. It designs the claims of catalog entries (property, preservation boundary, meaningful bounds, positive, negative and mutation controls, entry point, environment assumptions), reviews the claims of prepared examples with remarks (misstates, which the setup corrects; suggestion, which is the user's), and reuses an accepted review while the claim files are unchanged: watch.py claims --accept now keeps the files' hashes beside the decision record (llm-dlc/decisions/prove-change-claims.json), and preflight lists toReview and reviewed. Stage 2 writes plan.json beside plan.md (llm-dlc/prove-plan.schema.json; watch.py plan --check), and examples/tools/scaffold_example.py NNN writes a designed example's claim files and tasks from it, checks them against their schemas, refuses to change a frozen claim, and lists what is left for the setup. How each proof task is invoked is now a setup deliverable, recorded on the task as invocation (route, adapter or gap with an observed blocker; target.schema.json), and preflight lists tasks without it as toClassify without stopping a run. SKILL.md, runtime.md (stage 2, stage 3, examples by number, the catalog entry's and the repair's briefs), the plan template and the READMEs describe the new order: preflight, stage 2, the claims once, setup, repair, the loop in the plan's order. Verified: test_watch.py (36, 3 new), test_scaffold_example.py (4, new), test_changes, test_sidecar, test_workflow, test_build, test_conductor, test_decisions pass; validate_example.py 288 289 passes; test_costs lint agrees.
 
 ### /prove-java-change: setup overlaps proving in a workspace of its own, the loop takes examples added while it runs, and the watcher sees each setup and measures the run
 
-change `ypqrkrolzkkl` · [log `ce9f8355d880`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/ce9f8355d8800861bb2e0ba60efe41e7db26899dd824cc70a73b3146e38b2d2e.jsonl.gz)
+[`3019090acf37`](https://github.com/pilifs/in-the-loop/commit/3019090acf37c744b2b1c618aaa4430d4402c715) · [log `ce9f8355d880`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/ce9f8355d8800861bb2e0ba60efe41e7db26899dd824cc70a73b3146e38b2d2e.jsonl.gz)
 
 Following a review of the live run of 288-290, where the proof loop waited for all three setups and the watcher saw a setup only start and end. watch.py stage setup now takes --example NNN, which records each attempt (example, attempt number, session, cost, commit, the example's state and the proof tasks whose invocation it left unrecorded, its report), and --workspace NAME, which runs it in a jj workspace beside the checkout, made from the loop's line, so that one setup worker and one proof worker never share a working copy. watch.py add NNN leaves the running loop a conductor command, and feature-loop.sh's new add command takes the items after the ones it has (only from the conductor, where the item list lives; the run record notes each). watch.py wait now tells the watcher when a setup ends and when one goes quiet (one command running past ten minutes, or nothing written for twenty), and the summary has a Setup line (each under way: its tool calls, the command running, the last validate_example.py result) and a Measures line: the time to the first proof cycle, the setups redone, the examples whose first setup recorded every invocation, and the claims answered per dollar (from the stages' results and each cycle's turn). SKILL.md and runtime.md describe the overlap: claims accepted once for the batch, the loop started as soon as one example is ready, each later setup in the workspace prove-setup, merged between two examples (checked with validate_example.py, not the default run, unless shared code came in) and then added. Verified: test_watch.py (39, 3 new), test_prove_loop.py (30, 1 new: an example added while the loop runs is taken after the ones it has, and one it has already is not taken twice), test_conductor, test_loop_stats and test_inbox pass; watch.py status renders on the live run directory; test_costs lint agrees.
 
 ### Example 288 repaired: each proof task records its adapter invocation, the preservation claim states agreement only, and the oracle's canonical form is Spring's
 
-change `pvnkwqntllpq` · [log `5c386b219152`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/5c386b219152712b84f75bf4db8251e92d3a460751d528a2052144ec5d80dcb7.jsonl.gz)
+[`468f61451763`](https://github.com/pilifs/in-the-loop/commit/468f614517638b586727b7f3b30566fe3836ebe1) · [log `5c386b219152`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/5c386b219152712b84f75bf4db8251e92d3a460751d528a2052144ec5d80dcb7.jsonl.gz)
 
 The repair's brief (llm-dlc/runtime.md) for example 288 (CVE-2024-38820), as stage 2's plan for this /prove-java-change run asked. watch.py preflight listed 288 in toClassify, since none of its four proof tasks recorded how it is invoked. Each now records it as adapter (target.json, invocation). The route plans every task, but it enters DataBinder#isAllowed(String), and the claims' expressions name the adapter's parameters, so they can't compile there. LocaleDecisionAdapter#allowed was compiled against each revision's pinned closure and ran on the 31 decide probes on 6.1.13, 6.1.14 and the mutant, on JDK 21 and 25. There is no proof script of the example's own yet; the proof loop writes one, as example 286's proofs/prove.py does.
 
@@ -443,13 +443,13 @@ controls/oracle.py's canonical() was a regular expression needing two quote char
 
 ### validate_example.py regenerates the router after the replays, not before
 
-change `lwvsvznoxkry` · [log `5c386b219152`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/5c386b219152712b84f75bf4db8251e92d3a460751d528a2052144ec5d80dcb7.jsonl.gz)
+[`fc9c54fcedd8`](https://github.com/pilifs/in-the-loop/commit/fc9c54fcedd875cb41ed5a4f0790b2cf5f3c9d7c) · [log `5c386b219152`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/5c386b219152712b84f75bf4db8251e92d3a460751d528a2052144ec5d80dcb7.jsonl.gz)
 
 The repair of example 288 found that validate_example.py --replay regenerated examples/index.json first and then ran the replays, whose new receipts left the index stale for the tests that read it. The router step now comes after every step that can write receipts and before the tests. Verified: validate_example.py 288 passes.
 
 ### Example 289 repaired: each proof task records its adapter invocation, the preservation claim states agreement only, unpaired surrogates are probed, and the driver reports the matcher's logging
 
-change `qvqpqxpnkypn` · [log `5ec89604aa64`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/5ec89604aa6489cbea6f2e903f2df0902184a77f4853df1e5ea968f800ee6bf4.jsonl.gz)
+[`e747d722ad68`](https://github.com/pilifs/in-the-loop/commit/e747d722ad6888880cc019bfacddbb4c1ba53f67) · [log `5ec89604aa64`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/5ec89604aa6489cbea6f2e903f2df0902184a77f4853df1e5ea968f800ee6bf4.jsonl.gz)
 
 The repair's brief (llm-dlc/runtime.md) for example 289 (CVE-2022-22978, RegexRequestMatcher and line terminators), as stage 2's plan for this /prove-java-change run asked. watch.py preflight listed 289 in toClassify because none of its four proof tasks recorded how it is invoked. Each one now records it as adapter (target.json, invocation). The route plans every task, but it enters RegexRequestMatcher#matches(HttpServletRequest), and the claims' expressions name the adapter's parameters (pattern, caseInsensitive, servletPath, pathInfo, query), so they can't compile there. RegexMatchAdapter#matches was compiled against each revision's pinned closure and run on the 44 probes on 5.6.3, 5.6.4 and the mutant, on JDK 21 and 25. The example has no proof script of its own yet; the proof loop writes one, as example 286's proofs/prove.py does.
 
@@ -459,7 +459,7 @@ Following the plan's revised controls: eight probes were added for unpaired surr
 
 ### Example 290 set up from its catalog entry: claims and tasks from the plan, release pair and mutant prepared, carriers, driver and oracle, both replays as expected
 
-change `mlmnzmwkxwvo` · [log `5ec89604aa64`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/5ec89604aa6489cbea6f2e903f2df0902184a77f4853df1e5ea968f800ee6bf4.jsonl.gz)
+[`98159ad64e0d`](https://github.com/pilifs/in-the-loop/commit/98159ad64e0d4ffd537ab2147d5de79aca81eee1) · [log `5ec89604aa64`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/5ec89604aa6489cbea6f2e903f2df0902184a77f4853df1e5ea968f800ee6bf4.jsonl.gz)
 
 Example 290 (CVE-2023-34035, Spring Security 5.8.4 -> 5.8.5, requestMatchers(String...) in a multi-servlet application) was a catalog entry. The setup stage of /prove-java-change wrote the plan's two claims and six tasks with scaffold_example.py (unchanged from plan.json), and the rest from the entry: the release pair on the published-artifact route (spring-security-config/web/core, Spring Framework 5.3.28 and 5.3.29 with spring-webmvc, jakarta.servlet-api 4.0.4, pinned by sha256), sources.lock.json (each release's AbstractRequestMatcherRegistry.java is the exact-fix pair's blob; the other classes the replays load are byte-identical or differ outside the code reached; javap shows no subclass in either config JAR overriding the implicit overloads), and the mutant controls/first-registration-only.patch (hasDispatcherServlet looks at the first registration only).
 
@@ -467,19 +467,19 @@ The entry is example290.adapter.MatcherSelectionAdapter#select(int[] servlets, i
 
 ### Example 290: the page and notes count three null-pattern probes beyond the plan, not two
 
-change `zppsuptrnwkz` · [log `5ec89604aa64`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/5ec89604aa6489cbea6f2e903f2df0902184a77f4853df1e5ea968f800ee6bf4.jsonl.gz)
+[`90d4df90b628`](https://github.com/pilifs/in-the-loop/commit/90d4df90b62880fc1ee3006a268876166f76de2b) · [log `5ec89604aa64`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/5ec89604aa6489cbea6f2e903f2df0902184a77f4853df1e5ea968f800ee6bf4.jsonl.gz)
 
 The setup commit's README and example.json notes said two probes with a null pattern element were added beyond the plan's list; there are three (ambiguous-plain-dispatcher-null-pattern, lone-dispatcher-null-pattern, no-dispatcher-plain-null-pattern). Corrected the count and stated the lone probe's outcome. Verified with validate_example.py 290.
 
 ### watch.py: a turn of a resumed session costs its running total less the total seen before, and the briefs run the replays once
 
-change `rlosmoxonwxy` · [log `5ec89604aa64`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/5ec89604aa6489cbea6f2e903f2df0902184a77f4853df1e5ea968f800ee6bf4.jsonl.gz)
+[`eabaf9354367`](https://github.com/pilifs/in-the-loop/commit/eabaf93543671cc75c00fd02df593a253c5cebc3) · [log `5ec89604aa64`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/5ec89604aa6489cbea6f2e903f2df0902184a77f4853df1e5ea968f800ee6bf4.jsonl.gz)
 
 The first summary of the live run counted $436.67: a result's total_cost_usd is the session's running total, so the two stage 2 turns in the fixed session, which the earlier prove-examples run had left at $203.27, were counted at $211 and $214 instead of about $8 and $2.40. watch.py now keeps each session's last total (sessionTotals) and counts a turn as the difference; the first turn seen of a resumed session is left uncounted. The setup of 290 also found that the briefs had it run the replays and then validate_example.py --replay, which ran them again and left a second receipt for each; stage 3, the catalog entry's brief and the repair's brief now check with validate_example.py NNN and add --replay only when something a replay reads changed since. Made in the workspace prove-setup while the loop runs in the default one; it comes in with that workspace's merge. Verified: test_watch.py passes (40, 1 new); the test-cost lint agrees (the row added by hand, since an estimate in this workspace rewrote unrelated rows).
 
 ### Example 288: the default locale is an input the own checker follows, a regression check over String[] is a property of the pair of versions, and the four frozen claims are queued through the adapter entry (verification pending)
 
-change `qqoppoklvroo` · [log `5c386b219152`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/5c386b219152712b84f75bf4db8251e92d3a460751d528a2052144ec5d80dcb7.jsonl.gz)
+[`49671550540d`](https://github.com/pilifs/in-the-loop/commit/49671550540d10c01da67875f9f79073bf627f16) · [log `5c386b219152`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/5c386b219152712b84f75bf4db8251e92d3a460751d528a2052144ec5d80dcb7.jsonl.gz)
 
 Example 288 (CVE-2024-38820, Spring Framework 6.1.13 to 6.1.14: DataBinder lower-cased disallowed field patterns and the field under the default locale, so a Turkish or Azerbaijani default let Id past a pattern id) needed three things of the verifier, and each is now general. (1) The default locale is state the own checker follows (lib/src/bmc/locale.rs): Locale's 22 constants and Locale.forLanguageTag of a constant plain tag are Locales it knows one fact of, whether the language is tr or az, the only locales that lower an ASCII letter apart (I to U+0131); Locale.setDefault sets the default on the path; String.toLowerCase() and toLowerCase(Locale) lower an ASCII String under it as a formula of that fact. Where a path sets no default the earlier stated assumption stands; a Locale the checker knows nothing of, a String outside ASCII and a comparison of two Locales by reference are named gaps or refusals. (2) A reference read from an array at a computed index is one symbolic reference among the cells, where it split the path per cell. (3) jvmcontract equivalence makes a regression check with a String[] parameter, a nullable String, an assumption (--assume) or lemmas (--lemmas) as a property of the pair of versions (lib/src/pairing.rs): one generated method calls the previous version, relocated under before., and the new one on copies of the same inputs and says whether they agree in result or in the exception thrown, outside the allowed change.
 
@@ -487,25 +487,25 @@ Example 288's proofs/prove.py runs each frozen claim, unchanged, through the ada
 
 ### The watcher's decisions on the run of 288-290 so far
 
-change `krmvzrytnpwv` · [log `5ec89604aa64`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/5ec89604aa6489cbea6f2e903f2df0902184a77f4853df1e5ea968f800ee6bf4.jsonl.gz)
+[`a09752c02483`](https://github.com/pilifs/in-the-loop/commit/a09752c024838dcb116861d3cdfbc76dc5c551c2) · [log `5ec89604aa64`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/5ec89604aa6489cbea6f2e903f2df0902184a77f4853df1e5ea968f800ee6bf4.jsonl.gz)
 
 The decision record of the /prove-java-change run (llm-dlc/decisions/prove-change.*): the claims of 288 accepted in the user's place under --unattended (D001, flagged for review), continue at cycle 1's compaction (D002), and 288 waiting on its five jobs after cycle 1 (D003). Committed before merging the workspace prove-setup between examples.
 
 ### Record verification result: example 288 fixed-security through the adapter entry passed
 
-change `urqorxxswwuu` · [log `2debdf179e55`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/2debdf179e55b1d3e9b877a0dd8ad6a8864cfe436e1c7687192107d98650634e.jsonl.gz)
+[`4585e66f26ad`](https://github.com/pilifs/in-the-loop/commit/4585e66f26add64610b3fbb80bc4a157ad3f72a3) · [log `2debdf179e55`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/2debdf179e55b1d3e9b877a0dd8ad6a8864cfe436e1c7687192107d98650634e.jsonl.gz)
 
 Job 20261116-201436-example-288-fixed-security-through-the-a passed in 19m42s (peak 1.4 GiB, estimated 25m, 6 GiB) on vm-1, jvmcontract holds as expected; 3 outputs applied.
 
 ### The watcher accepts the claims of 289 and 290 in the user's place, and records the merge of prove-setup
 
-change `nvlyyytuquxx` · [log `2debdf179e55`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/2debdf179e55b1d3e9b877a0dd8ad6a8864cfe436e1c7687192107d98650634e.jsonl.gz)
+[`067a07071f06`](https://github.com/pilifs/in-the-loop/commit/067a07071f068f68ec8a0e99c44e51cd537c998e) · [log `2debdf179e55`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/2debdf179e55b1d3e9b877a0dd8ad6a8864cfe436e1c7687192107d98650634e.jsonl.gz)
 
 The workspace prove-setup (the repairs of 289 and 290's setup from stage 2's plan, and watch.py's per-turn cost and the briefs' single replay run) was merged into the loop's line between examples: jj new krmvzryt rlosmoxo, sync.py regenerate for the four generated trace files that conflicted, validate_example.py 289 290 and the default test run (48 of 48) on the merged tree. The verification loop's commit of 288's fixed-security result (urqorxxs) took the merge with it while the default run was going, so that commit, whose description is the result's, is also the merge. The claims of 289 and 290 are accepted in the user's place under --unattended (decisions flagged for review), and both are added to the running loop after 288, which waits on its jobs.
 
 ### Example 289: a pattern that is an input is modelled where the own checker shows it is a literal followed by .*, and the four frozen claims are queued through the adapter entry (verification pending)
 
-change `olnsqxznyoyr` · [log `a945559d1d0e`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/a945559d1d0e7382a35a75b7047f73e70fb93871f0e1c749ef5dca2090e26ebb.jsonl.gz)
+[`296188cfbf1f`](https://github.com/pilifs/in-the-loop/commit/296188cfbf1f4654ba4a688f15d27cca335fb864) · [log `a945559d1d0e`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/a945559d1d0e7382a35a75b7047f73e70fb93871f0e1c749ef5dca2090e26ebb.jsonl.gz)
 
 Example 289 is CVE-2022-22978 (Spring Security 5.6.3 to 5.6.4): RegexRequestMatcher compiled the rule it was given without Pattern.DOTALL, so /admin/.* did not match /admin/ followed by a line feed. Its two frozen claims quantify over the pattern (a literal prefix and .*), the case mode and every request String, so java.util.regex is on the proof's path with a pattern that is an input. The claims are unchanged.
 
@@ -523,7 +523,7 @@ Also in this commit, collected by the pipeline's runner and found uncommitted in
 
 ### Example 289 is decided beside the route: the security claim refuted on 5.6.3 and on the mutant, established on 5.6.4, and preservation established, each at the frozen bound
 
-change `ukstuotlooko` · [log `fe16117e4083`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/fe16117e408334988877414ca0b94ea3282cb37ba62f2e7c62cb395b18b76c39.jsonl.gz)
+[`46e115e76840`](https://github.com/pilifs/in-the-loop/commit/46e115e768406db2621a889dc006644e2aeb2c41) · [log `fe16117e4083`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/fe16117e408334988877414ca0b94ea3282cb37ba62f2e7c62cb395b18b76c39.jsonl.gz)
 
 The four proof jobs queued in the commit before this one passed, each with its expected verdict on the unchanged claim files, through the adapter entry on the releases' own bytecode (examples/289-.../proofs/prove.py), at the frozen bound of 8 code units for each String, strict gaps, loops followed for 26 turns. fixed-security (job 20261116-214343-example-289-fixed-security-through-the-a): established on Spring Security 5.6.4 in 36 s, 1,003 paths, 265 MiB, not vacuous. vulnerable-security (20261116-214344-example-289-vulnerable-security-through): refuted on 5.6.3 in 2 s at matches(pattern=".*", caseInsensitive=false, servletPath="", pathInfo="\u07ff\ufea0\u2028", query=null), which returns false. mutant-security (20261116-214344-example-289-mutant-security-through-the): refuted on the mutant in 2 s at a witness with caseInsensitive true and U+2029 in the path info; the mutant the job built has the SHA-256 the mutant replay's receipt records. Each witness was run on a JVM. preservation (20261116-214344-example-289-preservation-through-the-ada): established on the release pair in 61 s, 1,373 paths, 551 MiB.
 
@@ -531,13 +531,13 @@ Recorded: each task's besideRoute in target.json (answer, job, by, recorded), th
 
 ### Record verification results for examples 288 and 289 and the two proof-tier jobs; VF-031 for example 288's timeouts
 
-change `wwqnoqtlktty` · [log `5773705906d1`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/5773705906d1ed1c017e057e9d7df1c72412c0035bd1ecf9f42f354296e26516.jsonl.gz)
+[`4674e1f27676`](https://github.com/pilifs/in-the-loop/commit/4674e1f276766e225e6bc6dd0bf8e057eea7f13b) · [log `5773705906d1`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/5773705906d1ed1c017e057e9d7df1c72412c0035bd1ecf9f42f354296e26516.jsonl.gz)
 
 Collected on vm-1: 288 fixed-security passed (verified), 288 vulnerable/mutant-security and preservation ran out of the engine's own --timeout with no verdict (VF-031, not resubmitted since the fix is a step change); 289 vulnerable/mutant/fixed/preservation passed; the proof-tier jobs after 288's and 289's engine changes passed (33 cargo tests each).
 
 ### Example 290: a library initializer the checker does not run is observed on a JVM, registrations are a LinkedHashMap in order and classes are found by name, and fixed-security is queued through the adapter entry (verification pending)
 
-change `optkyymtxunx` · [log `6051281aeba9`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/6051281aeba9e8453d8668d51037007bbe1c23b7cb624adcb7d6b8ab47cf82d1.jsonl.gz)
+[`df8df449d2dd`](https://github.com/pilifs/in-the-loop/commit/df8df449d2ddb625cbd0ee6bee642289684d629b) · [log `6051281aeba9`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/6051281aeba9e8453d8668d51037007bbe1c23b7cb624adcb7d6b8ab47cf82d1.jsonl.gz)
 
 Example 290 (CVE-2023-34035, Spring Security 5.8.4 to 5.8.5: requestMatchers(String...) chooses a matcher type by the servlet context's registrations) gets its proof script, proofs/prove.py, which passes the frozen claims to jvmcontract through the adapter entry on the releases' own bytecode, beside the route, and proofs/predicates.py, which shows that the claims' expressions as javac compiles them agree with the oracle on the 27 select probes. An inline probe established fixed-security at the frozen bound of 8 in 6.9 s (659 paths). It is queued as job 20261116-225709-example-290-fixed-security-through-the-a. The two refutations and preservation are not decided: target.json's handoff says where each stops (Collections.emptyMap, Arrays.asList, ArrayList's addAll and toArray; then the matchers' constructors).
 
@@ -549,13 +549,13 @@ Verified by: lib/tests/claims.rs, two new tests over the new fixtures claims.M, 
 
 ### Record verification results: example 290 fixed-security passed; the default test run failed one test (VF-032)
 
-change `pptopklkymsm` · [log `aa6ed29cc5b6`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/aa6ed29cc5b65e5a5011e4e0dba9455b795efb2259070e0965ba5733a75d0d27.jsonl.gz)
+[`f19e6185b349`](https://github.com/pilifs/in-the-loop/commit/f19e6185b3493bbcac31a3d3207000214b332129) · [log `aa6ed29cc5b6`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/aa6ed29cc5b65e5a5011e4e0dba9455b795efb2259070e0965ba5733a75d0d27.jsonl.gz)
 
 Job 20261116-225709 (example 290 fixed-security through the adapter entry) passed in 9.8s, jvmcontract holds; its 3 outputs applied. Job 20261116-224337 (default test run at 76862913606e) failed 1 of 49 files: test_runtime.py sees JVMCONTRACT_JBMC_MEMORY_MB passed through to the verifier; recorded as VF-032 for the targets owner. No result edited.
 
 ### Example 290: fixed-security is established beside the route at the frozen bound, mutant-security is queued after its probe refuted it, and the page says where the other two stand (verification pending)
 
-change `mqoqmvttwklv` · [log `9c9cfc247435`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/9c9cfc247435c391e2c0cf91ab4e30b56a0ed30aa67d220f7995b07718dd2113.jsonl.gz)
+[`7a411e39daba`](https://github.com/pilifs/in-the-loop/commit/7a411e39dabab7180f8873e2277c8015c0b245f0) · [log `9c9cfc247435`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/9c9cfc247435c391e2c0cf91ab4e30b56a0ed30aa67d220f7995b07718dd2113.jsonl.gz)
 
 Example 290 (CVE-2023-34035, Spring Security 5.8.4 to 5.8.5). Job 20261116-225709-example-290-fixed-security-through-the-a passed: the frozen security claim is established on 5.8.5 at the bound of 8, through the adapter entry, in 6.9 s (659 paths, 8,509 variables, 131 MiB). target.json records it as the task's besideRoute answer; changes.py still lists the example as to prove, since three tasks are open. The verdict rests on three library initializers observed on a JVM in place of run by the checker (Spring's ClassUtils, the servlet API's GenericServlet and HttpServlet), which the outcome states and the page explains: weaker evidence than an initializer the checker ran, and said so.
 
@@ -565,13 +565,13 @@ vulnerable-security has no verdict: the checker stops, by name, at new ArrayList
 
 ### Record verification results: example 290 mutant-security passed
 
-change `zklwynpumvln` · [log `19e36c7df532`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/19e36c7df532195c1bc32400ffe662947083925e49f6ae997e82150766560e0c.jsonl.gz)
+[`3e8b8d0de562`](https://github.com/pilifs/in-the-loop/commit/3e8b8d0de562c518ab4e5d46446058e19eed69f9) · [log `19e36c7df532`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/19e36c7df532195c1bc32400ffe662947083925e49f6ae997e82150766560e0c.jsonl.gz)
 
 Collected 1 job (20261116-231724, example 290 mutant-security through the adapter entry): passed, 3 outputs applied. Others are still running.
 
 ### Example 290: mutant-security is refuted beside the route at the frozen bound, on a servlet registered before the DispatcherServlet
 
-change `snpkzvoozwwv` · [log `110762e70f30`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/110762e70f305e9a1c53fa50b934545293df849dcb60fd17a435374d9e219062.jsonl.gz)
+[`99a6307ea00c`](https://github.com/pilifs/in-the-loop/commit/99a6307ea00c7481a562be214e65974f75be4d8f) · [log `110762e70f30`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/110762e70f305e9a1c53fa50b934545293df849dcb60fd17a435374d9e219062.jsonl.gz)
 
 Job 20261116-231724-example-290-mutant-security-through-the passed: the frozen security claim of example 290 (CVE-2023-34035) is refuted on the constructed mutant of Spring Security 5.8.5, which looks at the first registration only, in 5.9 s (708 paths, 15,905 variables, 190 MiB). The witness is select(servlets=[1, 0], method=0, patterns={}), which returns 0 and throws nothing, run in the harness on a JVM; the mutant's JAR is byte for byte the one the mutant replay ran. target.json records it as the task's besideRoute answer, and the page, the verdict label and the notes say two of the four proof tasks are decided: the claim established on 5.8.5 and refuted on the mutant, both through the adapter entry, beside the route. vulnerable-security (no verdict: the checker has no model of ArrayList, which 5.8.4 collects its matchers in) and preservation (not attempted) stay open, as the page and target.json's handoff describe.
 
@@ -579,31 +579,31 @@ Verified by: validate_example.py 290 (passed); changes.py 290 (the example stays
 
 ### Record verification results: the default test run at qnmttuprxxym passed, closing VF-032
 
-change `kxsppxvzquup` · [log `545993ea65f8`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/545993ea65f8ba76e194e9cd3f5a9b155ae0a223369b842555d42a0bdd9b3295.jsonl.gz)
+[`5b401414646b`](https://github.com/pilifs/in-the-loop/commit/5b401414646ba2eab081523a511df2df97ca63f1) · [log `545993ea65f8`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/545993ea65f8ba76e194e9cd3f5a9b155ae0a223369b842555d42a0bdd9b3295.jsonl.gz)
 
 Collected 1 job (20261116-232054): the default tier passed 49 of 49 under the runner (14m32s, peak 2.7 GiB), which is the check VF-032 named; the entry is closed. The proof-tier job for example 290 is still running.
 
 ### Record verification results: the proof tier after example 290's engine changes passed
 
-change `kxkyqntwvlol` · [log `4dca36def684`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/4dca36def684da7ed44db7f3306e87d0d9727fad130282a9606050021d9dafb3.jsonl.gz)
+[`cee8ea2541e3`](https://github.com/pilifs/in-the-loop/commit/cee8ea2541e35662c97c06089ddd972683266b4c) · [log `4dca36def684`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/4dca36def684da7ed44db7f3306e87d0d9727fad130282a9606050021d9dafb3.jsonl.gz)
 
 Collected 1 job (20261116-231725): every proof-tier Rust test but VF-018's three passed in release (35m32s, peak 3.5 GiB against an estimated 8 GiB).
 
 ### Example 290: vulnerable-security is refuted in a probe at the frozen bound with a model of ArrayList the check asks for, and its job is queued (verification pending)
 
-change `qystlsvplrmv` · [log `7cbf1146fa31`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/7cbf1146fa31559a1f1fd4fce0e55600fdbe360f1faafa549c0b1a5564d2760b.jsonl.gz)
+[`a5fa1c82be2b`](https://github.com/pilifs/in-the-loop/commit/a5fa1c82be2bfaf86ac435bbaa5aca2c2d3ac8e6) · [log `7cbf1146fa31`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/7cbf1146fa31559a1f1fd4fce0e55600fdbe360f1faafa549c0b1a5564d2760b.jsonl.gz)
 
 5.8.4 collects its matchers in ArrayLists on every path, and jvmcontract's own checker stopped at new ArrayList(int). The checker now has a model of java.util.ArrayList that it runs only for a check that asks for it (prove --model java.util.ArrayList; lib/models/java/util/lists/ArrayList.java, models::ON_REQUEST, ClassPath::runs_model): both constructors, size, isEmpty, get, add, addAll, both toArray and a fail-fast iterator; any other method is the JDK call it names. It is on request and not run for every check because new ArrayList(int) is the gap the contract library, the conformance corpus and the examples' recorded refusals are written about: without the option nothing changes. A result states the model where a path ran it; JBMC, --cache and a class with no model on request are refused. Arrays.copyOf of an array of references, which the model grows by, is modelled for every check, as it was for arrays of numbers.
 
 ### Record verification results: example 290 vulnerable-security through the adapter entry is refuted at the frozen bound, as expected
 
-change `onkqouutwkor` · [log `d79df0d33f5f`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/d79df0d33f5f901bfd3c9974c9c8489085819a71647b709c859100e2cb86b9f7.jsonl.gz)
+[`48524f07fe88`](https://github.com/pilifs/in-the-loop/commit/48524f07fe88cefb99429adc83b6aa2a0da4ca89) · [log `d79df0d33f5f`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/d79df0d33f5f901bfd3c9974c9c8489085819a71647b709c859100e2cb86b9f7.jsonl.gz)
 
 Job 20261117-000856-example-290-vulnerable-security-through passed on vm-1 (1 step, 3.4 s, peak 187 MiB against an estimate of 5 min and 4 GiB): the frozen claim on 5.8.4 is refuted as the job expected. Outputs applied: the work folder's outcome and harness. No findings.
 
 ### Example 290: preservation is established in a probe at the frozen bound, the previous version's questions by name answered on its own class path; one job for all four tasks is queued (verification pending)
 
-change `lxywqktlwtqv` · [log `e4dda27d9544`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/e4dda27d9544684c02262272122223f0edf0796dfa66b1fae88c9b4a5717d09d.jsonl.gz)
+[`3bf65fcb44a5`](https://github.com/pilifs/in-the-loop/commit/3bf65fcb44a55749ad19863e292662582d0e8418) · [log `e4dda27d9544`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/e4dda27d9544684c02262272122223f0edf0796dfa66b1fae88c9b4a5717d09d.jsonl.gz)
 
 preservation (the release pair 5.8.4 to 5.8.5 through the adapter entry) needed four things of the verifier, each now there. (1) In a regression check made as a property of the pair of versions the previous version's classes are copies under the package before, and a question its code asks by a name it computes was answered from the program's class path, the new version's: Class.forName called by a copy now finds the copy of the class named and no class only the new version has, and a copy's getName() is the class's own name (lib/src/relocate.rs Previous, lib/src/bmc/runtime.rs). 5.8.4's initializer asks this way whether Spring MVC is present. (2) jvmcontract equivalence takes --observed-initializer and --model for such a check; an initializer is observed in each version that has the class, on that version's own class path, and the result says which. (3) new ConcurrentHashMap() and new ConcurrentHashMap(int) make an object with no content, a negative capacity refused: the caches an AntPathMatcher's constructor makes. (4) proofs/prove.py observes two more library initializers, UrlPathHelper's and AntPathMatcher's, met only where a release goes on to make MvcRequestMatchers.
 
@@ -611,77 +611,77 @@ Verified inline: tests/pairing.rs has two versions of a library that return the 
 
 ### Record verification results: example 290's four proof tasks through the adapter entry passed
 
-change `zkoptlxkvvts` · [log `48480ed84c9d`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/48480ed84c9d64465bfdad77c522993e4d9acf1e802b646640e29041063c1fb2.jsonl.gz)
+[`6917a60278c0`](https://github.com/pilifs/in-the-loop/commit/6917a60278c0c13acb5f55ef9343fba5aa9e9cd7) · [log `48480ed84c9d`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/48480ed84c9d64465bfdad77c522993e4d9acf1e802b646640e29041063c1fb2.jsonl.gz)
 
 Job 20261117-002240-example-290-the-four-proof-tasks-through passed (4 steps, 38.9s, 189 MiB; estimated 5m, 4 GiB). 4 output files applied, none conflicting. Collected by the unattended run-verification loop on vm-1.
 
 ### Record verification results: the default test run at lptpzxuplxky passed
 
-change `yrxntpunonzp` · [log `ee621f1afedd`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/ee621f1afedd5c3f65abbff11ef5cf89592906ccc470cdb4d76a87e4732dc0a6.jsonl.gz)
+[`a8f7921f1b1f`](https://github.com/pilifs/in-the-loop/commit/a8f7921f1b1fa0fbcab0bb01ee3257d687a2cc8d) · [log `ee621f1afedd`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/ee621f1afedd5c3f65abbff11ef5cf89592906ccc470cdb4d76a87e4732dc0a6.jsonl.gz)
 
 Job 20261117-003114-default-test-run-at-lptpzxuplxky passed: 1 step in 8m37s, peak 6.0 GiB (estimated 25m, 4 GiB; memory under-estimated). No outputs to apply. Collected by the unattended run-verification loop on vm-1.
 
 ### Example 290: all four proof tasks are decided beside the route at the frozen bound, and the page says what each verdict rests on
 
-change `xtkpoqknmqkx` · [log `ff3f3dc129a4`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/ff3f3dc129a47b718f8130ee7d6f4aebf0b39d1fc54a14e7c4acaed7d66d90ea.jsonl.gz)
+[`3762b2c49ba1`](https://github.com/pilifs/in-the-loop/commit/3762b2c49ba1c0de6e84cebfdbac75b08a960a4e) · [log `ff3f3dc129a4`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/ff3f3dc129a47b718f8130ee7d6f4aebf0b39d1fc54a14e7c4acaed7d66d90ea.jsonl.gz)
 
 Job 20261117-002240-example-290-the-four-proof-tasks-through ran proofs/prove.py on the four tasks at one commit (lxywqktl) and passed, 38.9 s after the build: vulnerable-security refuted on select(servlets=[0, 0], method=0, patterns={}), which returns 0 on 5.8.4, run on a JVM; fixed-security established (659 paths); mutant-security refuted on select(servlets=[1, 0], method=0, patterns={}), run on a JVM; preservation established for the pair 5.8.4 to 5.8.5 (573 paths, 7,907 variables). target.json records each as besideRoute with that job, dates the notes of the two blockers the work closed, and says in handoff.next what is left: the route has no adapter entry, so there are no route receipts. example.json's verdict and notes and the README's section follow, with what the verdicts rest on beyond the bytecode: up to five library initializers per release observed on a JVM instead of run by the checker, the hand-written ArrayList model run on request, and the stated class-loader assumptions.
 
 ### The user's review of the watcher's answers to the run of 288-290, and its answer that 290 is finished
 
-change `mrtuvsowozvn` · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
+[`72fa74329161`](https://github.com/pilifs/in-the-loop/commit/72fa74329161506fdc98e344c4d5997ed9bb938b) · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
 
 Reviewed with the watcher on 2026-11-17: the user accepted all nine answers so far (D001-D009). The three claim acceptances made in the user's place under --unattended (288, 289, 290) stand; the known gaps are in how the proofs meet the claims (288: exception categories and array aliasing; 290: observed initializers and a preservation claim that compares the count of matchers by type), not in the claims' wording. D010: 290 is finished, at medium confidence while the proof-tier rerun after its engine changes is out.
 
 ### conductor.py: a queue that can't be read is never taken for no jobs out
 
-change `xkymvxspxzwm` · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
+[`6e88e493fb52`](https://github.com/pilifs/in-the-loop/commit/6e88e493fb522ce8d2de643dbd88a88462e4384d) · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
 
 In the live run at 22:22, pipeline.py status once printed nothing, and conductor.unfinished_jobs read that as no job out: watch.py proof 288 and wait announced 288's jobs as in while its preservation job was still running. feature-loop.sh asks the same function (conductor.py unfinished) whether a waiting example's proof is in, so the same read would have sent the loop back to 288 early. The status is now read up to three times, and a queue still unreadable raises QueueUnreadable: conductor.py unfinished then prints every example named, as unfinished, with exit status 1, and watch.py's status, assessment, wait and proof treat the queue as unknown, not empty. Made in the workspace prove-setup while the loop runs in the default one. Verified: test_conductor.py (22, 1 new), test_watch.py, test_prove_loop.py (30) pass; the test-cost lint agrees (the row added by hand).
 
 ### The default test run is a verification job nobody waits for, only the newest of those waiting runs, the watcher triages what it finds, and a push requires a passed one
 
-change `yooukqwllnmu` · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
+[`fadada74fc87`](https://github.com/pilifs/in-the-loop/commit/fadada74fc878370be78eb999281a116601e6d04) · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
 
 The default run (lib/tools/test_costs.py run, about 16 minutes, longer beside proof jobs) had become the bottleneck of the /prove-java-change run: inline before every merge and at the end of each example. verification/default_tests.py queue writes a job that runs it at a commit, in the pipeline's clean export of that commit, at low priority, with its cargo target directory kept warm between runs; the job file is committed from any workspace. Its step first asks the queue (VERIFY_RUNNER_ROOT, now passed to every step) and, when a newer default-run job is pending or running, says it is superseded and exits at once, so of several waiting together only the newest runs. watch.py wait tells the watcher of each run that comes in, with the commit and the files it failed at, to triage: a small mechanical failure fixed in the side workspace, one in the loop's area written to test-findings.md for its next cycle, the rest to the user. sync.py push now requires a passed run covering the commit it pushes, at it or at an ancestor that differs only in files no test reads (traces, decisions, job results); --skip-tests REASON is for the user alone. CLAUDE.md, runtime.md (the proof loop's tests, the merge between examples, watching the loop), SKILL.md and verification/README.md say so. Verified: test_default_tests.py (7, new), test_watch.py (41, 1 new), test_pipeline.py and test_performance.py pass; the test-cost lint agrees (rows added by hand). A real job is queued next to check it end to end.
 
 ### Queue the first default test run as a job, at the commit that adds it (verification pending)
 
-change `nmoorrywzxqr` · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
+[`d3df58f4877f`](https://github.com/pilifs/in-the-loop/commit/d3df58f4877fb3e75d291316f7be334d0b76df6d) · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
 
 An end-to-end check of verification/default_tests.py: the job runs the default run at its parent commit, in the pipeline's clean export, and nobody waits for it. Job: 20261116-224337-default-test-run-at-yooukqwllnmu.
 
 ### sync.py regenerate takes the merged sessions' logs from the workspace that stores them, checked against their names
 
-change `splrunltklut` · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
+[`306fa30cca68`](https://github.com/pilifs/in-the-loop/commit/306fa30cca6825eb73afaab4991d8bf03a744f8b) · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
 
 Merging a workspace's line brought commits whose sessions' log snapshots were stored only in that workspace, so the merged checkout's check reported each as neither stored locally nor uploaded; the user copied them by hand twice today. sync.py adopt-logs, which regenerate now runs after every merge, finds each log a manifest names that is neither here nor uploaded, reads it from the repository's other workspaces, and keeps a copy only when the sha256 of its uncompressed content is the log's name: nothing is taken on trust, and nothing already here is touched. runtime.md's merge between examples says so. Also: the default-run job asks for 4G, the committed runner's per-job limit, instead of 6G. Verified: test_workspaces.py (12, 1 new: a real merge of two jj workspaces, one log taken, one copy that is not its log left), test_default_tests.py pass; the lint agrees; run in this workspace it took the five logs of session a6490df0 from the default workspace.
 
 ### The tests of a change are chosen from what it changed, the default run runs Rust beside Python and retries what fails once, and a failing default-run job traces each failure to its commit
 
-change `ypmumtnpltsm` · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
+[`ff15c4a954e0`](https://github.com/pilifs/in-the-loop/commit/ff15c4a954e052c1dee53443d3aa275e4d470eb3) · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
 
 Four ways to make the default test run (about 16 minutes) less of a bottleneck. test_costs.py run --changed (--from REV for a line of commits) chooses statically from jj diff: a Python test file runs when it changed, when a module it imports transitively changed, or when its code, or a module it imports directly, names a changed file in a string (docstrings and records every module names, such as the trace index, job results and the inventory, don't count); cargo test runs when lib/ changed outside its Python tools and pages, only the changed binaries when only lib/tests/*.rs changed. run now starts cargo test beside the Python files (--serial for the old order), so the wall time is the longer half, not the sum. What fails is run once more, a Python file whole and Rust's failed tests by name; what passes then is reported FLAKY, counted as passed and named in the tally. The default-run job (verification/default_tests.py) streams its output, and on a failure halves the first-parent commits since the last passed run for each failing test, within 20 minutes, printing 'default tests: culprit TEST: COMMIT'; the watcher's default-tests event carries the culprits and the flaky tests. CLAUDE.md, runtime.md and lib/README.md say so. Verified: test_test_costs.py (18, 2 new: a stand-in cargo on PATH started before the first Python file ended, a flake in each language), test_default_tests.py (9, 2 new: flaky read from the tally, a culprit found in log2 steps), and the 17 Python test files that run --changed chose for this change all pass; the lint agrees.
 
 ### test_runtime.py pins both variables the verifier passes through, so a pipeline job's environment no longer fails it (VF-032)
 
-change `wwrxuknwovqz` · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
+[`3874ed0e3d28`](https://github.com/pilifs/in-the-loop/commit/3874ed0e3d2874602b0d46ac2a9076caafa40697) · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
 
 The first default-run job (20261116-224337, at 76862913606e) failed one test of 49 files: VerifierTest.test_a_property_runs_on_the_original_artifact_alone_with_the_plans_engine_gaps_and_bounds expected the verifier's environment to hold exactly LANG, LC_ALL, TZ, JAVA_HOME, PATH and JVMCONTRACT_JAVA_OPTS, but runtime.py also passes JVMCONTRACT_JBMC_MEMORY_MB through, and a pipeline job sets it. The test's setup now sets both variables and expects both, and checks that JBMC's passes through too. Verified: test_runtime.py passes with JVMCONTRACT_JBMC_MEMORY_MB unset and set to 4096 in the caller's environment.
 
 ### sync.py adopt-logs also takes the uploaded logs a workspace lacks, so its sessions' metrics are computed from the same logs as elsewhere
 
-change `qnmttuprxxym` · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
+[`e756fe3f05c9`](https://github.com/pilifs/in-the-loop/commit/e756fe3f05c9a7471ed52bd08847fc0216dc7fc2) · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
 
 After the change that made regenerate take merged sessions' unuploaded logs from the workspace storing them, check in the prove-setup workspace still failed on session 3e8cabab: sync had recomputed its metrics.json there from the one of its 22 logs the workspace held (the other 21 are uploaded, and stored only in the default workspace), so the token counts no longer matched its manifest. adopt-logs now takes any log a manifest names that isn't stored here, uploaded or not, still only when its content hashes to its name. Run in prove-setup it took the missing logs of 95 sessions (the traces folder is 1.4 GB); sync then rewrote 3e8cabab's metrics.json byte for byte as main has it, and check reports 0 errors. Verified: test_workspaces.py (12) passes, its log test extended to an uploaded log.
 
 ### Queue a default test run at prove-setup's tip, to check the parallel run, the retry and the VF-032 fix (verification pending)
 
-change `qnnqmzztvtkk` · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
+[`7c4ee9d8ce7d`](https://github.com/pilifs/in-the-loop/commit/7c4ee9d8ce7dfadfdd281e4f674f67c2a578c3bd) · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
 
 ### The default run takes 4.6 minutes where it took 16: Rust's test binaries and the Python files run several at a time, and a passed run covers what it left unread
 
-change `lptpzxuplxky` · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
+[`34462882a648`](https://github.com/pilifs/in-the-loop/commit/34462882a648a155d920636d154b3e06e7a8d9bb) · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
 
 test_costs.py run: cargo only builds the Rust test binaries (--no-run), and they then run several at a time (--rust-jobs, by default half the CPUs, at most 4, and one per 1.5 GB of a job's memory limit), the longest first by what each took the last time (kept in the target directory). The Python test files run several at a time too (--python-jobs, 3 by default, 2 in a job); a file that fails has its second run alone after the others, so two files that disturbed each other show as flaky. The proof tier still runs one binary at a time, and --rust-jobs 1 --python-jobs 1 is the run as it was. Measured on this machine: the Rust binaries 707 s one after another in the first job, 403 s three at a time under a six-CPU limit beside another test job (peak 3.4 GB), 230 s four at a time; the whole default run 276 s, 49 of 49 passed, nothing flaky.
 
@@ -691,59 +691,59 @@ default_tests.py: a run in the pipeline's fresh export records which files nothi
 
 ### Queue a default test run at the parallel run's commit, its first under the job's limits and the first to record what it left unread (verification pending)
 
-change `kqtsqtzvmvvs` · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
+[`2b622bd4d544`](https://github.com/pilifs/in-the-loop/commit/2b622bd4d54453143cbfa9c00934961cea461887) · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
 
 Job 20261117-003114-default-test-run-at-lptpzxuplxky runs the default test run at change lptpzxup in the pipeline, with six CPUs and 4 GB: there the run takes two Rust test binaries and two Python files at a time. It shows the run's time under those limits (the first job took 19.5 minutes) and writes the first 'default tests: unread' line, which the push gate reads. Nobody waits for it.
 
 ### The default run builds Rust's tests in a lightly optimised profile and takes 3.4 minutes: the engine's own tests are several times faster for a build twice as long
 
-change `nmskpkrkukuy` · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
+[`01d603416db8`](https://github.com/pilifs/in-the-loop/commit/01d603416db8bdd2fa9c1fe164b90a5be787806a) · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
 
 lib/Cargo.toml gains the profile test-fast (dev with its checks, opt-level 1, line tables only, the SAT solver at 3 as in dev), and test_costs.py run uses it for the default and unit tiers; the proof tier stays in release and plain cargo test stays dev, each in its own folder of target/. Measured on this machine on 2026-11-17, each binary alone: tests/alignment.rs 94 s as dev and 10 s in test-fast, summaries 13 s and 5 s, conformance 45 s and 36 s, application_core_joint 147 s and 123 s, integration and heap unchanged; the profile's first build 69 s, and a build after an edit in src/bmc/mod.rs 14 s where dev takes 7 s. The whole default run with it: 201 s, 49 of 49 passed, the Rust binaries 163 s of it (276 s and 230 s in the commit before). The job queued in the commit before, 20261117-003114, passed in 518 s on six CPUs without this profile, where the first job took 1170 s.
 
 ### Queue a default test run at the test-fast profile's commit, and the job's estimate is 12 minutes (verification pending)
 
-change `mwspmmlwtymy` · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
+[`c43db210a818`](https://github.com/pilifs/in-the-loop/commit/c43db210a8189035850f224b6f021a6cee6198a5) · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
 
 Job 20261117-004852-default-test-run-at-nmskpkrkukuy runs the default test run at change nmskpkrk on six CPUs: the first job with Rust's tests in the test-fast profile, which its warm target directory has to build once. The estimate default_tests.py queue writes goes from 25 to 12 minutes, after the job at the commit before took 8.6 (its notes and verification/README.md's table say so). Checked with test_costs.py run --changed: 13 of 13 test files passed. Nobody waits for the job.
 
 ### Merge prove-setup: the default test run as a job nobody waits for, run in parallel, with tests of what changed, a flaky retry, bisecting and a push gate; logs taken across workspaces
 
-change `xunroyyopkuq` · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
+[`08d856d97ba5`](https://github.com/pilifs/in-the-loop/commit/08d856d97ba5c58deba95947d39e3a20e65911ef) · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
 
 Brings the prove-setup workspace's line into the loop's: conductor.py's unreadable-queue fix; verification/default_tests.py (the default run as a pipeline job, superseded by a newer one, triaged by the watcher, bisected on a failure) and the sync.py push gate that requires a passed run covering the pushed commit; test_costs.py run --changed, Rust beside Python, the retry of what fails, parallel Python and Rust jobs and the test-fast Cargo profile (from the session in tmux window tests, in-the-loop-10); sync.py adopt-logs, which regenerate runs after a merge. Conflicts: examples/tools/targets/test_runtime.py, where both lines fixed VF-032, takes prove-setup's side (the test sets JVMCONTRACT_JBMC_MEMORY_MB itself, expects it and checks it passes through); lib/tests/costs.json keeps the loop's new pairing row and prove-setup's two rows' calls; the generated trace files are regenerated. Verified: test_runtime.py and test_watch.py pass on the merged tree, the test-cost lint agrees, check reports 0 errors. The prove-setup line's last default-run job passed 49 of 49 at its own tip; one more is queued at this merge.
 
 ### Record verification results: the default test run at nmskpkrkukuy passed
 
-change `vypwysvxownk` · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
+[`cb617e344aee`](https://github.com/pilifs/in-the-loop/commit/cb617e344aee26a6a12cfb4fdcb2469a25d042ff) · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
 
 Job 20261117-004852-default-test-run-at-nmskpkrkukuy passed: 1 step in 7m01s, peak 6.0 GiB (estimated 12m, 4 GiB). No outputs to apply. Collected by the unattended run-verification loop on vm-1.
 
 ### Queue the default test run at the merge of prove-setup (verification pending)
 
-change `yuuvzuvykswq` · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
+[`9199d21979d5`](https://github.com/pilifs/in-the-loop/commit/9199d21979d5f49e7bb5fc848e5c3332e403b31f) · [log `42a6b8f267aa`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/42a6b8f267aae0ee8ee777a2210416ce6847601e552ee03c07896d8b9098a43a.jsonl.gz)
 
 Job 20261117-005759-default-test-run-at-xunroyyopkuq: the default run at the merge commit, in the pipeline's clean export, which nobody waits for; the watcher reads its result.
 
 ### Record verification results: the proof tier after example 290's second round of engine changes passed
 
-change `rlzwzoqoqyzy` · [log `4742b15c6bca`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/4742b15c6bca1452a2ada08f549dd989d1da9947643134e5a5daf9359a05a89a.jsonl.gz)
+[`61497e8fd6f6`](https://github.com/pilifs/in-the-loop/commit/61497e8fd6f608eb6d5c1805a243079c8736a503) · [log `4742b15c6bca`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/4742b15c6bca1452a2ada08f549dd989d1da9947643134e5a5daf9359a05a89a.jsonl.gz)
 
 Job 20261117-002240-the-proof-tier-after-example-290-s-secon passed: 1 step in 37m24s, peak 3.5 GiB (estimated 40m, 8 GiB). No outputs to apply. Collected by the unattended run-verification loop on vm-1.
 
 ### Example 290's results are stated at their exact scope, and VF-033 queues a stronger preservation claim and an audit of the observed initializers for a later run
 
-change `ymvkprpwxrrw` · [log `4742b15c6bca`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/4742b15c6bca1452a2ada08f549dd989d1da9947643134e5a5daf9359a05a89a.jsonl.gz)
+[`a4ec3f3bf7b9`](https://github.com/pilifs/in-the-loop/commit/a4ec3f3bf7b93e0251dcb4c87bf892e6c65edf8b) · [log `4742b15c6bca`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/4742b15c6bca1452a2ada08f549dd989d1da9947643134e5a5daf9359a05a89a.jsonl.gz)
 
 The user's decision on reviewing D005 (the watcher's acceptance of 290's claims in their place): keep the claims and their verdicts, say exactly what they cover, and queue the rest. 290's page and example.json notes now say that preservation is established for the count of matchers by type in the lone-DispatcherServlet configuration, not for the matchers themselves or what they match, and that fixed-security and preservation hold under the observation of library initializers on a JVM: two of them load resource bundles, so 'no input' is that observation's assumption until the state read is audited (points 1 and 2 of the outside expert's c3 review); the refutations replay on a JVM and do not rest on it. VF-033 (open) records both, with the chosen follow-up (restate preservation to compare each matcher's type, pattern, HTTP method and servlet path: a setup and about one proof cycle) and the one not chosen (compare matches(), which needs HandlerMappingIntrospector modelled). Verified: validate_example.py 290 passes.
 
 ### (in progress)
 
-change `qoktuvtvukrr`, not yet described
+[`4758f75d7f49`](https://github.com/pilifs/in-the-loop/commit/4758f75d7f49123ecc246c0dfb47698a11811c70), not yet described
 
 ### /run-brief: a watcher runs a feature brief on command, with a foundation stage on Fable 5.2 before its streams
 
-change `xppmwwppknky` · [log `4742b15c6bca`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/4742b15c6bca1452a2ada08f549dd989d1da9947643134e5a5daf9359a05a89a.jsonl.gz)
+[`c5cd267103fe`](https://github.com/pilifs/in-the-loop/commit/c5cd267103fe08eacbf1610f8ef59ae6a1b3a43c) · [log `4742b15c6bca`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/4742b15c6bca1452a2ada08f549dd989d1da9947643134e5a5daf9359a05a89a.jsonl.gz)
 
 A brief of llm-dlc/loops/ was started by hand, and its run was known to run-streams.sh only through a list of five names in the script. A local skill, /run-brief (.claude/skills/run-brief, not part of the plugin), now runs any brief with a watcher session on Opus 5.5, as /prove-java-change runs a proof. Its tool is llm-dlc/tools/brief_run.py: a preflight that finds what run-streams.sh would stop at before anything starts and says what the verification runner may keep beside this many loops (budget --apply lowers verification/pipeline.local.toml for the run); a foundation stage, one Fable 5.2 session at high effort given the user's instruction to start the work itself, build the foundation it sees fit and update the brief for the agents that take over, in a workspace of its own so no other session's uncommitted files meet its commits; land, which brings its commits to the default line, moved forward or by a merge with the generated trace files regenerated, and takes back a merge that conflicts in real work; start, which runs run-streams.sh detached; and wait, which returns only what needs the watcher (a blocked loop, a failing integration check, an open decision, a missing verification loop, a summary every 30 minutes, the end).
 
@@ -753,7 +753,7 @@ Verified by llm-dlc/tools/test_brief_run.py (24 tests on a made-up jj repository
 
 ### /run-brief: an open Opus session becomes the watcher or takes a run over, and the preflight sees a loop at work and loops sharing a session
 
-change `ykpxlwxnyzzu` · [log `4742b15c6bca`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/4742b15c6bca1452a2ada08f549dd989d1da9947643134e5a5daf9359a05a89a.jsonl.gz)
+[`0487cd773257`](https://github.com/pilifs/in-the-loop/commit/0487cd773257bcd389c0154ae90d8a86ec0620b7) · [log `4742b15c6bca`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/4742b15c6bca1452a2ada08f549dd989d1da9947643134e5a5daf9359a05a89a.jsonl.gz)
 
 The user wants to start a brief's run from a session that is already open, which then is the watcher. The skill says so: any Opus 5.5 session of the default workspace can be asked in words, the run's state is all in files, and a new section, A run under way, has the watcher read brief_run.py status first and either go straight to waiting (a run it takes over), continue an interrupted run, or start a new one.
 

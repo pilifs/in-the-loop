@@ -20,13 +20,13 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results: example 290 vulnerable-security through the adapter entry is refuted at the frozen bound, as expected
 
-change `onkqouutwkor` · [log `745520c62d93`](https://terminalvalue.net/raw-traces/5e11162e-5d2d-4d1e-8380-f13b91726445/745520c62d935818611eeb7ca18095970d5153f23c9aaf03fd42304a0b886eb2.jsonl.gz)
+[`48524f07fe88`](https://github.com/pilifs/in-the-loop/commit/48524f07fe88cefb99429adc83b6aa2a0da4ca89) · [log `745520c62d93`](https://terminalvalue.net/raw-traces/5e11162e-5d2d-4d1e-8380-f13b91726445/745520c62d935818611eeb7ca18095970d5153f23c9aaf03fd42304a0b886eb2.jsonl.gz)
 
 Job 20261117-000856-example-290-vulnerable-security-through passed on vm-1 (1 step, 3.4 s, peak 187 MiB against an estimate of 5 min and 4 GiB): the frozen claim on 5.8.4 is refuted as the job expected. Outputs applied: the work folder's outcome and harness. No findings.
 
 ### Example 290: preservation is established in a probe at the frozen bound, the previous version's questions by name answered on its own class path; one job for all four tasks is queued (verification pending)
 
-change `lxywqktlwtqv` · [log `84f8792cee1b`](https://terminalvalue.net/raw-traces/5e11162e-5d2d-4d1e-8380-f13b91726445/84f8792cee1b8c74b62b3f12b70c49019158692a0c831f08651200f1e2b861e5.jsonl.gz)
+[`3bf65fcb44a5`](https://github.com/pilifs/in-the-loop/commit/3bf65fcb44a55749ad19863e292662582d0e8418) · [log `84f8792cee1b`](https://terminalvalue.net/raw-traces/5e11162e-5d2d-4d1e-8380-f13b91726445/84f8792cee1b8c74b62b3f12b70c49019158692a0c831f08651200f1e2b861e5.jsonl.gz)
 
 preservation (the release pair 5.8.4 to 5.8.5 through the adapter entry) needed four things of the verifier, each now there. (1) In a regression check made as a property of the pair of versions the previous version's classes are copies under the package before, and a question its code asks by a name it computes was answered from the program's class path, the new version's: Class.forName called by a copy now finds the copy of the class named and no class only the new version has, and a copy's getName() is the class's own name (lib/src/relocate.rs Previous, lib/src/bmc/runtime.rs). 5.8.4's initializer asks this way whether Spring MVC is present. (2) jvmcontract equivalence takes --observed-initializer and --model for such a check; an initializer is observed in each version that has the class, on that version's own class path, and the result says which. (3) new ConcurrentHashMap() and new ConcurrentHashMap(int) make an object with no content, a negative capacity refused: the caches an AntPathMatcher's constructor makes. (4) proofs/prove.py observes two more library initializers, UrlPathHelper's and AntPathMatcher's, met only where a release goes on to make MvcRequestMatchers.
 

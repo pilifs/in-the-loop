@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Example 290: mutant-security is refuted beside the route at the frozen bound, on a servlet registered before the DispatcherServlet
 
-change `snpkzvoozwwv` · [log `7a4ba76c1e79`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/7a4ba76c1e79a682d86c11fa39547ddde6b56fbfc6a0e6bb40db935bc0fb0a39.jsonl.gz)
+[`99a6307ea00c`](https://github.com/pilifs/in-the-loop/commit/99a6307ea00c7481a562be214e65974f75be4d8f) · [log `7a4ba76c1e79`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/7a4ba76c1e79a682d86c11fa39547ddde6b56fbfc6a0e6bb40db935bc0fb0a39.jsonl.gz)
 
 Job 20261116-231724-example-290-mutant-security-through-the passed: the frozen security claim of example 290 (CVE-2023-34035) is refuted on the constructed mutant of Spring Security 5.8.5, which looks at the first registration only, in 5.9 s (708 paths, 15,905 variables, 190 MiB). The witness is select(servlets=[1, 0], method=0, patterns={}), which returns 0 and throws nothing, run in the harness on a JVM; the mutant's JAR is byte for byte the one the mutant replay ran. target.json records it as the task's besideRoute answer, and the page, the verdict label and the notes say two of the four proof tasks are decided: the claim established on 5.8.5 and refuted on the mutant, both through the adapter entry, beside the route. vulnerable-security (no verdict: the checker has no model of ArrayList, which 5.8.4 collects its matchers in) and preservation (not attempted) stay open, as the page and target.json's handoff describe.
 
@@ -28,31 +28,31 @@ Verified by: validate_example.py 290 (passed); changes.py 290 (the example stays
 
 ### Record verification results: the default test run at qnmttuprxxym passed, closing VF-032
 
-change `kxsppxvzquup` · [log `da9ac192df8a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/da9ac192df8a54ca3797c8be1d1ffb3786b93752f59697ff0f7f460d16491b05.jsonl.gz)
+[`5b401414646b`](https://github.com/pilifs/in-the-loop/commit/5b401414646ba2eab081523a511df2df97ca63f1) · [log `da9ac192df8a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/da9ac192df8a54ca3797c8be1d1ffb3786b93752f59697ff0f7f460d16491b05.jsonl.gz)
 
 Collected 1 job (20261116-232054): the default tier passed 49 of 49 under the runner (14m32s, peak 2.7 GiB), which is the check VF-032 named; the entry is closed. The proof-tier job for example 290 is still running.
 
 ### Record verification results: the proof tier after example 290's engine changes passed
 
-change `kxkyqntwvlol` · [log `532fb6ea5ac7`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/532fb6ea5ac743a631dcc724e5a0e6dc5fd060345e72ebe608b1463b32f57e19.jsonl.gz)
+[`cee8ea2541e3`](https://github.com/pilifs/in-the-loop/commit/cee8ea2541e35662c97c06089ddd972683266b4c) · [log `532fb6ea5ac7`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/532fb6ea5ac743a631dcc724e5a0e6dc5fd060345e72ebe608b1463b32f57e19.jsonl.gz)
 
 Collected 1 job (20261116-231725): every proof-tier Rust test but VF-018's three passed in release (35m32s, peak 3.5 GiB against an estimated 8 GiB).
 
 ### Example 290: vulnerable-security is refuted in a probe at the frozen bound with a model of ArrayList the check asks for, and its job is queued (verification pending)
 
-change `qystlsvplrmv` · [log `532fb6ea5ac7`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/532fb6ea5ac743a631dcc724e5a0e6dc5fd060345e72ebe608b1463b32f57e19.jsonl.gz)
+[`a5fa1c82be2b`](https://github.com/pilifs/in-the-loop/commit/a5fa1c82be2bfaf86ac435bbaa5aca2c2d3ac8e6) · [log `532fb6ea5ac7`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/532fb6ea5ac743a631dcc724e5a0e6dc5fd060345e72ebe608b1463b32f57e19.jsonl.gz)
 
 5.8.4 collects its matchers in ArrayLists on every path, and jvmcontract's own checker stopped at new ArrayList(int). The checker now has a model of java.util.ArrayList that it runs only for a check that asks for it (prove --model java.util.ArrayList; lib/models/java/util/lists/ArrayList.java, models::ON_REQUEST, ClassPath::runs_model): both constructors, size, isEmpty, get, add, addAll, both toArray and a fail-fast iterator; any other method is the JDK call it names. It is on request and not run for every check because new ArrayList(int) is the gap the contract library, the conformance corpus and the examples' recorded refusals are written about: without the option nothing changes. A result states the model where a path ran it; JBMC, --cache and a class with no model on request are refused. Arrays.copyOf of an array of references, which the model grows by, is modelled for every check, as it was for arrays of numbers.
 
 ### Record verification results: example 290 vulnerable-security through the adapter entry is refuted at the frozen bound, as expected
 
-change `onkqouutwkor` · [log `6b0a37bcefe7`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/6b0a37bcefe7134f524aa9dc6364550d8794a55688acf0b639656e223303ef8b.jsonl.gz)
+[`48524f07fe88`](https://github.com/pilifs/in-the-loop/commit/48524f07fe88cefb99429adc83b6aa2a0da4ca89) · [log `6b0a37bcefe7`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/6b0a37bcefe7134f524aa9dc6364550d8794a55688acf0b639656e223303ef8b.jsonl.gz)
 
 Job 20261117-000856-example-290-vulnerable-security-through passed on vm-1 (1 step, 3.4 s, peak 187 MiB against an estimate of 5 min and 4 GiB): the frozen claim on 5.8.4 is refuted as the job expected. Outputs applied: the work folder's outcome and harness. No findings.
 
 ### Example 290: preservation is established in a probe at the frozen bound, the previous version's questions by name answered on its own class path; one job for all four tasks is queued (verification pending)
 
-change `lxywqktlwtqv` · [log `f4cd30a67b67`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/f4cd30a67b67e3a4170e98b193ed651ea057a4bafa016d90645f3695ad459210.jsonl.gz)
+[`3bf65fcb44a5`](https://github.com/pilifs/in-the-loop/commit/3bf65fcb44a55749ad19863e292662582d0e8418) · [log `f4cd30a67b67`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/f4cd30a67b67e3a4170e98b193ed651ea057a4bafa016d90645f3695ad459210.jsonl.gz)
 
 preservation (the release pair 5.8.4 to 5.8.5 through the adapter entry) needed four things of the verifier, each now there. (1) In a regression check made as a property of the pair of versions the previous version's classes are copies under the package before, and a question its code asks by a name it computes was answered from the program's class path, the new version's: Class.forName called by a copy now finds the copy of the class named and no class only the new version has, and a copy's getName() is the class's own name (lib/src/relocate.rs Previous, lib/src/bmc/runtime.rs). 5.8.4's initializer asks this way whether Spring MVC is present. (2) jvmcontract equivalence takes --observed-initializer and --model for such a check; an initializer is observed in each version that has the class, on that version's own class path, and the result says which. (3) new ConcurrentHashMap() and new ConcurrentHashMap(int) make an object with no content, a negative capacity refused: the caches an AntPathMatcher's constructor makes. (4) proofs/prove.py observes two more library initializers, UrlPathHelper's and AntPathMatcher's, met only where a release goes on to make MvcRequestMatchers.
 
@@ -60,31 +60,31 @@ Verified inline: tests/pairing.rs has two versions of a library that return the 
 
 ### Record verification results: example 290's four proof tasks through the adapter entry passed
 
-change `zkoptlxkvvts` · [log `59baee919438`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/59baee919438ce65bdb48f3e63bfaceebb4104f264acbc1cf80ad704601f7512.jsonl.gz)
+[`6917a60278c0`](https://github.com/pilifs/in-the-loop/commit/6917a60278c0c13acb5f55ef9343fba5aa9e9cd7) · [log `59baee919438`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/59baee919438ce65bdb48f3e63bfaceebb4104f264acbc1cf80ad704601f7512.jsonl.gz)
 
 Job 20261117-002240-example-290-the-four-proof-tasks-through passed (4 steps, 38.9s, 189 MiB; estimated 5m, 4 GiB). 4 output files applied, none conflicting. Collected by the unattended run-verification loop on vm-1.
 
 ### Record verification results: the default test run at lptpzxuplxky passed
 
-change `yrxntpunonzp` · [log `393044c56754`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/393044c56754fd1711025fb3230e01cbe357ce032533381699b13b4b704b2084.jsonl.gz)
+[`a8f7921f1b1f`](https://github.com/pilifs/in-the-loop/commit/a8f7921f1b1fa0fbcab0bb01ee3257d687a2cc8d) · [log `393044c56754`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/393044c56754fd1711025fb3230e01cbe357ce032533381699b13b4b704b2084.jsonl.gz)
 
 Job 20261117-003114-default-test-run-at-lptpzxuplxky passed: 1 step in 8m37s, peak 6.0 GiB (estimated 25m, 4 GiB; memory under-estimated). No outputs to apply. Collected by the unattended run-verification loop on vm-1.
 
 ### Example 290: all four proof tasks are decided beside the route at the frozen bound, and the page says what each verdict rests on
 
-change `xtkpoqknmqkx` · [log `6e73ed43bc44`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/6e73ed43bc44229b5a02592410d163a289b88771877a2f64a227bf1c49005468.jsonl.gz)
+[`3762b2c49ba1`](https://github.com/pilifs/in-the-loop/commit/3762b2c49ba1c0de6e84cebfdbac75b08a960a4e) · [log `6e73ed43bc44`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/6e73ed43bc44229b5a02592410d163a289b88771877a2f64a227bf1c49005468.jsonl.gz)
 
 Job 20261117-002240-example-290-the-four-proof-tasks-through ran proofs/prove.py on the four tasks at one commit (lxywqktl) and passed, 38.9 s after the build: vulnerable-security refuted on select(servlets=[0, 0], method=0, patterns={}), which returns 0 on 5.8.4, run on a JVM; fixed-security established (659 paths); mutant-security refuted on select(servlets=[1, 0], method=0, patterns={}), run on a JVM; preservation established for the pair 5.8.4 to 5.8.5 (573 paths, 7,907 variables). target.json records each as besideRoute with that job, dates the notes of the two blockers the work closed, and says in handoff.next what is left: the route has no adapter entry, so there are no route receipts. example.json's verdict and notes and the README's section follow, with what the verdicts rest on beyond the bytecode: up to five library initializers per release observed on a JVM instead of run by the checker, the hand-written ArrayList model run on request, and the stated class-loader assumptions.
 
 ### The user's review of the watcher's answers to the run of 288-290, and its answer that 290 is finished
 
-change `mrtuvsowozvn` · [log `a6b3b9c6bcfc`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/a6b3b9c6bcfcb4c64cb9dd345a296329ea87a64e4b77ab559a6f9fdb374b6765.jsonl.gz)
+[`72fa74329161`](https://github.com/pilifs/in-the-loop/commit/72fa74329161506fdc98e344c4d5997ed9bb938b) · [log `a6b3b9c6bcfc`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/a6b3b9c6bcfcb4c64cb9dd345a296329ea87a64e4b77ab559a6f9fdb374b6765.jsonl.gz)
 
 Reviewed with the watcher on 2026-11-17: the user accepted all nine answers so far (D001-D009). The three claim acceptances made in the user's place under --unattended (288, 289, 290) stand; the known gaps are in how the proofs meet the claims (288: exception categories and array aliasing; 290: observed initializers and a preservation claim that compares the count of matchers by type), not in the claims' wording. D010: 290 is finished, at medium confidence while the proof-tier rerun after its engine changes is out.
 
 ### The default run takes 4.6 minutes where it took 16: Rust's test binaries and the Python files run several at a time, and a passed run covers what it left unread
 
-change `lptpzxuplxky` · [log `a6b3b9c6bcfc`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/a6b3b9c6bcfcb4c64cb9dd345a296329ea87a64e4b77ab559a6f9fdb374b6765.jsonl.gz)
+[`34462882a648`](https://github.com/pilifs/in-the-loop/commit/34462882a648a155d920636d154b3e06e7a8d9bb) · [log `a6b3b9c6bcfc`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/a6b3b9c6bcfcb4c64cb9dd345a296329ea87a64e4b77ab559a6f9fdb374b6765.jsonl.gz)
 
 test_costs.py run: cargo only builds the Rust test binaries (--no-run), and they then run several at a time (--rust-jobs, by default half the CPUs, at most 4, and one per 1.5 GB of a job's memory limit), the longest first by what each took the last time (kept in the target directory). The Python test files run several at a time too (--python-jobs, 3 by default, 2 in a job); a file that fails has its second run alone after the others, so two files that disturbed each other show as flaky. The proof tier still runs one binary at a time, and --rust-jobs 1 --python-jobs 1 is the run as it was. Measured on this machine: the Rust binaries 707 s one after another in the first job, 403 s three at a time under a six-CPU limit beside another test job (peak 3.4 GB), 230 s four at a time; the whole default run 276 s, 49 of 49 passed, nothing flaky.
 
@@ -94,83 +94,83 @@ default_tests.py: a run in the pipeline's fresh export records which files nothi
 
 ### Queue a default test run at the parallel run's commit, its first under the job's limits and the first to record what it left unread (verification pending)
 
-change `kqtsqtzvmvvs` · [log `a6b3b9c6bcfc`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/a6b3b9c6bcfcb4c64cb9dd345a296329ea87a64e4b77ab559a6f9fdb374b6765.jsonl.gz)
+[`2b622bd4d544`](https://github.com/pilifs/in-the-loop/commit/2b622bd4d54453143cbfa9c00934961cea461887) · [log `a6b3b9c6bcfc`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/a6b3b9c6bcfcb4c64cb9dd345a296329ea87a64e4b77ab559a6f9fdb374b6765.jsonl.gz)
 
 Job 20261117-003114-default-test-run-at-lptpzxuplxky runs the default test run at change lptpzxup in the pipeline, with six CPUs and 4 GB: there the run takes two Rust test binaries and two Python files at a time. It shows the run's time under those limits (the first job took 19.5 minutes) and writes the first 'default tests: unread' line, which the push gate reads. Nobody waits for it.
 
 ### The default run builds Rust's tests in a lightly optimised profile and takes 3.4 minutes: the engine's own tests are several times faster for a build twice as long
 
-change `nmskpkrkukuy` · [log `a6b3b9c6bcfc`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/a6b3b9c6bcfcb4c64cb9dd345a296329ea87a64e4b77ab559a6f9fdb374b6765.jsonl.gz)
+[`01d603416db8`](https://github.com/pilifs/in-the-loop/commit/01d603416db8bdd2fa9c1fe164b90a5be787806a) · [log `a6b3b9c6bcfc`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/a6b3b9c6bcfcb4c64cb9dd345a296329ea87a64e4b77ab559a6f9fdb374b6765.jsonl.gz)
 
 lib/Cargo.toml gains the profile test-fast (dev with its checks, opt-level 1, line tables only, the SAT solver at 3 as in dev), and test_costs.py run uses it for the default and unit tiers; the proof tier stays in release and plain cargo test stays dev, each in its own folder of target/. Measured on this machine on 2026-11-17, each binary alone: tests/alignment.rs 94 s as dev and 10 s in test-fast, summaries 13 s and 5 s, conformance 45 s and 36 s, application_core_joint 147 s and 123 s, integration and heap unchanged; the profile's first build 69 s, and a build after an edit in src/bmc/mod.rs 14 s where dev takes 7 s. The whole default run with it: 201 s, 49 of 49 passed, the Rust binaries 163 s of it (276 s and 230 s in the commit before). The job queued in the commit before, 20261117-003114, passed in 518 s on six CPUs without this profile, where the first job took 1170 s.
 
 ### Queue a default test run at the test-fast profile's commit, and the job's estimate is 12 minutes (verification pending)
 
-change `mwspmmlwtymy` · [log `a6b3b9c6bcfc`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/a6b3b9c6bcfcb4c64cb9dd345a296329ea87a64e4b77ab559a6f9fdb374b6765.jsonl.gz)
+[`c43db210a818`](https://github.com/pilifs/in-the-loop/commit/c43db210a8189035850f224b6f021a6cee6198a5) · [log `a6b3b9c6bcfc`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/a6b3b9c6bcfcb4c64cb9dd345a296329ea87a64e4b77ab559a6f9fdb374b6765.jsonl.gz)
 
 Job 20261117-004852-default-test-run-at-nmskpkrkukuy runs the default test run at change nmskpkrk on six CPUs: the first job with Rust's tests in the test-fast profile, which its warm target directory has to build once. The estimate default_tests.py queue writes goes from 25 to 12 minutes, after the job at the commit before took 8.6 (its notes and verification/README.md's table say so). Checked with test_costs.py run --changed: 13 of 13 test files passed. Nobody waits for the job.
 
 ### Merge prove-setup: the default test run as a job nobody waits for, run in parallel, with tests of what changed, a flaky retry, bisecting and a push gate; logs taken across workspaces
 
-change `xunroyyopkuq` · [log `a6b3b9c6bcfc`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/a6b3b9c6bcfcb4c64cb9dd345a296329ea87a64e4b77ab559a6f9fdb374b6765.jsonl.gz)
+[`08d856d97ba5`](https://github.com/pilifs/in-the-loop/commit/08d856d97ba5c58deba95947d39e3a20e65911ef) · [log `a6b3b9c6bcfc`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/a6b3b9c6bcfcb4c64cb9dd345a296329ea87a64e4b77ab559a6f9fdb374b6765.jsonl.gz)
 
 Brings the prove-setup workspace's line into the loop's: conductor.py's unreadable-queue fix; verification/default_tests.py (the default run as a pipeline job, superseded by a newer one, triaged by the watcher, bisected on a failure) and the sync.py push gate that requires a passed run covering the pushed commit; test_costs.py run --changed, Rust beside Python, the retry of what fails, parallel Python and Rust jobs and the test-fast Cargo profile (from the session in tmux window tests, in-the-loop-10); sync.py adopt-logs, which regenerate runs after a merge. Conflicts: examples/tools/targets/test_runtime.py, where both lines fixed VF-032, takes prove-setup's side (the test sets JVMCONTRACT_JBMC_MEMORY_MB itself, expects it and checks it passes through); lib/tests/costs.json keeps the loop's new pairing row and prove-setup's two rows' calls; the generated trace files are regenerated. Verified: test_runtime.py and test_watch.py pass on the merged tree, the test-cost lint agrees, check reports 0 errors. The prove-setup line's last default-run job passed 49 of 49 at its own tip; one more is queued at this merge.
 
 ### Record verification results: the default test run at nmskpkrkukuy passed
 
-change `vypwysvxownk` · [log `f97b270b2ebc`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/f97b270b2ebc4822f6fc45c381dffe6fac11673e3f566e4444d5e0dac8e9f8ff.jsonl.gz)
+[`cb617e344aee`](https://github.com/pilifs/in-the-loop/commit/cb617e344aee26a6a12cfb4fdcb2469a25d042ff) · [log `f97b270b2ebc`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/f97b270b2ebc4822f6fc45c381dffe6fac11673e3f566e4444d5e0dac8e9f8ff.jsonl.gz)
 
 Job 20261117-004852-default-test-run-at-nmskpkrkukuy passed: 1 step in 7m01s, peak 6.0 GiB (estimated 12m, 4 GiB). No outputs to apply. Collected by the unattended run-verification loop on vm-1.
 
 ### Queue the default test run at the merge of prove-setup (verification pending)
 
-change `yuuvzuvykswq` · [log `f97b270b2ebc`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/f97b270b2ebc4822f6fc45c381dffe6fac11673e3f566e4444d5e0dac8e9f8ff.jsonl.gz)
+[`9199d21979d5`](https://github.com/pilifs/in-the-loop/commit/9199d21979d5f49e7bb5fc848e5c3332e403b31f) · [log `f97b270b2ebc`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/f97b270b2ebc4822f6fc45c381dffe6fac11673e3f566e4444d5e0dac8e9f8ff.jsonl.gz)
 
 Job 20261117-005759-default-test-run-at-xunroyyopkuq: the default run at the merge commit, in the pipeline's clean export, which nobody waits for; the watcher reads its result.
 
 ### Record verification results: the proof tier after example 290's second round of engine changes passed
 
-change `rlzwzoqoqyzy` · [log `f6ea237ed0f7`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/f6ea237ed0f7954c6d40c8abd0df80bfdbbf74fe988475bae583f4cdb9bd7866.jsonl.gz)
+[`61497e8fd6f6`](https://github.com/pilifs/in-the-loop/commit/61497e8fd6f608eb6d5c1805a243079c8736a503) · [log `f6ea237ed0f7`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/f6ea237ed0f7954c6d40c8abd0df80bfdbbf74fe988475bae583f4cdb9bd7866.jsonl.gz)
 
 Job 20261117-002240-the-proof-tier-after-example-290-s-secon passed: 1 step in 37m24s, peak 3.5 GiB (estimated 40m, 8 GiB). No outputs to apply. Collected by the unattended run-verification loop on vm-1.
 
 ### Example 290's results are stated at their exact scope, and VF-033 queues a stronger preservation claim and an audit of the observed initializers for a later run
 
-change `ymvkprpwxrrw` · [log `f6ea237ed0f7`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/f6ea237ed0f7954c6d40c8abd0df80bfdbbf74fe988475bae583f4cdb9bd7866.jsonl.gz)
+[`a4ec3f3bf7b9`](https://github.com/pilifs/in-the-loop/commit/a4ec3f3bf7b93e0251dcb4c87bf892e6c65edf8b) · [log `f6ea237ed0f7`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/f6ea237ed0f7954c6d40c8abd0df80bfdbbf74fe988475bae583f4cdb9bd7866.jsonl.gz)
 
 The user's decision on reviewing D005 (the watcher's acceptance of 290's claims in their place): keep the claims and their verdicts, say exactly what they cover, and queue the rest. 290's page and example.json notes now say that preservation is established for the count of matchers by type in the lone-DispatcherServlet configuration, not for the matchers themselves or what they match, and that fixed-security and preservation hold under the observation of library initializers on a JVM: two of them load resource bundles, so 'no input' is that observation's assumption until the state read is audited (points 1 and 2 of the outside expert's c3 review); the refutations replay on a JVM and do not rest on it. VF-033 (open) records both, with the chosen follow-up (restate preservation to compare each matcher's type, pattern, HTTP method and servlet path: a setup and about one proof cycle) and the one not chosen (compare matches(), which needs HandlerMappingIntrospector modelled). Verified: validate_example.py 290 passes.
 
 ### What a default run left unread is a plain output file of the job, and its log says only how many paths
 
-change `lmwqozysyszl` · [log `6b74cb8f00a0`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/6b74cb8f00a00881fb00addf79c849a18aac034cc64e57ecdd2b3bd74a220196.jsonl.gz)
+[`ec90f8f8c904`](https://github.com/pilifs/in-the-loop/commit/ec90f8f8c904a693b0de198fe3f411f8f2d36e7d) · [log `6b74cb8f00a0`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/6b74cb8f00a00881fb00addf79c849a18aac034cc64e57ecdd2b3bd74a220196.jsonl.gz)
 
 The packed line (default tests: unread zlib:...) was opaque to the redaction scanner and raised a long-token warning in every transcript and log that showed it (finding fd843c30, after the merge of prove-setup). The step now writes verification/default-tests-unread.txt, the job's id and then one path a line, as a declared output: the pipeline applies it to the working copy when it collects a passed run and keeps a failed or late run's under the result's outputs/. default_tests.py reads a run's list from there (the kept copy first, else the file when its first line names the job), so the gate uses the list of the latest passed run and older runs cover by the fixed list alone; the file itself is on that list. The two runs already collected with a packed line no longer have a list. Checked with the suite's new tests (the step writes the file and prints a count; a run finds its list applied or kept) and test_costs.py run --changed: 14 of 14 passed.
 
 ### Queue a default test run that writes its unread list as an output file (verification pending)
 
-change `lzvyqmsyoprt` · [log `6b74cb8f00a0`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/6b74cb8f00a00881fb00addf79c849a18aac034cc64e57ecdd2b3bd74a220196.jsonl.gz)
+[`db0890ff6fe8`](https://github.com/pilifs/in-the-loop/commit/db0890ff6fe8ca802f310d551bce31121686ebcc) · [log `6b74cb8f00a0`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/6b74cb8f00a00881fb00addf79c849a18aac034cc64e57ecdd2b3bd74a220196.jsonl.gz)
 
 The job default_tests.py queue wrote at the commit before (its id is the new file under verification/jobs/) runs the default test run with verification/default-tests-unread.txt declared as its output: collecting it should apply that file to the working copy, with the job's id as its first line, and its log should carry a count and no packed line. Nobody waits for it.
 
 ### (in progress)
 
-change `qoktuvtvukrr`, not yet described
+[`4758f75d7f49`](https://github.com/pilifs/in-the-loop/commit/4758f75d7f49123ecc246c0dfb47698a11811c70), not yet described
 
 ### Record verification results: the default test run at lmwqozysyszl passed
 
-change `ztnvrpzluzrp` · [log `154b89ca3581`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/154b89ca358154c9c6eb6317ac6c7743e5a6c8e6abbefdc2547c96214705d22f.jsonl.gz)
+[`cfdbda3d1cc2`](https://github.com/pilifs/in-the-loop/commit/cfdbda3d1cc21389423c5258bd919918e22440c0) · [log `154b89ca3581`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/154b89ca358154c9c6eb6317ac6c7743e5a6c8e6abbefdc2547c96214705d22f.jsonl.gz)
 
 Job 20261117-010456-default-test-run-at-lmwqozysyszl passed. No outputs to apply. Collected by the unattended run-verification loop on vm-1.
 
 ### Record verification results: the default test run at xunroyyopkuq failed three Rust tests; VF-034 records it as closed by the passing run at lmwqozysyszl
 
-change `yvnykxmprxmv` · [log `5c5d166c2c23`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/5c5d166c2c2367eb9b8e4b6f93e5f83c14ffa79262f462a39301447ba9363384.jsonl.gz)
+[`158d7b25fae5`](https://github.com/pilifs/in-the-loop/commit/158d7b25fae562a628195814ca423092f497b54a) · [log `5c5d166c2c23`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/5c5d166c2c2367eb9b8e4b6f93e5f83c14ffa79262f462a39301447ba9363384.jsonl.gz)
 
 Job 20261117-005759-default-test-run-at-xunroyyopkuq failed in 6m28s: application_core_joint j1_the_quote_family..., environment a_per_call_choice..., effects an_effect_proof_is_reused... failed twice (two concern a stored result answering a changed claim). The later run at lmwqozysyszl, a descendant, passed, so VF-034 is closed with the cause unknown. The earlier commit titled 'xunroyyopkuq passed' was written before this result was collected: that result was a different run's; this one is the failed one.
 
 ### Allow list: Filip Stankovic approved 2760c53e, 8db694e2, a4bdf7bf, c0b7a76e, fd843c30
 
-change `kpstymvouxqt` · [log `7d73a5ace6eb`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/7d73a5ace6eb201f1f00be1b4882ef3df77f890864fdad58ba98860a0e2c677d.jsonl.gz)
+[`acf1501e41ee`](https://github.com/pilifs/in-the-loop/commit/acf1501e41eeb2a297f17f515a40849fd5dedc50) · [log `7d73a5ace6eb`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/7d73a5ace6eb201f1f00be1b4882ef3df77f890864fdad58ba98860a0e2c677d.jsonl.gz)
 
 Filip Stankovic approved 5 value(s) at their terminal with sync.py allow; the command committed the decision itself.
 
@@ -182,19 +182,19 @@ fd843c30  long-token  eNr…XH (173 chars): A 'default tests: unread zlib:...' l
 
 ### Record verification results: the seven proof-tier tests and the default test run at pqlvmnrruzsw passed
 
-change `pnlwkqxtxlzs` · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
+[`4b2872491565`](https://github.com/pilifs/in-the-loop/commit/4b2872491565d95b5747d4616ccbe94947c8965c) · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
 
 Two jobs collected. 20261113-013604 (the seven tests moved to the proof tier) passed in 7m29s. The default test run at pqlvmnrruzsw passed in 7m03s and its one output was applied. The first run of the runner was cut off by the tool's 10-minute limit while the default run was in progress; the job was returned to the queue and rerun cleanly. No verdicts, no new findings.
 
 ### Record verification results: the default test run at xunroyyopkuq passed
 
-change `slquqtpylozm` · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
+[`a50a1ec6cc5c`](https://github.com/pilifs/in-the-loop/commit/a50a1ec6cc5c47af0c14543c5856f806424677f0) · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
 
 Job 20261117-005759-default-test-run-at-xunroyyopkuq passed. No outputs to apply. Collected by the unattended run-verification loop on vm-1.
 
 ### Only one default test run runs at a time, and a job started again after a newer run finished is superseded
 
-change `kzwsnszxrwtt` · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
+[`29b36eadf1f1`](https://github.com/pilifs/in-the-loop/commit/29b36eadf1f13d0aa8f7a4f786e95f96be77847a) · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
 
 Two default-run jobs ran at once on 2026-11-17 (010456, and 005759 started a second time after it had passed): they share the warm cargo target directory and the tests' work folders under its tmp/, and eight Rust tests that pass alone failed in one run and passed on its retry, while the other's rerun failed. default_tests.py step now holds an exclusive lock (flock on ~/.cache/in-the-loop/default-tests.lock, beside the target directory) for the whole run and its bisect; a second step says it is waiting, waits, and asks the queue again once it has the lock.
 
@@ -202,13 +202,13 @@ Superseding looked only at jobs pending or running, and read a job's id only at 
 
 ### The READMEs say when the default test run is worth its cost, and no longer how many minutes it takes
 
-change `qwmwmrxvwpsu` · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
+[`3dcd1a2b285f`](https://github.com/pilifs/in-the-loop/commit/3dcd1a2b285fe5e97304450409283de4bc53044f) · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
 
 lib/README.md's Tests section and verification/README.md, by the user's direction: the default run is much more expensive than the tests of one change, so it is not for every commit. It is required before a release and before a push (the gate), worth queuing as a job once an example is done and after a merge, and while iterating and before a commit the tests of what changed are what to run. The measured minutes and seconds are gone from both pages (they are in the commits that measured them). CLAUDE.md, llm-dlc/runtime.md and the skill still state the earlier rule and a time: those are for the user to decide. Checked with test_costs.py run --changed.
 
 ### Seven expensive or solver-running tests move to the proof tier behind proxies, the preparation benchmark gets a proxy, and VF-035 records the Python files tagged unit that take minutes (verification pending)
 
-change `wvvtwkospqkp` · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
+[`ea2e5c7efe89`](https://github.com/pilifs/in-the-loop/commit/ea2e5c7efe8945a7d9b09c5f8ba19bf0a327416d) · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
 
 By the user's decisions on 2026-11-17. Retiered as proof (#[ignore = cost:proof ...], each with what it runs, why a cheaper test can't show it, and proxies that run by default): observations.rs's Box Office examples comparison (26 s alone in the test-fast profile), application_core_joint.rs's J1 quote family (77 s), application_core.rs's E1 (56 s) and E2 (32 s), and integration.rs's own-checker-against-JBMC agreement (JBMC, 10 s) and its two TLC tests. The Rust half of the default run goes from 163 s to 79 s without them. Job 20261117-013604-the-seven-tests-moved-to-the-proof-tier runs the seven as the proof tier does, in release by exact name.
 
@@ -218,25 +218,25 @@ preparation.rs's benchmark was on the proxy-none-yet list: its proxy is a new de
 
 ### CLAUDE.md and runtime.md state the new rule for the default test run: the tests of a change before a commit, the whole run before a release and a push
 
-change `yqxosmuoxuws` · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
+[`c41ec887c6cf`](https://github.com/pilifs/in-the-loop/commit/c41ec887c6cf02f1acc09964f826fc3dcdfe1fbc) · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
 
 By the user's decision on 2026-11-17, in line with the READMEs: before a commit an agent runs the tests of what it changed (test_costs.py run --changed, validate_example.py for an example's files), in every session and not only in a /prove-java-change run. The default run is required before a release and before anything is published, and worth queuing as a job once an example is done and after a merge; it may still be run inline. The stated 16 minutes is gone from both files. CLAUDE.md also says that the push gate counts the files a run left unread, and that the retier-pending tests stay in the default run by the user's decision the same day (most run JBMC in a few seconds and are its only real JBMC coverage). The skill states no per-commit rule and is unchanged. Checked with test_costs.py run --changed: 11 of 11 test files passed.
 
 ### VF-034 names its likely cause: two default runs at once in one cargo target directory
 
-change `wvuulmqkqxvr` · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
+[`03eab0eca429`](https://github.com/pilifs/in-the-loop/commit/03eab0eca429d380d307c293bad49dbcd75bc56b) · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
 
 verification/findings.md: the three Rust failures of the default run at the prove-setup merge are each a test finding another run's work folders or proof cache under the shared target directory's tmp/, while a second default run ran beside it; the lock of change kzwsnszx keeps two from overlapping. The entry says the cause was not reproduced on purpose and that the runner starting a passed job again is still unexplained. This workspace's four commits were also rebased onto the main line's kpstymvo, with VF-035 placed above VF-034 and the trace files regenerated.
 
 ### Cutting a release requires a passed default test run for the commit it is cut on, as a push does
 
-change `pvqrosuvxsnr` · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
+[`5f8a317e0a5f`](https://github.com/pilifs/in-the-loop/commit/5f8a317e0a5f63bc55ab29a59fe63caad3ee8a38) · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
 
 By the user's decision on 2026-11-17: release.py cut asks verification/default_tests.py gate --rev @- before it writes anything and refuses without a passed run covering that commit; --skip-tests REASON is for the user alone. The release commit changes only the plugin's and the marketplace's version and the pin, which the default run leaves unread (the last run's list names all three), so the run that allowed the cut also covers the push of the release. runtime.md's Releases section says so. Checked with three new unit tests (refused without a run, cut with one, the stated skip, nothing written before the gate) and the 10 Python test files test_costs.py run --changed chose.
 
 ### The runner counts a result recorded on any head as done, so a passed job whose commit was left behind is not run again
 
-change `rkmqvurpkynu` · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
+[`5e0e7d0d2da6`](https://github.com/pilifs/in-the-loop/commit/5e0e7d0d2da6f9a88dc5b22d134f478eaa6d41a3) · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
 
 Why job 20261117-005759 ran twice, from jj's operation log: its first pass was collected and committed in the default workspace at 01:06:45 (change slquqtpy), and in the same second a jj new lzvyqmsy there, the fast-forward to prove-setup's rebased commits, moved the working copy off that commit. The runner looks for results in its state folder and in the working copy, saw neither, and started the job again at 01:07:12. Nothing is wrong in collecting. Change slquqtpy is still a visible head with the result in it and is not on the main line: it needs merging there, by whoever owns that workspace.
 
@@ -244,19 +244,19 @@ pipeline.py: done_ids also counts every job whose result.json is in the tree of 
 
 ### Merge prove-setup's last eight commits and the orphaned first result of 005759: one default run at a time, a re-run of a passed job prevented, a release gate, and seven tests moved to the proof tier
 
-change `ksyktoyyrtyn` · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
+[`e1d891817acb`](https://github.com/pilifs/in-the-loop/commit/e1d891817acb63ccd765faa158a086984beddc9f) · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
 
 Brings the tests session's finished line (prove-setup, kzwsnszx through rkmqvurp): an exclusive lock so only one default test run runs at a time, superseding that also counts a newer finished run, the runner counting a result recorded on any head as done (so a passed job whose commit was left off the main line is not run again), cutting a release requiring a passed default run as a push does, seven expensive or solver-running tests moved to the proof tier behind proxies, CLAUDE.md and runtime.md stating the new rule for the default run, and VF-034 naming its likely cause (two default runs at once in one cargo target directory). Also merges slquqtpy, the verification loop's commit of job 20261117-005759's first run, which passed (8m32s) and was left off the main line when the watcher moved the main working copy while that commit was being made. The job's results directory and the results index keep the main line's record (the second run, which failed beside job 010456, and is what VF-034 is about); the first run's record stays in history through this merge's parent. The generated trace files are regenerated. Verified: the test-cost lint agrees, test_default_tests.py and test_pipeline.py pass on the merged tree, check reports 0 errors and 0 warnings.
 
 ### Queue the default test run at the merge of prove-setup's finished line (verification pending)
 
-change `wxqzmmswyzvy` · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
+[`1481c0cc044f`](https://github.com/pilifs/in-the-loop/commit/1481c0cc044fbe21bc981af0136fa2233a929547) · [log `104f2ad8a33a`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/104f2ad8a33a083244c2ede3e39d4ebf812bcf3e67dfbfbed0dca690d242187a.jsonl.gz)
 
 Job 20261117-015957-default-test-run-at-ksyktoyyrtyn: the first default run with the one-at-a-time lock, the release gate and the seven retiered tests all in. If it passes on its own, it is the clean run VF-034 needs, and it covers the main line's tip for a push.
 
 ### /run-brief: a watcher runs a feature brief on command, with a foundation stage on Fable 5.2 before its streams
 
-change `xppmwwppknky` · [log `2efc099126aa`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/2efc099126aad5943ca8a5dfd8da8212e8fff84c3b66b9408494952ac227eb8f.jsonl.gz)
+[`c5cd267103fe`](https://github.com/pilifs/in-the-loop/commit/c5cd267103fe08eacbf1610f8ef59ae6a1b3a43c) · [log `2efc099126aa`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/2efc099126aad5943ca8a5dfd8da8212e8fff84c3b66b9408494952ac227eb8f.jsonl.gz)
 
 A brief of llm-dlc/loops/ was started by hand, and its run was known to run-streams.sh only through a list of five names in the script. A local skill, /run-brief (.claude/skills/run-brief, not part of the plugin), now runs any brief with a watcher session on Opus 5.5, as /prove-java-change runs a proof. Its tool is llm-dlc/tools/brief_run.py: a preflight that finds what run-streams.sh would stop at before anything starts and says what the verification runner may keep beside this many loops (budget --apply lowers verification/pipeline.local.toml for the run); a foundation stage, one Fable 5.2 session at high effort given the user's instruction to start the work itself, build the foundation it sees fit and update the brief for the agents that take over, in a workspace of its own so no other session's uncommitted files meet its commits; land, which brings its commits to the default line, moved forward or by a merge with the generated trace files regenerated, and takes back a merge that conflicts in real work; start, which runs run-streams.sh detached; and wait, which returns only what needs the watcher (a blocked loop, a failing integration check, an open decision, a missing verification loop, a summary every 30 minutes, the end).
 
@@ -266,7 +266,7 @@ Verified by llm-dlc/tools/test_brief_run.py (24 tests on a made-up jj repository
 
 ### /run-brief: an open Opus session becomes the watcher or takes a run over, and the preflight sees a loop at work and loops sharing a session
 
-change `ykpxlwxnyzzu` · [log `2efc099126aa`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/2efc099126aad5943ca8a5dfd8da8212e8fff84c3b66b9408494952ac227eb8f.jsonl.gz)
+[`0487cd773257`](https://github.com/pilifs/in-the-loop/commit/0487cd773257bcd389c0154ae90d8a86ec0620b7) · [log `2efc099126aa`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/2efc099126aad5943ca8a5dfd8da8212e8fff84c3b66b9408494952ac227eb8f.jsonl.gz)
 
 The user wants to start a brief's run from a session that is already open, which then is the watcher. The skill says so: any Opus 5.5 session of the default workspace can be asked in words, the run's state is all in files, and a new section, A run under way, has the watcher read brief_run.py status first and either go straight to waiting (a run it takes over), continue an interrupted run, or start a new one.
 
@@ -276,7 +276,7 @@ Verified by test_brief_run.py, 26 tests, and the cost-tier lint. The whole defau
 
 ### Merge the default line into run-brief: the queued test policy for briefs follows the line's default-run job
 
-change `mrwsuwkprqyz` · [log `2efc099126aa`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/2efc099126aad5943ca8a5dfd8da8212e8fff84c3b66b9408494952ac227eb8f.jsonl.gz)
+[`ca823d3cfce0`](https://github.com/pilifs/in-the-loop/commit/ca823d3cfce03622d080090cbf2757af0035251a) · [log `2efc099126aa`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/2efc099126aad5943ca8a5dfd8da8212e8fff84c3b66b9408494952ac227eb8f.jsonl.gz)
 
 The default line moved on while /run-brief was built beside it: the default test run became a verification job nobody waits for (verification/default_tests.py), tests of a change are chosen from what changed, and sync.py takes a workspace's missing logs from the one that stores them. Only CLAUDE.md conflicted, in the Tests section: the line's text is kept, and the sentence for a brief that says tests: queued is restated in the line's terms (run --changed before a commit, default_tests.py queue once a piece of work is done), as is the brief template's Test policy.
 
@@ -284,7 +284,7 @@ Verified by the tests of what the merge touched on this side (test_brief_run, te
 
 ### /run-brief: a commit takes only its own files, a run stops at a boundary, the foundation's report reaches each stream's inbox, and a summary says where the time went
 
-change `pqlvmnrruzsw` · [log `2efc099126aa`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/2efc099126aad5943ca8a5dfd8da8212e8fff84c3b66b9408494952ac227eb8f.jsonl.gz)
+[`574a3e6198dc`](https://github.com/pilifs/in-the-loop/commit/574a3e6198dc0e906c5bc5c7fae696ec38e2d347) · [log `2efc099126aa`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/2efc099126aad5943ca8a5dfd8da8212e8fff84c3b66b9408494952ac227eb8f.jsonl.gz)
 
 Four additions the user chose before the first run of a brief through its watcher. (1) sync.py commit --only PATH ... commits the named files and folders alone: every other file changed in the working copy is set aside in a change below, and put back uncommitted after the commit, so the files on disk never change. The result collector commits with the paths pipeline.py commit-paths names (verification/, the examples table, the outputs it applied), and the loops' instruction names --only in place of a procedure to follow by hand; on 2026-11-16 a commit of results took a watcher's unfinished merge with it. A collector in a workspace of its own was the plan's wording and is not what this does: every reader of results reads them on the default line, so its commits would have to be landed there one by one, which brings the shared working copy back. (2) brief_run.py stop NAME stops a run at a boundary: run-streams.sh gives each loop a directory for command lines, each running loop is told to end after its cycle, a loop waiting on jobs stops waiting, nothing is run again and the merge is not started; start continues, and stop --now interrupts as before. (3) Landing the foundation puts its closing report into each stream's inbox as an item of a new kind, foundation, which the stream acknowledges. (4) run-streams.sh logs each change of a loop's phase with its time, and a summary says per loop how long it worked, waited on jobs, was blocked, and sat finished while another stream still ran.
 
@@ -292,13 +292,13 @@ Verified by test_commit_only.py on a real jj repository (the named paths committ
 
 ### Queue a default test run at run-brief's four additions (verification pending)
 
-change `smplsyrurprl` · [log `2efc099126aa`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/2efc099126aad5943ca8a5dfd8da8212e8fff84c3b66b9408494952ac227eb8f.jsonl.gz)
+[`3ef0f8a92a4e`](https://github.com/pilifs/in-the-loop/commit/3ef0f8a92a4e8c5d6ca2c19db49e3fb6bafbe20f) · [log `2efc099126aa`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/2efc099126aad5943ca8a5dfd8da8212e8fff84c3b66b9408494952ac227eb8f.jsonl.gz)
 
 The job README.md runs the default test run at the commit that added commit --only, the boundary stop, the foundation hand-off and the time lines to /run-brief. Nobody waits for it.
 
 ### A workspace a brief's run makes takes the session logs it lacks
 
-change `zvqqklkpkzky` · [log `2efc099126aa`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/2efc099126aad5943ca8a5dfd8da8212e8fff84c3b66b9408494952ac227eb8f.jsonl.gz)
+[`7547586d9884`](https://github.com/pilifs/in-the-loop/commit/7547586d9884373e19bd3faf29f6b5e13e581eee) · [log `2efc099126aa`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/2efc099126aad5943ca8a5dfd8da8212e8fff84c3b66b9408494952ac227eb8f.jsonl.gz)
 
 A new jj workspace has none of the session logs the default workspace stores and has not uploaded, and the check after every commit there reported each as an error (58 of them in the run-brief workspace itself), which a foundation or stream session would have tried to fix. run-streams.sh, for a stream's workspace and the integration check's, and brief_run.py, for the foundation's, now run sync.py adopt-logs in a workspace they have just made.
 
@@ -306,13 +306,13 @@ Verified by test_brief_run.py, 28 tests, whose stand-in for sync.py records that
 
 ### Merge run-brief: the /run-brief skill's watcher, foundation stage and gap fixes, with its queued test policy for briefs
 
-change `omnttzkzonux` · [log `2efc099126aa`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/2efc099126aad5943ca8a5dfd8da8212e8fff84c3b66b9408494952ac227eb8f.jsonl.gz)
+[`62993bc05c7a`](https://github.com/pilifs/in-the-loop/commit/62993bc05c7a30013ddb5dcf6ba1360cea9f9e82) · [log `2efc099126aa`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/2efc099126aad5943ca8a5dfd8da8212e8fff84c3b66b9408494952ac227eb8f.jsonl.gz)
 
 Brings the run-brief line (xppmwwpp through ksuoxmnk): an open Opus session becomes a brief's watcher or takes a run over, a feature brief runs on command with a foundation stage on Fable 5.2 before its streams, a commit takes only its own files, a run stops at a boundary, the foundation's report reaches each stream's inbox, a workspace a brief's run makes takes the session logs it lacks, the gaps the user settled before its first run, a tool for a stale workspace, and a throwaway brief to rehearse with. Conflict: CLAUDE.md's Tests section keeps the main line's three bullets (the every-session rule from the tests session) and adds run-brief's bullet for briefs whose Loop settings say tests: queued; the generated trace files are regenerated. Verified: test_costs.py run --changed from the main line's previous tip chose cargo test and 28 Python files for the 26 changed files, and all 29 passed (2m15s). run-brief's own default run at sttksmqy passed; one is queued at this merge for the push gate.
 
 ### Queue the default test run at the merge of run-brief (verification pending)
 
-change `ssorlrotqlup` · [log `2efc099126aa`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/2efc099126aad5943ca8a5dfd8da8212e8fff84c3b66b9408494952ac227eb8f.jsonl.gz)
+[`69e10c0b0646`](https://github.com/pilifs/in-the-loop/commit/69e10c0b0646130bd93cf1ac3b8350f723962c35) · [log `2efc099126aa`](https://terminalvalue.net/raw-traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/2efc099126aad5943ca8a5dfd8da8212e8fff84c3b66b9408494952ac227eb8f.jsonl.gz)
 
 Job 20261117-022611-default-test-run-at-omnttzkzonux: the default run at the merge of run-brief into the main line, which the push gate requires before the push the user asked for.
 

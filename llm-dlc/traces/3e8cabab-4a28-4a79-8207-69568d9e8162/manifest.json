@@ -627,7 +627,7 @@
     },
     {
       "change_id": "pruvstkqurrsrrqtvmrqsnupxnxrnlxo",
-      "commit_id": null,
+      "commit_id": "21b8a920222f78688034440ac837e1c013f03c84",
       "immutable": false,
       "summary": "Example 288 (CVE-2024-38820) set up from its catalog entry: locale-table decision claim and preservation frozen, replays pass",
       "body": "Example 288 was a catalog entry (revisions pinned, no tasks). It is now a deep negative packet, prepared as llm-dlc/runtime.md's catalog entry brief asks, with example 286 (CVE-2022-22968, the fix this one corrects) as the model. The release pair is Spring Framework 6.1.13 -> 6.1.14, from published JARs. Each release's DataBinder.java is the exact-fix pair's blob (c7af62b5, 98157756). Every other class the decision and the bind reach is byte-identical in the two closures. sources.lock.json records the tags, blobs, ancestry, JAR hashes against Maven Central, and a hand sweep of every JDK 21/25 locale: only tr and az lowercase an ASCII letter apart from the root locale, and only I.\n\nThere are two claims and six tasks. The decision claim is 286's assertion and ASCII domain, with the default locale as two int inputs indexing a table (root, en-US, tr-TR, az-AZ, lt-LT): one locale while the binder is configured, one while it decides. It says a field a disallowed pattern matches ignoring ASCII case is denied. It is expected refuted on 6.1.13, established on 6.1.14, and refuted on a mutant that lowercases the field in the default locale again. Preservation: outside the locale-dependent aliases (a capital I in the field decided under tr/az, or in a pattern configured under them), both releases decide alike. The controls are adapters, a driver, 36 probes and an independent oracle with a self-test.",
@@ -635,7 +635,7 @@
     },
     {
       "change_id": "rronuyxosqyznqwktzpsuznymslyyktl",
-      "commit_id": null,
+      "commit_id": "38202ae8fb429023ac76049c23f8f4389769dfd3",
       "immutable": false,
       "summary": "Example 289 (CVE-2022-22978) set up from its catalog entry: line-terminator prefix claim and preservation frozen, replays pass",
       "body": "Example 289 was a catalog entry (revisions pinned, no tasks). It is now a deep negative packet, set up as llm-dlc/runtime.md's catalog entry brief asks, with 288 (the packet's shape) and 285 (its HttpServletRequest carrier) as models. The release pair is Spring Security 5.6.3 -> 5.6.4, from published JARs. Each release's RegexRequestMatcher.java is the exact-fix pair's blob (9264b56f, a334afc7). Every other class the matcher reaches is byte-identical in the two closures (Spring Framework 5.3.19 and 5.3.20). The release pair also hardens StrictHttpFirewall, in a commit before the fix; that is outside the matcher and the claims. sources.lock.json records the tags, blobs, ancestry and JAR hashes against Maven Central.\n\nThere are two claims and six tasks. The security claim covers a matcher built as RegexRequestMatcher(P + \".*\", null, caseInsensitive), where P is a literal ASCII prefix. It must match every request whose documented URL (servletPath + pathInfo, then ? and the query) begins with P, line terminators included, exactly or ignoring US-ASCII case. It is expected refuted on 5.6.3, established on 5.6.4, and refuted on a mutant that leaves DOTALL out of the case-insensitive flags. Preservation: outside a URL in the namespace that holds a line terminator, both releases decide alike. The controls are an adapter, a request carrier, a driver, 36 probes and an independent oracle with a self-test.",
@@ -643,7 +643,7 @@
     },
     {
       "change_id": "lxvynzvoqslluqrtmlymuxnlnkynoqxz",
-      "commit_id": null,
+      "commit_id": "e385fcbf8a44fb02f37b6e4a0759d166f82addf4",
       "immutable": false,
       "summary": "A /prove-java-change run checks what a commit changed, not the default test run, and a prepared example needs no edit to the packet tests",
       "body": "The setup sessions of 288 and 289 each spent about 16 minutes on the default test run before committing, and each added its example by hand to test_packets.py's list. Following a review of the live run, CLAUDE.md (Tests), lib/README.md and runtime.md's briefs now say that a session of a /prove-java-change run checks a commit by what it changed: examples/tools/validate_example.py NNN for an example's own files (the router regenerated first, since the tests read examples/index.json and a stale one failed two checks of the live run; then the form, each task's plan, the oracle's self-test, with --replay the replays on a JVM, and the four test files that read every example), and the tests of any shared code it touched. The default run comes once an example is done and before anything is published. test_packets.py now discovers each packet from its sidecar's mutant revision instead of a hand-kept list; the expected outcomes of each replay stay written by hand. Verified: validate_example.py 288 289 passes in 40 s; the discovered packets equal the old list exactly; test_packets.py 22 tests pass; test_costs.py estimate changed only the new test's row and the lint agrees.",
@@ -651,7 +651,7 @@
     },
     {
       "change_id": "lrkmlooyrrxkpzxwytrqsptmykomrmwk",
-      "commit_id": null,
+      "commit_id": "c3def6c489423d74e9a48869d04b3189b9ffeaf0",
       "immutable": false,
       "summary": "/prove-java-change: stage 2 runs on every run and designs or reviews the claims, hands off plan.json, and the setup writes them with scaffold_example.py and records how each proof is invoked",
       "body": "Following a review of the live run of 288-290: examples named by number skipped stage 2, so a catalog entry's setup session interpreted the advisory, chose the domain and froze the claims itself. Now stage 2 runs on every run, in the fixed session at high effort (was medium), on changes and on examples by number alike. It designs the claims of catalog entries (property, preservation boundary, meaningful bounds, positive, negative and mutation controls, entry point, environment assumptions), reviews the claims of prepared examples with remarks (misstates, which the setup corrects; suggestion, which is the user's), and reuses an accepted review while the claim files are unchanged: watch.py claims --accept now keeps the files' hashes beside the decision record (llm-dlc/decisions/prove-change-claims.json), and preflight lists toReview and reviewed. Stage 2 writes plan.json beside plan.md (llm-dlc/prove-plan.schema.json; watch.py plan --check), and examples/tools/scaffold_example.py NNN writes a designed example's claim files and tasks from it, checks them against their schemas, refuses to change a frozen claim, and lists what is left for the setup. How each proof task is invoked is now a setup deliverable, recorded on the task as invocation (route, adapter or gap with an observed blocker; target.schema.json), and preflight lists tasks without it as toClassify without stopping a run. SKILL.md, runtime.md (stage 2, stage 3, examples by number, the catalog entry's and the repair's briefs), the plan template and the READMEs describe the new order: preflight, stage 2, the claims once, setup, repair, the loop in the plan's order. Verified: test_watch.py (36, 3 new), test_scaffold_example.py (4, new), test_changes, test_sidecar, test_workflow, test_build, test_conductor, test_decisions pass; validate_example.py 288 289 passes; test_costs lint agrees.",
@@ -659,7 +659,7 @@
     },
     {
       "change_id": "ypqrkrolzkklmwopyppmywtktlzyzvww",
-      "commit_id": null,
+      "commit_id": "3019090acf37c744b2b1c618aaa4430d4402c715",
       "immutable": false,
       "summary": "/prove-java-change: setup overlaps proving in a workspace of its own, the loop takes examples added while it runs, and the watcher sees each setup and measures the run",
       "body": "Following a review of the live run of 288-290, where the proof loop waited for all three setups and the watcher saw a setup only start and end. watch.py stage setup now takes --example NNN, which records each attempt (example, attempt number, session, cost, commit, the example's state and the proof tasks whose invocation it left unrecorded, its report), and --workspace NAME, which runs it in a jj workspace beside the checkout, made from the loop's line, so that one setup worker and one proof worker never share a working copy. watch.py add NNN leaves the running loop a conductor command, and feature-loop.sh's new add command takes the items after the ones it has (only from the conductor, where the item list lives; the run record notes each). watch.py wait now tells the watcher when a setup ends and when one goes quiet (one command running past ten minutes, or nothing written for twenty), and the summary has a Setup line (each under way: its tool calls, the command running, the last validate_example.py result) and a Measures line: the time to the first proof cycle, the setups redone, the examples whose first setup recorded every invocation, and the claims answered per dollar (from the stages' results and each cycle's turn). SKILL.md and runtime.md describe the overlap: claims accepted once for the batch, the loop started as soon as one example is ready, each later setup in the workspace prove-setup, merged between two examples (checked with validate_example.py, not the default run, unless shared code came in) and then added. Verified: test_watch.py (39, 3 new), test_prove_loop.py (30, 1 new: an example added while the loop runs is taken after the ones it has, and one it has already is not taken twice), test_conductor, test_loop_stats and test_inbox pass; watch.py status renders on the live run directory; test_costs lint agrees.",
@@ -667,7 +667,7 @@
     },
     {
       "change_id": "pvnkwqntllpqkqnooxpqrmvqtsxqvrml",
-      "commit_id": null,
+      "commit_id": "468f614517638b586727b7f3b30566fe3836ebe1",
       "immutable": false,
       "summary": "Example 288 repaired: each proof task records its adapter invocation, the preservation claim states agreement only, and the oracle's canonical form is Spring's",
       "body": "The repair's brief (llm-dlc/runtime.md) for example 288 (CVE-2024-38820), as stage 2's plan for this /prove-java-change run asked. watch.py preflight listed 288 in toClassify, since none of its four proof tasks recorded how it is invoked. Each now records it as adapter (target.json, invocation). The route plans every task, but it enters DataBinder#isAllowed(String), and the claims' expressions name the adapter's parameters, so they can't compile there. LocaleDecisionAdapter#allowed was compiled against each revision's pinned closure and ran on the 31 decide probes on 6.1.13, 6.1.14 and the mutant, on JDK 21 and 25. There is no proof script of the example's own yet; the proof loop writes one, as example 286's proofs/prove.py does.\n\nclaims/permitted-fields-preserved.json: the plan's 'misstates' remark said the statement also claimed which answer the releases give, which the task's equivalence does not show. The statement is replaced word for word by the remark's, which states agreement between the releases only, and the remark's note on the expected answers is added to the claim's notes. Nothing else in the claim changed.\n\ncontrols/oracle.py's canonical() was a regular expression needing two quote characters. Where Spring's PropertyAccessorUtils.canonicalPropertyName turns ['] and [\"] into ], it left them unchanged. It is now a transcription of Spring's loop. It agrees with the method on a JVM (6.1.13 and 6.1.14, JDK 21 and 25) for 3928 Strings: null, every String of at most 5 characters over [ ] ' \" a, and every String of the probes. The regex disagreed on 146 of them. The self-test now checks 13 of those shapes and the new probes. Two guarded probes were added (patterns ['] and [\"], field ], root locale), and both replays ran again over the 38 probes. As the plan expected, both releases and the mutant deny ], the 14 triggers and the mutant's 8 are unchanged, and the comparison is preserved. The setup's receipts, whose controls changed, are replaced by the new ones. The page's probe counts follow.",
@@ -675,7 +675,7 @@
     },
     {
       "change_id": "lwvsvznoxkrykovywzxokxynssprzsml",
-      "commit_id": null,
+      "commit_id": "fc9c54fcedd875cb41ed5a4f0790b2cf5f3c9d7c",
       "immutable": false,
       "summary": "validate_example.py regenerates the router after the replays, not before",
       "body": "The repair of example 288 found that validate_example.py --replay regenerated examples/index.json first and then ran the replays, whose new receipts left the index stale for the tests that read it. The router step now comes after every step that can write receipts and before the tests. Verified: validate_example.py 288 passes.",
@@ -683,7 +683,7 @@
     },
     {
       "change_id": "qvqpqxpnkypnomvonkstvrymxxnypluk",
-      "commit_id": null,
+      "commit_id": "e747d722ad6888880cc019bfacddbb4c1ba53f67",
       "immutable": false,
       "summary": "Example 289 repaired: each proof task records its adapter invocation, the preservation claim states agreement only, unpaired surrogates are probed, and the driver reports the matcher's logging",
       "body": "The repair's brief (llm-dlc/runtime.md) for example 289 (CVE-2022-22978, RegexRequestMatcher and line terminators), as stage 2's plan for this /prove-java-change run asked. watch.py preflight listed 289 in toClassify because none of its four proof tasks recorded how it is invoked. Each one now records it as adapter (target.json, invocation). The route plans every task, but it enters RegexRequestMatcher#matches(HttpServletRequest), and the claims' expressions name the adapter's parameters (pattern, caseInsensitive, servletPath, pathInfo, query), so they can't compile there. RegexMatchAdapter#matches was compiled against each revision's pinned closure and run on the 44 probes on 5.6.3, 5.6.4 and the mutant, on JDK 21 and 25. The example has no proof script of its own yet; the proof loop writes one, as example 286's proofs/prove.py does.\n\nclaims/prefix-classification-preserved.json: the plan's 'misstates' remark said the statement also claimed which answer the releases give, which the task's equivalence does not show. The statement was replaced word for word by the remark's text, which states only that the releases agree, and the remark's note on the expected answers was added to the claim's notes. Nothing else in the claim changed. The README's preservation sentence was reworded the same way.\n\nFollowing the plan's revised controls: eight probes were added for unpaired surrogates, which the claims' domain includes. Six are guarded: a lone U+D800, a lone U+DC00, and a pair split between the servlet path and the path info, each in both case modes. Two are triggers: U+D800 then a line feed, in both case modes. That makes 44 probes: 18 triggers, 16 guarded, 7 legitimate, 3 outside. The driver now prints each input string as its UTF-16 code units, the form argv passes, and every other string as ASCII with escapes kept as text, so the route's controls record (written as UTF-8) can hold a lone surrogate. Its first line also reports LogFactory.getLog(RegexRequestMatcher.class).isDebugEnabled() and whether java.util.logging.config.file or .class is set. The oracle decodes the code units, and it refuses a run where debug is on or not reported. Its self-test covers the surrogate probes, a path that isn't in code-unit form, debug enabled, and a missing report. Both replays ran again, as the plan expected. 5.6.3 fails at exactly the 18 triggers, and 5.6.4 holds. Every surrogate probe that is guarded matches on both releases and on the mutant. The mutant fails at exactly the 5 case-insensitive triggers. Debug was off and no JUL property was set on every run, and JDK 21 and 25 gave identical results. The setup's receipts, whose controls changed, were replaced by the new ones, and the page's and example.json's probe counts and 'Not probed' paragraph now match.",
@@ -691,7 +691,7 @@
     },
     {
       "change_id": "mlmnzmwkxwvokkwvxpnwyyxuxqplkoos",
-      "commit_id": null,
+      "commit_id": "98159ad64e0d4ffd537ab2147d5de79aca81eee1",
       "immutable": false,
       "summary": "Example 290 set up from its catalog entry: claims and tasks from the plan, release pair and mutant prepared, carriers, driver and oracle, both replays as expected",
       "body": "Example 290 (CVE-2023-34035, Spring Security 5.8.4 -> 5.8.5, requestMatchers(String...) in a multi-servlet application) was a catalog entry. The setup stage of /prove-java-change wrote the plan's two claims and six tasks with scaffold_example.py (unchanged from plan.json), and the rest from the entry: the release pair on the published-artifact route (spring-security-config/web/core, Spring Framework 5.3.28 and 5.3.29 with spring-webmvc, jakarta.servlet-api 4.0.4, pinned by sha256), sources.lock.json (each release's AbstractRequestMatcherRegistry.java is the exact-fix pair's blob; the other classes the replays load are byte-identical or differ outside the code reached; javap shows no subclass in either config JAR overriding the implicit overloads), and the mutant controls/first-registration-only.patch (hasDispatcherServlet looks at the first registration only).\n\nThe entry is example290.adapter.MatcherSelectionAdapter#select(int[] servlets, int method, String[] patterns), with SelectionRegistry (the three abstract methods only), PlainServlet, ExtendedDispatcherServlet and carriers for the WebApplicationContext, servlet context and registrations whose other methods throw. controls/probes.json has 29 probes, each with the outcome expected of 5.8.4, 5.8.5 and the mutant written before the run; controls/oracle.py holds each run to its revision's expectations (told by the registry class's sha256) and its self-test tells the fix from six constructed registries. Two null-pattern probes beyond the plan show the mutant throwing IllegalArgumentException from AntPathRequestMatcher rather than a rejection.",
@@ -699,7 +699,7 @@
     },
     {
       "change_id": "zppsuptrnwkzmxsusztpolrotxpyzmls",
-      "commit_id": null,
+      "commit_id": "90d4df90b62880fc1ee3006a268876166f76de2b",
       "immutable": false,
       "summary": "Example 290: the page and notes count three null-pattern probes beyond the plan, not two",
       "body": "The setup commit's README and example.json notes said two probes with a null pattern element were added beyond the plan's list; there are three (ambiguous-plain-dispatcher-null-pattern, lone-dispatcher-null-pattern, no-dispatcher-plain-null-pattern). Corrected the count and stated the lone probe's outcome. Verified with validate_example.py 290.",
@@ -707,7 +707,7 @@
     },
     {
       "change_id": "rlosmoxonwxyyssnwqoukroqoqkrxkqo",
-      "commit_id": null,
+      "commit_id": "eabaf93543671cc75c00fd02df593a253c5cebc3",
       "immutable": false,
       "summary": "watch.py: a turn of a resumed session costs its running total less the total seen before, and the briefs run the replays once",
       "body": "The first summary of the live run counted $436.67: a result's total_cost_usd is the session's running total, so the two stage 2 turns in the fixed session, which the earlier prove-examples run had left at $203.27, were counted at $211 and $214 instead of about $8 and $2.40. watch.py now keeps each session's last total (sessionTotals) and counts a turn as the difference; the first turn seen of a resumed session is left uncounted. The setup of 290 also found that the briefs had it run the replays and then validate_example.py --replay, which ran them again and left a second receipt for each; stage 3, the catalog entry's brief and the repair's brief now check with validate_example.py NNN and add --replay only when something a replay reads changed since. Made in the workspace prove-setup while the loop runs in the default one; it comes in with that workspace's merge. Verified: test_watch.py passes (40, 1 new); the test-cost lint agrees (the row added by hand, since an estimate in this workspace rewrote unrelated rows).",
@@ -715,7 +715,7 @@
     },
     {
       "change_id": "qqoppoklvroomtmulqpylmksxznkluyv",
-      "commit_id": null,
+      "commit_id": "49671550540d10c01da67875f9f79073bf627f16",
       "immutable": false,
       "summary": "Example 288: the default locale is an input the own checker follows, a regression check over String[] is a property of the pair of versions, and the four frozen claims are queued through the adapter entry (verification pending)",
       "body": "Example 288 (CVE-2024-38820, Spring Framework 6.1.13 to 6.1.14: DataBinder lower-cased disallowed field patterns and the field under the default locale, so a Turkish or Azerbaijani default let Id past a pattern id) needed three things of the verifier, and each is now general. (1) The default locale is state the own checker follows (lib/src/bmc/locale.rs): Locale's 22 constants and Locale.forLanguageTag of a constant plain tag are Locales it knows one fact of, whether the language is tr or az, the only locales that lower an ASCII letter apart (I to U+0131); Locale.setDefault sets the default on the path; String.toLowerCase() and toLowerCase(Locale) lower an ASCII String under it as a formula of that fact. Where a path sets no default the earlier stated assumption stands; a Locale the checker knows nothing of, a String outside ASCII and a comparison of two Locales by reference are named gaps or refusals. (2) A reference read from an array at a computed index is one symbolic reference among the cells, where it split the path per cell. (3) jvmcontract equivalence makes a regression check with a String[] parameter, a nullable String, an assumption (--assume) or lemmas (--lemmas) as a property of the pair of versions (lib/src/pairing.rs): one generated method calls the previous version, relocated under before., and the new one on copies of the same inputs and says whether they agree in result or in the exception thrown, outside the allowed change.\n\nExample 288's proofs/prove.py runs each frozen claim, unchanged, through the adapter entry its first assumption names, beside the route (which has no adapter entry), with the simpleMatch lemma of example 286 and, for preservation, a lemma for each release's simpleMatch. Inline probes at smaller bounds gave every expected verdict: fixed-security established at 2 and 5 (47 s); vulnerable-security and mutant-security refuted at 3 in 8 s and 5 s, each witness decided under tr-TR with a capital I and run on a JVM; preservation established at 2, 3 and 4 (48 s), and refuted at 2 when given no allowed change. The frozen bound, 8, is queued: jobs 20261116-201436-example-288-fixed-security-through-the-a, 20261116-201436-example-288-vulnerable-security-through, 20261116-201436-example-288-mutant-security-through-the and 20261116-203637-example-288-preservation-through-the-ada; and, because the checker's array read changed under nearly every proof-tier test, 20261116-203933-the-proof-tier-after-example-288-s-engin. The example's target.json, example.json and README record the queued state and close the four predicted blockers outside the route; no verdict label changes until the jobs report.",
@@ -723,7 +723,7 @@
     },
     {
       "change_id": "krmvzrytnpwvqpsrlnwsnttrtwvprvtm",
-      "commit_id": null,
+      "commit_id": "a09752c024838dcb116861d3cdfbc76dc5c551c2",
       "immutable": false,
       "summary": "The watcher's decisions on the run of 288-290 so far",
       "body": "The decision record of the /prove-java-change run (llm-dlc/decisions/prove-change.*): the claims of 288 accepted in the user's place under --unattended (D001, flagged for review), continue at cycle 1's compaction (D002), and 288 waiting on its five jobs after cycle 1 (D003). Committed before merging the workspace prove-setup between examples.",
@@ -731,7 +731,7 @@
     },
     {
       "change_id": "urqorxxswwuuwtxmnmnqrwsuoytlqklo",
-      "commit_id": null,
+      "commit_id": "4585e66f26add64610b3fbb80bc4a157ad3f72a3",
       "immutable": false,
       "summary": "Record verification result: example 288 fixed-security through the adapter entry passed",
       "body": "Job 20261116-201436-example-288-fixed-security-through-the-a passed in 19m42s (peak 1.4 GiB, estimated 25m, 6 GiB) on vm-1, jvmcontract holds as expected; 3 outputs applied.",
@@ -739,7 +739,7 @@
     },
     {
       "change_id": "nvlyyytuquxxknltyzqksxsvozslpmwx",
-      "commit_id": null,
+      "commit_id": "067a07071f068f68ec8a0e99c44e51cd537c998e",
       "immutable": false,
       "summary": "The watcher accepts the claims of 289 and 290 in the user's place, and records the merge of prove-setup",
       "body": "The workspace prove-setup (the repairs of 289 and 290's setup from stage 2's plan, and watch.py's per-turn cost and the briefs' single replay run) was merged into the loop's line between examples: jj new krmvzryt rlosmoxo, sync.py regenerate for the four generated trace files that conflicted, validate_example.py 289 290 and the default test run (48 of 48) on the merged tree. The verification loop's commit of 288's fixed-security result (urqorxxs) took the merge with it while the default run was going, so that commit, whose description is the result's, is also the merge. The claims of 289 and 290 are accepted in the user's place under --unattended (decisions flagged for review), and both are added to the running loop after 288, which waits on its jobs.",
@@ -747,7 +747,7 @@
     },
     {
       "change_id": "olnsqxznyoyrvvkwpoxqrznprytsmpyq",
-      "commit_id": null,
+      "commit_id": "296188cfbf1f4654ba4a688f15d27cca335fb864",
       "immutable": false,
       "summary": "Example 289: a pattern that is an input is modelled where the own checker shows it is a literal followed by .*, and the four frozen claims are queued through the adapter entry (verification pending)",
       "body": "Example 289 is CVE-2022-22978 (Spring Security 5.6.3 to 5.6.4): RegexRequestMatcher compiled the rule it was given without Pattern.DOTALL, so /admin/.* did not match /admin/ followed by a line feed. Its two frozen claims quantify over the pattern (a literal prefix and .*), the case mode and every request String, so java.util.regex is on the proof's path with a pattern that is an input. The claims are unchanged.\n\nThe verifier's own checker (lib/src/bmc) gained one guarded rule and what the path needs beside it. regex.rs: Pattern.compile(String, int) of a String that is no constant is modelled only where the solver shows that on the path the String can only be characters that stand for themselves followed by .*; the Pattern is then those characters as a quoted text and . any number of times, and any other pattern stays the JDK's call, a gap refused by name. The flags CASE_INSENSITIVE and DOTALL are formulas (a constructor chooses them by an input, and paths that chose differently may have merged before the call); that no other flag is set is the solver's to show. One .* that ends an expression takes surrogates: what comes before it matched none, so it never begins inside a pair, and neither a pair nor a surrogate alone is a line terminator, so matching by unit is the JDK's matching by code point there; a dot anywhere else still makes an input with a surrogate the JDK's call. strings.rs: Character.isLetter of an ASCII char, the JDK's call of any other. runtime.rs: the java.util.logging levels below INFO as constants and Logger.isLoggable of one as false, under an assumption each outcome states (the matcher's debug line through spring-jcl is not written). models: IntStream.range(int, int) enters a model the checker runs (RangeStream), as String.chars() does.\n\nEvidence for the rules: lib/tests/claims.rs has a new tool-tier test over a new fixture, claims.P. It proves the rule is its definition written out in Java (begins with the literal, ASCII case folded under CASE_INSENSITIVE, no line terminator after it without DOTALL) under each flag combination and with the flags chosen by an input, on every pattern and String of the bound; refutes a wrong claim on a witness run on a JVM; shows the refusals by name (any pattern, any text before the dot, another flag, a dot inside with a surrogate in the input, isLetter outside ASCII, isLoggable at INFO); and samples the definitions against the JDK on a JVM, with the five line terminators, surrogates alone and in pairs, the letters that fold outside ASCII, and isLetter on every char. lib/README.md and lib/models/README.md describe the rules.\n\nThe example: proofs/prove.py passes each frozen claim to jvmcontract through the adapter entry on the release's own bytecode, with no lemma and nothing put in a method's place, and builds the mutant by the replay route's recipe (the JAR it gives has the SHA-256 the mutant replay's receipt records). It follows loops for 26 turns where the default is 16: the allowed change reads a URL of up to 25 units, and at 16 the preservation check ended with no verdict, saying a loop was covered by an invariant. proofs/predicates.py compiles the claims' assumption, assertion and allowed change with javac and evaluates them on the 44 probes: they read each as controls/oracle.py does. target.json, example.json and the README record the queue, the probes and what became of the four predicted blockers.\n\nVerified: inline probes at the frozen bound, each one capped run, gave every expected verdict (fixed-security established in 28 s, vulnerable-security and mutant-security refuted in 3 s each on witnesses run on a JVM, the mutant's with caseInsensitive true; preservation established in 47 s, and refuted at bound 3 with no allowed change). The unit tests (285) and the claims, values, pairing, conformance, loops, object_strings, string_literals, tiers and value_parameters tests pass; test_costs.py lint agrees; validate_example.py 289 passes. The default test run was not run: it is owed when the example is decided.\n\nJobs queued, the results of record: 20261116-214343-example-289-fixed-security-through-the-a, 20261116-214344-example-289-vulnerable-security-through, 20261116-214344-example-289-mutant-security-through-the, 20261116-214344-example-289-preservation-through-the-ada, and the proof tier after the engine changes, 20261116-214344-the-proof-tier-after-example-289-s-engin.\n\nAlso in this commit, collected by the pipeline's runner and found uncommitted in the working copy: the results of three of example 288's jobs. The proof tier after 288's engine changes passed (35m47s). 288's vulnerable-security and mutant-security ended on the checker's own 30-minute limit with no verdict, not with a wrong one; they are to be resubmitted larger in 288's next cycle, as its handoff says. The watcher's decision log is committed with it.",
@@ -755,7 +755,7 @@
     },
     {
       "change_id": "ukstuotlookomtusowprsmysvnrxxkpl",
-      "commit_id": null,
+      "commit_id": "46e115e768406db2621a889dc006644e2aeb2c41",
       "immutable": false,
       "summary": "Example 289 is decided beside the route: the security claim refuted on 5.6.3 and on the mutant, established on 5.6.4, and preservation established, each at the frozen bound",
       "body": "The four proof jobs queued in the commit before this one passed, each with its expected verdict on the unchanged claim files, through the adapter entry on the releases' own bytecode (examples/289-.../proofs/prove.py), at the frozen bound of 8 code units for each String, strict gaps, loops followed for 26 turns. fixed-security (job 20261116-214343-example-289-fixed-security-through-the-a): established on Spring Security 5.6.4 in 36 s, 1,003 paths, 265 MiB, not vacuous. vulnerable-security (20261116-214344-example-289-vulnerable-security-through): refuted on 5.6.3 in 2 s at matches(pattern=\".*\", caseInsensitive=false, servletPath=\"\", pathInfo=\"\\u07ff\\ufea0\\u2028\", query=null), which returns false. mutant-security (20261116-214344-example-289-mutant-security-through-the): refuted on the mutant in 2 s at a witness with caseInsensitive true and U+2029 in the path info; the mutant the job built has the SHA-256 the mutant replay's receipt records. Each witness was run on a JVM. preservation (20261116-214344-example-289-preservation-through-the-ada): established on the release pair in 61 s, 1,373 paths, 551 MiB.\n\nRecorded: each task's besideRoute in target.json (answer, job, by, recorded), the handoff and the blockers' notes; example.json's verdict label, summary and a note with the figures, what the verdicts rest on and what they do not say; the README's verdict row and results table. changes.py 289 now says decided: 2 refuted and 2 established beside the route. The jobs' results, logs and outputs (verification/results, verification/.work-289) are committed with it. The route itself still has no adapter entry, so these are not route receipts.",
@@ -763,7 +763,7 @@
     },
     {
       "change_id": "wwqnoqtlkttyyvoqwsllspoktlrnvrun",
-      "commit_id": null,
+      "commit_id": "4674e1f276766e225e6bc6dd0bf8e057eea7f13b",
       "immutable": false,
       "summary": "Record verification results for examples 288 and 289 and the two proof-tier jobs; VF-031 for example 288's timeouts",
       "body": "Collected on vm-1: 288 fixed-security passed (verified), 288 vulnerable/mutant-security and preservation ran out of the engine's own --timeout with no verdict (VF-031, not resubmitted since the fix is a step change); 289 vulnerable/mutant/fixed/preservation passed; the proof-tier jobs after 288's and 289's engine changes passed (33 cargo tests each).",
@@ -771,7 +771,7 @@
     },
     {
       "change_id": "optkyymtxunxqzprsmwpmvvpxorxpkvz",
-      "commit_id": null,
+      "commit_id": "df8df449d2ddb625cbd0ee6bee642289684d629b",
       "immutable": false,
       "summary": "Example 290: a library initializer the checker does not run is observed on a JVM, registrations are a LinkedHashMap in order and classes are found by name, and fixed-security is queued through the adapter entry (verification pending)",
       "body": "Example 290 (CVE-2023-34035, Spring Security 5.8.4 to 5.8.5: requestMatchers(String...) chooses a matcher type by the servlet context's registrations) gets its proof script, proofs/prove.py, which passes the frozen claims to jvmcontract through the adapter entry on the releases' own bytecode, beside the route, and proofs/predicates.py, which shows that the claims' expressions as javac compiles them agree with the oracle on the 27 select probes. An inline probe established fixed-security at the frozen bound of 8 in 6.9 s (659 paths). It is queued as job 20261116-225709-example-290-fixed-security-through-the-a. The two refutations and preservation are not decided: target.json's handoff says where each stops (Collections.emptyMap, Arrays.asList, ArrayList's addAll and toArray; then the matchers' constructors).\n\nWhat the verifier gained for it (lib/). The new kind: prove --observed-initializer CLASS (src/observed.rs, src/bmc/observed.rs). Spring's ClassUtils builds its tables through an IdentityHashMap, a HashSet and a map of soft references, which the checker does not run (identity hash order, a float load factor, reference queues), and the servlet API's GenericServlet and HttpServlet each load a resource bundle. Such an initializer has no input, so the tool runs it on a JVM instead: the class is initialized in a JVM of its own, first thing, on the check's class path, its static fields are read by reflection, and the checker takes that state where a use initializes the class. Held: null, integral and boolean primitives, Strings (and whether each is the pooled one), Classes, a java.util.HashMap of String keys (as the HashMap model's entries) and arrays of those; any other value is not held, and a read of such a field is refused by name. A result that used one states it among what it rests on: one observation on the check's JDK, taken to be what the initializer leaves in every run. It is asked for class by class, is refused with --cache and for an initializer that throws, and is never used for the class under proof: the registry's own initializer runs as written. A class of a JDK package that the class path holds (javax.servlet's) is the JDK's to the checker, initialized already; naming it as observed is how its initializer is now accounted for.\n\nBeside it: a model of java.util.LinkedHashMap for the checker alone (models/java/util/LinkedHashMap.java: the HashMap model's chain, which is in insertion order, with values(), its size and a fail-fast iterator); Arrays.stream(int[]) as a stream model; an int, short or byte in the compiler's concatenation as its decimal digits (String model 6; such a String had no content before); Class.forName(String) of a constant name with its initialization, and both forms of forName left to the JDK where a supertype is missing from the class path; Class.isAssignableFrom of two class literals; Thread.currentThread() and its context class loader as the class path's, under a stated assumption.\n\nVerified by: lib/tests/claims.rs, two new tests over the new fixtures claims.M, claims.Tables, claims.Fails and javax.claims.Library (each model against its definition written out on every input of a bound; the observed state read as the JVM has it, an unheld field refused by name, the gap without the option, a throwing initializer and --cache refused), with claims.Samples running the same methods on a JVM; the unit tests (288 pass, three new in observed.rs); and the test files of the changed code (claims 14, values 18, conformance 10, loops, object_strings, pairing, string_literals, tiers, value_parameters). Two values tests that pinned the old behaviour were updated: a concatenated int now has content (a boolean is the gap that remains), and LinkedHashMap() is modelled (LinkedHashMap(Map) is the gap that remains). test_costs.py lint agrees; validate_example.py 290 passes. The default test run and the proof tier job follow once the example's remaining engine work is in.",
@@ -779,7 +779,7 @@
     },
     {
       "change_id": "pptopklkymsmqkkxwsluxvrmoxvuyznq",
-      "commit_id": null,
+      "commit_id": "f19e6185b3493bbcac31a3d3207000214b332129",
       "immutable": false,
       "summary": "Record verification results: example 290 fixed-security passed; the default test run failed one test (VF-032)",
       "body": "Job 20261116-225709 (example 290 fixed-security through the adapter entry) passed in 9.8s, jvmcontract holds; its 3 outputs applied. Job 20261116-224337 (default test run at 76862913606e) failed 1 of 49 files: test_runtime.py sees JVMCONTRACT_JBMC_MEMORY_MB passed through to the verifier; recorded as VF-032 for the targets owner. No result edited.",
@@ -787,7 +787,7 @@
     },
     {
       "change_id": "mqoqmvttwklvknxxktpwvtktyvzpnvmu",
-      "commit_id": null,
+      "commit_id": "7a411e39dabab7180f8873e2277c8015c0b245f0",
       "immutable": false,
       "summary": "Example 290: fixed-security is established beside the route at the frozen bound, mutant-security is queued after its probe refuted it, and the page says where the other two stand (verification pending)",
       "body": "Example 290 (CVE-2023-34035, Spring Security 5.8.4 to 5.8.5). Job 20261116-225709-example-290-fixed-security-through-the-a passed: the frozen security claim is established on 5.8.5 at the bound of 8, through the adapter entry, in 6.9 s (659 paths, 8,509 variables, 131 MiB). target.json records it as the task's besideRoute answer; changes.py still lists the example as to prove, since three tasks are open. The verdict rests on three library initializers observed on a JVM in place of run by the checker (Spring's ClassUtils, the servlet API's GenericServlet and HttpServlet), which the outcome states and the page explains: weaker evidence than an initializer the checker ran, and said so.\n\nmutant-security: an inline probe at the frozen bound refuted the claim on the mutant in 6.1 s, on select(servlets=[1, 0], method=0, patterns={}) returning 0, run on a JVM; the mutant's JAR is byte for byte the one the mutant replay ran. Queued as 20261116-231724-example-290-mutant-security-through-the, and not recorded as decided until that job is in. What it needed since the last commit: Arrays.asList(T...) as a model for the checker alone (lib/models/java/util/lists/ArrayAsList.java: a view of its array with size, get and toArray(), compiled against the JDK's List in a run of its own) and Collections.emptyMap() as the JDK's one empty map, with their evidence in lib/tests/claims.rs (claims.M#listed and #emptied, in the checker on every input of a bound and on a JVM). Those files of lib/ are in the commit before this one, pptopklk: the pipeline's commit of collected results took a snapshot of the shared working copy while they were being written.\n\nvulnerable-security has no verdict: the checker stops, by name, at new ArrayList(int) in createMvcMatchers, and 5.8.4 collects its matchers in ArrayLists on every path. A model of ArrayList written in this session gave the expected witness on 5.8.4 (select(servlets=[0, 0], method=0, patterns={}) returns 0, run on a JVM) and was taken out again before any commit: lib/tests/conformance.rs and lib/tests/values.rs record ArrayList as a class with no model and the contract library holds a contract for ArrayList(int), so making it a model changes recorded verdicts, which is a step to make and review on its own. preservation is not attempted; it needs that model, the matchers' constructors, and --observed-initializer for equivalence. The page (README.md), target.json's handoff and the blockers' notes say all of this.",
@@ -795,7 +795,7 @@
     },
     {
       "change_id": "zklwynpumvlnvpwowokkqlmmpukxtpxk",
-      "commit_id": null,
+      "commit_id": "3e8b8d0de562c518ab4e5d46446058e19eed69f9",
       "immutable": false,
       "summary": "Record verification results: example 290 mutant-security passed",
       "body": "Collected 1 job (20261116-231724, example 290 mutant-security through the adapter entry): passed, 3 outputs applied. Others are still running.",
@@ -803,7 +803,7 @@
     },
     {
       "change_id": "snpkzvoozwwvwoyouxlpsxvmqmxxwwkn",
-      "commit_id": null,
+      "commit_id": "99a6307ea00c7481a562be214e65974f75be4d8f",
       "immutable": false,
       "summary": "Example 290: mutant-security is refuted beside the route at the frozen bound, on a servlet registered before the DispatcherServlet",
       "body": "Job 20261116-231724-example-290-mutant-security-through-the passed: the frozen security claim of example 290 (CVE-2023-34035) is refuted on the constructed mutant of Spring Security 5.8.5, which looks at the first registration only, in 5.9 s (708 paths, 15,905 variables, 190 MiB). The witness is select(servlets=[1, 0], method=0, patterns={}), which returns 0 and throws nothing, run in the harness on a JVM; the mutant's JAR is byte for byte the one the mutant replay ran. target.json records it as the task's besideRoute answer, and the page, the verdict label and the notes say two of the four proof tasks are decided: the claim established on 5.8.5 and refuted on the mutant, both through the adapter entry, beside the route. vulnerable-security (no verdict: the checker has no model of ArrayList, which 5.8.4 collects its matchers in) and preservation (not attempted) stay open, as the page and target.json's handoff describe.\n\nVerified by: validate_example.py 290 (passed); changes.py 290 (the example stays listed as to prove); and the default test run on the state of the previous commit plus these files: default tier, 48 of 48 passed. The proof tier after this cycle's engine changes (20261116-231725-the-proof-tier-after-example-290-s-engin) is still running.",
@@ -811,7 +811,7 @@
     },
     {
       "change_id": "kxsppxvzquupprtvxyzxtklvrsrrkvys",
-      "commit_id": null,
+      "commit_id": "5b401414646ba2eab081523a511df2df97ca63f1",
       "immutable": false,
       "summary": "Record verification results: the default test run at qnmttuprxxym passed, closing VF-032",
       "body": "Collected 1 job (20261116-232054): the default tier passed 49 of 49 under the runner (14m32s, peak 2.7 GiB), which is the check VF-032 named; the entry is closed. The proof-tier job for example 290 is still running.",
@@ -819,7 +819,7 @@
     },
     {
       "change_id": "kxkyqntwvlolrqrtkkkvmrtyuwqzlsvx",
-      "commit_id": null,
+      "commit_id": "cee8ea2541e35662c97c06089ddd972683266b4c",
       "immutable": false,
       "summary": "Record verification results: the proof tier after example 290's engine changes passed",
       "body": "Collected 1 job (20261116-231725): every proof-tier Rust test but VF-018's three passed in release (35m32s, peak 3.5 GiB against an estimated 8 GiB).",
@@ -827,7 +827,7 @@
     },
     {
       "change_id": "qystlsvplrmvtymslznqzolmkzyywlrr",
-      "commit_id": null,
+      "commit_id": "a5fa1c82be2bfaf86ac435bbaa5aca2c2d3ac8e6",
       "immutable": false,
       "summary": "Example 290: vulnerable-security is refuted in a probe at the frozen bound with a model of ArrayList the check asks for, and its job is queued (verification pending)",
       "body": "5.8.4 collects its matchers in ArrayLists on every path, and jvmcontract's own checker stopped at new ArrayList(int). The checker now has a model of java.util.ArrayList that it runs only for a check that asks for it (prove --model java.util.ArrayList; lib/models/java/util/lists/ArrayList.java, models::ON_REQUEST, ClassPath::runs_model): both constructors, size, isEmpty, get, add, addAll, both toArray and a fail-fast iterator; any other method is the JDK call it names. It is on request and not run for every check because new ArrayList(int) is the gap the contract library, the conformance corpus and the examples' recorded refusals are written about: without the option nothing changes. A result states the model where a path ran it; JBMC, --cache and a class with no model on request are refused. Arrays.copyOf of an array of references, which the model grows by, is modelled for every check, as it was for arrays of numbers.",
@@ -835,7 +835,7 @@
     },
     {
       "change_id": "onkqouutwkoryzmluwqkymmqwqkmwpzp",
-      "commit_id": null,
+      "commit_id": "48524f07fe88cefb99429adc83b6aa2a0da4ca89",
       "immutable": false,
       "summary": "Record verification results: example 290 vulnerable-security through the adapter entry is refuted at the frozen bound, as expected",
       "body": "Job 20261117-000856-example-290-vulnerable-security-through passed on vm-1 (1 step, 3.4 s, peak 187 MiB against an estimate of 5 min and 4 GiB): the frozen claim on 5.8.4 is refuted as the job expected. Outputs applied: the work folder's outcome and harness. No findings.",
@@ -843,7 +843,7 @@
     },
     {
       "change_id": "lxywqktlwtqvrrzqxuoykyrqkmlpruut",
-      "commit_id": null,
+      "commit_id": "3bf65fcb44a55749ad19863e292662582d0e8418",
       "immutable": false,
       "summary": "Example 290: preservation is established in a probe at the frozen bound, the previous version's questions by name answered on its own class path; one job for all four tasks is queued (verification pending)",
       "body": "preservation (the release pair 5.8.4 to 5.8.5 through the adapter entry) needed four things of the verifier, each now there. (1) In a regression check made as a property of the pair of versions the previous version's classes are copies under the package before, and a question its code asks by a name it computes was answered from the program's class path, the new version's: Class.forName called by a copy now finds the copy of the class named and no class only the new version has, and a copy's getName() is the class's own name (lib/src/relocate.rs Previous, lib/src/bmc/runtime.rs). 5.8.4's initializer asks this way whether Spring MVC is present. (2) jvmcontract equivalence takes --observed-initializer and --model for such a check; an initializer is observed in each version that has the class, on that version's own class path, and the result says which. (3) new ConcurrentHashMap() and new ConcurrentHashMap(int) make an object with no content, a negative capacity refused: the caches an AntPathMatcher's constructor makes. (4) proofs/prove.py observes two more library initializers, UrlPathHelper's and AntPathMatcher's, met only where a release goes on to make MvcRequestMatchers.\n\nVerified inline: tests/pairing.rs has two versions of a library that return the same number only if each one's lookup by name, class name and observed initializer are its own, both ways round (verified), with the refusals; claims.M#cached proves the map's constructors against their definition and claims.Samples runs it on a JVM; the unit tests (288), claims (15), pairing (4), values, conformance, loops, object_strings and value_parameters pass; test_costs lint agrees; validate_example.py 290 passes. At the frozen bound of 8, proofs/prove.py preservation was established in 2.1 s (573 paths), and a control with a wider region that must agree was refuted on select(servlets=[1], ...), run on a JVM, where the fix changes the selection by design. The other three tasks give their recorded verdicts with the final script (4, 659 and 708 paths). Jobs: 20261117-012215-example-290-the-four-proof-tasks-through (all four tasks at one commit) and 20261117-012216-the-proof-tier-after-example-290-s-secon. vulnerable-security's own job, 20261117-000856-example-290-vulnerable-security-through, passed in 3.4 s (collected in onkqouut); its record in target.json follows with the others'. The commit also holds four allow-list proposals for scratch file names this session printed.",
@@ -851,7 +851,7 @@
     },
     {
       "change_id": "zkoptlxkvvtspwqlkqrkztzluntqqtyr",
-      "commit_id": null,
+      "commit_id": "6917a60278c0c13acb5f55ef9343fba5aa9e9cd7",
       "immutable": false,
       "summary": "Record verification results: example 290's four proof tasks through the adapter entry passed",
       "body": "Job 20261117-002240-example-290-the-four-proof-tasks-through passed (4 steps, 38.9s, 189 MiB; estimated 5m, 4 GiB). 4 output files applied, none conflicting. Collected by the unattended run-verification loop on vm-1.",
@@ -859,7 +859,7 @@
     },
     {
       "change_id": "yrxntpunonzpoluswmlxytzvlquvxost",
-      "commit_id": null,
+      "commit_id": "a8f7921f1b1fa0fbcab0bb01ee3257d687a2cc8d",
       "immutable": false,
       "summary": "Record verification results: the default test run at lptpzxuplxky passed",
       "body": "Job 20261117-003114-default-test-run-at-lptpzxuplxky passed: 1 step in 8m37s, peak 6.0 GiB (estimated 25m, 4 GiB; memory under-estimated). No outputs to apply. Collected by the unattended run-verification loop on vm-1.",
@@ -867,7 +867,7 @@
     },
     {
       "change_id": "xtkpoqknmqkxznnwknstomrlzpztxmxz",
-      "commit_id": null,
+      "commit_id": "3762b2c49ba1c0de6e84cebfdbac75b08a960a4e",
       "immutable": false,
       "summary": "Example 290: all four proof tasks are decided beside the route at the frozen bound, and the page says what each verdict rests on",
       "body": "Job 20261117-002240-example-290-the-four-proof-tasks-through ran proofs/prove.py on the four tasks at one commit (lxywqktl) and passed, 38.9 s after the build: vulnerable-security refuted on select(servlets=[0, 0], method=0, patterns={}), which returns 0 on 5.8.4, run on a JVM; fixed-security established (659 paths); mutant-security refuted on select(servlets=[1, 0], method=0, patterns={}), run on a JVM; preservation established for the pair 5.8.4 to 5.8.5 (573 paths, 7,907 variables). target.json records each as besideRoute with that job, dates the notes of the two blockers the work closed, and says in handoff.next what is left: the route has no adapter entry, so there are no route receipts. example.json's verdict and notes and the README's section follow, with what the verdicts rest on beyond the bytecode: up to five library initializers per release observed on a JVM instead of run by the checker, the hand-written ArrayList model run on request, and the stated class-loader assumptions.",
@@ -875,7 +875,7 @@
     },
     {
       "change_id": "mrtuvsowozvnusvpzntyyqotqlkrumyo",
-      "commit_id": null,
+      "commit_id": "72fa74329161506fdc98e344c4d5997ed9bb938b",
       "immutable": false,
       "summary": "The user's review of the watcher's answers to the run of 288-290, and its answer that 290 is finished",
       "body": "Reviewed with the watcher on 2026-11-17: the user accepted all nine answers so far (D001-D009). The three claim acceptances made in the user's place under --unattended (288, 289, 290) stand; the known gaps are in how the proofs meet the claims (288: exception categories and array aliasing; 290: observed initializers and a preservation claim that compares the count of matchers by type), not in the claims' wording. D010: 290 is finished, at medium confidence while the proof-tier rerun after its engine changes is out.",
@@ -883,7 +883,7 @@
     },
     {
       "change_id": "xkymvxspxzwmyusppsoutoqvupzltrxq",
-      "commit_id": null,
+      "commit_id": "6e88e493fb522ce8d2de643dbd88a88462e4384d",
       "immutable": false,
       "summary": "conductor.py: a queue that can't be read is never taken for no jobs out",
       "body": "In the live run at 22:22, pipeline.py status once printed nothing, and conductor.unfinished_jobs read that as no job out: watch.py proof 288 and wait announced 288's jobs as in while its preservation job was still running. feature-loop.sh asks the same function (conductor.py unfinished) whether a waiting example's proof is in, so the same read would have sent the loop back to 288 early. The status is now read up to three times, and a queue still unreadable raises QueueUnreadable: conductor.py unfinished then prints every example named, as unfinished, with exit status 1, and watch.py's status, assessment, wait and proof treat the queue as unknown, not empty. Made in the workspace prove-setup while the loop runs in the default one. Verified: test_conductor.py (22, 1 new), test_watch.py, test_prove_loop.py (30) pass; the test-cost lint agrees (the row added by hand).",
@@ -891,7 +891,7 @@
     },
     {
       "change_id": "yooukqwllnmukovxpomzxnuntkzqmvlm",
-      "commit_id": null,
+      "commit_id": "fadada74fc878370be78eb999281a116601e6d04",
       "immutable": false,
       "summary": "The default test run is a verification job nobody waits for, only the newest of those waiting runs, the watcher triages what it finds, and a push requires a passed one",
       "body": "The default run (lib/tools/test_costs.py run, about 16 minutes, longer beside proof jobs) had become the bottleneck of the /prove-java-change run: inline before every merge and at the end of each example. verification/default_tests.py queue writes a job that runs it at a commit, in the pipeline's clean export of that commit, at low priority, with its cargo target directory kept warm between runs; the job file is committed from any workspace. Its step first asks the queue (VERIFY_RUNNER_ROOT, now passed to every step) and, when a newer default-run job is pending or running, says it is superseded and exits at once, so of several waiting together only the newest runs. watch.py wait tells the watcher of each run that comes in, with the commit and the files it failed at, to triage: a small mechanical failure fixed in the side workspace, one in the loop's area written to test-findings.md for its next cycle, the rest to the user. sync.py push now requires a passed run covering the commit it pushes, at it or at an ancestor that differs only in files no test reads (traces, decisions, job results); --skip-tests REASON is for the user alone. CLAUDE.md, runtime.md (the proof loop's tests, the merge between examples, watching the loop), SKILL.md and verification/README.md say so. Verified: test_default_tests.py (7, new), test_watch.py (41, 1 new), test_pipeline.py and test_performance.py pass; the test-cost lint agrees (rows added by hand). A real job is queued next to check it end to end.",
@@ -899,7 +899,7 @@
     },
     {
       "change_id": "nmoorrywzxqrwlwwylsllvrqxlwzzupy",
-      "commit_id": null,
+      "commit_id": "d3df58f4877fb3e75d291316f7be334d0b76df6d",
       "immutable": false,
       "summary": "Queue the first default test run as a job, at the commit that adds it (verification pending)",
       "body": "An end-to-end check of verification/default_tests.py: the job runs the default run at its parent commit, in the pipeline's clean export, and nobody waits for it. Job: 20261116-224337-default-test-run-at-yooukqwllnmu.",
@@ -907,7 +907,7 @@
     },
     {
       "change_id": "splrunltkluttuxopxwrnxmsvqtllozq",
-      "commit_id": null,
+      "commit_id": "306fa30cca6825eb73afaab4991d8bf03a744f8b",
       "immutable": false,
       "summary": "sync.py regenerate takes the merged sessions' logs from the workspace that stores them, checked against their names",
       "body": "Merging a workspace's line brought commits whose sessions' log snapshots were stored only in that workspace, so the merged checkout's check reported each as neither stored locally nor uploaded; the user copied them by hand twice today. sync.py adopt-logs, which regenerate now runs after every merge, finds each log a manifest names that is neither here nor uploaded, reads it from the repository's other workspaces, and keeps a copy only when the sha256 of its uncompressed content is the log's name: nothing is taken on trust, and nothing already here is touched. runtime.md's merge between examples says so. Also: the default-run job asks for 4G, the committed runner's per-job limit, instead of 6G. Verified: test_workspaces.py (12, 1 new: a real merge of two jj workspaces, one log taken, one copy that is not its log left), test_default_tests.py pass; the lint agrees; run in this workspace it took the five logs of session a6490df0 from the default workspace.",
@@ -915,7 +915,7 @@
     },
     {
       "change_id": "ypmumtnpltsmrvuxrnqyvvxsmnlsqkmy",
-      "commit_id": null,
+      "commit_id": "ff15c4a954e052c1dee53443d3aa275e4d470eb3",
       "immutable": false,
       "summary": "The tests of a change are chosen from what it changed, the default run runs Rust beside Python and retries what fails once, and a failing default-run job traces each failure to its commit",
       "body": "Four ways to make the default test run (about 16 minutes) less of a bottleneck. test_costs.py run --changed (--from REV for a line of commits) chooses statically from jj diff: a Python test file runs when it changed, when a module it imports transitively changed, or when its code, or a module it imports directly, names a changed file in a string (docstrings and records every module names, such as the trace index, job results and the inventory, don't count); cargo test runs when lib/ changed outside its Python tools and pages, only the changed binaries when only lib/tests/*.rs changed. run now starts cargo test beside the Python files (--serial for the old order), so the wall time is the longer half, not the sum. What fails is run once more, a Python file whole and Rust's failed tests by name; what passes then is reported FLAKY, counted as passed and named in the tally. The default-run job (verification/default_tests.py) streams its output, and on a failure halves the first-parent commits since the last passed run for each failing test, within 20 minutes, printing 'default tests: culprit TEST: COMMIT'; the watcher's default-tests event carries the culprits and the flaky tests. CLAUDE.md, runtime.md and lib/README.md say so. Verified: test_test_costs.py (18, 2 new: a stand-in cargo on PATH started before the first Python file ended, a flake in each language), test_default_tests.py (9, 2 new: flaky read from the tally, a culprit found in log2 steps), and the 17 Python test files that run --changed chose for this change all pass; the lint agrees.",
@@ -923,7 +923,7 @@
     },
     {
       "change_id": "wwrxuknwovqzwkxmsuozrtktmxmpwnvv",
-      "commit_id": null,
+      "commit_id": "3874ed0e3d2874602b0d46ac2a9076caafa40697",
       "immutable": false,
       "summary": "test_runtime.py pins both variables the verifier passes through, so a pipeline job's environment no longer fails it (VF-032)",
       "body": "The first default-run job (20261116-224337, at 76862913606e) failed one test of 49 files: VerifierTest.test_a_property_runs_on_the_original_artifact_alone_with_the_plans_engine_gaps_and_bounds expected the verifier's environment to hold exactly LANG, LC_ALL, TZ, JAVA_HOME, PATH and JVMCONTRACT_JAVA_OPTS, but runtime.py also passes JVMCONTRACT_JBMC_MEMORY_MB through, and a pipeline job sets it. The test's setup now sets both variables and expects both, and checks that JBMC's passes through too. Verified: test_runtime.py passes with JVMCONTRACT_JBMC_MEMORY_MB unset and set to 4096 in the caller's environment.",
@@ -931,7 +931,7 @@
     },
     {
       "change_id": "qnmttuprxxymxpyyxvsvrzsmnnssxyxv",
-      "commit_id": null,
+      "commit_id": "e756fe3f05c9a7471ed52bd08847fc0216dc7fc2",
       "immutable": false,
       "summary": "sync.py adopt-logs also takes the uploaded logs a workspace lacks, so its sessions' metrics are computed from the same logs as elsewhere",
       "body": "After the change that made regenerate take merged sessions' unuploaded logs from the workspace storing them, check in the prove-setup workspace still failed on session 3e8cabab: sync had recomputed its metrics.json there from the one of its 22 logs the workspace held (the other 21 are uploaded, and stored only in the default workspace), so the token counts no longer matched its manifest. adopt-logs now takes any log a manifest names that isn't stored here, uploaded or not, still only when its content hashes to its name. Run in prove-setup it took the missing logs of 95 sessions (the traces folder is 1.4 GB); sync then rewrote 3e8cabab's metrics.json byte for byte as main has it, and check reports 0 errors. Verified: test_workspaces.py (12) passes, its log test extended to an uploaded log.",
@@ -939,7 +939,7 @@
     },
     {
       "change_id": "qnnqmzztvtkkoqrpznowkrtmxzrktnnx",
-      "commit_id": null,
+      "commit_id": "7c4ee9d8ce7dfadfdd281e4f674f67c2a578c3bd",
       "immutable": false,
       "summary": "Queue a default test run at prove-setup's tip, to check the parallel run, the retry and the VF-032 fix (verification pending)",
       "body": "",
@@ -947,7 +947,7 @@
     },
     {
       "change_id": "lptpzxuplxkymxytqpnuroqllyntnrto",
-      "commit_id": null,
+      "commit_id": "34462882a648a155d920636d154b3e06e7a8d9bb",
       "immutable": false,
       "summary": "The default run takes 4.6 minutes where it took 16: Rust's test binaries and the Python files run several at a time, and a passed run covers what it left unread",
       "body": "test_costs.py run: cargo only builds the Rust test binaries (--no-run), and they then run several at a time (--rust-jobs, by default half the CPUs, at most 4, and one per 1.5 GB of a job's memory limit), the longest first by what each took the last time (kept in the target directory). The Python test files run several at a time too (--python-jobs, 3 by default, 2 in a job); a file that fails has its second run alone after the others, so two files that disturbed each other show as flaky. The proof tier still runs one binary at a time, and --rust-jobs 1 --python-jobs 1 is the run as it was. Measured on this machine: the Rust binaries 707 s one after another in the first job, 403 s three at a time under a six-CPU limit beside another test job (peak 3.4 GB), 230 s four at a time; the whole default run 276 s, 49 of 49 passed, nothing flaky.\n\nThree Rust test files prepare their fixtures together and not one after another, with the same assertions: observations.rs's Box Office examples test builds its ten patched examples four at a time (the binary went from 146 s to 71 s alone) and keeps the Gradle build between runs under a hash of its sources, tasks and JDK; application_core.rs and application_core_joint.rs compile their nineteen fixture builds four at a time.\n\ndefault_tests.py: a run in the pipeline's fresh export records which files nothing opened and which folders nothing listed, from their access times (one packed line in its log; 'default_tests.py unread JOB' lists it), and a passed run then covers a later commit that only modifies those files or adds and removes files inside those folders. lib/ always counts as read, a rename is never covered, and a filesystem without access times records nothing. A probe of the Python half in an export left 546 entries unread, among them the example pages, CLAUDE.md and the runtime page. 'default_tests.py flaky' counts flaky tests over the collected runs. sync.py adopt-logs takes a log as a hard link where it can. Verified by the default run above, which includes the new tests of each piece (stand-in cargo and made-up runs); the inventory has the eight new Python rows, added by hand as the handoff note says.",
@@ -955,7 +955,7 @@
     },
     {
       "change_id": "kqtsqtzvmvvsxzkrtlwzzmvkyxnlozrn",
-      "commit_id": null,
+      "commit_id": "2b622bd4d54453143cbfa9c00934961cea461887",
       "immutable": false,
       "summary": "Queue a default test run at the parallel run's commit, its first under the job's limits and the first to record what it left unread (verification pending)",
       "body": "Job 20261117-003114-default-test-run-at-lptpzxuplxky runs the default test run at change lptpzxup in the pipeline, with six CPUs and 4 GB: there the run takes two Rust test binaries and two Python files at a time. It shows the run's time under those limits (the first job took 19.5 minutes) and writes the first 'default tests: unread' line, which the push gate reads. Nobody waits for it.",
@@ -963,7 +963,7 @@
     },
     {
       "change_id": "nmskpkrkukuykqmqyuzukrnvqtolnkys",
-      "commit_id": null,
+      "commit_id": "01d603416db8bdd2fa9c1fe164b90a5be787806a",
       "immutable": false,
       "summary": "The default run builds Rust's tests in a lightly optimised profile and takes 3.4 minutes: the engine's own tests are several times faster for a build twice as long",
       "body": "lib/Cargo.toml gains the profile test-fast (dev with its checks, opt-level 1, line tables only, the SAT solver at 3 as in dev), and test_costs.py run uses it for the default and unit tiers; the proof tier stays in release and plain cargo test stays dev, each in its own folder of target/. Measured on this machine on 2026-11-17, each binary alone: tests/alignment.rs 94 s as dev and 10 s in test-fast, summaries 13 s and 5 s, conformance 45 s and 36 s, application_core_joint 147 s and 123 s, integration and heap unchanged; the profile's first build 69 s, and a build after an edit in src/bmc/mod.rs 14 s where dev takes 7 s. The whole default run with it: 201 s, 49 of 49 passed, the Rust binaries 163 s of it (276 s and 230 s in the commit before). The job queued in the commit before, 20261117-003114, passed in 518 s on six CPUs without this profile, where the first job took 1170 s.",
@@ -971,7 +971,7 @@
     },
     {
       "change_id": "mwspmmlwtymyxpsmqotposwlmykqrrrn",
-      "commit_id": null,
+      "commit_id": "c43db210a8189035850f224b6f021a6cee6198a5",
       "immutable": false,
       "summary": "Queue a default test run at the test-fast profile's commit, and the job's estimate is 12 minutes (verification pending)",
       "body": "Job 20261117-004852-default-test-run-at-nmskpkrkukuy runs the default test run at change nmskpkrk on six CPUs: the first job with Rust's tests in the test-fast profile, which its warm target directory has to build once. The estimate default_tests.py queue writes goes from 25 to 12 minutes, after the job at the commit before took 8.6 (its notes and verification/README.md's table say so). Checked with test_costs.py run --changed: 13 of 13 test files passed. Nobody waits for the job.",
@@ -979,7 +979,7 @@
     },
     {
       "change_id": "xunroyyopkuqmpwnlmsmttomzupoqswk",
-      "commit_id": null,
+      "commit_id": "08d856d97ba5c58deba95947d39e3a20e65911ef",
       "immutable": false,
       "summary": "Merge prove-setup: the default test run as a job nobody waits for, run in parallel, with tests of what changed, a flaky retry, bisecting and a push gate; logs taken across workspaces",
       "body": "Brings the prove-setup workspace's line into the loop's: conductor.py's unreadable-queue fix; verification/default_tests.py (the default run as a pipeline job, superseded by a newer one, triaged by the watcher, bisected on a failure) and the sync.py push gate that requires a passed run covering the pushed commit; test_costs.py run --changed, Rust beside Python, the retry of what fails, parallel Python and Rust jobs and the test-fast Cargo profile (from the session in tmux window tests, in-the-loop-10); sync.py adopt-logs, which regenerate runs after a merge. Conflicts: examples/tools/targets/test_runtime.py, where both lines fixed VF-032, takes prove-setup's side (the test sets JVMCONTRACT_JBMC_MEMORY_MB itself, expects it and checks it passes through); lib/tests/costs.json keeps the loop's new pairing row and prove-setup's two rows' calls; the generated trace files are regenerated. Verified: test_runtime.py and test_watch.py pass on the merged tree, the test-cost lint agrees, check reports 0 errors. The prove-setup line's last default-run job passed 49 of 49 at its own tip; one more is queued at this merge.",
@@ -987,7 +987,7 @@
     },
     {
       "change_id": "vypwysvxownkwotkumqklvukomrvpwuv",
-      "commit_id": null,
+      "commit_id": "cb617e344aee26a6a12cfb4fdcb2469a25d042ff",
       "immutable": false,
       "summary": "Record verification results: the default test run at nmskpkrkukuy passed",
       "body": "Job 20261117-004852-default-test-run-at-nmskpkrkukuy passed: 1 step in 7m01s, peak 6.0 GiB (estimated 12m, 4 GiB). No outputs to apply. Collected by the unattended run-verification loop on vm-1.",
@@ -995,7 +995,7 @@
     },
     {
       "change_id": "yuuvzuvykswqyruzrxqmsvwuvvzwnxvm",
-      "commit_id": null,
+      "commit_id": "9199d21979d5f49e7bb5fc848e5c3332e403b31f",
       "immutable": false,
       "summary": "Queue the default test run at the merge of prove-setup (verification pending)",
       "body": "Job 20261117-005759-default-test-run-at-xunroyyopkuq: the default run at the merge commit, in the pipeline's clean export, which nobody waits for; the watcher reads its result.",
@@ -1003,7 +1003,7 @@
     },
     {
       "change_id": "rlzwzoqoqyzyvklkzpyqttvtlnlxxynl",
-      "commit_id": null,
+      "commit_id": "61497e8fd6f608eb6d5c1805a243079c8736a503",
       "immutable": false,
       "summary": "Record verification results: the proof tier after example 290's second round of engine changes passed",
       "body": "Job 20261117-002240-the-proof-tier-after-example-290-s-secon passed: 1 step in 37m24s, peak 3.5 GiB (estimated 40m, 8 GiB). No outputs to apply. Collected by the unattended run-verification loop on vm-1.",
@@ -1011,7 +1011,7 @@
     },
     {
       "change_id": "ymvkprpwxrrwvnlxtswssutzrwvxxsuk",
-      "commit_id": null,
+      "commit_id": "a4ec3f3bf7b93e0251dcb4c87bf892e6c65edf8b",
       "immutable": false,
       "summary": "Example 290's results are stated at their exact scope, and VF-033 queues a stronger preservation claim and an audit of the observed initializers for a later run",
       "body": "The user's decision on reviewing D005 (the watcher's acceptance of 290's claims in their place): keep the claims and their verdicts, say exactly what they cover, and queue the rest. 290's page and example.json notes now say that preservation is established for the count of matchers by type in the lone-DispatcherServlet configuration, not for the matchers themselves or what they match, and that fixed-security and preservation hold under the observation of library initializers on a JVM: two of them load resource bundles, so 'no input' is that observation's assumption until the state read is audited (points 1 and 2 of the outside expert's c3 review); the refutations replay on a JVM and do not rest on it. VF-033 (open) records both, with the chosen follow-up (restate preservation to compare each matcher's type, pattern, HTTP method and servlet path: a setup and about one proof cycle) and the one not chosen (compare matches(), which needs HandlerMappingIntrospector modelled). Verified: validate_example.py 290 passes.",
@@ -1019,7 +1019,7 @@
     },
     {
       "change_id": "lmwqozysyszlnwovlvyrsrlnmlymrlmm",
-      "commit_id": null,
+      "commit_id": "ec90f8f8c904a693b0de198fe3f411f8f2d36e7d",
       "immutable": false,
       "summary": "What a default run left unread is a plain output file of the job, and its log says only how many paths",
       "body": "The packed line (default tests: unread zlib:...) was opaque to the redaction scanner and raised a long-token warning in every transcript and log that showed it (finding fd843c30, after the merge of prove-setup). The step now writes verification/default-tests-unread.txt, the job's id and then one path a line, as a declared output: the pipeline applies it to the working copy when it collects a passed run and keeps a failed or late run's under the result's outputs/. default_tests.py reads a run's list from there (the kept copy first, else the file when its first line names the job), so the gate uses the list of the latest passed run and older runs cover by the fixed list alone; the file itself is on that list. The two runs already collected with a packed line no longer have a list. Checked with the suite's new tests (the step writes the file and prints a count; a run finds its list applied or kept) and test_costs.py run --changed: 14 of 14 passed.",
@@ -1027,7 +1027,7 @@
     },
     {
       "change_id": "lzvyqmsyoprtmpqlursvnxwyllvkzoks",
-      "commit_id": null,
+      "commit_id": "db0890ff6fe8ca802f310d551bce31121686ebcc",
       "immutable": false,
       "summary": "Queue a default test run that writes its unread list as an output file (verification pending)",
       "body": "The job default_tests.py queue wrote at the commit before (its id is the new file under verification/jobs/) runs the default test run with verification/default-tests-unread.txt declared as its output: collecting it should apply that file to the working copy, with the job's id as its first line, and its log should carry a count and no packed line. Nobody waits for it.",
@@ -1035,7 +1035,7 @@
     },
     {
       "change_id": "qoktuvtvukrrtymwtsmnpxyuyksluuuw",
-      "commit_id": null,
+      "commit_id": "4758f75d7f49123ecc246c0dfb47698a11811c70",
       "immutable": false,
       "summary": null,
       "body": "",
@@ -1043,7 +1043,7 @@
     },
     {
       "change_id": "ztnvrpzluzrplkkllruukwnrxtpwypms",
-      "commit_id": null,
+      "commit_id": "cfdbda3d1cc21389423c5258bd919918e22440c0",
       "immutable": false,
       "summary": "Record verification results: the default test run at lmwqozysyszl passed",
       "body": "Job 20261117-010456-default-test-run-at-lmwqozysyszl passed. No outputs to apply. Collected by the unattended run-verification loop on vm-1.",
@@ -1051,7 +1051,7 @@
     },
     {
       "change_id": "yvnykxmprxmvnlspqprnoqoplwqymosz",
-      "commit_id": null,
+      "commit_id": "158d7b25fae562a628195814ca423092f497b54a",
       "immutable": false,
       "summary": "Record verification results: the default test run at xunroyyopkuq failed three Rust tests; VF-034 records it as closed by the passing run at lmwqozysyszl",
       "body": "Job 20261117-005759-default-test-run-at-xunroyyopkuq failed in 6m28s: application_core_joint j1_the_quote_family..., environment a_per_call_choice..., effects an_effect_proof_is_reused... failed twice (two concern a stored result answering a changed claim). The later run at lmwqozysyszl, a descendant, passed, so VF-034 is closed with the cause unknown. The earlier commit titled 'xunroyyopkuq passed' was written before this result was collected: that result was a different run's; this one is the failed one.",
@@ -1059,7 +1059,7 @@
     },
     {
       "change_id": "kpstymvouxqtmnsttmyuxzuxqkqnvqlr",
-      "commit_id": null,
+      "commit_id": "acf1501e41eeb2a297f17f515a40849fd5dedc50",
       "immutable": false,
       "summary": "Allow list: Filip Stankovic approved 2760c53e, 8db694e2, a4bdf7bf, c0b7a76e, fd843c30",
       "body": "Filip Stankovic approved 5 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\n2760c53e  long-token  008…an (79 chars): A scratch file name this session made up under /tmp/e290/recover: a counter, the tool's name and the path of a plan file with its slashes replaced by underscores (NNN-Write-_home_..._prove-change_plan). It is a file name, not a credential.\n8db694e2  long-token  005…an (79 chars): A scratch file name this session made up under /tmp/e290/recover: a counter, the tool's name and the path of a plan file with its slashes replaced by underscores (NNN-Write-_home_..._prove-change_plan). It is a file name, not a credential.\na4bdf7bf  long-token  009…an (79 chars): A scratch file name this session made up under /tmp/e290/recover: a counter, the tool's name and the path of a plan file with its slashes replaced by underscores (NNN-Write-_home_..._prove-change_plan). It is a file name, not a credential.\nc0b7a76e  long-token  004…an (79 chars): A scratch file name this session made up under /tmp/e290/recover: a counter, the tool's name and the path of a plan file with its slashes replaced by underscores (NNN-Write-_home_..._prove-change_plan). It is a file name, not a credential.\nfd843c30  long-token  eNr…XH (173 chars): A 'default tests: unread zlib:...' line from verification/default_tests.py: a zlib+base64 pack of the repository paths a default run left unread. The packs in the job logs unpack to 580-581 relative paths, all present in the checkout; the value is generated output, not a credential.",
@@ -1067,7 +1067,7 @@
     },
     {
       "change_id": "pnlwkqxtxlzsuvvoktmquroryvnkupmr",
-      "commit_id": null,
+      "commit_id": "4b2872491565d95b5747d4616ccbe94947c8965c",
       "immutable": false,
       "summary": "Record verification results: the seven proof-tier tests and the default test run at pqlvmnrruzsw passed",
       "body": "Two jobs collected. 20261113-013604 (the seven tests moved to the proof tier) passed in 7m29s. The default test run at pqlvmnrruzsw passed in 7m03s and its one output was applied. The first run of the runner was cut off by the tool's 10-minute limit while the default run was in progress; the job was returned to the queue and rerun cleanly. No verdicts, no new findings.",
@@ -1075,7 +1075,7 @@
     },
     {
       "change_id": "slquqtpylozmsxrqtqrqprxqqtsmmovy",
-      "commit_id": null,
+      "commit_id": "a50a1ec6cc5c47af0c14543c5856f806424677f0",
       "immutable": false,
       "summary": "Record verification results: the default test run at xunroyyopkuq passed",
       "body": "Job 20261117-005759-default-test-run-at-xunroyyopkuq passed. No outputs to apply. Collected by the unattended run-verification loop on vm-1.",
@@ -1083,7 +1083,7 @@
     },
     {
       "change_id": "kzwsnszxrwttokwmnsyzwolxyzwnzomx",
-      "commit_id": null,
+      "commit_id": "29b36eadf1f13d0aa8f7a4f786e95f96be77847a",
       "immutable": false,
       "summary": "Only one default test run runs at a time, and a job started again after a newer run finished is superseded",
       "body": "Two default-run jobs ran at once on 2026-11-17 (010456, and 005759 started a second time after it had passed): they share the warm cargo target directory and the tests' work folders under its tmp/, and eight Rust tests that pass alone failed in one run and passed on its retry, while the other's rerun failed. default_tests.py step now holds an exclusive lock (flock on ~/.cache/in-the-loop/default-tests.lock, beside the target directory) for the whole run and its bisect; a second step says it is waiting, waits, and asks the queue again once it has the lock.\n\nSuperseding looked only at jobs pending or running, and read a job's id only at the start of a status row. It now also counts a newer default run that has finished or been collected, so a passed job the runner starts again exits at once, finds the id anywhere in the row, and says in the log when the queue could not be read (it then runs, as before). Why the runner started a passed job again is not found: that is in pipeline.py's collecting, not here. Checked with three new tests (a held lock makes a second step wait and re-ask; a newer collected run; an unreadable queue), the 13 Python test files test_costs.py run --changed chose, and tests/tiers.rs.",
@@ -1091,7 +1091,7 @@
     },
     {
       "change_id": "qwmwmrxvwpsuoqtlpxnwrtxronutrusx",
-      "commit_id": null,
+      "commit_id": "3dcd1a2b285fe5e97304450409283de4bc53044f",
       "immutable": false,
       "summary": "The READMEs say when the default test run is worth its cost, and no longer how many minutes it takes",
       "body": "lib/README.md's Tests section and verification/README.md, by the user's direction: the default run is much more expensive than the tests of one change, so it is not for every commit. It is required before a release and before a push (the gate), worth queuing as a job once an example is done and after a merge, and while iterating and before a commit the tests of what changed are what to run. The measured minutes and seconds are gone from both pages (they are in the commits that measured them). CLAUDE.md, llm-dlc/runtime.md and the skill still state the earlier rule and a time: those are for the user to decide. Checked with test_costs.py run --changed.",
@@ -1099,7 +1099,7 @@
     },
     {
       "change_id": "wvvtwkospqkpqvllmlwnwlksxymmrwtq",
-      "commit_id": null,
+      "commit_id": "ea2e5c7efe8945a7d9b09c5f8ba19bf0a327416d",
       "immutable": false,
       "summary": "Seven expensive or solver-running tests move to the proof tier behind proxies, the preparation benchmark gets a proxy, and VF-035 records the Python files tagged unit that take minutes (verification pending)",
       "body": "By the user's decisions on 2026-11-17. Retiered as proof (#[ignore = cost:proof ...], each with what it runs, why a cheaper test can't show it, and proxies that run by default): observations.rs's Box Office examples comparison (26 s alone in the test-fast profile), application_core_joint.rs's J1 quote family (77 s), application_core.rs's E1 (56 s) and E2 (32 s), and integration.rs's own-checker-against-JBMC agreement (JBMC, 10 s) and its two TLC tests. The Rust half of the default run goes from 163 s to 79 s without them. Job 20261117-013604-the-seven-tests-moved-to-the-proof-tier runs the seven as the proof tier does, in release by exact name.\n\npreparation.rs's benchmark was on the proxy-none-yet list: its proxy is a new default test, one cold compare run of the fixture and its rerun under the ledger, asserting what the benchmark asserts of those two scenarios (the rerun proves nothing again and reaches the same verdicts as exact hits) and that the table's eleven stages are times inside the run; 4 s.\n\n56 tests stay retier-pending. Four of them measured cheap in the new profile (2 to 6 s, no solver) but the inventory's recorded times still say over 10 s; conformance.rs's corpus test took 34 s but is the proxy of two proof tests; the rest call JBMC by the inventory's reading, most of them in integration.rs, whose whole binary takes 23 s: whether they move, and with what proxies, is asked of the user. VF-035 in verification/findings.md records four Python test files tagged unit whose tests start processes the inventory doesn't see (258, 110, 47 and 16 s a file), to revisit. Checked with test_costs.py run --changed (the Rust binaries and the Python files it chose, all passed) and the lint.",
@@ -1107,7 +1107,7 @@
     },
     {
       "change_id": "yqxosmuoxuwsullpvzoqxrlwqntykoom",
-      "commit_id": null,
+      "commit_id": "c41ec887c6cf02f1acc09964f826fc3dcdfe1fbc",
       "immutable": false,
       "summary": "CLAUDE.md and runtime.md state the new rule for the default test run: the tests of a change before a commit, the whole run before a release and a push",
       "body": "By the user's decision on 2026-11-17, in line with the READMEs: before a commit an agent runs the tests of what it changed (test_costs.py run --changed, validate_example.py for an example's files), in every session and not only in a /prove-java-change run. The default run is required before a release and before anything is published, and worth queuing as a job once an example is done and after a merge; it may still be run inline. The stated 16 minutes is gone from both files. CLAUDE.md also says that the push gate counts the files a run left unread, and that the retier-pending tests stay in the default run by the user's decision the same day (most run JBMC in a few seconds and are its only real JBMC coverage). The skill states no per-commit rule and is unchanged. Checked with test_costs.py run --changed: 11 of 11 test files passed.",
@@ -1115,7 +1115,7 @@
     },
     {
       "change_id": "wvuulmqkqxvroxszmnrpmvomrpuouqoq",
-      "commit_id": null,
+      "commit_id": "03eab0eca429d380d307c293bad49dbcd75bc56b",
       "immutable": false,
       "summary": "VF-034 names its likely cause: two default runs at once in one cargo target directory",
       "body": "verification/findings.md: the three Rust failures of the default run at the prove-setup merge are each a test finding another run's work folders or proof cache under the shared target directory's tmp/, while a second default run ran beside it; the lock of change kzwsnszx keeps two from overlapping. The entry says the cause was not reproduced on purpose and that the runner starting a passed job again is still unexplained. This workspace's four commits were also rebased onto the main line's kpstymvo, with VF-035 placed above VF-034 and the trace files regenerated.",
@@ -1123,7 +1123,7 @@
     },
     {
       "change_id": "pvqrosuvxsnrvlkvxummmsryonuzzyst",
-      "commit_id": null,
+      "commit_id": "5f8a317e0a5f63bc55ab29a59fe63caad3ee8a38",
       "immutable": false,
       "summary": "Cutting a release requires a passed default test run for the commit it is cut on, as a push does",
       "body": "By the user's decision on 2026-11-17: release.py cut asks verification/default_tests.py gate --rev @- before it writes anything and refuses without a passed run covering that commit; --skip-tests REASON is for the user alone. The release commit changes only the plugin's and the marketplace's version and the pin, which the default run leaves unread (the last run's list names all three), so the run that allowed the cut also covers the push of the release. runtime.md's Releases section says so. Checked with three new unit tests (refused without a run, cut with one, the stated skip, nothing written before the gate) and the 10 Python test files test_costs.py run --changed chose.",
@@ -1131,7 +1131,7 @@
     },
     {
       "change_id": "rkmqvurpkynusyuuslzkkvwwuwzkuloq",
-      "commit_id": null,
+      "commit_id": "5e0e7d0d2da6f9a88dc5b22d134f478eaa6d41a3",
       "immutable": false,
       "summary": "The runner counts a result recorded on any head as done, so a passed job whose commit was left behind is not run again",
       "body": "Why job 20261117-005759 ran twice, from jj's operation log: its first pass was collected and committed in the default workspace at 01:06:45 (change slquqtpy), and in the same second a jj new lzvyqmsy there, the fast-forward to prove-setup's rebased commits, moved the working copy off that commit. The runner looks for results in its state folder and in the working copy, saw neither, and started the job again at 01:07:12. Nothing is wrong in collecting. Change slquqtpy is still a visible head with the result in it and is not on the main line: it needs merging there, by whoever owns that workspace.\n\npipeline.py: done_ids also counts every job whose result.json is in the tree of a visible head (jj's visible_heads(), git's branches outside jj; a commit's listing is read once), prints a note naming the commit, and status lists such a job under 'recorded on another head' and not as pending. default_tests.py's superseding reads that row too. VF-034 records the cause. Checked with a new test that reproduces it in a git repository (a result committed, the branch moved back, the job is not run a second time) and test_costs.py run --changed: 20 of 20 passed.",
@@ -1139,7 +1139,7 @@
     },
     {
       "change_id": "ksyktoyyrtynllmuntvwxtloswkuwzsz",
-      "commit_id": null,
+      "commit_id": "e1d891817acb63ccd765faa158a086984beddc9f",
       "immutable": false,
       "summary": "Merge prove-setup's last eight commits and the orphaned first result of 005759: one default run at a time, a re-run of a passed job prevented, a release gate, and seven tests moved to the proof tier",
       "body": "Brings the tests session's finished line (prove-setup, kzwsnszx through rkmqvurp): an exclusive lock so only one default test run runs at a time, superseding that also counts a newer finished run, the runner counting a result recorded on any head as done (so a passed job whose commit was left off the main line is not run again), cutting a release requiring a passed default run as a push does, seven expensive or solver-running tests moved to the proof tier behind proxies, CLAUDE.md and runtime.md stating the new rule for the default run, and VF-034 naming its likely cause (two default runs at once in one cargo target directory). Also merges slquqtpy, the verification loop's commit of job 20261117-005759's first run, which passed (8m32s) and was left off the main line when the watcher moved the main working copy while that commit was being made. The job's results directory and the results index keep the main line's record (the second run, which failed beside job 010456, and is what VF-034 is about); the first run's record stays in history through this merge's parent. The generated trace files are regenerated. Verified: the test-cost lint agrees, test_default_tests.py and test_pipeline.py pass on the merged tree, check reports 0 errors and 0 warnings.",
@@ -1147,7 +1147,7 @@
     },
     {
       "change_id": "wxqzmmswyzvyvqrxnllokunzstnmqtky",
-      "commit_id": null,
+      "commit_id": "1481c0cc044fbe21bc981af0136fa2233a929547",
       "immutable": false,
       "summary": "Queue the default test run at the merge of prove-setup's finished line (verification pending)",
       "body": "Job 20261117-015957-default-test-run-at-ksyktoyyrtyn: the first default run with the one-at-a-time lock, the release gate and the seven retiered tests all in. If it passes on its own, it is the clean run VF-034 needs, and it covers the main line's tip for a push.",
@@ -1155,7 +1155,7 @@
     },
     {
       "change_id": "xppmwwppknkylnltzvkvxsnplyoxvnko",
-      "commit_id": null,
+      "commit_id": "c5cd267103fe08eacbf1610f8ef59ae6a1b3a43c",
       "immutable": false,
       "summary": "/run-brief: a watcher runs a feature brief on command, with a foundation stage on Fable 5.2 before its streams",
       "body": "A brief of llm-dlc/loops/ was started by hand, and its run was known to run-streams.sh only through a list of five names in the script. A local skill, /run-brief (.claude/skills/run-brief, not part of the plugin), now runs any brief with a watcher session on Opus 5.5, as /prove-java-change runs a proof. Its tool is llm-dlc/tools/brief_run.py: a preflight that finds what run-streams.sh would stop at before anything starts and says what the verification runner may keep beside this many loops (budget --apply lowers verification/pipeline.local.toml for the run); a foundation stage, one Fable 5.2 session at high effort given the user's instruction to start the work itself, build the foundation it sees fit and update the brief for the agents that take over, in a workspace of its own so no other session's uncommitted files meet its commits; land, which brings its commits to the default line, moved forward or by a merge with the generated trace files regenerated, and takes back a merge that conflicts in real work; start, which runs run-streams.sh detached; and wait, which returns only what needs the watcher (a blocked loop, a failing integration check, an open decision, a missing verification loop, a summary every 30 minutes, the end).\n\nrun-streams.sh takes a brief by name or file and reads its streams from the brief's Loop settings (- streams: a, b); the five older briefs keep their lists, a brief with no streams runs as its own loop, --plan prints what was read, and a stream brief's fork is optional. With a watcher, a loop that ends blocked is put to it (conductor.py's new blocked question: rerun or leave, half an hour at most), so a decision reaches its stream during the run instead of after it; the verdict is a decision in the record. A stream waiting on jobs is checked every minute, not every five. The brief template gains the streams setting, how a brief is run, and an opt-in test policy (tests: queued: the default run as a job per commit instead of a wait before each next piece), which CLAUDE.md names as an exception for such a brief's own loops.\n\nVerified by llm-dlc/tools/test_brief_run.py (24 tests on a made-up jj repository with stand-ins for claude, feature-loop.sh and sync.py, including run-streams.sh end to end: a blocked stream run again at the watcher's word, one left without an answer, a brief with no streams, and a run started and watched by the tool) and by the default test run, 49 of 49 files. No brief has been run through it with real sessions. Not built from the user's plan (~/docs/01-feature-stream-plumbing-plan.md): the result collector in a workspace of its own, the submitted, released and accepted boundary, a submission boundary in feature-loop.sh, routing inside wait, early merge and a headless watcher. The work is in the jj workspace run-brief, beside the default line, which a proof run is using.",
@@ -1163,7 +1163,7 @@
     },
     {
       "change_id": "ykpxlwxnyzzuqtpolzyltpxoktsrupzx",
-      "commit_id": null,
+      "commit_id": "0487cd773257bcd389c0154ae90d8a86ec0620b7",
       "immutable": false,
       "summary": "/run-brief: an open Opus session becomes the watcher or takes a run over, and the preflight sees a loop at work and loops sharing a session",
       "body": "The user wants to start a brief's run from a session that is already open, which then is the watcher. The skill says so: any Opus 5.5 session of the default workspace can be asked in words, the run's state is all in files, and a new section, A run under way, has the watcher read brief_run.py status first and either go straight to waiting (a run it takes over), continue an interrupted run, or start a new one.\n\nTwo gaps in the preflight, found by checking it against the proof run under way: feature-loop.sh runs from a private copy of itself, so looking for prove-loop.sh by name missed a running proof loop, and the preflight now blocks on any feature loop at work in the default workspace; and a brief without a session setting falls back on the loops' one default session, so each brief of the run must name a session and no two the same.\n\nVerified by test_brief_run.py, 26 tests, and the cost-tier lint. The whole default run was not repeated: it passed 49 of 49 on the commit before, and only brief_run.py, its tests, the skill and the README changed since.",
@@ -1171,7 +1171,7 @@
     },
     {
       "change_id": "mrwsuwkprqyzyvprlklntoruumltnrku",
-      "commit_id": null,
+      "commit_id": "ca823d3cfce03622d080090cbf2757af0035251a",
       "immutable": false,
       "summary": "Merge the default line into run-brief: the queued test policy for briefs follows the line's default-run job",
       "body": "The default line moved on while /run-brief was built beside it: the default test run became a verification job nobody waits for (verification/default_tests.py), tests of a change are chosen from what changed, and sync.py takes a workspace's missing logs from the one that stores them. Only CLAUDE.md conflicted, in the Tests section: the line's text is kept, and the sentence for a brief that says tests: queued is restated in the line's terms (run --changed before a commit, default_tests.py queue once a piece of work is done), as is the brief template's Test policy.\n\nVerified by the tests of what the merge touched on this side (test_brief_run, test_conductor, test_watch, test_inbox, test_integration), the cost-tier lint, and sync.py regenerate, after which the check reports no error: the 58 missing-log errors of the earlier commits here are gone, the logs taken from the default workspace.",
@@ -1179,7 +1179,7 @@
     },
     {
       "change_id": "pqlvmnrruzswypktxpxnxvstukswosuu",
-      "commit_id": null,
+      "commit_id": "574a3e6198dc0e906c5bc5c7fae696ec38e2d347",
       "immutable": false,
       "summary": "/run-brief: a commit takes only its own files, a run stops at a boundary, the foundation's report reaches each stream's inbox, and a summary says where the time went",
       "body": "Four additions the user chose before the first run of a brief through its watcher. (1) sync.py commit --only PATH ... commits the named files and folders alone: every other file changed in the working copy is set aside in a change below, and put back uncommitted after the commit, so the files on disk never change. The result collector commits with the paths pipeline.py commit-paths names (verification/, the examples table, the outputs it applied), and the loops' instruction names --only in place of a procedure to follow by hand; on 2026-11-16 a commit of results took a watcher's unfinished merge with it. A collector in a workspace of its own was the plan's wording and is not what this does: every reader of results reads them on the default line, so its commits would have to be landed there one by one, which brings the shared working copy back. (2) brief_run.py stop NAME stops a run at a boundary: run-streams.sh gives each loop a directory for command lines, each running loop is told to end after its cycle, a loop waiting on jobs stops waiting, nothing is run again and the merge is not started; start continues, and stop --now interrupts as before. (3) Landing the foundation puts its closing report into each stream's inbox as an item of a new kind, foundation, which the stream acknowledges. (4) run-streams.sh logs each change of a loop's phase with its time, and a summary says per loop how long it worked, waited on jobs, was blocked, and sat finished while another stream still ran.\n\nVerified by test_commit_only.py on a real jj repository (the named paths committed, a modified, an added and a nested file of another session left uncommitted with their contents), test_brief_run.py (28 tests: a run stopped while a stream waits on jobs, then continued to its merge; the hand-off sent once; the time lines), and test_costs.py run --changed, 26 of 27 files, the one failure an assertion of mine on the order two parallel streams start in, since fixed and run three times. Telling a real loop to end after its cycle is the command path the proof loop's watcher already uses, and is not exercised here with a real session. The working copy went stale during this work and was restored from a backup, compared against jj's own snapshot.",
@@ -1187,7 +1187,7 @@
     },
     {
       "change_id": "smplsyrurprllqlnxpxwwqovwyqykoow",
-      "commit_id": null,
+      "commit_id": "3ef0f8a92a4e8c5d6ca2c19db49e3fb6bafbe20f",
       "immutable": false,
       "summary": "Queue a default test run at run-brief's four additions (verification pending)",
       "body": "The job README.md runs the default test run at the commit that added commit --only, the boundary stop, the foundation hand-off and the time lines to /run-brief. Nobody waits for it.",
@@ -1195,7 +1195,7 @@
     },
     {
       "change_id": "zvqqklkpkzkyoplnrlvluxytynrotqrr",
-      "commit_id": null,
+      "commit_id": "7547586d9884373e19bd3faf29f6b5e13e581eee",
       "immutable": false,
       "summary": "A workspace a brief's run makes takes the session logs it lacks",
       "body": "A new jj workspace has none of the session logs the default workspace stores and has not uploaded, and the check after every commit there reported each as an error (58 of them in the run-brief workspace itself), which a foundation or stream session would have tried to fix. run-streams.sh, for a stream's workspace and the integration check's, and brief_run.py, for the foundation's, now run sync.py adopt-logs in a workspace they have just made.\n\nVerified by test_brief_run.py, 28 tests, whose stand-in for sync.py records that the foundation's new workspace asked for the logs; in the run-brief workspace itself adopt-logs took the check from 58 errors to none.",
@@ -1203,7 +1203,7 @@
     },
     {
       "change_id": "sttksmqyyznxswskslkumkrnnlwmssyo",
-      "commit_id": null,
+      "commit_id": "21063bfffdd50be398ca01f5fa7f45fdd9b43052",
       "immutable": false,
       "summary": "/run-brief: the gaps the user settled before its first run, a tool for a stale workspace, and a throwaway brief to rehearse with",
       "body": "The user went through ten gaps of /run-brief one by one. What they chose is built here. A workspace jj calls stale is put right by llm-dlc/tools/unstale.py, which CLAUDE.md now names: it saves the files changed since jj last looked, runs jj workspace update-stale, takes the edits back from the second copy of the working-copy change that jj leaves (only the files that copy changed), and abandons the copy; a second copy without staleness, which two operations at once also leave, is abandoned when the working copy holds all it has. While the foundation session runs, brief_run.py wait tells the watcher at each interval how long it has run, its tool calls, the command under way and its last commit; no cap was wanted. A loop that ends blocked is run again at the watcher's word twice at most in a run (RUN_STREAMS_RERUNS), then left without a question. Landing the foundation by a merge puts back, uncommitted, whatever another session wrote into the working copy while the merge was made. The foundation's spend is in the summary and its total, and brief_run.py verification start|stop records the verification loop with the brief's run, so the watcher can stop the one it started. Left as they are, by the user's choice: the wait of 30 minutes for an answer about a blocked loop, and a runner that keeps its budget until its run ends (they plan to rework the pipeline). The collector keeps commit --only in place of a workspace of its own.\n\nllm-dlc/loops/rehearsal.md with its streams a and b is a brief that builds nothing kept: two notes in a shared format, the second of which needs a word only the watcher can pass on, so stream b stops blocked on purpose. The user starts it from their watcher session before the first real brief.\n\nVerified by test_unstale.py (5 tests on a real jj repository with two workspaces whose operations are made to meet; a truly stale working copy could not be produced on demand with this jj, so the restore is tested from the state update-stale leaves), test_brief_run.py (31 tests, with the rerun limit, the foundation's progress, the landing clean-up and the spend), and test_costs.py run --changed, 14 of 14 files. The workspace is not merged into the default line: the user said not yet.",
@@ -1211,7 +1211,7 @@
     },
     {
       "change_id": "ksuoxmnkptomlwrnytzrxlqtwuplrluv",
-      "commit_id": null,
+      "commit_id": "b85ff5797ab551df303b9661da432c38a8a19a8d",
       "immutable": false,
       "summary": "Queue a default test run at run-brief's gap fixes (verification pending)",
       "body": "The job 20261117-020349-default-test-run-at-sttksmqyyznx runs the default test run at the commit that added unstale.py, the rerun limit, the foundation's progress and the landing clean-up to /run-brief. Nobody waits for it.",
@@ -1235,7 +1235,7 @@
       "bytes": 17578519,
       "lines": 6250,
       "gzip_bytes": 2961249,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/324460a5ab60e82b3c555bb2ed2d16f6846b70dfc4cc635b2b4bd5a7bcce4a12.jsonl.gz"
     },
     "48082da1b4999ef439c5f0c8cdaf2bec7f5e78d35060517f202b76dd41b16223": {
       "bytes": 15247318,
@@ -1247,7 +1247,7 @@
       "bytes": 19541596,
       "lines": 6891,
       "gzip_bytes": 3320687,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/54484e301ac54ca0b28a0110745533d1ba67f15ef5f2d63c0e7f672a87d33548.jsonl.gz"
     },
     "641542547e13a66af6e338dd94824418f04823787ec3b86064c665195f8f50fd": {
       "bytes": 17567538,
@@ -1259,7 +1259,7 @@
       "bytes": 20063213,
       "lines": 7144,
       "gzip_bytes": 3385478,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/650c6e49bf29c02494f89623df007a8a5b8ad4db6e158c1a1f6de80dcf8ec89a.jsonl.gz"
     },
     "69122164fc60d1f4d14976b6e06c75b3d6bb8327001c8e86bc2b1255e7d0245d": {
       "bytes": 7689234,
@@ -1289,7 +1289,7 @@
       "bytes": 19081848,
       "lines": 6636,
       "gzip_bytes": 3257757,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/8f67207ab7e9931d094e7f5b014781811031dbbd8e78f54a54a673e6c17d5d98.jsonl.gz"
     },
     "986ad63f61154b7ab86b683fd98ffa05530771e10c5aceed1687e68174c485ea": {
       "bytes": 1378728,
@@ -1307,7 +1307,7 @@
       "bytes": 20295771,
       "lines": 7247,
       "gzip_bytes": 3416105,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/9fb0125cfbee1225a5429c009839ff7b128ba89a788844e670010dbc783fc186.jsonl.gz"
     },
     "a15b6a2f3e3ddc0757a5cd4e5051a6c1d96c77f95d0fda1e2507e21ef14722ec": {
       "bytes": 13904508,
@@ -1325,7 +1325,7 @@
       "bytes": 19218644,
       "lines": 6721,
       "gzip_bytes": 3275416,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/a50e7c636c07b9b4f8643a8a77ec629924163226ae16251aee8ee603421a3e5c.jsonl.gz"
     },
     "a6acf0d0026c78336987a2cf87fe4c8bc18ef663cf57a3213caa730d61ff092c": {
       "bytes": 11707352,
@@ -1337,7 +1337,7 @@
       "bytes": 20215415,
       "lines": 7211,
       "gzip_bytes": 3404108,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/a814a49bd6ed8f2a657d70d814f58f5a489e0530aa5039adca537aa140949ce9.jsonl.gz"
     },
     "a827ea1c65cfab13623015e3f968e9e59e50cb05a75c28cf44f108c0fcd91572": {
       "bytes": 17339556,
@@ -1385,19 +1385,19 @@
       "bytes": 19171685,
       "lines": 6689,
       "gzip_bytes": 3268255,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/e2ed028c608343e9aeedef683a4df41a6503e9491a1d113a7f8531bb94c67455.jsonl.gz"
     },
     "ecc1eb3d68bde95235d6693d63840fed64f2cdc40060c431705ef1afb5210b49": {
       "bytes": 19330425,
       "lines": 6784,
       "gzip_bytes": 3291398,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/ecc1eb3d68bde95235d6693d63840fed64f2cdc40060c431705ef1afb5210b49.jsonl.gz"
     },
     "fa64e2e8a004344cfbffc44ce8bf23c177248204cb7f7a39c3ae9639872cb803": {
       "bytes": 19122186,
       "lines": 6661,
       "gzip_bytes": 3262527,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/fa64e2e8a004344cfbffc44ce8bf23c177248204cb7f7a39c3ae9639872cb803.jsonl.gz"
     },
     "ffcc994ed8c0f63567129aca8b4f4d2bb70c750d96908d01b0a4edb469dfc5e4": {
       "bytes": 11683035,

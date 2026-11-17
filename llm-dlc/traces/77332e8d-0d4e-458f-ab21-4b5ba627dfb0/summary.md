@@ -20,11 +20,17 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Example 288 (CVE-2024-38820) set up from its catalog entry: locale-table decision claim and preservation frozen, replays pass
 
-change `pruvstkqurrs` · [log `548bd50f5647`](https://terminalvalue.net/raw-traces/77332e8d-0d4e-458f-ab21-4b5ba627dfb0/548bd50f56473815b2d0aa03d6de68012a5514bc67c01f8ac9b08a58a156cba6.jsonl.gz)
+[`21b8a920222f`](https://github.com/pilifs/in-the-loop/commit/21b8a920222f78688034440ac837e1c013f03c84) · [log `548bd50f5647`](https://terminalvalue.net/raw-traces/77332e8d-0d4e-458f-ab21-4b5ba627dfb0/548bd50f56473815b2d0aa03d6de68012a5514bc67c01f8ac9b08a58a156cba6.jsonl.gz)
 
 Example 288 was a catalog entry (revisions pinned, no tasks). It is now a deep negative packet, prepared as llm-dlc/runtime.md's catalog entry brief asks, with example 286 (CVE-2022-22968, the fix this one corrects) as the model. The release pair is Spring Framework 6.1.13 -> 6.1.14, from published JARs. Each release's DataBinder.java is the exact-fix pair's blob (c7af62b5, 98157756). Every other class the decision and the bind reach is byte-identical in the two closures. sources.lock.json records the tags, blobs, ancestry, JAR hashes against Maven Central, and a hand sweep of every JDK 21/25 locale: only tr and az lowercase an ASCII letter apart from the root locale, and only I.
 
 There are two claims and six tasks. The decision claim is 286's assertion and ASCII domain, with the default locale as two int inputs indexing a table (root, en-US, tr-TR, az-AZ, lt-LT): one locale while the binder is configured, one while it decides. It says a field a disallowed pattern matches ignoring ASCII case is denied. It is expected refuted on 6.1.13, established on 6.1.14, and refuted on a mutant that lowercases the field in the default locale again. Preservation: outside the locale-dependent aliases (a capital I in the field decided under tr/az, or in a pattern configured under them), both releases decide alike. The controls are adapters, a driver, 36 probes and an independent oracle with a self-test.
+
+### Record session traces
+
+change `qkzwyzzpwtlo` · [log `777e10cc789d`](https://terminalvalue.net/raw-traces/77332e8d-0d4e-458f-ab21-4b5ba627dfb0/777e10cc789d4a6a0002070a7621f8a3365c9dcd97cacfbd3998ae076f3145bc.jsonl.gz)
+
+Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 
 ## Conversation
 

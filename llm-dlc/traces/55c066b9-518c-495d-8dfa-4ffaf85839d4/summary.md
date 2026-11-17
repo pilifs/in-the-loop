@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Example 290: a library initializer the checker does not run is observed on a JVM, registrations are a LinkedHashMap in order and classes are found by name, and fixed-security is queued through the adapter entry (verification pending)
 
-change `optkyymtxunx` · [log `38132afa1c05`](https://terminalvalue.net/raw-traces/55c066b9-518c-495d-8dfa-4ffaf85839d4/38132afa1c05cd86b56c5a33c3c4abde341eedc281aaab7a43c71b6f9c0d0faf.jsonl.gz)
+[`df8df449d2dd`](https://github.com/pilifs/in-the-loop/commit/df8df449d2ddb625cbd0ee6bee642289684d629b) · [log `38132afa1c05`](https://terminalvalue.net/raw-traces/55c066b9-518c-495d-8dfa-4ffaf85839d4/38132afa1c05cd86b56c5a33c3c4abde341eedc281aaab7a43c71b6f9c0d0faf.jsonl.gz)
 
 Example 290 (CVE-2023-34035, Spring Security 5.8.4 to 5.8.5: requestMatchers(String...) chooses a matcher type by the servlet context's registrations) gets its proof script, proofs/prove.py, which passes the frozen claims to jvmcontract through the adapter entry on the releases' own bytecode, beside the route, and proofs/predicates.py, which shows that the claims' expressions as javac compiles them agree with the oracle on the 27 select probes. An inline probe established fixed-security at the frozen bound of 8 in 6.9 s (659 paths). It is queued as job 20261116-225709-example-290-fixed-security-through-the-a. The two refutations and preservation are not decided: target.json's handoff says where each stops (Collections.emptyMap, Arrays.asList, ArrayList's addAll and toArray; then the matchers' constructors).
 
@@ -32,13 +32,13 @@ Verified by: lib/tests/claims.rs, two new tests over the new fixtures claims.M, 
 
 ### Record verification results: example 290 fixed-security passed; the default test run failed one test (VF-032)
 
-change `pptopklkymsm` · [log `bb3bd0f26038`](https://terminalvalue.net/raw-traces/55c066b9-518c-495d-8dfa-4ffaf85839d4/bb3bd0f26038c1c3e07efc878459e080a0a998c3549ae46e5eafd80e3774a7dd.jsonl.gz)
+[`f19e6185b349`](https://github.com/pilifs/in-the-loop/commit/f19e6185b3493bbcac31a3d3207000214b332129) · [log `bb3bd0f26038`](https://terminalvalue.net/raw-traces/55c066b9-518c-495d-8dfa-4ffaf85839d4/bb3bd0f26038c1c3e07efc878459e080a0a998c3549ae46e5eafd80e3774a7dd.jsonl.gz)
 
 Job 20261116-225709 (example 290 fixed-security through the adapter entry) passed in 9.8s, jvmcontract holds; its 3 outputs applied. Job 20261116-224337 (default test run at 76862913606e) failed 1 of 49 files: test_runtime.py sees JVMCONTRACT_JBMC_MEMORY_MB passed through to the verifier; recorded as VF-032 for the targets owner. No result edited.
 
 ### Example 290: fixed-security is established beside the route at the frozen bound, mutant-security is queued after its probe refuted it, and the page says where the other two stand (verification pending)
 
-change `mqoqmvttwklv` · [log `2f971df7ac4c`](https://terminalvalue.net/raw-traces/55c066b9-518c-495d-8dfa-4ffaf85839d4/2f971df7ac4c1294316d2da746f2c6dbba5c4fe18af99cff50d91243509d2c8a.jsonl.gz)
+[`7a411e39daba`](https://github.com/pilifs/in-the-loop/commit/7a411e39dabab7180f8873e2277c8015c0b245f0) · [log `2f971df7ac4c`](https://terminalvalue.net/raw-traces/55c066b9-518c-495d-8dfa-4ffaf85839d4/2f971df7ac4c1294316d2da746f2c6dbba5c4fe18af99cff50d91243509d2c8a.jsonl.gz)
 
 Example 290 (CVE-2023-34035, Spring Security 5.8.4 to 5.8.5). Job 20261116-225709-example-290-fixed-security-through-the-a passed: the frozen security claim is established on 5.8.5 at the bound of 8, through the adapter entry, in 6.9 s (659 paths, 8,509 variables, 131 MiB). target.json records it as the task's besideRoute answer; changes.py still lists the example as to prove, since three tasks are open. The verdict rests on three library initializers observed on a JVM in place of run by the checker (Spring's ClassUtils, the servlet API's GenericServlet and HttpServlet), which the outcome states and the page explains: weaker evidence than an initializer the checker ran, and said so.
 
@@ -48,13 +48,13 @@ vulnerable-security has no verdict: the checker stops, by name, at new ArrayList
 
 ### sync.py regenerate takes the merged sessions' logs from the workspace that stores them, checked against their names
 
-change `splrunltklut` · [log `2f971df7ac4c`](https://terminalvalue.net/raw-traces/55c066b9-518c-495d-8dfa-4ffaf85839d4/2f971df7ac4c1294316d2da746f2c6dbba5c4fe18af99cff50d91243509d2c8a.jsonl.gz)
+[`306fa30cca68`](https://github.com/pilifs/in-the-loop/commit/306fa30cca6825eb73afaab4991d8bf03a744f8b) · [log `2f971df7ac4c`](https://terminalvalue.net/raw-traces/55c066b9-518c-495d-8dfa-4ffaf85839d4/2f971df7ac4c1294316d2da746f2c6dbba5c4fe18af99cff50d91243509d2c8a.jsonl.gz)
 
 Merging a workspace's line brought commits whose sessions' log snapshots were stored only in that workspace, so the merged checkout's check reported each as neither stored locally nor uploaded; the user copied them by hand twice today. sync.py adopt-logs, which regenerate now runs after every merge, finds each log a manifest names that is neither here nor uploaded, reads it from the repository's other workspaces, and keeps a copy only when the sha256 of its uncompressed content is the log's name: nothing is taken on trust, and nothing already here is touched. runtime.md's merge between examples says so. Also: the default-run job asks for 4G, the committed runner's per-job limit, instead of 6G. Verified: test_workspaces.py (12, 1 new: a real merge of two jj workspaces, one log taken, one copy that is not its log left), test_default_tests.py pass; the lint agrees; run in this workspace it took the five logs of session a6490df0 from the default workspace.
 
 ### The tests of a change are chosen from what it changed, the default run runs Rust beside Python and retries what fails once, and a failing default-run job traces each failure to its commit
 
-change `ypmumtnpltsm` · [log `2f971df7ac4c`](https://terminalvalue.net/raw-traces/55c066b9-518c-495d-8dfa-4ffaf85839d4/2f971df7ac4c1294316d2da746f2c6dbba5c4fe18af99cff50d91243509d2c8a.jsonl.gz)
+[`ff15c4a954e0`](https://github.com/pilifs/in-the-loop/commit/ff15c4a954e052c1dee53443d3aa275e4d470eb3) · [log `2f971df7ac4c`](https://terminalvalue.net/raw-traces/55c066b9-518c-495d-8dfa-4ffaf85839d4/2f971df7ac4c1294316d2da746f2c6dbba5c4fe18af99cff50d91243509d2c8a.jsonl.gz)
 
 Four ways to make the default test run (about 16 minutes) less of a bottleneck. test_costs.py run --changed (--from REV for a line of commits) chooses statically from jj diff: a Python test file runs when it changed, when a module it imports transitively changed, or when its code, or a module it imports directly, names a changed file in a string (docstrings and records every module names, such as the trace index, job results and the inventory, don't count); cargo test runs when lib/ changed outside its Python tools and pages, only the changed binaries when only lib/tests/*.rs changed. run now starts cargo test beside the Python files (--serial for the old order), so the wall time is the longer half, not the sum. What fails is run once more, a Python file whole and Rust's failed tests by name; what passes then is reported FLAKY, counted as passed and named in the tally. The default-run job (verification/default_tests.py) streams its output, and on a failure halves the first-parent commits since the last passed run for each failing test, within 20 minutes, printing 'default tests: culprit TEST: COMMIT'; the watcher's default-tests event carries the culprits and the flaky tests. CLAUDE.md, runtime.md and lib/README.md say so. Verified: test_test_costs.py (18, 2 new: a stand-in cargo on PATH started before the first Python file ended, a flake in each language), test_default_tests.py (9, 2 new: flaky read from the tally, a culprit found in log2 steps), and the 17 Python test files that run --changed chose for this change all pass; the lint agrees.
 

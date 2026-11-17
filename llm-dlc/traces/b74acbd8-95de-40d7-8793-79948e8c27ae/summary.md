@@ -20,37 +20,37 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record verification results: two default test runs passed (ksyktoyyrtyn, sttksmqyyznx)
 
-change `xmkxynyvkrop` · [log `feb1181ae1ed`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/feb1181ae1ed5ed3aa4ec53f4fd0ed0d42ba14aebb4e9f5636905e9649fdf40b.jsonl.gz)
+[`30b08444057a`](https://github.com/pilifs/in-the-loop/commit/30b08444057ae985033b17619d9005d4870f3db4) · [log `feb1181ae1ed`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/feb1181ae1ed5ed3aa4ec53f4fd0ed0d42ba14aebb4e9f5636905e9649fdf40b.jsonl.gz)
 
 Both default runs (unit and tool tiers) passed. The first's output, the unread-files list, was applied; the second's differs from the file the first changed, so it is kept under its result's outputs and not applied. It is not resubmitted: a rerun would only queue another default run. The second was first cancelled when this session's runner hit its background time limit and was run again in full.
 
 ### VF-034 is closed by the user's decision: two default runs in one cargo target directory, fixed by the lock, and not worth pursuing before pipeline jobs are refactored
 
-change `omnplrmzrpwy` · [log `608f2d4e4c2a`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/608f2d4e4c2abb5e5b99981e900ba19111998b2b05dea6ee1de0f3689e599799.jsonl.gz)
+[`b4e78527ccba`](https://github.com/pilifs/in-the-loop/commit/b4e78527ccba288ef6aa32de0b24cea0c61aa5c1) · [log `608f2d4e4c2a`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/608f2d4e4c2abb5e5b99981e900ba19111998b2b05dea6ee1de0f3689e599799.jsonl.gz)
 
 The user's decision on 2026-11-17: VF-034 (the default run at the prove-setup merge failing three Rust tests, twice) is closed. Its likely cause is two default runs at once sharing one warm cargo target directory, whose tmp/ holds the tests' work folders and proof caches; since kzwsnszx a run holds a lock, and the run at the merge of prove-setup's finished line (job 20261117-015957, at ksyktoyyrtyn) passed 49 of 49. The entry also says why the passed job was run again (its result commit was left off the main line by a jj new in the same second, since merged as part of ksyktoyy) and lists the sharp edges left for the refactoring of how the pipeline handles jobs, which the user plans, rather than for fixes now. It moves from Open to Decided and closed.
 
 ### The user's review of the watcher's last two answers to the run of 288-290
 
-change `qymxztlpqwul` · [log `608f2d4e4c2a`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/608f2d4e4c2abb5e5b99981e900ba19111998b2b05dea6ee1de0f3689e599799.jsonl.gz)
+[`1817ff40c15d`](https://github.com/pilifs/in-the-loop/commit/1817ff40c15de161b45561559626091fabda0891) · [log `608f2d4e4c2a`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/608f2d4e4c2abb5e5b99981e900ba19111998b2b05dea6ee1de0f3689e599799.jsonl.gz)
 
 Accepted D010 (290 finished; the proof-tier rerun it waited on passed) and D011 (stop after 290, as the user asked; 288 left for a later run, VF-031). No answer of the run is left unreviewed.
 
 ### Merge run-brief: the /run-brief skill's watcher, foundation stage and gap fixes, with its queued test policy for briefs
 
-change `omnttzkzonux` · [log `608f2d4e4c2a`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/608f2d4e4c2abb5e5b99981e900ba19111998b2b05dea6ee1de0f3689e599799.jsonl.gz)
+[`62993bc05c7a`](https://github.com/pilifs/in-the-loop/commit/62993bc05c7a30013ddb5dcf6ba1360cea9f9e82) · [log `608f2d4e4c2a`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/608f2d4e4c2abb5e5b99981e900ba19111998b2b05dea6ee1de0f3689e599799.jsonl.gz)
 
 Brings the run-brief line (xppmwwpp through ksuoxmnk): an open Opus session becomes a brief's watcher or takes a run over, a feature brief runs on command with a foundation stage on Fable 5.2 before its streams, a commit takes only its own files, a run stops at a boundary, the foundation's report reaches each stream's inbox, a workspace a brief's run makes takes the session logs it lacks, the gaps the user settled before its first run, a tool for a stale workspace, and a throwaway brief to rehearse with. Conflict: CLAUDE.md's Tests section keeps the main line's three bullets (the every-session rule from the tests session) and adds run-brief's bullet for briefs whose Loop settings say tests: queued; the generated trace files are regenerated. Verified: test_costs.py run --changed from the main line's previous tip chose cargo test and 28 Python files for the 26 changed files, and all 29 passed (2m15s). run-brief's own default run at sttksmqy passed; one is queued at this merge for the push gate.
 
 ### Queue the default test run at the merge of run-brief (verification pending)
 
-change `ssorlrotqlup` · [log `608f2d4e4c2a`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/608f2d4e4c2abb5e5b99981e900ba19111998b2b05dea6ee1de0f3689e599799.jsonl.gz)
+[`69e10c0b0646`](https://github.com/pilifs/in-the-loop/commit/69e10c0b0646130bd93cf1ac3b8350f723962c35) · [log `608f2d4e4c2a`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/608f2d4e4c2abb5e5b99981e900ba19111998b2b05dea6ee1de0f3689e599799.jsonl.gz)
 
 Job 20261117-022611-default-test-run-at-omnttzkzonux: the default run at the merge of run-brief into the main line, which the push gate requires before the push the user asked for.
 
 ### Record the default test run at the merge of run-brief: passed
 
-change `wvxxwsnmwwsp` · [log `48074e58fe44`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/48074e58fe44eae3d6ca9c8289c248bcc0efb3cf857f749cc3ffb71ecce975a9.jsonl.gz)
+[`4184655789f6`](https://github.com/pilifs/in-the-loop/commit/4184655789f640cf0980e01ce2a484a3891935eb) · [log `48074e58fe44`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/48074e58fe44eae3d6ca9c8289c248bcc0efb3cf857f749cc3ffb71ecce975a9.jsonl.gz)
 
 Job 20261117-022611-default-test-run-at-omnttzkzonux (commit 62993bc0) passed in 6m23s, peak 6.0 GiB (estimated 12m, 4 GiB), on vm-1. Collected with one output applied; no findings added or changed.
 

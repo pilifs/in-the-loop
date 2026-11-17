@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Example 288 repaired: each proof task records its adapter invocation, the preservation claim states agreement only, and the oracle's canonical form is Spring's
 
-change `pvnkwqntllpq` · [log `8b0cbb12fb99`](https://terminalvalue.net/raw-traces/722674dd-f1af-42c9-a55d-4febdb90b0f1/8b0cbb12fb991e56755cb8137c4e6df5210a60d4ce49d5df8db105cefb0ab5f0.jsonl.gz)
+[`468f61451763`](https://github.com/pilifs/in-the-loop/commit/468f614517638b586727b7f3b30566fe3836ebe1) · [log `8b0cbb12fb99`](https://terminalvalue.net/raw-traces/722674dd-f1af-42c9-a55d-4febdb90b0f1/8b0cbb12fb991e56755cb8137c4e6df5210a60d4ce49d5df8db105cefb0ab5f0.jsonl.gz)
 
 The repair's brief (llm-dlc/runtime.md) for example 288 (CVE-2024-38820), as stage 2's plan for this /prove-java-change run asked. watch.py preflight listed 288 in toClassify, since none of its four proof tasks recorded how it is invoked. Each now records it as adapter (target.json, invocation). The route plans every task, but it enters DataBinder#isAllowed(String), and the claims' expressions name the adapter's parameters, so they can't compile there. LocaleDecisionAdapter#allowed was compiled against each revision's pinned closure and ran on the 31 decide probes on 6.1.13, 6.1.14 and the mutant, on JDK 21 and 25. There is no proof script of the example's own yet; the proof loop writes one, as example 286's proofs/prove.py does.
 
@@ -30,7 +30,7 @@ controls/oracle.py's canonical() was a regular expression needing two quote char
 
 ### validate_example.py regenerates the router after the replays, not before
 
-change `lwvsvznoxkry` · [log `503c8de63051`](https://terminalvalue.net/raw-traces/722674dd-f1af-42c9-a55d-4febdb90b0f1/503c8de630511427d19ba1f744bc7fb7a6b6b6fc2b53a2917d96ae583f352b00.jsonl.gz)
+[`fc9c54fcedd8`](https://github.com/pilifs/in-the-loop/commit/fc9c54fcedd875cb41ed5a4f0790b2cf5f3c9d7c) · [log `503c8de63051`](https://terminalvalue.net/raw-traces/722674dd-f1af-42c9-a55d-4febdb90b0f1/503c8de630511427d19ba1f744bc7fb7a6b6b6fc2b53a2917d96ae583f352b00.jsonl.gz)
 
 The repair of example 288 found that validate_example.py --replay regenerated examples/index.json first and then ran the replays, whose new receipts left the index stale for the tests that read it. The router step now comes after every step that can write receipts and before the tests. Verified: validate_example.py 288 passes.
 
