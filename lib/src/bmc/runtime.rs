@@ -6,9 +6,10 @@
 //! class path and the JDK, which the engine has: each is modelled where the answer is one, under an assumption the
 //! run states ([`CLASS_PATH_ASSUMPTION`]), and stays the JDK call it was elsewhere.
 //!
-//! - `Object.getClass()` of an object of an application class that the run made with `new`: that class's literal,
-//!   the one object a class literal of it is (JLS §15.8.2). Of any other object (an array, a lambda's, a JDK
-//!   class's) it is the JDK call it was.
+//! - `Object.getClass()` of an object of an application class that the run made with `new`, or of a `Throwable`
+//!   the run made (with `new`, or the engine for the JVM or a model of a JDK method, as `athrow`'s handlers already
+//!   take it): that class's literal, the one object a class literal of it is (JLS §15.8.2). Of any other object (an
+//!   array, a lambda's, a JDK class's) it is the JDK call it was.
 //! - `Class.getName()` of a class literal: the class's binary name, the interned String (the JVM interns it).
 //! - `Class.getClassLoader()` of the literal of a class of the check's class path: the one loader object of the
 //!   run; of a JDK class, the JDK call it was.
@@ -141,7 +142,10 @@ impl Engine<'_> {
     pub(super) fn class_method(&mut self, path: &mut Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Option<Step> {
         if (name, descriptor) == ("getClass", "()Ljava/lang/Class;") {
             let class = path.objects[o].class.clone();
-            if class.starts_with('[') || path.objects[o].lambda.is_some() || !self.cp.is_application(&class) {
+            // A Throwable the run made (with `new`, or the engine for the JVM or a model) is of the class it was
+            // made as, whoever made it: a handler already takes it for that class.
+            let made_throwable = !path.objects[o].given && class.contains('/') && self.cp.loads(&class) && self.cp.is_subtype(&class, "java/lang/Throwable");
+            if class.starts_with('[') || path.objects[o].lambda.is_some() || !(self.cp.is_application(&class) || made_throwable) {
                 return None;
             }
             let literal = self.literal(path, Literal::Class(class), CLASS);

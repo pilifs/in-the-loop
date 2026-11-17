@@ -4188,6 +4188,16 @@ impl<'a> Engine<'a> {
     /// lambda's call of the method it stands for comes here too ([`Engine::lambda_call`]).
     fn invoke_static(&mut self, path: &mut Path, caller: &str, member: &crate::classfile::MemberRef) -> Step {
         let descriptor = MethodDescriptor::parse(&member.descriptor).map_err(|e| Stop::Unsupported(e.to_string()))?;
+        // Where a version of a pair begins ([`crate::pairing`]): it starts as if it ran alone. What a run can leave
+        // for a later one is the static fields, the classes' initialization and the default locale, which the
+        // engine holds in the path's statics; every other object is reached through them or through the call's
+        // own arguments, which are each version's own. The pair's own class stays initialized.
+        if self.previous.is_some() && caller == crate::pairing::CLASS && member.owner == crate::pairing::CLASS && (member.name.as_str(), member.descriptor.as_str()) == (crate::pairing::FRESH, "()V") {
+            path.statics.clear();
+            path.classes.retain(|c, _| c == crate::pairing::CLASS);
+            self.advance(path);
+            return Ok(None);
+        }
         // A model only for JBMC's class path that the checker runs all the same ([`ClassPath::checker_runs`]:
         // `List.of`, `List.copyOf` and the immutable lists' helpers) is called as an application method, unless
         // no evidence record samples the call (`List.of(E...)`), which is then the JDK call it names

@@ -9,13 +9,18 @@
 //! ```java
 //! public final class RegressionPair {
 //!     static boolean meantToChange(P...) { try { return SCOPE; } catch (Throwable t) { return false; } }
+//!     static void fresh() { ... }
+//!     static String thrown(Throwable t, boolean previous) { ... t.getClass().getName(), `before.` taken off ... }
 //!     public static boolean agree(P...) {
+//!         fresh();
 //!         if (meantToChange(p...)) { return true; }
-//!         R a = ZERO; int ea = 0;
-//!         try { a = before.pkg.Target.method(COPIES); } catch (NumberFormatException t) { ea = 1; } catch ...
-//!         R b = ZERO; int eb = 0;
-//!         try { b = pkg.Target.method(COPIES); } catch (NumberFormatException t) { eb = 1; } catch ...
-//!         return ea == eb && (ea != 0 || EQUAL);
+//!         fresh();
+//!         R a = ZERO; String ea = null;
+//!         try { a = before.pkg.Target.method(COPIES); } catch (Throwable t) { ea = thrown(t, true); }
+//!         fresh();
+//!         R b = ZERO; String eb = null;
+//!         try { b = pkg.Target.method(COPIES); } catch (Throwable t) { eb = thrown(t, false); }
+//!         return ea == null ? eb == null && EQUAL : ea.equals(eb);
 //!     }
 //! }
 //! ```
@@ -30,15 +35,23 @@
 //!   is not among those the change is meant for, so the versions are compared on it;
 //! - **an array argument** is each version's own copy (`clone()`), so that neither sees what the other wrote;
 //!   a String is immutable and is passed as it is;
-//! - **an exception** is the category of the first class of [`crate::harness::EXCEPTIONS`] that catches it, and
-//!   any other `Throwable` one more category: the versions agree when they return equal results or throw in the
-//!   same category. A method that declares checked exceptions is refused here, since two of them would be one
-//!   category;
-//! - **the result** is compared by `==` for a primitive and by content for a String, two nulls agreeing.
-//!
-//! What both versions share is the JDK, and with it the JDK's own state: a default locale one version sets is the
-//! default the other starts under. The previous version runs first. A target that reads such state before it
-//! writes it would be compared under two states; the statement says so.
+//! - **an exception** is its class, by name, a copy of the previous version's class (`before.x.E`) being that class
+//!   (`x.E`): the versions agree when they return equal results or throw exceptions of one class. Two subclasses of
+//!   `RuntimeException`, or `IllegalArgumentException` and a subclass of it, are two answers (the countermodels of
+//!   `tests/fixtures/pairing-countermodels`, 2026-11-17, which a comparison by the categories of
+//!   [`crate::harness::EXCEPTIONS`] proved to agree). A method that declares checked exceptions is refused, not yet taken;
+//! - **the result** is compared by `==` for a primitive and by content for a String, two nulls agreeing;
+//! - **each version starts as if it ran alone** ([`FRESH`]): the scope, the previous version and the new one each
+//!   begin where the checker has given the path a fresh state, the static fields and the classes' initialization
+//!   as no call had touched them, and the default locale the JVM's own ([`crate::bmc`], which holds the default
+//!   locale among the statics). A version that sets the default locale, writes a library's static (without
+//!   `--before-classpath` the library is one copy for both) or initializes a class leaves nothing for the next:
+//!   the order of the calls is not observable. Every other object a version reaches is its own (the arrays are
+//!   copies, a String is immutable) or one the engine models without content (a class literal, a `Logger`);
+//!   JDK state the engine does not model is a call it does not run, which stops the check. A witness is replayed
+//!   in the interpreter, which starts each version the same way, or on a JVM, where `fresh()` sets the default
+//!   locale back and a library's statics stay shared: a difference only a static shows is then dropped there as
+//!   no reproduction, never proved.
 //!
 //! Taken here: a static method whose parameters are integral or boolean values, arrays of them, Strings and
 //! `String[]`, and whose result is one of the values, a String or nothing. Asked for by `--assume` or `--lemmas`,
@@ -93,7 +106,7 @@ pub fn refusal(options: &Options, method: &Method, before: Option<&Method>, own_
         return Some("the previous version's method has another descriptor: a regression check as a property of the pair of versions calls the same method of both".into());
     }
     if [method, before].iter().any(|m| m.attributes.iter().any(|a| a.name == "Exceptions")) {
-        return Some("the method declares checked exceptions, which a regression check as a property of the pair of versions (lib/src/pairing.rs) would not tell apart".into());
+        return Some("the method declares checked exceptions, which a regression check as a property of the pair of versions (lib/src/pairing.rs) does not take yet".into());
     }
     if !own_checker {
         return Some("a regression check with an assumption, lemmas, a String[] or a nullable String is the tool's own checker's (--engine native or auto, without --confirm): JBMC is given none of them".into());
@@ -101,20 +114,21 @@ pub fn refusal(options: &Options, method: &Method, before: Option<&Method>, own_
     None
 }
 
+/// The method of the pair's class that stands between the calls: the checker gives each version a fresh state
+/// there ([`crate::bmc`]: the static fields and the classes' initialization the path has, the default locale with
+/// them, as no call had run yet); on a JVM it does nothing.
+pub const FRESH: &str = "fresh";
+
+/// The relocation's package as a binary name's prefix: a copy of the previous version's `x.Y` is `before.x.Y` on a
+/// JVM, and `getName()` of it is that ([`crate::relocate`]). The checker gives a copy its own class's name.
+const RELOCATED: &str = "before.";
+
 /// The pair's class as Java: see the module's notes.
 pub fn source(class: &str, method: &str, names: &[String], params: &[Type], ret: &Type, scope: Option<&str>) -> String {
     let declared = names.iter().zip(params).map(|(n, t)| format!("{} {n}", t.java_name())).collect::<Vec<_>>().join(", ");
     let passed = names.join(", ");
     // Each version writes into its own copy of an array.
     let copies = names.iter().zip(params).map(|(n, t)| if matches!(t, Type::Array(_)) { format!("{n} == null ? null : {n}.clone()") } else { n.clone() }).collect::<Vec<_>>().join(", ");
-    let catches = |var: &str| {
-        let mut s = String::new();
-        for (i, exception) in crate::harness::EXCEPTIONS.iter().enumerate() {
-            let _ = write!(s, " catch ({} t) {{ {var} = {}; }}", exception.replace('/', "."), i + 1);
-        }
-        let _ = write!(s, " catch (Throwable t) {{ {var} = {}; }}", crate::harness::EXCEPTIONS.len() + 1);
-        s
-    };
     let (zero, equal) = match ret {
         Type::Void => ("", "true"),
         Type::Boolean => ("false", "a == b"),
@@ -129,19 +143,27 @@ pub fn source(class: &str, method: &str, names: &[String], params: &[Type], ret:
         s.push_str("    /** The inputs the change is meant to affect, read on the new version; an input on which the expression throws is not among them. */\n");
         let _ = writeln!(s, "    static boolean meantToChange({declared}) {{\n        try {{\n            return {scope};\n        }} catch (Throwable t) {{\n            return false;\n        }}\n    }}\n");
     }
+    s.push_str("    /** The default locale the first version started under. */\n    private static java.util.Locale start;\n\n");
+    s.push_str("    /** Where each version starts: the checker and the interpreter give it a fresh state here, as if it ran alone; on a JVM the default locale is set back to the one the first started under. */\n");
+    let _ = writeln!(s, "    static void {FRESH}() {{\n        if (start == null) {{\n            start = java.util.Locale.getDefault();\n        }} else {{\n            java.util.Locale.setDefault(start);\n        }}\n    }}\n");
+    s.push_str("    /** The class of what a version threw, by its own name: a copy of the previous version's class is that class. */\n");
+    let _ = writeln!(s, "    static String thrown(Throwable t, boolean previous) {{\n        String name = t.getClass().getName();\n        return previous && name.indexOf(\"{RELOCATED}\") == 0 ? name.substring({}) : name;\n    }}\n", RELOCATED.len());
     let _ = writeln!(s, "    public static boolean {METHOD}({declared}) {{");
+    // The first call keeps the state every version is to start in, before the scope can change it.
+    let _ = writeln!(s, "        {FRESH}();");
     if scope.is_some() {
         let _ = writeln!(s, "        if (meantToChange({passed})) {{ return true; }}");
     }
-    for (var, owner) in [("a", format!("before.{class}")), ("b", class.to_string())] {
+    for (var, owner, previous) in [("a", format!("before.{class}"), true), ("b", class.to_string(), false)] {
         let call = format!("{owner}.{method}({copies});");
+        let _ = writeln!(s, "        {FRESH}();");
         if *ret == Type::Void {
-            let _ = writeln!(s, "        int e{var} = 0;\n        try {{ {call} }}{}", catches(&format!("e{var}")));
+            let _ = writeln!(s, "        String e{var} = null;\n        try {{ {call} }} catch (Throwable t) {{ e{var} = thrown(t, {previous}); }}");
         } else {
-            let _ = writeln!(s, "        {} {var} = {zero}; int e{var} = 0;\n        try {{ {var} = {call} }}{}", ret.java_name(), catches(&format!("e{var}")));
+            let _ = writeln!(s, "        {} {var} = {zero}; String e{var} = null;\n        try {{ {var} = {call} }} catch (Throwable t) {{ e{var} = thrown(t, {previous}); }}", ret.java_name());
         }
     }
-    let _ = writeln!(s, "        return ea == eb && (ea != 0 || {equal});\n    }}\n}}");
+    let _ = writeln!(s, "        return ea == null ? eb == null && {equal} : ea.equals(eb);\n    }}\n}}");
     s
 }
 
@@ -212,7 +234,7 @@ pub fn run(options: &Options, work: &Path, relocated_dir: &Path, class: &ClassFi
         None => String::new(),
     };
     let note = format!(
-        "note: checked as a property of the pair of versions: {CLASS}.{METHOD} ({}) calls the previous version's {target}, relocated under `before`, and then the new one's on the same inputs{own}{scope}, each array argument a copy of its own, and returns whether they returned equal results or threw in the same category. The two share the JDK and its state (a default locale one sets is the other's to start under); the previous version runs first",
+        "note: checked as a property of the pair of versions: {CLASS}.{METHOD} ({}) calls the previous version's {target}, relocated under `before`, and then the new one's on the same inputs{own}{scope}, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of one class (a copy's class being its own). Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale",
         statement.display(),
         target = options.target,
     );
@@ -223,25 +245,26 @@ pub fn run(options: &Options, work: &Path, relocated_dir: &Path, class: &ClassFi
 mod tests {
     use super::*;
 
-    /// The statement as Java: the scope read first and a throw in it compared, each version on its own copy of an
-    /// array, the exceptions in the harness's categories with any other Throwable one more, a String result
-    /// compared by content.
+    /// The statement as Java: a fresh state first, the scope read and a throw in it compared, each version from a
+    /// fresh state on its own copy of an array, an exception by its class with the previous version's copy taken for
+    /// its own class, a String result compared by content.
     #[test]
-    fn the_pairs_class_calls_both_versions_on_copies_and_compares_results_and_categories() {
+    fn the_pairs_class_calls_both_versions_on_copies_from_fresh_states_and_compares_results_and_classes() {
         let names: Vec<String> = ["k", "patterns", "field"].iter().map(|s| s.to_string()).collect();
         let params = vec![Type::Int, Type::Array(Box::new(Type::Object("java/lang/String".into()))), Type::Object("java/lang/String".into())];
         let java = source("x.Adapter", "allowed", &names, &params, &Type::Boolean, Some("k == 2"));
         assert!(java.contains("static boolean meantToChange(int k, java.lang.String[] patterns, java.lang.String field)"), "{java}");
         assert!(java.contains("return k == 2;") && java.contains("catch (Throwable t) {\n            return false;"), "{java}");
-        assert!(java.contains("if (meantToChange(k, patterns, field)) { return true; }"), "{java}");
-        assert!(java.contains("a = before.x.Adapter.allowed(k, patterns == null ? null : patterns.clone(), field);"), "{java}");
-        assert!(java.contains("b = x.Adapter.allowed(k, patterns == null ? null : patterns.clone(), field);"), "{java}");
-        assert!(java.contains("catch (java.lang.NumberFormatException t) { ea = 1; }") && java.contains(&format!("catch (Throwable t) {{ eb = {}; }}", crate::harness::EXCEPTIONS.len() + 1)), "{java}");
-        assert!(java.contains("return ea == eb && (ea != 0 || a == b);"), "{java}");
+        let fresh = |at: &str| java.find(at).unwrap_or_else(|| panic!("{at}: {java}"));
+        let calls = [fresh("public static boolean agree"), fresh("        fresh();\n        if (meantToChange(k, patterns, field)) { return true; }\n        fresh();\n        boolean a"), fresh("a = before.x.Adapter.allowed(k, patterns == null ? null : patterns.clone(), field);"), fresh("        fresh();\n        boolean b"), fresh("b = x.Adapter.allowed(k, patterns == null ? null : patterns.clone(), field);")];
+        assert!(calls.windows(2).all(|w| w[0] < w[1]), "{java}");
+        assert!(java.contains("catch (Throwable t) { ea = thrown(t, true); }") && java.contains("catch (Throwable t) { eb = thrown(t, false); }"), "{java}");
+        assert!(java.contains("return previous && name.indexOf(\"before.\") == 0 ? name.substring(7) : name;"), "{java}");
+        assert!(java.contains("return ea == null ? eb == null && a == b : ea.equals(eb);"), "{java}");
         let text = source("x.A", "name", &names[..1], &params[..1], &Type::Object("java/lang/String".into()), None);
         assert!(!text.contains("meantToChange") && text.contains("(a == null ? b == null : a.equals(b))"), "{text}");
         let nothing = source("x.A", "run", &names[..1], &params[..1], &Type::Void, None);
-        assert!(nothing.contains("try { before.x.A.run(k); }") && nothing.contains("return ea == eb && (ea != 0 || true);"), "{nothing}");
+        assert!(nothing.contains("try { before.x.A.run(k); }") && nothing.contains("return ea == null ? eb == null && true : ea.equals(eb);"), "{nothing}");
     }
 
     /// Only the tool's own checker is given a String[], a nullable String, an assumption or lemmas: any other

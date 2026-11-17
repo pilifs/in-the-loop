@@ -127,3 +127,48 @@ fn in_the_other_order_or_on_its_own_library_the_pair_sees_the_static_differ() {
         assert!(out.contains("the two versions differ on flag(k="), "{name}: {out}");
     }
 }
+
+/// The checker's side: each pair of versions differs when each runs alone (the test above), so a proof that they
+/// agree is false. Each case is also run with the versions' roles swapped, which runs the calls in the other order
+/// and changes nothing else in the statement: where the order is observable the two verdicts differ.
+#[test]
+fn the_pair_does_not_prove_two_versions_agree_that_differ_when_each_runs_alone() {
+    jvmcontract::tool_tier!();
+    let Some(c) = classes() else { return };
+    let mut wrong = Vec::new();
+    let mut check = |name: &str, o: equivalence::Options| {
+        let (v, out) = verdict(&o);
+        eprintln!("--- {name}: {v:?}\n{out}");
+        if v == Verdict::Verified {
+            wrong.push(name.to_string());
+        }
+    };
+    // Shared JDK state: the previous version sets the default locale the new one lowers under.
+    for (name, before, after) in [("locale", &c.old, &c.new), ("locale-swapped", &c.new, &c.old)] {
+        let mut o = options(before, after, "app.Entry#locale", name);
+        o.before_classpath = Some(vec![c.library.clone()]);
+        o.assume = Some(ASCII.into());
+        check(name, o);
+    }
+    // A library's static, shared by the two versions without --before-classpath.
+    for (name, before, after) in [("flag", &c.old, &c.new), ("flag-swapped", &c.new, &c.old)] {
+        let mut o = options(before, after, "app.Entry#flag", name);
+        o.assume = Some(SMALL.into());
+        check(name, o);
+    }
+    // Exceptions by category: two unrelated RuntimeExceptions, and an IllegalArgumentException against a subclass.
+    for method in ["thrown", "argument"] {
+        let mut o = options(&c.old, &c.new, &format!("app.Entry#{method}"), method);
+        o.before_classpath = Some(vec![c.library.clone()]);
+        o.assume = Some(SMALL.into());
+        check(method, o);
+    }
+    // The allowed change runs the new version's code before both calls: a scope that is false everywhere but sets
+    // the default locale makes the claim "agree on every input" and makes the versions agree.
+    let mut o = options(&c.old, &c.new, "app.Entry#scoped", "scoped");
+    o.before_classpath = Some(vec![c.library.clone()]);
+    o.assume = Some(ASCII.into());
+    o.unchanged_unless = Some("app.Entry.special(s)".into());
+    check("scoped", o);
+    assert!(wrong.is_empty(), "proved to agree, though each version alone gives another result: {wrong:?}");
+}

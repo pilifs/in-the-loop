@@ -12,29 +12,30 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.021Z",
-  "ended": "2026-11-17T13:25:17.524Z",
-  "duration_seconds": 1707,
+  "ended": "2026-11-17T13:45:46.581Z",
+  "duration_seconds": 2936,
   "stats": {
     "turns": 6,
-    "api_calls": 67,
-    "tool_calls": 69,
+    "api_calls": 116,
+    "tool_calls": 119,
     "tool_errors": 1,
     "compactions": 1,
-    "peak_context_tokens": 161079,
+    "peak_context_tokens": 176568,
     "usage": {
-      "input_tokens": 134,
-      "output_tokens": 42989,
-      "cache_read_input_tokens": 6283391,
-      "cache_creation_input_tokens": 218007
+      "input_tokens": 232,
+      "output_tokens": 87925,
+      "cache_read_input_tokens": 13172418,
+      "cache_creation_input_tokens": 313031
     }
   },
   "tools": {
-    "Bash": 66,
-    "Edit": 2,
+    "Bash": 114,
+    "Edit": 4,
     "Write": 1
   },
   "files_touched": [
     "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
+    "lib/src/bmc/mod.rs",
     "llm-dlc/loops/domain-advances-preservation.md"
   ],
   "context_windows": [
@@ -55,24 +56,24 @@
     {
       "index": 1,
       "started": "2026-11-17T13:16:09.414Z",
-      "ended": "2026-11-17T13:25:17.524Z",
+      "ended": "2026-11-17T13:45:46.581Z",
       "turns": 4,
-      "api_calls": 18,
+      "api_calls": 67,
       "usage": {
-        "input_tokens": 36,
-        "output_tokens": 10382,
-        "cache_read_input_tokens": 1049456,
-        "cache_creation_input_tokens": 68271
+        "input_tokens": 134,
+        "output_tokens": 55318,
+        "cache_read_input_tokens": 7938483,
+        "cache_creation_input_tokens": 163295
       },
-      "peak_context_tokens": 81544
+      "peak_context_tokens": 176568
     }
   ],
   "log": {
-    "sha256": "a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de",
-    "bytes": 2402038,
-    "lines": 631,
-    "gzip_bytes": 449633,
-    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de.jsonl.gz"
+    "sha256": "b17c45752115266256b1c406ca0a71b7f65fbc6938ef86b2a85a06445afee80e",
+    "bytes": 3340870,
+    "lines": 1055,
+    "gzip_bytes": 569167,
+    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/b17c45752115266256b1c406ca0a71b7f65fbc6938ef86b2a85a06445afee80e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -101,14 +102,6 @@
       "log_sha256": "a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de"
     },
     {
-      "change_id": "smxzwqlrvzxmnyqvzmnsuqoktxkoqomx",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "The run-streams tests no longer inherit a real run's watcher, so run inside a stream they cannot ask it questions",
-      "body": "test_brief_run.py's fixture now drops RUN_STREAMS_*, FEATURE_LOOP_* and LOOP_CONDUCTOR from the environment. A stream of the domain-advances run ran the test of a run 'without a watcher', which built its env from os.environ: inside the stream's loop that carries RUN_STREAMS_WATCHER, so the test's made-up run-streams.sh put two merge questions (streams a and b of made-up) to the real watcher, which answered them leave (run-streams-domain-advances D001, D002). Verified: the 39 tests pass with a decoy RUN_STREAMS_WATCHER and LOOP_CONDUCTOR set, and nothing is written to the decoy.",
-      "log_sha256": "a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de"
-    },
-    {
       "change_id": "yypzyxmwluytmwrouqvxqkpppqzpqszn",
       "commit_id": null,
       "immutable": false,
@@ -125,12 +118,28 @@
       "log_sha256": "a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de"
     },
     {
+      "change_id": "smxzwqlrvzxmnyqvzmnsuqoktxkoqomx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The run-streams tests no longer inherit a real run's watcher, so run inside a stream they cannot ask it questions",
+      "body": "test_brief_run.py's fixture now drops RUN_STREAMS_*, FEATURE_LOOP_* and LOOP_CONDUCTOR from the environment. A stream of the domain-advances run ran the test of a run 'without a watcher', which built its env from os.environ: inside the stream's loop that carries RUN_STREAMS_WATCHER, so the test's made-up run-streams.sh put two merge questions (streams a and b of made-up) to the real watcher, which answered them leave (run-streams-domain-advances D001, D002). Verified: the 39 tests pass with a decoy RUN_STREAMS_WATCHER and LOOP_CONDUCTOR set, and nothing is written to the decoy.",
+      "log_sha256": "a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de"
+    },
+    {
       "change_id": "kwyxmlnsmmwrtvqwwloppwnsrkyknwks",
       "commit_id": null,
       "immutable": false,
       "summary": "Merge the shared driver module, the pairing countermodels and the run-streams test fix into the preservation stream",
       "body": "Takes in three commits the inbox asked for: rkxyyqwnvlqz (every example's driver on examples/tools/beside_route.py, I002), yypzyxmwluyt (the challenge stream's five pairing countermodels, I003) and smxzwqlr (the run-streams tests no longer inherit a real watcher, I001). Merged rather than rebased, so this stream's own commits keep their ids. Example 287's driver conflicted: it is the evidence stream's version, with the preservation task's equivalence branch (the pair's adapters, --before-classpath, --assume where the claim has one, --unchanged-unless) put back as the task's own arguments. The generated trace files were regenerated (sync.py regenerate) and lib/tests/costs.json re-estimated.",
       "log_sha256": "a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de"
+    },
+    {
+      "change_id": "zmvkptqzpvkxuvprtzsuzkrpwtyoovtq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The pair of versions compares exceptions by class and starts each version as if it ran alone (verification pending)",
+      "body": "The challenge stream's five countermodels of the pair (lib/tests/fixtures/pairing-countermodels: a default locale the previous version sets, a library static shared without --before-classpath, two unrelated RuntimeExceptions, an IllegalArgumentException against its subclass, a scope that sets the default locale) were each proved to agree, though the versions differ when each runs alone. RegressionPair (lib/src/pairing.rs) now compares exceptions by class, through getClass().getName() with a copy's 'before.' prefix taken off, and calls fresh() before the scope and before each version. At fresh() the checker (bmc/mod.rs) and the interpreter clear the path's static fields and class initialization, which hold the default locale too, so no version starts in what an earlier one left; on a JVM fresh() sets the default locale back. The checker models getClass() of a Throwable the run made (bmc/runtime.rs), as its handlers already take it for that class. The README's checker-side test is added to lib/tests/pairing_countermodels.rs: it failed on all five before and passes now, each of the seven runs a violation confirmed by replay. Limit, stated in pairing.rs and lib/README.md: on a JVM a library's statics stay shared without --before-classpath, so a witness only they show is dropped there as no reproduction, never proved.",
+      "log_sha256": "b17c45752115266256b1c406ca0a71b7f65fbc6938ef86b2a85a06445afee80e"
     }
   ],
   "logs": {
@@ -144,6 +153,12 @@
       "bytes": 2402038,
       "lines": 631,
       "gzip_bytes": 449633,
+      "url": null
+    },
+    "b17c45752115266256b1c406ca0a71b7f65fbc6938ef86b2a85a06445afee80e": {
+      "bytes": 3340870,
+      "lines": 1055,
+      "gzip_bytes": 569167,
       "url": null
     },
     "e41f2c4d702ac713bfe202b895a8b1166472b9b3ac35124558b19988e8a514ab": {

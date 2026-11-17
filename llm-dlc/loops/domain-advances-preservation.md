@@ -106,10 +106,23 @@ relational result needs a new check (the rule's applications recorded in the out
   equivalence branch put back as the task's own arguments, and a trial probe at bound 8 stops where job
   `20261117-130445-…` expects (its paths are the module's too). I003: merged yypzyxmwluyt (the five fixtures and
   `lib/tests/pairing_countermodels.rs`); the fix is step 4, taken next.
-- Next: I003 / step 4, the pairing's five countermodels (fresh JDK state per version or a refusal, exceptions by
-  class, a scope that cannot write), then lift the warning path (java.util.logging at INFO and above under the
-  default configuration, with countermodels: a level, a handler or a filter that would make it observable is
-  refused), probe again to reach the two sides' bcrypt, then step 2.
+- 2026-11-17, step 4 (the pairing; I003 done). The challenge stream's checker-side test is in
+  `lib/tests/pairing_countermodels.rs` and failed on all five (each Verified). Two changes:
+  - Exceptions are compared by class: `RegressionPair.thrown` takes `getClass().getName()`, with a copy's
+    `before.` taken off on a JVM (the checker already names a copy by its own class). The checker now models
+    `getClass()` of a Throwable the run made, since its handlers already take such an object for its class.
+  - Each of the scope, the previous version and the new one starts as if it ran alone. `RegressionPair.fresh()`
+    comes before each; at it the checker (`bmc/mod.rs`) and the interpreter clear the path's statics and class
+    initialization, which hold the default locale too. On a JVM `fresh()` sets the default locale back.
+  I chose isolation over refusing writes because it is the claims' own reading ("ends as 6.3.7 does") and needs
+  no write tracking. All seven runs (five, two swapped) are now violations, each confirmed by replay. Capped
+  probes at the frozen bounds: 289's and 290's preservation still verify (62 s, 1 s), and 287 still stops at
+  `Level.WARNING`. Job `20261117-134306-examples-289-and-290-preservation-again` reruns both so `accept.py` can
+  settle them under the exact statement; the evidence stream is told. Limit: on a JVM a library's statics stay
+  shared without `--before-classpath`, so a witness that only they show is dropped there, never proved.
+- Next: lift the warning path (java.util.logging at INFO and above under the default configuration, with
+  countermodels: a level, a handler or a filter that would make it observable is refused), probe again to reach
+  the two sides' bcrypt, then step 2.
 - Status: working
 
 ## Loop settings
