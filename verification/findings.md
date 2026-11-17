@@ -43,46 +43,6 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Tracked in**: `lib/README.md`'s Tests section (the unit tier's note names the first two files).
 - **Closes when**: the four files' tests carry tiers that a measured run agrees with, or the user decides they stay.
 
-### VF-034: the default test run at `xunroyyopkuq` (the prove-setup merge) failed three Rust tests, twice
-
-- **Status**: closed (job `20261117-010456-default-test-run-at-lmwqozysyszl` passed at a descendant of `xunroyyopkuq`;
-  the cause of the failures is not known, so a recurrence would reopen it).
-- **Raised**: 2026-11-17 on `vm-1`. Job `20261117-005759-default-test-run-at-xunroyyopkuq` (at `9c48697e070a`), failed in
-  6m28s; the pipeline found no culprit (the last passed run, `225f3605b7c1`, is not on that commit's first-parent line).
-  The later default run at `lmwqozysyszl` (`20261117-010456-default-test-run-at-lmwqozysyszl`) passed, so the failures may
-  be specific to the merge commit or flaky under load.
-- **Found**: `cargo test` failed, and again on its rerun, in three tests (48 of 49 default-tier suites passed):
-  - `application_core_joint::j1_the_quote_family_composes_the_four_streams` (`tests/application_core_joint.rs:232`):
-    "quote-claim helper-extra-field: a build whose verdict differs from after's is never answered by a stored result".
-    The helper-extra-field build was refuted with a replayed witness, but a stored result (an `exact` reuse) was
-    reported for it.
-  - `environment::a_per_call_choice_proves_a_rewrite_and_refutes_a_wrong_key` (`tests/environment.rs:134`): panicked with
-    only the message `POST /price`.
-  - `effects::an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged` (`tests/effects.rs:257`): "a changed
-    annotation is a miss: Some(ClaimKey(sha256:2cf62f9e...))", i.e. a changed claim was answered from the cache.
-  All Python suites passed. Two of the three are about result reuse by claim key, which suggests one cause in the
-  reuse/claim-key code at the merge.
-- **Needs**: the author of the prove-setup merge or the watcher of the `/prove-java-change` run: check whether
-  `9c48697e070a`'s line has the failures when run alone (`cargo test --test effects --test application_core_joint
-  --test environment`), and whether the passed run at `lmwqozysyszl` covers a fix.
-- **Likely cause** (added 2026-11-17 by the session that wrote the default-run job): two default runs were running
-  at once. Job `005759` was started a second time at 01:07 while `010456` ran, and both use one warm cargo target
-  directory, whose `tmp/` holds the tests' work folders and proof caches. All three failures are a test finding
-  another run's files there (a stored result for a build it had not checked, a changed claim answered from the
-  cache), and `010456` itself had eight Rust tests fail and pass on their second run. Not reproduced on purpose.
-  Since change `kzwsnszx` a default-run step holds a lock for its whole run, so two no longer overlap.
-- **Why the passed job ran again** (found the same day, from `jj op log`): the first pass was collected and
-  committed in the default workspace at 01:06:45 ("Record verification results: the default test run at
-  xunroyyopkuq passed", change `slquqtpy`), and in the same second a `jj new lzvyqmsy` there, the fast-forward to
-  prove-setup's rebased commits, moved the working copy off that commit before it was anyone's parent. The runner
-  looks for results in its state folder and in the working copy, found neither, and started the job again at
-  01:07:12. Change `slquqtpy` is still a visible head, with the result in it, and is not on the main line: it needs
-  merging there. The runner now also counts a result recorded on any visible head as done, says so, and
-  `pipeline.py status` lists such a job under "recorded on another head".
-- **Tracked in**: the job's `logs/1-default-tests.log`.
-- **Closes when**: a default test run at a commit that contains the merge passes (the run at `lmwqozysyszl` already
-  passed; confirm it contains `9c48697e070a`, then this closes).
-
 ### VF-033: example 290's preservation claim compares only the count of matchers by type, and its fixed-security verdict rests on initializers observed on a JVM
 
 - **Status**: open, for a later run (the user's decision on 2026-11-17, reviewing the watcher's answer D005).
@@ -463,6 +423,37 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   through `run()`; then resubmit 147 and 148 unchanged. VF-002 stays open.
 
 ## Decided and closed
+
+### VF-034: the default test run at `xunroyyopkuq` (the prove-setup merge) failed three Rust tests, twice
+
+- **Status**: closed, by the user's decision on 2026-11-17: the likely cause is known and fixed for this case, and
+  the pipeline's handling of jobs will be refactored as a whole later, so this is not worth investigating further.
+  The default run at the merge of prove-setup's finished line, job
+  `20261117-015957-default-test-run-at-ksyktoyyrtyn` (at `ksyktoyyrtyn`, which contains `9c48697e070a`), passed 49 of
+  49 with the lock in.
+- **Likely cause**: two default test runs at once in one warm cargo target directory. Job `005759` was started a
+  second time at 01:07 while job `010456` ran; the tests' work folders and proof caches live in that directory's
+  `tmp/`, and all three failures are a test finding another run's files there (a stored result for a build it had not
+  checked, a changed claim answered from the cache). Job `010456` itself had eight Rust tests fail and pass only on
+  their second run, so its "passed" was no evidence either way. Not reproduced on purpose. Since change `kzwsnszx` a
+  default-run step holds a lock for its whole run, so two runs at commits that have it no longer overlap. A job at a
+  commit without the lock can still overlap (the run-brief line's job `20261117-020349` ran beside `015957` from
+  02:04, which had one cache test fail and pass on its retry).
+- **Why the passed job ran again**: the first pass was committed in the default workspace at 01:06:45 (change
+  `slquqtpy`), and in the same second the watcher's `jj new lzvyqmsy` there moved the working copy off that commit
+  before it had a child, so the runner found the result neither in its state folder nor in the working copy and
+  started the job again. `slquqtpy` is merged into the main line (`ksyktoyy`), and the runner now counts a result
+  recorded on any visible head as done.
+- **Raised**: 2026-11-17 on `vm-1`. Job `20261117-005759-default-test-run-at-xunroyyopkuq` (at `9c48697e070a`) failed in
+  6m28s on its second run, in three tests, and again on their retry:
+  `application_core_joint::j1_the_quote_family_composes_the_four_streams`,
+  `environment::a_per_call_choice_proves_a_rewrite_and_refutes_a_wrong_key` and
+  `effects::an_effect_proof_is_reused_exactly_when_its_claim_is_unchanged`; all Python suites passed.
+- **Not pursued, by the same decision**: the remaining sharp edges (a commit made in the default workspace while
+  another process moves its working copy is left off the main line; the flaky retry counts a run with many
+  second-run passes as passed; overlap with a job at a commit without the lock) go to the refactoring of pipeline jobs
+  rather than to fixes here.
+- **Tracked in**: the job's `logs/1-default-tests.log`; the lock in `verification/default_tests.py` (`kzwsnszx`).
 
 ### VF-029: job `20261115-181435-object-comparisons-under-jbmc-and-auto-c` cancelled, not recorded
 

@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-17T02:11:26.954Z",
-  "duration_seconds": 117840,
+  "ended": "2026-11-17T02:18:55.941Z",
+  "duration_seconds": 118289,
   "stats": {
     "turns": 107,
-    "api_calls": 773,
-    "tool_calls": 707,
+    "api_calls": 775,
+    "tool_calls": 709,
     "tool_errors": 11,
     "compactions": 3,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 1776,
-      "output_tokens": 569618,
-      "cache_read_input_tokens": 193116520,
-      "cache_creation_input_tokens": 1283591
+      "input_tokens": 1780,
+      "output_tokens": 571377,
+      "cache_read_input_tokens": 193819297,
+      "cache_creation_input_tokens": 1285760
     }
   },
   "tools": {
-    "Bash": 668,
+    "Bash": 670,
     "ToolSearch": 9,
     "Write": 8,
     "SendMessage": 7,
@@ -98,24 +98,24 @@
     {
       "index": 3,
       "started": "2026-11-16T23:07:53.833Z",
-      "ended": "2026-11-17T02:11:26.954Z",
+      "ended": "2026-11-17T02:18:55.941Z",
       "turns": 24,
-      "api_calls": 175,
+      "api_calls": 177,
       "usage": {
-        "input_tokens": 406,
-        "output_tokens": 111101,
-        "cache_read_input_tokens": 42577505,
-        "cache_creation_input_tokens": 318206
+        "input_tokens": 410,
+        "output_tokens": 112860,
+        "cache_read_input_tokens": 43280282,
+        "cache_creation_input_tokens": 320375
       },
-      "peak_context_tokens": 351125
+      "peak_context_tokens": 353294
     }
   ],
   "log": {
-    "sha256": "ffa4616029208c8b940c02e4e5bc659c80328724dd3144d6fad0b88f4cca8452",
-    "bytes": 14454998,
-    "lines": 6319,
-    "gzip_bytes": 2452582,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/ffa4616029208c8b940c02e4e5bc659c80328724dd3144d6fad0b88f4cca8452.jsonl.gz"
+    "sha256": "7b1340ba458bd1d34f03430dcb551a102786953dd46405f2a23e7c3b6d6fae82",
+    "bytes": 14532317,
+    "lines": 6347,
+    "gzip_bytes": 2464409,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/7b1340ba458bd1d34f03430dcb551a102786953dd46405f2a23e7c3b6d6fae82.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1094,6 +1094,14 @@
       "summary": "Record verification results: two default test runs passed (ksyktoyyrtyn, sttksmqyyznx)",
       "body": "Both default runs (unit and tool tiers) passed. The first's output, the unread-files list, was applied; the second's differs from the file the first changed, so it is kept under its result's outputs and not applied. It is not resubmitted: a rerun would only queue another default run. The second was first cancelled when this session's runner hit its background time limit and was run again in full.",
       "log_sha256": "ffa4616029208c8b940c02e4e5bc659c80328724dd3144d6fad0b88f4cca8452"
+    },
+    {
+      "change_id": "omnplrmzrpwypoqlllzxmxylqvuntrvv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-034 is closed by the user's decision: two default runs in one cargo target directory, fixed by the lock, and not worth pursuing before pipeline jobs are refactored",
+      "body": "The user's decision on 2026-11-17: VF-034 (the default run at the prove-setup merge failing three Rust tests, twice) is closed. Its likely cause is two default runs at once sharing one warm cargo target directory, whose tmp/ holds the tests' work folders and proof caches; since kzwsnszx a run holds a lock, and the run at the merge of prove-setup's finished line (job 20261117-015957, at ksyktoyyrtyn) passed 49 of 49. The entry also says why the passed job was run again (its result commit was left off the main line by a jj new in the same second, since merged as part of ksyktoyy) and lists the sharp edges left for the refactoring of how the pipeline handles jobs, which the user plans, rather than for fixes now. It moves from Open to Decided and closed.",
+      "log_sha256": "7b1340ba458bd1d34f03430dcb551a102786953dd46405f2a23e7c3b6d6fae82"
     }
   ],
   "logs": {
@@ -1233,6 +1241,12 @@
       "bytes": 12981410,
       "lines": 5633,
       "gzip_bytes": 2230063,
+      "url": null
+    },
+    "7b1340ba458bd1d34f03430dcb551a102786953dd46405f2a23e7c3b6d6fae82": {
+      "bytes": 14532317,
+      "lines": 6347,
+      "gzip_bytes": 2464409,
       "url": null
     },
     "84e7297cd536fd40a9d3d7e0b16aa7b528293a406a6746b31f70a45a0365e9d7": {
