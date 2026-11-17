@@ -102,7 +102,15 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   the challenge stream's `ob` countermodels (`lib/tests/fixtures/rule-countermodels`): the supertypes the
   initialization initialized are compared too, a property read by key through `System.getProperties()` is stated, a
   read of the properties as a whole and code that reads the environment are refused, and the default time zone is
-  stated; 290's two tasks verified again under it in capped probes, with the same path counts.
+  stated; 290's two tasks verified again under it in capped probes, with the same path counts. Widened again after
+  the challenge stream's binding countermodels (`lib/tests/fixtures/binding-countermodels`): a value a class the
+  initialization initialized holds and the observation does not is compared by the observer's full description of
+  it (an object's fields, a lambda's method and captured values, a JDK collection's elements), and one it does not
+  describe is refused, so a write into an object another class holds (`bc.Boxed`) or a lambda put in place of
+  another of its class (`bc.Rehooked`) is refused; and an initialization that changed the default locale, time zone
+  or a system property (`bc.Relocaled`) is refused. 290's nine classes initialized besides are all described (two
+  `IdentityHashMap`s, a `HashSet`, a `ConcurrentReferenceHashMap`, enum constants, a resource bundle, a float) and
+  the same alone, no setting changed; its two tasks verified again in capped probes, with the same path counts.
 - **Prepared** (2026-11-17, the evidence stream): the restated claim (B),
   `claims/lone-dispatcher-matchers-preserved.json` (sha256 `4185eea3f4ef…`), with its entry
   `MatcherDescriptionAdapter#describe` (each matcher's exact class and the library's rendering of its pattern, servlet

@@ -8,7 +8,9 @@
 //! (`jvmcontract::observed::On`), and the test after the two class files' holds that it is. The two class files are
 //! refused here (`ClassPath::refused`), and the two tests before it hold that. The last test takes the challenge
 //! stream's `ob` fixtures (`tests/fixtures/rule-countermodels/ob`): writes to a supertype's static state, and a
-//! property, the time zone and the environment read where the first binding did not look.
+//! property, the time zone and the environment read where the first binding did not look. The one after it takes
+//! the challenge stream's binding countermodels (`tests/fixtures/binding-countermodels/bc`, from `klqnuoxw`): writes
+//! into a lambda or an object another class holds, and into the JDK's default locale.
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -294,4 +296,38 @@ fn an_observation_is_bound_to_its_writes_outside_the_class_and_to_every_setting_
     assert!(said_by_cli[0].starts_with("✓") && said_by_cli[0].contains("it read the system properties ob.value = \"xyz\""), "{}", said_by_cli[0]);
     assert!(said_by_cli[1].starts_with("✓") && said_by_cli[1].contains("default time zone Asia/Tokyo"), "{}", said_by_cli[1]);
     assert!(said_by_cli[2].contains("--observed-initializer ob.Environ: its code reads the environment (java.lang.System.getenv)"), "{}", said_by_cli[2]);
+}
+
+/// An initializer that writes beside its own class: into a lambda or an object another class holds, or the JDK's
+/// default locale. Each is refused, or the write carried. On a JVM rehooked() is 5, boxed() 5 and relocaled() 305
+/// (tests/binding_countermodels.rs). The challenge stream's test (`tests/fixtures/binding-countermodels/README.md`),
+/// with how each is refused: Hooks' lambda and Boxes' Box by their descriptions, the locale by the setting.
+#[test]
+fn an_initializer_that_writes_beside_its_own_class_is_refused_or_carried() {
+    jvmcontract::tool_tier!();
+    if !has("javac") || !has("java") {
+        return;
+    }
+    let dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/binding-countermodels/bc");
+    let classes = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("binding-countermodels-checked");
+    let _ = std::fs::remove_dir_all(&classes);
+    let sources: Vec<PathBuf> = std::fs::read_dir(&dir).unwrap().map(|e| e.unwrap().path()).filter(|p| p.extension().is_some_and(|e| e == "java")).collect();
+    assert!(Command::new("javac").args(["-g", "-proc:none", "-nowarn", "--release", "21", "-d"]).arg(&classes).args(&sources).status().unwrap().success());
+    let mut said = Vec::new();
+    for (entry, assert, class) in [("bc.M#rehooked", "result == 1", "bc.Rehooked"), ("bc.M#boxed", "result == 0", "bc.Boxed"), ("bc.M#relocaled", "result == 105", "bc.Relocaled")] {
+        let out = Command::new(env!("CARGO_BIN_EXE_jvmcontract"))
+            .env_remove("JAVA_TOOL_OPTIONS")
+            .args(["prove", entry, "--assert", assert, "--observed-initializer", class, "--engine", "native", "--jbmc", NO_JBMC, "--classes"])
+            .arg(&classes)
+            .arg("--work")
+            .arg(work(class))
+            .output()
+            .unwrap();
+        let stdout = String::from_utf8_lossy(&out.stdout);
+        assert!(!stdout.starts_with("✓"), "{entry}: proved where a JVM says otherwise\n{stdout}");
+        said.push(stdout.to_string() + &String::from_utf8_lossy(&out.stderr));
+    }
+    assert!(said[0].contains("initialized bc.Hooks and left it other than it is initialized alone (its field hook was an object of bc.Hooks$$Lambda (bc.Hooks$$Lambda calling bc/Hooks.lambda$install$"), "{}", said[0]);
+    assert!(said[1].contains("initialized bc.Boxes and left it other than it is initialized alone (its field BOX was an object of bc.Box (bc.Box{value=Integer 5}) after it and is an object of bc.Box (bc.Box{value=Integer 0}) alone)"), "{}", said[1]);
+    assert!(said[2].contains("its initialization changed the JDK's settings (the default locale, from en-US to tr;"), "{}", said[2]);
 }

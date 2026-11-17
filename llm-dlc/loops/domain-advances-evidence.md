@@ -427,7 +427,48 @@ Don't change `verification/pipeline.py`.
     on either, and prepares nothing more for the freeze unless the user answers.
 - Next: I011. Then done, unless the inbox brings more: the Done-when's first row waits on the preservation stream's
   rerun (I012), and its third on the user's freeze of 290's restated claim.
-- Status: working
+- 2026-11-17, cycle 16. **I011 done: the binding now compares every value of each class the initialization initialized
+  besides, and refuses changed JDK settings.**
+  - The challenge stream's fixtures and their JVM test were copied from `klqnuoxw` unchanged
+    (`lib/tests/fixtures/binding-countermodels`, `lib/tests/binding_countermodels.rs`), not merged.
+  - The observer describes each value it does not hold, in a class initialized besides the observed one and in that
+    class initialized alone (`Describe` in `ObservedInitializer.java`):
+    - an object of the application: every field its classes declare;
+    - a lambda: the method it calls, read from its class's constant pool (the observer's JVM gets
+      `--add-exports` for that), and the values it captured;
+    - a JDK collection or map: its elements, sorted where the class keeps no order;
+    - a float: its bits;
+    - and a few JDK value classes.
+
+    `observe` compares these descriptions. A value with no description is refused, with why.
+  - The observer reads the default locale (all three categories), the time zone and the system properties again
+    after the initialization. A change is refused, with the setting.
+  - `bc.Rehooked` is refused, the lambda `lambda$install$0` with 5 captured, where alone it is `lambda$static$0`.
+    `bc.Boxed` is refused, `bc.Box{value=5}` against `{value=0}` alone. `bc.Relocaled` is refused, its default locale
+    changed from en-US to tr.
+  - The test is `an_initializer_that_writes_beside_its_own_class_is_refused_or_carried` in
+    `tests/observed_countermodels.rs`: the README's test plus how each case is refused. There is one more unit test in
+    `observed.rs`.
+  - 290 still binds. Capped probes verified fixed-security (659 paths) and preservation (573 paths), the same counts
+    as before. Every value its nine classes initialized besides hold is described, the same as alone:
+    - two `IdentityHashMap`s of classes;
+    - a `HashSet`;
+    - an empty `ConcurrentReferenceHashMap`;
+    - enum constants;
+    - GenericServlet's resource bundle;
+    - a float.
+
+    No setting changed.
+  - Recorded in 290's notes, VF-033's audit entry, `lib/README.md` and `observed.rs`'s doc. That doc names what is
+    still not compared: the JDK's state beyond those settings (a logger registered) and what a `ReferenceQueue` holds.
+  - Format: `on.changed`, plus `d` or `why` beside `u` on a value not held. `Slot`, `Object` and the identity are
+    unchanged. Sent to the state stream's inbox.
+- Repeated work measured (step 7): none.
+- Inbox: `domain-advances-evidence-I011` was acknowledged in cycle 15 and is done here. No new open items.
+- Next: nothing needs only me. The Done-when's first row waits on the preservation stream's rerun of 289's and 290's
+  preservation (I012). Its third row's binding and countermodels are done, and 290's restated claim waits on the user's
+  freeze (D023).
+- Status: done
 
 ## Loop settings
 
