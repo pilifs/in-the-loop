@@ -12,48 +12,48 @@
     "claude-sonnet-5-5"
   ],
   "started": "2026-11-17T00:23:35.212Z",
-  "ended": "2026-11-17T01:01:15.145Z",
-  "duration_seconds": 2260,
+  "ended": "2026-11-17T01:06:44.240Z",
+  "duration_seconds": 2589,
   "stats": {
     "turns": 1,
-    "api_calls": 13,
-    "tool_calls": 14,
+    "api_calls": 14,
+    "tool_calls": 15,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 43157,
+    "peak_context_tokens": 43770,
     "usage": {
-      "input_tokens": 26,
-      "output_tokens": 2985,
-      "cache_read_input_tokens": 471605,
-      "cache_creation_input_tokens": 29844
+      "input_tokens": 28,
+      "output_tokens": 3306,
+      "cache_read_input_tokens": 514760,
+      "cache_creation_input_tokens": 30457
     }
   },
   "tools": {
-    "Bash": 14
+    "Bash": 15
   },
   "files_touched": [],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-17T00:23:35.212Z",
-      "ended": "2026-11-17T01:01:15.145Z",
+      "ended": "2026-11-17T01:06:44.240Z",
       "turns": 1,
-      "api_calls": 13,
+      "api_calls": 14,
       "usage": {
-        "input_tokens": 26,
-        "output_tokens": 2985,
-        "cache_read_input_tokens": 471605,
-        "cache_creation_input_tokens": 29844
+        "input_tokens": 28,
+        "output_tokens": 3306,
+        "cache_read_input_tokens": 514760,
+        "cache_creation_input_tokens": 30457
       },
-      "peak_context_tokens": 43157
+      "peak_context_tokens": 43770
     }
   ],
   "log": {
-    "sha256": "b5067e1a55cb036fad9fda2c6e7de9b6cf87209a0991ea0ad2798ae15da905f3",
-    "bytes": 409641,
-    "lines": 126,
-    "gzip_bytes": 89821,
-    "path": "llm-dlc/traces/587c234b-0915-4213-816f-e502a741da0a/logs/b5067e1a55cb036fad9fda2c6e7de9b6cf87209a0991ea0ad2798ae15da905f3.jsonl.gz"
+    "sha256": "5b717d88df74c20dc4132c5474456d87bd2fb20d39c41abeaebbcc9ffbc0f1b9",
+    "bytes": 420007,
+    "lines": 132,
+    "gzip_bytes": 90641,
+    "path": "llm-dlc/traces/587c234b-0915-4213-816f-e502a741da0a/logs/5b717d88df74c20dc4132c5474456d87bd2fb20d39c41abeaebbcc9ffbc0f1b9.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -152,9 +152,39 @@
       "summary": "Example 290's results are stated at their exact scope, and VF-033 queues a stronger preservation claim and an audit of the observed initializers for a later run",
       "body": "The user's decision on reviewing D005 (the watcher's acceptance of 290's claims in their place): keep the claims and their verdicts, say exactly what they cover, and queue the rest. 290's page and example.json notes now say that preservation is established for the count of matchers by type in the lone-DispatcherServlet configuration, not for the matchers themselves or what they match, and that fixed-security and preservation hold under the observation of library initializers on a JVM: two of them load resource bundles, so 'no input' is that observation's assumption until the state read is audited (points 1 and 2 of the outside expert's c3 review); the refutations replay on a JVM and do not rest on it. VF-033 (open) records both, with the chosen follow-up (restate preservation to compare each matcher's type, pattern, HTTP method and servlet path: a setup and about one proof cycle) and the one not chosen (compare matches(), which needs HandlerMappingIntrospector modelled). Verified: validate_example.py 290 passes.",
       "log_sha256": "b5067e1a55cb036fad9fda2c6e7de9b6cf87209a0991ea0ad2798ae15da905f3"
+    },
+    {
+      "change_id": "lmwqozysyszlnwovlvyrsrlnmlymrlmm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "What a default run left unread is a plain output file of the job, and its log says only how many paths",
+      "body": "The packed line (default tests: unread zlib:...) was opaque to the redaction scanner and raised a long-token warning in every transcript and log that showed it (finding fd843c30, after the merge of prove-setup). The step now writes verification/default-tests-unread.txt, the job's id and then one path a line, as a declared output: the pipeline applies it to the working copy when it collects a passed run and keeps a failed or late run's under the result's outputs/. default_tests.py reads a run's list from there (the kept copy first, else the file when its first line names the job), so the gate uses the list of the latest passed run and older runs cover by the fixed list alone; the file itself is on that list. The two runs already collected with a packed line no longer have a list. Checked with the suite's new tests (the step writes the file and prints a count; a run finds its list applied or kept) and test_costs.py run --changed: 14 of 14 passed.",
+      "log_sha256": "5b717d88df74c20dc4132c5474456d87bd2fb20d39c41abeaebbcc9ffbc0f1b9"
+    },
+    {
+      "change_id": "lzvyqmsyoprtmpqlursvnxwyllvkzoks",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue a default test run that writes its unread list as an output file (verification pending)",
+      "body": "The job default_tests.py queue wrote at the commit before (its id is the new file under verification/jobs/) runs the default test run with verification/default-tests-unread.txt declared as its output: collecting it should apply that file to the working copy, with the job's id as its first line, and its log should carry a count and no packed line. Nobody waits for it.",
+      "log_sha256": "5b717d88df74c20dc4132c5474456d87bd2fb20d39c41abeaebbcc9ffbc0f1b9"
+    },
+    {
+      "change_id": "qoktuvtvukrrtymwtsmnpxyuyksluuuw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "5b717d88df74c20dc4132c5474456d87bd2fb20d39c41abeaebbcc9ffbc0f1b9"
     }
   ],
   "logs": {
+    "5b717d88df74c20dc4132c5474456d87bd2fb20d39c41abeaebbcc9ffbc0f1b9": {
+      "bytes": 420007,
+      "lines": 132,
+      "gzip_bytes": 90641,
+      "url": null
+    },
     "8a048c85fbde04894c979e2b8822bc7c7aeeccc5283d113d4f28b69b22e7065a": {
       "bytes": 358266,
       "lines": 88,
