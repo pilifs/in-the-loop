@@ -75,6 +75,10 @@ llm-dlc/
   tools/loop_stats.py               adds up the loops from the metrics tables, the run records and the verification jobs;
                                     test_loop_stats.py tests it
   tools/streams_status.py           the state and status bar of run-streams.sh; test_streams_status.py tests it
+  tools/unstale.py                  puts a jj workspace right after another session's operation met its own (stale, or a
+                                    second copy of the working-copy change); test_unstale.py tests it
+  tools/brief_run.py                the watcher's tools for a brief's run (/run-brief): preflight, the foundation
+                                    stage, start, wait, status; test_brief_run.py tests it and run-streams.sh's part
   decisions/<name>.jsonl            a run's decision record: what its conductor decided (a parallel run's conductor, or the
                                     watcher of a proof loop, whose record is prove-change), with the confidence, how hard it
                                     is to undo and the user's review, and the questions queued for the user (schema.json)
@@ -180,7 +184,7 @@ A brief can carry its own instructions for when to stop under a `## Loop until` 
 
 It runs in a systemd scope capped at 3.5 GB (a brief's `- memory:` or `FEATURE_LOOP_MEMORY_MAX` changes that), so a proof that exhausts memory is killed alone and the session sees it fail. The scope is named after the loop, `feature-loop-NAME.scope` (`feature-loop-engine-priorities-jbmc.scope` for the brief `engine-priorities-jbmc.md`), so different loops can run at once. A loop won't start if less memory than its cap is available, or if its own scope is still active.
 
-Loops can run in parallel on separate branches, each in its own [jj workspace](https://jj-vcs.github.io/jj/latest/working-copy/#workspaces): `jj workspace add --name NAME -r @- ../REPO-NAME` makes a directory with its own working copy, on a branch of its own from the latest commit, sharing the repository. Claude Code files a session under the directory it ran in, so each workspace's sessions and traces stay apart. A brief that sets `- workspace: NAME` runs only from that workspace's copy of the script, `$(jj workspace root --name NAME)/llm-dlc/tools/feature-loop.sh`, so its commits can't land on another branch. A brief that sets `- fork: SESSION` starts its session, the first time, as a fork of that one: the streams of a brief all begin from the conversation that planned them, in a turn with tools and hooks off, so the parent's transcript, copied into the workspace for the fork and removed after, is never published there. [`tools/run-streams.sh`](tools/run-streams.sh) `engines` runs a brief's whole loop unattended from the default workspace, in one terminal, each line prefixed with its loop. It compacts the planning session once and adds the workspaces. Run inside tmux, it turns the mouse on so the wheel scrolls back through the output over ssh (or Ctrl-b `[`), moves to a new window with a 200,000-line history if the pane keeps fewer, which stays open with the output after the run, and keeps a status bar at the bottom of the pane: the run's age and spend, the integration check's last result, and per loop its cycle, commits, spend, status and time since its last output (`tools/streams_status.py`, with its state in `llm-dlc/loop-summaries/run-streams-NAME/`). A brief whose Loop settings name `- integration: SCRIPT` also gets a rolling integration line while its streams run ([`tools/integration.py`](tools/integration.py)): in a workspace of its own, `NAME-integration`, it merges every stream's latest commit whenever one moves (at most hourly) and runs the script on it. A merge that passes is committed there, on a line of merges each known to work (`integration.py line BRIEF` names the newest), never pushed and never on the default workspace's line. One that fails is left uncommitted and triaged by the files in conflict or named in the output: a stream whose changes alone are named gets a `failure` item in its inbox; two or more get an open question in the decision record on how their changes meet, and a `queued` item each, and once a merge passes again the question is closed as settled and each side is told it may go on. The report goes to `llm-dlc/loop-summaries/NAME-integration.md`, which the streams read every cycle. Each brief's instruction also ends with one sentence (`tools/inbox.py instruction`) pointing it at its inbox, `llm-dlc/loop-summaries/BRIEF-inbox.md` in the default workspace, where a conductor puts only what that stream has to act on, each item with an id the stream acknowledges in its Progress; the brief comes first, then the user's decisions, then the conductor's messages ([stream-conductor.md](loops/stream-conductor.md), Design 2). The trace files every commit regenerates conflict as soon as two streams have committed; the check settles those with the merged tree's `sync.py regenerate` before it runs the script, so only a conflict in real work stops it; `foundations` is the first, `cleanup` (`tools/cleanup-integration.sh`) the second, and `application-core` (`tools/application-core-integration.sh`) the third. A brief whose Loop settings say `- verification: separate` runs without the pipeline: `run-streams.sh` starts no verification loop and waits for no job, and its loops submit jobs and go on, leaving the results for a person to review after the run; a session may still await a quick job, submitted at a higher priority, within its cycle for a bounded time (`foundations` does this). It starts `verification-loop.sh` for the loops' jobs and runs every stream's loop side by side. Then it runs the brief's own loop, which merges the streams in a fresh session (the brief tells it where the streams' commits, Progress, run records, traces and jobs are), and stops. Each brief ends its Progress with a status line (`- Status: working`, `waiting on jobs ID ...`, `done` or `blocked: ...`): a loop waiting on jobs is run again once their results are collected, and one done or blocked is finished, so a person is needed only at the end. To run a session's loops on another machine, [`tools/transfer-session.sh`](tools/transfer-session.sh) `HOST SESSION`, run here after closing the session, does everything before `run-streams.sh`: it checks this repo is on top of the remote main, publishes, copies the transcript into HOST's project directory for the repo, moves the local transcript aside so the session goes on in one place only (a push republishes every session it finds, and would roll back one that went on elsewhere), and brings HOST's repo to the pushed main, refusing if it has work of its own not on main. The verification runner also runs jobs committed in other workspaces (see `verification/README.md`). Merging the branches is a loop's work of its own: [Streams](loops/engine-priorities.md#streams) in the engine-priorities brief is the first worked example, with the steps that keep the traces whole (recording each stream's last turns, copying its logs, and `sync.py regenerate` after the merge, which rewrites the generated trace files from the session files and lists any conflict left). `check` reads the commits in the history of `@` only: a commit another workspace's line holds is checked there, by its own `commit`, and here once it is merged.
+Loops can run in parallel on separate branches, each in its own [jj workspace](https://jj-vcs.github.io/jj/latest/working-copy/#workspaces): `jj workspace add --name NAME -r @- ../REPO-NAME` makes a directory with its own working copy, on a branch of its own from the latest commit, sharing the repository. Claude Code files a session under the directory it ran in, so each workspace's sessions and traces stay apart. A brief that sets `- workspace: NAME` runs only from that workspace's copy of the script, `$(jj workspace root --name NAME)/llm-dlc/tools/feature-loop.sh`, so its commits can't land on another branch. A brief that sets `- fork: SESSION` starts its session, the first time, as a fork of that one: the streams of a brief all begin from the conversation that planned them, in a turn with tools and hooks off, so the parent's transcript, copied into the workspace for the fork and removed after, is never published there. [`tools/run-streams.sh`](tools/run-streams.sh) `NAME` runs a brief's whole loop unattended from the default workspace, in one terminal, each line prefixed with its loop (a person starts it through a watcher, [`/run-brief`](#a-briefs-run), which adds a foundation stage before it and answers what it asks). It compacts the planning session once and adds the workspaces. Run inside tmux, it turns the mouse on so the wheel scrolls back through the output over ssh (or Ctrl-b `[`), moves to a new window with a 200,000-line history if the pane keeps fewer, which stays open with the output after the run, and keeps a status bar at the bottom of the pane: the run's age and spend, the integration check's last result, and per loop its cycle, commits, spend, status and time since its last output (`tools/streams_status.py`, with its state in `llm-dlc/loop-summaries/run-streams-NAME/`). A brief whose Loop settings name `- integration: SCRIPT` also gets a rolling integration line while its streams run ([`tools/integration.py`](tools/integration.py)): in a workspace of its own, `NAME-integration`, it merges every stream's latest commit whenever one moves (at most hourly) and runs the script on it. A merge that passes is committed there, on a line of merges each known to work (`integration.py line BRIEF` names the newest), never pushed and never on the default workspace's line. One that fails is left uncommitted and triaged by the files in conflict or named in the output: a stream whose changes alone are named gets a `failure` item in its inbox; two or more get an open question in the decision record on how their changes meet, and a `queued` item each, and once a merge passes again the question is closed as settled and each side is told it may go on. The report goes to `llm-dlc/loop-summaries/NAME-integration.md`, which the streams read every cycle. Each brief's instruction also ends with one sentence (`tools/inbox.py instruction`) pointing it at its inbox, `llm-dlc/loop-summaries/BRIEF-inbox.md` in the default workspace, where a conductor puts only what that stream has to act on, each item with an id the stream acknowledges in its Progress; the brief comes first, then the user's decisions, then the conductor's messages ([stream-conductor.md](loops/stream-conductor.md), Design 2). The trace files every commit regenerates conflict as soon as two streams have committed; the check settles those with the merged tree's `sync.py regenerate` before it runs the script, so only a conflict in real work stops it; `foundations` is the first, `cleanup` (`tools/cleanup-integration.sh`) the second, and `application-core` (`tools/application-core-integration.sh`) the third. A brief whose Loop settings say `- verification: separate` runs without the pipeline: `run-streams.sh` starts no verification loop and waits for no job, and its loops submit jobs and go on, leaving the results for a person to review after the run; a session may still await a quick job, submitted at a higher priority, within its cycle for a bounded time (`foundations` does this). It starts `verification-loop.sh` for the loops' jobs and runs every stream's loop side by side. Then it runs the brief's own loop, which merges the streams in a fresh session (the brief tells it where the streams' commits, Progress, run records, traces and jobs are), and stops. Each brief ends its Progress with a status line (`- Status: working`, `waiting on jobs ID ...`, `done` or `blocked: ...`): a loop waiting on jobs is run again once their results are collected, and one done or blocked is finished, so a person is needed only at the end. To run a session's loops on another machine, [`tools/transfer-session.sh`](tools/transfer-session.sh) `HOST SESSION`, run here after closing the session, does everything before `run-streams.sh`: it checks this repo is on top of the remote main, publishes, copies the transcript into HOST's project directory for the repo, moves the local transcript aside so the session goes on in one place only (a push republishes every session it finds, and would roll back one that went on elsewhere), and brings HOST's repo to the pushed main, refusing if it has work of its own not on main. The verification runner also runs jobs committed in other workspaces (see `verification/README.md`). Merging the branches is a loop's work of its own: [Streams](loops/engine-priorities.md#streams) in the engine-priorities brief is the first worked example, with the steps that keep the traces whole (recording each stream's last turns, copying its logs, and `sync.py regenerate` after the merge, which rewrites the generated trace files from the session files and lists any conflict left). `check` reads the commits in the history of `@` only: a commit another workspace's line holds is checked there, by its own `commit`, and here once it is merged.
 
 `prove-change` is the templated moonshot behind `/prove-java-change`: the same instruction as `prove-examples`, over whichever examples [`tools/prove-loop.sh`](tools/prove-loop.sh) gives it, continuing the session that evaluated them. The skill's session, the watcher, conducts it from outside ([`runtime.md`](runtime.md#the-watcher)): it, not the loop's own judge, says after each cycle whether the example is finished, continues, or waits on its proof, in which case the loop starts the next example and returns when the proof is in; it is asked before the loop changes example, which is where it merges a workspace the user queued or stops; and where another moonshot only logs a compaction with no commit (or stops there, with `FEATURE_LOOP_STOP_ON_COMPACT=1`), this one asks and stops on its word. From 2026-11-16 every moonshot over examples is run this way, `prove-examples`' list included: `/prove-java-change 288 289 ...` in this repository.
 
@@ -215,6 +219,84 @@ llm-dlc/tools/verification-loop.sh
 
 A run that leaves work behind, such as jobs it resubmitted, is followed by another, up to 4 in a row (`VERIFICATION_LOOP_RUNS`). A run that leaves exactly what it found isn't repeated: the loop waits until the queue changes, since what is left needs a person. Jobs too big for this machine, and jobs another runner holds, don't start a run. While it runs it reads `stop` (end after the run under way, or at once while waiting), `now` (check the queue at once) and `?` (show the queue) from its terminal, and prints them when it starts. It runs alongside the feature loop, whose scope the skill leaves memory for. It commits locally and pushes nothing.
 
+### A brief's run
+
+A brief is run on command by a watcher, as a proof run is: `/run-brief NAME`
+([`.claude/skills/run-brief`](../.claude/skills/run-brief/SKILL.md)) in a Claude Code session on Opus 5.5 in the
+default workspace, or the same asked in words of a session that is already open there, which then becomes the
+watcher. The run's state is all in files, so a watcher that was compacted, or a new session, takes over a run
+under way (`brief_run.py status NAME` first). The watcher does none of the brief's work. It runs
+[`tools/brief_run.py`](tools/brief_run.py), in four stages:
+
+1. **Preflight** (`brief_run.py preflight NAME`): what would start (the brief's streams, each one's workspace,
+   session and status) and what `run-streams.sh` would otherwise stop at once it had started: a stream without a
+   brief or a workspace, two streams naming one workspace, a forgotten workspace's folder in the way, a brief
+   without a status line, another run already under way. It also says what is left for the verification runner
+   beside this many loops, and `brief_run.py budget NAME --apply` lowers `verification/pipeline.local.toml` to
+   it for the run (`--restore` afterwards): a runner budgeted for one loop beside four would take the machine
+   past its memory.
+2. **The foundation** (`brief_run.py foundation NAME`): one session on Fable 5.2 at high effort, given the brief
+   and its streams' briefs with the instruction to start the work itself, build whatever foundation it sees fit
+   for the most benefit, and update the brief for the agents that take over after it. It runs before any stream exists, so it may edit the briefs, and
+   what it commits is what every stream begins with: the interface two streams would otherwise each invent, the
+   fixture each would build, the tool each would wait for. It works in a workspace of its own,
+   `NAME-foundation`, in a scope with a loop's memory cap, so no other session's uncommitted files meet its
+   commits (on 2026-11-16 the result collector committed a watcher's unfinished merge that shared its working
+   copy). `brief_run.py land NAME` then brings its commits to the default workspace's line: moved forward when
+   that line has not moved, else by a merge whose generated trace files are regenerated. A merge that conflicts
+   in real work is taken back and reported. Landing also puts the session's closing report into each stream's
+   inbox, as an item of kind `foundation` that the stream acknowledges in its Progress, so what was built for
+   it is known to have reached it.
+3. **The run** (`brief_run.py start NAME`): `run-streams.sh`, detached, with the run's directory as its watcher.
+   The watcher blocks in `brief_run.py wait NAME`, which returns only what needs it: a loop that ended blocked
+   (below), an integration check that stopped passing, a decision open for the user, a verification loop it had
+   to start because none ran while jobs waited, a summary every 30 minutes, and the end of the run.
+4. **The report**: each loop's status against the brief's `Done when`, what was deferred or is blocked on the
+   user, the watcher's decisions still to review, the cost, and what is left on the machine.
+
+**A stream no longer waits for the end of the run for an answer.** Without a watcher, a stream that stops
+`blocked:` is finished, and the merge lists what it left. With one, `run-streams.sh` asks before it counts the
+stream as finished (`conductor.py`'s `blocked` question, half an hour at most, `RUN_STREAMS_BLOCKED_WAIT`): the
+watcher settles what it can by Design 3 of [stream-conductor.md](loops/stream-conductor.md), sends the stream
+the inbox item that says so, and answers `rerun`, and the stream goes on. Its answer is a decision in
+`llm-dlc/decisions/run-streams-NAME.jsonl`, reviewed like any other. This is the attended watcher of that
+brief's Design 8; a watcher that decides while nobody is there is not built.
+
+**A run is stopped at a boundary** with `brief_run.py stop NAME`: each loop is told to end after its cycle under
+way (the command line `feature-loop.sh` takes from its conductor directory), a loop waiting on jobs stops
+waiting, nothing is run again and the merge is not started. `start` continues. `stop --now` interrupts instead.
+
+**Where the time went.** `run-streams.sh` logs each change of a loop's phase with its time, and a summary says
+per loop how long it worked, waited on jobs, was blocked, and, for a stream, sat finished while another stream
+still ran. The last is what merging a finished stream early would save, and the second what going on to the
+next piece while jobs run would.
+
+**Two sessions in one working copy.** The brief's own loop and the result collector both commit in the default
+workspace. `sync.py commit --only PATH ...` commits the named files and folders alone and leaves everything else
+uncommitted where it is: the collector commits with the paths `pipeline.py commit-paths` names (its results,
+the findings, the examples table, the outputs it applied), and a loop's cycle is told to name its own. A
+collector in a workspace of its own was considered and not built: every reader of results (a stream waiting on
+its jobs, the watcher, the push gate) reads them on the default line, so its commits would have to be landed
+there one by one, which brings the shared working copy back.
+
+**While the foundation runs**, `wait` says at each interval how long it has run, its tool calls, the command under
+way and its last commit; its spend is known when it ends, and is then in every summary's total. **A blocked loop
+is run again twice at most** (`RUN_STREAMS_RERUNS`); the third time it is left for the merge without a question.
+**A workspace jj calls stale** is put right with [`tools/unstale.py`](tools/unstale.py), which keeps the edits
+that `jj workspace update-stale` alone would take off the disk. [`loops/rehearsal.md`](loops/rehearsal.md) is a
+throwaway brief of two streams that exercises all of this with real sessions for little money: its second
+stream stops blocked on purpose, for a word only the watcher can pass on.
+
+**Any brief runs.** `run-streams.sh NAME` takes a brief of `llm-dlc/loops/` by name or file and reads its
+streams from the brief's Loop settings (`- streams: a, b`); a brief that names none is run as its own loop
+alone. The five briefs older than the setting keep the lists the script used to hold. A stream brief's
+`- fork:` is optional: without one, each stream starts a session of its own. `run-streams.sh --plan NAME`
+prints what it read and starts nothing.
+
+**What else got faster** (2026-11-16, from the runs of 2026-11-08 to 2026-11-16): a stream waiting on jobs is
+checked every minute, not every five (`RUN_STREAMS_POLL`); and a brief may queue its default test runs as jobs nobody waits for, as a proof run does
+([brief-template.md](loops/brief-template.md#test-policy)).
+
 ## Sessions
 
 Newest first. Each row links to the session summary. The [traces overview](traces/README.md) adds them all up, and [loop statistics](traces/loops.md) adds up the loops.
@@ -222,13 +304,13 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 <!-- index:begin (generated by llm-dlc/tools/sync.py) -->
 | Started | Session | Prompts | Commits | Status |
 |---|---|---|---|---|
-| 2026-11-17 02:13 UTC | [Window 11 verification loop](traces/b74acbd8-95de-40d7-8793-79948e8c27ae/summary.md) | 6 | 3 | open |
-| 2026-11-17 02:00 UTC | [7a0043cd-fc61-48d4-bca1-fdef53364800](traces/7a0043cd-fc61-48d4-bca1-fdef53364800/summary.md) | 1 | 3 | open |
-| 2026-11-17 01:38 UTC | [217e3061-f107-4c8d-b779-3330a34ecabf](traces/217e3061-f107-4c8d-b779-3330a34ecabf/summary.md) | 1 | 7 | ended |
-| 2026-11-17 00:23 UTC | [587c234b-0915-4213-816f-e502a741da0a](traces/587c234b-0915-4213-816f-e502a741da0a/summary.md) | 1 | 20 | ended |
+| 2026-11-17 02:13 UTC | [Window 11 verification loop](traces/b74acbd8-95de-40d7-8793-79948e8c27ae/summary.md) | 6 | 4 | open |
+| 2026-11-17 02:00 UTC | [7a0043cd-fc61-48d4-bca1-fdef53364800](traces/7a0043cd-fc61-48d4-bca1-fdef53364800/summary.md) | 1 | 5 | open |
+| 2026-11-17 01:38 UTC | [217e3061-f107-4c8d-b779-3330a34ecabf](traces/217e3061-f107-4c8d-b779-3330a34ecabf/summary.md) | 1 | 10 | ended |
+| 2026-11-17 00:23 UTC | [587c234b-0915-4213-816f-e502a741da0a](traces/587c234b-0915-4213-816f-e502a741da0a/summary.md) | 1 | 21 | ended |
 | 2026-11-17 00:10 UTC | [5e11162e-5d2d-4d1e-8380-f13b91726445](traces/5e11162e-5d2d-4d1e-8380-f13b91726445/summary.md) | 1 | 2 | ended |
-| 2026-11-16 23:33 UTC | [Test suite improvements from docs](traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/summary.md) | 8 | 36 | ended |
-| 2026-11-16 23:20 UTC | [853b40ba-32fd-4638-8789-b2c3159d775a](traces/853b40ba-32fd-4638-8789-b2c3159d775a/summary.md) | 1 | 8 | ended |
+| 2026-11-16 23:33 UTC | [Test suite improvements from docs](traces/b23a1dcc-0128-4ba1-b4aa-85526c834e11/summary.md) | 8 | 43 | open |
+| 2026-11-16 23:20 UTC | [853b40ba-32fd-4638-8789-b2c3159d775a](traces/853b40ba-32fd-4638-8789-b2c3159d775a/summary.md) | 1 | 9 | ended |
 | 2026-11-16 22:43 UTC | [55c066b9-518c-495d-8dfa-4ffaf85839d4](traces/55c066b9-518c-495d-8dfa-4ffaf85839d4/summary.md) | 1 | 5 | ended |
 | 2026-11-16 20:48 UTC | [a6490df0-ff44-40c1-b34e-d0de7394edeb](traces/a6490df0-ff44-40c1-b34e-d0de7394edeb/summary.md) | 1 | 6 | ended |
 | 2026-11-16 19:50 UTC | [4bd65c9c-5e21-441c-aef9-b9f46ff56d94](traces/4bd65c9c-5e21-441c-aef9-b9f46ff56d94/summary.md) | 1 | 3 | ended |
@@ -240,10 +322,10 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 | 2026-11-16 15:14 UTC | [0d14bf6f-8e0a-47cf-bce9-778897fc474e](traces/0d14bf6f-8e0a-47cf-bce9-778897fc474e/summary.md) | 3 | 2 | ended |
 | 2026-11-16 05:44 UTC | [55c8cba6-01ea-400f-bee3-52e9db3aaba0](traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/summary.md) | 1 | 8 | ended |
 | 2026-11-15 23:45 UTC | [5399f71b-f38b-4670-8fbe-9aa44d5cd46d](traces/5399f71b-f38b-4670-8fbe-9aa44d5cd46d/summary.md) | 3 | 3 | ended |
-| 2026-11-15 19:24 UTC | [Prove-java-change skill and in-the-loop runtime](traces/3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | 31 | 114 | ended |
+| 2026-11-15 19:24 UTC | [Prove-java-change skill and in-the-loop runtime](traces/3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | 31 | 122 | ended |
 | 2026-11-15 17:34 UTC | [48807e20-0bdb-4031-8ced-d21d16fc3816](traces/48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) | 1 | 6 | ended |
-| 2026-11-15 17:27 UTC | [Moonshot loop status](traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 107 | 124 | open |
-| 2026-11-15 16:13 UTC | [a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31](traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) | 41 | 88 | ended |
+| 2026-11-15 17:27 UTC | [Moonshot loop status](traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 108 | 133 | open |
+| 2026-11-15 16:13 UTC | [a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31](traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) | 41 | 90 | ended |
 | 2026-11-15 14:52 UTC | [Moonshot loop stats backfill](traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/summary.md) | 11 | 12 | ended |
 | 2026-11-15 12:23 UTC | [72d38e75-aae0-402e-9b8a-881beec53824](traces/72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | 61 | 21 | ended |
 | 2026-11-15 05:45 UTC | [8f6a10f0-126a-4dc8-8126-3348577606af](traces/8f6a10f0-126a-4dc8-8126-3348577606af/summary.md) | 1 | 2 | ended |

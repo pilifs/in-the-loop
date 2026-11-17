@@ -36,6 +36,11 @@ comes before its deadline, so a conductor that has gone away never stops the wor
     example     the loop is between two items: `continue` (the default), or `stop` here. It waits longer while
                 DIR/merge-queue names a workspace the conductor is to merge first.
 
+run-streams.sh asks a fourth of the watcher of a brief's run (RUN_STREAMS_WATCHER, llm-dlc/tools/brief_run.py):
+
+    blocked     a stream's loop, or the brief's own, ended with a `blocked:` status: `rerun` it, once what blocked
+                it is settled and its inbox says so, or `leave` it (the default) for the merge to list.
+
 A verdict given in time is also a decision, and goes into the decision record beside the verdict's own file:
 llm-dlc/decisions/NAME.jsonl (decisions.py), NAME the run directory's name (in a runtime checkout `local-NAME`, so a
 user's record never meets the one a release carries). There the user reviews it afterwards with the rest
@@ -80,7 +85,7 @@ REPO = Path(__file__).resolve().parents[2]
 EVENTS = "events.jsonl"
 COMMANDS = "commands"
 MERGE_QUEUE = "merge-queue"
-VERDICTS = ("continue", "stop", "finished", "waiting")
+VERDICTS = ("continue", "stop", "finished", "waiting", "rerun", "leave")
 DEFAULT_ANSWERS = ("continue", "stop")  # an event that names none: a compaction
 JOB_ID = re.compile(r"\d{8}-\d{6}-[a-z0-9-]+")
 
@@ -182,6 +187,11 @@ QUESTIONS = {
     "example": ("The loop is between two examples{after}: does it take the next one?", {
         "continue": ("take the next example", "the run goes on", "stop the loop after the example under way"),
         "stop": ("end the loop here", "the examples left are not started", "start the loop again on the examples left")}),
+    "blocked": ("A loop of a brief's run ended blocked: is it run again?", {
+        "rerun": ("run the loop again", "what blocked it was settled and its inbox says so: it goes on, at a further cycle's cost",
+                  "answer leave when it next ends blocked"),
+        "leave": ("leave it blocked", "the run goes on without it, and the merge lists what it left for the user",
+                  "set its status back to working and start the run again")}),
 }
 
 

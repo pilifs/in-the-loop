@@ -144,6 +144,16 @@ Two default-run jobs ran at once on 2026-11-17 (010456, and 005759 started a sec
 
 Superseding looked only at jobs pending or running, and read a job's id only at the start of a status row. It now also counts a newer default run that has finished or been collected, so a passed job the runner starts again exits at once, finds the id anywhere in the row, and says in the log when the queue could not be read (it then runs, as before). Why the runner started a passed job again is not found: that is in pipeline.py's collecting, not here. Checked with three new tests (a held lock makes a second step wait and re-ask; a newer collected run; an unreadable queue), the 13 Python test files test_costs.py run --changed chose, and tests/tiers.rs.
 
+### /run-brief: an open Opus session becomes the watcher or takes a run over, and the preflight sees a loop at work and loops sharing a session
+
+change `ykpxlwxnyzzu` · [log `e30ea06db31e`](https://terminalvalue.net/raw-traces/587c234b-0915-4213-816f-e502a741da0a/e30ea06db31e6d39a8a9d33d91c90fc4493d2336352f73eb2d733fbc2eb7079c.jsonl.gz)
+
+The user wants to start a brief's run from a session that is already open, which then is the watcher. The skill says so: any Opus 5.5 session of the default workspace can be asked in words, the run's state is all in files, and a new section, A run under way, has the watcher read brief_run.py status first and either go straight to waiting (a run it takes over), continue an interrupted run, or start a new one.
+
+Two gaps in the preflight, found by checking it against the proof run under way: feature-loop.sh runs from a private copy of itself, so looking for prove-loop.sh by name missed a running proof loop, and the preflight now blocks on any feature loop at work in the default workspace; and a brief without a session setting falls back on the loops' one default session, so each brief of the run must name a session and no two the same.
+
+Verified by test_brief_run.py, 26 tests, and the cost-tier lint. The whole default run was not repeated: it passed 49 of 49 on the commit before, and only brief_run.py, its tests, the skill and the README changed since.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/587c234b-0915-4213-816f-e502a741da0a/e30ea06db31e6d39a8a9d33d91c90fc4493d2336352f73eb2d733fbc2eb7079c.jsonl.gz) has every step in between: reasoning, tool calls and their results.

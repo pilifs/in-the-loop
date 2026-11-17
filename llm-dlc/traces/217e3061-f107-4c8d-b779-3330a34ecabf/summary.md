@@ -62,6 +62,28 @@ change `wxqzmmswyzvy` · [log `32021d84567f`](https://terminalvalue.net/raw-trac
 
 Job 20261117-015957-default-test-run-at-ksyktoyyrtyn: the first default run with the one-at-a-time lock, the release gate and the seven retiered tests all in. If it passes on its own, it is the clean run VF-034 needs, and it covers the main line's tip for a push.
 
+### /run-brief: a commit takes only its own files, a run stops at a boundary, the foundation's report reaches each stream's inbox, and a summary says where the time went
+
+change `pqlvmnrruzsw` · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
+
+Four additions the user chose before the first run of a brief through its watcher. (1) sync.py commit --only PATH ... commits the named files and folders alone: every other file changed in the working copy is set aside in a change below, and put back uncommitted after the commit, so the files on disk never change. The result collector commits with the paths pipeline.py commit-paths names (verification/, the examples table, the outputs it applied), and the loops' instruction names --only in place of a procedure to follow by hand; on 2026-11-16 a commit of results took a watcher's unfinished merge with it. A collector in a workspace of its own was the plan's wording and is not what this does: every reader of results reads them on the default line, so its commits would have to be landed there one by one, which brings the shared working copy back. (2) brief_run.py stop NAME stops a run at a boundary: run-streams.sh gives each loop a directory for command lines, each running loop is told to end after its cycle, a loop waiting on jobs stops waiting, nothing is run again and the merge is not started; start continues, and stop --now interrupts as before. (3) Landing the foundation puts its closing report into each stream's inbox as an item of a new kind, foundation, which the stream acknowledges. (4) run-streams.sh logs each change of a loop's phase with its time, and a summary says per loop how long it worked, waited on jobs, was blocked, and sat finished while another stream still ran.
+
+Verified by test_commit_only.py on a real jj repository (the named paths committed, a modified, an added and a nested file of another session left uncommitted with their contents), test_brief_run.py (28 tests: a run stopped while a stream waits on jobs, then continued to its merge; the hand-off sent once; the time lines), and test_costs.py run --changed, 26 of 27 files, the one failure an assertion of mine on the order two parallel streams start in, since fixed and run three times. Telling a real loop to end after its cycle is the command path the proof loop's watcher already uses, and is not exercised here with a real session. The working copy went stale during this work and was restored from a backup, compared against jj's own snapshot.
+
+### Queue a default test run at run-brief's four additions (verification pending)
+
+change `smplsyrurprl` · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
+
+The job README.md runs the default test run at the commit that added commit --only, the boundary stop, the foundation hand-off and the time lines to /run-brief. Nobody waits for it.
+
+### A workspace a brief's run makes takes the session logs it lacks
+
+change `zvqqklkpkzky` · [log `32021d84567f`](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz)
+
+A new jj workspace has none of the session logs the default workspace stores and has not uploaded, and the check after every commit there reported each as an error (58 of them in the run-brief workspace itself), which a foundation or stream session would have tried to fix. run-streams.sh, for a stream's workspace and the integration check's, and brief_run.py, for the foundation's, now run sync.py adopt-logs in a workspace they have just made.
+
+Verified by test_brief_run.py, 28 tests, whose stand-in for sync.py records that the foundation's new workspace asked for the logs; in the run-brief workspace itself adopt-logs took the check from 58 errors to none.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/217e3061-f107-4c8d-b779-3330a34ecabf/32021d84567f503c48ec254449b9355c04939df2231ce4e124df580243a8451f.jsonl.gz) has every step in between: reasoning, tool calls and their results.

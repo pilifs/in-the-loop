@@ -77,22 +77,20 @@ commands by hand to see: the runner is how they run, under limits.
    - When a finding belongs to a brief or an example, record it there too (the brief's Progress, the example's
      `notes`) and link the entry to it. This page is the index a person reads; it does not replace those.
 
-6. **Commit.** Follow `CLAUDE.md`: `python3 llm-dlc/tools/sync.py commit` with the message `collect` printed,
-   reworded for a reader who did not see the run; it checks the result itself. The commit should hold only
-   `verification/results/`, the outputs `collect` applied, the regenerated `examples/README.md` and
-   `examples/index.json`, `verification/findings.md`, and any jobs you resubmitted. If `jj st` shows other files, they are another
-   session's: keep them out by moving them into a change of their own below yours, committing, and moving them back
-   on top:
+6. **Commit.** Follow `CLAUDE.md`, with the message `collect` printed, reworded for a reader who did not see the
+   run, and with `--only`, so the commit takes your files and nothing else:
 
    ```bash
-   jj split -r @ -m "wip: another session's files" PATH ...   # their files, now the parent of @
-   OTHER=$(jj log --no-graph -r @- -T change_id)
-   python3 llm-dlc/tools/sync.py commit -m "..." -m "..."
-   jj rebase -r "$OTHER" -A "$(jj log --no-graph -r @- -T change_id)"
-   jj squash --from "$OTHER" --into @ -u                       # their files uncommitted again, on top
+   python3 llm-dlc/tools/sync.py commit --only $(python3 verification/pipeline.py commit-paths) -m "..." -m "..."
    ```
 
-   The files on disk don't change, so the other session is not disturbed. Push only if the user asks.
+   `commit-paths` names what a commit of results holds: `verification/` (the results, `findings.md`, any job you
+   resubmitted), the regenerated `examples/README.md` and `examples/index.json`, and the outputs `collect`
+   applied. Another session often has uncommitted files in this working copy (a loop, a watcher's merge), and
+   the commit leaves them uncommitted where they are; it prints which (`left uncommitted, as outside --only`).
+   Read that line: if it names a file you changed yourself (an example's `notes`, say), commit again with that
+   path added after `--only`. Never commit without `--only` here: on 2026-11-16 a commit of results took a
+   watcher's unfinished merge with it. The commit checks the result itself. Push only if the user asks.
 
 7. **Report.** Tell the user, in this order: verdicts that need someone (with the job ids and what was found, and the
    `VF-` entry each is in), jobs that need a bigger machine or a rerun, errors, then a count of clean passes and how

@@ -58,6 +58,35 @@ Say in the brief which of the two modes it runs in:
   time (15 minutes after submitting, polling `pipeline.py status`); every other job is listed under Progress for review
   after the run. The timebox counts the failures the loop sees: quick jobs that came back, and inline checks.
 
+### Test policy
+
+Say in the brief which of the two it runs under:
+- **Inline** (the default): the standing rule above, the whole default run before every commit.
+- **Queued** (`- tests: queued` in Loop settings): as a `/prove-java-change` run does since 2026-11-17 (CLAUDE.md,
+  Tests). A cycle runs the tests of what it changed before its commit (`python3 lib/tools/test_costs.py run --changed`),
+  and once a piece of work is done it queues the default run as a job nobody waits for
+  (`python3 verification/default_tests.py queue --why "WHY"`, committed with its next commit), then takes the next
+  piece. Of the default runs waiting together only the newest runs. A run that comes back failed is the first thing
+  its owner takes up, before new work, and what was built on the failed commit is not accepted until the repair's
+  run passes. Bookkeeping commits (Progress, a status line, a result recorded) queue nothing. A push requires a
+  passed run covering its commit whatever the policy (`default_tests.py gate`).
+
+### How a brief is run
+
+A person starts a brief with `/run-brief NAME` (`.claude/skills/run-brief`): a watcher session runs the
+preflight, the foundation stage, the streams and the merge, and answers what they ask
+([`llm-dlc/README.md`](../README.md#a-briefs-run)). So a brief needs no planning session to fork from, and no
+entry in any script: its streams are the `- streams:` line of its Loop settings.
+
+- **The foundation stage** comes before the streams: one session on Fable 5.2 reads the brief and the streams'
+  briefs, builds whatever every stream would otherwise build or wait for (a shared interface, a fixture, a
+  tool), and updates the plan to say so. Write the brief so that this is easy to see: name under "The plan" what
+  two or more streams depend on, and what each stream owns. The stage may edit the brief and the streams'
+  briefs, since no loop is running yet.
+- **A stream that stops `blocked:`** is put to the watcher, who can settle what blocked it, tell the stream
+  through its inbox, and have it run again during the run. Say in the status what it is blocked on and who can
+  settle it, so the watcher need not guess.
+
 ## Skeleton
 
 ```markdown
@@ -112,8 +141,11 @@ Settled by the user on DATE, numbered.
 - model: claude-opus-5-5
 - effort: high
 - memory: 3.5G (optional)
+- streams: a, b, c (main brief of streams: each has its brief beside this one, NAME-a.md, and runs in parallel)
 - workspace: NAME (streams only)
-- fork: SESSION (streams only: the planning session)
+- fork: SESSION (streams only, optional: a planning session every stream starts as a fork of; without it each
+  stream starts a session of its own, from its brief and what the foundation stage left)
+- tests: queued (optional: see Test policy)
 - integration: SCRIPT (optional, main brief of streams: the check the rolling integration line runs on each merge)
 - verification: separate (optional: see Verification mode)
 - new-window: no (optional, main brief of streams: run-streams.sh stays in its tmux pane instead of moving to a new

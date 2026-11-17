@@ -1152,6 +1152,70 @@
       "summary": "Queue the default test run at the merge of prove-setup's finished line (verification pending)",
       "body": "Job 20261117-015957-default-test-run-at-ksyktoyyrtyn: the first default run with the one-at-a-time lock, the release gate and the seven retiered tests all in. If it passes on its own, it is the clean run VF-034 needs, and it covers the main line's tip for a push.",
       "log_sha256": "a814a49bd6ed8f2a657d70d814f58f5a489e0530aa5039adca537aa140949ce9"
+    },
+    {
+      "change_id": "xppmwwppknkylnltzvkvxsnplyoxvnko",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "/run-brief: a watcher runs a feature brief on command, with a foundation stage on Fable 5.2 before its streams",
+      "body": "A brief of llm-dlc/loops/ was started by hand, and its run was known to run-streams.sh only through a list of five names in the script. A local skill, /run-brief (.claude/skills/run-brief, not part of the plugin), now runs any brief with a watcher session on Opus 5.5, as /prove-java-change runs a proof. Its tool is llm-dlc/tools/brief_run.py: a preflight that finds what run-streams.sh would stop at before anything starts and says what the verification runner may keep beside this many loops (budget --apply lowers verification/pipeline.local.toml for the run); a foundation stage, one Fable 5.2 session at high effort given the user's instruction to start the work itself, build the foundation it sees fit and update the brief for the agents that take over, in a workspace of its own so no other session's uncommitted files meet its commits; land, which brings its commits to the default line, moved forward or by a merge with the generated trace files regenerated, and takes back a merge that conflicts in real work; start, which runs run-streams.sh detached; and wait, which returns only what needs the watcher (a blocked loop, a failing integration check, an open decision, a missing verification loop, a summary every 30 minutes, the end).\n\nrun-streams.sh takes a brief by name or file and reads its streams from the brief's Loop settings (- streams: a, b); the five older briefs keep their lists, a brief with no streams runs as its own loop, --plan prints what was read, and a stream brief's fork is optional. With a watcher, a loop that ends blocked is put to it (conductor.py's new blocked question: rerun or leave, half an hour at most), so a decision reaches its stream during the run instead of after it; the verdict is a decision in the record. A stream waiting on jobs is checked every minute, not every five. The brief template gains the streams setting, how a brief is run, and an opt-in test policy (tests: queued: the default run as a job per commit instead of a wait before each next piece), which CLAUDE.md names as an exception for such a brief's own loops.\n\nVerified by llm-dlc/tools/test_brief_run.py (24 tests on a made-up jj repository with stand-ins for claude, feature-loop.sh and sync.py, including run-streams.sh end to end: a blocked stream run again at the watcher's word, one left without an answer, a brief with no streams, and a run started and watched by the tool) and by the default test run, 49 of 49 files. No brief has been run through it with real sessions. Not built from the user's plan (~/docs/01-feature-stream-plumbing-plan.md): the result collector in a workspace of its own, the submitted, released and accepted boundary, a submission boundary in feature-loop.sh, routing inside wait, early merge and a headless watcher. The work is in the jj workspace run-brief, beside the default line, which a proof run is using.",
+      "log_sha256": "9fb0125cfbee1225a5429c009839ff7b128ba89a788844e670010dbc783fc186"
+    },
+    {
+      "change_id": "ykpxlwxnyzzuqtpolzyltpxoktsrupzx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "/run-brief: an open Opus session becomes the watcher or takes a run over, and the preflight sees a loop at work and loops sharing a session",
+      "body": "The user wants to start a brief's run from a session that is already open, which then is the watcher. The skill says so: any Opus 5.5 session of the default workspace can be asked in words, the run's state is all in files, and a new section, A run under way, has the watcher read brief_run.py status first and either go straight to waiting (a run it takes over), continue an interrupted run, or start a new one.\n\nTwo gaps in the preflight, found by checking it against the proof run under way: feature-loop.sh runs from a private copy of itself, so looking for prove-loop.sh by name missed a running proof loop, and the preflight now blocks on any feature loop at work in the default workspace; and a brief without a session setting falls back on the loops' one default session, so each brief of the run must name a session and no two the same.\n\nVerified by test_brief_run.py, 26 tests, and the cost-tier lint. The whole default run was not repeated: it passed 49 of 49 on the commit before, and only brief_run.py, its tests, the skill and the README changed since.",
+      "log_sha256": "9fb0125cfbee1225a5429c009839ff7b128ba89a788844e670010dbc783fc186"
+    },
+    {
+      "change_id": "mrwsuwkprqyzyvprlklntoruumltnrku",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the default line into run-brief: the queued test policy for briefs follows the line's default-run job",
+      "body": "The default line moved on while /run-brief was built beside it: the default test run became a verification job nobody waits for (verification/default_tests.py), tests of a change are chosen from what changed, and sync.py takes a workspace's missing logs from the one that stores them. Only CLAUDE.md conflicted, in the Tests section: the line's text is kept, and the sentence for a brief that says tests: queued is restated in the line's terms (run --changed before a commit, default_tests.py queue once a piece of work is done), as is the brief template's Test policy.\n\nVerified by the tests of what the merge touched on this side (test_brief_run, test_conductor, test_watch, test_inbox, test_integration), the cost-tier lint, and sync.py regenerate, after which the check reports no error: the 58 missing-log errors of the earlier commits here are gone, the logs taken from the default workspace.",
+      "log_sha256": "9fb0125cfbee1225a5429c009839ff7b128ba89a788844e670010dbc783fc186"
+    },
+    {
+      "change_id": "pqlvmnrruzswypktxpxnxvstukswosuu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "/run-brief: a commit takes only its own files, a run stops at a boundary, the foundation's report reaches each stream's inbox, and a summary says where the time went",
+      "body": "Four additions the user chose before the first run of a brief through its watcher. (1) sync.py commit --only PATH ... commits the named files and folders alone: every other file changed in the working copy is set aside in a change below, and put back uncommitted after the commit, so the files on disk never change. The result collector commits with the paths pipeline.py commit-paths names (verification/, the examples table, the outputs it applied), and the loops' instruction names --only in place of a procedure to follow by hand; on 2026-11-16 a commit of results took a watcher's unfinished merge with it. A collector in a workspace of its own was the plan's wording and is not what this does: every reader of results reads them on the default line, so its commits would have to be landed there one by one, which brings the shared working copy back. (2) brief_run.py stop NAME stops a run at a boundary: run-streams.sh gives each loop a directory for command lines, each running loop is told to end after its cycle, a loop waiting on jobs stops waiting, nothing is run again and the merge is not started; start continues, and stop --now interrupts as before. (3) Landing the foundation puts its closing report into each stream's inbox as an item of a new kind, foundation, which the stream acknowledges. (4) run-streams.sh logs each change of a loop's phase with its time, and a summary says per loop how long it worked, waited on jobs, was blocked, and sat finished while another stream still ran.\n\nVerified by test_commit_only.py on a real jj repository (the named paths committed, a modified, an added and a nested file of another session left uncommitted with their contents), test_brief_run.py (28 tests: a run stopped while a stream waits on jobs, then continued to its merge; the hand-off sent once; the time lines), and test_costs.py run --changed, 26 of 27 files, the one failure an assertion of mine on the order two parallel streams start in, since fixed and run three times. Telling a real loop to end after its cycle is the command path the proof loop's watcher already uses, and is not exercised here with a real session. The working copy went stale during this work and was restored from a backup, compared against jj's own snapshot.",
+      "log_sha256": "9fb0125cfbee1225a5429c009839ff7b128ba89a788844e670010dbc783fc186"
+    },
+    {
+      "change_id": "smplsyrurprllqlnxpxwwqovwyqykoow",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue a default test run at run-brief's four additions (verification pending)",
+      "body": "The job README.md runs the default test run at the commit that added commit --only, the boundary stop, the foundation hand-off and the time lines to /run-brief. Nobody waits for it.",
+      "log_sha256": "9fb0125cfbee1225a5429c009839ff7b128ba89a788844e670010dbc783fc186"
+    },
+    {
+      "change_id": "zvqqklkpkzkyoplnrlvluxytynrotqrr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A workspace a brief's run makes takes the session logs it lacks",
+      "body": "A new jj workspace has none of the session logs the default workspace stores and has not uploaded, and the check after every commit there reported each as an error (58 of them in the run-brief workspace itself), which a foundation or stream session would have tried to fix. run-streams.sh, for a stream's workspace and the integration check's, and brief_run.py, for the foundation's, now run sync.py adopt-logs in a workspace they have just made.\n\nVerified by test_brief_run.py, 28 tests, whose stand-in for sync.py records that the foundation's new workspace asked for the logs; in the run-brief workspace itself adopt-logs took the check from 58 errors to none.",
+      "log_sha256": "9fb0125cfbee1225a5429c009839ff7b128ba89a788844e670010dbc783fc186"
+    },
+    {
+      "change_id": "sttksmqyyznxswskslkumkrnnlwmssyo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "/run-brief: the gaps the user settled before its first run, a tool for a stale workspace, and a throwaway brief to rehearse with",
+      "body": "The user went through ten gaps of /run-brief one by one. What they chose is built here. A workspace jj calls stale is put right by llm-dlc/tools/unstale.py, which CLAUDE.md now names: it saves the files changed since jj last looked, runs jj workspace update-stale, takes the edits back from the second copy of the working-copy change that jj leaves (only the files that copy changed), and abandons the copy; a second copy without staleness, which two operations at once also leave, is abandoned when the working copy holds all it has. While the foundation session runs, brief_run.py wait tells the watcher at each interval how long it has run, its tool calls, the command under way and its last commit; no cap was wanted. A loop that ends blocked is run again at the watcher's word twice at most in a run (RUN_STREAMS_RERUNS), then left without a question. Landing the foundation by a merge puts back, uncommitted, whatever another session wrote into the working copy while the merge was made. The foundation's spend is in the summary and its total, and brief_run.py verification start|stop records the verification loop with the brief's run, so the watcher can stop the one it started. Left as they are, by the user's choice: the wait of 30 minutes for an answer about a blocked loop, and a runner that keeps its budget until its run ends (they plan to rework the pipeline). The collector keeps commit --only in place of a workspace of its own.\n\nllm-dlc/loops/rehearsal.md with its streams a and b is a brief that builds nothing kept: two notes in a shared format, the second of which needs a word only the watcher can pass on, so stream b stops blocked on purpose. The user starts it from their watcher session before the first real brief.\n\nVerified by test_unstale.py (5 tests on a real jj repository with two workspaces whose operations are made to meet; a truly stale working copy could not be produced on demand with this jj, so the restore is tested from the state update-stale leaves), test_brief_run.py (31 tests, with the rerun limit, the foundation's progress, the landing clean-up and the spend), and test_costs.py run --changed, 14 of 14 files. The workspace is not merged into the default line: the user said not yet.",
+      "log_sha256": "9fb0125cfbee1225a5429c009839ff7b128ba89a788844e670010dbc783fc186"
+    },
+    {
+      "change_id": "ksuoxmnkptomlwrnytzrxlqtwuplrluv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue a default test run at run-brief's gap fixes (verification pending)",
+      "body": "The job 20261117-020349-default-test-run-at-sttksmqyyznx runs the default test run at the commit that added unstale.py, the rerun limit, the foundation's progress and the landing clean-up to /run-brief. Nobody waits for it.",
+      "log_sha256": "9fb0125cfbee1225a5429c009839ff7b128ba89a788844e670010dbc783fc186"
     }
   ],
   "logs": {

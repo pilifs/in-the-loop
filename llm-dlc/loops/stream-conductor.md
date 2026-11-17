@@ -521,6 +521,14 @@ The next parallel run uses the conductor:
   them to read; nothing of it is built. The workspace `stream-conductor` was forgotten and its folder removed, its
   commits being on the default line, so the Loop settings below name a workspace that no longer exists: a restart
   runs in the default workspace, with new Loop settings and a new Loop until.
+- 2026-11-16/17: the user asked for briefs to be run by a watcher on command, as a local skill, with a foundation
+  stage on Fable 5.2 before the streams. Built in the workspace `run-brief`, outside this brief's loop, and it is
+  the attended part of Design 8 (its points 1 to 3 settled that way: attended, one model, a skill of its own):
+  `/run-brief` and `llm-dlc/tools/brief_run.py` (preflight, foundation, land, start, wait, status), the `blocked`
+  question `run-streams.sh` asks its watcher so a decision reaches its stream during the run, and the streams
+  read from the brief's Loop settings. Not built: `inbox.py collect` and the routing of interface requests as a
+  script inside `wait` (the watcher runs them by hand), early merge (step 5), the measurements of step 6, and a
+  headless watcher. See "A brief's run" in `llm-dlc/README.md`.
 - Status: blocked: steps 1–3 merged; Design 8 (the watcher in place of step 4's loop) waits for the user's reading; nothing of steps 4–6 is started
 
 ## Loop settings

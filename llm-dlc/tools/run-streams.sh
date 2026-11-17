@@ -4,8 +4,14 @@
 # brief's own loop, which merges them and finishes the work. You are needed only
 # once that loop is done.
 #
-# Usage: [RUN_STREAMS_POLL=300] [RUN_STREAMS_JOB_WAIT=43200] [RUN_STREAMS_INTEGRATION_EVERY=3600] \
-#          llm-dlc/tools/run-streams.sh engines|foundations|cleanup|application-core|example-targets
+# Usage: [RUN_STREAMS_POLL=60] [RUN_STREAMS_JOB_WAIT=43200] [RUN_STREAMS_INTEGRATION_EVERY=3600] \
+#          llm-dlc/tools/run-streams.sh [--plan] NAME|FILE.md
+#   NAME is a brief of llm-dlc/loops/ (NAME.md), FILE.md a brief's file. The brief names its streams in its Loop
+#   settings, "- streams: a, b, c", each with a brief of its own beside it (NAME-a.md); a brief that names none has
+#   no streams, and its own loop is the whole run. --plan prints the brief and its streams and starts nothing.
+#   A person starts a run with /run-brief, whose watcher starts this script (llm-dlc/tools/brief_run.py) after the
+#   run's foundation stage, and answers what it asks; by hand it runs as before. The briefs older than the
+#   setting are still known by name:
 #   engines      llm-dlc/loops/engine-priorities.md: the streams jbmc and native, then the merge
 #   foundations  llm-dlc/loops/foundations.md: the streams heap, summaries, observations and
 #                alignment, with an integration check while they run, then the merge
@@ -39,12 +45,29 @@
 #     session of its own.
 #  6. It stops the verification loop after its run under way, and exits.
 #
+# A stream brief's "- fork:" is optional: without one in any of them, each stream starts a session of its own,
+# nothing is compacted, and the brief each cycle reads is all a stream starts from.
+#
+# With a watcher (RUN_STREAMS_WATCHER, the run's directory: brief_run.py sets it), a loop that ends blocked is put
+# to it before it counts as finished (conductor.py's `blocked` question): `rerun` runs the loop again, for a
+# stream whose inbox now holds the answer it was blocked on, and `leave`, or no answer within
+# RUN_STREAMS_BLOCKED_WAIT seconds (1800), leaves it for the merge to list, as without a watcher. So a decision
+# made during the run reaches its stream during the run, not after it. A loop is run again this way
+# RUN_STREAMS_RERUNS times (2) in one run of this script: the next time it ends blocked it is left without asking,
+# as the brief template's timebox leaves an item that failed twice.
+#
+# A run is stopped at a boundary by the file stop-after in its state directory (brief_run.py stop writes it, and
+# tells each loop to end after its cycle under way): a loop that ends is then not run again, one waiting on jobs
+# stops waiting, the merge is not started, and the script exits 3. Nothing is interrupted and nothing uncommitted
+# is left; running the script again continues, and removes the file.
+#
 # Each brief ends its "## Progress" with a status line its loop keeps current:
 # "- Status: working", "- Status: waiting on jobs ID ...", "- Status: done" or
 # "- Status: blocked: what needs the user". When a loop stops, this script reads
 # it: waiting on jobs, it polls every RUN_STREAMS_POLL seconds until each job's
 # result is collected here and runs the loop again, which picks up where it
-# left off (and counts the loop as blocked after RUN_STREAMS_JOB_WAIT seconds);
+# left off (and counts the loop as blocked after RUN_STREAMS_JOB_WAIT seconds;
+# the poll was 300 seconds until 2026-11-16, which left a stream idle for minutes after its result was in);
 # done or blocked, the loop is finished. A loop that stops with no such status,
 # on an error, a cycle with no commit, or a decision to stop that left it
 # working, is run once more to finish what it left; twice in a row, it counts as
@@ -115,38 +138,29 @@
 # survives a restart. llm-dlc/tools/streams_status.py reads and renders it.
 #
 # Exits 0 when the brief's own loop is finished, 1 if it is blocked or the setup
-# fails, 2 for a bad argument and 130 if interrupted.
+# fails, 2 for a bad argument, 3 when stopped at a boundary and 130 if interrupted.
 
 set -uo pipefail
 
 usage() {
-  echo "usage: run-streams.sh engines|foundations|cleanup|application-core|example-targets" >&2
+  echo "usage: run-streams.sh [--plan] NAME|FILE.md   (a brief of llm-dlc/loops/ by name, or a brief's file)" >&2
   exit 2
 }
 
+PLAN=
+[[ "${1:-}" == --plan ]] && { PLAN=1; shift; }
 (( $# == 1 )) || usage
-NAME=$1
-case "$NAME" in
-  engines) BRIEF=llm-dlc/loops/engine-priorities.md STREAMS=(jbmc native) ;;
-  foundations) BRIEF=llm-dlc/loops/foundations.md STREAMS=(heap summaries observations alignment) ;;
-  cleanup) BRIEF=llm-dlc/loops/cleanup.md STREAMS=(native jbmc examples) ;;
-  application-core) BRIEF=llm-dlc/loops/application-core.md STREAMS=(objects values environment reuse) ;;
-  example-targets) BRIEF=llm-dlc/loops/example-targets.md STREAMS=(runtime negative positive workflow) ;;
-  *) usage ;;
-esac
-POLL=${RUN_STREAMS_POLL:-300}
+POLL=${RUN_STREAMS_POLL:-60}
 JOB_WAIT=${RUN_STREAMS_JOB_WAIT:-43200}
 INTEGRATION_EVERY=${RUN_STREAMS_INTEGRATION_EVERY:-3600}
-[[ "$POLL" =~ ^[1-9][0-9]*$ && "$JOB_WAIT" =~ ^[0-9]+$ && "$INTEGRATION_EVERY" =~ ^[0-9]+$ ]] || usage
+BLOCKED_WAIT=${RUN_STREAMS_BLOCKED_WAIT:-1800}
+RERUNS=${RUN_STREAMS_RERUNS:-2}
+[[ "$RERUNS" =~ ^[0-9]+$ ]] || usage
+[[ "$POLL" =~ ^[1-9][0-9]*$ && "$JOB_WAIT" =~ ^[0-9]+$ && "$INTEGRATION_EVERY" =~ ^[0-9]+$ && "$BLOCKED_WAIT" =~ ^[0-9]+$ ]] || usage
 
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd) || exit 1
 cd "$ROOT" || exit 1
 source llm-dlc/tools/loop-common.sh
-
-if [[ "$(realpath "$(jj workspace root --ignore-working-copy --name default 2>/dev/null)")" != "$ROOT" ]]; then
-  log "run this from the default workspace's copy of the script, not $ROOT"
-  exit 2
-fi
 
 # "- key: value" under a brief's "## Loop settings" heading, as feature-loop.sh reads it.
 setting() {
@@ -155,6 +169,51 @@ setting() {
     inside && match($0, "^[-*] +" key ": *") { v = substr($0, RLENGTH + 1); gsub(/[`[:space:]]/, "", v); print v; exit }
   ' "$1"
 }
+
+# The brief, and the name its run goes by: the brief file's, but for the one brief whose run was named otherwise.
+NAME=$1
+case "$NAME" in
+  engines) BRIEF=llm-dlc/loops/engine-priorities.md ;;
+  *.md)
+    BRIEF=$NAME
+    [[ "$BRIEF" == "$ROOT"/* ]] && BRIEF=${BRIEF#"$ROOT"/}
+    NAME=$(basename "$BRIEF" .md)
+    [[ "$NAME" == engine-priorities ]] && NAME=engines
+    ;;
+  *) BRIEF=llm-dlc/loops/$NAME.md ;;
+esac
+[[ "$NAME" =~ ^[a-z0-9][a-z0-9-]*$ ]] || usage
+[[ "$BRIEF" != /* && -f "$BRIEF" ]] || { echo "run-streams.sh: no brief $BRIEF in $ROOT" >&2; exit 2; }
+# Its streams: the brief's "- streams: a, b" (the setting is read with its spaces removed), or, for the briefs
+# written before the setting, the list this script used to hold.
+STREAMS=()
+IFS=, read -ra STREAMS <<<"$(setting "$BRIEF" streams)"
+if (( ${#STREAMS[@]} == 0 )); then
+  case "$NAME" in
+    engines) STREAMS=(jbmc native) ;;
+    foundations) STREAMS=(heap summaries observations alignment) ;;
+    cleanup) STREAMS=(native jbmc examples) ;;
+    application-core) STREAMS=(objects values environment reuse) ;;
+    example-targets) STREAMS=(runtime negative positive workflow) ;;
+  esac
+fi
+for s in "${STREAMS[@]}"; do
+  [[ "$s" =~ ^[a-z0-9][a-z0-9-]*$ && "$s" != merge && "$s" != integration ]] || {
+    echo "run-streams.sh: $BRIEF names a stream '$s': a stream's name is lower-case letters, digits and hyphens, and not merge or integration" >&2
+    exit 2
+  }
+done
+if [[ -n "$PLAN" ]]; then
+  echo "name: $NAME"
+  echo "brief: $BRIEF"
+  for s in "${STREAMS[@]}"; do echo "stream: $s ${BRIEF%.md}-$s.md"; done
+  exit 0
+fi
+
+if [[ "$(realpath "$(jj workspace root --ignore-working-copy --name default 2>/dev/null)")" != "$ROOT" ]]; then
+  log "run this from the default workspace's copy of the script, not $ROOT"
+  exit 2
+fi
 
 # tmux: scrollback and the status bar (see the header).
 PANE=
@@ -212,8 +271,7 @@ for s in "${STREAMS[@]}"; do
   done
   WS[$s]=$ws
   fork=$(setting "$brief" fork)
-  [[ -n "$fork" ]] || { log "$brief has no '- fork:' in its Loop settings"; exit 1; }
-  [[ -z "$PARENT" || "$fork" == "$PARENT" ]] || { log "the streams fork different sessions: $PARENT and $fork"; exit 1; }
+  (( ${#WS[@]} == 1 )) || [[ "$fork" == "$PARENT" ]] || { log "the streams fork different sessions: ${PARENT:-none} and ${fork:-none}"; exit 1; }
   PARENT=$fork
   SESSION[$s]=$(setting "$brief" session)
   DIR[$s]=$(jj workspace root --ignore-working-copy --name "$ws" 2>/dev/null) || DIR[$s]=
@@ -247,7 +305,9 @@ done
 (( taken == 0 )) || exit 1
 
 # The planning session, compacted once: before the first fork, when no stream has a session yet.
-if (( fresh == ${#STREAMS[@]} )); then
+if [[ -z "$PARENT" ]]; then
+  (( ${#STREAMS[@]} == 0 )) || log "the streams fork no session: each starts one of its own, from its brief"
+elif (( fresh == ${#STREAMS[@]} )); then
   transcript=$(project_dir "$ROOT")/$PARENT.jsonl
   if [[ ! -f "$transcript" ]]; then
     log "the streams fork session $PARENT, and it has no transcript here: $transcript"
@@ -260,11 +320,18 @@ if (( fresh == ${#STREAMS[@]} )); then
   (( PIPESTATUS[0] == 0 )) || { log "the compact failed; nothing started"; exit 1; }
 fi
 
+# A new workspace has none of the session logs this one stores and has not uploaded yet, and every commit's check
+# there would report each as an error: it takes them from here (sync.py adopt-logs).
+adopt_logs() {
+  (cd "$1" && python3 llm-dlc/tools/sync.py adopt-logs >/dev/null 2>&1) || log "the workspace at $1 could not take the session logs it lacks (sync.py adopt-logs there)"
+}
+
 for s in "${STREAMS[@]}"; do
   if [[ -z "${DIR[$s]}" ]]; then
     DIR[$s]=$(dirname "$ROOT")/$(basename "$ROOT")-${WS[$s]}
     log "adding jj workspace ${WS[$s]} at ${DIR[$s]}"
     jj workspace add --name "${WS[$s]}" -r @- "${DIR[$s]}" >/dev/null || { log "could not add workspace ${WS[$s]}"; exit 1; }
+    adopt_logs "${DIR[$s]}"
   fi
 done
 
@@ -311,17 +378,47 @@ jobs_back() {
 # restart; phases, cycles and activity are this invocation's.
 STATE=$ROOT/llm-dlc/loop-summaries/run-streams-$NAME
 mkdir -p "$STATE" || exit 1
-rm -f "$STATE"/*.phase "$STATE"/*.cycle "$STATE"/*.last
+rm -f "$STATE"/*.phase "$STATE"/*.cycle "$STATE"/*.last "$STATE/stop-after"
+stopping() { [[ -e "$STATE/stop-after" ]]; }
 [[ -s "$STATE/start" ]] || date +%s >"$STATE/start"
 START=$(<"$STATE/start")
-phase() { printf '%s\n' "$2" >"$STATE/$1.phase"; }
+# A loop's phase, for the status bar, and each change of it with its time (LABEL.phases), which is where a summary's
+# time working, waiting on jobs, blocked, and finished while others still ran comes from (brief_run.py).
+phase() {
+  printf '%s\n' "$2" >"$STATE/$1.phase"
+  printf '%s\t%s\n' "$(date +%s)" "$2" >>"$STATE/$1.phases"
+}
+
+# With a watcher, whether a loop that ended blocked is run again (see the header): LABEL, its status, its brief.
+rerun_blocked() {
+  [[ -n "${RUN_STREAMS_WATCHER:-}" ]] || return 1
+  local asked
+  phase "$1" "blocked: put to the watcher"
+  log "[$1] asking the watcher whether it is run again, for ${BLOCKED_WAIT}s at most"
+  asked=$(python3 "$ROOT/llm-dlc/tools/conductor.py" ask "$RUN_STREAMS_WATCHER" blocked --answers rerun,leave \
+    --wait "$BLOCKED_WAIT" "loop=$1" "brief=$3" "status=$2" 2>/dev/null)
+  log "[$1] the watcher: ${asked:-none}"
+  [[ "${asked%%$'\t'*}" == rerun ]]
+}
 
 # Run one loop until it is finished, as the header says: LABEL, the workspace it
-# runs in, its name for feature-loop.sh, and its brief there. Exits 0 when its
+# runs in, its name, and its brief there, which is what feature-loop.sh is given.
+# With a watcher the loop takes command lines from a directory of its own (conductor.py command), which is how it
+# is told to end after its cycle under way; a brief's loop is asked nothing through it. Exits 0 when its
 # brief says done, 3 when it is blocked, 130 if interrupted.
 supervise() {
-  local label=$1 dir=$2 loop=$3 brief=$2/$4 code status failed=0 waited ids
+  local label=$1 dir=$2 loop=$4 brief=$2/$4 code status failed=0 waited ids
+  local commands= reruns=0
+  if [[ -n "${RUN_STREAMS_WATCHER:-}" ]]; then
+    commands=$STATE/loops/$label
+    mkdir -p "$commands"
+  fi
   while :; do
+    if stopping; then
+      log "[$label] the run is stopping at a boundary: not run again; its brief says $(status_of "$brief")"
+      phase "$label" "stopped at a boundary"
+      exit 4
+    fi
     # Waiting on jobs, from this run or one before it: they come back first.
     status=$(status_of "$brief")
     if [[ "$VERIFICATION" == separate && "$status" == "waiting on jobs"* ]]; then
@@ -335,6 +432,7 @@ supervise() {
         log "[$label] waiting for ${ids[*]}, checking every ${POLL}s"
         waited=0
         until jobs_back "${ids[@]}"; do
+          stopping && continue 2
           if (( waited >= JOB_WAIT )); then
             log "[$label] the jobs aren't back after ${JOB_WAIT}s: counted as blocked"
             exit 3
@@ -347,7 +445,7 @@ supervise() {
     fi
     log "[$label] starting feature-loop.sh $loop in $dir"
     phase "$label" running
-    "$dir/llm-dlc/tools/feature-loop.sh" "$loop" </dev/null 2>&1 | python3 -u "$ROOT/llm-dlc/tools/streams_status.py" tag "$label" "$STATE"
+    LOOP_CONDUCTOR=$commands "$dir/llm-dlc/tools/feature-loop.sh" "$loop" </dev/null 2>&1 | python3 -u "$ROOT/llm-dlc/tools/streams_status.py" tag "$label" "$STATE"
     code=${PIPESTATUS[0]}
     collect_records "$dir" "$label"
     (( code == 130 )) && exit 130
@@ -355,7 +453,19 @@ supervise() {
     log "[$label] the loop ended with status $code; its brief says: ${status:-no status}"
     case "$status" in
       done*) exit 0 ;;
-      blocked*) exit 3 ;;
+    esac
+    stopping && continue
+    case "$status" in
+      blocked*)
+        if [[ -n "${RUN_STREAMS_WATCHER:-}" ]] && (( reruns >= RERUNS )); then
+          log "[$label] blocked again after $reruns rerun(s): left for the merge, the watcher is not asked again"
+          exit 3
+        fi
+        rerun_blocked "$label" "$status" "$4" || exit 3
+        reruns=$(( reruns + 1 ))
+        failed=0
+        continue
+        ;;
     esac
     if [[ "$VERIFICATION" == separate && "$status" == "waiting on jobs"* ]]; then
       log "[$label] verification is separate, so nothing waits: counted as finished, the jobs left for review"
@@ -390,6 +500,7 @@ if [[ -n "$INTEGRATION" ]]; then
     INTEGRATION_DIR=$(dirname "$ROOT")/$(basename "$ROOT")-$INTEGRATION_WS
     log "adding jj workspace $INTEGRATION_WS at $INTEGRATION_DIR, for the integration check"
     jj workspace add --name "$INTEGRATION_WS" -r @- "$INTEGRATION_DIR" >/dev/null || { log "could not add workspace $INTEGRATION_WS"; exit 1; }
+    adopt_logs "$INTEGRATION_DIR"
   fi
   INTEGRATION_REPORT=$ROOT/llm-dlc/loop-summaries/$(basename "$BRIEF" .md)-integration.md
   INTEGRATION_SCOPE=feature-loop-$(basename "$BRIEF" .md)-integration
@@ -518,6 +629,7 @@ for s in "${!PID[@]}"; do
   wait "${PID[$s]}"
   code=$?
   (( code == 130 )) && { log "[$s] interrupted"; stop_all; wait; exit 130; }
+  (( code == 4 )) && continue
   log "[$s] finished: $(status_of "${DIR[$s]}/${BRIEF%.md}-$s.md")"
   phase "$s" "finished: $(status_of "${DIR[$s]}/${BRIEF%.md}-$s.md")"
 done
@@ -532,17 +644,19 @@ fi
 for s in "${STREAMS[@]}"; do collect_records "${DIR[$s]}" "$s"; done
 code=0
 status=$(status_of "$ROOT/$BRIEF")
-if finished "$status"; then
+if stopping; then
+  log "stopped at a boundary: the brief's own loop is not started"
+elif finished "$status"; then
   log "[merge] its brief says $status: not run again"
   phase merge "finished: $status"
 else
-  log "every stream is finished: the brief's own loop merges them"
+  if (( ${#STREAMS[@]} )); then log "every stream is finished: the brief's own loop merges them"; else log "the brief names no streams: its own loop is the run"; fi
   supervise merge "$ROOT" "$NAME" "$BRIEF" &
   PID[merge]=$!
   wait "${PID[merge]}"
   code=$?
   PID=()
-  phase merge "finished: $(status_of "$ROOT/$BRIEF")"
+  (( code == 4 )) || phase merge "finished: $(status_of "$ROOT/$BRIEF")"
 fi
 if [[ -n "$VERIFY" ]]; then
   log "stopping the verification loop after its run under way"
@@ -556,11 +670,15 @@ if [[ -n "$STATUS" ]]; then
 fi
 show_status log
 (( code == 130 )) && exit 130
+if stopping; then
+  log "stopped at a boundary, every loop after its cycle under way: running this again continues"
+  exit 3
+fi
 status=$(status_of "$ROOT/$BRIEF")
 log "finished: the brief $BRIEF says ${status:-no status}"
 # Every loop's session, so the one to resume or read is on screen. The
 # integration check is a script, with no session of its own.
-log "sessions: planning $PARENT, merge ${FEATURE_LOOP_SESSION:-$(setting "$ROOT/$BRIEF" session)}"
+log "sessions: planning ${PARENT:-none}, merge ${FEATURE_LOOP_SESSION:-$(setting "$ROOT/$BRIEF" session)}"
 for s in "${STREAMS[@]}"; do log "sessions: $s ${SESSION[$s]}"; done
 log "what needs you: its Progress, verification/findings.md and the run records in llm-dlc/loop-summaries/"
 [[ "$status" == done* ]] && exit 0

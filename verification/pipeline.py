@@ -1540,6 +1540,28 @@ def cmd_prioritize(args):
     return 0
 
 
+COLLECTORS_OWN = (HERE, "examples/README.md", "examples/index.json")  # besides the outputs it applies
+
+
+def cmd_commit_paths(args):
+    """What a commit of collected results holds, one path a line, for `sync.py commit --only`: this folder (the
+    results, the findings, a resubmitted job), the examples table that collecting regenerates, and the outputs
+    applied for each result that is not committed yet. Anything else changed in the working copy is another
+    session's, and a commit of these paths alone leaves it where it is."""
+    paths = list(COLLECTORS_OWN)
+    proc = run_quiet(["jj", "diff", "--name-only", RESULTS], cwd=ROOT) if (ROOT / ".jj").exists() and shutil.which("jj") \
+        else run_quiet(["git", "status", "--porcelain", "--untracked-files=all", RESULTS], cwd=ROOT)
+    changed = {Path(line.split()[-1]).parent for line in proc.stdout.splitlines() if line.strip().endswith("/result.json")}
+    for folder in sorted(changed):
+        try:
+            applied = (json.loads((ROOT / folder / "result.json").read_text()).get("collected") or {}).get("applied") or []
+        except (OSError, ValueError):
+            continue
+        paths += [a for a in applied if a not in paths and not a.startswith(HERE + "/")]
+    print("\n".join(paths))
+    return 0
+
+
 def cmd_collect(args):
     config = load_config(args)
     state = config["runner"]["state_dir"] / "results"
@@ -2036,6 +2058,9 @@ def main(argv=None):
     p.add_argument("--apply-failed", action="store_true", help="apply the outputs of jobs that did not pass too")
     p.add_argument("ids", nargs="*")
     p.set_defaults(func=cmd_collect)
+
+    p = sub.add_parser("commit-paths", help="the paths a commit of collected results holds, for sync.py commit --only")
+    p.set_defaults(func=cmd_commit_paths)
 
     p = sub.add_parser("report", help="a digest of collected results")
     p.add_argument("--format", choices=["md", "json"], default="md")
