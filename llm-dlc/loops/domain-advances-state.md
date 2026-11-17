@@ -91,7 +91,22 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
 
 ## Progress
 
-- Nothing yet.
+- 2026-11-17, step 1 (the working formalization and the accepted claim unchanged; nothing decided). 286's
+  `proofs/prove.py` runs the protected-state tasks: entry `BindingAdapter#ageAfterBinding`, `--model
+  java.util.ArrayList`, the simpleMatch lemma, unwind 16, and 289's three properties (`accept.record` writes
+  `evidence.json`; a mutant that is not the replay's ends the run; another bound is marked a trial). The mutant is
+  now built by the route's recipe and is byte for byte the JAR `receipts/mutant-replay` ran (`48323d21…`; before,
+  `--release 8` and a re-deflated copy gave `12be51f1…`), so the evidence stream can rerun `mutant-security` on it.
+  **Where bind stops now** (probe at bound 2, a trial): past `ArrayList`, under strict gaps at
+  `java.util.ArrayDeque.<init>()` (`AbstractErrors.<init>:44`, the binding result, made on every path) and
+  `String.toLowerCase()` at `DataBinder.isAllowed:828` on a non-ASCII field. The second is a finding about the
+  frozen claim: unlike the decision claim it does not restrict `field` to ASCII, and the checker lowers ASCII only.
+  Job `20261117-130335-example-286-protected-state-tasks-at-the` records both tasks at bound 8 (expected exit 1).
+- Next: close `ArrayDeque` (a model of the few calls `AbstractErrors` makes, as `ArrayList`'s, sampled against a
+  JVM) and probe on to the reflection; for non-ASCII `toLowerCase()`, either a model of Unicode lowering under the
+  root locale checked exhaustively over the BMP on a JVM, or a corrected formalization restricted to ASCII proposed
+  to the user as a new claim file (the frozen one stays). Step 2's refutation (`Age`, ASCII) needs only the path
+  past `ArrayDeque` and the reflection.
 - Status: working
 
 ## Loop settings

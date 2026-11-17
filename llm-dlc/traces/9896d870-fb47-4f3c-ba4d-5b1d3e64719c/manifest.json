@@ -1,0 +1,90 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "9896d870-fb47-4f3c-ba4d-5b1d3e64719c",
+  "status": "open",
+  "title": null,
+  "first_prompt": "Work on the brief in `llm-dlc/loops/domain-advances-state.md`. Read it in full now, even if you have read it before: it is the instruction for this cycle and every cycle of this loop, and what you rem",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.326"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-17T12:56:51.005Z",
+  "ended": "2026-11-17T13:12:47.623Z",
+  "duration_seconds": 957,
+  "stats": {
+    "turns": 1,
+    "api_calls": 34,
+    "tool_calls": 35,
+    "tool_errors": 3,
+    "compactions": 0,
+    "peak_context_tokens": 112333,
+    "usage": {
+      "input_tokens": 68,
+      "output_tokens": 25059,
+      "cache_read_input_tokens": 2640037,
+      "cache_creation_input_tokens": 100990
+    }
+  },
+  "tools": {
+    "Bash": 34,
+    "Edit": 1
+  },
+  "files_touched": [
+    "llm-dlc/loops/domain-advances-state.md"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-17T12:56:51.005Z",
+      "ended": "2026-11-17T13:12:47.623Z",
+      "turns": 1,
+      "api_calls": 34,
+      "usage": {
+        "input_tokens": 68,
+        "output_tokens": 25059,
+        "cache_read_input_tokens": 2640037,
+        "cache_creation_input_tokens": 100990
+      },
+      "peak_context_tokens": 112333
+    }
+  ],
+  "log": {
+    "sha256": "fb11de6676ba0e4fd17e99d6abe495c602e29649035c34de15e48bcd3644b6fe",
+    "bytes": 950480,
+    "lines": 288,
+    "gzip_bytes": 177631,
+    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/fb11de6676ba0e4fd17e99d6abe495c602e29649035c34de15e48bcd3644b6fe.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "zmuqutotnvumzuzsuzyrynotvzzuntqs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "fb11de6676ba0e4fd17e99d6abe495c602e29649035c34de15e48bcd3644b6fe"
+    },
+    {
+      "change_id": "tvxyzwqvsppzzulsvzkplqopslvzmomw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 286's driver runs the protected-state tasks and records what it ran; where DataBinder.bind stops now (verification pending)",
+      "body": "The state stream's step 1. proofs/prove.py now takes vulnerable- and fixed-protected-state-mutation: each claim on the adapter entry its first assumption names (BindingAdapter#ageAfterBinding for the protected-state claim), with the checker's model of java.util.ArrayList for the binding path. It has example 289's three properties: it writes evidence.json with accept.record, a constructed mutant that is not the JAR the mutant replay ran ends the run, and a run at another bound is marked a trial. The mutant is now built by the replay route's recipe (the class's own --release and debugging flags, entries copied with their compression and dates); checked inline, it is byte for byte the replay's JAR (48323d21...), where the old recipe gave 12be51f1...\n\nWhere it stops: a probe at bound 2 (a trial, inline, capped) passes the ArrayList calls and stops under strict gaps at java.util.ArrayDeque.<init>() in AbstractErrors.<init>:44 and String.toLowerCase() in DataBinder.isAllowed:828 on a non-ASCII field. The second comes from the frozen claim, which, unlike the decision claim, does not restrict the field to ASCII. Job 20261117-130335-example-286-protected-state-tasks-at-the records both tasks at the frozen bound 8 and is expected to exit 1 with those gaps. The example's notes and the brief's Progress say the same.",
+      "log_sha256": "fb11de6676ba0e4fd17e99d6abe495c602e29649035c34de15e48bcd3644b6fe"
+    }
+  ],
+  "logs": {
+    "fb11de6676ba0e4fd17e99d6abe495c602e29649035c34de15e48bcd3644b6fe": {
+      "bytes": 950480,
+      "lines": 288,
+      "gzip_bytes": 177631,
+      "url": null
+    }
+  },
+  "redaction_policy": 4,
+  "generator": "llm-dlc/tools/sync.py"
+}
