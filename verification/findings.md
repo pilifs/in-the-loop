@@ -65,6 +65,13 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Needs**: the author of the prove-setup merge or the watcher of the `/prove-java-change` run: check whether
   `9c48697e070a`'s line has the failures when run alone (`cargo test --test effects --test application_core_joint
   --test environment`), and whether the passed run at `lmwqozysyszl` covers a fix.
+- **Likely cause** (added 2026-11-17 by the session that wrote the default-run job): two default runs were running
+  at once. Job `005759` was started a second time at 01:07 while `010456` ran, and both use one warm cargo target
+  directory, whose `tmp/` holds the tests' work folders and proof caches. All three failures are a test finding
+  another run's files there (a stored result for a build it had not checked, a changed claim answered from the
+  cache), and `010456` itself had eight Rust tests fail and pass on their second run. Not reproduced on purpose.
+  Since change `kzwsnszx` a default-run step holds a lock for its whole run, so two no longer overlap. Why the runner
+  started a passed job again is not found.
 - **Tracked in**: the job's `logs/1-default-tests.log`.
 - **Closes when**: a default test run at a commit that contains the merge passes (the run at `lmwqozysyszl` already
   passed; confirm it contains `9c48697e070a`, then this closes).
