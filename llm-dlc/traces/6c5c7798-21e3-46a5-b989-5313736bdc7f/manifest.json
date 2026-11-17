@@ -12,8 +12,8 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-17T00:56:59.121Z",
-  "duration_seconds": 113372,
+  "ended": "2026-11-17T00:57:59.962Z",
+  "duration_seconds": 113433,
   "stats": {
     "turns": 101,
     "api_calls": 713,
@@ -98,7 +98,7 @@
     {
       "index": 3,
       "started": "2026-11-16T23:07:53.833Z",
-      "ended": "2026-11-17T00:56:59.121Z",
+      "ended": "2026-11-17T00:57:59.962Z",
       "turns": 18,
       "api_calls": 115,
       "usage": {
@@ -111,11 +111,11 @@
     }
   ],
   "log": {
-    "sha256": "b0bc0e025047429fa6a0817088ffce3431e910cbca0ce2a1fbc6fbc87f4c5fbe",
-    "bytes": 13219424,
-    "lines": 5759,
-    "gzip_bytes": 2260955,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/b0bc0e025047429fa6a0817088ffce3431e910cbca0ce2a1fbc6fbc87f4c5fbe.jsonl.gz"
+    "sha256": "1db4ed8c1b5b92a2c595172a01ba0bd8e9f008929a59ab9393cc1f1c9fdedd69",
+    "bytes": 13285002,
+    "lines": 5768,
+    "gzip_bytes": 2271537,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/1db4ed8c1b5b92a2c595172a01ba0bd8e9f008929a59ab9393cc1f1c9fdedd69.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -918,6 +918,14 @@
       "summary": "Merge prove-setup: the default test run as a job nobody waits for, run in parallel, with tests of what changed, a flaky retry, bisecting and a push gate; logs taken across workspaces",
       "body": "Brings the prove-setup workspace's line into the loop's: conductor.py's unreadable-queue fix; verification/default_tests.py (the default run as a pipeline job, superseded by a newer one, triaged by the watcher, bisected on a failure) and the sync.py push gate that requires a passed run covering the pushed commit; test_costs.py run --changed, Rust beside Python, the retry of what fails, parallel Python and Rust jobs and the test-fast Cargo profile (from the session in tmux window tests, in-the-loop-10); sync.py adopt-logs, which regenerate runs after a merge. Conflicts: examples/tools/targets/test_runtime.py, where both lines fixed VF-032, takes prove-setup's side (the test sets JVMCONTRACT_JBMC_MEMORY_MB itself, expects it and checks it passes through); lib/tests/costs.json keeps the loop's new pairing row and prove-setup's two rows' calls; the generated trace files are regenerated. Verified: test_runtime.py and test_watch.py pass on the merged tree, the test-cost lint agrees, check reports 0 errors. The prove-setup line's last default-run job passed 49 of 49 at its own tip; one more is queued at this merge.",
       "log_sha256": "b0bc0e025047429fa6a0817088ffce3431e910cbca0ce2a1fbc6fbc87f4c5fbe"
+    },
+    {
+      "change_id": "vypwysvxownkwotkumqklvukomrvpwuv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: the default test run at nmskpkrkukuy passed",
+      "body": "Job 20261117-004852-default-test-run-at-nmskpkrkukuy passed: 1 step in 7m01s, peak 6.0 GiB (estimated 12m, 4 GiB). No outputs to apply. Collected by the unattended run-verification loop on vm-1.",
+      "log_sha256": "1db4ed8c1b5b92a2c595172a01ba0bd8e9f008929a59ab9393cc1f1c9fdedd69"
     }
   ],
   "logs": {
@@ -949,6 +957,12 @@
       "bytes": 12112770,
       "lines": 5142,
       "gzip_bytes": 2102103,
+      "url": null
+    },
+    "1db4ed8c1b5b92a2c595172a01ba0bd8e9f008929a59ab9393cc1f1c9fdedd69": {
+      "bytes": 13285002,
+      "lines": 5768,
+      "gzip_bytes": 2271537,
       "url": null
     },
     "27971696767ca758fbd0b11be5c863581f35299c4083155630d0c7a52d07277e": {

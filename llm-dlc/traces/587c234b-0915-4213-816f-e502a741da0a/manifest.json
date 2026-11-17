@@ -12,48 +12,48 @@
     "claude-sonnet-5-5"
   ],
   "started": "2026-11-17T00:23:35.212Z",
-  "ended": "2026-11-17T00:50:11.609Z",
-  "duration_seconds": 1596,
+  "ended": "2026-11-17T00:57:43.646Z",
+  "duration_seconds": 2048,
   "stats": {
     "turns": 1,
-    "api_calls": 9,
-    "tool_calls": 10,
+    "api_calls": 11,
+    "tool_calls": 12,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 41009,
+    "peak_context_tokens": 42261,
     "usage": {
-      "input_tokens": 18,
-      "output_tokens": 1924,
-      "cache_read_input_tokens": 303805,
-      "cache_creation_input_tokens": 27696
+      "input_tokens": 22,
+      "output_tokens": 2443,
+      "cache_read_input_tokens": 386647,
+      "cache_creation_input_tokens": 28948
     }
   },
   "tools": {
-    "Bash": 10
+    "Bash": 12
   },
   "files_touched": [],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-17T00:23:35.212Z",
-      "ended": "2026-11-17T00:50:11.609Z",
+      "ended": "2026-11-17T00:57:43.646Z",
       "turns": 1,
-      "api_calls": 9,
+      "api_calls": 11,
       "usage": {
-        "input_tokens": 18,
-        "output_tokens": 1924,
-        "cache_read_input_tokens": 303805,
-        "cache_creation_input_tokens": 27696
+        "input_tokens": 22,
+        "output_tokens": 2443,
+        "cache_read_input_tokens": 386647,
+        "cache_creation_input_tokens": 28948
       },
-      "peak_context_tokens": 41009
+      "peak_context_tokens": 42261
     }
   ],
   "log": {
-    "sha256": "ff46495ca13678287c21649f3b46efe3ab105cd841e6496d7640eae8f38330ad",
-    "bytes": 369227,
-    "lines": 99,
-    "gzip_bytes": 86151,
-    "path": "llm-dlc/traces/587c234b-0915-4213-816f-e502a741da0a/logs/ff46495ca13678287c21649f3b46efe3ab105cd841e6496d7640eae8f38330ad.jsonl.gz"
+    "sha256": "c1cb6a87e90a8c2753a8511ec8376a3071f0ee6b94665e28f821b578dba02b6c",
+    "bytes": 392950,
+    "lines": 113,
+    "gzip_bytes": 88334,
+    "path": "llm-dlc/traces/587c234b-0915-4213-816f-e502a741da0a/logs/c1cb6a87e90a8c2753a8511ec8376a3071f0ee6b94665e28f821b578dba02b6c.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -120,6 +120,14 @@
       "summary": "Merge prove-setup: the default test run as a job nobody waits for, run in parallel, with tests of what changed, a flaky retry, bisecting and a push gate; logs taken across workspaces",
       "body": "Brings the prove-setup workspace's line into the loop's: conductor.py's unreadable-queue fix; verification/default_tests.py (the default run as a pipeline job, superseded by a newer one, triaged by the watcher, bisected on a failure) and the sync.py push gate that requires a passed run covering the pushed commit; test_costs.py run --changed, Rust beside Python, the retry of what fails, parallel Python and Rust jobs and the test-fast Cargo profile (from the session in tmux window tests, in-the-loop-10); sync.py adopt-logs, which regenerate runs after a merge. Conflicts: examples/tools/targets/test_runtime.py, where both lines fixed VF-032, takes prove-setup's side (the test sets JVMCONTRACT_JBMC_MEMORY_MB itself, expects it and checks it passes through); lib/tests/costs.json keeps the loop's new pairing row and prove-setup's two rows' calls; the generated trace files are regenerated. Verified: test_runtime.py and test_watch.py pass on the merged tree, the test-cost lint agrees, check reports 0 errors. The prove-setup line's last default-run job passed 49 of 49 at its own tip; one more is queued at this merge.",
       "log_sha256": "ff46495ca13678287c21649f3b46efe3ab105cd841e6496d7640eae8f38330ad"
+    },
+    {
+      "change_id": "vypwysvxownkwotkumqklvukomrvpwuv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: the default test run at nmskpkrkukuy passed",
+      "body": "Job 20261117-004852-default-test-run-at-nmskpkrkukuy passed: 1 step in 7m01s, peak 6.0 GiB (estimated 12m, 4 GiB). No outputs to apply. Collected by the unattended run-verification loop on vm-1.",
+      "log_sha256": "c1cb6a87e90a8c2753a8511ec8376a3071f0ee6b94665e28f821b578dba02b6c"
     }
   ],
   "logs": {
@@ -127,6 +135,12 @@
       "bytes": 358266,
       "lines": 88,
       "gzip_bytes": 84691,
+      "url": null
+    },
+    "c1cb6a87e90a8c2753a8511ec8376a3071f0ee6b94665e28f821b578dba02b6c": {
+      "bytes": 392950,
+      "lines": 113,
+      "gzip_bytes": 88334,
       "url": null
     },
     "d62ee777e0d9dbf10f1ba882544b5e4b0b90fe7a3d4039e82801e73e649aa170": {
