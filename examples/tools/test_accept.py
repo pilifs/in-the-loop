@@ -655,6 +655,122 @@ class Countermodels(Checkout):
         self.refused("fixed-security", "domain", "8")
 
 
+class StepsPastTheFix(Checkout):
+    """The challenge stream's controls of the step check past `kqxwrwrx` (lib/tests/fixtures/accept-countermodels/
+    README.md, 'Past the fix', `xnqlyxnw`): a job whose step ran the example's driver and did something else besides,
+    or ran it on something else. The pipeline runs a step with `bash -c`, and evidence.json does not hash the outcome,
+    so only a job every step of which is a plain driver run leaves an outcome the driver alone wrote. Each failed while
+    the check read a step's words only up to the task's name and the first `--work`; beside them, the honest jobs'
+    shapes that are still accepted."""
+
+    DRIVER = "examples/900-made-up-change/proofs/prove.py"
+    WORK = "verification/.work-900"
+    recorded = DriverRecord.recorded  # with evidence.json, so that an accepted answer has no limit
+
+    def steps(self, runs: list[str], build: bool = False, **job) -> None:
+        """The job's steps are RUNS, each passed, the last one's log the step's log, and the result records the job
+        as the runner read it; BUILD puts the pipeline's own build of the checker first, as step 0."""
+        spec = json.loads((self.root / self.paths["job"]).read_text())
+        result = json.loads((self.root / self.paths["result"]).read_text())
+        log = result["steps"][0]["log"]
+        spec.pop("env", None)
+        spec.update(job)
+        spec["steps"] = [{"name": f"step {i}", "run": run} for i, run in enumerate(runs, 1)]
+        result["steps"] = [{"index": i, "status": "passed", "run": run, "log": log} for i, run in enumerate(runs, 1)]
+        if build:
+            result["steps"].insert(0, {"index": 0, "status": "passed", "log": log,
+                                       "run": "/home/someone/.cargo/bin/cargo build --release --manifest-path lib/Cargo.toml"})
+        (self.root / self.paths["job"]).write_text(json.dumps(spec))
+        result["job"]["sha256"] = hashlib.sha256(json.dumps(spec, sort_keys=True).encode()).hexdigest()
+        (self.root / self.paths["result"]).write_text(json.dumps(result))
+
+    def setUp(self):
+        super().setUp()
+        self.paths = self.recorded()
+        self.driver = f"python3 {self.DRIVER} fixed-security --timeout 60 --work {self.WORK}"
+        self.committed = AsCommitted(self.root)  # the job's source commit is this checkout as it is
+
+    def accepted(self, runs: list[str], **how) -> None:
+        self.steps(runs, **how)
+        r = self.check("fixed-security", self.committed)
+        self.assertTrue(r["accepted"], r.get("why"))
+        self.assertEqual(r["limits"], [], "the evidence an honest job leaves")
+
+    def refused_for(self, runs: list[str], words: str, **how) -> None:
+        self.steps(runs, **how)
+        self.refused("fixed-security", "step", words, self.committed)
+
+    def test_the_honest_jobs_shapes_are_accepted(self):
+        """The 13 accepted answers' jobs: the pipeline's build first, driver runs of the example's tasks with
+        --timeout and one --work, `python3 -I`, a trial in a folder of its own before the frozen run, and in one job
+        the drivers of two examples."""
+        other = "python3 examples/901-another-change/proofs/prove.py fixed-security --timeout 60 --work verification/.work-901"
+        for runs, how in (([self.driver], {"build": True}),
+                          ([f"python3 {self.DRIVER} regex-probe --timeout 60 --work {self.WORK}", self.driver.replace("python3", "python3 -I")], {}),
+                          ([f"python3 {self.DRIVER} fixed-security --max-array-length 2 --timeout 60 --work {self.WORK}/trial", self.driver], {}),
+                          ([other, self.driver, other], {"build": True})):
+            with self.subTest(runs=runs):
+                self.accepted(runs, **how)
+
+    def test_a_step_that_goes_on_past_the_driver_in_the_shell_is_refused(self):
+        """What follows a `;` or a `&&` runs after the driver and can write the outcome it collected."""
+        for after in (f" ; cp verification/forged.json {self.WORK}/fixed-security/outcome.json",
+                      f" && sed -i s/violation/verified/ {self.WORK}/fixed-security/outcome.json",
+                      f";cp verification/forged.json {self.WORK}/fixed-security/outcome.json",
+                      " $(cp verification/forged.json x)", "\ncp verification/forged.json x"):
+            with self.subTest(after=after):
+                self.refused_for([self.driver + after], "not a plain driver run")
+
+    def test_a_step_before_or_after_the_driver_that_is_not_a_driver_run_is_refused(self):
+        """A job's earlier step can replace the driver in the job's checkout, which then writes evidence.json naming
+        the source commit's driver hash, or write the outcome folder itself; a later one can rewrite it."""
+        for runs in ([f"cp /elsewhere/prove.py {self.DRIVER}", self.driver],
+                     [f"cp -r verification/forged/. {self.WORK}", self.driver],
+                     [self.driver, f"cp verification/forged.json {self.WORK}/fixed-security/outcome.json"]):
+            with self.subTest(runs=runs):
+                self.refused_for(runs, "is not a plain driver run")
+
+    def test_a_later_driver_run_into_the_same_outcome_folder_is_refused(self):
+        """The outcome collected is the last one written there: a trial after the frozen run, or another example's
+        driver on a task of the same name, leaves its own."""
+        for later in (f"python3 {self.DRIVER} fixed-security --max-array-length 2 --timeout 60 --work {self.WORK}",
+                      f"python3 examples/901-another-change/proofs/prove.py fixed-security --timeout 60 --work {self.WORK}/"):
+            with self.subTest(later=later):
+                self.refused_for([self.driver, later], "writes the same outcome folder")
+
+    def test_the_outcome_read_is_the_one_the_driver_wrote_where_work_is_given_twice(self):
+        """The step check took the first `--work`; the driver's argparse keeps the last (and `--work=DIR` was not
+        read as one at all)."""
+        for twice, words in ((f"--work {self.WORK} --work verification/.work-elsewhere", "given twice"),
+                             (f"--work {self.WORK} --work=verification/.work-elsewhere", "--work=")):
+            with self.subTest(twice=twice):
+                self.refused_for([f"python3 {self.DRIVER} fixed-security --timeout 60 {twice}"], words)
+
+    def test_a_step_that_runs_the_driver_on_another_checker_binary_or_environment_is_refused(self):
+        """`--jvmcontract PATH` runs another binary than the pipeline's build of the job's lib/, which the identity
+        still names; a job's `env` can do the same through PATH or JVMCONTRACT, and a step's `cwd` moves what its
+        paths mean."""
+        self.refused_for([f"python3 {self.DRIVER} fixed-security --jvmcontract /elsewhere/lib/target/release/jvmcontract "
+                          f"--timeout 60 --work {self.WORK}"], "--jvmcontract")
+        self.refused_for([self.driver], "environment", env={"PATH": "/elsewhere/bin:/usr/bin"})
+        self.steps([self.driver])
+        spec = json.loads((self.root / self.paths["job"]).read_text())
+        spec["steps"][0]["cwd"] = "examples"
+        (self.root / self.paths["job"]).write_text(json.dumps(spec))
+        result = json.loads((self.root / self.paths["result"]).read_text())
+        result["job"]["sha256"] = hashlib.sha256(json.dumps(spec, sort_keys=True).encode()).hexdigest()
+        (self.root / self.paths["result"]).write_text(json.dumps(result))
+        self.refused("fixed-security", "step", "runs in 'examples'", self.committed)
+
+    def test_a_result_whose_steps_are_not_the_job_files_is_refused(self):
+        """The job file is the one its result is of (its hash); the steps the result records ran are its steps."""
+        self.steps([self.driver])
+        result = json.loads((self.root / self.paths["result"]).read_text())
+        result["steps"].insert(0, {**result["steps"][0], "index": 0, "run": f"cp -r verification/forged/. {self.WORK}"})
+        (self.root / self.paths["result"]).write_text(json.dumps(result))
+        self.refused("fixed-security", "step", "not the job file's", self.committed)
+
+
 class ThisCheckout(unittest.TestCase):
     @cost("tool")
     def test_example_289s_four_answers_are_accepted_from_their_saved_results(self):

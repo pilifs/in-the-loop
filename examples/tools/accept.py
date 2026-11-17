@@ -11,7 +11,11 @@ when every one of these holds; one that fails, or that the evidence has nothing 
 
     job         the job's result is in the checkout, passed, of the job file as it is, and names the example
     step        one of its steps ran the example's driver on this task, `python3 [-I] <folder>/proofs/prove.py TASK`
-                with the driver at that path in the job's checkout; the outcome is the one that step wrote
+                with the driver at that path in the job's checkout; the outcome is the one that step wrote. Every step
+                of the job is such a plain run of a driver (the pipeline runs a step with bash -c, so anything else,
+                before or after, can write the outcome): plain words only, the flags --timeout, --work (once) and the
+                trial flags alone (not --jvmcontract, which runs another checker), no environment set by the job; and
+                no later step writes the same outcome folder
     outcome     the outcome file is among the job's collected outputs and has the bytes the result records
     conclusion  the outcome's own verdict is the recorded answer (verified: established, violation: refuted)
     claim       the claim file is the one the job ran (its bytes at the job's source commit) and the one frozen
@@ -55,6 +59,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import posixpath
 import re
 import shlex
 import subprocess
@@ -140,23 +145,63 @@ def gates_on(source: str, assume: str) -> bool:
     return first == f"if (!({assume})) {GATE}"
 
 
-def driver_steps(result: dict, folder: str, task: str) -> list[dict]:
-    """The job's steps that ran the example's driver on the task: `python3 [-I] <folder>/proofs/prove.py TASK ...`,
-    the driver at exactly that path relative to the job's checkout (not one of another checkout, nor a word that only
-    names it)."""
-    out = []
-    for step in result.get("steps") or []:
-        try:
-            words = shlex.split(step.get("run") or "")
-        except ValueError:
-            continue
-        at = 2 if words[:2] == ["python3", "-I"] else 1
-        if words[:1] != ["python3"] or words[at : at + 2] != [f"{folder}/proofs/prove.py", task]:
-            continue
-        rest = words[at + 2 :]
-        work = next((rest[i + 1] for i, w in enumerate(rest[:-1]) if w == "--work"), None)
-        out.append({"step": step, "work": work, "trial": [w for w in rest if w.split("=", 1)[0] in TRIAL_FLAGS]})
-    return out
+# A step the job runs is a plain run of an example's driver, or the step can do anything: the pipeline runs it with
+# `bash -c`, so what follows a `;` runs too, and a step before the driver's can replace it or write its outcome.
+DRIVER = re.compile(r"examples/\d{3}-[A-Za-z0-9][\w-]*/proofs/prove\.py")
+PLAIN_WORD = re.compile(r"[\w./:+,=-]+")
+DRIVER_FLAGS = {"--timeout": "number", "--work": "folder", "--max-array-length": "number", "--unwind": "number"}
+# The pipeline's own build of the checker at the job's source commit, which it records as step 0.
+BUILD = re.compile(r"(?:\S*/)?cargo build --release --manifest-path lib/Cargo\.toml")
+
+
+def driver_run(run: str) -> dict | str:
+    """RUN as a plain run of an example's driver, `python3 [-I] examples/NNN-.../proofs/prove.py TASK` followed by
+    the flags every driver shares (`--timeout N`, `--work DIR`, the trial flags), each once and each as its own two
+    words; or why it is not one. A word that is not plain (a shell operator, a quote, an expansion), a flag of another
+    kind (`--jvmcontract`, which runs another checker, or `--jars`) or `--work=DIR` makes it not one."""
+    if re.search(r"[^\S ]", run):
+        return "it spans more than one line"
+    words = run.split()
+    odd = next((w for w in words if not PLAIN_WORD.fullmatch(w)), None)
+    if odd is not None:
+        return f"`{odd}` is not a plain word (the pipeline runs a step with bash -c)"
+    at = 2 if words[:2] == ["python3", "-I"] else 1
+    if words[:1] != ["python3"] or len(words) < at + 2 or not DRIVER.fullmatch(words[at]) or words[at + 1].startswith("-"):
+        return "it is not `python3 [-I] examples/NNN-.../proofs/prove.py TASK`"
+    flags: dict[str, str] = {}
+    rest = words[at + 2 :]
+    for flag, value in zip(rest[::2], rest[1::2] + [None]):
+        if flag not in DRIVER_FLAGS:
+            return f"`{flag}` is not one of the driver flags a run may give ({', '.join(DRIVER_FLAGS)})"
+        if flag in flags:
+            return f"`{flag}` is given twice"
+        if value is None or value.startswith("-") or (DRIVER_FLAGS[flag] == "number" and not value.isdigit()):
+            return f"`{flag}` has no {DRIVER_FLAGS[flag]} after it"
+        flags[flag] = value
+    work = flags.get("--work")
+    return {"folder": words[at].rsplit("/proofs/", 1)[0], "task": words[at + 1],
+            "work": posixpath.normpath(work) if work else None, "trial": [f for f in flags if f in TRIAL_FLAGS]}
+
+
+def job_steps(job: dict, result: dict) -> tuple[list[dict], str | None]:
+    """The result's steps, each with its run read as a driver run (`driver_run`), but for the pipeline's own build;
+    or why the job is not one whose outcomes a driver alone wrote: a step of the job file that is not a plain driver
+    run, a job that sets the steps' environment or a step's folder, or a result whose steps are not the job file's."""
+    if job.get("env"):
+        return [], f"the job sets the steps' environment ({', '.join(sorted(job['env']))}), which can change what a driver runs"
+    runs = []
+    for i, spec in enumerate(job.get("steps") or [], 1):
+        if spec.get("cwd", ".") not in (".", "./"):
+            return [], f"the job's step {i} runs in {spec.get('cwd')!r}, not the checkout's top"
+        parsed = driver_run(str(spec.get("run") or ""))
+        if isinstance(parsed, str):
+            return [], (f"the job's step {i} is not a plain driver run ({parsed}): every step must be one, since any "
+                        f"step can write what a driver step leaves")
+        runs.append(spec.get("run"))
+    steps = [s for s in result.get("steps") or [] if not (s.get("index") == 0 and BUILD.fullmatch(s.get("run") or ""))]
+    if [s.get("run") for s in steps] != runs[: len(steps)]:
+        return [], "the result's steps are not the job file's"
+    return [{"step": s, **driver_run(s["run"])} for s in steps], None
 
 
 def sizes(value) -> list[int]:
@@ -270,14 +315,23 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
     identity = {"sourceCommit": commit, "libTree": (result.get("jvmcontract") or {}).get("libTree")}
 
     # step
-    steps = [s for s in driver_steps(result, rel, task_id) if s["step"].get("status") == "passed"]
+    every, why = job_steps(job, result)
+    if why:
+        said("step", FAIL, f"job {job_id}: {why}")
+        return done(**base, actual=None, identity=identity)
+    steps = [s for s in every if s["folder"] == rel and s["task"] == task_id and s["step"].get("status") == "passed"]
     if not steps:
-        said("step", UNBOUND, f"no passed step of job {job_id} ran {rel}/proofs/prove.py {task_id}")
+        said("step", UNBOUND, f"no passed step of job {job_id} ran python3 [-I] {rel}/proofs/prove.py {task_id}")
         return done(**base, actual=None, identity=identity)
     chosen = next((s for s in reversed(steps) if not s["trial"]), steps[-1])
     step = chosen["step"]
     if not chosen["work"]:
         said("step", UNBOUND, f"step {step.get('index')} names no --work folder, so its outcome is in no collected file")
+        return done(**base, actual=None, identity=identity)
+    later = next((s for s in every[every.index(chosen) + 1 :] if (s["work"], s["task"]) == (chosen["work"], task_id)), None)
+    if later:
+        said("step", FAIL, f"step {later['step'].get('index')}, after step {step.get('index')}, writes the same outcome folder "
+                           f"({chosen['work']}/{task_id})")
         return done(**base, actual=None, identity=identity)
     said("step", OK, f"step {step.get('index')}: {step.get('run')}")
     work = f"{chosen['work'].rstrip('/')}/{task_id}"

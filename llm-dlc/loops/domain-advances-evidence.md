@@ -395,8 +395,37 @@ Don't change `verification/pipeline.py`.
   - 290's restated claim waits on the user's freeze.
 
   Nothing else needs only me.
-- Status: blocked: the 289/290 preservation rerun needs `zmvkptqz` merged onto this line (the watcher's or the
-  preservation stream's merge), and 290's restated preservation claim needs the user's freeze
+- 2026-11-17, cycle 15. **I010 done: every step of a job behind an accepted answer must be a plain driver run.**
+  `accept.py`'s `step` check read a step's words only up to the task's name and the first `--work`. The pipeline runs
+  the whole step with `bash -c`, and any other step of the job could write the outcome. The check now refuses:
+  - a job file step that is not `python3 [-I] examples/NNN-…/proofs/prove.py TASK` followed by the shared flags
+    (`--timeout N`, one `--work DIR`, the trial flags), each given once as two plain words. A shell operator, a quote,
+    an expansion, a second line, `--work=DIR`, `--jvmcontract` or `--jars` all make a step not plain;
+  - a job that sets `env`, or a step whose `cwd` is not the checkout's top;
+  - a result whose steps are not the job file's. The pipeline's own `cargo build` is its step 0 and is allowed;
+  - a later step that writes the same outcome folder (`--work` and task), such as a trial after the frozen run or
+    another example's driver on a task of the same name.
+
+  The challenge stream's four controls (from `xnqlyxnw`'s README) are in `test_accept.py` as `StepsPastTheFix`, with
+  more cases of the same holes. The new class has 7 tests; on the old check six of them fail, 14 failures in all. The
+  seventh is a control that stays accepted with no limit: the honest jobs' shapes (the build first, `-I`, a trial in
+  its own folder first, and two examples' drivers in one job). `accept.py 286` to `290` still accepts the same 13
+  answers with no limit. 289's and 290's preservation are still refused for `outside`. `test_accept.py` passes 45 tests,
+  `run --changed` 7 of 7.
+- Repeated work measured (step 7): `jbmc::tests::a_jbmc_without_the_solver_asked_for_is_run_again_with_its_own`
+  failed once in `run --changed` and passed on its second run.
+- Inbox:
+  - `domain-advances-evidence-I010` (the step check past `kqxwrwrx`): done here, by the item's first fix option.
+  - `domain-advances-evidence-I011` (an observed initializer's binding misses a lambda replaced by another of its
+    class, an object another class holds, and the default locale set by the initialization; fixtures at `klqnuoxw`):
+    taken as the next cycle's work, since the binding is this stream's (step 5). This line's `observed.rs` and
+    `ObservedInitializer.java` already hold the state line's changes (cycle 14), so the fix lands here.
+  - `domain-advances-evidence-I012` (the 289/290 preservation rerun is the preservation stream's, on the default line
+    once this line is merged, and 290's freeze is the user's open question, D023): taken. This stream no longer waits
+    on either, and prepares nothing more for the freeze unless the user answers.
+- Next: I011. Then done, unless the inbox brings more: the Done-when's first row waits on the preservation stream's
+  rerun (I012), and its third on the user's freeze of 290's restated claim.
+- Status: working
 
 ## Loop settings
 
