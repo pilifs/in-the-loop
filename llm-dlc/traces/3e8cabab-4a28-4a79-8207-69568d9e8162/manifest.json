@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T19:24:01.389Z",
-  "ended": "2026-11-17T12:37:06.248Z",
-  "duration_seconds": 148385,
+  "ended": "2026-11-17T12:41:53.348Z",
+  "duration_seconds": 148672,
   "stats": {
-    "turns": 37,
-    "api_calls": 923,
-    "tool_calls": 970,
+    "turns": 38,
+    "api_calls": 929,
+    "tool_calls": 974,
     "tool_errors": 33,
     "compactions": 7,
     "peak_context_tokens": 466382,
     "usage": {
-      "input_tokens": 1890,
-      "output_tokens": 1302893,
-      "cache_read_input_tokens": 241698645,
-      "cache_creation_input_tokens": 3331984
+      "input_tokens": 1904,
+      "output_tokens": 1306017,
+      "cache_read_input_tokens": 244383534,
+      "cache_creation_input_tokens": 3336933
     }
   },
   "tools": {
-    "Bash": 855,
+    "Bash": 859,
     "Write": 54,
     "Read": 23,
     "AskUserQuestion": 11,
@@ -189,24 +189,24 @@
     {
       "index": 7,
       "started": "2026-11-17T12:02:44.795Z",
-      "ended": "2026-11-17T12:37:06.248Z",
-      "turns": 2,
-      "api_calls": 112,
+      "ended": "2026-11-17T12:41:53.348Z",
+      "turns": 3,
+      "api_calls": 118,
       "usage": {
-        "input_tokens": 226,
-        "output_tokens": 166403,
-        "cache_read_input_tokens": 34270639,
-        "cache_creation_input_tokens": 415321
+        "input_tokens": 240,
+        "output_tokens": 169527,
+        "cache_read_input_tokens": 36955528,
+        "cache_creation_input_tokens": 420270
       },
-      "peak_context_tokens": 444870
+      "peak_context_tokens": 449844
     }
   ],
   "log": {
-    "sha256": "49bbfe573cb72648ae27370de40c936881101879b0b65393313823e4ec3f8cd8",
-    "bytes": 24270912,
-    "lines": 8408,
-    "gzip_bytes": 4173449,
-    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/49bbfe573cb72648ae27370de40c936881101879b0b65393313823e4ec3f8cd8.jsonl.gz"
+    "sha256": "db8426e717da05b1e78c67f4e65b6179a6bf872f0b3f46ae84d4c14b708e5287",
+    "bytes": 24331979,
+    "lines": 8455,
+    "gzip_bytes": 4181887,
+    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/db8426e717da05b1e78c67f4e65b6179a6bf872f0b3f46ae84d4c14b708e5287.jsonl.gz"
   },
   "subagents": [
     {
@@ -1358,6 +1358,22 @@
       "summary": "Merge the foundation of the domain-advances brief into the line",
       "body": "The foundation of the brief llm-dlc/loops/domain-advances.md (the checker's three soundness fixes, the acceptance check examples/tools/accept.py with changes.py on it, example 289's driver recording identities, two queued jobs, and the brief with its four stream briefs) was built in the workspace domain-advances-foundation by the user's own session while this line moved on (VF-036 was recorded here), so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
       "log_sha256": "49bbfe573cb72648ae27370de40c936881101879b0b65393313823e4ec3f8cd8"
+    },
+    {
+      "change_id": "rqopxxzkkxvovswnmpyzyyuxvsryotxr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The verification runner reads the machine's settings from ~/.config/in-the-loop, so a side workspace judges jobs by this machine's limits",
+      "body": "verification/pipeline.local.toml is gitignored, so it existed only in the default workspace, and submit in any other jj workspace judged a job by the committed defaults, a laptop's (4 GB a job): an agent in a side workspace was told the local runner could not run a 6 GB job that the runner here, at 24 GB a job, would take. load_config now reads, in order, pipeline.toml, the machine's file (~/.config/in-the-loop/pipeline.local.toml; XDG_CONFIG_HOME moves it, VERIFY_MACHINE_CONFIG names another or none), the checkout's own pipeline.local.toml, VERIFY_CONFIG, then flags. submit's 'cannot run' note names the settings it judged by, and says when they were the committed defaults alone. brief_run.py budget edits whichever file gives the runner its budget: the checkout's when it sets one, else the machine's. Every test run (test_costs.py run) and test_pipeline set VERIFY_MACHINE_CONFIG empty, so no test reads this machine's settings: without it two pipeline tests failed with a machine file in place. The README no longer says '4 GB a job here', and the docs that named the local file name both.",
+      "log_sha256": "db8426e717da05b1e78c67f4e65b6179a6bf872f0b3f46ae84d4c14b708e5287"
+    },
+    {
+      "change_id": "lupovnmvlpnmukynpprxtssqkorzxvvl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the machine-level runner settings into the line",
+      "body": "The commit that makes verification/pipeline.py read ~/.config/in-the-loop/pipeline.local.toml was made in the workspace machine-config while this line took the domain-advances foundation; nothing but the generated trace files met, and they were regenerated.",
+      "log_sha256": "db8426e717da05b1e78c67f4e65b6179a6bf872f0b3f46ae84d4c14b708e5287"
     }
   ],
   "logs": {
@@ -1546,6 +1562,12 @@
       "lines": 2381,
       "gzip_bytes": 1389216,
       "url": "https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/cb349b4cc63ab90184a8ec7b956d47247e30c9734067a9672e95b9b8c3ee98d9.jsonl.gz"
+    },
+    "db8426e717da05b1e78c67f4e65b6179a6bf872f0b3f46ae84d4c14b708e5287": {
+      "bytes": 24331979,
+      "lines": 8455,
+      "gzip_bytes": 4181887,
+      "url": null
     },
     "e2ed028c608343e9aeedef683a4df41a6503e9491a1d113a7f8531bb94c67455": {
       "bytes": 19171685,

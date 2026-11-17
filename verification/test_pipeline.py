@@ -25,6 +25,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1] / "lib/tools"))
 from cost_tier import cost  # noqa: E402
 
 SYSTEMD = pipeline.systemd_works()
+os.environ["VERIFY_MACHINE_CONFIG"] = ""  # this machine's runner settings are not the test repositories'
 
 
 class Repo:
@@ -58,9 +59,9 @@ class Repo:
         self.git("update-ref", "HEAD", commit)
         return commit
 
-    def pipeline(self, *args, check=True):
+    def pipeline(self, *args, check=True, env=None):
         proc = subprocess.run([sys.executable, "verification/pipeline.py", *args], cwd=self.dir, text=True,
-                              capture_output=True, env=dict(os.environ, VERIFY_REPO=str(self.dir)), timeout=300)
+                              capture_output=True, env=dict(os.environ, VERIFY_REPO=str(self.dir), **(env or {})), timeout=300)
         if check and proc.returncode != 0:
             raise AssertionError(f"pipeline {args} exited {proc.returncode}:\n{proc.stdout}\n{proc.stderr}")
         return proc
@@ -94,6 +95,24 @@ class PipelineTest(unittest.TestCase):
                                  "--capability", "test", "--run", "true", "--memory", "lots", check=False)
         self.assertNotEqual(bad.returncode, 0)
         self.assertIn("not a size", bad.stderr)
+
+    def test_the_machines_settings_are_read_by_every_checkout_and_a_checkouts_own_outrank_them(self):
+        """A jj side workspace has no gitignored pipeline.local.toml: the machine's file is what tells it this runner
+        allows 24 GB a job, where the committed defaults (here 1 GB) would call a 2 GB job one it cannot run."""
+        submit = lambda title: ("submit", "--title", title, "--description", "A stub job, for testing the pipeline itself.",
+                                "--capability", "test", "--run", "true", "--memory", "2G")
+        alone = self.repo.pipeline(*submit("Two gigabytes, by the defaults")).stdout
+        self.assertIn("cannot run it", alone)
+        self.assertIn("Judged by the committed defaults alone", alone)
+        machine = self.repo.dir.parent / f"{self.repo.dir.name}-machine.toml"
+        self.addCleanup(machine.unlink, missing_ok=True)
+        machine.write_text('[runner]\nmemory = "48G"\njob_memory_max = "24G"\n')
+        with_machine = self.repo.pipeline(*submit("Two gigabytes, by the machine"), env={"VERIFY_MACHINE_CONFIG": str(machine)}).stdout
+        self.assertNotIn("cannot run it", with_machine)
+        (self.repo.dir / "verification/pipeline.local.toml").write_text('[runner]\njob_memory_max = "1G"\n')
+        own = self.repo.pipeline(*submit("Two gigabytes, by the checkout"), env={"VERIFY_MACHINE_CONFIG": str(machine)}).stdout
+        self.assertIn("cannot run it", own)  # the checkout's own file outranks the machine's
+        self.assertIn(f"This runner's settings: {machine}, {self.repo.dir}/verification/pipeline.local.toml", own)
 
     def test_a_job_names_the_session_that_submitted_it(self):
         """The loop statistics tie a job to the loop cycle that submitted it by the session it names, so a

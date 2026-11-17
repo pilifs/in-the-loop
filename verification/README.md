@@ -47,7 +47,7 @@ Tests: `python3 verification/test_pipeline.py` (about 30 s; the systemd tests ru
 | `results/index.json` | one line per result, newest first | `collect` |
 | [`findings.md`](findings.md) | what the runs found that needs a person, and the decisions taken, open first, each with what closes it | the managing agent, by hand |
 | `priorities.json` | the queue's priorities by job id, each with its reason, over the jobs' own | `prioritize`, committed |
-| [`pipeline.toml`](pipeline.toml) | the runner's defaults; `pipeline.local.toml` (not committed) overrides them per machine | |
+| [`pipeline.toml`](pipeline.toml) | the runner's defaults; `~/.config/in-the-loop/pipeline.local.toml` overrides them for the machine, and `pipeline.local.toml` (not committed) for one checkout | |
 | `.state/` (not committed) | the runner's claims, work directories, whole logs, results not yet collected, the jvmcontract cache | `run` |
 
 A job is *pending* while it is committed and has no result, *running* while a runner holds its claim, *finished* when
@@ -158,8 +158,9 @@ result says so. Measured here: examples 052 (B11) and 076 (D1) each peaked at ab
 | one proof-tier test, by its row in `lib/tests/costs.json` | 1 | 2G | its recorded time: heap's up to about an hour |
 | a jvmcontract build, when `lib/` changed | counted by the runner, not by you | | |
 
-A job that asks for more memory than a runner allows (4 GB a job here) is deferred, not run: it waits for a bigger
-machine. Say so in the description if you know.
+A job that asks for more memory than a runner allows (its `job_memory_max`, from the machine's settings below; the
+committed default, 4 GB, is a laptop's) is deferred, not run: it waits for a bigger machine. Say so in the description
+if you know. `submit` names the settings it judged by, and says so when they were the committed defaults alone.
 
 **The default test run is not a job.** It runs inline, in the session that needs its answer (CLAUDE.md, Tests;
 [`lib/README.md`](../lib/README.md#tests)), and a passed run is recorded for the push's gate
@@ -223,7 +224,7 @@ proof, as everywhere in this repo: an exit of 0 with `jbmc:no-verdict` is not on
 
 The environment (host, CPU, memory, Java, JBMC, TLC, cargo and rustc versions), the commit, the limits, and the
 jvmcontract build (by the tree id of `lib/`) are recorded, so a result can be compared with one from another machine.
-A result records its machine under the runner's `machine_name` (`pipeline.local.toml`; the hostname when it is
+A result records its machine under the runner's `machine_name` (the machine's settings; the hostname when it is
 empty). `report` names the machine of every result (that name, architecture, WSL, CPUs) and gives its calibration
 table per machine, since a duration measured on one says little about another. Every result collected before
 2026-11-06 ran on `FilSurface`, an 8-core aarch64 WSL2 laptop, recorded by its hostname; later ones on `vm-1`, a
@@ -231,7 +232,12 @@ table per machine, since a duration measured on one says little about another. E
 
 ## Running: resources, isolation, configuration
 
-The runner reads [`pipeline.toml`](pipeline.toml), then `pipeline.local.toml`, then `$VERIFY_CONFIG`, then flags:
+The runner reads [`pipeline.toml`](pipeline.toml), then the machine's settings, `~/.config/in-the-loop/pipeline.local.toml`
+(`$XDG_CONFIG_HOME` moves it; `$VERIFY_MACHINE_CONFIG` names another file, or none when empty, as every test run
+sets it), then this checkout's `pipeline.local.toml` (not committed), then `$VERIFY_CONFIG`, then flags. The
+machine's file is the one to keep: a jj workspace beside the default one has no gitignored file of its own, and
+before 2026-11-17, when it was only the default workspace's, `submit` in a side workspace judged jobs by the
+laptop's defaults (4 GB a job on a machine that allows 24 GB):
 
 ```bash
 python3 verification/pipeline.py run --workers 3 --cpus 6 --memory 6G --job-memory-max 4G
@@ -272,7 +278,7 @@ python3 verification/pipeline.py run --workers 3 --cpus 6 --memory 6G --job-memo
 
 The committed defaults suit the WSL laptop (8 cores, 9 GB): they leave room for one development session in the
 feature loop's scope (3.5 GB by default). Without it, `--memory 7G` is safe there. A bigger machine sets its own budget
-in `pipeline.local.toml`, with a comment on what it leaves for the loop (`FEATURE_LOOP_MEMORY_MAX`) and the OS.
+in the machine's settings file, with a comment on what it leaves for the loop (`FEATURE_LOOP_MEMORY_MAX`) and the OS.
 
 ## Backends: other machines and the cloud
 

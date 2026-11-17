@@ -144,7 +144,8 @@ class Fixture(unittest.TestCase):
         self.log = base / "claude.jsonl"
         env = {"JJ_USER": "Made Up", "JJ_EMAIL": "made-up@example.com", "JJ_CONFIG": str(base / "jj-config.toml"),
                "PATH": f"{base / 'bin'}:{os.environ['PATH']}", "STANDIN_LOG": str(self.log), "STATUSES": str(self.statuses),
-               "CLAUDE_CONFIG_DIR": str(base / "claude"), "XDG_STATE_HOME": str(base / "state")}
+               "CLAUDE_CONFIG_DIR": str(base / "claude"), "XDG_STATE_HOME": str(base / "state"),
+               "VERIFY_MACHINE_CONFIG": ""}
         self.env = mock.patch.dict(os.environ, env)
         self.env.start()
         for key in ("TMUX", "TMUX_PANE"):
@@ -310,6 +311,22 @@ class BeforeTheRun(Fixture):
             self.run_tool("budget", "made-up", "--apply")  # a second time keeps the values of before the run
             self.run_tool("budget", "made-up", "--restore")
         self.assertIn('workers = 13\ncpus = 26  # of 30\nmemory = "80G"\n[other]', local.read_text())
+
+    @cost("tool")
+    def test_without_a_budget_of_its_own_the_checkout_is_given_the_machines_and_that_is_the_file_lowered(self):
+        machine = self.root.parent / "machine.toml"
+        machine.write_text('[runner]\nworkers = 13\ncpus = 26\nmemory = "80G"\njob_memory_max = "24G"\n')
+        (self.root / brief_run.LOCAL).parent.mkdir(exist_ok=True)
+        (self.root / brief_run.LOCAL).write_text('[runner]\nmachine_name = "vm"\n')  # sets no budget
+        with mock.patch.dict(os.environ, {"VERIFY_MACHINE_CONFIG": str(machine)}), \
+                mock.patch.object(doctor, "machine", lambda: {"memory": 105 * doctor.GIB, "cpus": 30}):
+            self.assertEqual(brief_run.budget_file(self.root), machine)
+            self.assertIn(f"{machine} gives the runner more", " ".join(json.loads(self.run_tool("preflight", "made-up")[1])["notes"]))
+            self.run_tool("budget", "made-up", "--apply")
+            self.assertIn('workers = 12\ncpus = 24\nmemory = "68G"\n', machine.read_text())
+            self.run_tool("budget", "made-up", "--restore")
+        self.assertEqual(machine.read_text(), '[runner]\nworkers = 13\ncpus = 26\nmemory = "80G"\njob_memory_max = "24G"\n')
+        self.assertEqual((self.root / brief_run.LOCAL).read_text(), '[runner]\nmachine_name = "vm"\n')
 
 
 class TheFoundation(Fixture):

@@ -18,8 +18,9 @@ Commands:
   resubmit  a new job from an old one, with other resources (after a timeout or out-of-memory, say)
   validate  check every job and result file against its schema
 
-Configuration: verification/pipeline.toml, then verification/pipeline.local.toml (not committed), then the file
-named by $VERIFY_CONFIG, then command-line flags.
+Configuration: verification/pipeline.toml, then the machine's file (~/.config/in-the-loop/pipeline.local.toml, or
+$VERIFY_MACHINE_CONFIG; read by every checkout and workspace on the machine), then verification/pipeline.local.toml
+(not committed, this checkout's own), then the file named by $VERIFY_CONFIG, then command-line flags.
 """
 
 import argparse
@@ -201,14 +202,27 @@ def merge(base, extra):
     return out
 
 
+def machine_config():
+    """The machine's own runner settings, which every checkout and jj workspace of the repository on it reads: a
+    side workspace has no gitignored verification/pipeline.local.toml of its own, and without this judged a job
+    against the committed defaults, which suit a laptop (4 GB a job). $VERIFY_MACHINE_CONFIG names another file, or
+    none when empty (the tests)."""
+    named = os.environ.get("VERIFY_MACHINE_CONFIG")
+    if named is not None:
+        return Path(named) if named else None
+    return Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config") / "in-the-loop" / "pipeline.local.toml"
+
+
 def load_config(args=None):
     config = DEFAULTS
-    files = [ROOT / HERE / "pipeline.toml", ROOT / HERE / "pipeline.local.toml"]
+    files = [ROOT / HERE / "pipeline.toml", machine_config(), ROOT / HERE / "pipeline.local.toml"]
     if os.environ.get("VERIFY_CONFIG"):
         files.append(Path(os.environ["VERIFY_CONFIG"]))
+    read = []
     for f in files:
-        if f.exists():
+        if f is not None and f.exists():
             config = merge(config, tomllib.loads(f.read_text()))
+            read.append(str(f))
     runner = dict(config["runner"])
     for flag in ["workers", "cpus", "memory", "job_memory_max", "isolation", "max_timeout", "state_dir"]:
         value = getattr(args, flag, None) if args else None
@@ -227,7 +241,7 @@ def load_config(args=None):
     runner["state_dir"] = state if state.is_absolute() else ROOT / state
     if runner["backend"] != "local":
         sys.exit(f"backend {runner['backend']!r}: only 'local' exists so far (verification/README.md, Backends)")
-    return {"runner": runner, "defaults": config["defaults"]}
+    return {"runner": runner, "defaults": config["defaults"], "files": read}
 
 
 def systemd_works():
@@ -1953,11 +1967,17 @@ def cmd_submit(args):
         print(json.dumps(job, indent=2, ensure_ascii=False))
         return 0
     write_json(path, job)
-    p = plan(job, load_config())
+    config = load_config()
+    p = plan(job, config)
     print(f"wrote {path.relative_to(ROOT)}: {len(job['steps'])} step(s), {p['cpus']:g} CPU, {fmt_bytes(p['memoryEstimate'])}, "
           f"~{fmt_seconds(p['durationEstimate'])} (limit {fmt_bytes(p['memoryLimit'])}, timeout {fmt_seconds(p['timeout'])})")
     if p["cannotRun"]:
-        print("note: the local runner cannot run it: " + "; ".join(p["cannotRun"]) + ". It waits for a bigger runner.")
+        local = [f for f in config["files"] if not f.endswith("/pipeline.toml")]
+        print("note: the local runner cannot run it: " + "; ".join(p["cannotRun"]) + ". It waits for a bigger runner. "
+              + (f"(This runner's settings: {', '.join(local)}.)" if local else
+                 "(Judged by the committed defaults alone, which suit a laptop: no machine file "
+                 f"({machine_config() or 'none'}) and no verification/pipeline.local.toml was found, so the runner here "
+                 "may well allow more.)"))
     print("Commit it with the change, marked verification pending (verification/README.md).")
     return 0
 
