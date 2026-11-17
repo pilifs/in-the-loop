@@ -680,8 +680,19 @@ pub(crate) fn side_effect(cp: &crate::classpath::ClassPath, class: &str, name: &
 /// and what no plan of this wave makes (several constructors without a choice, a superclass, a cycle) is a boundary
 /// of its own.
 pub fn receiver(cp: &crate::classpath::ClassPath, class: &str) -> Result<crate::harness::RecordType, Unsupported> {
+    receiver_in(cp, class, false)
+}
+
+/// [`receiver`] for a write set's check, whose frame compares a field of a type it makes no object of by identity
+/// (`equivalence::made_of_framed`).
+pub fn receiver_framed(cp: &crate::classpath::ClassPath, class: &str) -> Result<crate::harness::RecordType, Unsupported> {
+    receiver_in(cp, class, true)
+}
+
+fn receiver_in(cp: &crate::classpath::ClassPath, class: &str, framed: bool) -> Result<crate::harness::RecordType, Unsupported> {
     let java = class.replace('/', ".");
-    match crate::equivalence::made_of(cp, class, &mut Vec::new()) {
+    let made = if framed { crate::equivalence::made_of_framed(cp, class) } else { crate::equivalence::made_of(cp, class, &mut Vec::new()) };
+    match made {
         Ok(Ok(record)) => Ok(record),
         Ok(Err(gap)) if gap.contains("constructor's arguments must be") || gap.contains("is an interface") || gap.contains("is abstract") => {
             Err(unbuilt(&format!("an ordinary receiver, an object of {java} made by its constructor, whose {gap}")))

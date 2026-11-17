@@ -470,7 +470,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             Err(u) => return refuse(&mut out, line, u.what),
         }
     } else {
-        match crate::construction::receiver(&cp, &class_internal) {
+        let made = if options.writes.is_some() { crate::construction::receiver_framed(&cp, &class_internal) } else { crate::construction::receiver(&cp, &class_internal) };
+        match made {
             Ok(r) => Some((r, None)),
             Err(u) => return refuse(&mut out, line, format!("{method_name} is an instance method, whose receiver is outside the objects a property check makes: {}", u.what)),
         }
@@ -516,6 +517,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 given.push(g);
                 Ok(record)
             }
+            Type::Object(class) if cp.application(class)?.is_some() && options.writes.is_some() => crate::equivalence::made_of_framed(&cp, class)?,
             Type::Object(class) if cp.application(class)?.is_some() => crate::equivalence::made_of(&cp, class, &mut Vec::new())?,
             _ => return refuse(&mut out, line, format!("parameter {name} has type {}; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.{}", t.java_name(), crate::equivalence::adapted_refusal(t, options.max_array_length))),
         };

@@ -943,7 +943,7 @@ fn the_frame_countermodels_are_what_a_jvm_says_they_are() {
     assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
     assert_eq!(
         String::from_utf8_lossy(&out.stdout).trim(),
-        "adversarial.admin=true honest.admin=false restoring.admin=false copying.title.same=false copying.title.equal=true lastName=x audit.writes=1 counting.audit.same=true held.writes=1 seen[0]=1 rename.admin=true honest.rename=true lengthy.admin=true promoted.admin=true matched.admin=true sneaky.admin=true trusted.admin=true linked.name=self"
+        "adversarial.admin=true honest.admin=false restoring.admin=false copying.title.same=false copying.title.equal=true lastName=x audit.writes=1 counting.audit.same=true held.writes=1 seen[0]=1 rename.admin=true honest.rename=true lengthy.admin=true promoted.admin=true matched.admin=true sneaky.admin=true trusted.admin=true linked.name=self remapping.extras.same=false stashing.extras.size=1 mapped.rename=true peeked.rename=false"
     );
 }
 
@@ -1037,4 +1037,53 @@ fn the_countermodels_are_what_a_jvm_says_they_are() {
         String::from_utf8_lossy(&out.stdout).trim(),
         "counting(1)=2 throwing(1)=IllegalStateException checked(2)=2 depth(3)=3 setThenLevel(7)=7 setThenLevelIndirectly(8)=8 setThenFirst(9)=9 setThenFixedFirst(10)=10 twiceLimit()=14 lowersToI(I)=true turkishThenLowers()=false"
     );
+}
+
+/// A field of a type the check makes no object of (`java.util.Map extras` in `claims.Frames`, as example 286's
+/// `ProtectedBean.someMap`): under a write set it is framed by identity, where any other check refuses it as before.
+/// So a setter of such a bean has a write set and an effect contract: the honest one is proved and stands in for its
+/// call, one that puts another map in the field is refuted with a witness a JVM replays, one that puts into the map
+/// is refused for that write, and the contract of one that reads the map is refused for that read. Each refuted or
+/// refused bean does on a JVM what `Frames.main` shows.
+#[test]
+fn a_write_set_frames_a_field_of_a_type_the_check_makes_no_object_of_by_identity() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let framed = |bean: &str, tag: &str| {
+        let mut o = options(classes, &format!("claims.Frames${bean}#setDisplayName"), 3, &format!("frames-map-{tag}"));
+        o.writes = Some(vec!["this.displayName".into()]);
+        run(&o)
+    };
+    let mapped = framed("Mapped", "mapped");
+    assert_eq!(mapped.verdict, Verdict::Verified, "{}", mapped.output);
+    assert_eq!(mapped.assert.as_deref(), Some("this.admin == \\old(this.admin) && this.extras == \\old(this.extras)"), "{}", mapped.output);
+    let remapping = framed("Remapping", "remapping");
+    assert_eq!(remapping.verdict, Verdict::Violation, "{}", remapping.output);
+    assert!(remapping.output.contains("violated: `this.extras == \\old(this.extras)`"), "{}", remapping.output);
+    assert_eq!(remapping.replay.as_ref().map(|r| (r.by.as_str(), r.reproduced)), Some(("jvm", true)), "{}", remapping.output);
+    let stashing = framed("Stashing", "stashing");
+    assert_eq!(stashing.verdict, Verdict::Unverifiable, "{}", stashing.output);
+    assert!(stashing.problem.as_deref().unwrap_or_default().contains("writes a field of an object made before it was called and none of its inputs"), "{}", stashing.output);
+    // Without a write set the field is refused by name, as before.
+    let mut plain = options(classes, "claims.Frames$Mapped#setDisplayName", 3, "frames-map-plain");
+    plain.assert = Some("this.displayName == name".into());
+    let plain = run(&plain);
+    assert_eq!(plain.verdict, Verdict::Unverifiable, "{}", plain.output);
+    assert!(plain.problem.as_deref().unwrap_or_default().contains("the field extras of claims.Frames$Mapped has type java.util.Map"), "{}", plain.output);
+    // The effect contract at a call: proved, and named among what the result rests on.
+    let app = |entry: &str, bean: &str| {
+        let mut o = options(classes, &format!("claims.Frames#{entry}"), 3, &format!("effects-map-{bean}"));
+        o.assert = Some("result".into());
+        o.lemmas = Some(effect_contract(bean, ""));
+        run(&o)
+    };
+    let renamed = app("mappedRename", "Mapped");
+    assert_eq!(renamed.verdict, Verdict::Verified, "{}", renamed.output);
+    let stated = renamed.stated.as_ref().expect("a statement");
+    assert!(stated.assumptions.iter().any(|a| a.text == "the effect contract of claims.Frames$Mapped.setDisplayName(Ljava/lang/String;)V, proved beside this check"), "the contract stood in for the call: {:?}", stated.assumptions);
+    // The map is a field of the receiver, which the contract's proof does not read: a caller filled it.
+    let peeked = app("peekedRename", "Peeking");
+    assert_eq!(peeked.verdict, Verdict::Unverifiable, "{}", peeked.output);
+    assert!(peeked.problem.as_deref().unwrap_or_default().contains("the effect contract of claims.Frames$Peeking#setDisplayName"), "{}", peeked.output);
+    assert!(peeked.output.contains("extras"), "the refusal names the read: {}", peeked.output);
 }

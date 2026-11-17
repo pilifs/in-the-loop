@@ -301,6 +301,86 @@ public final class Frames {
         }
     }
 
+    /**
+     * A bean with a field of a JDK interface type, as example 286's ProtectedBean has (someMap), which the check makes
+     * no object of: under a write set it is framed by identity. The honest setter leaves it.
+     */
+    public static final class Mapped {
+        String displayName;
+        boolean admin;
+        java.util.Map<String, Object> extras = new java.util.HashMap<>();
+
+        public Mapped(String displayName, boolean admin) {
+            this.displayName = displayName;
+            this.admin = admin;
+        }
+
+        public void setDisplayName(String name) {
+            this.displayName = name;
+        }
+    }
+
+    /** Puts another map in the field: a write of the reference the frame keeps. */
+    public static final class Remapping {
+        String displayName;
+        java.util.Map<String, Object> extras = new java.util.HashMap<>();
+
+        public Remapping(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public void setDisplayName(String name) {
+            this.displayName = name;
+            this.extras = new java.util.HashMap<>();
+        }
+    }
+
+    /** Puts the name into the map the field holds: a write into an object that was there before the call. */
+    public static final class Stashing {
+        String displayName;
+        java.util.Map<String, Object> extras = new java.util.HashMap<>();
+
+        public Stashing(String displayName) {
+            this.displayName = displayName;
+        }
+
+        public void setDisplayName(String name) {
+            this.displayName = name;
+            this.extras.put("name", name);
+        }
+    }
+
+    /** Reads the map the field holds: what it writes then depends on what a caller put there. */
+    public static final class Peeking {
+        String displayName;
+        boolean admin;
+        java.util.Map<String, Object> extras = new java.util.HashMap<>();
+
+        public Peeking(String displayName, boolean admin) {
+            this.displayName = displayName;
+            this.admin = admin;
+        }
+
+        public void setDisplayName(String name) {
+            this.displayName = extras.isEmpty() ? name : "admin:";
+        }
+    }
+
+    /** A rename of an admin with a map field: it stays one, under the new name. */
+    public static boolean mappedRename(String name) {
+        Mapped account = new Mapped("", true);
+        account.setDisplayName(name);
+        return account.admin && account.displayName == name;
+    }
+
+    /** A caller fills the map first, then renames: the name it is given is not the one the bean keeps. */
+    public static boolean peekedRename(String name) {
+        Peeking account = new Peeking("", false);
+        account.extras.put("k", "v");
+        account.setDisplayName(name);
+        return account.displayName == name;
+    }
+
     /** A mentor renames an admin: it stays one, under the new name. */
     public static boolean adoptedRename(String name) {
         Honest account = new Honest("", true);
@@ -388,6 +468,14 @@ public final class Frames {
         Linking linking = new Linking("", false);
         linking.link(linking);
         out.append(" linked.name=").append(linking.displayName);
+        Remapping remapping = new Remapping("");
+        java.util.Map<String, Object> extras = remapping.extras;
+        remapping.setDisplayName("x");
+        out.append(" remapping.extras.same=").append(remapping.extras == extras);
+        Stashing stashing = new Stashing("");
+        stashing.setDisplayName("x");
+        out.append(" stashing.extras.size=").append(stashing.extras.size());
+        out.append(" mapped.rename=").append(mappedRename("x")).append(" peeked.rename=").append(peekedRename("x"));
         System.out.println(out);
     }
 }

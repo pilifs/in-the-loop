@@ -506,15 +506,48 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
     kept exactly where that setter's contract frames it. So the brief's composed statement is the one this
     capability can carry: the binder's part (sampled stand-in) and each setter's part (a proved effect contract).
   - Job `20261117-225439-example-286-s-adversarial-fixture-on-5-3` runs the five checks for the record.
+- 2026-11-17, step 6 begun: the setters' effect contracts on 286's real path (frozen claim unchanged; the accepted
+  refutation unaffected). Inbox: nothing open.
+  - **Job 222610 passed as expected.** Under the frozen claim, at bound 8, the fixed task stops at one strict gap,
+    non-ASCII `toLowerCase()` (`isAllowed:828`). That is its blocker; every other step of the path is decided.
+    - The ASCII trial is **proved at bound 8** in 196 s, resting on the five models, both stand-ins (sampled), two
+      observed initializers, the locale assumption and the `simpleMatch` lemma.
+  - **The contracts.** `proofs/beans/protected-setters.contract` gives `ProtectedBean`'s permitted setters (`setName`,
+    `setFavouriteColour`, `setTouchy`) the contract of the adversarial fixture's honest setter: each writes its own
+    field only and leaves the String it is given.
+    - `prove.py --contracts FILE` puts the contracts beside the lemma and records the file in `evidence.json`.
+    - The check proves each contract first and uses it where `ProtectedBeanStandIn` calls the setter.
+  - **What the second use showed was accidental:** the receiver's fields.
+    - The first try was refused: `ProtectedBean.someMap` is a `java.util.Map`, and a property check made no receiver
+      with such a field. `AccountBean` had only String and boolean fields.
+    - A write set's check (and so an effect contract's proof) now frames such a field by identity
+      (`harness::FieldKind::Reference`, through `equivalence::made_of_framed` and `construction::receiver_framed`):
+      `this.someMap == \old(this.someMap)`.
+    - A read of it inside a contract's proof, and a write into its object, are refused as before.
+    - Every other check still refuses the field by name.
+    - So the contract's form is about locations of any reference type, not about beans of primitive and String
+      fields.
+  - **Tests.** `claims.Frames` gains `Mapped` (proved, and its contract stands in for the call in `mappedRename`),
+    `Remapping` (refuted on the frame, replayed on a JVM), `Stashing` (refused for its write into the map), and
+    `Peeking` (its contract is refused: it reads the map a caller filled).
+    - `a_write_set_frames_a_field_of_a_type_the_check_makes_no_object_of_by_identity` covers them; `Frames.main`
+      shows each on a JVM.
+    - With the identity fields left out of the frame (by mutation), the test fails.
+  - **The probe** (capped, ASCII trial, bound 7): the fixed task is **proved through the contracts** in 93 s.
+    - The result names the contracts of `setName` and `setTouchy` among what it rests on.
+    - `favouriteColour` (15 units) is beyond the bound, so its contract is proved but never used.
+  - Job `20261117-233000-example-286-s-fixed-protected-state-task` runs it at bound 8.
 - Next:
-  - Step 6: the contract on 286's real path (`ProtectedBean`'s setters through `ProtectedBeanStandIn` on 5.3.19),
-    then 288's binding task as the second consumer.
-  - Job 222610's result: record the fixed task's blocker under the frozen claim, and the ASCII trial. Job 225439's
-    result.
+  - Step 6's second consumer: 288's binding (6.1.14, whose `setPropertyValue(PropertyValue)` has 5.3.19's shape),
+    with 288's own `ProtectedBean` (`id` and `admin` protected, `name` and `title` permitted). It needs a stand-in
+    sampled against 6.1.14 and an entry of its own beside 288's adapter set. The question is whether the same
+    contract form carries over under 288's locales.
+  - Job 225439's and job 233000's results.
   - Still open from cycle 1:
-    - non-ASCII `toLowerCase()`, the fixed task's one blocker under the frozen claim;
+    - non-ASCII `toLowerCase()`, the fixed task's one blocker under the frozen claim (job 222610 confirms it is the
+      only one);
     - the corrected formalization: I009's two values and an ASCII `field`. It is a new claim file, the user's
-      decision; the trial is its evidence.
+      decision; the trial (proved at bound 8 by job 222610) is its evidence.
 - Status: working
 
 ## Loop settings

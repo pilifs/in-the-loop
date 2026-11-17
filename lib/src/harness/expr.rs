@@ -1052,6 +1052,12 @@ impl Parser<'_> {
                     steps.push(step(ty.descriptor()));
                     at = None;
                 }
+                // Compared by identity alone, with null or with itself before the call: no field of it is read.
+                super::FieldKind::Reference(t) => {
+                    steps.push(step(t.descriptor()));
+                    ty = t.clone();
+                    at = None;
+                }
             }
         }
         Ok(FieldPath { shown, slot, steps, ty })

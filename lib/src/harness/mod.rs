@@ -463,6 +463,11 @@ pub enum FieldKind {
     /// A `java.lang.String`: null in both, or the same content (`String.equals`, the values stream's String model),
     /// never its identity, which no claim over a String observes (J1's O2: the quote request's code).
     String,
+    /// A reference of a type the check makes no object of (`java.util.Map`), of a receiver or object parameter made
+    /// by its constructor: compared by identity alone, never read into. Only a write set's check lays a field out so
+    /// (`equivalence::made_of_framed`), where the frame needs `this.someMap == \old(this.someMap)` and nothing
+    /// else of it; every other check refuses such a field by name, as before.
+    Reference(Type),
 }
 
 impl Fields {
@@ -473,6 +478,7 @@ impl Fields {
             match kind {
                 FieldKind::Value(t) | FieldKind::Array(t) => out.push((name.clone(), t.clone())),
                 FieldKind::String => out.push((name.clone(), Type::Object("java/lang/String".into()))),
+                FieldKind::Reference(t) => out.push((name.clone(), t.clone())),
                 FieldKind::Object(inner) => out.extend(inner.paths().into_iter().map(|(p, t)| (format!("{name}.{p}"), t))),
             }
         }
@@ -508,6 +514,7 @@ impl Fields {
                     && match (a, b) {
                         (FieldKind::Value(x), FieldKind::Value(y)) | (FieldKind::Array(x), FieldKind::Array(y)) => x == y,
                         (FieldKind::String, FieldKind::String) => true,
+                        (FieldKind::Reference(x), FieldKind::Reference(y)) => x == y,
                         (FieldKind::Object(x), FieldKind::Object(y)) => x.same_shape(y),
                         _ => false,
                     }
@@ -824,8 +831,13 @@ fn field_refs(out: &mut Vec<RefPath>, path: &str, at: usize, root: Root, fields:
             FieldKind::Value(_) | FieldKind::String => continue,
             FieldKind::Array(t) => t.descriptor(),
             FieldKind::Object(inner) => inner.class.clone(),
+            FieldKind::Reference(t) => t.class_name().map(str::to_string).unwrap_or_else(|| t.descriptor()),
         };
-        let descriptor = if matches!(kind, FieldKind::Object(_)) { format!("L{ty};") } else { ty.clone() };
+        let descriptor = match kind {
+            FieldKind::Object(_) => format!("L{ty};"),
+            FieldKind::Reference(t) => t.descriptor(),
+            _ => ty.clone(),
+        };
         let here = out.len();
         out.push(RefPath { path: format!("{path}.{name}"), ty, root, field: Some((at, fields.class.clone(), name.clone(), descriptor)) });
         if let FieldKind::Object(inner) = kind {
@@ -2985,6 +2997,7 @@ fn compare_fields(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::P
         let descriptor = |k: &FieldKind, prefix: &str| match k {
             FieldKind::Value(t) | FieldKind::Array(t) => t.descriptor(),
             FieldKind::String => "Ljava/lang/String;".to_string(),
+            FieldKind::Reference(t) => t.descriptor(),
             FieldKind::Object(f) => format!("L{prefix}{};", f.class),
         };
         // An interface's accessor (`getKey()`, [`expr::accessor_name`]) is called where a field is read.
@@ -3082,7 +3095,7 @@ fn compare_fields(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::P
                 code.bind(done);
                 used = used.max(scratch + 2);
             }
-            (FieldKind::Object(_) | FieldKind::String, _) => code.goto(fail),
+            (FieldKind::Object(_) | FieldKind::String | FieldKind::Reference(_), _) => code.goto(fail),
         }
     }
     used
@@ -3687,7 +3700,7 @@ fn fields_source(old: &str, new: &str, old_fields: &Fields, fields: &Fields) -> 
                 (FieldKind::Array(_), _) => format!("java.util.Arrays.equals({x}, {y})"),
                 (FieldKind::Object(inner), FieldKind::Object(old_inner)) => format!("({x} == null ? {y} == null : {y} != null && {})", fields_source(&x, &y, old_inner, inner)),
                 (FieldKind::String, FieldKind::String) => format!("({x} == null ? {y} == null : {x}.equals({y}))"),
-                (FieldKind::Object(_) | FieldKind::String, _) => "false".to_string(),
+                (FieldKind::Object(_) | FieldKind::String | FieldKind::Reference(_), _) => "false".to_string(),
             }
         })
         .collect();
