@@ -255,6 +255,21 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
   `an_effect_contract_reads_no_final_field_a_caller_made_in_another_state` is added to
   `lib/tests/contract_countermodels.rs`, with the refusal also required to name the read. It fails with the refusal
   switched off (by mutation).
+- 2026-11-17, the observation binding brought level with the evidence line (nothing of 286 decided; the frozen claim
+  unchanged). Inbox: `domain-advances-state-I012` taken now rather than at a merge: `mmnoqopr`'s
+  `lib/src/observed.rs`, `lib/src/observed/ObservedInitializer.java`, `lib/tests/observed_countermodels.rs` and
+  `lib/README.md`'s observed-initializer paragraph are copied unchanged (they hold this line's `Dump.nameOf`; the
+  other paragraphs of the README this line changed are kept; the `ob` fixtures were already here), and the cost
+  inventory is regenerated. `domain-advances-state-I011` (the binding countermodels of `klqnuoxw`): the evidence
+  stream lands the fix, as the binding is its own, its line merges first (D021) and its inbox carries the same item
+  (`domain-advances-evidence-I011`); an item sent to it says so and that this line copies the fix whole, changing
+  nothing in the binding meanwhile. Until then this line has the three false proofs the item names (none in an
+  accepted result: 290's observed classes set no locale and write no other class's state). Step 3, from 5.3.19's
+  bytecode: the binder's wrapper extracts the old value for the editor (`BeanPropertyBindingResult.createBeanWrapper`),
+  so the getter runs before each write, and recording a `TypeMismatchException` (binding `"32"` to `someMap`) reads
+  the property's type through the same reflection (`AbstractPropertyBindingResult.getFieldType`, `getPropertyType`),
+  so a stand-in for `processLocalProperty` alone leaves that read on the real path: the stand-in has to answer the
+  property's type too, or stand at `BeanWrapperImpl.getLocalPropertyHandler`.
 - Next: step 3, option 2. A stand-in for `AbstractNestablePropertyAccessor.processLocalProperty(PropertyTokenHolder,
   PropertyValue)` on a wrapped object of exactly one class, checked on a JVM by sampling against the real method:
   - Spring's lookup (exact, uncapitalized, capitalized) over the property names and write methods the JVM's

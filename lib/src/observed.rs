@@ -28,25 +28,35 @@
 //! say it, or says something the check does not hold, ends there by name; nothing falls back to a Java default.
 //! - The class file: its sha256 as the JVM's class loader read it must be the class file the tool reads of the
 //!   class on the same class path, in the same order (the JVM's `java.class.path` is the one it was given).
-//! - The classes it initialized besides itself and its supertypes (as the JVM logged them, `-Xlog:class+init`):
-//!   each is, in the check, initialized where the check first uses it, as if the observed initializer had not run,
-//!   so its static state just after the observed initialization must be the state it has initialized first thing
-//!   in a JVM of its own, as far as the observation holds it. An initializer that wrote another class's static
-//!   (`A.<clinit> { B.x = 1; k = 7; }`, `lib/tests/observed_countermodels.rs`) is refused, with the field, and so is
+//! - The classes it initialized besides itself (as the JVM logged them, `-Xlog:class+init`), its superclasses and
+//!   superinterfaces among them: each is, in the check, initialized as it is without the observed initializer (a
+//!   supertype before the class, any other where the check first uses it), so its static state just after the
+//!   observed initialization must be the state it has initialized first thing in a JVM of its own, as far as the
+//!   observation holds it. An initializer that wrote another class's static (`A.<clinit> { B.x = 1; k = 7; }`,
+//!   `lib/tests/observed_countermodels.rs`), a superclass's (`ob.Derived`) or a cell of a superinterface's array
+//!   (`ob.Filled`, both `lib/tests/fixtures/rule-countermodels`) is refused, with the field, and so is
 //!   one whose class file is not the tool's. A value not held is compared by what it is said to be, and a lambda's
 //!   hidden class is said by what it was defined from (`R$$Lambda`), without the address a JVM appends to its name,
 //!   which differs from run to run (`claims.Hooked`, `lib/tests/claims.rs`).
 //! - The default locale: one whose language is Turkish, Azeri or Lithuanian is refused, since the check takes the
-//!   JVM's default to be none of them ([`crate::bmc::strings::LOCALE_ASSUMPTION`]); any other is stated.
-//! - The system properties the class path's code read during the initialization (directly, or through
-//!   `Integer.getInteger`, `Long.getLong` or `Boolean.getBoolean`), each with the value it had or that it was not
-//!   set: stated. The JDK's reads of its own configuration, as it opens a JAR or first uses one of its classes, are
-//!   not listed: the check takes the JDK at its defaults throughout.
+//!   JVM's default to be none of them ([`crate::bmc::strings::LOCALE_ASSUMPTION`]); any other is stated. The default
+//!   time zone (which the JDK reads from `user.timezone` or the machine, as `ob.Zoned`'s `TimeZone.getDefault()`
+//!   does) is stated too.
+//! - The system properties the class path's code read during the initialization (through `System.getProperty`,
+//!   `Integer.getInteger`, `Long.getLong` or `Boolean.getBoolean`, or by key through the map `System.getProperties()`
+//!   gives, as `ob.Bypassed` does), each with the value it had or that it was not set: stated. One that read the
+//!   properties as a whole (their keys, entries or values, a copy) is refused, since the observation lists only the
+//!   ones read by name. The JDK's reads of its own configuration, as it opens a JAR or first uses one of its
+//!   classes, are not listed: the check takes the JDK at its defaults throughout.
+//! - The environment: an observation does not record it, so one whose initialization initialized a class whose code
+//!   reads it (`System.getenv`, `ProcessBuilder.environment`, as `ob.Environ` does) is refused, by the class.
 //! - The JDK: its release must be the check's, and its vendor and home are stated.
 //!
 //! What is still assumed, and stated: that a class it initialized holds, where the observation holds nothing of a
 //! field (an object of the application), what it would hold alone, and that a write of the value a field already
-//! had is none; that the settings it read (the locale, the properties) are those of the run the result is about.
+//! had is none; that the settings it read (the locale, the time zone, the properties) are those of the run the
+//! result is about. Not seen: a read of the environment by reflection or through a JDK method other than the two,
+//! and a read of the properties through a method the observer does not override (`equals`, `hashCode`).
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -119,9 +129,13 @@ pub struct On {
     pub locale: String,
     pub format: String,
     pub display: String,
+    /// The default time zone's id (`Asia/Tokyo`).
+    pub zone: String,
     /// Each system property the initialization read, in the order it first did, and the value it had.
     pub properties: Vec<(String, Option<String>)>,
-    /// Each class of the class path the initialization initialized besides the class and its supertypes.
+    /// The first class of the class path that read the system properties as a whole, if one did.
+    pub all_properties: Option<String>,
+    /// Each class of the class path the initialization initialized besides the class, its supertypes among them.
     pub initialized: Vec<Initialized>,
 }
 
@@ -159,13 +173,14 @@ pub fn assumption(class: &str, observed: &Observed) -> String {
         format!("; it initialized {} besides, and left each in the state the class has initialized alone, as far as the observation holds its fields (what it holds nothing of is taken to be the same too)", names.join(", "))
     };
     format!(
-        "the class initializer of {} was not run by the checker: its static state is the one a JVM (JDK {jdk}, {}) left after initializing the class first thing on {on}, from the class file the check reads (sha256 {}), in a JVM whose default locale was {} (formatting {}, display {}); {properties}{initialized}; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+        "the class initializer of {} was not run by the checker: its static state is the one a JVM (JDK {jdk}, {}) left after initializing the class first thing on {on}, from the class file the check reads (sha256 {}), in a JVM whose default locale was {} (formatting {}, display {}) and default time zone {}; {properties}{initialized}; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
         class.replace('/', "."),
         bound.vendor,
         short(&bound.sha256),
         bound.locale,
         bound.format,
         bound.display,
+        bound.zone,
     )
 }
 
@@ -204,6 +219,14 @@ pub fn observe(classes: &[String], classpath: &[PathBuf], work: &Path) -> Result
         let line = jvm.run(&binary, Some(&log))?;
         let observed = parse(&binary, &line)?;
         bind(&binary, &internal, &observed.on, &entries, &tool)?;
+        for ran in std::iter::once(internal.as_str()).chain(observed.on.initialized.iter().map(|i| i.name.as_str())) {
+            if let Some(call) = reads_environment(&tool, ran)? {
+                let whose = if ran == internal { "its code".to_string() } else { format!("its initialization initialized {}, whose code", ran.replace('/', ".")) };
+                return Err(Error::new(format!(
+                    "--observed-initializer {binary}: {whose} reads the environment ({call}), and an observation does not record the environment, so the check cannot take it (the environment is not the class path's, and it differs from one machine to the next)"
+                )));
+            }
+        }
         for other in &observed.on.initialized {
             let name = other.name.replace('/', ".");
             if tool_sha256(&tool, &other.name)?.as_deref() != Some(other.sha256.as_str()) {
@@ -280,8 +303,25 @@ fn tool_sha256(tool: &crate::classpath::ClassPath, internal: &str) -> Result<Opt
     Ok(tool.application_bytes(internal)?.map(|b| crate::digest::sha256_hex(&b)))
 }
 
-/// Checks that an observation was made on what the check holds: the class path in its order, the class file, and a
-/// default locale the check's lowering of a String agrees with.
+/// The JDK method by which the class file the tool reads of `internal` reads the environment, if it has one: a call
+/// or a method handle of `System.getenv` or `ProcessBuilder.environment` anywhere in it, run or not.
+fn reads_environment(tool: &crate::classpath::ClassPath, internal: &str) -> Result<Option<String>, Error> {
+    let Some(bytes) = tool.application_bytes(internal)? else { return Ok(None) };
+    let class = crate::classfile::ClassFile::parse(&bytes).map_err(|e| Error::new(format!("--observed-initializer: the class file of {} does not parse: {e}", internal.replace('/', "."))))?;
+    for (index, constant) in class.pool.entries().iter().enumerate() {
+        if !matches!(constant, crate::classfile::Constant::MethodRef { .. }) {
+            continue;
+        }
+        let Ok(member) = class.pool.member(index as u16) else { continue };
+        if matches!((member.owner.as_str(), member.name.as_str()), ("java/lang/System", "getenv") | ("java/lang/ProcessBuilder", "environment")) {
+            return Ok(Some(member.display()));
+        }
+    }
+    Ok(None)
+}
+
+/// Checks that an observation was made on what the check holds: the class path in its order, the class file, and the
+/// settings it read ([`settings`]).
 fn bind(binary: &str, internal: &str, on: &On, entries: &[PathBuf], tool: &crate::classpath::ClassPath) -> Result<(), Error> {
     let given: Vec<String> = entries.iter().map(|e| e.display().to_string()).collect();
     if on.classpath != given {
@@ -292,11 +332,22 @@ fn bind(binary: &str, internal: &str, on: &On, entries: &[PathBuf], tool: &crate
         Some(_) => return Err(Error::new(format!("--observed-initializer {binary}: the class file the JVM initialized (from {}) is not the one the tool reads of the class on the same class path", on.from.as_deref().unwrap_or("an unnamed location")))),
         None => return Err(Error::new(format!("--observed-initializer {binary}: the tool reads no class file of it on the check's class path, where the JVM read one (from {})", on.from.as_deref().unwrap_or("an unnamed location")))),
     }
+    settings(binary, on)
+}
+
+/// Checks the settings an observation was made under: a default locale the check's lowering of a String agrees
+/// with, and system properties read one by one.
+fn settings(binary: &str, on: &On) -> Result<(), Error> {
     let language = on.locale.split(['-', '_']).next().unwrap_or("");
     if matches!(language, "tr" | "az" | "lt") {
         return Err(Error::new(format!(
             "--observed-initializer {binary}: it was observed in a JVM whose default locale is {}, and the check takes the default locale to be none of Turkish, Azeri or Lithuanian, under which String.toLowerCase() differs: the observation is not of the run the check is about (observe it under another default locale, as the JVM's settings, JAVA_TOOL_OPTIONS among them, give it)",
             on.locale
+        )));
+    }
+    if let Some(reader) = &on.all_properties {
+        return Err(Error::new(format!(
+            "--observed-initializer {binary}: {reader} read the system properties as a whole (their keys, entries or values, through System.getProperties()), and an observation lists only the properties read by name, so the check cannot take it"
         )));
     }
     Ok(())
@@ -446,7 +497,13 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
         locale: text(locale, "default")?,
         format: text(locale, "format")?,
         display: text(locale, "display")?,
+        zone: text(on, "zone")?,
         properties: list("properties")?.iter().map(|p| Ok((text(p, "name")?, p.get("value").and_then(|v| v.as_str()).map(String::from)))).collect::<Result<_, Error>>()?,
+        all_properties: match on.get("allProperties") {
+            Some(serde_json::Value::Null) => None,
+            Some(serde_json::Value::String(reader)) => Some(reader.clone()),
+            _ => return Err(bad("allProperties")),
+        },
         initialized: list("initialized")?
             .iter()
             .map(|i| Ok(Initialized { name: text(i, "name")?, sha256: text(i, "sha256")?, state: serde_json::json!({ "fields": i.get("fields"), "objects": i.get("objects") }) }))
@@ -496,7 +553,7 @@ mod tests {
     use super::*;
 
     /// What an observer says it observed on, as it writes it: one property read, one class initialized besides.
-    const ON: &str = r#""on":{"sha256":"ab12","from":"file:/app/","classpath":["/w/observed","/app"],"vendor":"Eclipse Adoptium","home":"/jdk","locale":{"default":"en-US","format":"de-DE","display":"en-US"},"properties":[{"name":"p.value","value":"xyz"},{"name":"p.unset","value":null}],"initialized":[{"name":"p/B","sha256":"cd34","fields":[{"name":"x","value":{"n":1}}],"objects":[]}]}"#;
+    const ON: &str = r#""on":{"sha256":"ab12","from":"file:/app/","classpath":["/w/observed","/app"],"vendor":"Eclipse Adoptium","home":"/jdk","locale":{"default":"en-US","format":"de-DE","display":"en-US"},"zone":"Asia/Tokyo","properties":[{"name":"p.value","value":"xyz"},{"name":"p.unset","value":null}],"allProperties":null,"initialized":[{"name":"p/B","sha256":"cd34","fields":[{"name":"x","value":{"n":1}}],"objects":[]}]}"#;
 
     fn on(fields: &str) -> String {
         format!("{{{fields},{ON}}}")
@@ -517,7 +574,7 @@ mod tests {
         assert_eq!(o.on.properties, vec![("p.value".to_string(), Some("xyz".to_string())), ("p.unset".to_string(), None)]);
         assert_eq!(o.on.initialized[0].name, "p/B");
         let said = assumption("p/C", &o);
-        for part in ["JDK 25.0.5, Eclipse Adoptium", "sha256 ab12", "default locale was en-US (formatting de-DE", "p.value = \"xyz\"", "p.unset, not set", "it initialized p.B besides"] {
+        for part in ["JDK 25.0.5, Eclipse Adoptium", "sha256 ab12", "default locale was en-US (formatting de-DE", "default time zone Asia/Tokyo", "p.value = \"xyz\"", "p.unset, not set", "it initialized p.B besides"] {
             assert!(said.contains(part), "{part}: {said}");
         }
     }
@@ -547,6 +604,20 @@ mod tests {
         alone.classpath = vec!["/w/observed".into()];
         let none = bind("p.C", "p/C", &alone, &[PathBuf::from("/w/observed")], &tool).unwrap_err().to_string();
         assert!(none.contains("reads no class file"), "{none}");
+    }
+
+    #[test]
+    fn an_observation_that_read_the_properties_as_a_whole_or_does_not_say_its_settings_is_not_bound() {
+        let line = on(r#""jdk":"25","fields":[],"objects":[]"#);
+        assert!(settings("p.C", &parse("p.C", &line).unwrap().on).is_ok());
+        let o = parse("p.C", &line.replace(r#""allProperties":null"#, r#""allProperties":"p.Lister""#)).unwrap();
+        assert_eq!(o.on.all_properties.as_deref(), Some("p.Lister"));
+        let said = settings("p.C", &o.on).unwrap_err().to_string();
+        assert!(said.contains("p.Lister read the system properties as a whole"), "{said}");
+        let unsaid = parse("p.C", &line.replace(r#""allProperties":null,"#, "")).unwrap_err().to_string();
+        assert!(unsaid.contains("allProperties"), "{unsaid}");
+        let unzoned = parse("p.C", &line.replace(r#""zone":"Asia/Tokyo","#, "")).unwrap_err().to_string();
+        assert!(unzoned.contains("zone"), "{unzoned}");
     }
 
     #[test]

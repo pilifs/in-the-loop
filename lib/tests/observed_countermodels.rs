@@ -5,8 +5,10 @@
 //! of the JDK's `org.xml.sax.helpers.AttributesImpl`. `oc.M.main` runs one entry point on a JVM, and the first test
 //! holds the fixtures to what a JVM says. The checker's side of the observed initializers, the proofs it should not
 //! make, is in the fixtures' README; the evidence stream bound an observation to what it was observed on
-//! (`jvmcontract::observed::On`), and the last test holds that it is. The two class files are refused here
-//! (`ClassPath::refused`), and the two tests before it hold that.
+//! (`jvmcontract::observed::On`), and the test after the two class files' holds that it is. The two class files are
+//! refused here (`ClassPath::refused`), and the two tests before it hold that. The last test takes the challenge
+//! stream's `ob` fixtures (`tests/fixtures/rule-countermodels/ob`): writes to a supertype's static state, and a
+//! property, the time zone and the environment read where the first binding did not look.
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -207,4 +209,89 @@ fn an_observed_initializer_is_bound_to_what_it_was_observed_on() {
     assert!(crossed_said.contains("initialized oc.B and left it other than it is initialized alone (its field x was 1 after it and is 0 alone)"), "{crossed_said}");
     assert!(lowered.contains("default locale is tr-TR"), "{lowered}");
     assert!(configured.contains("oc.value = \"xyz\""), "{configured}");
+}
+
+/// The challenge stream's `ob` fixtures (`tests/fixtures/rule-countermodels/ob`, from `lqvlvwsm`), compiled: `None`
+/// without a JDK.
+fn ob() -> Option<&'static Path> {
+    static OUT: OnceLock<Option<PathBuf>> = OnceLock::new();
+    OUT.get_or_init(|| {
+        if !has("javac") || !has("java") {
+            return None;
+        }
+        let sources = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/rule-countermodels/ob");
+        let out = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("rule-countermodels-ob-classes");
+        let _ = std::fs::remove_dir_all(&out);
+        let status = Command::new("javac").args(["-g", "-parameters", "-proc:none", "-nowarn", "--release", "21", "-d"]).arg(&out).args(walk(&sources)).status().expect("javac runs");
+        assert!(status.success(), "the ob fixtures compile");
+        Some(out)
+    })
+    .as_deref()
+}
+
+/// The checker's side of the challenge stream's `ob` countermodels (`tests/fixtures/rule-countermodels/README.md`,
+/// for the evidence stream, `lzpqszyo`): an observation is bound to what it was observed on. An initializer that
+/// wrote a supertype's static or a superinterface's array is refused or its write carried; one that read a property
+/// through the `Properties` map, the default time zone or the environment is refused or the result says so. A JVM in
+/// UTC with neither setting gives inherited() 1, filled() 5, bypassed() 6, zoned() 0, environ() 6 (the challenge
+/// stream's `rule_countermodels.rs` holds the fixtures to that).
+#[test]
+fn an_observation_is_bound_to_its_writes_outside_the_class_and_to_every_setting_it_read() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = ob() else { return };
+    let work = |name: &str| PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("rule-countermodels").join(name);
+    let mut wrong = Vec::new();
+    let mut said = Vec::new();
+    for (entry, class, assertion) in [("inherited", "ob.Derived", "result == 0"), ("filled", "ob.Filled", "result == 0")] {
+        let mut o = property::Options::new(&[classes.to_path_buf()], &format!("ob.M#{entry}"));
+        o.engine = Engine::Native;
+        o.jbmc = NO_JBMC.into();
+        o.assert = Some(assertion.into());
+        o.observed_initializers = vec![class.into()];
+        o.work = Some(work(entry));
+        let run = property::run(&o);
+        eprintln!("--- {entry}: {run:?}");
+        if matches!(run, Ok(ref out) if out.verdict == Verdict::Verified) {
+            wrong.push(entry.to_string());
+        }
+        said.push(match run {
+            Ok(out) => out.output,
+            Err(e) => e.to_string(),
+        });
+    }
+    // The observer's JVM takes its settings from the environment: JAVA_TOOL_OPTIONS and OB_VALUE stand for a machine
+    // or a launcher that sets them.
+    let mut said_by_cli = Vec::new();
+    for (entry, class, assertion, env, said) in [
+        ("bypassed", "ob.Bypassed", "result == 3", ("JAVA_TOOL_OPTIONS", "-Dob.value=xyz"), "ob.value"),
+        ("zoned", "ob.Zoned", "result == 9", ("JAVA_TOOL_OPTIONS", "-Duser.timezone=Asia/Tokyo"), "Asia/Tokyo"),
+        ("environ", "ob.Environ", "result == 3", ("OB_VALUE", "xyz"), "OB_VALUE"),
+    ] {
+        let out = Command::new(env!("CARGO_BIN_EXE_jvmcontract"))
+            .env_remove("JAVA_TOOL_OPTIONS")
+            .env_remove("OB_VALUE")
+            .env(env.0, env.1)
+            .args(["prove", &format!("ob.M#{entry}"), "--assert", assertion, "--observed-initializer", class, "--engine", "native", "--jbmc", NO_JBMC, "--details", "--classes"])
+            .arg(classes)
+            .arg("--classpath")
+            .arg(classes)
+            .arg("--work")
+            .arg(work(entry))
+            .output()
+            .unwrap();
+        let text = String::from_utf8_lossy(&out.stdout).to_string() + &String::from_utf8_lossy(&out.stderr);
+        eprintln!("--- {entry}:\n{text}");
+        if text.starts_with("✓") && !text.contains(said) {
+            wrong.push(entry.to_string());
+        }
+        said_by_cli.push(text);
+    }
+    assert!(wrong.is_empty(), "proved from an observation that does not say what it rests on: {wrong:?}");
+    // And how: the two writes are refused with the supertype's field, the map's read and the time zone are stated,
+    // and the environment's read is refused by the call.
+    assert!(said[0].contains("initialized ob.Base and left it other than it is initialized alone (its field x was 1 after it and is 0 alone)"), "{}", said[0]);
+    assert!(said[1].contains("initialized ob.Table and left it other than it is initialized alone (an object its fields hold)"), "{}", said[1]);
+    assert!(said_by_cli[0].starts_with("✓") && said_by_cli[0].contains("it read the system properties ob.value = \"xyz\""), "{}", said_by_cli[0]);
+    assert!(said_by_cli[1].starts_with("✓") && said_by_cli[1].contains("default time zone Asia/Tokyo"), "{}", said_by_cli[1]);
+    assert!(said_by_cli[2].contains("--observed-initializer ob.Environ: its code reads the environment (java.lang.System.getenv)"), "{}", said_by_cli[2]);
 }

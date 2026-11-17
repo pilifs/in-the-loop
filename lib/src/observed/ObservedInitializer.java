@@ -27,10 +27,11 @@ import java.util.regex.Pattern;
  *
  * With a second argument, the file the JVM logs each class initialization to (-Xlog:class+init), the line also says
  * what the state was observed on ("on"): the class file's sha256 and where it came from, the class path in order,
- * the JDK, the default locale, each system property the class path's code read with the value it had, and each class
- * of the class path the initialization initialized besides the class and its supertypes, with its class file's
- * sha256 and its static state as it was then. Without one, the class's state alone: what a class another
- * initialization initialized is compared with, initialized first thing in a JVM of its own.
+ * the JDK, the default locale and time zone, each system property the class path's code read with the value it had
+ * (and the first class of it that read the properties as a whole, if one did), and each class of the class path the
+ * initialization initialized besides the class, its supertypes among them, with its class file's sha256 and its
+ * static state as it was then. Without one, the class's state alone: what a class another initialization
+ * initialized is compared with, initialized first thing in a JVM of its own.
  */
 public final class ObservedInitializer {
     private static final Pattern INITIALIZING = Pattern.compile("Initializing '([^']+)'");
@@ -40,25 +41,189 @@ public final class ObservedInitializer {
 
     /**
      * The system properties, recording each one the class path's code read and the value it had (null where it was
-     * not set): a read whose caller, past System.getProperty and the getters Integer.getInteger, Long.getLong and
-     * Boolean.getBoolean, is a class the application class loader loaded. The JDK's reads of its own configuration
-     * (as it opens a JAR, or the first time a JDK class is used) are not the initializer's: the check takes the JDK
-     * at its defaults throughout.
+     * not set): a read whose caller, past System.getProperty, the map's own methods and the getters
+     * Integer.getInteger, Long.getLong and Boolean.getBoolean, is a class the application class loader loaded. A key
+     * read through the map (get, getOrDefault, containsKey) is recorded as one read through getProperty is; a read of
+     * the properties as a whole (their keys, entries or values, a copy, a listing) names the class that made it,
+     * since the observation does not list every property. The JDK's reads of its own configuration (as it opens a
+     * JAR, or the first time a JDK class is used) are not the initializer's: the check takes the JDK at its defaults
+     * throughout, and the default locale and time zone, which it reads that way, are said beside.
      */
     private static final class Recording extends Properties {
         final Map<String, String> read = new LinkedHashMap<>();
         final List<String> order = new ArrayList<>();
+        /** The first class of the class path that read the properties as a whole, or null. */
+        String whole;
         private boolean busy;
 
         @Override
         public String getProperty(String key) {
             String value = super.getProperty(key);
+            note(key, value);
+            return value;
+        }
+
+        @Override
+        public Object get(Object key) {
+            Object value = super.get(key);
+            keyed(key, value);
+            return value;
+        }
+
+        @Override
+        public Object getOrDefault(Object key, Object otherwise) {
+            keyed(key, super.get(key));
+            return super.getOrDefault(key, otherwise);
+        }
+
+        @Override
+        public boolean containsKey(Object key) {
+            keyed(key, super.get(key));
+            return super.containsKey(key);
+        }
+
+        @Override
+        public java.util.Set<Object> keySet() {
+            all();
+            return super.keySet();
+        }
+
+        @Override
+        public java.util.Set<Map.Entry<Object, Object>> entrySet() {
+            all();
+            return super.entrySet();
+        }
+
+        @Override
+        public java.util.Collection<Object> values() {
+            all();
+            return super.values();
+        }
+
+        @Override
+        public java.util.Enumeration<Object> keys() {
+            all();
+            return super.keys();
+        }
+
+        @Override
+        public java.util.Enumeration<Object> elements() {
+            all();
+            return super.elements();
+        }
+
+        @Override
+        public java.util.Enumeration<?> propertyNames() {
+            all();
+            return super.propertyNames();
+        }
+
+        @Override
+        public java.util.Set<String> stringPropertyNames() {
+            all();
+            return super.stringPropertyNames();
+        }
+
+        @Override
+        public void forEach(java.util.function.BiConsumer<? super Object, ? super Object> action) {
+            all();
+            super.forEach(action);
+        }
+
+        @Override
+        public boolean contains(Object value) {
+            all();
+            return super.contains(value);
+        }
+
+        @Override
+        public boolean containsValue(Object value) {
+            all();
+            return super.containsValue(value);
+        }
+
+        @Override
+        public int size() {
+            all();
+            return super.size();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            all();
+            return super.isEmpty();
+        }
+
+        @Override
+        public Object clone() {
+            all();
+            return super.clone();
+        }
+
+        @Override
+        public String toString() {
+            all();
+            return super.toString();
+        }
+
+        @Override
+        public void list(java.io.PrintStream out) {
+            all();
+            super.list(out);
+        }
+
+        @Override
+        public void list(java.io.PrintWriter out) {
+            all();
+            super.list(out);
+        }
+
+        @Override
+        public void store(java.io.Writer writer, String comments) throws java.io.IOException {
+            all();
+            super.store(writer, comments);
+        }
+
+        @Override
+        public void store(java.io.OutputStream out, String comments) throws java.io.IOException {
+            all();
+            super.store(out, comments);
+        }
+
+        @Override
+        public void storeToXML(java.io.OutputStream os, String comment) throws java.io.IOException {
+            all();
+            super.storeToXML(os, comment);
+        }
+
+        @Override
+        public void storeToXML(java.io.OutputStream os, String comment, String encoding) throws java.io.IOException {
+            all();
+            super.storeToXML(os, comment, encoding);
+        }
+
+        @Override
+        public void storeToXML(java.io.OutputStream os, String comment, java.nio.charset.Charset charset) throws java.io.IOException {
+            all();
+            super.storeToXML(os, comment, charset);
+        }
+
+        private void keyed(Object key, Object value) {
+            if (key instanceof String k) {
+                note(k, value == null ? null : value.toString());
+            }
+            else {
+                all();
+            }
+        }
+
+        private void note(String key, String value) {
             if (busy || read.containsKey(key)) {
-                return value;
+                return;
             }
             busy = true;
             try {
-                if (byApplication(new Throwable().getStackTrace())) {
+                if (reader(new Throwable().getStackTrace()) != null) {
                     read.put(key, value);
                     order.add(key);
                 }
@@ -66,18 +231,31 @@ public final class ObservedInitializer {
             finally {
                 busy = false;
             }
-            return value;
         }
 
-        private static boolean byApplication(StackTraceElement[] stack) {
-            for (int i = 1; i < stack.length; i++) {
-                String c = stack[i].getClassName();
-                if (c.equals("java.util.Properties") || c.equals("java.lang.System") || c.equals("java.lang.Integer") || c.equals("java.lang.Long") || c.equals("java.lang.Boolean")) {
+        private void all() {
+            if (busy || whole != null) {
+                return;
+            }
+            busy = true;
+            try {
+                whole = reader(new Throwable().getStackTrace());
+            }
+            finally {
+                busy = false;
+            }
+        }
+
+        /** The class of the class path that made the read, past the map and the JDK's getters, or null. */
+        private static String reader(StackTraceElement[] stack) {
+            for (StackTraceElement frame : stack) {
+                String c = frame.getClassName();
+                if (c.equals(Recording.class.getName()) || c.equals("java.util.Properties") || c.equals("java.util.Hashtable") || c.equals("java.lang.System") || c.equals("java.lang.Integer") || c.equals("java.lang.Long") || c.equals("java.lang.Boolean")) {
                     continue;
                 }
-                return "app".equals(stack[i].getClassLoaderName());
+                return "app".equals(frame.getClassLoaderName()) ? c : null;
             }
-            return false;
+            return null;
         }
     }
 
@@ -90,6 +268,7 @@ public final class ObservedInitializer {
         String locale = Locale.getDefault().toLanguageTag();
         String format = Locale.getDefault(Locale.Category.FORMAT).toLanguageTag();
         String display = Locale.getDefault(Locale.Category.DISPLAY).toLanguageTag();
+        String zone = java.util.TimeZone.getDefault().getID();
         Path log = args.length > 1 ? Path.of(args[1]) : null;
         Properties original = System.getProperties();
         Recording recording = new Recording();
@@ -131,7 +310,7 @@ public final class ObservedInitializer {
             catch (Throwable t) {
                 continue;
             }
-            if (k == c || k.getClassLoader() != app || k.isAssignableFrom(c) || k.getName().startsWith(ObservedInitializer.class.getName())) {
+            if (k == c || k.getClassLoader() != app || k.getName().startsWith(ObservedInitializer.class.getName())) {
                 continue;
             }
             initialized.append(initialized.length() == 0 ? "" : ",").append("{\"name\":").append(text(internal)).append(",\"sha256\":")
@@ -152,7 +331,8 @@ public final class ObservedInitializer {
         System.out.println("@observed {\"jdk\":" + text(jdk) + "," + state + ",\"on\":{\"sha256\":" + text(sha256(app, internal))
                 + ",\"from\":" + (from == null ? "null" : text(from)) + ",\"classpath\":[" + entries + "],\"vendor\":" + text(vendor)
                 + ",\"home\":" + text(home) + ",\"locale\":{\"default\":" + text(locale) + ",\"format\":" + text(format) + ",\"display\":"
-                + text(display) + "},\"properties\":[" + properties + "],\"initialized\":[" + initialized + "]}}");
+                + text(display) + "},\"zone\":" + text(zone) + ",\"properties\":[" + properties + "],\"allProperties\":"
+                + (recording.whole == null ? "null" : text(recording.whole)) + ",\"initialized\":[" + initialized + "]}}");
     }
 
     /** The sha256 of the class file the loader reads of the class, or "" where it reads none. */
