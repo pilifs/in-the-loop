@@ -1324,7 +1324,8 @@ fn check_kind(kind: ArrayKind, element: &Type) -> Result<(), Stop> {
 /// In a pair of versions a call both versions share may be taken as one function of both ([`ties`]): a proof with
 /// such calls is a proof, and a counterexample is run on a JVM before it is believed. A check they leave undecided
 /// (an opaque result a String method asks the content of, a limit, the time) runs again in the time left with every
-/// call as written, and that run's outcome is the check's ([`Outcome::calls_as_written`]).
+/// call as written, and that run's outcome is the check's ([`Outcome::calls_as_written`]); with less than a second
+/// left, the first run's is.
 pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Result<Outcome, Error> {
     let started = Instant::now();
     let first = check_once(cp, class, method, options)?;
@@ -1332,6 +1333,10 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         return Ok(first);
     }
     let left = options.timeout.saturating_sub(started.elapsed());
+    // With no time left the second run would end at once, and its account would hide the first's.
+    if left < Duration::from_secs(1) {
+        return Ok(first);
+    }
     let as_written = Options { calls_as_one_function: false, timeout: left, ..options.clone() };
     let mut second = check_once(cp, class, method, &as_written)?;
     second.calls_as_written = true;
@@ -4350,7 +4355,7 @@ impl<'a> Engine<'a> {
                 return self.call(path, crate::harness::expr::CLAIM_CLASS, &stub, &member.descriptor, args);
             }
             // In a pair of versions, a call of a static method both share, as one function of both ([`ties`]).
-            if let Some(step) = self.call_as_one_function(path, caller, member, &descriptor) {
+            if let Some(step) = self.call_as_one_function(path, caller, member, &descriptor, None) {
                 return step;
             }
             let args = self.pop_args(path, descriptor.params.len())?;
@@ -4513,6 +4518,16 @@ impl<'a> Engine<'a> {
                     if let Some(step) = self.concrete_ref(path, depth) {
                         return step;
                     }
+                }
+            }
+        }
+        // In a pair of versions, a call of an application method both share on a receiver no one reads after it, as
+        // one function of both ([`ties`]).
+        if let Val::R(Some(o)) = path.frames.last().expect("a frame").stack[receiver_at] {
+            let owner = if special { member.owner.clone() } else { path.objects[o].class.clone() };
+            if self.cp.is_application(&owner) {
+                if let Some(step) = self.call_as_one_function(path, caller, member, &descriptor, Some((o, &owner))) {
+                    return step;
                 }
             }
         }

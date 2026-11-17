@@ -52,20 +52,33 @@
 //! file holds a fork of the previous version past its loops, on whose second branch the new version's loops tie
 //! only because whether a loop is summarized at its entry is each run's own history.
 //!
-//! **A call taken as one function of both versions.** Where a static method the two versions share (the same code,
+//! **A call taken as one function of both versions.** Where a method the two versions share (the same code,
 //! [`crate::shared::fingerprint`]) is called with arguments and static state the engine holds as values (numbers,
 //! Strings, arrays of numbers), the call is not run: its outcome is a function of what it reads, as relational
-//! verification takes an unchanged callee. What decides the outcome is its inputs: the arguments, and the static
-//! fields of the application classes its code uses, which must be initialized. [`crate::shared::one_function`]
-//! says from the code that nothing else can: no static field written outside an initializer, none of the JDK's read,
-//! no JDK call that reads state a run can change (the default locale, a property, the clock, an identity), no lambda,
-//! no exception of the application's own. The outcome is new bits: whether the call throws, and which class of the
-//! ones it may throw ([`crate::shared::OneFunction::throws`]); the result, a number or an opaque String; and, where
-//! its code stores into arrays, the cells of every array it reaches. A later call of the same code on the path,
-//! on either side, takes each of these as the earlier call's wherever their inputs are equal (the lengths and
-//! cells of each array and String, each number), and new bits elsewhere: two calls are related by congruence, so
-//! that equal inputs give equal outcomes and unequal ones any. The inputs must have one shape (which references are
-//! null, which are one object, each array's type and cells), or the calls are not related.
+//! verification takes an unchanged callee. What decides the outcome is its inputs: the arguments, the receiver's
+//! fields for an instance method, and the static fields of the application classes its code uses, which must be
+//! initialized. [`crate::shared::one_function`] says from the code that nothing else can: no static field written
+//! outside an initializer, none of the JDK's read, no JDK call that reads state a run can change (the default locale,
+//! a property, the clock, an identity), no lambda, no exception of the application's own. The outcome is new bits:
+//! whether the call throws, and which class of the ones it may throw ([`crate::shared::OneFunction::throws`]); the
+//! result, a number, an opaque String, or an array the call made; and, where its code stores into arrays, the cells
+//! of every array it may reach: through an argument or the receiver, or through a static field its code takes other
+//! than to copy it at once ([`crate::shared::OneFunction::taken_statics`]). A later call of the same code on the
+//! path, on either side, takes each of these as the earlier call's wherever their inputs are equal (the lengths and
+//! cells of each array and String, each number; an array whose cells hold any values by the name of its content),
+//! and new bits elsewhere: two calls are related by congruence, so that equal inputs give equal outcomes and unequal
+//! ones any. The inputs must have one shape (which references are null, which are one object, each array's type and
+//! cells), or the calls are not related.
+//!
+//! An instance method is taken where nothing can read its receiver after the call: no live local of any frame holds
+//! it (an exception's handler is a way on from the call), no other place on a stack, no static field and no other
+//! object. What the call leaves in the receiver is then no part of what the caller sees, and is not computed. bcrypt's
+//! `crypt_raw` (example 287) is such a call: `hashpw` makes a `BCrypt`, calls it, and drops it. An array result is
+//! taken where the code returns an array it made (`newarray` into a local nothing else sets, [`crate::shared::OneFunction::returns_made`])
+//! of a length it computes from constants and the lengths of static fields' arrays ([`crate::shared::OneFunction::result_length`]),
+//! which is a constant at the call: its cells are new bits named by the inputs as formulas, and an earlier call's
+//! where their inputs are equal. One of any length would leave each read of it a fork and a loop over it unbounded,
+//! so such a call runs as written. The countermodels are in `lib/tests/pairing.rs` (`KEYED`).
 //!
 //! This is sound for a proof, since every outcome a run of the callee has is among the ones the bits allow, and it
 //! is what makes a cipher both versions run on equal inputs (bcrypt's, in example 307) cost nothing. It can be too
@@ -88,6 +101,8 @@ const CELLS: i64 = 2;
 const SUMMARIZED: i64 = 3;
 const WRITTEN: i64 = 4;
 const READ: i64 = 5;
+/// What a call taken as one function wrote into an array whose cells hold any values, and the cells it returned.
+const RESULT: i64 = 6;
 
 /// The keys met so far and the bits each tied place was given.
 #[derive(Default)]
@@ -135,11 +150,13 @@ pub(super) struct Call {
     written: Vec<Vec<Bits>>,
 }
 
-/// A value a call taken as one function reads: a number, or the length and cells of an array or a String.
+/// A value a call taken as one function reads: a number, the length and cells of an array or a String, or the
+/// length and the name of the content of an array whose cells hold any values ([`Obj::content`]).
 #[derive(Debug, Clone)]
 enum Input {
     Bits(Bits),
     Content { length: Bits, cells: Vec<Bits> },
+    Named { length: Bits, content: u64 },
 }
 
 /// Whether a parameter of this type is one a call taken as one function may have.
@@ -437,21 +454,25 @@ impl Engine<'_> {
 }
 
 impl Engine<'_> {
-    /// A call of the static method `member` (its arguments on the stack, its class initialized) taken as one
-    /// function of both versions: see the module's notes. `None` where the call runs as written: outside a pair of
-    /// versions, in a lemma's proof, from the pair's own class, or where the method, its code, its inputs or the
-    /// state of its classes is not one the rule takes.
-    pub(super) fn call_as_one_function(&mut self, path: &mut Path, caller: &str, member: &crate::classfile::MemberRef, descriptor: &MethodDescriptor) -> Option<Step> {
-        if !self.calls_as_one_function || self.pure.is_some() || caller == crate::pairing::CLASS {
+    /// A call of the method `member` (its arguments on the stack, its class initialized) taken as one function of
+    /// both versions: see the module's notes. `receiver` is, for an instance method, the receiver's object and the
+    /// class the call runs the method of (the one named for `invokespecial`, the object's own otherwise). `None`
+    /// where the call runs as written: outside a pair of versions, in a lemma's proof, from the pair's own class, or
+    /// where the method, its code, its inputs or the state of its classes is not one the rule takes.
+    pub(super) fn call_as_one_function(&mut self, path: &mut Path, caller: &str, member: &crate::classfile::MemberRef, descriptor: &MethodDescriptor, receiver: Option<(usize, &str)>) -> Option<Step> {
+        if !self.calls_as_one_function || self.pure.is_some() || caller == crate::pairing::CLASS || member.name == "<init>" {
             return None;
         }
         let previous = self.previous.clone()?;
-        let result_type = matches!(&descriptor.ret, Type::Void | Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long) || descriptor.ret == Type::Object("java/lang/String".into());
+        let numeric = |t: &Type| matches!(t, Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long);
+        let array_result = matches!(&descriptor.ret, Type::Array(e) if numeric(e));
+        let result_type = numeric(&descriptor.ret) || descriptor.ret == Type::Void || descriptor.ret == Type::Object("java/lang/String".into()) || array_result;
         if !result_type || !descriptor.params.iter().all(one_function_input) {
             return None;
         }
-        let (class, method) = self.cp.checker_method(&member.owner, &member.name, &member.descriptor)?;
-        if !method.is_static() || method.code.is_none() || !self.cp.is_application(&class.name) {
+        let owner = receiver.map_or(member.owner.as_str(), |(_, owner)| owner);
+        let (class, method) = self.cp.checker_method(owner, &member.name, &member.descriptor)?;
+        if method.is_static() != receiver.is_none() || method.code.is_none() || !self.cp.is_application(&class.name) {
             return None;
         }
         let at = (class.name.clone(), member.name.clone(), member.descriptor.clone());
@@ -464,6 +485,15 @@ impl Engine<'_> {
                 found
             }
         }?;
+        // An array result is taken where the call makes it with a length the code gives as a constant here: one
+        // of any length would leave every read of it a fork, and a loop over it unbounded.
+        let result_length = match &one.result_length {
+            Some(l) if array_result && one.returns_made => self.length_value(path, l).filter(|n| (0..=1 << 16).contains(n)).map(|n| n as usize),
+            _ => None,
+        };
+        if array_result && result_length.is_none() {
+            return None;
+        }
         let (function, uses) = self.code_key(&class, &member.name, &member.descriptor, &previous)?;
         // The other version has the same code: else no call of the other's is ever related to this one.
         let other = match previous.original(&class.name) {
@@ -486,21 +516,45 @@ impl Engine<'_> {
                 }
             }
         }
-        // The inputs: the arguments, then the static fields of those classes, by their own names.
+        // The receiver: nothing reads it after the call, so what the call leaves in it is no part of the outcome.
         let n = descriptor.params.len();
+        if let Some((o, _)) = receiver {
+            let at = path.frames.last()?.stack.len().checked_sub(n + 1)?;
+            if !self.unreachable_after(path, o, at) {
+                return None;
+            }
+        }
+        // The inputs: the arguments, the receiver's fields, then the static fields of those classes, by their own
+        // names. An array the call may store into is one it reaches through any of these but a static it does not
+        // take ([`crate::shared::OneFunction::taken_statics`]).
         let stack = &path.frames.last()?.stack;
         let args: Vec<Val> = stack.get(stack.len().checked_sub(n)?..)?.to_vec();
         let (mut shape, mut inputs, mut numbers, mut arrays) = (vec![function], Vec::new(), HashMap::new(), Vec::new());
         for v in &args {
-            self.one_function_input(path, v, &mut shape, &mut inputs, &mut numbers, &mut arrays)?;
+            self.one_function_input(path, v, true, &mut shape, &mut inputs, &mut numbers, &mut arrays)?;
         }
-        let mut statics: Vec<(String, String, Val)> = path.statics.iter().filter(|((c, _), _)| uses.contains(c)).map(|((c, f), v)| (unprefixed(c, &previous), f.clone(), v.clone())).collect();
+        if let Some((o, _)) = receiver {
+            let fields = self.instance_fields(path, o)?;
+            let class = path.objects[o].class.clone();
+            let name = self.class_key(&class, &previous);
+            shape.extend([6, name, fields.len() as i64]);
+            for (key, descriptor) in &fields {
+                let v = match path.objects[o].fields.get(key) {
+                    Some(v) => v.clone(),
+                    None => self.default_value(descriptor).ok()?,
+                };
+                let name = self.ties.name(key);
+                shape.push(name);
+                self.one_function_input(path, &v, true, &mut shape, &mut inputs, &mut numbers, &mut arrays)?;
+            }
+        }
+        let mut statics: Vec<(String, String, bool, Val)> = path.statics.iter().filter(|((c, _), _)| uses.contains(c)).map(|((c, f), v)| (unprefixed(c, &previous), f.clone(), one.taken_statics.contains(&(c.clone(), f.clone())), v.clone())).collect();
         statics.sort_by(|x, y| (&x.0, &x.1).cmp(&(&y.0, &y.1)));
         shape.push(statics.len() as i64);
-        for (c, f, v) in &statics {
+        for (c, f, taken, v) in &statics {
             let (c, f) = (self.ties.name(c), self.ties.name(f));
             shape.extend([c, f]);
-            self.one_function_input(path, v, &mut shape, &mut inputs, &mut numbers, &mut arrays)?;
+            self.one_function_input(path, v, *taken, &mut shape, &mut inputs, &mut numbers, &mut arrays)?;
         }
         // The earlier calls of the same code with inputs of the same shape, each with whether its inputs are these.
         let earlier: Vec<(Lit, Call)> = path.calls.iter().filter(|c| c.function == function && c.shape == shape).cloned().collect::<Vec<_>>().into_iter().map(|c| (self.same_inputs(&inputs, &c.inputs), c)).filter(|(same, _)| *same != FALSE).collect();
@@ -512,9 +566,33 @@ impl Engine<'_> {
             threw = self.b.ite_bits(*same, &c.threw, &threw);
             which = self.b.ite_bits(*same, &c.which, &which);
         }
+        // The call's inputs as formulas: what names an array result's content, and an array's of any cells it may
+        // write.
+        let mut key = vec![RESULT];
+        key.extend(&shape);
+        for input in &inputs {
+            match input {
+                Input::Bits(b) => bits_into(&mut key, b),
+                Input::Content { length, cells } => {
+                    bits_into(&mut key, length);
+                    for cell in cells {
+                        bits_into(&mut key, cell);
+                    }
+                }
+                Input::Named { length, content } => {
+                    bits_into(&mut key, length);
+                    key.push(*content as i64);
+                }
+            }
+        }
+        let call_key = self.ties.key(key);
         let mut written = Vec::new();
         if one.writes_arrays {
             for (j, &o) in arrays.iter().enumerate() {
+                if path.objects[o].unknown {
+                    written.push(Vec::new());
+                    continue;
+                }
                 let array = path.objects[o].array.as_ref()?;
                 let w = cell_width(&array.element);
                 let mut cells: Vec<Bits> = (0..array.cells.len()).map(|_| self.b.fresh(w)).collect();
@@ -532,6 +610,25 @@ impl Engine<'_> {
         // From here the call is taken: the path changes.
         let result = match &descriptor.ret {
             Type::Void => None,
+            // An array the call made ([`crate::shared::OneFunction::returns_made`]), of the length the code gives
+            // ([`crate::shared::OneFunction::result_length`]): a new object whose cells are new bits named by the
+            // inputs as formulas, and an earlier call's wherever their inputs are equal.
+            Type::Array(element) => {
+                let n = result_length?;
+                let width = cell_width(element);
+                let mut cells: Vec<Bits> = (0..n).map(|i| self.ties.bits(&mut self.b, call_key, vec![RESULT, i as i64], width).0).collect();
+                for (same, c) in earlier.iter().rev() {
+                    if let Some(theirs) = c.result.as_ref().and_then(|r| match r { Val::R(Some(t)) => path.objects[*t].array.as_ref().filter(|a| a.cells.len() == n).map(|a| a.cells.clone()), _ => None }) {
+                        for (mine, theirs) in cells.iter_mut().zip(&theirs) {
+                            *mine = self.b.ite_bits(*same, theirs, mine);
+                        }
+                    }
+                }
+                let length = self.b.constant(n as i64, 32);
+                let class = descriptor.ret.descriptor();
+                path.objects.push(Obj { array: Some(Array { element: (**element).clone(), length, cells, refs: Vec::new() }), ..Obj::new(&class) });
+                Some(Val::R(Some(path.objects.len() - 1)))
+            }
             Type::Object(_) => {
                 let o = self.alloc(path, "java/lang/String");
                 path.objects[o].limit = Some(ONE_FUNCTION_RESULT.to_string());
@@ -558,12 +655,14 @@ impl Engine<'_> {
         }
         let call = Call { id: self.ties.last_call, function, shape, inputs, threw: threw.clone(), which: which.clone(), result: result.clone(), written: written.clone() };
         Rc::make_mut(&mut path.calls).push(call);
-        for (&o, cells) in arrays.iter().zip(written) {
-            if let Some(array) = path.objects[o].array.as_mut() {
+        for (j, (&o, cells)) in arrays.iter().zip(written).enumerate() {
+            if path.objects[o].unknown {
+                path.objects[o].content = Some(self.ties.key(vec![RESULT, call_key as i64, j as i64]));
+            } else if let Some(array) = path.objects[o].array.as_mut() {
                 array.cells = cells;
             }
         }
-        if let Err(e) = self.pop_args(path, n) {
+        if let Err(e) = self.pop_args(path, n + usize::from(receiver.is_some())) {
             return Some(Err(e));
         }
         let mut thrown = Vec::with_capacity(k);
@@ -576,7 +675,9 @@ impl Engine<'_> {
     }
 
     /// Adds the value `v` to a call's inputs and their shape; `None` where it is not one the rule takes.
-    fn one_function_input(&mut self, path: &Path, v: &Val, shape: &mut Vec<i64>, inputs: &mut Vec<Input>, numbers: &mut HashMap<usize, i64>, arrays: &mut Vec<usize>) -> Option<()> {
+    /// `writable`: whether the call may store into an array reached here ([`Self::call_as_one_function`]).
+    #[allow(clippy::too_many_arguments)]
+    fn one_function_input(&mut self, path: &Path, v: &Val, writable: bool, shape: &mut Vec<i64>, inputs: &mut Vec<Input>, numbers: &mut HashMap<usize, i64>, arrays: &mut Vec<usize>) -> Option<()> {
         match v {
             Val::I(b) => {
                 shape.push(1);
@@ -590,6 +691,11 @@ impl Engine<'_> {
             Val::R(Some(o)) => {
                 if let Some(&n) = numbers.get(o) {
                     shape.extend([4, n]);
+                    // One object reached first through a static the call does not take and now through an input
+                    // it may store into.
+                    if writable && path.objects[*o].class.starts_with('[') && !arrays.contains(o) {
+                        arrays.push(*o);
+                    }
                     return Some(());
                 }
                 let n = numbers.len() as i64;
@@ -598,10 +704,22 @@ impl Engine<'_> {
                 let string = obj.class == "java/lang/String";
                 let array = obj.array.as_ref()?;
                 let numeric = matches!(array.element, Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long);
-                if obj.lambda.is_some() || obj.unknown || obj.limit.is_some() || !array.refs.is_empty() || !numeric || !(string || obj.class.starts_with('[')) {
+                if obj.lambda.is_some() || obj.limit.is_some() || !array.refs.is_empty() || !numeric || !(string || obj.class.starts_with('[')) {
                     return None;
                 }
-                if !string {
+                // An array whose cells hold any values: by the name of its content, where one is kept.
+                if obj.unknown {
+                    let content = obj.content.filter(|_| !string)?;
+                    let length = array.length.clone();
+                    let element = self.ties.name(&array.element.descriptor());
+                    if writable {
+                        arrays.push(*o);
+                    }
+                    shape.extend([7, n, element, length.len() as i64]);
+                    inputs.push(Input::Named { length, content });
+                    return Some(());
+                }
+                if !string && writable {
                     arrays.push(*o);
                 }
                 let element = self.ties.name(&array.element.descriptor());
@@ -615,6 +733,69 @@ impl Engine<'_> {
         Some(())
     }
 
+    /// The value of a length the code computes ([`crate::shared::Length`]) on this path: `None` where a static
+    /// field's array or its length is not known here.
+    fn length_value(&self, path: &Path, length: &crate::shared::Length) -> Option<i64> {
+        use crate::classfile::ArithOp;
+        use crate::shared::Length;
+        Some(match length {
+            Length::Constant(v) => i64::from(*v),
+            Length::Static(class, name) => {
+                let Some(Val::R(Some(o))) = path.statics.get(&(class.clone(), name.clone())) else { return None };
+                self.b.constant_value(&path.objects[*o].array.as_ref()?.length)?
+            }
+            Length::Op(op, a, b) => {
+                let (a, b) = (i32::try_from(self.length_value(path, a)?).ok()?, i32::try_from(self.length_value(path, b)?).ok()?);
+                i64::from(match op {
+                    ArithOp::Add => a.wrapping_add(b),
+                    ArithOp::Sub => a.wrapping_sub(b),
+                    ArithOp::Mul => a.wrapping_mul(b),
+                    _ => return None,
+                })
+            }
+        })
+    }
+
+    /// Whether nothing can read the object `o` once the call whose receiver it is (at `at` on the top frame's stack)
+    /// returns: no live local of any frame holds it, no other place on a stack, no static field and no other
+    /// object's field or cell. Then what the call leaves in it is no part of what the caller sees. A local that is
+    /// not live is one every way on from the call writes before it reads, an exception's handler included
+    /// ([`Decoded::live`]).
+    fn unreachable_after(&self, path: &Path, o: usize, at: usize) -> bool {
+        let refers = |v: &Val| v.options().is_some_and(|options| options.iter().any(|(_, r)| *r == Some(o)));
+        let top = path.frames.len() - 1;
+        for (i, frame) in path.frames.iter().enumerate() {
+            let live = &frame.code.live[frame.at];
+            for (slot, local) in frame.locals.iter().enumerate() {
+                if local.as_ref().is_some_and(refers) && live.get(slot).copied().unwrap_or(true) {
+                    return false;
+                }
+            }
+            if frame.stack.iter().enumerate().any(|(k, v)| (i != top || k != at) && refers(v)) {
+                return false;
+            }
+        }
+        if path.statics.values().any(refers) || path.literals.values().any(|&l| l == o) {
+            return false;
+        }
+        path.objects.iter().enumerate().all(|(p, obj)| p == o || !(obj.fields.values().any(refers) || obj.array.as_ref().is_some_and(|a| a.refs.iter().any(refers)) || obj.same.iter().any(|(_, s)| *s == o)))
+    }
+
+    /// The instance fields of the object `o`, by their keys in it and their descriptors, its class's first and then
+    /// each superclass's up to `Object`; `None` where a superclass is the JDK's and not `Object`.
+    fn instance_fields(&mut self, path: &Path, o: usize) -> Option<Vec<(String, String)>> {
+        let mut out = Vec::new();
+        let mut class = Some(path.objects[o].class.clone());
+        while let Some(c) = class.filter(|c| c != "java/lang/Object") {
+            let file = self.cp.application(&c).ok().flatten()?;
+            for f in file.fields.iter().filter(|f| !f.is_static()) {
+                out.push((self.field_key(path, o, &c, &f.name, &f.descriptor).ok()?, f.descriptor.clone()));
+            }
+            class = file.super_class.clone();
+        }
+        Some(out)
+    }
+
     /// Whether two calls' inputs of one shape are equal: each number, and each array's or String's length and its
     /// cells below the length.
     fn same_inputs(&mut self, x: &[Input], y: &[Input]) -> Lit {
@@ -624,10 +805,14 @@ impl Engine<'_> {
                 (Input::Bits(p), Input::Bits(q)) if p.len() == q.len() => lits.push(self.b.eq(p, q)),
                 (Input::Content { length: lp, cells: cp }, Input::Content { length: lq, cells: cq }) if lp.len() == lq.len() => {
                     lits.push(self.b.eq(lp, lq));
-                    // Both lengths within the cells both have, so that the cells compared are all there are.
-                    let room = self.b.constant(cp.len().min(cq.len()) as i64, lp.len());
-                    let within = self.b.slt(&room, lp);
-                    lits.push(-within);
+                    // Both lengths within the cells both have, so that the cells compared are all there are. Of one
+                    // length and as many cells, the cells compared are all either has: a length is within its
+                    // array's cells on every path ([`Engine::new_array_cells`]).
+                    if lp != lq || cp.len() != cq.len() {
+                        let room = self.b.constant(cp.len().min(cq.len()) as i64, lp.len());
+                        let within = self.b.slt(&room, lp);
+                        lits.push(-within);
+                    }
                     for (i, (c, d)) in cp.iter().zip(cq).enumerate() {
                         let here = self.b.constant(i as i64, lp.len());
                         let inside = self.b.slt(&here, lp);
@@ -635,6 +820,8 @@ impl Engine<'_> {
                         lits.push(self.b.or(-inside, same));
                     }
                 }
+                // Two contents of one name are the same cells; of two names, not known to be.
+                (Input::Named { length: lp, content: x }, Input::Named { length: lq, content: y }) if lp.len() == lq.len() && x == y => lits.push(self.b.eq(lp, lq)),
                 _ => return FALSE,
             }
             if lits.last() == Some(&FALSE) {

@@ -420,6 +420,106 @@ fn no_call_is_one_function_of_two_versions_that_may_differ() {
     assert!(proved.is_empty(), "proved to agree, though a JVM tells them apart: {proved:?}");
 }
 
+/// A call of an instance method taken as one function of both versions (`bmc/ties.rs`), as bcrypt's `crypt_raw` is
+/// in example 287: `run`, a method with a loop that both versions share, is called on a receiver `digest` makes just
+/// before and never reads again, writes the receiver's fields, and returns an array it makes of a length its code
+/// gives (`new byte[8]`). Each variant but `same` is a countermodel, a pair of versions that differ on a JVM and that
+/// the rule would prove to agree without one of its side conditions: `kept` reads the field `run` wrote through
+/// the local that holds the receiver, on one side only (the receiver is read by no live local after the call),
+/// `held` through a static field (nor by a static field or another object), `caught` in a handler of the exception
+/// `run` throws (a handler is a way on from the call), `field` gives the receiver another field value on each side
+/// (the receiver's fields are among the inputs), `returned` returns the array argument it was given rather than one
+/// it made, and one side writes that argument after the call (the result is an array the call made), and `table`
+/// reads the static array `run` writes, before the call on one side and after it on the other (an array a static
+/// field holds is among what the call writes, where its code takes the field other than to copy it). With that side
+/// condition taken out, each was proved to agree (a temporary switch, removed, 2026-11-17).
+const KEYED: [&str; 7] = ["same", "kept", "held", "caught", "field", "returned", "table"];
+
+fn keyed(variant: &str, old: bool) -> String {
+    let check = if old { "" } else { "if (x == 12345) { throw new IllegalArgumentException(); }" };
+    let before = match variant {
+        "field" => format!("c.seed = {};", if old { 1 } else { 2 }),
+        "held" if old => "Holder.HELD = c;".to_string(),
+        _ => String::new(),
+    };
+    let call = "byte[] r = c.run(t, u, x);";
+    let body = match (variant, old) {
+        ("kept", true) => format!("{call}\n        return c.state;"),
+        ("kept", false) | ("held", false) => format!("{call}\n        return 0;"),
+        ("held", true) => format!("{call}\n        return Holder.HELD.state;"),
+        ("caught", _) => format!("try {{\n            {call}\n            return r[x & 7];\n        }} catch (IllegalArgumentException e) {{\n            return {};\n        }}", if old { "c.state" } else { "0" }),
+        ("returned", true) => format!("{call}\n        u[0] = 9;\n        return r[0];"),
+        ("returned", false) => format!("{call}\n        return r[0];"),
+        ("table", true) => "int k = T[x & 7];\n        c.run(t, u, x);\n        return k;".to_string(),
+        ("table", false) => "c.run(t, u, x);\n        return T[x & 7];".to_string(),
+        _ => format!("{call}\n        return r[x & 7] + t[x & 15];"),
+    };
+    let throwing = if variant == "caught" { "if (x == 7) { throw new IllegalArgumentException(); }" } else { "" };
+    let table = if variant == "table" { "T[acc & 7] ^= acc;" } else { "" };
+    let made = if variant == "returned" { "b[0] = (byte) acc;\n        return b;" } else { "byte[] out = new byte[8];\n        for (int i = 0; i < 8; i++) {\n            out[i] = (byte) box[i];\n        }\n        return out;" };
+    format!(
+        "package app.{variant};\npublic final class Keyed {{\n    static final int[] T = new int[8];\n    int seed;\n    int state;\n    int[] box;\n    public static int digest(int x) {{\n        {check}\n        int[] t = new int[16];\n        byte[] u = new byte[8];\n        Keyed c = new Keyed();\n        {before}\n        {body}\n    }}\n    byte[] run(int[] a, byte[] b, int x) {{\n        box = new int[8];\n        int acc = x + seed;\n        for (int i = 0; i < 40; i++) {{\n            acc = acc * 31 + a[(acc >>> 3) & 15];\n            box[i & 7] ^= acc;\n            a[acc & 15] ^= acc;\n            {table}\n        }}\n        state = acc | 1;\n        {throwing}\n        {made}\n    }}\n}}\nfinal class Holder {{\n    static Keyed HELD;\n}}\n"
+    )
+}
+
+/// Every variant, the previous versions in one folder and the new ones in another.
+fn keyeds() -> &'static (PathBuf, PathBuf) {
+    static KEYEDS: std::sync::OnceLock<(PathBuf, PathBuf)> = std::sync::OnceLock::new();
+    KEYEDS.get_or_init(|| {
+        let paths: Vec<String> = KEYED.iter().map(|v| format!("app/{v}/Keyed.java")).collect();
+        let sources = |old: bool| paths.iter().zip(KEYED).map(|(p, v)| (p.as_str(), keyed(v, old))).collect::<Vec<_>>();
+        (compile("keyed-old", &sources(true), &[]), compile("keyed-new", &sources(false), &[]))
+    })
+}
+
+fn keyed_check(variant: &str) -> equivalence::Outcome {
+    let (old, new) = keyeds();
+    let mut o = equivalence::Options::new(old, new, &format!("app.{variant}.Keyed#digest"));
+    o.engine = Engine::Native;
+    o.jbmc = NO_JBMC.into();
+    o.assume = Some("x != 12345".into());
+    o.work = Some(tmp(&format!("keyed-{variant}")));
+    equivalence::run(&o).unwrap()
+}
+
+#[test]
+fn a_call_on_a_receiver_no_one_reads_after_is_one_function_of_its_inputs() {
+    jvmcontract::tool_tier!();
+    let o = keyed_check("same");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let native = o.search.as_ref().and_then(|s| s.native.as_ref()).expect("the own checker's account");
+    assert!(native.calls_as_one_function >= 2 && native.calls_related >= 1 && native.loops.is_empty(), "{native:?}");
+    let stated = o.pair.as_ref().and_then(|p| p.stated.as_ref()).expect("the pair's statement");
+    assert!(stated.assumptions.iter().any(|a| a.text.starts_with("each call of app.same.Keyed.run taken as one function of both versions")), "{:?}", stated.assumptions);
+}
+
+/// The countermodels are pairs of versions a JVM tells apart, on one of the first 64 inputs (each version in a JVM
+/// of its own, as the pair starts each fresh), and `same` is not.
+#[test]
+fn each_keyed_countermodel_differs_on_a_jvm() {
+    jvmcontract::tool_tier!();
+    let (old, new) = keyeds();
+    let runner = "public class Run {\n    public static void main(String[] variants) throws Exception {\n        for (String v : variants) {\n            StringBuilder out = new StringBuilder();\n            for (int x = 0; x < 64; x++) {\n                Object r;\n                try { r = Class.forName(\"app.\" + v + \".Keyed\").getMethod(\"digest\", int.class).invoke(null, x); }\n                catch (java.lang.reflect.InvocationTargetException e) { r = e.getCause().getClass().getName(); }\n                out.append(r).append(',');\n            }\n            System.out.println(v + \" \" + out);\n        }\n    }\n}\n";
+    let run_dir = compile("keyed-runner", &[("Run.java", runner.to_string())], &[]);
+    let outputs = |version: &Path| {
+        let cp = format!("{}:{}", run_dir.display(), version.display());
+        let out = Command::new("java").args(["-cp", &cp, "Run"]).args(KEYED).output().expect("java runs");
+        assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+        String::from_utf8_lossy(&out.stdout).lines().map(String::from).collect::<Vec<_>>()
+    };
+    let (before, after) = (outputs(old), outputs(new));
+    for (i, v) in KEYED.iter().enumerate() {
+        assert_eq!(before[i] == after[i], *v == "same", "{v}: {} | {}", before[i], after[i]);
+    }
+}
+
+#[test]
+fn no_call_on_a_receiver_is_one_function_of_two_versions_that_may_differ() {
+    jvmcontract::tool_tier!();
+    let proved: Vec<&str> = KEYED[1..].iter().copied().filter(|v| keyed_check(v).verdict == Verdict::Verified).collect();
+    assert!(proved.is_empty(), "proved to agree, though a JVM tells them apart: {proved:?}");
+}
+
 /// The countermodels are pairs of versions a JVM tells apart, on one of the first 64 inputs, and `same` is not.
 #[test]
 fn each_mixes_countermodel_differs_on_a_jvm() {
@@ -446,15 +546,16 @@ fn each_mixes_countermodel_differs_on_a_jvm() {
 /// version's run on this one. Whether it is summarized at its entry is now this path's own history since its version
 /// began, and the second fork is proved as the first is. When that was the check's history, the new version's
 /// inner loop on the second fork started at its entry, the previous version's past the bound, and nothing tied
-/// (checked by hand, 2026-11-17). `rounds` takes an `Object` it does not use, so that its call is not taken as one
-/// function of both versions ([`ONCES`]) and its loops run.
+/// (checked by hand, 2026-11-17). `rounds` and `inner` take an `Object` they do not use, so that their calls are not
+/// taken as one function of both versions ([`ONCES`]) and their loops run: `inner`'s argument is an array whose
+/// cells hold any values past `rounds`' first loop, which the rule takes by the name of its content.
 #[test]
 fn two_versions_summarize_a_loop_at_its_entry_alike_on_every_fork() {
     jvmcontract::tool_tier!();
     let source = |old: bool| {
         let check = if old { "" } else { "if (x == 12345) { throw new IllegalArgumentException(); }" };
         format!(
-            "package app.nested;\npublic final class Mix {{\n    public static int digest(int x) {{\n        {check}\n        int[] t = new int[256];\n        int acc = rounds(t, x, null);\n        if (acc > 0) {{\n            return acc + t[x & 127];\n        }}\n        return acc - t[x & 63];\n    }}\n    private static int rounds(int[] t, int acc, Object kept) {{\n        for (int i = 0; i < 100; i++) {{\n            acc = acc * 7 + t[(acc >>> 5) & 255];\n            t[i & 255] ^= acc;\n        }}\n        for (int r = 0; r < 40; r++) {{\n            acc = inner(t, acc);\n        }}\n        return acc;\n    }}\n    private static int inner(int[] t, int acc) {{\n        for (int i = 0; i < 100; i++) {{\n            acc = acc * 31 + t[(acc >>> 3) & 255];\n            t[acc & 255] ^= acc;\n        }}\n        return acc;\n    }}\n}}\n"
+            "package app.nested;\npublic final class Mix {{\n    public static int digest(int x) {{\n        {check}\n        int[] t = new int[256];\n        int acc = rounds(t, x, null);\n        if (acc > 0) {{\n            return acc + t[x & 127];\n        }}\n        return acc - t[x & 63];\n    }}\n    private static int rounds(int[] t, int acc, Object kept) {{\n        for (int i = 0; i < 100; i++) {{\n            acc = acc * 7 + t[(acc >>> 5) & 255];\n            t[i & 255] ^= acc;\n        }}\n        for (int r = 0; r < 40; r++) {{\n            acc = inner(t, acc, null);\n        }}\n        return acc;\n    }}\n    private static int inner(int[] t, int acc, Object kept) {{\n        for (int i = 0; i < 100; i++) {{\n            acc = acc * 31 + t[(acc >>> 3) & 255];\n            t[acc & 255] ^= acc;\n        }}\n        return acc;\n    }}\n}}\n"
         )
     };
     let old = compile("nested-old", &[("app/nested/Mix.java", source(true))], &[]);

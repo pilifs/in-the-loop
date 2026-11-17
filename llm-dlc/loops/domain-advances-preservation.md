@@ -428,12 +428,41 @@ relational result needs a new check (the rule's applications recorded in the out
   - **Warnings.** The commit check warns on bcrypt test hashes (`long-token`, `If6…`) in this session's log and two
     others. They are 307's public test vectors and are already proposed for the allow list (`d6616e20`), awaiting
     the user.
+- 2026-11-17, step 5's third approach (I015, I018 and I020; *working formalization* and *accepted claim* unchanged).
+  - **I018, the fixture.** `callee-countermodels` against this line's rule on JDK 25 (`check.py --rule-landed`):
+    `same`, `copied` and `parsed` verified, no countermodel proved, exit 0, before and after this entry's change.
+    `table` and `aliased` end with no verdict (a witness the interpreter cannot run, `getBytes(Charset)`), not refuted.
+  - **The rule at `crypt_raw`** (`bmc/ties.rs`, `shared::one_function`), as I012 and the 307 specialist suggested:
+    - an instance method is taken where nothing can read its receiver after the call (no live local of any frame,
+      a handler counted as a way on; no other place on a stack, no static, no other object), its fields among the
+      inputs; `hashpw` makes a `BCrypt`, calls `crypt_raw` on it and drops it;
+    - an array result is taken where the code returns an array it made, of a length it computes from constants and
+      static tables' lengths, constant at the call (`new byte[cdata.length * 4]`: 24);
+    - what a call may write is what it reaches through an argument, the receiver, or a static its code takes other
+      than to copy at once, so bcrypt's tables, which it only clones, stay inputs.
+    Countermodels first, `KEYED` in `lib/tests/pairing.rs`: `kept`, `held`, `caught` (the receiver read after the call
+    by a live local, a static, a handler), `field`, `returned`, `table`. Each differs on a JVM and is not proved. With
+    each side condition switched off in turn (a temporary switch, removed), exactly its own rows were proved.
+    `returned` first tested nothing: its new side fell to the default body, so the two differed in any model.
+    An array of any cells past a loop's summary is now an input by the name of its content, so the fork test's
+    `inner` was taken as one function and its loops no longer ran. It takes an unused `Object` now, as `rounds` does.
+  - **What the probes found on the way, both in the rule.**
+    - Two calls whose inputs were the same formulas were related only under a literal asking whether a symbolic
+      length is within the cells, so each outcome split cost a solver call. Now there is no such literal where both
+      arrays have one length and as many cells.
+    - `decode_base64`'s result, whose length a loop counts, made each read of it a fork. An array result of a
+      length that is no constant at the call now runs as written.
+    - When the first run used the whole budget, the outcome was the empty fallback's. With under a second left it is
+      now the first run's.
+  - **Probes at the frozen bounds.** 287 `preservation` verified in 112 s (53 paths, 52 calls taken, 48 related, no
+    loop summarized). 307 `preservation` verified (61 s) and `mutant-preservation` refuted (41 s). 289 and 290 verify
+    at their former path counts. Job `20261117-230459-example-287-preservation-at-the-frozen-b` decides 287.
+  - **Inbox.** I015 and I018 are done above. I020 (D032, VF-039): 287's notes now say its claims do not tell a
+    check-only guard from the fix, and no claim is prepared. No item came in after I020.
 - Next:
-  1. I018: test the rule against `callee-countermodels` (`check.py --only ROW`, on JDK 25). Then extend it to
-     `crypt_raw`, an instance method whose receiver it writes and `hashpw` never reads again, for 287 and for 307's
-     mutant.
-  2. The results of the 307 jobs (`20261117-210114-…`) and of `20261117-213024-…`, then acceptance through `accept.py`
-     once the evidence stream can read them.
+  1. The results of jobs `20261117-230459-…` (287), `20261117-210114-…` (307's two) and `20261117-213024-…` (289 and
+     290), then acceptance through `accept.py` once the evidence stream can read them.
+  2. Step 7: 288's preservation, profiled first (VF-031).
 - Status: working
 
 ## Loop settings

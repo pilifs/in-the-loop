@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.021Z",
-  "ended": "2026-11-17T21:31:06.968Z",
-  "duration_seconds": 30856,
+  "ended": "2026-11-17T23:13:35.743Z",
+  "duration_seconds": 37005,
   "stats": {
-    "turns": 46,
-    "api_calls": 803,
-    "tool_calls": 803,
-    "tool_errors": 8,
-    "compactions": 9,
+    "turns": 51,
+    "api_calls": 911,
+    "tool_calls": 912,
+    "tool_errors": 9,
+    "compactions": 10,
     "peak_context_tokens": 463604,
     "usage": {
-      "input_tokens": 1614,
-      "output_tokens": 743368,
-      "cache_read_input_tokens": 128815262,
-      "cache_creation_input_tokens": 2047960
+      "input_tokens": 1832,
+      "output_tokens": 860856,
+      "cache_read_input_tokens": 147638722,
+      "cache_creation_input_tokens": 2313832
     }
   },
   "tools": {
-    "Bash": 778,
+    "Bash": 886,
     "Edit": 13,
-    "Read": 6,
+    "Read": 7,
     "Write": 4,
     "ToolSearch": 2
   },
@@ -175,24 +175,38 @@
     {
       "index": 9,
       "started": "2026-11-17T21:10:59.684Z",
-      "ended": "2026-11-17T21:31:06.968Z",
-      "turns": 4,
-      "api_calls": 56,
+      "ended": "2026-11-17T21:31:44.138Z",
+      "turns": 5,
+      "api_calls": 59,
       "usage": {
-        "input_tokens": 114,
-        "output_tokens": 29987,
-        "cache_read_input_tokens": 6611312,
-        "cache_creation_input_tokens": 159736
+        "input_tokens": 122,
+        "output_tokens": 31273,
+        "cache_read_input_tokens": 7133108,
+        "cache_creation_input_tokens": 162538
       },
-      "peak_context_tokens": 173009
+      "peak_context_tokens": 175813
+    },
+    {
+      "index": 10,
+      "started": "2026-11-17T21:32:27.775Z",
+      "ended": "2026-11-17T23:13:35.743Z",
+      "turns": 4,
+      "api_calls": 105,
+      "usage": {
+        "input_tokens": 210,
+        "output_tokens": 116202,
+        "cache_read_input_tokens": 18301664,
+        "cache_creation_input_tokens": 263070
+      },
+      "peak_context_tokens": 276343
     }
   ],
   "log": {
-    "sha256": "d25d5c89e0f564831cb3b0aebc386c921cdbb349bed775d429eb4ee77ca43fec",
-    "bytes": 20877067,
-    "lines": 6883,
-    "gzip_bytes": 3538398,
-    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/d25d5c89e0f564831cb3b0aebc386c921cdbb349bed775d429eb4ee77ca43fec.jsonl.gz"
+    "sha256": "70f5ca6b65006ca5a10663bc49aa696662280ca46ba1124182e24756d7cd5ac1",
+    "bytes": 23390829,
+    "lines": 7848,
+    "gzip_bytes": 3939903,
+    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/70f5ca6b65006ca5a10663bc49aa696662280ca46ba1124182e24756d7cd5ac1.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -995,6 +1009,14 @@
       "summary": "The code two versions are taken to share resolves each field to the class that declares it and takes in the initializers the JVM runs; the observer's log path is absolute; 289 and 290 rerun (verification pending)",
       "body": "I019, the challenge stream's reach countermodels (lib/tests/fixtures/reach-countermodels). shared::reach now records each application field the code names with the class that declares the field it resolves to (JVMS 5.4.3.2), and compares those in the identical-code shortcut and the ties' fingerprint, so a field a version declares to hide an inherited one is a difference (hidden). A static field's initializer is its declaring class's or interface's (constant, and looped under the ties). A class's use runs the initializers of every superinterface that declares a default method (defaulted, JVMS 5.5), and the root's own class's initializer is part of its code (Own#f). The shortcut walks both versions' reaches, so an override the previous version declared and the new one inherits is a difference (removed). The README's checker-side test is in lib/tests/reach_countermodels.rs and passes; with each change undone in turn exactly its own rows were proved again. looped is no verdict now (a spurious candidate past the loop that does not replay), as on a checker without ties. A capped probe of 307's preservation at the frozen bound still verifies with the same 72 calls taken as one function, 66 related.\n\nI014: the initializer observer gave the JVM a -Xlog file relative to the repository while running it in its observed/ folder (job 20261117-185623's 290 step). The state stream's fix (zlvqxmst) is taken byte for byte, with its test, so the lines merge cleanly. A capped probe of 290 with the job's relative --work verifies in 573 paths.\n\nJob 20261117-213024-examples-289-and-290-preservation-again reruns 290's preservation step, and 289's beside it on this checker, at the frozen bounds.\n\ntest_costs.py run --changed passes (every Rust test binary), and lint agrees.",
       "log_sha256": "d25d5c89e0f564831cb3b0aebc386c921cdbb349bed775d429eb4ee77ca43fec"
+    },
+    {
+      "change_id": "xuwlklyorpoytspmuzzoxuxsnmpmrvyt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The checker takes bcrypt's crypt_raw as one function of both releases: a call on a receiver nothing reads after it, returning an array it makes; 287's preservation verifies in a capped probe at bound 80 (verification pending)",
+      "body": "Example 287's preservation claim compares Spring Security 6.3.7 and 6.3.8 on BCryptPasswordEncoder.matches. Two jobs related the two releases at bcrypt's loop summaries and stopped undecided at the previous release's BCrypt.key loop. This moves the relation up to the call of crypt_raw, whose nine methods are the same bytecode in both releases, as the 307 specialist's prototype and an outside review suggested (inbox items I015 and I018).\n\nThe rule for a call both versions share (lib/src/bmc/ties.rs, lib/src/shared.rs one_function) now takes three more cases. An instance method, where nothing can read its receiver after the call: no live local of any frame (an exception's handler counted), no other stack place, no static field, no other object; the receiver's fields are among the inputs. An array result, where the code returns an array it made of a length it computes from constants and static tables' lengths that is a constant at the call (crypt_raw's new byte[cdata.length * 4]). An array whose cells hold any values, as an input named by its content. What a call may write is what it reaches through an argument, the receiver, or a static its code takes other than to copy it at once, so bcrypt's tables, which it only clones, stay inputs. Two cost fixes found by profiling: inputs that are the same formulas are now related without a solver literal, and a check whose first run used the whole budget reports that run rather than an empty fallback.\n\nCountermodels first: KEYED in lib/tests/pairing.rs (the receiver read after the call through a live local, a static or a handler; another field value on each side; an argument returned in place of a made array; a static table the call writes). Each differs on a JVM and is not proved. With each side condition switched off in turn (a temporary switch, removed), exactly its own rows were proved. lib/tests/fixtures/callee-countermodels on JDK 25 (check.py --rule-landed) still proves no countermodel, with same, copied and parsed verified. Capped probes at the frozen bounds: 287 preservation verified in 112 s (53 paths, 52 calls taken as one function); 307 preservation verified and its mutant refuted; 289 and 290 verify as before. test_costs.py run --changed passes (26 of 26) and validate_example.py 287 passes. The fork test of the loop ties now gives inner an unused Object, so its loops still run there.\n\nJob 20261117-230459-example-287-preservation-at-the-frozen-b decides 287's preservation at bound 80. Inbox item I020 is noted in 287's notes: its claims do not tell a check-only guard from the fix (VF-039, deferred by the user). lib/README.md describes the extended rule and its limits.",
+      "log_sha256": "70f5ca6b65006ca5a10663bc49aa696662280ca46ba1124182e24756d7cd5ac1"
     }
   ],
   "logs": {
@@ -1020,6 +1042,12 @@
       "bytes": 12880216,
       "lines": 4331,
       "gzip_bytes": 2158641,
+      "url": null
+    },
+    "70f5ca6b65006ca5a10663bc49aa696662280ca46ba1124182e24756d7cd5ac1": {
+      "bytes": 23390829,
+      "lines": 7848,
+      "gzip_bytes": 3939903,
       "url": null
     },
     "8026afd239d466a9a3185bb713b604a030b2247358b75659f8d6e3559ccf4b33": {

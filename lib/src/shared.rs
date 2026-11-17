@@ -642,9 +642,30 @@ pub(crate) struct OneFunction {
     /// The exception classes a call may end with, by internal name: the JDK's that its code makes, and those the JVM
     /// and the JDK methods it may call throw ([`ONE_FUNCTION_THROWN`]).
     pub throws: Vec<String>,
-    /// Whether its code stores into an array: then every array a call reaches through its arguments and the static
-    /// fields of its classes holds what the call left, which is part of its outcome.
+    /// Whether its code stores into an array: then every array a call reaches through its arguments, its receiver
+    /// and the static fields it takes holds what the call left, which is part of its outcome.
     pub writes_arrays: bool,
+    /// The static fields, by declaring class and name, whose value its code may take other than to `clone` it at
+    /// once: the only ones of which an array it reads may be the very object it stores into. A static it never
+    /// reads, or reads only to copy (bcrypt's `P_orig`, `S_orig` and `bf_crypt_ciphertext`), holds an array the
+    /// call cannot reach, unless another input is the same object, which the caller sees by numbering them.
+    pub taken_statics: BTreeSet<(String, String)>,
+    /// Whether the root returns an array of numbers it made itself: every `areturn` returns a local that only a
+    /// `newarray` just before it ever sets, so the result is no input and no object a caller held.
+    pub returns_made: bool,
+    /// Of such an array, its length as the code computes it, where that is constants and the lengths of the arrays
+    /// static fields hold: bcrypt's `crypt_raw` returns `new byte[cdata.length * 4]`, `cdata` a copy of a table.
+    pub result_length: Option<Length>,
+}
+
+/// A length a method computes from constants and the lengths of the arrays static fields hold (by declaring class
+/// and name), in `int` arithmetic. Each holds whenever the method runs: a static field is written by no method a
+/// call taken as one function runs but an initializer, and an array's length never changes.
+#[derive(Debug, Clone, PartialEq)]
+pub(crate) enum Length {
+    Constant(i32),
+    Static(String, String),
+    Op(ArithOp, Box<Length>, Box<Length>),
 }
 
 /// What the JVM and the JDK methods [`one_function`] lets a callee call may throw: a superset, which is sound.
@@ -681,8 +702,9 @@ const ONE_FUNCTION_JDK: &[(&str, &[&str])] = &[
     ("java/security/MessageDigest", &["isEqual"]),
 ];
 
-/// Whether a call of `root` (a static method) may be taken as one function of both versions, by its code: what it
-/// may throw and whether it writes arrays, or why not. The code must be closed ([`reach`]), contain a loop (a callee
+/// Whether a call of `root` (a static method, or an instance method whose receiver the caller shows no one reads
+/// after the call) may be taken as one function of both versions, by its code: what it may throw, whether it
+/// writes arrays and which static fields it takes, or why not. The code must be closed ([`reach`]), contain a loop (a callee
 /// without one costs the checker less as written than a counterexample through a function would), write no static
 /// field but in an initializer, read none of the JDK's, make no lambda and no exception of the application's own,
 /// and call nothing of the JDK's but [`ONE_FUNCTION_JDK`], an array's `clone` and an exception's constructor. So
@@ -697,6 +719,7 @@ pub(crate) fn one_function(cp: &ClassPath, root: &MemberRef) -> Result<OneFuncti
     }
     let mut throws: BTreeSet<String> = ONE_FUNCTION_THROWN.iter().map(|s| s.to_string()).collect();
     let (mut writes_arrays, mut looped) = (false, false);
+    let mut taken_statics = BTreeSet::new();
     for (m, _) in &reached.methods {
         if !cp.is_application(&m.owner) {
             continue;
@@ -704,7 +727,8 @@ pub(crate) fn one_function(cp: &ClassPath, root: &MemberRef) -> Result<OneFuncti
         let Some((class, method)) = cp.find_method(&m.owner, &m.name, &m.descriptor) else { return Err(format!("{m:?} does not load")) };
         let Some(code) = &method.code else { continue };
         let insns = code.instructions().map_err(|e| e.to_string())?;
-        for (pc, insn) in insns {
+        for (at, (pc, insn)) in insns.iter().enumerate() {
+            let (pc, insn) = (*pc, insn.clone());
             let back = |target: &u32| *target <= pc;
             match &insn {
                 Insn::If(_, t) | Insn::IfICmp(_, t) | Insn::IfACmp(_, t) | Insn::IfNull(t) | Insn::IfNonNull(t) | Insn::Goto(t) if back(t) => looped = true,
@@ -716,6 +740,15 @@ pub(crate) fn one_function(cp: &ClassPath, root: &MemberRef) -> Result<OneFuncti
                     let field = class.pool.member(*i).map_err(|e| e.to_string())?;
                     if !cp.is_application(&field.owner) {
                         return Err(format!("{}.{} reads the JDK's static field {}.{}", m.owner, m.name, field.owner, field.name));
+                    }
+                    // Copied at once (`T.clone()`): the copy is a new array, and the field's own is not taken.
+                    let copied = match insns.get(at + 1) {
+                        Some((_, Insn::InvokeVirtual(j))) => class.pool.member(*j).is_ok_and(|c| c.owner.starts_with('[') && c.name == "clone"),
+                        _ => false,
+                    };
+                    if !copied || m.name == "<clinit>" {
+                        let declaring = cp.resolve_field(&field.owner, &field.name, &field.descriptor).unwrap_or_else(|| field.owner.clone());
+                        taken_statics.insert((declaring, field.name.clone()));
                     }
                 }
                 Insn::New(i) => {
@@ -753,7 +786,140 @@ pub(crate) fn one_function(cp: &ClassPath, root: &MemberRef) -> Result<OneFuncti
     if !looped {
         return Err("its code has no loop".into());
     }
-    Ok(OneFunction { throws: throws.into_iter().collect(), writes_arrays })
+    let (returns_made, result_length) = returns_made(cp, root).unwrap_or((false, None));
+    Ok(OneFunction { throws: throws.into_iter().collect(), writes_arrays, taken_statics, returns_made, result_length })
+}
+
+/// Whether `root` returns an array of numbers it made: every `areturn` follows an `aload` of a local that is no
+/// parameter and that only `astore`s right after a `newarray` set, neither instruction reached by a jump or a
+/// handler; and, where every such `newarray` is given one length [`Straight`] reads, that length. `None` where the
+/// code cannot be read.
+fn returns_made(cp: &ClassPath, root: &MemberRef) -> Option<(bool, Option<Length>)> {
+    let (class, method) = cp.find_method(&root.owner, &root.name, &root.descriptor)?;
+    let descriptor = method.parsed_descriptor().ok()?;
+    if !matches!(&descriptor.ret, Type::Array(e) if e.is_primitive()) {
+        return Some((false, None));
+    }
+    let code = method.code.as_ref()?;
+    let insns = code.instructions().ok()?;
+    let mut targets: HashSet<u32> = insns.iter().flat_map(|(_, insn)| insn.targets()).collect();
+    targets.extend(code.exception_table.iter().map(|h| u32::from(h.handler_pc)));
+    let parameters = descriptor.params.iter().map(|t| if matches!(t, Type::Long | Type::Double) { 2 } else { 1 }).sum::<usize>() + usize::from(!method.is_static());
+    let mut returned = BTreeSet::new();
+    for (at, (pc, insn)) in insns.iter().enumerate() {
+        if *insn != Insn::Return(Some(Kind::Ref)) {
+            continue;
+        }
+        match at.checked_sub(1).map(|i| &insns[i].1) {
+            Some(Insn::Load(Kind::Ref, k)) if usize::from(*k) >= parameters && !targets.contains(pc) => {
+                returned.insert(*k);
+            }
+            _ => return Some((false, None)),
+        }
+    }
+    let straight = Straight { cp, class: &class, insns: &insns, targets: &targets, parameters };
+    let mut lengths = Vec::new();
+    for (at, (pc, insn)) in insns.iter().enumerate() {
+        if let Insn::Store(Kind::Ref, k) = insn {
+            if returned.contains(k) && (targets.contains(pc) || !matches!(at.checked_sub(1).map(|i| &insns[i].1), Some(Insn::NewArray(_)))) {
+                return Some((false, None));
+            }
+            if returned.contains(k) {
+                lengths.push(straight.array(at - 1, 0).map(|(l, _)| l));
+            }
+        }
+    }
+    let length = match lengths.first() {
+        Some(Some(first)) if lengths.iter().all(|l| l.as_ref() == Some(first)) => Some(first.clone()),
+        _ => None,
+    };
+    Some((!returned.is_empty(), length))
+}
+
+/// Reads a value a method's code computes in a straight line of instructions that no jump or handler enters, from
+/// constants, the lengths of static fields' arrays and of copies of them, and locals that one store sets, with `+`,
+/// `-` and `*`: the value is then the same whenever the instruction runs.
+struct Straight<'a> {
+    cp: &'a ClassPath,
+    class: &'a ClassFile,
+    insns: &'a [(u32, Insn)],
+    targets: &'a HashSet<u32>,
+    parameters: usize,
+}
+
+impl Straight<'_> {
+    /// The `int` the instruction at `at` leaves on the stack, and where the instructions computing it begin.
+    fn int(&self, at: usize, depth: u32) -> Option<(Length, usize)> {
+        if depth > 32 {
+            return None;
+        }
+        let found = match &self.insns.get(at)?.1 {
+            Insn::IConst(v) => (Length::Constant(*v), at),
+            Insn::Ldc(i) => match self.class.pool.loadable(*i).ok()? {
+                BootstrapArg::Int(v) => (Length::Constant(v), at),
+                _ => return None,
+            },
+            Insn::Load(Kind::Int, k) => (self.local(*k, Kind::Int, depth)?, at),
+            Insn::ArrayLength => self.array(at.checked_sub(1)?, depth + 1)?,
+            Insn::Arith(op @ (ArithOp::Add | ArithOp::Sub | ArithOp::Mul), Kind::Int) => {
+                let (right, starts) = self.int(at.checked_sub(1)?, depth + 1)?;
+                let (left, starts) = self.int(starts.checked_sub(1)?, depth + 1)?;
+                (Length::Op(*op, Box::new(left), Box::new(right)), starts)
+            }
+            _ => return None,
+        };
+        self.linear(found.1, at).then_some(found)
+    }
+
+    /// The length of the array the instruction at `at` leaves on the stack, and where the instructions computing
+    /// it begin.
+    fn array(&self, at: usize, depth: u32) -> Option<(Length, usize)> {
+        if depth > 32 {
+            return None;
+        }
+        let found = match &self.insns.get(at)?.1 {
+            Insn::CheckCast(_) => self.array(at.checked_sub(1)?, depth + 1)?,
+            Insn::InvokeVirtual(j) => {
+                let callee = self.class.pool.member(*j).ok()?;
+                if !(callee.owner.starts_with('[') && callee.name == "clone") {
+                    return None;
+                }
+                self.array(at.checked_sub(1)?, depth + 1)?
+            }
+            Insn::GetStatic(i) => {
+                let field = self.class.pool.member(*i).ok()?;
+                if !field.descriptor.starts_with('[') {
+                    return None;
+                }
+                let declaring = self.cp.resolve_field(&field.owner, &field.name, &field.descriptor)?;
+                (Length::Static(declaring, field.name.clone()), at)
+            }
+            Insn::NewArray(_) => self.int(at.checked_sub(1)?, depth + 1)?,
+            Insn::Load(Kind::Ref, k) => (self.local(*k, Kind::Ref, depth)?, at),
+            _ => return None,
+        };
+        self.linear(found.1, at).then_some(found)
+    }
+
+    /// What the local `k` holds, of the kind `kind`: what its one store of that kind is given, where it is no
+    /// parameter and no `iinc` changes it.
+    fn local(&self, k: u16, kind: Kind, depth: u32) -> Option<Length> {
+        if usize::from(k) < self.parameters || self.insns.iter().any(|(_, i)| matches!(i, Insn::IInc(j, _) if *j == k)) {
+            return None;
+        }
+        let stores: Vec<usize> = self.insns.iter().enumerate().filter(|(_, (_, i))| *i == Insn::Store(kind, k)).map(|(at, _)| at).collect();
+        let [store] = stores.as_slice() else { return None };
+        let (value, starts) = match kind {
+            Kind::Int => self.int(store.checked_sub(1)?, depth + 1)?,
+            _ => self.array(store.checked_sub(1)?, depth + 1)?,
+        };
+        self.linear(starts, *store).then_some(value)
+    }
+
+    /// Whether no jump or handler enters the instructions after `start` up to `end`.
+    fn linear(&self, start: usize, end: usize) -> bool {
+        self.insns.get(start + 1..=end).is_some_and(|run| run.iter().all(|(pc, _)| !self.targets.contains(pc)))
+    }
 }
 
 /// Whether a method is declared by the same class with the same code in both versions.

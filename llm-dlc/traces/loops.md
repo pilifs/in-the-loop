@@ -17,9 +17,9 @@ loop or not.
 | Category | Loops | Runs | Cycles | With a commit | Commits | Jobs | Active | Tokens written | Cost | Per committed cycle |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | moonshot | 6 | 7 | 56 | 53 | 96 | 64 (57 passed, 7 failed) | 2.3 d | 7,291,647 | $855.37 | $16.14 |
-| brief | 32 | 63 | 351 | 346 | 515 | 219 (168 passed, 48 failed, 3 pending) | 4.1 d | 15,267,197 | $1,267.79 | $3.66 |
+| brief | 32 | 63 | 352 | 347 | 516 | 220 (168 passed, 48 failed, 4 pending) | 4.2 d | 15,384,685 | $1,276.03 | $3.68 |
 | verification | 1 | 62 | 0 | 0 | 242 | 0 | 18 h 17 min | 263,932 | $16.18 | n/a |
-| **all** | 39 | 132 | 407 | 399 | 853 | 283 (225 passed, 55 failed, 3 pending) | 7.2 d | 22,822,776 | $2,139.34 | $5.36 |
+| **all** | 39 | 132 | 408 | 400 | 854 | 284 (225 passed, 55 failed, 4 pending) | 7.2 d | 22,940,264 | $2,147.59 | $5.37 |
 
 The moonshot row includes `examples-by-hand` (3 cycles, $55.22), which a person ran by hand before the script existed. See the note under [Moonshots](#moonshots).
 
@@ -175,11 +175,11 @@ streams for a brief that ran them. The *with its streams* row adds the streams t
 | **`rehearsal`** | 2 | 2 | 2 | 2 | 0 | `claude-sonnet-5-5` | 2026-11-17 | 3.2 min | 2.3 min | 1.1 min | 8,137 | $0.51 | $0.19 | $0.26 |
 | **`domain-advances-challenge`** | 3 | 20 | 18 | 19 | 0 | `claude-opus-5-5` | 2026-11-17 | 4 h 47 min | 7 h 32 min | 13 min | 808,268 | $59.73 | $2.57 | $3.14 |
 | **`domain-advances-evidence`** | 3 | 16 | 16 | 22 | 5 (5 passed) | `claude-opus-5-5` | 2026-11-17 | 3 h 39 min | 3 h 03 min | 9.1 min | 469,172 | $36.97 | $2.16 | $1.68 |
-| **`domain-advances-preservation`** | 1 | 10 | 10 | 100 | 9 (3 passed, 3 failed, 3 pending) | `claude-opus-5-5` | 2026-11-17 | 8 h 34 min | 8 h 23 min | 58 min | 743,368 | $57.02 | $4.27 | $0.57 |
+| **`domain-advances-preservation`** | 1 | 11 | 11 | 101 | 10 (3 passed, 3 failed, 4 pending) | `claude-opus-5-5` | 2026-11-17 | 10 h 17 min | 10 h 05 min | 58 min | 860,856 | $65.26 | $4.27 | $0.65 |
 
 ## Verification loop
 
-62 runs from 2026-11-03 to 11-17, on `claude-sonnet-5-5`: 18 h 17 min active, 242 commits, 263,932 tokens written, $16.18 ($0.26 a run). Of the 343 verification jobs on record, 283 are tied to the loop cycle that submitted them.
+62 runs from 2026-11-03 to 11-17, on `claude-sonnet-5-5`: 18 h 17 min active, 242 commits, 263,932 tokens written, $16.18 ($0.26 a run). Of the 344 verification jobs on record, 284 are tied to the loop cycle that submitted them.
 
 ## Runs
 
@@ -253,7 +253,7 @@ run before 2026-11-06) is read from its session's prompts and marked *transcript
 | 2026-11-17 02:56 | [`2026-11-17-025646-rehearsal`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/runs/2026-11-17-025646-rehearsal.md) | brief | `claude-sonnet-5-5` | 1 | 1 | 1.5 min | 1.1 min | $0.29 | work done | record |
 | 2026-11-17 12:56 | [`2026-11-17-125650-domain-advances-challenge`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/runs/2026-11-17-125650-domain-advances-challenge.md) | brief | `claude-opus-5-5` | 17 | 17 | 4 h 15 min | 7 h 01 min | $54.17 | no commit (stopped) | record |
 | 2026-11-17 12:56 | [`2026-11-17-125650-domain-advances-evidence`](7ece8184-b148-4351-92d8-d634606b823e/runs/2026-11-17-125650-domain-advances-evidence.md) | brief | `claude-opus-5-5` | 12 | 17 | 2 h 38 min | 2 h 15 min | $26.74 | waiting on jobs | record |
-| 2026-11-17 12:56 | `2026-11-17-125651-domain-advances-preservation` | brief | `claude-opus-5-5` | 10 | 100 | 8 h 34 min | 8 h 23 min | $57.02 | no end recorded | transcript |
+| 2026-11-17 12:56 | `2026-11-17-125651-domain-advances-preservation` | brief | `claude-opus-5-5` | 11 | 101 | 10 h 17 min | 10 h 05 min | $65.26 | no end recorded | transcript |
 | 2026-11-17 16:05 | [`2026-11-17-160544-domain-advances-evidence`](7ece8184-b148-4351-92d8-d634606b823e/runs/2026-11-17-160544-domain-advances-evidence.md) | brief | `claude-opus-5-5` | 2 | 2 | 25 min | 23 min | $4.70 | blocked | record |
 | 2026-11-17 16:31 | [`2026-11-17-163151-domain-advances-evidence`](7ece8184-b148-4351-92d8-d634606b823e/runs/2026-11-17-163151-domain-advances-evidence.md) | brief | `claude-opus-5-5` | 2 | 3 | 36 min | 24 min | $5.54 | work done | record |
 | 2026-11-17 20:20 | `2026-11-17-202015-domain-advances-challenge` | brief | `claude-opus-5-5` | 1 | 0 | 0.3 min | 0.3 min | $1.27 | no end recorded | transcript |
