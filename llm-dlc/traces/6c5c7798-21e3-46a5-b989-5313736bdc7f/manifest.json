@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-17T19:56:27.625Z",
-  "duration_seconds": 181741,
+  "ended": "2026-11-17T20:18:19.983Z",
+  "duration_seconds": 183053,
   "stats": {
-    "turns": 209,
-    "api_calls": 1370,
-    "tool_calls": 1244,
+    "turns": 210,
+    "api_calls": 1378,
+    "tool_calls": 1253,
     "tool_errors": 25,
     "compactions": 6,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 3154,
-      "output_tokens": 909800,
-      "cache_read_input_tokens": 314698321,
-      "cache_creation_input_tokens": 2147905
+      "input_tokens": 3172,
+      "output_tokens": 916279,
+      "cache_read_input_tokens": 317276335,
+      "cache_creation_input_tokens": 2158491
     }
   },
   "tools": {
-    "Bash": 1186,
+    "Bash": 1193,
     "ToolSearch": 11,
-    "SendMessage": 9,
+    "SendMessage": 10,
+    "Edit": 8,
     "Write": 8,
-    "Edit": 7,
     "ListAgents": 7,
     "TaskStop": 6,
     "AskUserQuestion": 5,
@@ -143,24 +143,24 @@
     {
       "index": 6,
       "started": "2026-11-17T12:55:11.414Z",
-      "ended": "2026-11-17T19:56:27.625Z",
-      "turns": 57,
-      "api_calls": 269,
+      "ended": "2026-11-17T20:18:19.983Z",
+      "turns": 58,
+      "api_calls": 277,
       "usage": {
-        "input_tokens": 650,
-        "output_tokens": 114269,
-        "cache_read_input_tokens": 49837636,
-        "cache_creation_input_tokens": 281310
+        "input_tokens": 668,
+        "output_tokens": 120748,
+        "cache_read_input_tokens": 52415650,
+        "cache_creation_input_tokens": 291896
       },
-      "peak_context_tokens": 317733
+      "peak_context_tokens": 328317
     }
   ],
   "log": {
-    "sha256": "169e8772580a82cd64d48532c1c5a0f234280c15e594f6304786803055724776",
-    "bytes": 26353703,
-    "lines": 11298,
-    "gzip_bytes": 4422817,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/169e8772580a82cd64d48532c1c5a0f234280c15e594f6304786803055724776.jsonl.gz"
+    "sha256": "7b762ec15d7b3f8abd9a96b3a4f13ea469b5857a3ea05337aa2316fc9e529092",
+    "bytes": 26513577,
+    "lines": 11372,
+    "gzip_bytes": 4447700,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/7b762ec15d7b3f8abd9a96b3a4f13ea469b5857a3ea05337aa2316fc9e529092.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1859,6 +1859,14 @@
       "summary": "The preservation stream is told why a call-level rule keyed on the fingerprint declines on JDK 25",
       "body": "The 307 specialist found that since the I010 fix the unchanged callee hashpw(byte[],String) has no fingerprint on JDK 25, where Integer.parseInt reaches String.format(String, Object[]); preservation's 307 probe was dying at 4 GB while it traced where its new rule declines. Passed on as optional guidance (I017, under D030), with the two ways out the specialist sees.",
       "log_sha256": "169e8772580a82cd64d48532c1c5a0f234280c15e594f6304786803055724776"
+    },
+    {
+      "change_id": "qpwxnpxsyzysqmwswqvkpzkxsqkqsyxu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The challenge stream is restarted by hand, at the user's word, with an inbox item for its interrupted step",
+      "body": "D031: challenge's loop ended at 17:11 when the OOM killer took its session (VF-037) and run-streams.sh no longer supervises it; the user asked to restart it now rather than after the run, so it attacks preservation's call-level rule while that is written. Its inbox item I003 says how to finish the interrupted setting-countermodels step with the tests under a memory cap of their own, then to attack the call-level rule. VF-037 records the hand restart.",
+      "log_sha256": "7b762ec15d7b3f8abd9a96b3a4f13ea469b5857a3ea05337aa2316fc9e529092"
     }
   ],
   "logs": {
@@ -2155,6 +2163,12 @@
       "lines": 6347,
       "gzip_bytes": 2464409,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/7b1340ba458bd1d34f03430dcb551a102786953dd46405f2a23e7c3b6d6fae82.jsonl.gz"
+    },
+    "7b762ec15d7b3f8abd9a96b3a4f13ea469b5857a3ea05337aa2316fc9e529092": {
+      "bytes": 26513577,
+      "lines": 11372,
+      "gzip_bytes": 4447700,
+      "url": null
     },
     "7de732b20e0bcabf1c7858295cc8f04d0e646526672ac1081ae9220d300df36e": {
       "bytes": 23312014,

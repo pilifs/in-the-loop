@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-17T18:37:50.477Z",
-  "ended": "2026-11-17T19:56:04.190Z",
-  "duration_seconds": 4694,
+  "ended": "2026-11-17T20:17:28.078Z",
+  "duration_seconds": 5978,
   "stats": {
     "turns": 6,
-    "api_calls": 145,
-    "tool_calls": 165,
+    "api_calls": 157,
+    "tool_calls": 177,
     "tool_errors": 3,
     "compactions": 1,
     "peak_context_tokens": 466832,
     "usage": {
-      "input_tokens": 294,
-      "output_tokens": 220919,
-      "cache_read_input_tokens": 39321188,
-      "cache_creation_input_tokens": 548938
+      "input_tokens": 318,
+      "output_tokens": 244864,
+      "cache_read_input_tokens": 41167416,
+      "cache_creation_input_tokens": 582325
     }
   },
   "tools": {
-    "Bash": 148,
+    "Bash": 160,
     "Write": 8,
     "Read": 4,
     "SendMessage": 2,
@@ -64,24 +64,24 @@
     {
       "index": 1,
       "started": "2026-11-17T19:49:30.503Z",
-      "ended": "2026-11-17T19:56:04.190Z",
+      "ended": "2026-11-17T20:17:28.078Z",
       "turns": 1,
-      "api_calls": 8,
+      "api_calls": 20,
       "usage": {
-        "input_tokens": 16,
-        "output_tokens": 14615,
-        "cache_read_input_tokens": 927092,
-        "cache_creation_input_tokens": 108152
+        "input_tokens": 40,
+        "output_tokens": 38560,
+        "cache_read_input_tokens": 2773320,
+        "cache_creation_input_tokens": 141539
       },
-      "peak_context_tokens": 137637
+      "peak_context_tokens": 171024
     }
   ],
   "log": {
-    "sha256": "d5e2b748f541ab8777f5472a319d8433ab97bc24f99a03bb392f99ec4c3dffaa",
-    "bytes": 4319430,
-    "lines": 1317,
-    "gzip_bytes": 786013,
-    "path": "llm-dlc/traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/logs/d5e2b748f541ab8777f5472a319d8433ab97bc24f99a03bb392f99ec4c3dffaa.jsonl.gz"
+    "sha256": "727b6aa732907ae78c45a08579c58c367af7e95efeba9eacf19681aa85a37243",
+    "bytes": 4504986,
+    "lines": 1404,
+    "gzip_bytes": 808639,
+    "path": "llm-dlc/traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/logs/727b6aa732907ae78c45a08579c58c367af7e95efeba9eacf19681aa85a37243.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -172,6 +172,14 @@
       "summary": "The preservation stream is told why a call-level rule keyed on the fingerprint declines on JDK 25",
       "body": "The 307 specialist found that since the I010 fix the unchanged callee hashpw(byte[],String) has no fingerprint on JDK 25, where Integer.parseInt reaches String.format(String, Object[]); preservation's 307 probe was dying at 4 GB while it traced where its new rule declines. Passed on as optional guidance (I017, under D030), with the two ways out the specialist sees.",
       "log_sha256": "d5e2b748f541ab8777f5472a319d8433ab97bc24f99a03bb392f99ec4c3dffaa"
+    },
+    {
+      "change_id": "qpwxnpxsyzysqmwswqvkpzkxsqkqsyxu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The challenge stream is restarted by hand, at the user's word, with an inbox item for its interrupted step",
+      "body": "D031: challenge's loop ended at 17:11 when the OOM killer took its session (VF-037) and run-streams.sh no longer supervises it; the user asked to restart it now rather than after the run, so it attacks preservation's call-level rule while that is written. Its inbox item I003 says how to finish the interrupted setting-countermodels step with the tests under a memory cap of their own, then to attack the call-level rule. VF-037 records the hand restart.",
+      "log_sha256": "727b6aa732907ae78c45a08579c58c367af7e95efeba9eacf19681aa85a37243"
     }
   ],
   "logs": {
@@ -185,6 +193,12 @@
       "bytes": 2076934,
       "lines": 612,
       "gzip_bytes": 375977,
+      "url": null
+    },
+    "727b6aa732907ae78c45a08579c58c367af7e95efeba9eacf19681aa85a37243": {
+      "bytes": 4504986,
+      "lines": 1404,
+      "gzip_bytes": 808639,
       "url": null
     },
     "745ca6ffecc3b0d02b269ec2272c791e679c645e53384cd73d61bb1e5de74181": {

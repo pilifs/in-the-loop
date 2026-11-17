@@ -51,7 +51,11 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   `claude` process, the largest single one, so the tests went on as orphans holding 10G in the scope. run-streams.sh then
   ran the loop again at once, which refused to start beside them ("the scope is active"); two stops in a row counted the
   stream as blocked and put it to the watcher to merge, with its uncommitted work (new countermodels,
-  `lib/tests/setting_countermodels.rs`) left in its workspace. The watcher stopped the scope by hand.
+  `lib/tests/setting_countermodels.rs`) left in its workspace. The watcher stopped the scope by hand (17:14).
+  run-streams.sh's supervision of the stream had ended, so nothing in the run would restart it: at the user's word
+  (run-streams-domain-advances-D031) the watcher restarted its feature-loop.sh by hand at 20:35, in a tmux window of
+  its own, its output tagged into the run's `streams.log`. Both steps, stopping the scope and restarting the loop,
+  are what a loop that ends this way should do for itself.
 - **Needs**: one of: the test run inside a loop takes fewer binaries at a time, or a cap of its own below the
   loop's (`systemd-run --scope -p MemoryMax=` around it), so the OOM killer meets the tests, not the session; or
   `claude` gets a lower `OOMScoreAdjust` than its children; and a loop that ends this way stops its scope before it is

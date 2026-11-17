@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "e61d882b-5ef7-428e-90df-ffe709ac6962",
-  "status": "ended",
+  "status": "open",
   "title": "/run-brief invocation options",
   "first_prompt": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>",
   "client": {
@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-17T19:05:13.942Z",
-  "duration_seconds": 23250,
+  "ended": "2026-11-17T20:17:37.239Z",
+  "duration_seconds": 27594,
   "stats": {
-    "turns": 14,
-    "api_calls": 97,
-    "tool_calls": 85,
+    "turns": 17,
+    "api_calls": 127,
+    "tool_calls": 118,
     "tool_errors": 2,
-    "compactions": 0,
+    "compactions": 1,
     "peak_context_tokens": 288290,
     "usage": {
-      "input_tokens": 218,
-      "output_tokens": 74580,
-      "cache_read_input_tokens": 15841021,
-      "cache_creation_input_tokens": 412468
+      "input_tokens": 280,
+      "output_tokens": 95460,
+      "cache_read_input_tokens": 18456457,
+      "cache_creation_input_tokens": 492825
     }
   },
   "tools": {
-    "Bash": 81,
-    "Read": 3,
+    "Bash": 113,
+    "Read": 4,
     "Write": 1
   },
   "files_touched": [
@@ -50,14 +50,28 @@
         "cache_creation_input_tokens": 412468
       },
       "peak_context_tokens": 288290
+    },
+    {
+      "index": 1,
+      "started": "2026-11-17T19:59:47.700Z",
+      "ended": "2026-11-17T20:17:37.239Z",
+      "turns": 3,
+      "api_calls": 30,
+      "usage": {
+        "input_tokens": 62,
+        "output_tokens": 20880,
+        "cache_read_input_tokens": 2615436,
+        "cache_creation_input_tokens": 80357
+      },
+      "peak_context_tokens": 111440
     }
   ],
   "log": {
-    "sha256": "2d880c8187c0ecb5eaa7ef48c34a1a70f48fe089833a751ccbb079c61c179390",
-    "bytes": 2097538,
-    "lines": 715,
-    "gzip_bytes": 379680,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/2d880c8187c0ecb5eaa7ef48c34a1a70f48fe089833a751ccbb079c61c179390.jsonl.gz"
+    "sha256": "b5af6cc1f94e94095b8ebc94b74a0a2e59d82f678515beac1b1434da5afa9e76",
+    "bytes": 3002430,
+    "lines": 962,
+    "gzip_bytes": 572291,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/b5af6cc1f94e94095b8ebc94b74a0a2e59d82f678515beac1b1434da5afa9e76.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -500,6 +514,78 @@
       "summary": "Job 20261117-185623's 290 failure goes to the preservation stream: the same relative -Xlog path as state's 286 job",
       "body": "289's preservation passed on one checker with the pair's and evidence's fixes; 290's step stopped before the check, in the initializer observer that runs its JVM in another folder than the relative --work assumes. Told to preservation, with the note that state is fixing the same code.",
       "log_sha256": "2d880c8187c0ecb5eaa7ef48c34a1a70f48fe089833a751ccbb079c61c179390"
+    },
+    {
+      "change_id": "nqturzqlsqnprkzpntqpvzqkmxolupqk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 307 ahead of the preservation stream's step 6: where the checker stops, the callee's footprint, the conversions on the pinned JDKs, and countermodels for the model and the rule",
+      "body": "New files only, for the watcher of the domain-advances run to pass on as guidance within step 6; no claim, note, checker source or stream file is changed. examples/307-*/records/step-6-packet.md is the account. Six capped probes of the preservation stream's rmvpqswzxlyv (step-6-probes.json): 307's preservation stops in 1 s at the previous revision's getBytes(\"UTF-8\"), the mutant's at StandardCharsets.US_ASCII, and with the conversions modelled the claim's unwind 513 leaves no loop summarized, so nothing is tied and the check is killed at 4 GB in 39 s; at the default unwinding it ends at the time limit as 287 does.\n\nrecords/callee-footprint/footprint.py reads class files and says what a callee's closure reads, writes and hands on: hashpw(byte[],String) is the same 13 methods and initializer in before, after and the mutant, writes nothing its caller can see and reads five final tables nothing else writes (hashpw-bytes.json); 287's crypt_raw is the same in 6.3.7 and 6.3.8, whose hashpw differs by nine inserted instructions (287-crypt-raw.json). records/conversion/ runs both getBytes overloads, the US-ASCII conversion and written-out encoders on 4.3 thousand million Strings on Temurin 21.0.13 and 25.0.5 with no difference, and records the overloads' bytecode. records/mutant-witness.json says which candidates the real cipher tells apart.\n\nlib/tests/fixtures/conversion-countermodels (twelve pairs, a prototype model as a patch, the test to add) and callee-countermodels (ten pairs for taking an unchanged callee as one function) each have a harness, check.py, and a README with what a JVM and today's checker say. Verified by running them: the prototype decides its six pairs, a prototype made wrong on purpose is caught on six, today's checker proves none of the seven callee countermodels and proves 307's shape in the miniature. validate_example.py 307 and the test-cost lint pass. Also found: the example route passes no --assume for an equivalence task, a witness a second run undoes is reported as not reproduced, and a parameter named b does not compile in the generated pair.",
+      "log_sha256": "b5af6cc1f94e94095b8ebc94b74a0a2e59d82f678515beac1b1434da5afa9e76"
+    },
+    {
+      "change_id": "vtpwwlrpxrtslyruqozmmkzpnprxvvnm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261117-185613-example-287-preservation-at-the-frozen-b: failed: 1 failed step(s) in 7m53s, peak 2.3 GiB (estimated 30m00s, 8.0 GiB); 4 output file(s) changed; signals: jvmcontract:fails×2 Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "b5af6cc1f94e94095b8ebc94b74a0a2e59d82f678515beac1b1434da5afa9e76"
+    },
+    {
+      "change_id": "qunuoqurxqspxzuxyluwxmzunuxskzus",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Job 20261117-185613's verdict goes to the preservation stream: 287 at bound 80 is still unverifiable at BCrypt.key's loop",
+      "body": "The same wall as the run before I010 was closed, with the same counts; not out of time or memory, so not resubmitted.",
+      "log_sha256": "b5af6cc1f94e94095b8ebc94b74a0a2e59d82f678515beac1b1434da5afa9e76"
+    },
+    {
+      "change_id": "lsuuqtnqqywxmsrmovttwrsnmnxwykvq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261117-192205-example-286-protected-state-tasks-at-the: passed: 2 passed step(s) in 2m28s, peak 897.8 MiB (estimated 15m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:fails×1 Applied 6 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "b5af6cc1f94e94095b8ebc94b74a0a2e59d82f678515beac1b1434da5afa9e76"
+    },
+    {
+      "change_id": "wpqrtyzvzvvlryzyzznuqksrrzonuvts",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the 307 specialist's scaffold of step 6 into the line",
+      "body": "A session the user brought in to get ahead of the preservation stream's step 6 (example 307) worked in a workspace of its own (307-specialist) and committed new files only (nqturzql): records/step-6-packet.md with where the checker stops on 307, the unchanged callee's footprint read from its bytecode, the two conversions compared on Temurin 8, 21 and 25, the mutant's witness, and countermodel fixtures for a conversion model and a callee rule. Merged so the preservation stream can take it with the default line; nothing in it changes the claim, the checker or any stream's files.",
+      "log_sha256": "b5af6cc1f94e94095b8ebc94b74a0a2e59d82f678515beac1b1434da5afa9e76"
+    },
+    {
+      "change_id": "ywlkutrxplqrqktrslmxlxwmmqzxuqrs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose example 307's bcrypt test vectors for the allow list",
+      "body": "Three long-token findings in the watcher's and the 307 specialist's session logs are bcrypt hashes under upstream BCryptTests' salt, which 307's committed claim and probes already hold. Proposed for the user's approval.",
+      "log_sha256": "b5af6cc1f94e94095b8ebc94b74a0a2e59d82f678515beac1b1434da5afa9e76"
+    },
+    {
+      "change_id": "vqmowvpwuyyqtuylusoqyvnslyxmotvv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The 307 specialist's scaffold goes to the preservation stream as one item of guidance within step 6",
+      "body": "D030: the specialist's commit is merged (wpqrtyzv) and preservation's inbox item I016 points at its packet, with the user's ask to consider call-level convergence for 287 too and the user's decisions on 307's claim (D028, D029).",
+      "log_sha256": "b5af6cc1f94e94095b8ebc94b74a0a2e59d82f678515beac1b1434da5afa9e76"
+    },
+    {
+      "change_id": "xqxvxrmxqwsnrykvyqpnsxqwxwvztqwz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The preservation stream is told why a call-level rule keyed on the fingerprint declines on JDK 25",
+      "body": "The 307 specialist found that since the I010 fix the unchanged callee hashpw(byte[],String) has no fingerprint on JDK 25, where Integer.parseInt reaches String.format(String, Object[]); preservation's 307 probe was dying at 4 GB while it traced where its new rule declines. Passed on as optional guidance (I017, under D030), with the two ways out the specialist sees.",
+      "log_sha256": "b5af6cc1f94e94095b8ebc94b74a0a2e59d82f678515beac1b1434da5afa9e76"
+    },
+    {
+      "change_id": "qpwxnpxsyzysqmwswqvkpzkxsqkqsyxu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The challenge stream is restarted by hand, at the user's word, with an inbox item for its interrupted step",
+      "body": "D031: challenge's loop ended at 17:11 when the OOM killer took its session (VF-037) and run-streams.sh no longer supervises it; the user asked to restart it now rather than after the run, so it attacks preservation's call-level rule while that is written. Its inbox item I003 says how to finish the interrupted setting-countermodels step with the tests under a memory cap of their own, then to attack the call-level rule. VF-037 records the hand restart.",
+      "log_sha256": "b5af6cc1f94e94095b8ebc94b74a0a2e59d82f678515beac1b1434da5afa9e76"
     }
   ],
   "logs": {
@@ -537,6 +623,12 @@
       "bytes": 816643,
       "lines": 233,
       "gzip_bytes": 160142,
+      "url": null
+    },
+    "b5af6cc1f94e94095b8ebc94b74a0a2e59d82f678515beac1b1434da5afa9e76": {
+      "bytes": 3002430,
+      "lines": 962,
+      "gzip_bytes": 572291,
       "url": null
     }
   },
