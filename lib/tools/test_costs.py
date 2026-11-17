@@ -32,10 +32,12 @@ Tiers (decision 1 of the brief): unit has no subprocess and runs under 1 s; tool
 spawns JBMC or TLC, or goes over the tool tier's limits.
 """
 import argparse
+import contextlib
 import importlib
 import json
 import os
 import re
+import shutil
 import signal
 import subprocess
 import sys
@@ -844,11 +846,37 @@ def _python_file(label, argv, env, cwd):
     return p.returncode, line, p.stdout
 
 
+@contextlib.contextmanager
+def run_tmp(root, environ=os.environ):
+    """A folder of this run's own for what its tests leave in the temporary directory, as TMPDIR for every command
+    of the run, removed when the run ends. A check run without a work folder makes one there and keeps it for
+    whoever reads its outcome (`jvmcontract-equivalence-PID-...`, some 35 files each), and a test has no reader: on
+    2026-11-17 some 18,000 of them had used every inode of a /tmp held in memory, and no command could start. The
+    folder is in the cargo target directory, on disk, and one a run that was killed left is removed by the next."""
+    base = Path(root) / "lib/target/test-tmp"
+    base.mkdir(parents=True, exist_ok=True)
+    for left in base.glob("run-*"):
+        pid = left.name[4:]
+        if pid.isdigit() and not Path(f"/proc/{pid}").exists():
+            shutil.rmtree(left, ignore_errors=True)
+    mine, before = base / f"run-{os.getpid()}", environ.get("TMPDIR")
+    mine.mkdir(exist_ok=True)
+    environ["TMPDIR"] = str(mine)
+    try:
+        yield mine
+    finally:
+        if before is None:
+            environ.pop("TMPDIR", None)
+        else:
+            environ["TMPDIR"] = before
+        shutil.rmtree(mine, ignore_errors=True)
+
+
 def rust_seconds(doc):
     """Each Rust source file's tests' recorded seconds, summed: what orders the test binaries, longest first."""
     out = {}
     for r in doc.get("rust", []):
-        out[r["file"]] = out.get(r["file"], 0) + (r.get("cost") or {}).get("seconds", 0)
+        out[r["file"]] = out.get(r["file"], 0) + ((r.get("cost") or {}).get("seconds") or 0)  # a new test has no time yet
     return out
 
 
@@ -1291,8 +1319,9 @@ def main(argv=None):
         # The whole default run, as it is run before a push, is recorded when it passes; a part of it is not.
         whole = a.tier == "default" and changed is None and not a.only and not a.test and Path(a.path) == INVENTORY
         started = default_run.Started(ROOT) if whole else None
-        code = run_tier(a.tier, a.path, ROOT, a.only, a.test, a.test_threads, False, a.serial, not a.no_retry, changed,
-                        a.rust_jobs, a.python_jobs, tally=(tally := []))
+        with run_tmp(ROOT):
+            code = run_tier(a.tier, a.path, ROOT, a.only, a.test, a.test_threads, False, a.serial, not a.no_retry, changed,
+                            a.rust_jobs, a.python_jobs, tally=(tally := []))
         if started and code == 0:
             started.passed(tally[-1] if tally else "passed")
         held.close()

@@ -196,6 +196,25 @@ class Files(unittest.TestCase):
             self.assertEqual(found, ["examples/tools/test_build.py", "verification/test_pipeline.py"])
 
 
+class ATemporaryFolderOfTheRunsOwn(unittest.TestCase):
+    def test_a_run_has_its_own_tmpdir_which_is_removed_with_what_a_killed_run_left(self):
+        with tempfile.TemporaryDirectory() as root:
+            environ = {"TMPDIR": "/somewhere/else"}
+            left = Path(root) / "lib/target/test-tmp/run-999999999"  # no such process
+            left.mkdir(parents=True)
+            (left / "jvmcontract-equivalence-1-2-0").mkdir()
+            with tc.run_tmp(root, environ) as mine:
+                self.assertEqual(environ["TMPDIR"], str(mine))
+                self.assertEqual(mine, Path(root) / f"lib/target/test-tmp/run-{os.getpid()}")
+                self.assertFalse(left.exists(), "what a run that was killed left is removed by the next")
+                (mine / "left-by-a-test").mkdir()
+            self.assertEqual(environ["TMPDIR"], "/somewhere/else")
+            self.assertFalse(mine.exists())
+            with tc.run_tmp(root, environ := {}):
+                self.assertIn("TMPDIR", environ)
+            self.assertNotIn("TMPDIR", environ)
+
+
 class RunningATier(unittest.TestCase):
     """`run`'s commands for each tier, from a made-up inventory; the one test that runs them runs made-up files."""
     DOC = {"python": [
