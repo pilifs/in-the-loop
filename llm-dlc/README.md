@@ -248,14 +248,31 @@ under way (`brief_run.py status NAME` first). The watcher does none of the brief
    inbox, as an item of kind `foundation` that the stream acknowledges in its Progress, so what was built for
    it is known to have reached it.
 3. **The run** (`brief_run.py start NAME`): `run-streams.sh`, detached, with the run's directory as its watcher.
-   The watcher blocks in `brief_run.py wait NAME`, which returns only what needs it: a loop that ended blocked
-   (below), an integration check that stopped passing, a decision open for the user, a verification loop it had
+   The watcher blocks in `brief_run.py wait NAME`, which returns only what needs it: a stream that is finished,
+   to merge (below), a loop that ended blocked (below), an integration check that stopped passing, a decision open for the user, a verification loop it had
    to start because none ran while jobs waited, a summary every 30 minutes, and the end of the run.
-4. **The report**: each loop's status against the brief's `Done when`, what was deferred or is blocked on the
+4. **The report**: each loop's status, and whether it is merged, against the brief's `Done when`, what was deferred or is blocked on the
    user, the watcher's decisions still to review, the cost, and what is left on the machine.
 
+**Each stream is merged the moment it is finished, by the watcher; there is no merge loop.** `run-streams.sh`
+puts a finished stream to the watcher (`conductor.py`'s `merge` question, half an hour at most,
+`RUN_STREAMS_MERGE_WAIT`), and the watcher runs `brief_run.py merge NAME STREAM` while the other streams go on.
+It merges the stream's `@-` into the default workspace's line as `land` does (moved forward or merged, the
+generated trace files regenerated, the session logs it names taken from the workspace that stores them; a merge
+that conflicts in real work is taken back), takes the stream's inbox acknowledgements, answers `merged`, and
+records the merge in the brief's Progress, whose status it sets to `done` once every stream is merged and says
+done (`blocked: stream S: ...` when one was left blocked), in one commit with the decision. The watcher then runs
+the default test run, as after any merge. A conflict it can see through it resolves by hand, as the watcher of a
+proof run does between examples ([`runtime.md`](runtime.md)), and the same command then records it; anything else
+it answers `leave` and reports. A stream left blocked is put to it as well: what it committed is usually worth
+having. Without a watcher nothing is merged, and the end of the run names the command for each stream. Until
+2026-11-17 the brief's own loop ran once every stream was finished, to merge them and finish the work; in the
+first rehearsal (`/run-brief rehearsal`, 2026-11-17) it took the streams for empty because their notes were not in
+its working copy's files, and a finished stream sat waiting for the slowest one. A brief's own work after its
+streams is now a brief of its own, run after them; a brief that names no streams still runs as its own loop.
+
 **A stream no longer waits for the end of the run for an answer.** Without a watcher, a stream that stops
-`blocked:` is finished, and the merge lists what it left. With one, `run-streams.sh` asks before it counts the
+`blocked:` is finished, as it stands. With one, `run-streams.sh` asks before it counts the
 stream as finished (`conductor.py`'s `blocked` question, half an hour at most, `RUN_STREAMS_BLOCKED_WAIT`): the
 watcher settles what it can by Design 3 of [stream-conductor.md](loops/stream-conductor.md), sends the stream
 the inbox item that says so, and answers `rerun`, and the stream goes on. Its answer is a decision in
@@ -264,15 +281,15 @@ brief's Design 8; a watcher that decides while nobody is there is not built.
 
 **A run is stopped at a boundary** with `brief_run.py stop NAME`: each loop is told to end after its cycle under
 way (the command line `feature-loop.sh` takes from its conductor directory), a loop waiting on jobs stops
-waiting, nothing is run again and the merge is not started. `start` continues. `stop --now` interrupts instead.
+waiting, nothing is run again and no stream is put to the watcher to merge. `start` continues. `stop --now` interrupts instead.
 
 **Where the time went.** `run-streams.sh` logs each change of a loop's phase with its time, and a summary says
 per loop how long it worked, waited on jobs, was blocked, and, for a stream, sat finished while another stream
-still ran. The last is what merging a finished stream early would save, and the second what going on to the
-next piece while jobs run would.
+still ran (merged at once, a finished stream no longer waits for the others, so this is only the time to its
+merge). The second is what going on to the next piece while jobs run would save.
 
-**Two sessions in one working copy.** The brief's own loop and the result collector both commit in the default
-workspace. `sync.py commit --only PATH ...` commits the named files and folders alone and leaves everything else
+**Two sessions in one working copy.** The watcher's merges and the result collector both commit in the default
+workspace (and a brief without streams runs its own loop there). `sync.py commit --only PATH ...` commits the named files and folders alone and leaves everything else
 uncommitted where it is: the collector commits with the paths `pipeline.py commit-paths` names (its results,
 the findings, the examples table, the outputs it applied), and a loop's cycle is told to name its own. A
 collector in a workspace of its own was considered and not built: every reader of results (a stream waiting on
@@ -281,7 +298,7 @@ there one by one, which brings the shared working copy back.
 
 **While the foundation runs**, `wait` says at each interval how long it has run, its tool calls, the command under
 way and its last commit; its spend is known when it ends, and is then in every summary's total. **A blocked loop
-is run again twice at most** (`RUN_STREAMS_RERUNS`); the third time it is left for the merge without a question.
+is run again twice at most** (`RUN_STREAMS_RERUNS`); the third time it is left blocked without a question, and put to the watcher to merge.
 **A workspace jj calls stale** is put right with [`tools/unstale.py`](tools/unstale.py), which keeps the edits
 that `jj workspace update-stale` alone would take off the disk. [`loops/rehearsal.md`](loops/rehearsal.md) is a
 throwaway brief of two streams that exercises all of this with real sessions for little money: its second

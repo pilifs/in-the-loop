@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Tests for brief_run.py, the watcher's tools for a brief's run, and for what run-streams.sh does for it: the
-streams a brief names, the question it asks about a loop that ended blocked, and a run with no fork.
+streams a brief names, the questions it asks about a loop that ended blocked and a stream to merge, and a run with
+no fork.
 Run: python3 llm-dlc/tools/test_brief_run.py
 Everything is made up: a real jj repository in a temporary directory with copies of the scripts, a stand-in
 `claude` on PATH, a stand-in feature-loop.sh that sets a brief's status and commits, and a stand-in sync.py. No
@@ -49,7 +50,10 @@ FAKE_SYNC = textwrap.dedent('''\
         Path("verification").mkdir(exist_ok=True)
         Path("verification/late.txt").write_text("a result collected during the merge\\n")
     if sys.argv[1] == "commit":
-        sys.exit(subprocess.run(["jj", "commit", "-m", sys.argv[3]]).returncode)
+        args = sys.argv[2:]
+        paths = args[1:args.index("-m")] if args[0] == "--only" else []
+        message = args[args.index("-m") + 1]
+        sys.exit(subprocess.run(["jj", "commit", "-m", message, *paths]).returncode)
 ''')
 
 # feature-loop.sh's stand-in: each run of a brief takes the next status of the list in STATUSES/BRIEF-NAME (the
@@ -191,10 +195,10 @@ class TheStreamsABriefNames(Fixture):
     @cost("tool")
     def test_a_brief_that_is_not_there_and_a_stream_named_as_the_runs_own_parts_are_refused(self):
         self.assertEqual(self.plan("absent").returncode, 2)
-        self.write("llm-dlc/loops/bad.md", brief(["a", "merge"]))
+        self.write("llm-dlc/loops/bad.md", brief(["a", "brief"]))
         r = self.plan("bad")
         self.assertEqual(r.returncode, 2)
-        self.assertIn("'merge'", r.stderr)
+        self.assertIn("'brief'", r.stderr)
 
 
 class BeforeTheRun(Fixture):
@@ -428,10 +432,11 @@ class Watching(Fixture):
         self.assertRegex(out.splitlines()[0], r"^### .* UTC · 1 h 0\d min into the run of llm-dlc/loops/made-up.md · \$5.50$")
         self.assertIn("- **foundation**: ended, $3.00; landed", out)
         self.assertIn("- **a**: working; cycle 3, 0 commits, $2.50; at ", out)
-        self.assertIn("- **merge**: working; cycle -, 0 commits, $0.00", out)
+        self.assertIn("- **b**: working; cycle -, 0 commits, $0.00", out)
+        self.assertNotIn("**merge**", out)  # there is no merge loop
         self.assertEqual(json.loads(self.wait()[1])["kind"], "nothing")  # the next one is an interval away
         self.run_tool("interval", "made-up", "0")
-        self.assertNotIn("; at ", self.wait()[1].split("**merge**")[0].split("**a**")[1])  # a's head has not moved
+        self.assertNotIn("; at ", self.wait()[1].split("**b**")[0].split("**a**")[1])  # a's head has not moved
 
     @cost("tool")
     def test_a_summary_says_where_each_loops_time_went(self):
@@ -442,13 +447,11 @@ class Watching(Fixture):
         # a: an hour's work, twenty minutes for jobs, ten more of work, blocked ten, then done at 1 h 40
         phases("a", (0, "running"), (3600, "waiting for jobs"), (4800, "running"), (5400, "blocked: put to the watcher"),
                (6000, "finished: done"))
-        phases("b", (0, "running"), (1800, "finished: done"))  # done after half an hour, while a ran on to 1 h 40
-        phases("merge", (6000, "running"))
+        phases("b", (0, "running"), (1800, "finished: done"), (1801, "finished: done; merged"))  # merged at once, while a ran on to 1 h 40
         out = self.wait()[1]
-        a, b, merge = (out.split(f"**{name}**")[1].split("- **")[0] for name in ("a", "b", "merge"))
+        a, b = (out.split(f"**{name}**")[1].split("- **")[0] for name in ("a", "b"))
         self.assertIn("time: 1 h 10 min working, 20 min waiting on jobs, 10 min blocked\n", a)
         self.assertIn("time: 30 min working, 1 h 10 min finished, others still running\n", b)
-        self.assertIn("time: 20 min working\n", merge)
         self.assertEqual(brief_run.state(run)["loops"][1]["time"]["finished, others still running"], 4200)
 
     @cost("tool")
@@ -469,61 +472,91 @@ class Watching(Fixture):
         p.wait()
         self.started(pid=p.pid)
         thing = json.loads(self.wait()[1])
-        self.assertEqual((thing["kind"], [r["loop"] for r in thing["state"]["loops"]]), ("ended", ["a", "b", "merge"]))
+        self.assertEqual((thing["kind"], [r["loop"] for r in thing["state"]["loops"]]), ("ended", ["a", "b"]))
         self.assertEqual(json.loads(self.wait()[1])["kind"], "nothing")
 
 
 class ARunOfStreams(Fixture):
     """run-streams.sh itself, over stand-in loops: the streams it reads from the brief, none of them forked."""
 
+    def answer(self, p: subprocess.Popen, seconds: float = 90) -> list[dict]:
+        """Answer every question the run asks until it ends: `rerun` a blocked stream, and merge a finished one
+        with brief_run.py merge, as the watcher does. Returns the questions, in order."""
+        asked, until = [], time.time() + seconds
+        while p.poll() is None and time.time() < until:
+            event = conductor.pending(self.dir)
+            if event is None:
+                time.sleep(0.2)
+                continue
+            asked.append(event)
+            if event["type"] == "merge":
+                code, _, err = self.run_tool("merge", "made-up", event["loop"])
+                self.assertEqual(code, 0, err)
+            else:
+                conductor.cmd_decide(self.dir, event["n"], "rerun", "b answered: the item is in a's inbox")
+        return asked
+
     @cost("tool")
-    def test_a_blocked_stream_is_run_again_when_the_watcher_says_so_and_the_merge_follows(self):
-        p = self.streams(("made-up-a", ["blocked: an answer from b", "done"]), ("made-up-b", ["done"]), ("made-up", ["done"]),
+    def test_each_stream_is_merged_by_the_watcher_the_moment_it_is_finished_and_no_merge_loop_runs(self):
+        p = self.streams(("made-up-a", ["blocked: an answer from b", "done"]), ("made-up-b", ["done"]),
                          RUN_STREAMS_WATCHER=str(self.dir), RUN_STREAMS_BLOCKED_WAIT="60")
-        until = time.time() + 60
-        while (event := conductor.pending(self.dir)) is None and time.time() < until and p.poll() is None:
-            time.sleep(0.2)
-        self.assertIsNotNone(event, p.stdout.read() if p.poll() is not None else "no question was asked")
-        self.assertEqual((event["type"], event["loop"], event["status"], event["brief"]),
-                         ("blocked", "a", "blocked: an answer from b", "llm-dlc/loops/made-up-a.md"))
-        self.assertNotIn("made-up", self.runs())  # the merge has not started while the question is open
-        conductor.cmd_decide(self.dir, event["n"], "rerun", "b answered: the item is in a's inbox")
-        out, _ = p.communicate(timeout=120)
+        asked = self.answer(p)
+        out, _ = p.communicate(timeout=60)
         self.assertEqual(p.returncode, 0, out)
-        self.assertEqual(sorted(self.runs()), ["made-up", "made-up-a", "made-up-a", "made-up-b"])
-        self.assertEqual(self.runs()[-1], "made-up")
+        self.assertEqual(sorted((e["type"], e["loop"]) for e in asked), [("blocked", "a"), ("merge", "a"), ("merge", "b")])
+        self.assertEqual(next(e for e in asked if e["type"] == "merge")["workspace"][:8], "made-up-")
+        self.assertLess(asked.index(next(e for e in asked if e["type"] == "blocked")),
+                        asked.index(next(e for e in asked if e == {**e, "type": "merge", "loop": "a"})))
+        self.assertEqual(sorted(self.runs()), ["made-up-a", "made-up-a", "made-up-b"])  # the brief's own loop never ran
+        self.assertIn("every stream is finished: merged a b; not merged none", out)
         self.assertIn("the streams fork no session", out)
         self.assertNotIn("compacting", out)
+        # both streams' commits are on the default line, and the brief says so
+        line = self.jj(self.root, "log", "--no-graph", "-r", "::@-", "-T", "description.first_line() ++ \"\\n\"")
+        self.assertIn("made-up-a: done", line)
+        self.assertIn("made-up-b: done", line)
+        text = (self.root / "llm-dlc/loops/made-up.md").read_text()
+        self.assertRegex(text, r"the watcher: merged stream \w \(\w+\), which says done\.\n.*merged stream \w \(\w+\), which says done\.\n- Status: done\n")
+        self.assertEqual(self.jj(self.root, "diff", "-r", "@", "--name-only"), "")  # nothing is left uncommitted
+        recorded = decisions.fold(decisions.read("run-streams-made-up", self.root / "llm-dlc" / "decisions"))
+        self.assertEqual(sorted(d["decision"]["option"] for d in recorded.values()), ["merged", "merged", "rerun"])
+        # again: nothing to merge, and nothing recorded twice
+        code, again, _ = self.run_tool("merge", "made-up", "a")
+        self.assertEqual((code, json.loads(again)["landed"]), (0, "nothing to land: the line already has it"))
+        self.assertEqual((self.root / "llm-dlc/loops/made-up.md").read_text().count("merged stream a"), 1)
+        rows = {r["loop"]: r for r in json.loads(self.run_tool("status", "made-up")[1])["loops"]}
+        self.assertEqual({k: (r["status"], r["merged"]) for k, r in rows.items()}, {"a": ("done", True), "b": ("done", True)})
 
     @cost("tool")
     def test_a_stream_is_run_again_twice_at_most_and_then_left_without_asking(self):
-        p = self.streams(("made-up-a", ["blocked: an answer"]), ("made-up-b", ["done"]), ("made-up", ["done"]),
+        p = self.streams(("made-up-a", ["blocked: an answer"]), ("made-up-b", ["done"]),
                          RUN_STREAMS_WATCHER=str(self.dir), RUN_STREAMS_BLOCKED_WAIT="60")
-        asked, until = 0, time.time() + 90
-        while p.poll() is None and time.time() < until:
-            event = conductor.pending(self.dir)
-            if event is not None:
-                asked += 1
-                conductor.cmd_decide(self.dir, event["n"], "rerun", "made up: run it again")
-            time.sleep(0.2)
+        asked = self.answer(p)
         out, _ = p.communicate(timeout=60)
-        self.assertEqual((p.returncode, asked), (0, 2), out)
+        self.assertEqual(p.returncode, 1, out)  # the brief is not done: a is blocked
+        self.assertEqual([e["loop"] for e in asked if e["type"] == "blocked"], ["a", "a"])
         self.assertEqual(self.runs().count("made-up-a"), 3)
-        self.assertIn("[a] blocked again after 2 rerun(s): left for the merge", out)
+        self.assertIn("[a] blocked again after 2 rerun(s): left blocked", out)
+        # a blocked stream is merged too, and the brief says what it left
+        self.assertEqual(sorted(e["loop"] for e in asked if e["type"] == "merge"), ["a", "b"])
+        self.assertIn("- Status: blocked: stream a: blocked: an answer\n", (self.root / "llm-dlc/loops/made-up.md").read_text())
+        self.assertIn("finished: the brief llm-dlc/loops/made-up.md says blocked: stream a", out)
 
     @cost("tool")
-    def test_without_an_answer_or_a_watcher_a_blocked_stream_is_left_for_the_merge(self):
-        p = self.streams(("made-up-a", ["blocked: an answer"]), ("made-up-b", ["done"]), ("made-up", ["done"]),
-                         RUN_STREAMS_WATCHER=str(self.dir), RUN_STREAMS_BLOCKED_WAIT="1")
+    def test_without_an_answer_or_a_watcher_nothing_is_merged_and_the_end_says_how_to(self):
+        p = self.streams(("made-up-a", ["blocked: an answer"]), ("made-up-b", ["done"]),
+                         RUN_STREAMS_WATCHER=str(self.dir), RUN_STREAMS_BLOCKED_WAIT="1", RUN_STREAMS_MERGE_WAIT="1")
         out, _ = p.communicate(timeout=120)
-        self.assertEqual(p.returncode, 0, out)
-        self.assertEqual(sorted(self.runs()), ["made-up", "made-up-a", "made-up-b"])
+        self.assertEqual(p.returncode, 1, out)  # the brief is not done: nothing was merged
+        self.assertEqual(sorted(self.runs()), ["made-up-a", "made-up-b"])
+        self.assertIn("every stream is finished: merged none; not merged a b", out)
+        self.assertIn("[b] not merged: `python3 llm-dlc/tools/brief_run.py merge made-up b` merges it", out)
         (self.statuses / "runs").unlink()
-        self.write("llm-dlc/loops/made-up.md", brief(self.STREAMS))  # the brief's own loop is to run again
-        p = self.streams(("made-up", ["done"]))  # no watcher: nothing is asked, and finished streams are not run again
+        p = self.streams()  # no watcher: nothing is asked, and finished streams are not run again
         out, _ = p.communicate(timeout=120)
-        self.assertEqual((p.returncode, self.runs()), (0, ["made-up"]), out)
+        self.assertEqual((p.returncode, (self.statuses / "runs").exists()), (1, False), out)
         self.assertNotIn("asking the watcher", out)
+        self.assertIn("not merged a b", out)
 
     @cost("tool")
     def test_a_run_stopped_at_a_boundary_runs_nothing_again_starts_no_merge_and_is_continued_by_start(self):
@@ -534,7 +567,7 @@ class ARunOfStreams(Fixture):
         job = "20260101-000000-made-up"
         for name, statuses in (("made-up-a", [f"waiting on jobs {job}", "done"]), ("made-up-b", ["done"]), ("made-up", ["done"])):
             (self.statuses / name).write_text("".join(x + "\n" for x in statuses))
-        with mock.patch.dict(os.environ, {"RUN_STREAMS_POLL": "1", "RUN_STREAMS_STATUS_EVERY": "1"}):
+        with mock.patch.dict(os.environ, {"RUN_STREAMS_POLL": "1", "RUN_STREAMS_STATUS_EVERY": "1", "RUN_STREAMS_MERGE_WAIT": "1"}):
             self.assertEqual(self.run_tool("start", "made-up")[0], 0)
             log = self.dir / "streams.log"
             self.until(lambda: f"[a] waiting for {job}" in log.read_text() and "[b] finished: done" in log.read_text(), log)
@@ -542,13 +575,15 @@ class ARunOfStreams(Fixture):
             self.assertTrue(json.loads(self.run_tool("status", "made-up")[1])["stopping"])
             self.until(lambda: not self.alive(), log)
             self.assertIn("stopped at a boundary, every loop after its cycle under way", log.read_text())
-            self.assertEqual(sorted(self.runs()), ["made-up-a", "made-up-b"])  # a was not run again, and no merge
+            self.assertEqual(sorted(self.runs()), ["made-up-a", "made-up-b"])  # a was not run again
+            self.assertNotIn("[a] asking the watcher to merge", log.read_text())  # nor put to the watcher to merge
             thing = json.loads(self.run_tool("wait", "made-up", "--timeout", "0")[1])
             self.assertEqual((thing["kind"], {r["loop"]: r["phase"] for r in thing["state"]["loops"]}["a"]), ("ended", "stopped at a boundary"))
             self.write(f"verification/results/{job}/result.json", "{}\n")  # the job is back
-            self.assertEqual(self.run_tool("start", "made-up")[0], 0)  # continues: a's last cycle, then the merge
+            self.assertEqual(self.run_tool("start", "made-up")[0], 0)  # continues: a's last cycle, then its merge
             self.until(lambda: not self.alive(), log)
-        self.assertEqual((sorted(self.runs()[:2]), self.runs()[2:]), (["made-up-a", "made-up-b"], ["made-up-a", "made-up"]))
+        self.assertEqual((sorted(self.runs()[:2]), self.runs()[2:]), (["made-up-a", "made-up-b"], ["made-up-a"]))
+        self.assertIn("[a] asking the watcher to merge", log.read_text())
         self.assertFalse(json.loads(self.run_tool("status", "made-up")[1])["stopping"])
 
     def alive(self) -> bool:
@@ -572,12 +607,13 @@ class ARunOfStreams(Fixture):
         out, _ = p.communicate(timeout=120)
         self.assertEqual((p.returncode, self.runs()), (0, ["made-up"]), out)
         self.assertIn("the brief names no streams: its own loop is the run", out)
+        self.assertIn("[brief] ", out)
 
     @cost("tool")
     def test_the_watcher_starts_the_run_detached_and_is_told_when_it_ends(self):
-        for name, statuses in (("made-up-a", ["done"]), ("made-up-b", ["done"]), ("made-up", ["done"])):
+        for name, statuses in (("made-up-a", ["done"]), ("made-up-b", ["done"])):
             (self.statuses / name).write_text("".join(s + "\n" for s in statuses))
-        with mock.patch.dict(os.environ, {"RUN_STREAMS_POLL": "1", "RUN_STREAMS_STATUS_EVERY": "1"}):
+        with mock.patch.dict(os.environ, {"RUN_STREAMS_POLL": "1", "RUN_STREAMS_STATUS_EVERY": "1", "RUN_STREAMS_MERGE_WAIT": "1"}):
             code, out, err = self.run_tool("start", "made-up")
         self.assertEqual(code, 0, err)
         run = self.run_of()
@@ -593,8 +629,9 @@ class ARunOfStreams(Fixture):
         code, out, _ = self.run_tool("wait", "made-up", "--timeout", "0")
         thing = json.loads(out)
         self.assertEqual(thing["kind"], "ended", (self.dir / "streams.log").read_text())
-        self.assertEqual({r["loop"]: r["status"] for r in thing["state"]["loops"]}, {"a": "done", "b": "done", "merge": "done"})
-        self.assertEqual(sorted(self.runs()), ["made-up", "made-up-a", "made-up-b"])
+        self.assertEqual({r["loop"]: (r["status"], r["merged"]) for r in thing["state"]["loops"]},
+                         {"a": ("done", False), "b": ("done", False)})  # nobody answered the merge questions
+        self.assertEqual(sorted(self.runs()), ["made-up-a", "made-up-b"])
 
 
 if __name__ == "__main__":

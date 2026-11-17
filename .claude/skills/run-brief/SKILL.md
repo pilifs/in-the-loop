@@ -1,6 +1,6 @@
 ---
 name: run-brief
-description: Run a feature brief of this repository (llm-dlc/loops/NAME.md) from start to end as its watcher. A foundation session on Fable 5.2 reads the brief and builds what every stream would otherwise wait for, then the brief's streams run side by side and its own loop merges them, while the watcher answers what the run asks, keeps the verification queue moving and reports at intervals. Start it only when the user asks for this skill or for a brief to be run, never as a step of other work: a run takes hours and spends their tokens.
+description: Run a feature brief of this repository (llm-dlc/loops/NAME.md) from start to end as its watcher. A foundation session on Fable 5.2 reads the brief and builds what every stream would otherwise wait for, then the brief's streams run side by side and the watcher merges each into the default line the moment it is finished, while it answers what the run asks, keeps the verification queue moving and reports at intervals. Start it only when the user asks for this skill or for a brief to be run, never as a step of other work: a run takes hours and spends their tokens.
 argument-hint: "[--no-foundation] [--unattended] [--summary-interval SECONDS] <a brief's name or file: NAME | llm-dlc/loops/NAME.md>"
 model: claude-opus-5-5
 effort: high
@@ -10,7 +10,9 @@ effort: high
 
 You are the watcher of a brief's run in this repository, as the watcher of `/prove-java-change` is of a proof run.
 You are one session, on Opus 5.5, and you do none of the brief's work: you start the sessions that do, you are
-called back when something needs a judgement, and you keep the user informed. Everything you run is
+called back when something needs a judgement, and you keep the user informed. You also merge each stream into
+the default line the moment it is finished, as the watcher of a proof run merges a workspace between examples:
+there is no merge loop. Everything you run is
 `python3 llm-dlc/tools/brief_run.py`, from the default workspace; its own first lines say what each command does.
 
 - **You run on Opus 5.5.** If you are another model, say so and stop: the user switches with `/model` and runs the
@@ -20,7 +22,8 @@ called back when something needs a judgement, and you keep the user informed. Ev
   lives in your context. It is all in files (`llm-dlc/loop-summaries/run-streams-NAME/`), so a session that was
   compacted, or a new one that takes a run over, reads where the run stands and goes on (see "A run under
   way"). While you are the watcher, leave the default workspace's files alone but for what this skill has you
-  do: the brief's own loop and the result collector commit there.
+  do (the merges included): the result collector commits there, and a brief without streams runs its own loop
+  there.
 - **Read first**: "A brief's run" in `llm-dlc/README.md`, the brief itself, and Designs 2 and 3 of
   `llm-dlc/loops/stream-conductor.md` (inboxes, and which decisions are yours). They outrank your memory of them.
 - **Decide what you can, and record it.** A decision is yours when it is cheap to take back and you are sure
@@ -28,7 +31,8 @@ called back when something needs a judgement, and you keep the user informed. Ev
   through its inbox (`inbox.py send`). What is the user's stays theirs: what the brief is for, their machine's
   hours and their money, anything that leaves the machine, and whatever the brief's Decisions keep for them.
 - **Never write into a loop's session, and never edit a brief while its loop runs**: a changed brief stops its
-  loop. A stream is told things through its inbox only.
+  loop. A stream is told things through its inbox only. (`brief_run.py merge` records each merge in the main
+  brief's Progress: a brief of streams has no loop of its own.)
 - **Nothing is pushed** unless the user asks.
 
 The request: $ARGUMENTS
@@ -117,18 +121,34 @@ record it as an open decision, and go on only if the streams' work does not depe
 python3 llm-dlc/tools/brief_run.py start BRIEF
 ```
 
-starts `run-streams.sh` detached: a workspace and a loop per stream, the integration check if the brief names
-one, then the brief's own loop, which merges them. Then watch it: run `python3 llm-dlc/tools/brief_run.py wait BRIEF`
+starts `run-streams.sh` detached: a workspace and a loop per stream, and the integration check if the brief names
+one; a brief without streams runs as its own loop alone. Each stream, once finished, is put to you to merge. Then
+watch it: run `python3 llm-dlc/tools/brief_run.py wait BRIEF`
 as a background task, act on what it returns, and run it again, until it returns `ended`.
 
 - **A summary**: print it as it is. Its `time` lines say where each loop's time went: working, waiting on jobs,
   blocked, and finished while other streams still ran.
-- **`question`**, a loop that ended `blocked:`. It waits half an hour for you, and the merge waits with it. Read
+- **`question` of type `merge`**: a stream is finished, `done` or left blocked, while the others may still run. It
+  waits half an hour. Merge it now: run the `merge` command the question prints (`brief_run.py merge BRIEF
+  STREAM`). It merges the stream's line into the default workspace's (regenerating the generated trace files and
+  taking the stream's session logs), answers the question `merged`, records the merge in the brief's Progress, sets
+  the brief's status to `done` once every stream is merged and says done, and commits all of it.
+  - A merge that conflicts in real work is taken back and says where. If the conflict is small and you can see
+    how both sides meet, resolve it by hand as "Between two examples" in `llm-dlc/runtime.md` shows (a merge
+    commit of `@-` and `WORKSPACE@-`, the conflicts resolved, `sync.py regenerate`, `sync.py commit`), then run
+    `brief_run.py merge` again, which finds it merged and records it. Otherwise answer `leave` with the command
+    the question prints, and tell the user what conflicts.
+  - Then check what came in as the brief says (its integration script, if it names one) and run the default
+    test run inline (`python3 lib/tools/test_costs.py run`), as `CLAUDE.md` asks after a merge, unless the brief
+    rules out test runs. Another stream's merge can wait for it. A failure is reported to the user (with
+    `--unattended`: an open decision), not fixed by you: it is the brief's work.
+  - A stream left blocked is merged too, unless what it committed is broken on its own: say so with `leave`.
+- **`question`** of type `blocked`, a loop that ended `blocked:`. It waits half an hour for you. Read
   the loop's status and the Progress of its brief in its workspace, and its open inbox items. If what blocked it
   is settled, or you can settle it (another stream's answer that is committed, a decision that is yours), record
   the decision, send the stream the item that says so (`inbox.py send NAME-STREAM --kind answer|unblocked ...`),
-  and answer `rerun`. If it waits for the user, ask them when they are there; otherwise answer `leave`, and the
-  merge lists it. Answer with the command the question prints; each answer is recorded as a decision. A loop is run again
+  and answer `rerun`. If it waits for the user, ask them when they are there; otherwise answer `leave`: it is then
+  put to you to merge as it stands, and the brief's status names it. Answer with the command the question prints; each answer is recorded as a decision. A loop is run again
   this way twice at most: the third time it ends blocked it is left without a question.
 - **`attention`**: the integration check stopped passing, or a decision is open. The check has already told the
   streams it concerns. Read what it names and decide what is yours, as above.
@@ -140,7 +160,7 @@ The user may ask about the run at any time: answer from `brief_run.py status BRI
 Fix what is small yourself (a verification loop that died, a job that hangs, a workspace jj calls stale:
 `python3 llm-dlc/tools/unstale.py` from that workspace), say what you did, and leave the
 rest to the user. `brief_run.py stop BRIEF` stops the run at a boundary: every loop ends after its cycle under way,
-nothing is run again and the merge is not started, so nothing is cut off; `wait` returns `ended` when it has, and
+nothing is run again and no stream is put to you to merge, so nothing is cut off; `wait` returns `ended` when it has, and
 `start` continues. Use it at the user's word, or when the run should not go on as it is. `stop BRIEF --now`
 interrupts mid-cycle instead: only when the run is doing damage.
 
@@ -150,14 +170,15 @@ When the run has ended, put the budget back (`brief_run.py budget BRIEF --restor
 once the queue is clear (`brief_run.py verification BRIEF stop`, which ends only one this run started), and tell
 the user:
 
-- each loop's last status, and for the brief its `Done when` table, criterion by criterion: met, not met, or
-  waiting on which jobs;
+- each loop's last status and whether it is merged, and for the brief its `Done when` table, criterion by
+  criterion: met, not met, or waiting on which jobs;
 - what the timebox deferred, and what is blocked on the user, each with what they need to decide;
 - the decisions you made that they have not reviewed
   (`python3 llm-dlc/tools/decisions.py list --group flagged,unreviewed`), and that `decisions.py review` accepts
   or overturns them;
 - what the run cost, per loop, and the jobs still out;
 - what is left on the machine: the streams' workspaces and the foundation's, which
-  `python3 llm-dlc/tools/prune_workspaces.py` lists, and that nothing was pushed.
+  `python3 llm-dlc/tools/prune_workspaces.py` lists, any stream not merged (`brief_run.py merge BRIEF STREAM`
+  merges it), and that nothing was pushed.
 
 The skill ends here. The session is theirs to continue.

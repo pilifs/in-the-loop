@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # Run a brief's whole loop unattended, in one terminal: its parallel streams, each
-# a feature loop in a jj workspace of its own on a branch of its own, then the
-# brief's own loop, which merges them and finishes the work. You are needed only
-# once that loop is done.
+# a feature loop in a jj workspace of its own on a branch of its own, each merged
+# into this workspace's line by the run's watcher as soon as it is finished. A
+# brief that names no streams is run as its own loop alone. There is no merge
+# loop: until 2026-11-17 the brief's own loop ran after every stream had finished,
+# to merge them and finish the work.
 #
 # Usage: [RUN_STREAMS_POLL=60] [RUN_STREAMS_JOB_WAIT=43200] [RUN_STREAMS_INTEGRATION_EVERY=3600] \
 #          llm-dlc/tools/run-streams.sh [--plan] NAME|FILE.md
@@ -12,17 +14,19 @@
 #   A person starts a run with /run-brief, whose watcher starts this script (llm-dlc/tools/brief_run.py) after the
 #   run's foundation stage, and answers what it asks; by hand it runs as before. The briefs older than the
 #   setting are still known by name:
-#   engines      llm-dlc/loops/engine-priorities.md: the streams jbmc and native, then the merge
+#   engines      llm-dlc/loops/engine-priorities.md: the streams jbmc and native
 #   foundations  llm-dlc/loops/foundations.md: the streams heap, summaries, observations and
-#                alignment, with an integration check while they run, then the merge
+#                alignment, with an integration check while they run
 #   cleanup      llm-dlc/loops/cleanup.md: the streams native, jbmc and examples, with an
-#                integration check and the verification loop, then the merge
+#                integration check and the verification loop
 #   application-core  llm-dlc/loops/application-core.md: the streams objects, values,
 #                environment and reuse, with an integration check and the
-#                verification loop, then the merge
+#                verification loop
 #   example-targets  llm-dlc/loops/example-targets.md: the streams runtime, negative,
 #                positive and workflow, with an integration check and the
-#                verification loop, then the merge and Phase 5
+#                verification loop
+#   (Each of these ran with the merge loop, which is gone: a brief's own work after its streams is now a brief of
+#   its own, run after them.)
 #
 # From the default workspace, in order:
 #  1. Before any stream has a session, it compacts the conversation that planned
@@ -40,9 +44,13 @@
 #     workspace, side by side, and looks after each until it is finished.
 #     If the brief's Loop settings name "- integration: SCRIPT", it also runs
 #     the integration check while they do (below).
-#  5. It runs the brief's own loop, feature-loop.sh NAME, here: the merge (see
-#     the brief's Streams section), then whatever is left. It starts in a fresh
-#     session of its own.
+#  5. With a watcher, it puts each stream to it to merge the moment the stream is
+#     finished, while the others still run (conductor.py's `merge` question): the
+#     watcher merges the stream's @- into this workspace's line
+#     (brief_run.py merge, which also answers). Without one, nothing is merged,
+#     and the end of the run names the command that merges each stream.
+#     A brief with no streams instead runs its own loop, feature-loop.sh NAME,
+#     here, in a fresh session of its own.
 #  6. It stops the verification loop after its run under way, and exits.
 #
 # A stream brief's "- fork:" is optional: without one in any of them, each stream starts a session of its own,
@@ -51,14 +59,18 @@
 # With a watcher (RUN_STREAMS_WATCHER, the run's directory: brief_run.py sets it), a loop that ends blocked is put
 # to it before it counts as finished (conductor.py's `blocked` question): `rerun` runs the loop again, for a
 # stream whose inbox now holds the answer it was blocked on, and `leave`, or no answer within
-# RUN_STREAMS_BLOCKED_WAIT seconds (1800), leaves it for the merge to list, as without a watcher. So a decision
+# RUN_STREAMS_BLOCKED_WAIT seconds (1800), leaves it finished with its blocked status, as without a watcher. So a decision
 # made during the run reaches its stream during the run, not after it. A loop is run again this way
 # RUN_STREAMS_RERUNS times (2) in one run of this script: the next time it ends blocked it is left without asking,
 # as the brief template's timebox leaves an item that failed twice.
 #
+# A finished stream, blocked or done, is put to the watcher to merge (`merge`, answered `merged` or `leave`):
+# a blocked one's commits are worth having too, and the watcher judges whether they stand alone. No answer within
+# RUN_STREAMS_MERGE_WAIT seconds (1800) leaves it unmerged.
+#
 # A run is stopped at a boundary by the file stop-after in its state directory (brief_run.py stop writes it, and
 # tells each loop to end after its cycle under way): a loop that ends is then not run again, one waiting on jobs
-# stops waiting, the merge is not started, and the script exits 3. Nothing is interrupted and nothing uncommitted
+# stops waiting, no stream is put to the watcher to merge, and the script exits 3. Nothing is interrupted and nothing uncommitted
 # is left; running the script again continues, and removes the file.
 #
 # Each brief ends its "## Progress" with a status line its loop keeps current:
@@ -73,11 +85,10 @@
 # working, is run once more to finish what it left; twice in a row, it counts as
 # blocked. (Until 2026-11-08 a decision to stop counted as done whatever the
 # status said, and three application-core streams that were waiting on jobs or
-# blocked went to the merge as finished.) A blocked stream doesn't hold the merge
-# up: the merge takes what it committed and lists what needs the user.
+# blocked went to the merge as finished.) A blocked stream holds no other up.
 #
 # Every line comes here, prefixed with its loop ([jbmc], [native], [verify],
-# [merge]). Ctrl-C stops them all, each recording the interruption. Running this
+# [brief] for a brief without streams). Ctrl-C stops them all, each recording the interruption. Running this
 # again continues: workspaces and sessions are kept, nothing is compacted again,
 # a loop whose status is done or blocked is not run again (set its status back
 # to working to run it), and each loop finishes what an interrupted cycle left.
@@ -137,8 +148,8 @@
 # the rest of the state in llm-dlc/loop-summaries/run-streams-NAME/, so it
 # survives a restart. llm-dlc/tools/streams_status.py reads and renders it.
 #
-# Exits 0 when the brief's own loop is finished, 1 if it is blocked or the setup
-# fails, 2 for a bad argument, 3 when stopped at a boundary and 130 if interrupted.
+# Exits 0 when the brief says done at the end (for a brief of streams, brief_run.py merge sets it once every
+# stream is merged and done), 1 if it does not or the setup fails, 2 for a bad argument, 3 when stopped at a boundary and 130 if interrupted.
 
 set -uo pipefail
 
@@ -154,9 +165,10 @@ POLL=${RUN_STREAMS_POLL:-60}
 JOB_WAIT=${RUN_STREAMS_JOB_WAIT:-43200}
 INTEGRATION_EVERY=${RUN_STREAMS_INTEGRATION_EVERY:-3600}
 BLOCKED_WAIT=${RUN_STREAMS_BLOCKED_WAIT:-1800}
+MERGE_WAIT=${RUN_STREAMS_MERGE_WAIT:-1800}
 RERUNS=${RUN_STREAMS_RERUNS:-2}
 [[ "$RERUNS" =~ ^[0-9]+$ ]] || usage
-[[ "$POLL" =~ ^[1-9][0-9]*$ && "$JOB_WAIT" =~ ^[0-9]+$ && "$INTEGRATION_EVERY" =~ ^[0-9]+$ && "$BLOCKED_WAIT" =~ ^[0-9]+$ ]] || usage
+[[ "$POLL" =~ ^[1-9][0-9]*$ && "$JOB_WAIT" =~ ^[0-9]+$ && "$INTEGRATION_EVERY" =~ ^[0-9]+$ && "$BLOCKED_WAIT" =~ ^[0-9]+$ && "$MERGE_WAIT" =~ ^[0-9]+$ ]] || usage
 
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd) || exit 1
 cd "$ROOT" || exit 1
@@ -198,8 +210,8 @@ if (( ${#STREAMS[@]} == 0 )); then
   esac
 fi
 for s in "${STREAMS[@]}"; do
-  [[ "$s" =~ ^[a-z0-9][a-z0-9-]*$ && "$s" != merge && "$s" != integration ]] || {
-    echo "run-streams.sh: $BRIEF names a stream '$s': a stream's name is lower-case letters, digits and hyphens, and not merge or integration" >&2
+  [[ "$s" =~ ^[a-z0-9][a-z0-9-]*$ && "$s" != brief && "$s" != integration ]] || {
+    echo "run-streams.sh: $BRIEF names a stream '$s': a stream's name is lower-case letters, digits and hyphens, and not brief or integration" >&2
     exit 2
   }
 done
@@ -336,8 +348,8 @@ for s in "${STREAMS[@]}"; do
 done
 
 # A stream's run records are its own workspace's (feature-loop.sh writes them where it runs), and
-# only this workspace publishes them (sync.py): they are copied here at the start, after each of the
-# stream's runs, and before the merge, whose commit publishes them. LABEL names the loop in the log.
+# only this workspace publishes them (sync.py): they are copied here at the start and after each of the
+# stream's runs, so the stream's merge publishes them. LABEL names the loop in the log.
 collect_records() {
   local dir=$1 label=$2 line
   [[ "$dir" == "$ROOT" ]] && return 0
@@ -458,7 +470,7 @@ supervise() {
     case "$status" in
       blocked*)
         if [[ -n "${RUN_STREAMS_WATCHER:-}" ]] && (( reruns >= RERUNS )); then
-          log "[$label] blocked again after $reruns rerun(s): left for the merge, the watcher is not asked again"
+          log "[$label] blocked again after $reruns rerun(s): left blocked, the watcher is not asked again"
           exit 3
         fi
         rerun_blocked "$label" "$status" "$4" || exit 3
@@ -491,6 +503,45 @@ supervise() {
     fi
     log "[$label] running it again once, to finish what it left"
   done
+}
+
+# Whether a stream's line is in this workspace's: its @- is an ancestor of ours.
+merged_in() {
+  [[ -n "$(jj log --ignore-working-copy --no-graph -r "${WS[$1]}@- & ::@-" -T change_id 2>/dev/null)" ]]
+}
+
+# With a watcher, a finished stream is put to it at once, to merge into this workspace's line (see the header):
+# LABEL and its status. Without a watcher, or while the run stops, nothing is asked.
+offer_merge() {
+  local label=$1 status=$2 asked
+  [[ -n "${RUN_STREAMS_WATCHER:-}" ]] || return 0
+  stopping && return 0
+  if merged_in "$label"; then phase "$label" "finished: $status; merged"; return 0; fi
+  phase "$label" "finished: $status; put to the watcher to merge"
+  log "[$label] asking the watcher to merge workspace ${WS[$label]} into this line, for ${MERGE_WAIT}s at most"
+  asked=$(python3 "$ROOT/llm-dlc/tools/conductor.py" ask "$RUN_STREAMS_WATCHER" merge --answers merged,leave \
+    --wait "$MERGE_WAIT" "loop=$label" "workspace=${WS[$label]}" "brief=${BRIEF%.md}-$label.md" "status=$status" 2>/dev/null)
+  log "[$label] the watcher: ${asked:-none}"
+  if merged_in "$label"; then
+    phase "$label" "finished: $status; merged"
+  else
+    log "[$label] not merged: \`python3 llm-dlc/tools/brief_run.py merge $NAME $label\` merges it"
+    phase "$label" "finished: $status; not merged"
+  fi
+}
+
+# One stream, from its first cycle to its merge: its loop until it is finished (supervise), then the merge.
+# Exits as supervise does.
+stream() {
+  local label=$1 code status
+  ( supervise "$@" )
+  code=$?
+  (( code == 0 || code == 3 )) || exit "$code"
+  status=$(status_of "$2/$4")
+  log "[$label] finished: $status"
+  phase "$label" "finished: $status"
+  offer_merge "$label" "$status"
+  exit "$code"
 }
 
 # The integration check (see the header), when the brief names a script for it.
@@ -581,10 +632,10 @@ else
   VERIFY=$!
 fi
 
-# The status line: each stream, then the merge, from the state above.
+# The status line: each stream, or the brief's own loop, from the state above.
 STATUS_LOOPS=()
 for s in "${STREAMS[@]}"; do STATUS_LOOPS+=("$s=${DIR[$s]}=${BRIEF%.md}-$s.md"); done
-STATUS_LOOPS+=("merge=$ROOT=$BRIEF")
+(( ${#STREAMS[@]} )) || STATUS_LOOPS+=("brief=$ROOT=$BRIEF")
 status_line() {
   python3 "$ROOT/llm-dlc/tools/streams_status.py" render --name "$NAME" --state "$STATE" --start "$START" \
     ${INTEGRATION:+--integration "$INTEGRATION_REPORT"} "${STATUS_LOOPS[@]}" 2>/dev/null
@@ -612,9 +663,11 @@ for s in "${STREAMS[@]}"; do
   if finished "$status"; then
     log "[$s] its brief says $status: not run again"
     phase "$s" "finished: $status"
+    offer_merge "$s" "$status" &  # from an earlier run of this script, perhaps not merged yet
+    PID[$s]=$!
     continue
   fi
-  supervise "$s" "${DIR[$s]}" "$NAME-$s" "$brief" &
+  stream "$s" "${DIR[$s]}" "$NAME-$s" "$brief" &
   PID[$s]=$!
 done
 status_bar &
@@ -629,9 +682,6 @@ for s in "${!PID[@]}"; do
   wait "${PID[$s]}"
   code=$?
   (( code == 130 )) && { log "[$s] interrupted"; stop_all; wait; exit 130; }
-  (( code == 4 )) && continue
-  log "[$s] finished: $(status_of "${DIR[$s]}/${BRIEF%.md}-$s.md")"
-  phase "$s" "finished: $(status_of "${DIR[$s]}/${BRIEF%.md}-$s.md")"
 done
 PID=()
 if [[ -n "$INTEGRATE" ]]; then
@@ -644,19 +694,24 @@ fi
 for s in "${STREAMS[@]}"; do collect_records "${DIR[$s]}" "$s"; done
 code=0
 status=$(status_of "$ROOT/$BRIEF")
-if stopping; then
+if (( ${#STREAMS[@]} )); then
+  merged=() unmerged=()
+  for s in "${STREAMS[@]}"; do if merged_in "$s"; then merged+=("$s"); else unmerged+=("$s"); fi; done
+  log "every stream is finished: merged ${merged[*]:-none}; not merged ${unmerged[*]:-none}"
+  for s in "${unmerged[@]}"; do log "[$s] not merged: \`python3 llm-dlc/tools/brief_run.py merge $NAME $s\` merges it"; done
+elif stopping; then
   log "stopped at a boundary: the brief's own loop is not started"
 elif finished "$status"; then
-  log "[merge] its brief says $status: not run again"
-  phase merge "finished: $status"
+  log "[brief] its brief says $status: not run again"
+  phase brief "finished: $status"
 else
-  if (( ${#STREAMS[@]} )); then log "every stream is finished: the brief's own loop merges them"; else log "the brief names no streams: its own loop is the run"; fi
-  supervise merge "$ROOT" "$NAME" "$BRIEF" &
-  PID[merge]=$!
-  wait "${PID[merge]}"
+  log "the brief names no streams: its own loop is the run"
+  supervise brief "$ROOT" "$NAME" "$BRIEF" &
+  PID[brief]=$!
+  wait "${PID[brief]}"
   code=$?
   PID=()
-  (( code == 4 )) || phase merge "finished: $(status_of "$ROOT/$BRIEF")"
+  (( code == 4 )) || phase brief "finished: $(status_of "$ROOT/$BRIEF")"
 fi
 if [[ -n "$VERIFY" ]]; then
   log "stopping the verification loop after its run under way"
@@ -678,8 +733,12 @@ status=$(status_of "$ROOT/$BRIEF")
 log "finished: the brief $BRIEF says ${status:-no status}"
 # Every loop's session, so the one to resume or read is on screen. The
 # integration check is a script, with no session of its own.
-log "sessions: planning ${PARENT:-none}, merge ${FEATURE_LOOP_SESSION:-$(setting "$ROOT/$BRIEF" session)}"
-for s in "${STREAMS[@]}"; do log "sessions: $s ${SESSION[$s]}"; done
+if (( ${#STREAMS[@]} )); then
+  log "sessions: planning ${PARENT:-none}"
+  for s in "${STREAMS[@]}"; do log "sessions: $s ${SESSION[$s]}"; done
+else
+  log "sessions: the brief's own loop ${FEATURE_LOOP_SESSION:-$(setting "$ROOT/$BRIEF" session)}"
+fi
 log "what needs you: its Progress, verification/findings.md and the run records in llm-dlc/loop-summaries/"
 [[ "$status" == done* ]] && exit 0
 exit 1

@@ -36,6 +36,27 @@ class ConductorTest(unittest.TestCase):
         self.assertEqual([self.ask()["n"], self.ask()["n"]], [1, 2])
         self.assertEqual([e["n"] for e in conductor.read_events(self.dir)], [1, 2])
 
+    def test_events_added_at_once_each_get_a_number_of_their_own(self):
+        # two streams of a brief's run that finish together each ask the watcher to merge them
+        import threading
+        read, start = conductor.read_events, threading.Barrier(8)
+
+        def slow(directory):  # the gap between counting the events and writing one, made wide
+            events = read(directory)
+            time.sleep(0.02)
+            return events
+
+        def add():
+            start.wait()
+            self.ask()
+        threads = [threading.Thread(target=add) for _ in range(8)]
+        with mock.patch.object(conductor, "read_events", slow):
+            for t in threads:
+                t.start()
+            for t in threads:
+                t.join()
+        self.assertEqual(sorted(e["n"] for e in conductor.read_events(self.dir)), list(range(1, 9)))
+
     def test_wait_returns_the_event_that_needs_a_verdict_with_how_to_answer_it(self):
         self.ask(tokens=600000)
         status, out, _ = call("wait", self.dir, "--timeout", 0)

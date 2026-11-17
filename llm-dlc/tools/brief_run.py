@@ -19,13 +19,20 @@ intervals. This is what it runs. BRIEF is a brief's name or file, as run-streams
         until the session ends: run it as a background task. A second call continues the same session.
     brief_run.py land BRIEF
         bring the foundation's commits to the default workspace's line, where the streams start from: moved
-        forward when the line has not moved, else a merge with the generated trace files regenerated. A merge
-        that conflicts in real work is taken back and reported.
+        forward when the line has not moved, else a merge with the generated trace files regenerated, and the
+        session logs it names (sync.py adopt-logs). A merge that conflicts in real work is taken back and reported.
     brief_run.py start BRIEF
         start run-streams.sh for the brief, detached, with this run's directory as its watcher.
+    brief_run.py merge BRIEF STREAM
+        merge a finished stream's line (its workspace's @-) into the default workspace's, as `land` does, the
+        moment the stream is finished, while the others still run: there is no merge loop. Then it takes the
+        stream's session logs (sync.py adopt-logs) and its inbox acknowledgements, answers run-streams.sh's
+        `merge` question for it (`merged`), and records the merge in the brief's Progress, whose status it sets
+        to `done` once every stream is merged and says done, and commits that. Run again after a merge made by
+        hand, it records that merge. A merge that conflicts in real work is taken back and reported.
     brief_run.py wait BRIEF [--interval SECONDS] [--timeout SECONDS]
         block until something needs the watcher, and print it as JSON: a `question` (a loop ended blocked: rerun
-        or leave), `attention` (the integration check stopped passing, or a decision is open for the user),
+        or leave; a stream is finished: merge it), `attention` (the integration check stopped passing, or a decision is open for the user),
         `verification` (no verification loop ran while jobs waited: one was started), `summary` (every 30
         minutes, or `interval`), or `ended`. Exit 3 with nothing after the timeout: wait again.
     brief_run.py verification BRIEF start|stop|status|nudge
@@ -37,7 +44,7 @@ intervals. This is what it runs. BRIEF is a brief's name or file, as run-streams
         where the run stands, as data.
     brief_run.py stop BRIEF [--now]
         stop the run at a boundary: every loop ends after its cycle under way, a loop waiting on jobs stops
-        waiting, and the merge is not started, so nothing is cut off and nothing uncommitted is left. `start`
+        waiting, and no stream is put to the watcher to merge, so nothing is cut off and nothing uncommitted is left. `start`
         continues the run. --now interrupts it instead, mid-cycle: each loop records the interruption.
 
 The run's directory is llm-dlc/loop-summaries/run-streams-NAME/, which run-streams.sh keeps its own state in;
@@ -50,6 +57,8 @@ Standard library only.
 from __future__ import annotations
 
 import argparse
+import contextlib
+import io
 import json
 import os
 import re
@@ -440,8 +449,22 @@ def is_ancestor(where: Path, a: str, b: str) -> bool:
 GENERATED = ("llm-dlc/", "README.md")  # what sync.py regenerate writes
 
 
-def land(run: Run, workspace: str) -> dict:
-    """Bring WORKSPACE's line to the default workspace's (see the header)."""
+def adopt_logs(root: Path) -> None:
+    """Take the session logs the line now names and this workspace lacks, from the workspace storing them
+    (sync.py adopt-logs): else every later check here reports each as an error."""
+    sync = root / "llm-dlc" / "tools" / "sync.py"
+    if sync.exists():
+        subprocess.run([sys.executable, str(sync), "adopt-logs"], cwd=root, capture_output=True, text=True, stdin=subprocess.DEVNULL)
+
+
+def land(run: Run, workspace: str, message: tuple[str, str] | None = None) -> dict:
+    """Bring WORKSPACE's line to the default workspace's (see the header), and the session logs it names."""
+    out = _land(run, workspace, message)
+    adopt_logs(run.root)
+    return out
+
+
+def _land(run: Run, workspace: str, message: tuple[str, str] | None) -> dict:
     root = run.root
     dirty = jj(root, "diff", "-r", "@", "--name-only").stdout.split()  # also snapshots the working copy
     theirs, ours = commit_id(root, f"{workspace}@-"), commit_id(root, "@-")
@@ -471,12 +494,13 @@ def land(run: Run, workspace: str) -> dict:
         jj(root, "new", ours)
         jj(root, "abandon", merge)
         raise Problem(f"the merge conflicts in {', '.join(files[:8])}: taken back. Resolve it by hand as llm-dlc/runtime.md's "
-                      f"merge of a queued workspace shows (a merge of @- and {workspace}@-), or have the foundation's session "
-                      f"rebuild on the line as it is now")
-    r = subprocess.run([sys.executable, str(sync), "commit", "-m", f"Merge the foundation of the {run.name} run into the line",
-                        "-m", f"The foundation stage of the brief {run.brief} ran in the workspace {workspace} while this line "
-                              f"moved on, so its commits come in by a merge. Nothing but the generated trace files met; they "
-                              f"were regenerated from the session files."],
+                      f"merge of a queued workspace shows (a merge of @- and {workspace}@-), or have the session that "
+                      f"wrote it rebuild on the line as it is now")
+    message = message or (f"Merge the foundation of the {run.name} run into the line",
+                          f"The foundation stage of the brief {run.brief} ran in the workspace {workspace} while this line "
+                          f"moved on, so its commits come in by a merge. Nothing but the generated trace files met; they "
+                          f"were regenerated from the session files.")
+    r = subprocess.run([sys.executable, str(sync), "commit", "-m", message[0], "-m", message[1]],
                        cwd=root, capture_output=True, text=True, stdin=subprocess.DEVNULL)
     if r.returncode != 0:
         raise Problem(f"the merge is made but its commit reported: {(r.stderr or r.stdout).strip()[-600:]}")
@@ -532,6 +556,128 @@ def cmd_land(run: Run) -> int:
     return 0
 
 
+# -- merging a finished stream
+
+def stream_of(run: Run, label: str) -> dict:
+    for s in preflight(run)["streams"]:
+        if s["label"] == label:
+            if not s.get("exists"):
+                raise Problem(f"the stream {label} has no workspace yet ({s['workspace']}): nothing to merge")
+            return s
+    raise Problem(f"{run.brief} names no stream {label}: its streams are "
+                  f"{', '.join(s['label'] for s in run.plan['streams']) or 'none'}")
+
+
+def merged_in(root: Path, workspace: str) -> bool:
+    return is_ancestor(root, commit_id(root, f"{workspace}@-"), commit_id(root, "@-"))
+
+
+STATUS_LINE = re.compile(r"^[-*] +Status: *(.*)$")
+
+
+def record_merge(text: str, line: str, status: str) -> str:
+    """The brief with LINE added to its Progress, before its last `- Status:` line, which becomes STATUS (one is
+    added at the section's end when there is none)."""
+    lines, start = text.split("\n"), None
+    for i, raw in enumerate(lines):
+        if raw.startswith("## "):
+            if start is not None:
+                end = i
+                break
+            if re.match(r"^## +Progress\s*$", raw):
+                start = i
+    else:
+        end = len(lines)
+    if start is None:
+        raise Problem("the brief has no ## Progress section to record the merge in")
+    at = next((i for i in range(end - 1, start, -1) if STATUS_LINE.match(lines[i])), None)
+    if at is None:
+        at = end
+        while at - 1 > start and not lines[at - 1].strip():
+            at -= 1
+        lines[at:at] = [f"- Status: {status}"]
+    else:
+        lines[at] = f"- Status: {status}"
+    lines[at:at] = [line]
+    return "\n".join(lines)
+
+
+def brief_status_after(run: Run, check: dict) -> str:
+    """The brief's status once a stream is merged: done when every stream is merged and says done, blocked
+    with what each blocked one says when every stream is merged, else working."""
+    rows = []
+    for s in check["streams"]:
+        folder = Path(s["folder"])
+        merged = s.get("exists") and merged_in(run.root, s["workspace"])
+        rows.append((s["label"], merged, streams_status.brief_status(folder / s["brief"]) if s.get("exists") else None))
+    if not all(m for _, m, _ in rows):
+        return "working"
+    blocked = [f"stream {label}: {status}" for label, _, status in rows if not (status or "").startswith("done")]
+    return "done" if not blocked else "blocked: " + "; ".join(blocked)
+
+
+def commit_own_record(run: Run) -> None:
+    """Commit the watcher's own answers (conductor.py decide writes them to the run's decision record and commits
+    nothing), so they don't count as another session's uncommitted files that a merge must wait for."""
+    own = [f"llm-dlc/decisions/{run.dir.name}.jsonl", f"llm-dlc/decisions/{run.dir.name}.md"]
+    dirty = jj(run.root, "diff", "-r", "@", "--name-only").stdout.split()
+    mine = [f for f in dirty if f in own]
+    if not mine:
+        return
+    r = subprocess.run([sys.executable, str(run.root / "llm-dlc" / "tools" / "sync.py"), "commit", "--only", *mine,
+                        "-m", f"Record the watcher's answers in the {run.name} run",
+                        "-m", f"The decisions the watcher of the brief {run.brief} took while it ran, committed before it "
+                              f"merges a stream."],
+                       cwd=run.root, capture_output=True, text=True, stdin=subprocess.DEVNULL)
+    if r.returncode != 0:
+        raise Problem(f"could not commit the run's decision record first: {(r.stderr or r.stdout).strip()[-600:]}")
+
+
+def cmd_merge(run: Run, label: str) -> int:
+    s = stream_of(run, label)
+    workspace, root = s["workspace"], run.root
+    head = jj(root, "log", "--no-graph", "-r", f"{workspace}@-", "-T", "change_id.short(12)", snapshot=False).stdout.strip()
+    status = streams_status.brief_status(Path(s["folder"]) / s["brief"]) or "no status"
+    commit_own_record(run)
+    out = land(run, workspace, (f"Merge stream {label} of the {run.name} run into the line",
+                                f"The stream {label} of the brief {run.brief} is finished ({status}), and the run's watcher "
+                                f"merges each stream the moment it is, while the others still run. Its workspace "
+                                f"{workspace} branched from this line, which moved on, so its commits come in by a merge. "
+                                f"Nothing but the generated trace files met; they were regenerated from the session files."))
+    try:
+        out["acknowledged"] = inbox.collect(Path(s["brief"]).stem, root / inbox.FOLDER, root)
+    except inbox.InboxError as e:
+        out["acknowledged"] = f"not read: {e}"
+    event = next((e for e in reversed(conductor.read_events(run.dir)) if e.get("type") == "merge" and e.get("loop") == label
+                  and e.get("needsVerdict") and conductor.read_verdict(run.dir, e["n"]) is None), None)
+    if event is not None:
+        said = io.StringIO()
+        with contextlib.redirect_stdout(said):
+            conductor.cmd_decide(run.dir, event["n"], "merged",
+                                 f"The stream {label} is finished ({status}), and its line ({head}) is merged into the "
+                                 f"default line: {out['landed']}.")
+        out["answered"] = " ".join(said.getvalue().split())
+    brief = root / run.brief
+    text = brief.read_text()
+    if f"merged stream {label} ({head})" not in text:
+        new_status = brief_status_after(run, preflight(run))
+        brief.write_text(record_merge(text, f"- {conductor.now()[:10]}, the watcher: merged stream {label} ({head}), which "
+                                            f"says {status}.", new_status))
+        sync = root / "llm-dlc" / "tools" / "sync.py"
+        paths = [run.brief] + (["llm-dlc/decisions"] if (root / "llm-dlc" / "decisions").is_dir() else [])
+        r = subprocess.run([sys.executable, str(sync), "commit", "--only", *paths,
+                            "-m", f"Record the merge of stream {label} in the {run.name} brief's Progress",
+                            "-m", f"The run's watcher merged stream {label} ({head}) into the default line; the brief's "
+                                  f"status is now {new_status}."],
+                           cwd=root, capture_output=True, text=True, stdin=subprocess.DEVNULL)
+        if r.returncode != 0:
+            raise Problem(f"the stream is merged, but recording it reported: {(r.stderr or r.stdout).strip()[-600:]}")
+        out["briefStatus"] = new_status
+    out["commit"] = watch.head_change(root)
+    print(json.dumps(out, indent=1))
+    return 0
+
+
 # -- the run
 
 def cmd_start(run: Run) -> int:
@@ -561,7 +707,7 @@ def loops(run: Run, check: dict | None = None) -> list[tuple[str, Path, str]]:
     """Each loop of the run as run-streams.sh labels it: (label, the workspace it runs in, its brief there)."""
     check = check or preflight(run)
     out = [(s["label"], Path(s["folder"]) if s.get("exists") else run.root, s["brief"]) for s in check["streams"]]
-    return out + [("merge", run.root, run.brief)]
+    return out or [("brief", run.root, run.brief)]  # a brief without streams is its own loop: there is no merge loop
 
 
 KINDS_OF_TIME = ("working", "waiting on jobs", "blocked", "finished, others still running")
@@ -582,7 +728,7 @@ def times(run: Run, label: str, since: float, until: float, last_stream_end: flo
     for (at, phase), (end, _) in zip(marks, marks[1:] + [(until, "")]):
         kind = ("working" if phase == "running" else "waiting on jobs" if phase.startswith("waiting") else
                 "blocked" if phase.startswith(("blocked", "finished: blocked")) else
-                "finished, others still running" if phase.startswith("finished") and label != "merge" else None)
+                "finished, others still running" if phase.startswith("finished") and label != "brief" else None)
         if kind == "finished, others still running":
             end = min(end, last_stream_end if last_stream_end is not None else until)
         if kind and end > at:
@@ -620,7 +766,8 @@ def state(run: Run) -> dict:
         rows.append({"loop": label, "time": times(run, label, started or 0, until, streams_end) if started else None, "status": streams_status.brief_status(folder / brief) or None, "phase": phase or "not started",
                      "cycle": streams_status.read(run.dir / f"{label}.cycle") or None,
                      "commits": streams_status.commits(folder, brief), "spent": round(streams_status.spend(run.dir, label), 2),
-                     "head": watch.head_change(folder) if folder.exists() else None})
+                     "head": watch.head_change(folder) if folder.exists() else None,
+                     **({"merged": merged_in(run.root, ws)} if (ws := workspace_of(check, label)) else {})})
     result = re.search(r"^- Result: (.+)$", streams_status.read(run.report), re.M)
     record = open_decisions(run)
     queue = watch.jobs(run.root)
@@ -632,6 +779,11 @@ def state(run: Run) -> dict:
             "integration": result[1] if result else None,
             "openDecisions": record,
             "jobs": {k: queue.get(k) or [] for k in ("pending", "running", "finished")}, "blocking": check["blocking"]}
+
+
+def workspace_of(check: dict, label: str) -> str | None:
+    """A stream's workspace, once it has one."""
+    return next((s["workspace"] for s in check["streams"] if s["label"] == label and s.get("exists")), None)
 
 
 def open_decisions(run: Run) -> list[str]:
@@ -660,6 +812,7 @@ def summary(run: Run, s: dict) -> str:
         moved = r["commits"] - was.get("commits", 0)
         lines.append(f"- **{r['loop']}**: {r['status'] or r['phase']}"
                      + (f" ({r['phase']})" if r["phase"] not in ("running", "not started") and not r["phase"].startswith("finished") else "")
+                     + ("; merged" if r.get("merged") else "")
                      + f"; cycle {r['cycle'] or '-'}, {r['commits']} commits" + (f" (+{moved})" if was and moved else "")
                      + f", ${r['spent']:.2f}" + (f"; at {r['head']}" if r["head"] and (not was or was.get("head") != r["head"]) else ""))
         spans = [f"{watch.span(v)} {k}" for k, v in (r.get("time") or {}).items() if v >= 60]
@@ -700,6 +853,10 @@ def next_thing(run: Run, interval: float) -> dict | None:
         return True
 
     event = conductor.pending(run.dir)
+    if event is not None and event.get("type") == "merge":
+        return {"kind": "question", "event": {**event, "secondsLeft": int(event["deadline"] - time.time())},
+                "merge": f"python3 llm-dlc/tools/brief_run.py merge {run.name} {event.get('loop')}",
+                "leave": f"python3 llm-dlc/tools/conductor.py decide {run.dir.relative_to(run.root)} {event['n']} leave --reason TEXT"}
     if event is not None and event.get("type") != "ended":
         return {"kind": "question", "event": {**event, "secondsLeft": int(event["deadline"] - time.time())},
                 "inbox": f"python3 llm-dlc/tools/inbox.py list {Path(event.get('brief', run.brief)).stem} --open",
@@ -764,14 +921,14 @@ def cmd_stop(run: Run, now: bool) -> int:
         os.killpg(int(pid), signal.SIGINT)  # run-streams.sh passes it on to every loop, which records it
         print(f"interrupted the run (pid {pid}): each loop records it, and `brief_run.py start {run.name}` continues")
         return 0
-    (run.dir / "stop-after").write_text(conductor.now() + "\n")  # run-streams.sh: run no loop again, start no merge
+    (run.dir / "stop-after").write_text(conductor.now() + "\n")  # run-streams.sh: run no loop again, ask no merge
     told = []
     for loop in sorted((run.dir / "loops").glob("*")) if (run.dir / "loops").is_dir() else []:
         if streams_status.read(run.dir / f"{loop.name}.phase") == "running":
             conductor.cmd_command(loop, "stop")  # feature-loop.sh: end after the cycle under way
             told.append(loop.name)
     print(f"the run stops at a boundary: {', '.join(told) or 'no loop'} told to end after the cycle under way, nothing "
-          f"is run again and the merge is not started. `wait` returns `ended` when it has; `brief_run.py start "
+          f"is run again and no stream is put to you to merge. `wait` returns `ended` when it has; `brief_run.py start "
           f"{run.name}` continues, and `stop --now` interrupts instead")
     return 0
 
@@ -781,6 +938,9 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
     sub = ap.add_subparsers(dest="command", required=True)
     for name in ("preflight", "land", "start", "status"):
         sub.add_parser(name).add_argument("brief")
+    m = sub.add_parser("merge")
+    m.add_argument("brief")
+    m.add_argument("stream")
     x = sub.add_parser("stop")
     x.add_argument("brief")
     x.add_argument("--now", action="store_true", help="interrupt mid-cycle instead of stopping at a boundary")
@@ -817,6 +977,8 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
             return cmd_land(run)
         if args.command == "start":
             return cmd_start(run)
+        if args.command == "merge":
+            return cmd_merge(run, args.stream)
         if args.command == "wait":
             return cmd_wait(run, args.interval, args.timeout)
         if args.command == "verification":

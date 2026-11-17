@@ -210,6 +210,10 @@ Otherwise it waits for the final merge. An early merge happens in the conductor'
 It never touches the running streams, and tells them nothing unless the merge changes what they have to do. Each early
 merge is itself a logged decision (cheap or costly by the test above).
 
+**Superseded on 2026-11-17, at the user's word:** there is no final merge any more. The watcher of `/run-brief`
+merges every stream the moment it is finished (`brief_run.py merge`, answering `run-streams.sh`'s `merge`
+question), and the brief's own loop no longer runs after the streams ([`llm-dlc/README.md`](../README.md#a-briefs-run)).
+
 ### 6. Upkeep the user does today
 
 - Restart a stream that stopped `working` after a clean stop (the application-core bug), instead of counting it done.

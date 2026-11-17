@@ -72,7 +72,8 @@ that setting is gone, and a brief that still says it runs as above.)
 ### How a brief is run
 
 A person starts a brief with `/run-brief NAME` (`.claude/skills/run-brief`): a watcher session runs the
-preflight, the foundation stage, the streams and the merge, and answers what they ask
+preflight, the foundation stage and the streams, merges each stream the moment it is finished, and answers what
+they ask
 ([`llm-dlc/README.md`](../README.md#a-briefs-run)). So a brief needs no planning session to fork from, and no
 entry in any script: its streams are the `- streams:` line of its Loop settings.
 
@@ -81,6 +82,10 @@ entry in any script: its streams are the `- streams:` line of its Loop settings.
   tool), and updates the plan to say so. Write the brief so that this is easy to see: name under "The plan" what
   two or more streams depend on, and what each stream owns. The stage may edit the brief and the streams'
   briefs, since no loop is running yet.
+- **There is no merge loop.** All of a brief's work is in its streams: the watcher merges each into the default
+  line as it finishes, and records the merges in the main brief's Progress. Work that can only start once every
+  stream is in (a reconciliation, docs over all of it) is a brief of its own, run afterwards. Say in each stream
+  brief which files it owns, so the merges meet only in the generated files.
 - **A stream that stops `blocked:`** is put to the watcher, who can settle what blocked it, tell the stream
   through its inbox, and have it run again during the run. Say in the status what it is blocked on and who can
   settle it, so the watcher need not guess.

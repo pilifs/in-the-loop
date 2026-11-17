@@ -36,10 +36,13 @@ comes before its deadline, so a conductor that has gone away never stops the wor
     example     the loop is between two items: `continue` (the default), or `stop` here. It waits longer while
                 DIR/merge-queue names a workspace the conductor is to merge first.
 
-run-streams.sh asks a fourth of the watcher of a brief's run (RUN_STREAMS_WATCHER, llm-dlc/tools/brief_run.py):
+run-streams.sh asks two more of the watcher of a brief's run (RUN_STREAMS_WATCHER, llm-dlc/tools/brief_run.py):
 
     blocked     a stream's loop, or the brief's own, ended with a `blocked:` status: `rerun` it, once what blocked
-                it is settled and its inbox says so, or `leave` it (the default) for the merge to list.
+                it is settled and its inbox says so, or `leave` it (the default) blocked.
+    merge       a stream is finished, done or left blocked: the watcher merges its workspace's line into the default
+                workspace's at once, while the other streams run (`brief_run.py merge`, which answers `merged`),
+                or answers `leave` (the default), and the stream stays unmerged.
 
 A verdict given in time is also a decision, and goes into the decision record beside the verdict's own file:
 llm-dlc/decisions/NAME.jsonl (decisions.py), NAME the run directory's name (in a runtime checkout `local-NAME`, so a
@@ -72,6 +75,7 @@ Standard library only.
 from __future__ import annotations
 
 import argparse
+import fcntl
 import json
 import os
 import re
@@ -85,7 +89,7 @@ REPO = Path(__file__).resolve().parents[2]
 EVENTS = "events.jsonl"
 COMMANDS = "commands"
 MERGE_QUEUE = "merge-queue"
-VERDICTS = ("continue", "stop", "finished", "waiting", "rerun", "leave")
+VERDICTS = ("continue", "stop", "finished", "waiting", "rerun", "leave", "merged")
 DEFAULT_ANSWERS = ("continue", "stop")  # an event that names none: a compaction
 JOB_ID = re.compile(r"\d{8}-\d{6}-[a-z0-9-]+")
 
@@ -112,11 +116,14 @@ def read_events(directory: Path) -> list[dict]:
 
 def append_event(directory: Path, **event) -> dict:
     """Add an event, numbered after the last, in one write (O_APPEND: the loop's reader and the loop itself both
-    write here). Returns it."""
+    write here), under a lock: two streams of a brief's run that finish at once each ask, and without it both
+    took the number 1 and each other's verdict. Returns it."""
     directory.mkdir(parents=True, exist_ok=True)
-    event = {"n": len(read_events(directory)) + 1, "time": now(), **event}
-    with open(directory / EVENTS, "a") as f:
-        f.write(json.dumps(event) + "\n")
+    with open(directory / f"{EVENTS}.lock", "a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        event = {"n": len(read_events(directory)) + 1, "time": now(), **event}
+        with open(directory / EVENTS, "a") as f:
+            f.write(json.dumps(event) + "\n")
     return event
 
 
@@ -190,8 +197,14 @@ QUESTIONS = {
     "blocked": ("A loop of a brief's run ended blocked: is it run again?", {
         "rerun": ("run the loop again", "what blocked it was settled and its inbox says so: it goes on, at a further cycle's cost",
                   "answer leave when it next ends blocked"),
-        "leave": ("leave it blocked", "the run goes on without it, and the merge lists what it left for the user",
+        "leave": ("leave it blocked", "the run goes on without it; what it committed can still be merged, and its status says what it left for the user",
                   "set its status back to working and start the run again")}),
+    "merge": ("A stream of a brief's run is finished: is it merged into the default line now?", {
+        "merged": ("merge it into the default workspace's line now", "the line has the stream's commits while the other streams still run; "
+                   "a conflict was resolved, or the merge was taken back",
+                   "abandon the merge commit (jj abandon) before anything builds on it, or revert it after"),
+        "leave": ("leave it unmerged", "its commits stay on its workspace's line, and the run ends without them",
+                  "merge it later: brief_run.py merge BRIEF STREAM")}),
 }
 
 

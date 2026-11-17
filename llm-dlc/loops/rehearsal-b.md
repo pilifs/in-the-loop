@@ -24,7 +24,7 @@ You own `llm-dlc/loops/rehearsal-out/b.md` and this brief's Progress, and nothin
 
 ## Loop settings
 
-- session: 63ab3275-dd2b-44b5-901a-fec8eb1c3c72
+- session: 4e06dac2-1228-4071-bee1-11421c5efc50
 - model: claude-sonnet-5-5
 - effort: medium
 - workspace: rehearsal-b
