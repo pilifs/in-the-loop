@@ -438,7 +438,9 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   their second run, so its "passed" was no evidence either way. Not reproduced on purpose. Since change `kzwsnszx` a
   default-run step holds a lock for its whole run, so two runs at commits that have it no longer overlap. A job at a
   commit without the lock can still overlap (the run-brief line's job `20261117-020349` ran beside `015957` from
-  02:04, which had one cache test fail and pass on its retry).
+  02:04, which had one cache test fail and pass on its retry). Later on 2026-11-17 the user removed the default run
+  as a job altogether: it runs inline again, and `lib/tools/test_costs.py run` holds a lock in the workspace's cargo
+  target directory, so two inline runs in one workspace take turns.
 - **Why the passed job ran again**: the first pass was committed in the default workspace at 01:06:45 (change
   `slquqtpy`), and in the same second the watcher's `jj new lzvyqmsy` there moved the working copy off that commit
   before it had a child, so the runner found the result neither in its state folder nor in the working copy and

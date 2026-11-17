@@ -59,16 +59,16 @@ class GateTest(unittest.TestCase):
         import contextlib
         import io
         from unittest import mock
-        answer = mock.Mock(returncode=code, stdout="the default run passed for @-: JOB at abc\n", stderr="no passed default run covers @-\n")
-        with mock.patch.object(release.subprocess, "run", return_value=answer) as run, \
+        with mock.patch.object(release.subprocess, "run", return_value=mock.Mock(returncode=code)) as run, \
                 contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()) as err:
             return release.tests_gate(skipped), run, err.getvalue()
 
     def test_a_release_is_refused_without_a_passed_default_run_and_cut_with_one(self):
         refusal, run, _ = self.gate(1)
-        self.assertIn("no passed default run covers @-", refusal)
+        self.assertIn("no passed default test run covers @-", refusal)
         self.assertIn("required before a release", refusal)
-        self.assertEqual(run.call_args.args[0][-3:], ["gate", "--rev", "@-"], "the commit a release is cut on")
+        self.assertEqual(run.call_args.args[0][-4:], ["gate", "--rev", "@-", "--run"],
+                         "the commit a release is cut on, run inline when none is recorded")
         self.assertIsNone(self.gate(0)[0])
 
     def test_only_a_stated_reason_skips_the_gate_and_it_is_said(self):

@@ -264,20 +264,6 @@ class SetupTest(Made):
         self.assertEqual((told["kind"], told["command"]), ("setup-quiet", "Bash: Replay 290 on a JVM"))
         self.assertIsNone(watch.next_thing(self.run, 10**9), "told once")
 
-    def test_a_default_run_that_comes_in_is_told_once_with_what_it_failed_at(self):
-        (self.root / "verification/default_tests.py").write_text((REPO / "verification/default_tests.py").read_text())
-        d = self.root / "verification/results/20261116-230000-default-test-run-at-aaaa"
-        (d / "logs").mkdir(parents=True)
-        (d / "result.json").write_text(json.dumps({"status": "failed", "sourceCommit": "c1"}))
-        (d / "logs/1-default-tests.log").write_text("FAIL llm-dlc/tools/test_watch.py: Ran 40 tests\n"
-                                                    "default tests: failed: default tier: 47 of 48 passed\n")
-        self.run.update(lastSummary={"time": watch.now()})  # no summary due
-        told = watch.next_thing(self.run, 10**9)
-        self.assertEqual((told["kind"], told["run"]["verdict"], told["run"]["failed"]),
-                         ("default-tests", "failed", ["llm-dlc/tools/test_watch.py"]))
-        self.assertIn("test-findings.md", told["note"])
-        self.assertIsNone(watch.next_thing(self.run, 10**9), "told once")
-
     def test_add_gives_a_running_loop_more_examples_and_refuses_when_none_runs(self):
         self.assertEqual(self.call("add", "290")[0], 1)
         self.loop("288", "289")

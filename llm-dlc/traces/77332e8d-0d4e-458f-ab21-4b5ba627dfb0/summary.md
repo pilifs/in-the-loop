@@ -28,7 +28,7 @@ There are two claims and six tasks. The decision claim is 286's assertion and AS
 
 ### Record session traces
 
-change `qkzwyzzpwtlo` · [log `777e10cc789d`](https://terminalvalue.net/raw-traces/77332e8d-0d4e-458f-ab21-4b5ba627dfb0/777e10cc789d4a6a0002070a7621f8a3365c9dcd97cacfbd3998ae076f3145bc.jsonl.gz)
+[`d8cef37875e3`](https://github.com/pilifs/in-the-loop/commit/d8cef37875e322c0cde1174cec992a43c401d5dd) · [log `777e10cc789d`](https://terminalvalue.net/raw-traces/77332e8d-0d4e-458f-ab21-4b5ba627dfb0/777e10cc789d4a6a0002070a7621f8a3365c9dcd97cacfbd3998ae076f3145bc.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

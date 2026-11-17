@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""The checks a change to one example's own files needs, in place of the default test run before each commit of a
-/prove-java-change run (CLAUDE.md, Tests): the default run takes about 16 minutes and checks the whole repository,
-and comes once an example is done and before anything is published.
+"""The checks a change to one example's own files needs before a commit, in place of the default test run
+(CLAUDE.md, Tests): the default run takes several minutes and checks the whole repository, and runs inline once an
+example is done, after a merge and before anything is published.
 
     python3 examples/tools/validate_example.py NNN [NNN ...]            the checks below, for these examples
     python3 examples/tools/validate_example.py --replay NNN [NNN ...]   and their replays on a JVM, run again

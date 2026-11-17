@@ -70,7 +70,7 @@ Collected on vm-1: 288 fixed-security passed (verified), 288 vulnerable/mutant-s
 
 ### Record session traces
 
-change `qkzwyzzpwtlo` · [log `7c3b8dc3162d`](https://terminalvalue.net/raw-traces/a6490df0-ff44-40c1-b34e-d0de7394edeb/7c3b8dc3162d3493c00923d998cc100c6c3525f9faad0468f853b497a2d705de.jsonl.gz)
+[`d8cef37875e3`](https://github.com/pilifs/in-the-loop/commit/d8cef37875e322c0cde1174cec992a43c401d5dd) · [log `7c3b8dc3162d`](https://terminalvalue.net/raw-traces/a6490df0-ff44-40c1-b34e-d0de7394edeb/7c3b8dc3162d3493c00923d998cc100c6c3525f9faad0468f853b497a2d705de.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
 

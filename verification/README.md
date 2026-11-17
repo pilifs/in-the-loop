@@ -35,7 +35,6 @@ Tests: `python3 verification/test_pipeline.py` (about 30 s; the systemd tests ru
 | Path | What it is | Written by |
 |---|---|---|
 | [`README.md`](README.md) | this page: the lifecycle, [submitting a job](#for-agents-making-changes-submitting-a-job), [managing the pipeline](#for-the-agent-managing-the-pipeline), [reading results](#reading-results), [the runner's resources](#running-resources-isolation-configuration), [other backends](#backends-other-machines-and-the-cloud) | |
-| [`default_tests.py`](default_tests.py) | the default test run as a job: queue one, which run covers a commit, and the push's gate | |
 | [`pipeline.py`](pipeline.py) | every command: `submit`, `status`, `run`, `prioritize`, `collect`, `report`, `resubmit`, `validate`; [`test_pipeline.py`](test_pipeline.py) tests it | |
 | [`/run-verification`](../.claude/skills/run-verification/SKILL.md) | the procedure of the agent that manages the pipeline, as a skill; [`llm-dlc/tools/verification-loop.sh`](../llm-dlc/tools/verification-loop.sh) runs it unattended | |
 | [`schema/job.schema.json`](schema/job.schema.json) | the job format | |
@@ -63,8 +62,8 @@ result is collected here, in the runner's workspace, and reaches that branch whe
 Submit a job for anything that runs a prover or a model checker, or that takes more than a minute or more than 1 GB:
 `build.py` on a B9, B11 or D1 example, an app's `verify.sh`, `jvmcontract prove`, `equivalence` or `tlc`, the
 proof tier of the tests in `lib/` and the Python suites, a real-world example's proof. Keep doing inline what is quick
-and what you need in order to go on: compiling, the default test run (`python3 lib/tools/test_costs.py run`, the unit
-and tool tiers), `jvmcontract tla` (which only generates), a TLC run over a few hundred states while you write a model.
+and what you need in order to go on: compiling, the tests of what you changed and the default test run (`python3
+lib/tools/test_costs.py run`, the unit and tool tiers, which is not a job: see CLAUDE.md, Tests), `jvmcontract tla` (which only generates), a TLC run over a few hundred states while you write a model.
 A probe is the one exception to the limits above: a single run of a prover or model checker on one claim, to see where
 it stops or whether a change helps, may run inline for up to 5 minutes and 4 GB, one at a time, under a cap it cannot
 exceed (`systemd-run --user --scope -q -p MemoryMax=4G -p MemorySwapMax=0 timeout 300 COMMAND`). Real-world claims
@@ -76,8 +75,8 @@ The slow tests are the proof tier: the ignored Rust tests, tagged `cost:proof:`,
 `lib/README.md` gives the `submit` command for the whole tier; a job for one change runs only the proof tests whose
 inputs it touched. CLAUDE.md allows one exception inline: a single proof-tier test, once, when the change targets it
 directly and its row records a past run of it alone under a minute. The slow tests also include, until they move, the
-56 Rust tests marked `retier: pending` in the inventory: proof tier by what they call or took, but still in the default
-run until the next test-cost loop moves them behind proxies. They are a large part of what the default run costs.
+tests marked `retier: pending` in the inventory: proof tier by what they call or took, but still in the default run,
+by the user's decision of 2026-11-17. They are a large part of what the default run costs.
 While iterating, run the tests of what you changed, not them, unless the change targets one.
 
 A demo example, by id, fills in the step, the outputs, the requirements and the approach. The requirements are the
@@ -156,40 +155,16 @@ result says so. Measured here: examples 052 (B11) and 076 (D1) each peaked at ab
 | D1 example, up to about 100,000 states | 2 | 1G | 1m |
 | D1 example, about a million states, or liveness | 2 | 2G to 3G | 10m to 30m |
 | the proof tier, `test_costs.py run --tier proof` (see `lib/README.md`) | 4 | 8G | 1h30m |
-| the default test run, `default_tests.py queue` (below) | 6 | 4G | 12m |
 | one proof-tier test, by its row in `lib/tests/costs.json` | 1 | 2G | its recorded time: heap's up to about an hour |
 | a jvmcontract build, when `lib/` changed | counted by the runner, not by you | | |
 
 A job that asks for more memory than a runner allows (4 GB a job here) is deferred, not run: it waits for a bigger
 machine. Say so in the description if you know.
 
-**The default test run as a job.** `python3 verification/default_tests.py queue [--rev REV] [--why TEXT]` writes a job
-that runs `lib/tools/test_costs.py run` at commit REV (`@-` by default), at low priority and with its cargo target
-directory kept warm between runs. Commit the job file like any other, from any workspace. Nobody waits for it. A passed run is
-required before a release and before a push; one is worth queuing when an example is done and after a merge, and not
-for every commit. A run of `/prove-java-change` queues those, and its watcher triages the result.
-Of several waiting together only the newest runs; the others' step says `default tests: superseded by ID` and exits.
-A job started again after a newer one has finished is superseded too. Only one default run runs at a time: the runs
-share a warm cargo target directory and the tests' work folders under it, so a step holds a lock beside it
-(`~/.cache/in-the-loop/default-tests.lock`) and a second step waits, then asks the queue again.
-`default_tests.py last` says which run covers a commit (one at it, or at an ancestor that differs from it only in
-files no test reads), and `sync.py push` refuses without a passed one (`default_tests.py gate`).
-
-Which files no test reads is partly a fixed list (the traces, the decisions, job files and results) and partly
-what a passed run saw for itself. The job runs in a fresh export, so when it ends a file's access time says whether
-anything in the run opened it (a test, or a script or JVM a test started), and a folder's whether anything listed
-it. The step writes what was left untouched to `verification/default-tests-unread.txt`, one path a line under the job's
-id, as a declared output of the job: collecting a passed run applies it to the working copy, and the log says only how
-many paths (`default_tests.py unread JOB` lists them). The run then also covers
-a later commit that only modifies those files, or adds and removes files inside folders the run never listed. A
-file added to a folder a test walks is not covered, nor is a rename, nor anything under `lib/`, which always counts
-as read because cargo's warm build decides from dates without opening a source. A run on a filesystem that keeps no
-access times writes an empty list, and covers by the fixed list alone, as does a run whose list a newer run's has
-replaced.
-
-`default_tests.py flaky` counts, over the collected runs, the tests that failed and then passed on their second run
-(a Python test file, or a Rust test by name). One that appears in more than one run is no longer noise: fix it, or
-ask for it to be marked.
+**The default test run is not a job.** It runs inline, in the session that needs its answer (CLAUDE.md, Tests;
+[`lib/README.md`](../lib/README.md#tests)), and a passed run is recorded for the push's gate
+(`lib/tools/default_run.py`). From 2026-11-16 to 2026-11-17 it was queued here as a job nobody waited for; the jobs
+and results of that time stay as records.
 
 ## For the agent managing the pipeline
 

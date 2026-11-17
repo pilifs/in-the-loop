@@ -948,7 +948,7 @@ def _second_run(label, argv, env, cwd, line, output, failed, flaky):
 
 
 def run_tier(tier, path=INVENTORY, root=ROOT, only=None, tests=(), test_threads=None, dry_run=False,
-             serial=False, retry=True, changed=None, rust_jobs=1, python_jobs=1):
+             serial=False, retry=True, changed=None, rust_jobs=1, python_jobs=1, tally=None):
     """Run TIER's commands: cargo's, and one line per Python file (its output in full when it fails). `cargo test`
     runs beside the Python files unless SERIAL (its output, kept in a file meanwhile, is printed when it ends), which
     takes the wall time from Rust's plus Python's to the longer of the two. With RETRY, what fails is run once more,
@@ -1079,8 +1079,11 @@ def run_tier(tier, path=INVENTORY, root=ROOT, only=None, tests=(), test_threads=
                 print(f"cargo test: {', '.join(names)} failed again on a second run", flush=True)
         if code:
             failed.insert(0, "cargo test")
-    print(f"{tier} tier: {len(runs) - len(failed)} of {len(runs)} passed"
-          + (f"; failed: {', '.join(failed)}" if failed else "") + (f"; flaky: {', '.join(flaky)}" if flaky else ""))
+    line = (f"{tier} tier: {len(runs) - len(failed)} of {len(runs)} passed"
+            + (f"; failed: {', '.join(failed)}" if failed else "") + (f"; flaky: {', '.join(flaky)}" if flaky else ""))
+    print(line)
+    if tally is not None:  # the caller's list, given the summary line
+        tally.append(line)
     return 1 if failed else 0
 
 
@@ -1279,8 +1282,21 @@ def main(argv=None):
         return 0
     if a.command == "run":
         changed = changed_paths(ROOT, a.since) if a.changed or a.since else None
-        return run_tier(a.tier, a.path, ROOT, a.only, a.test, a.test_threads, a.dry_run, a.serial, not a.no_retry, changed,
-                        a.rust_jobs, a.python_jobs)
+        if a.dry_run:
+            return run_tier(a.tier, a.path, ROOT, a.only, a.test, a.test_threads, True, a.serial, not a.no_retry,
+                            changed, a.rust_jobs, a.python_jobs)
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import default_run  # the lock, one run at a time, and the record a push's gate reads
+        held = default_run.lock(ROOT)
+        # The whole default run, as it is run before a push, is recorded when it passes; a part of it is not.
+        whole = a.tier == "default" and changed is None and not a.only and not a.test and Path(a.path) == INVENTORY
+        started = default_run.Started(ROOT) if whole else None
+        code = run_tier(a.tier, a.path, ROOT, a.only, a.test, a.test_threads, False, a.serial, not a.no_retry, changed,
+                        a.rust_jobs, a.python_jobs, tally=(tally := []))
+        if started and code == 0:
+            started.passed(tally[-1] if tally else "passed")
+        held.close()
+        return code
     if a.command == "lint":
         problems = lint(a.path, ROOT, a.only)
         for line in problems:

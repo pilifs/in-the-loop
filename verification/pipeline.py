@@ -1077,8 +1077,8 @@ class Runner:
         env.update({"VERIFY_JOB_ID": job["id"], "VERIFY_CPUS": f"{result['limits']['cpus']:g}",
                     "VERIFY_MEMORY_LIMIT_MB": str(limit_mb), "VERIFY_WORKDIR": str(work),
                     "VERIFY_SOURCE_COMMIT": result["sourceCommit"],
-                    # The repository the runner works for, outside the export: a step that asks the queue (a
-                    # default test run that a newer one makes moot, verification/default_tests.py) reads it there.
+                    # The repository the runner works for, outside the export: a step that asks the queue reads
+                    # it there.
                     "VERIFY_RUNNER_ROOT": str(ROOT)})
         # The export is a plain tree inside this repository's own (under .state/work): git run in a job must not take
         # this repository for the job's. Inside it, `git apply` takes a git-format patch's paths from its top level

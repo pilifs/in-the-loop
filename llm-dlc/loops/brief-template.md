@@ -18,9 +18,10 @@ Put these under the brief's `## How to work through it`, adjusted to its own wor
 - **One step per cycle**, committed on its own with `sync.py commit`.
 - **Check each claim against the code first**, including the brief's own and its inputs'.
 - **Proofs, model checks and benchmark runs are queued, never run inline** (CLAUDE.md, Verification jobs and Tests).
-  Compiling and the default test run, the unit and tool tiers (`python3 lib/tools/test_costs.py run`), run inline:
-  the tests of what changed while iterating, the whole default run once before committing. The proof tier runs as a
-  job, for the tests whose inputs the change touched, with CLAUDE.md's one narrow inline exception. A new test is the
+  Compiling and the tests run inline: the tests of what changed while iterating and before each commit
+  (`python3 lib/tools/test_costs.py run --changed`), and the whole default run (`python3 lib/tools/test_costs.py
+  run`, the unit and tool tiers) when a piece of work is done and after a merge (see Tests below). The proof tier
+  runs as a job, for the tests whose inputs the change touched, with CLAUDE.md's one narrow inline exception. A new test is the
   cheapest that shows the behaviour, and a new proof-tier test has a tag, a reason and a proxy.
 - **Recorded results are evidence, not inputs to edit.** A new measurement is a new job.
 - **Nothing gets weaker**: no verdict, check or test is relaxed to make a step pass.
@@ -58,18 +59,15 @@ Say in the brief which of the two modes it runs in:
   time (15 minutes after submitting, polling `pipeline.py status`); every other job is listed under Progress for review
   after the run. The timebox counts the failures the loop sees: quick jobs that came back, and inline checks.
 
-### Test policy
+### Tests
 
-Say in the brief which of the two it runs under:
-- **Inline** (the default): the standing rule above, the whole default run before every commit.
-- **Queued** (`- tests: queued` in Loop settings): as a `/prove-java-change` run does since 2026-11-17 (CLAUDE.md,
-  Tests). A cycle runs the tests of what it changed before its commit (`python3 lib/tools/test_costs.py run --changed`),
-  and once a piece of work is done it queues the default run as a job nobody waits for
-  (`python3 verification/default_tests.py queue --why "WHY"`, committed with its next commit), then takes the next
-  piece. Of the default runs waiting together only the newest runs. A run that comes back failed is the first thing
-  its owner takes up, before new work, and what was built on the failed commit is not accepted until the repair's
-  run passes. Bookkeeping commits (Progress, a status line, a result recorded) queue nothing. A push requires a
-  passed run covering its commit whatever the policy (`default_tests.py gate`).
+Every loop works by CLAUDE.md's Tests section, inline: a cycle runs the tests of what it changed before its commit
+(`python3 lib/tools/test_costs.py run --changed`), and the whole default run (`python3 lib/tools/test_costs.py run`)
+once a piece of work is done and after a merge. A default run that fails is the first thing its owner takes up,
+before new work. Bookkeeping commits (Progress, a status line, a result recorded) run no tests. A push requires a
+passed default run covering its commit, and runs one itself when none is recorded (`lib/tools/default_run.py`).
+(From 2026-11-16 to 2026-11-17 a brief could say `- tests: queued` to queue its default runs as verification jobs;
+that setting is gone, and a brief that still says it runs as above.)
 
 ### How a brief is run
 
@@ -145,7 +143,6 @@ Settled by the user on DATE, numbered.
 - workspace: NAME (streams only)
 - fork: SESSION (streams only, optional: a planning session every stream starts as a fork of; without it each
   stream starts a session of its own, from its brief and what the foundation stage left)
-- tests: queued (optional: see Test policy)
 - integration: SCRIPT (optional, main brief of streams: the check the rolling integration line runs on each merge)
 - verification: separate (optional: see Verification mode)
 - new-window: no (optional, main brief of streams: run-streams.sh stays in its tmux pane instead of moving to a new

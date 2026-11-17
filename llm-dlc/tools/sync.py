@@ -52,8 +52,9 @@ Commands:
   sync.py push [JJ PUSH ARGS]   record outstanding traces in a last commit, upload, check, then `jj git push`,
                                 moving any --bookmark to it, once the revision to push is shown to hold
                                 exactly the checked files and uploaded logs; leaves @ empty (alias: jj trace-push).
-                                It first requires a passed default test run covering @- (verification/
-                                default_tests.py gate); --skip-tests REASON is the user's word to push without
+                                It first requires a passed default test run covering @- (lib/tools/
+                                default_run.py gate --run: one is run inline when none is recorded);
+                                --skip-tests REASON is the user's word to push without
   sync.py check [--remote] [--full]
                                 verify hashes, trailers and redaction (--remote: re-download uploads);
                                 a log already scanned under these rules is not scanned again, --full
@@ -3329,22 +3330,21 @@ def without_skip_tests(args: list[str]) -> tuple[list[str], str | None]:
 
 
 def tests_gate(skipped: str | None) -> bool:
-    """The default test run runs as a job nobody waits for (verification/default_tests.py), so a push is where it is
-    required: a passed run at the commit pushed, or at an ancestor that differs from it only in files no test reads.
-    Any merge or change after the last run may have broken what the suite is there to catch."""
-    tool = REPO / "verification/default_tests.py"
+    """A push needs a passed default test run covering the commit it pushes (lib/tools/default_run.py): a run of the
+    same tree, or of one that differs from it only in files no test reads. When none is recorded, the gate runs it
+    here, inline, and the push goes on once it passes. Any merge or change after the last run may have broken what
+    the suite is there to catch."""
+    tool = REPO / "lib/tools/default_run.py"
     if not tool.exists():
         return True
     if skipped is not None:
         print(f"pushing without a passed default test run, as asked: {skipped}", file=sys.stderr)
         return True
-    r = subprocess.run([sys.executable, str(tool), "gate", "--rev", "@-"], cwd=REPO, capture_output=True, text=True)
-    sys.stderr.write(r.stderr)
-    if r.returncode:
+    # Not captured: when the gate runs the default run, its output is what a failure is read from.
+    if subprocess.run([sys.executable, str(tool), "gate", "--rev", "@-", "--run"], cwd=REPO).returncode:
         print("not pushing: the default test run is required before a push (CLAUDE.md, Tests). "
               "`--skip-tests REASON` is for the user alone.", file=sys.stderr)
         return False
-    print(r.stdout.strip())
     return True
 
 

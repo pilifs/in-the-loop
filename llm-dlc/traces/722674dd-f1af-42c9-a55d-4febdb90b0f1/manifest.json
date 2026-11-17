@@ -63,7 +63,7 @@
     {
       "change_id": "pvnkwqntllpqkqnooxpqrmvqtsxqvrml",
       "commit_id": "468f614517638b586727b7f3b30566fe3836ebe1",
-      "immutable": false,
+      "immutable": true,
       "summary": "Example 288 repaired: each proof task records its adapter invocation, the preservation claim states agreement only, and the oracle's canonical form is Spring's",
       "body": "The repair's brief (llm-dlc/runtime.md) for example 288 (CVE-2024-38820), as stage 2's plan for this /prove-java-change run asked. watch.py preflight listed 288 in toClassify, since none of its four proof tasks recorded how it is invoked. Each now records it as adapter (target.json, invocation). The route plans every task, but it enters DataBinder#isAllowed(String), and the claims' expressions name the adapter's parameters, so they can't compile there. LocaleDecisionAdapter#allowed was compiled against each revision's pinned closure and ran on the 31 decide probes on 6.1.13, 6.1.14 and the mutant, on JDK 21 and 25. There is no proof script of the example's own yet; the proof loop writes one, as example 286's proofs/prove.py does.\n\nclaims/permitted-fields-preserved.json: the plan's 'misstates' remark said the statement also claimed which answer the releases give, which the task's equivalence does not show. The statement is replaced word for word by the remark's, which states agreement between the releases only, and the remark's note on the expected answers is added to the claim's notes. Nothing else in the claim changed.\n\ncontrols/oracle.py's canonical() was a regular expression needing two quote characters. Where Spring's PropertyAccessorUtils.canonicalPropertyName turns ['] and [\"] into ], it left them unchanged. It is now a transcription of Spring's loop. It agrees with the method on a JVM (6.1.13 and 6.1.14, JDK 21 and 25) for 3928 Strings: null, every String of at most 5 characters over [ ] ' \" a, and every String of the probes. The regex disagreed on 146 of them. The self-test now checks 13 of those shapes and the new probes. Two guarded probes were added (patterns ['] and [\"], field ], root locale), and both replays ran again over the 38 probes. As the plan expected, both releases and the mutant deny ], the 14 triggers and the mutant's 8 are unchanged, and the comparison is preserved. The setup's receipts, whose controls changed, are replaced by the new ones. The page's probe counts follow.",
       "log_sha256": "8b0cbb12fb991e56755cb8137c4e6df5210a60d4ce49d5df8db105cefb0ab5f0"
@@ -71,7 +71,7 @@
     {
       "change_id": "lwvsvznoxkrykovywzxokxynssprzsml",
       "commit_id": "fc9c54fcedd875cb41ed5a4f0790b2cf5f3c9d7c",
-      "immutable": false,
+      "immutable": true,
       "summary": "validate_example.py regenerates the router after the replays, not before",
       "body": "The repair of example 288 found that validate_example.py --replay regenerated examples/index.json first and then ran the replays, whose new receipts left the index stale for the tests that read it. The router step now comes after every step that can write receipts and before the tests. Verified: validate_example.py 288 passes.",
       "log_sha256": "503c8de630511427d19ba1f744bc7fb7a6b6b6fc2b53a2917d96ae583f352b00"

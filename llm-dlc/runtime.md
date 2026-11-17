@@ -499,7 +499,6 @@ right what the check names, in the examples it names, and nothing else:
 | A proof that has come in | Tells the user. The loop takes the example up again by itself when it next changes example |
 | The loop's end | Reports (the skill's last step), and stops the verification loop once the queue is clear |
 | A setup that has ended (`"kind": "setup"`) | Checks it (`preflight --after-setup`); for one in a workspace, queues its merge and, once it is merged, `watch.py add NNN` |
-| A default test run that has come in (`"kind": "default-tests"`) | Triages a failure, since nobody waited on the run: a small, mechanical one (an inventory row, a lint, a stale index or count) it fixes in the side workspace, merged at the next change of example; one in the area the loop works on it writes to `test-findings.md` in the run's state, which the loop's session may read; anything else goes to the user. A pass needs nothing |
 | A setup gone quiet (`"kind": "setup-quiet"`) | A setup with one command running past ten minutes, or nothing written for twenty: looks at its stream before acting, since a build or a replay often takes long |
 | A verification loop it started (`"kind": "verification"`) | Tells the user: none was running while jobs waited, and `wait` has started one. Nothing else to do |
 
@@ -526,9 +525,9 @@ runs from a private copy of its scripts, so a merge can't pull them from under i
   watcher merges each queued workspace into the loop's line, in the loop's checkout: a merge commit of the line's
   tip and the workspace's (`jj new @- NAME@-`), its conflicts resolved, `python3 llm-dlc/tools/sync.py regenerate`
   in a development checkout (which also takes the merged sessions' logs from the workspace that stores them), what came in checked (`examples/tools/validate_example.py NNN` for the examples it
-  brings, the tests of the shared code it brings), the merge committed, the default run queued at it as a job
-  (`verification/default_tests.py queue --rev @- --why "the merge of NAME"`, committed in the side workspace, so
-  nothing waits on it), then `watch.py merge done NAME`. Leave nothing of a merge uncommitted while the
+  brings, the tests of the shared code it brings), the merge committed, the default run run at it inline
+  (`python3 lib/tools/test_costs.py run`, a few minutes; a failure is fixed before the loop goes on, or reported to
+  the user), then `watch.py merge done NAME`. Leave nothing of a merge uncommitted while the
   verification loop runs in the same working copy: its next commit takes whatever is there. A merge
   that does not come out clean is undone (`jj abandon`), left queued, and reported to the user.
 - The user asks to stop after the example under way at any time: `watch.py stop-after example` (`cycle` ends it
@@ -606,11 +605,9 @@ there leaves the run unmeasured). It works the same in both modes, and the watch
   change, and a cycle commits often. A commit is checked by what it changed: `examples/tools/validate_example.py NNN`
   for an example's own files, and the tests of any shared code it touched (`lib/tools/test_costs.py run --changed`).
   The default run is required before a release and before a push, and worth having when an example is done and after
-  a merge between examples: there it is queued as a job nobody waits for
-  ([`verification/default_tests.py`](../verification/default_tests.py) `queue`). It runs in a clean export of that
-  commit, one at a time, and of several waiting together only the newest runs. The watcher triages what it finds, and
-  a push requires a passed one covering the commit it pushes
-  ([`CLAUDE.md`](../CLAUDE.md#tests)).
+  a merge between examples: there it runs inline (`python3 lib/tools/test_costs.py run`), never as a job, and a
+  failure is taken up before new work. A passed whole run is recorded, and a push requires a record covering the
+  commit it pushes, running the default run itself when there is none ([`CLAUDE.md`](../CLAUDE.md#tests)).
 - **The jobs.** The proof queues its long runs as [verification jobs](../verification/README.md), as everything here
   does. The watcher's verification loop runs them; started by hand, `prove-loop.sh` starts one itself unless one
   already runs for this repository.
@@ -704,9 +701,9 @@ python3 llm-dlc/tools/release.py verify
   `llm-dlc/index.json`, `llm-dlc/README.md`), listed in the pin. It is of content only, so the trace lines added to a
   commit's message later don't move it.
 - **A release needs a passed default test run** covering the commit it is cut on: `cut` asks
-  `verification/default_tests.py gate` first, as a push does, and refuses without one (`--skip-tests REASON` is for
-  the user alone). The release commit changes only the version files and the pin, which no test reads, so the same
-  run covers its push.
+  `lib/tools/default_run.py gate --run` first, as a push does, which runs the default run inline when no passed run
+  is recorded for that tree, and refuses if it fails (`--skip-tests REASON` is for the user alone). The release
+  commit changes the version files and the pin, so its push asks the gate again.
 - **Cutting** writes the version into the plugin and the marketplace, then the pin from `@`'s tree, commits with
   `sync.py commit`, and verifies the commit. It refuses while `@` holds other uncommitted work. It can be run at any
   commit, as often as wanted: a version is only a name for a digest.
