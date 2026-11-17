@@ -548,8 +548,80 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
 - New on the other lines since the last cycle, not yet challenged: evidence's `wxpoysws` (its fix for I010, the step
   check) and state's `uxomquou` (the binding of `mmnoqopr` taken whole).
 - Inbox: no open items.
+- The tie failure went to preservation as `domain-advances-preservation-I010`, citing `qnlomnmx`.
+- 2026-11-17, item 5, evidence's `mmnoqopr` (its fix for I008) and `vqquvmnm` (its fix for I011): **both hold, and six
+  false proofs past the binding**, to be handed over.
+  - Built apart at `qxstltmq` and `vqquvmnm`, with the sources touched. `observed_countermodels.rs` passes at both, so
+    I008's five cases are refused or stated. At `vqquvmnm` the I011 test passes too.
+  - The new holes are settings the binding does not see.
+  - The fixture is `lib/tests/fixtures/setting-countermodels`. Its README has the table, the commands, what was tried,
+    the options and the checker-side test. `lib/tests/setting_countermodels.rs` holds each case to a JVM, under the
+    setting and under another.
+  - Each is **Verified** at `vqquvmnm` with the class observed under its setting. The result says "it read no system
+    property" and nothing of the setting:
+    - `mapped`: `Optional.of(k).map(System::getProperty)`. A lambda's frame is hidden, so the recorder takes
+      `java.util.Optional` for the reader and counts the read as the JDK's own.
+    - `kept`: the value `Properties.putIfAbsent` returns where the property is set. It is not overridden, and nothing
+      changes. `clearProperty`'s return value was Verified at `qxstltmq`; `vqquvmnm` refuses it as a changed setting.
+    - `looked`: `getenv` through a method handle looked up by name. The module documents this limit, but the result
+      does not state it.
+    - three settings the JDK takes at startup: `availableProcessors()` (`counted`), the working directory through
+      `File.getAbsolutePath` (`rooted`), and the default charset through `getBytes()` (`encoded`).
+  - The README's checker-side test fails on all six at `vqquvmnm`, as it should. The binding is evidence's, and state's
+    `uxomquou` takes it whole, so nothing in `lib/src` changes here. The test goes as a `failure` item to
+    `domain-advances-evidence`, citing this commit; the id goes in the next entry.
+  - *Audit*: 290's five observed classes, read with `javap -c -p` from the hash-checked JARs:
+    - none of their initializers calls any of these methods;
+    - `UrlPathHelper`'s logger setup reaches JUL's configuration through JDK frames, but the observation does not hold
+      the logger (`{"u": ...}`), and a read of it is refused.
+    Not affected, and nothing for the watcher.
+- Inbox: `domain-advances-challenge-I003` (cycle 17 OOM-killed, VF-037).
+  - The uncapped run this cycle started again was stopped by its own process group.
+  - The changed tests ran under `MemoryMax=8G` with `--rust-jobs 1` and passed: 48 test binaries, exit 0.
+  - After `cleared` became `kept`, the new test and `test_costs.py lint` were run again under the cap and pass.
+  - Its next step, preservation's call-level rule, is taken next. Preservation's `kskmpmny` looks like it: "closed
+    against calls back through the JDK", merged with this stream's tie countermodels.
+- The settings failure went to evidence as `domain-advances-evidence-I014`, citing `plqpmmop`.
+- 2026-11-17, item 5, preservation's `kskmpmny`, its fix for I010 (the reach closed against calls back through the JDK,
+  and the initializers of the application classes the code uses): **the fix holds, and six false proofs past it**, to
+  be handed over.
+  - Built apart at `kskmpmny` (sources touched): `tie_countermodels.rs` passes, its checker-side test included.
+  - The fixture is `lib/tests/fixtures/reach-countermodels`. Its README has the table, the commands, what was tried, the
+    options and the checker-side test. `lib/tests/reach_countermodels.rs` holds it to a JVM: each version alone gives 2
+    (0 for `hidden`) against 1.
+  - Five targets are each **"identical in both versions; nothing to prove"** under the defaults. This holds at
+    `kskmpmny` and on this line alike, since the shortcut is older than the run:
+    - `removed`: an override the previous version declared and the new one removed. Only the new version's reach is
+      walked, and the previous version is looked up by the new one's declaring class;
+    - `hidden`: a field the previous version declared that hides an inherited one. Fields are not compared;
+    - `constant`: an interface's static read through a class that implements it. javac names that class, the JVM
+      initializes the interface, and `initialized` takes superclasses only;
+    - `defaulted`: making an object initializes a superinterface that declares a default method;
+    - `Own#f`: the target's own class's initializer.
+  - `looped` (`constant`'s read in a loop past the bound) is **Verified** under the ties at `kskmpmny`, non-vacuous. On
+    this line, which has no ties, it gets no verdict.
+  - The README's checker-side test fails on all six at `kskmpmny`, as it should. `shared.rs` is preservation's this
+    run, so nothing in `lib/src` changes here. The test goes as a `failure` item to `domain-advances-preservation`,
+    citing this commit; the id goes in the next entry.
+  - Read, not run: the JDK side of the fix (charsets by name, inherited JDK code, concatenation). No countermodel was
+    found there; a sealed static call from walked JDK code (`Class.forName`) counts as inert, but no inherited method
+    was found that makes one with a name the application chooses.
+  - *Audit*: the shortcut needs no `--before-classpath`, which 288 to 290 all pass. 289's rerun on `kskmpmny` unwinds
+    fully. 287's `BCrypt`, read in both pinned releases (hashes checked), implements no interface and uses only its own
+    fields. Nothing for the watcher.
+- Inbox: `domain-advances-challenge-I004` (attack the call-level rule with the 307 specialist's callee
+  countermodels): taken on, but waiting. Preservation's call-level rule is not committed yet: its working copy holds
+  it uncommitted, and its last commit is `kskmpmny`, which this entry challenges. Once it lands, I will run
+  `callee-countermodels`' `check.py` rows against it, built apart, and then look past them.
+- **To the watcher**: `sync.py check` here reports 19 `has no manifest` errors, up from 15. `kskmpmny` stamped session
+  f28025bc on four more of my commits (`qnlomnmx`, `uqrzluvx`, `klqnuoxw`, `xnqlyxnw`). The cause is the one recorded
+  above (`link_commits`). I have not touched the trace lines.
+- Not yet challenged: preservation's `lqkwokqq` (I006, I009) and its call-level rule once committed (I003, I004);
+  evidence's `wxpoysws`; state's `twtuqvvr`, `qlylowvo` (a stand-in sampled on a JVM), `krxzxzow`/`lwxvoqsy` and
+  `zlvqxmst`.
 - Next:
-  - item 5: evidence's `mmnoqopr` and `wxpoysws`, state's `twtuqvvr`;
+  - item 5: preservation's call-level rule as soon as it is committed (I003, I004); until then, state's `qlylowvo`
+    stand-ins and `twtuqvvr`, and evidence's `wxpoysws`;
   - item 5: `nzsypymy` (290's preservation restated, also item 6);
   - item 6's entries for 288's `fixed-security` and 289's other answers.
 - Status: working

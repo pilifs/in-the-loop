@@ -1,0 +1,268 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261117-185613-example-287-preservation-at-the-frozen-b",
+  "title": "Example 287 preservation at the frozen bound 80 again, on a checker whose ties take only code that cannot call back through the JDK",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 7m53s, peak 2.3 GiB (estimated 30m00s, 8.0 GiB); 4 output file(s) changed; signals: jvmcontract:fails×2",
+  "attention": [
+    "step 1 (287 preservation at the frozen bound, 80, on the closed reach) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261117-185613-example-287-preservation-at-the-frozen-b.json",
+    "sha256": "51f1b34a27e7c7d59817c78b8f6fbd01a754fb5e6aae0970430461817caa3abb",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261117-185613-example-287-preservation-at-the-frozen-b",
+      "title": "Example 287 preservation at the frozen bound 80 again, on a checker whose ties take only code that cannot call back through the JDK",
+      "description": "The preservation stream's step 5 (llm-dlc/loops/domain-advances-preservation.md), after job 20261117-180758-example-287-preservation-at-the-frozen-b. That job ran 424 s and 1187 paths, then stopped: no invariant for the previous release's BCrypt.key loop at pc 39, 'an iteration changes local 1, which holds a reference' (local 1 is the key array). Capped probes reach about 540 paths in 280 s, so they cannot get there. Since that job: (1) inbox item I010: shared.rs's reach, which both the identical-bytecode shortcut and the checker's ties rest on, now leaves the code open where a call into the JDK may come back into the application (an interface or overridable JDK method, an argument whose methods the JDK may call, a charset by name), and takes in the initializers of the application classes the code uses. bcrypt's loop methods call only array clone and IllegalArgumentException(String), so their ties stand: a capped probe takes over 208 summaries as before. (2) That refusal now says what the reference held at the loop's head and back at it, so a stop at the same place names the objects. Expected: verified. Otherwise the stop, with the objects named, is step 5's next finding (outcome.json search.native, the driver's last lines).",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "B9",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "287"
+        ],
+        "paths": [
+          "lib/src/shared.rs",
+          "lib/src/bmc/loops.rs",
+          "lib/src/bmc/ties.rs"
+        ]
+      },
+      "expected": "prove.py ends 'verdict: verified (expected verified)' and exits 0; outcome.json has verdict verified and stated.vacuity.outside, and evidence.json is written",
+      "submitted": {
+        "at": "2026-11-17T18:56:13+00:00",
+        "session": "f28025bc-e46b-4a87-a943-bfb79dea5465"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "8G",
+        "duration": "30m",
+        "timeout": "4h",
+        "notes": "job 20261117-180758 ran 7 min (424 s of proof, peak 2.3 GiB) to its stop at 1187 paths; a run past it may take hours; plus the release build and the fetch of the four pinned JARs"
+      },
+      "steps": [
+        {
+          "name": "287 preservation at the frozen bound, 80, on the closed reach",
+          "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py preservation --timeout 12600 --work verification/.work-287/preservation-closed-reach",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/.work-287/preservation-closed-reach/preservation/outcome.json",
+        "verification/.work-287/preservation-closed-reach/preservation/evidence.json",
+        "verification/.work-287/preservation-closed-reach/preservation/stderr.txt",
+        "verification/.work-287/preservation-closed-reach/preservation/work/pair/RegressionPair.java"
+      ]
+    }
+  },
+  "sourceCommit": "10b5d9c0cf0673897d39814acaa6931a66d8bb8f",
+  "startedAt": "2026-11-17T19:13:44+00:00",
+  "finishedAt": "2026-11-17T19:24:27+00:00",
+  "wallSeconds": 643.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1320911,
+    "workers": 10,
+    "cpus": 20.0,
+    "memoryBudgetBytes": 47244640256,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 12884901888,
+    "timeoutSeconds": 14400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 8589934592,
+    "durationSeconds": 1800.0,
+    "notes": "job 20261117-180758 ran 7 min (424 s of proof, peak 2.3 GiB) to its stop at 1187 paths; a run past it may take hours; plus the release build and the fetch of the four pinned JARs"
+  },
+  "usage": {
+    "peakMemoryBytes": 2475433984,
+    "wallSeconds": 473.6,
+    "cpuSeconds": 474.3,
+    "memoryOfEstimate": 0.29,
+    "durationOfEstimate": 0.26
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 168.38,
+      "cpuSeconds": 168.666,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1980809216,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "1460b7a48e97473799b91ea7b6551c35bd5acf399015a6a3ed0d7b0b1195f356",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261117-185613-example-287-preservation-at-the-frozen-b/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 48s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "287 preservation at the frozen bound, 80, on the closed reach",
+      "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py preservation --timeout 12600 --work verification/.work-287/preservation-closed-reach",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 473.583,
+      "cpuSeconds": 474.301,
+      "cpuThrottledSeconds": 0.094,
+      "peakMemoryBytes": 2475433984,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-287-preservation-at-the-frozen.log",
+        "lines": 5,
+        "bytes": 1714,
+        "sha256": "1773ed1e5b1dd6548f4cd6d7858af4f563208bb21d455244a012c69b1aef90c6",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 2
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 2,
+          "text": "✗ example287.adapter.PasswordMatchAdapter#matches cannot be verified as a property of the pair of versions (below)",
+          "groups": [
+            "example287.adapter.PasswordMatchAdapter#matches cannot be verified as a property of the pair of versions (below)"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 3,
+          "text": "✗ RegressionPair#agree cannot be verified: a loop was not fully unwound with --unwind 16 (before.org.springframework.security.crypto.bcrypt.BCrypt.key at pc 39; no invariant was found that covers its further iterations: an iteration changes local 1, which holds a reference (at the head one of [B 115",
+          "groups": [
+            "RegressionPair#agree cannot be verified: a loop was not fully unwound with --unwind 16 (before.org.springframework.security.crypto.bcrypt.BCrypt.key at pc 39; no invariant was found that covers its further iterations: an iteration changes local 1, which holds a reference (at the head one of [B 115, [B 1972 by a condition; back at it one of [B 115, [B 1972 by a condition))"
+          ]
+        }
+      ],
+      "tail": [
+        "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-287/preservation-closed-reach/preservation/work/pair/RegressionPair.java) calls the previous version's example287.adapter.PasswordMatchAdapter#matches, relocated under `before`, and then the new one's on th",
+        "✗ example287.adapter.PasswordMatchAdapter#matches cannot be verified as a property of the pair of versions (below)",
+        "✗ RegressionPair#agree cannot be verified: a loop was not fully unwound with --unwind 16 (before.org.springframework.security.crypto.bcrypt.BCrypt.key at pc 39; no invariant was found that covers its further iterations: an iteration changes local 1, which holds a reference (at the head one of [B 115",
+        "",
+        "verdict: unverifiable (expected verified); paths 1187, solver calls 4663, variables 19711639, loops covered by invariants 12; outcome in verification/.work-287/preservation-closed-reach/preservation/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-287/preservation-closed-reach/preservation/outcome.json",
+      "change": "added",
+      "bytes": 23973,
+      "sha256": "b679f8e5d580c6db4aabe07ece147947002a890924c2bb14ca5ac98223a14421",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/preservation-closed-reach/preservation/evidence.json",
+      "change": "added",
+      "bytes": 1914,
+      "sha256": "9f9719fb5b5dddb2966fe085360961fa3c682a16f10eabb38739cc6c025e11c0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/preservation-closed-reach/preservation/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/preservation-closed-reach/preservation/work/pair/RegressionPair.java",
+      "change": "added",
+      "bytes": 2716,
+      "sha256": "4bfaf6c430949b00e81c30d6470f6bb56af3812d3cae44ca0281bb7fdfe6a089",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-17T19:24:30+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/.work-287/preservation-closed-reach/preservation/outcome.json",
+      "verification/.work-287/preservation-closed-reach/preservation/evidence.json",
+      "verification/.work-287/preservation-closed-reach/preservation/stderr.txt",
+      "verification/.work-287/preservation-closed-reach/preservation/work/pair/RegressionPair.java"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "96c763835d0972c651763f99c0514798622ec060",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/96c763835d0972c651763f99c0514798622ec060/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261117-185613-example-287-preservation-at-the-frozen-b"
+}

@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.021Z",
-  "ended": "2026-11-17T21:09:13.517Z",
-  "duration_seconds": 29542,
+  "ended": "2026-11-17T21:16:30.439Z",
+  "duration_seconds": 29979,
   "stats": {
-    "turns": 41,
-    "api_calls": 745,
-    "tool_calls": 746,
+    "turns": 46,
+    "api_calls": 779,
+    "tool_calls": 778,
     "tool_errors": 7,
-    "compactions": 8,
-    "peak_context_tokens": 459505,
+    "compactions": 9,
+    "peak_context_tokens": 463604,
     "usage": {
-      "input_tokens": 1496,
-      "output_tokens": 711781,
-      "cache_read_input_tokens": 121283019,
-      "cache_creation_input_tokens": 1884125
+      "input_tokens": 1566,
+      "output_tokens": 726791,
+      "cache_read_input_tokens": 125059548,
+      "cache_creation_input_tokens": 2015729
     }
   },
   "tools": {
-    "Bash": 724,
+    "Bash": 753,
     "Edit": 13,
-    "Read": 4,
+    "Read": 6,
     "Write": 4,
-    "ToolSearch": 1
+    "ToolSearch": 2
   },
   "files_touched": [
     "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
@@ -161,24 +161,38 @@
     {
       "index": 8,
       "started": "2026-11-17T19:14:52.560Z",
-      "ended": "2026-11-17T21:09:13.517Z",
-      "turns": 4,
-      "api_calls": 155,
+      "ended": "2026-11-17T21:09:53.219Z",
+      "turns": 5,
+      "api_calls": 157,
       "usage": {
-        "input_tokens": 310,
-        "output_tokens": 200230,
-        "cache_read_input_tokens": 43979790,
-        "cache_creation_input_tokens": 446232
+        "input_tokens": 314,
+        "output_tokens": 201830,
+        "cache_read_input_tokens": 44900721,
+        "cache_creation_input_tokens": 450331
       },
-      "peak_context_tokens": 459505
+      "peak_context_tokens": 463604
+    },
+    {
+      "index": 9,
+      "started": "2026-11-17T21:10:59.684Z",
+      "ended": "2026-11-17T21:16:30.439Z",
+      "turns": 4,
+      "api_calls": 32,
+      "usage": {
+        "input_tokens": 66,
+        "output_tokens": 13410,
+        "cache_read_input_tokens": 2855598,
+        "cache_creation_input_tokens": 127505
+      },
+      "peak_context_tokens": 140778
     }
   ],
   "log": {
-    "sha256": "2649b91927799ff47bb2de518cf55b2ab1673577fb71655d09a69fa4c7fd53a3",
-    "bytes": 18851342,
-    "lines": 6332,
-    "gzip_bytes": 3143858,
-    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/2649b91927799ff47bb2de518cf55b2ab1673577fb71655d09a69fa4c7fd53a3.jsonl.gz"
+    "sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052",
+    "bytes": 20143601,
+    "lines": 6674,
+    "gzip_bytes": 3432129,
+    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -765,6 +779,214 @@
       "summary": "307 has a driver on the route's slices, and the checker takes a call both versions share as one function of both: preservation verified and the mutant refuted in capped probes at the frozen bound (verification pending)",
       "body": "Example 307 (Spring Security fe9e4549, BCrypt.hashpw with StandardCharsets.UTF_8) gets proofs/prove.py. It runs preservation and mutant-preservation on the route's own source slices (runtime.prepare), each slice JAR checked against the replay receipt that ran it, at the claim's bound (unwind 513, length 80), with its assumption and nullable password and salt. It keeps beside_route's record, mutant check and trial marking. Its first stop was String.getBytes(String), now modelled for the names the JDK takes for UTF-8, as getBytes(US_ASCII) is for the mutant (String model 7, sampled on the JVM, the interpreter and the checker).\n\nAt unwind 513 every bcrypt loop runs to its end, so the loop ties of 287 never apply (4 GB in 39 s). The checker now takes a call of a static method both versions share as one function of both (lib/src/bmc/ties.rs, shared::one_function). Its outcome is new bits: the result, whether it throws and which class, and the cells it writes. Those are related by congruence to earlier calls of the same code wherever the inputs (arguments, and the statics of the classes it uses) are equal. Side conditions: the same code, numbers, Strings and arrays of numbers only, initialized classes, a loop, no static written, no JDK state read, no lambda or own exception. Eight countermodels (ONCES in lib/tests/pairing.rs) each differ on a JVM, are not proved, and were each proved with their condition taken out. The reach now leaves a followed JDK class's own calls closed and checks the application's call into it, which closes a hole: parseInt(CharSequence) given an application object was 'nothing to prove' (new countermodel). Capped probes: preservation verified in about 100 s, the mutant refuted at a non-ASCII password and reproduced on a JVM, 289 and 290 unchanged. lib/README.md has the rule and its limits (no instance methods, so not 287's crypt_raw; a counterexample through unrelated calls that does not reproduce leaves the check undecided).",
       "log_sha256": "2649b91927799ff47bb2de518cf55b2ab1673577fb71655d09a69fa4c7fd53a3"
+    },
+    {
+      "change_id": "plqpmmopzxpyvzswlunyzmvpzoxnkwnt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of an observation bound to the settings it read: a property read under a JDK frame or through putIfAbsent, the environment by a looked-up handle, and three startup settings, each proved where a JVM under another setting says otherwise",
+      "body": "Item 5 against the evidence stream's mmnoqopr (its fix for I008) and vqquvmnm (its fix for I011). Both hold. Built apart with the sources touched, observed_countermodels.rs passes at qxstltmq and at vqquvmnm, and I011's test passes at vqquvmnm. Six initializers read a setting the binding does not see, and each is Verified at vqquvmnm with the class observed under that setting. The result says 'it read no system property' and nothing of the setting. The cases: a property read through Optional.map(System::getProperty), where the lambda's frame is hidden so the recorder takes the JDK's Optional for the reader; the value Properties.putIfAbsent returns, which Recording does not override; getenv through a method handle looked up by name; and the processor count, the working directory and the default charset, which the JDK reads at startup. lib/tests/setting_countermodels.rs holds each case to a JVM, under the setting and under another. The checker-side test is in lib/tests/fixtures/setting-countermodels/README.md, and it fails on all six at vqquvmnm; it goes to the evidence stream as a failure item. Nothing in lib/src changes.\n\nAudit: 290's five observed classes (hash-checked JARs, javap -c -p) call none of these methods. UrlPathHelper's logger reaches JUL's configuration through JDK frames, but the observation does not hold the logger, so a read of it is refused. No accepted result is affected.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "tqmpowvxsrvqozpqowlrkqvprrytwvyt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of the code two versions are taken to share past the reach's fix: an override removed, a hidden field, an interface's initializer two ways and the target's own class's, each taken as identical or tied where a JVM tells the versions apart",
+      "body": "Item 5 of the challenge brief, against the preservation stream's kskmpmny (its fix for domain-advances-preservation-I010). The fix holds: built apart with the sources touched, tie_countermodels.rs passes there, its checker-side test included. Past it, lib/src/shared.rs's reach still leaves out five things, each shown by lib/tests/fixtures/reach-countermodels (old/ against new/), where each version alone gives 2 (0 for hidden) against 1 on a JVM (lib/tests/reach_countermodels.rs). Under the defaults, each of these is 'identical in both versions; nothing to prove' at kskmpmny and on this line alike, since the shortcut is older than the run: removed (an override the previous version declared and the new one inherits; only the new version's reach is walked and the old one is looked up by the new one's declaring class), hidden (a field the previous version declared that hides an inherited one; fields are not compared), constant (an interface's static read through an implementing class; the JVM initializes the interface, initialized() takes superclasses only), defaulted (making an object initializes a superinterface with a default method) and Own#f (the target's own class's initializer). looped, constant's read in a loop past the bound, is Verified under the ties at kskmpmny, non-vacuous; on this line it gets no verdict.\n\nshared.rs is the preservation stream's this run, so nothing in lib/src changes here: the README's checker-side test, which fails on all six at kskmpmny, goes to it as a failure item citing this commit. Audit: the shortcut needs no --before-classpath, which 288 to 290 all pass; 289's rerun on kskmpmny unwinds fully; 287's BCrypt implements no interface and uses only its own fields in both pinned releases. No accepted result is affected. Inbox I004 is acknowledged as waiting: preservation's call-level rule is not committed yet. Verified: the changed tests under MemoryMax=8G with --rust-jobs 1 passed after test_costs.py estimate and tag; lint agrees.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "wwpkylrynorxnztppmskrxprwvqlqzsq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The preservation stream is passed an outside review of its relational check, for optional consideration",
+      "body": "At the user's request the watcher asked Codex (read-only) to review the preservation stream's approach to 287 and 307. Its advice goes to the stream through its inbox as optional: close I010 in shared.rs::reach before more summary reuse, don't take job 20261117-180758 as a decision while I010 is open on its checker, move the relational boundary outward to a checked congruence of an unchanged callee (crypt_raw) rather than tune loops, and bound the remaining cost work.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "svtrzmswmxpttzmytottnkvolzrosmkr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The preservation stream is passed an outside review of its relational check, for optional consideration",
+      "body": "At the user's request the watcher asked Codex (read-only) to review the preservation stream's approach to 287 and 307. Its advice goes to the stream through its inbox as optional: close I010 in shared.rs::reach before more summary reuse, don't take job 20261117-180758 as a decision while I010 is open on its checker, move the relational boundary outward to a checked congruence of an unchanged callee (crypt_raw) rather than tune loops, and bound the remaining cost work.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "xmowtynznpmskmysnquyulrptloxstpm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261117-180758-example-287-preservation-at-the-frozen-b: failed: 1 failed step(s) in 7m06s, peak 2.3 GiB (estimated 2h00m, 12.0 GiB); 4 output file(s) changed; signals: jvmcontract:fails×2 Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "vvyzlpwtzpptolxonrwxwmmstkvmrxpu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Job 20261117-180758's verdict goes to the preservation stream: 287 at bound 80 is unverifiable at BCrypt.key's loop",
+      "body": "The job ran 7 minutes and stopped where BCrypt.key's loop in the previous release (pc 39) was not unwound at --unwind 16 and no invariant covered its further iterations. Not out of time or memory, so not resubmitted; the stream's to take up, told through its inbox.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "twwknmkxwnuypxrzyquzxsstrxlywqvo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261117-181750-example-286-protected-state-tasks-at-the: failed: 1 failed, 1 passed step(s) in 10.6s, peak 114.2 MiB (estimated 15m00s, 4.0 GiB); 6 output file(s) changed Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "wxomrslysorrttxxrmtquupzpvyyyowt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Job 20261117-181750's failure goes to the state stream: the initializer observer's -Xlog path is relative to the wrong folder",
+      "body": "286's refutation step stopped before the check: observed.rs runs the observer JVM in its observed/ folder but passes -Xlog's file relative to the repository when --work is relative, so the JVM refuses the option. The same code is on the default line (evidence's). The state stream, whose job it was, is told with the reading and asked to fix and rerun it.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "pvoyxpukkkxswwlororpxklqkxtynlos",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A correction to the state stream's item I015, whose detail a shell expansion garbled",
+      "body": "I016 restates the one sentence of I015 that lost words to a backtick expansion in the watcher's command; nothing else in it changes.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "nqturzqlsqnprkzpntqpvzqkmxolupqk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 307 ahead of the preservation stream's step 6: where the checker stops, the callee's footprint, the conversions on the pinned JDKs, and countermodels for the model and the rule",
+      "body": "New files only, for the watcher of the domain-advances run to pass on as guidance within step 6; no claim, note, checker source or stream file is changed. examples/307-*/records/step-6-packet.md is the account. Six capped probes of the preservation stream's rmvpqswzxlyv (step-6-probes.json): 307's preservation stops in 1 s at the previous revision's getBytes(\"UTF-8\"), the mutant's at StandardCharsets.US_ASCII, and with the conversions modelled the claim's unwind 513 leaves no loop summarized, so nothing is tied and the check is killed at 4 GB in 39 s; at the default unwinding it ends at the time limit as 287 does.\n\nrecords/callee-footprint/footprint.py reads class files and says what a callee's closure reads, writes and hands on: hashpw(byte[],String) is the same 13 methods and initializer in before, after and the mutant, writes nothing its caller can see and reads five final tables nothing else writes (hashpw-bytes.json); 287's crypt_raw is the same in 6.3.7 and 6.3.8, whose hashpw differs by nine inserted instructions (287-crypt-raw.json). records/conversion/ runs both getBytes overloads, the US-ASCII conversion and written-out encoders on 4.3 thousand million Strings on Temurin 21.0.13 and 25.0.5 with no difference, and records the overloads' bytecode. records/mutant-witness.json says which candidates the real cipher tells apart.\n\nlib/tests/fixtures/conversion-countermodels (twelve pairs, a prototype model as a patch, the test to add) and callee-countermodels (ten pairs for taking an unchanged callee as one function) each have a harness, check.py, and a README with what a JVM and today's checker say. Verified by running them: the prototype decides its six pairs, a prototype made wrong on purpose is caught on six, today's checker proves none of the seven callee countermodels and proves 307's shape in the miniature. validate_example.py 307 and the test-cost lint pass. Also found: the example route passes no --assume for an equivalence task, a witness a second run undoes is reported as not reproduced, and a parameter named b does not compile in the generated pair.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "qtxkqsmtopqzrznlvpusvouzsovtrprx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 307: a prototype of the relation at the unchanged callee closes both tasks at crypt_raw on JDK 25, and the callee's code has no fingerprint there at hashpw(byte[], String)",
+      "body": "A second delivery from the session the user brought in ahead of the preservation stream's step 6, for the stream to compare its own call-level rule against. New files, and edits to this session's own fixture; no checker source and no test changes.\n\nexamples/307-*/records/step-6-call-level.md is the note and step-6-call-level-probes.json the runs. lib/tests/fixtures/callee-countermodels/prototype-one-function.patch (against kskmpmny, git 10b5d9c0, after prototype-model.patch) names a callee's outcome by the key of the state at its entry, as a loop's state past the bound is named, and checks no side condition. With it, at the claim's frozen parameters and assumption, in capped probes (4 GB, 300 s): with the relation at crypt_raw on JDK 25, preservation is verified in 79 s (878 MB) and the mutant is a violation in 58 s, replayed on a JVM; with it at hashpw(byte[], String), preservation is verified in 53 s on JDK 21 and the run is killed at 4 GB on JDK 25, and the mutant has no verdict under the claim's seven salts (the first candidate has salt = null) and is a violation under one valid salt. Without a relation the runs die at 4 GB.\n\nThe JDK 25 difference: hashpw(byte[], String) calls Integer.parseInt, whose bytecode the checker follows, and JDK 25's parseInt(String, int) calls String.format(String, Object[]), which shared::reach takes as a way back into the application since kskmpmny. The fixture gains the row parsed (Parsing.java, a callee that calls Integer.parseInt): verified on JDK 21 and no verdict on JDK 25 on kskmpmny, in under a second.\n\nThe prototype against the fixture's rows: by formula it falsely proves wiped and counted (what the callee writes is not in its outcome); with a relation by content added it falsely proves table, seeded, helped and aliased too. No other row turns. So the rows separate a rule with its side conditions from one without.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "msusklystoqwukumsymuvwvvootwloqz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-038: 307's frozen claim cites a specification getBytes(String) does not have; the user keeps the claim and defers the restatement and I008",
+      "body": "The user decided (D028) to defer I008's companion claim under a non-UTF-8 default to after the run, and (D029) to keep 307's frozen claim with a finding for its wrong citation, restating the wording after the run in one freeze with the companion claim if there is one. The premise of the assumption holds on the pinned OpenJDK 21 and 25 by implementation; a 307 result is read as holding there.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "vxxpmtltlmvtynqolqlumxvxpvsyltmw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261117-185623-examples-289-and-290-preservation-on-one: failed: 1 passed, 1 failed step(s) in 1m06s, peak 551.1 MiB (estimated 10m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:holds×2 Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "rtllkuzmporrwqwrxpmluymypzmopxmx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Job 20261117-185623's 290 failure goes to the preservation stream: the same relative -Xlog path as state's 286 job",
+      "body": "289's preservation passed on one checker with the pair's and evidence's fixes; 290's step stopped before the check, in the initializer observer that runs its JVM in another folder than the relative --work assumes. Told to preservation, with the note that state is fixing the same code.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "vtpwwlrpxrtslyruqozmmkzpnprxvvnm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261117-185613-example-287-preservation-at-the-frozen-b: failed: 1 failed step(s) in 7m53s, peak 2.3 GiB (estimated 30m00s, 8.0 GiB); 4 output file(s) changed; signals: jvmcontract:fails×2 Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "qunuoqurxqspxzuxyluwxmzunuxskzus",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Job 20261117-185613's verdict goes to the preservation stream: 287 at bound 80 is still unverifiable at BCrypt.key's loop",
+      "body": "The same wall as the run before I010 was closed, with the same counts; not out of time or memory, so not resubmitted.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "lsuuqtnqqywxmsrmovttwrsnmnxwykvq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261117-192205-example-286-protected-state-tasks-at-the: passed: 2 passed step(s) in 2m28s, peak 897.8 MiB (estimated 15m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:fails×1 Applied 6 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "wpqrtyzvzvvlryzyzznuqksrrzonuvts",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the 307 specialist's scaffold of step 6 into the line",
+      "body": "A session the user brought in to get ahead of the preservation stream's step 6 (example 307) worked in a workspace of its own (307-specialist) and committed new files only (nqturzql): records/step-6-packet.md with where the checker stops on 307, the unchanged callee's footprint read from its bytecode, the two conversions compared on Temurin 8, 21 and 25, the mutant's witness, and countermodel fixtures for a conversion model and a callee rule. Merged so the preservation stream can take it with the default line; nothing in it changes the claim, the checker or any stream's files.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "ywlkutrxplqrqktrslmxlxwmmqzxuqrs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose example 307's bcrypt test vectors for the allow list",
+      "body": "Three long-token findings in the watcher's and the 307 specialist's session logs are bcrypt hashes under upstream BCryptTests' salt, which 307's committed claim and probes already hold. Proposed for the user's approval.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "vqmowvpwuyyqtuylusoqyvnslyxmotvv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The 307 specialist's scaffold goes to the preservation stream as one item of guidance within step 6",
+      "body": "D030: the specialist's commit is merged (wpqrtyzv) and preservation's inbox item I016 points at its packet, with the user's ask to consider call-level convergence for 287 too and the user's decisions on 307's claim (D028, D029).",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "xqxvxrmxqwsnrykvyqpnsxqwxwvztqwz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The preservation stream is told why a call-level rule keyed on the fingerprint declines on JDK 25",
+      "body": "The 307 specialist found that since the I010 fix the unchanged callee hashpw(byte[],String) has no fingerprint on JDK 25, where Integer.parseInt reaches String.format(String, Object[]); preservation's 307 probe was dying at 4 GB while it traced where its new rule declines. Passed on as optional guidance (I017, under D030), with the two ways out the specialist sees.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "qpwxnpxsyzysqmwswqvkpzkxsqkqsyxu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The challenge stream is restarted by hand, at the user's word, with an inbox item for its interrupted step",
+      "body": "D031: challenge's loop ended at 17:11 when the OOM killer took its session (VF-037) and run-streams.sh no longer supervises it; the user asked to restart it now rather than after the run, so it attacks preservation's call-level rule while that is written. Its inbox item I003 says how to finish the interrupted setting-countermodels step with the tests under a memory cap of their own, then to attack the call-level rule. VF-037 records the hand restart.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "rwomprmzwrsnpqxluwnkmmuznrvoswqw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-037: what the challenge stream's OOM kill cost the run, and what run-streams.sh lacks to start one stream again",
+      "body": "Amended from a read-only review of the domain-advances run, beside its watcher. The second of the two stops that counted challenge blocked was only the refusal beside the killed session's orphans. brief_run.py can stop and start a whole run but not one stream, so challenge sat idle for over three hours while preservation wrote its riskiest rules. A loop restarted by hand is outside run-streams.sh's bookkeeping (merge question, phase, reruns, start and wait). Needs now names the interim test-run cap (I003), a rerun of one stream inside a run, and not counting a scope refusal as a stop, together with the deferred RUN_STREAMS_WATCHER leak fix. Also removed the restart time the entry gave (20:35): at 20:19 UTC no challenge loop was running yet. No code changed; nothing to test.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "wtlwyxyqyxkonukwkvnkltmlumwzlsoz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the 307 specialist's call-level prototype into the line",
+      "body": "The specialist's second commit (qtxkqsmt, its own files only): records/step-6-call-level.md and its probes, where a prototype relation at crypt_raw verifies 307's preservation at the frozen parameters on JDK 25 in 79 s and refutes mutant-preservation with a JVM-replayed witness; a prototype patch to read; and callee countermodel rows, with a new one (parsed) that shows a fingerprint-keyed rule declining on JDK 25. Merged so the preservation and challenge streams can take it with the default line.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "okuplpysxvlusznoznpmsrprnwoqtxsv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The 307 specialist's call-level prototype goes to the preservation stream as guidance and to the challenge stream as countermodels",
+      "body": "Merged as wtlwyxyq: a prototype relation at crypt_raw closes both of 307's tasks at the frozen parameters on JDK 25. Preservation's item I018 points at its record and the fixtures to test its own rule against; challenge's item I004 points at the same fixture rows as a floor for its attack on preservation's rule.",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
+    },
+    {
+      "change_id": "mqpxrmvuwmpmoppzsrqynsrqolvvkrwm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the default line and the challenge stream's reach countermodels",
+      "body": "Brings the 307 specialist's two packets (records/step-6-packet.md, step-6-call-level.md) and the callee-countermodels fixture, the results of jobs 20261117-185613 (287 at bound 80, unverifiable again at BCrypt.key pc 39) and 20261117-185623 (289 passed; 290 failed on the observer's relative -Xlog path), and the challenge stream's tqmpowvx (reach-countermodels and its JVM-side test). Only generated files conflicted: the trace pages were regenerated and lib/tests/costs.json re-estimated, tagged and linted. The default run passed on the merged tree (54 of 54).",
+      "log_sha256": "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052"
     }
   ],
   "logs": {
@@ -802,6 +1024,12 @@
       "bytes": 12710256,
       "lines": 4307,
       "gzip_bytes": 2132706,
+      "url": null
+    },
+    "99f8aaf8c448c9366ed6aaf3317639d1c954d79952bd1405221c8467f49f7052": {
+      "bytes": 20143601,
+      "lines": 6674,
+      "gzip_bytes": 3432129,
       "url": null
     },
     "a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de": {

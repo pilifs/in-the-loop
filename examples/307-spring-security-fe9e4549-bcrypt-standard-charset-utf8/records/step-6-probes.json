@@ -1,0 +1,130 @@
+{
+ "schema": "step-6-probes/v1",
+ "what": "Capped probes of 2026-11-17 (systemd-run --user --scope -p MemoryMax=4G -p MemorySwapMax=0 timeout 300, one at a time, JDK 25.0.5), each a single run to see where the checker stops on example 307. None is evidence for the claim: a probe answers nothing, and the classes are a hand compile by the slice's recipe (Temurin 8 javac -g -source 1.8 -target 1.8 -encoding UTF-8), not the route's prepared artifacts.",
+ "command": "jvmcontract equivalence --before BEFORE --after AFTER --target 'org.springframework.security.crypto.bcrypt.BCrypt#hashpw(java.lang.String, java.lang.String)' --nullable password --nullable salt --assume ASSUME --engine native --gaps strict --max-array-length 80 --timeout T --work W --json",
+ "assume": "the claim's assume expression (claims/hashpw-preservation.json), unchanged",
+ "classes": {
+  "recipe": "each revision's BCrypt.java from the cached clone of spring-projects/spring-security at the commits target.json names, compiled alone by Temurin 1.8.0_512 javac with the slice's flags; mutant is after with controls/us-ascii.patch's one line; twin is after with hashpw(String,String)'s last statement written as two (String hashed = hashpw(passwordb, salt); return hashed;), a pair constructed only to reach the cipher on both sides",
+  "BCrypt.class sha256": {
+   "before": "0b137406e13890130cb1dbb26a776471f50ec766c1dd96ef5534334a94841ffb",
+   "after": "54ae5693a9b80314415670586fbea77624584854d5bfb8542123475fb4c2f6e2",
+   "mutant": "1cae45be58fdfa42603c35812fe05f1abcc2d19885f6581357b52bedecd667ad",
+   "twin": "4342533497ad378ad791aaa16dc1a1bef3ac26965632d79f87507c83374820b5"
+  },
+  "beforeMatchesPublished": true
+ },
+ "checkers": {
+  "stream": {
+   "what": "the preservation stream's last commit before its I010 fix, rmvpqswzxlyv (git e461ac1d2c5f), lib/ exported and built apart with cargo build --release",
+   "jvmcontract sha256": "5b55fec77785919301c72f6870715a447c30e93752df8e130a725a5fea07670b"
+  },
+  "prototype": {
+   "what": "the same with lib/tests/fixtures/conversion-countermodels/prototype-model.patch applied (String.getBytes(\"UTF-8\") and the US-ASCII conversion modelled)",
+   "jvmcontract sha256": "7dc5a531550187afdab30e8bfa8446802c82affb01bf70f20b38f97548f34405"
+  }
+ },
+ "probes": [
+  {
+   "id": "claim-pair",
+   "checker": "stream",
+   "before": "before",
+   "after": "after",
+   "unwind": 513,
+   "frozenBound": true,
+   "verdict": "unverifiable",
+   "problem": "outside the fragment: java.lang.String.getBytes on an object the engine does not model",
+   "seconds": 0.4,
+   "paths": 2,
+   "solverCalls": 2,
+   "solvingSeconds": 0.0,
+   "variables": 2757,
+   "tied": null,
+   "summariesReused": null,
+   "loopsCoveredByInvariants": 0,
+   "wall": "1.2 s",
+   "reading": "The first stop of the claim's own pair: the previous revision's password.getBytes(\"UTF-8\"). The nullable String parameters (VF-028) are no longer refused, and the claim's assume expression compiles."
+  },
+  {
+   "id": "mutation-pair",
+   "checker": "stream",
+   "before": "after",
+   "after": "mutant",
+   "unwind": 513,
+   "frozenBound": true,
+   "verdict": "unverifiable",
+   "problem": "outside the fragment: reads static field java.nio.charset.StandardCharsets.US_ASCII, which is not a compile-time constant",
+   "seconds": 1.5,
+   "paths": 2,
+   "solverCalls": 2,
+   "solvingSeconds": 0.0,
+   "variables": 780829,
+   "tied": null,
+   "summariesReused": null,
+   "loopsCoveredByInvariants": 0,
+   "wall": "2.5 s",
+   "reading": "The first stop of the mutation pair: the mutant's read of StandardCharsets.US_ASCII, on the path of a null password, before any cipher. The mutant's conversion needs a model of its own before the task can be refuted under --gaps strict."
+  },
+  {
+   "id": "constructed-pair-frozen-unwind",
+   "checker": "stream",
+   "before": "after",
+   "after": "twin",
+   "unwind": 513,
+   "frozenBound": true,
+   "verdict": "none: killed at the memory cap",
+   "problem": "the kernel's OOM killer, 4G peak after 62 s",
+   "reading": "Past the conversion, at the claim's unwind 513 every loop of bcrypt is within the bound, so none is summarized and nothing is tied: the checker unwinds the key schedule itself and runs out of memory. This is the cost of the cipher alone; both sides convert with the modelled getBytes(UTF_8)."
+  },
+  {
+   "id": "constructed-pair-default-unwind",
+   "checker": "stream",
+   "before": "after",
+   "after": "twin",
+   "unwind": "the checker's default (16): a trial, not the claim's bound",
+   "frozenBound": false,
+   "verdict": "unverifiable",
+   "problem": "the engine did not finish within the time limit",
+   "seconds": 240.4,
+   "paths": 591,
+   "solverCalls": 2552,
+   "solvingSeconds": 203.1,
+   "variables": 10319553,
+   "tied": 36061,
+   "summariesReused": 72,
+   "loopsCoveredByInvariants": 12,
+   "wall": "4 min 2 s, 1.7G peak",
+   "reading": "With loops summarized past unwind 16 the ties apply (36,061 tied, 72 summaries taken over) and the run still ends at the time limit, 203 of 240 s in the solver: the same cost profile as 287 at bound 80."
+  },
+  {
+   "id": "claim-pair-with-conversion-model",
+   "checker": "prototype",
+   "before": "before",
+   "after": "after",
+   "unwind": 513,
+   "frozenBound": true,
+   "verdict": "none: killed at the memory cap",
+   "problem": "the kernel's OOM killer, 4G peak after 39 s",
+   "reading": "The second stop of the claim's own pair, once the named conversion is modelled: the cipher under complete unwinding. Nothing else stood between the conversion and bcrypt (Arrays.copyOf, Integer.parseInt, StringBuilder and the base64 helpers are passed)."
+  },
+  {
+   "id": "mutation-pair-with-conversion-models-default-unwind",
+   "checker": "prototype",
+   "before": "after",
+   "after": "mutant",
+   "unwind": "the checker's default (16): a trial",
+   "frozenBound": false,
+   "verdict": "unverifiable",
+   "problem": "the engine did not finish within the time limit",
+   "seconds": 240.4,
+   "paths": 679,
+   "solverCalls": 2763,
+   "solvingSeconds": 201.0,
+   "variables": 12365561,
+   "tied": 3672,
+   "summariesReused": null,
+   "loopsCoveredByInvariants": 10,
+   "wall": "4 min 1 s, 1.8G peak",
+   "reading": "No witness within the limit: the search spends its time in the same summaries, and does not get a candidate from the differing bytes before it."
+  }
+ ]
+}

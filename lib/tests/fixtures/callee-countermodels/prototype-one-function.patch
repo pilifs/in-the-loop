@@ -1,0 +1,244 @@
+--- a/lib/src/bmc/mod.rs
++++ b/lib/src/bmc/mod.rs
+@@ -801,6 +801,22 @@
+     /// invariant at once ([`Engine::summarize_at_entry`]). A run's own history, and not the check's, so that two
+     /// versions running the same code summarize the same loops at the same points and their states tie ([`ties`]).
+     summarized: Rc<std::collections::BTreeSet<(String, String, u32)>>,
++    /// PROTOTYPE: at the entry of a callee taken as one function ([`Engine::one_function`]), how many of the
++    /// exceptions it may throw this path has already been split from.
++    one: usize,
++}
++
++/// PROTOTYPE: an argument of a callee taken as one function ([`Engine::one_function`]), as two calls' are compared.
++#[derive(Clone)]
++enum OneArg {
++    Bits(Bits),
++    Null,
++    Content(Bits, Vec<Bits>),
++    Made(u64),
++    /// An object of this class no field of which was written (a receiver the caller has just made).
++    Plain(String),
++    /// One of several objects or null, each under its guard: equal to the same choice only.
++    Choice(Vec<(Lit, Option<u64>)>),
+ }
+ 
+ /// Where a class is in its initialization (JVMS §5.5).
+@@ -1254,6 +1270,13 @@
+     /// no value of, each with what it was ([`Engine::unheld_static`]).
+     observed: std::sync::Arc<crate::observed::Observations>,
+     previous: Option<std::sync::Arc<crate::relocate::Previous>>,
++    /// PROTOTYPE: the callees a pair of versions takes as one function, each `owner#name#descriptor` (the new
++    /// version's names), from the environment variable `JVMCONTRACT_PROTOTYPE_ONE_FUNCTION`, separated by spaces.
++    one: Vec<(String, String, String)>,
++    /// PROTOTYPE: with `JVMCONTRACT_PROTOTYPE_ONE_FUNCTION_BY_CONTENT` set, each call so taken, by its code, the
++    /// key of its state and its arguments: two calls of one code whose arguments are equal by content have one
++    /// outcome, also where their states have different keys (the arguments are other formulas).
++    one_calls: Vec<((String, String, String), u64, Vec<OneArg>)>,
+     unheld: HashMap<(String, String), String>,
+     /// The time spent decoding methods, and reading witnesses out of models (their solving and encoding apart).
+     decoding: Duration,
+@@ -1347,6 +1370,8 @@
+         runs: HashMap::new(),
+         observed: options.observed.clone(),
+         previous: options.previous.clone(),
++        one: std::env::var("JVMCONTRACT_PROTOTYPE_ONE_FUNCTION").unwrap_or_default().split_whitespace().filter_map(|e| { let mut p = e.split('#'); Some((p.next()?.to_string(), p.next()?.to_string(), p.next()?.to_string())) }).collect(),
++        one_calls: Vec::new(),
+         unheld: HashMap::new(),
+         decoding: Duration::ZERO,
+         witness: Duration::ZERO,
+@@ -1519,7 +1544,7 @@
+         }
+         let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
+         locals.resize(code.max_locals.max(locals.len()), None);
+-        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, loose: false, summarized: Default::default() };
++        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, loose: false, summarized: Default::default(), one: 0 };
+         engine.pending.push(first);
+ 
+         // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
+@@ -3219,8 +3244,186 @@
+         }
+     }
+ 
++    /// PROTOTYPE, to see whether example 307 closes with it; not a rule to merge as it is. In a pair of versions, a
++    /// call of a method named in `JVMCONTRACT_PROTOTYPE_ONE_FUNCTION` is not run: its outcome is named by the key of
++    /// the state at its entry ([`Engine::state_key`], taken with the callee's frame on top: its code with
++    /// everything it reaches, its arguments with the objects they reach, the static fields that code uses and the
++    /// classes' initialization), as a loop's state past the bound is ([`ties`]). A second call from a state of the
++    /// same key, in the other version or in this one, has the same outcome: one of the exceptions below, or a new
++    /// String of the same content.
++    ///
++    /// What it does NOT check, and a rule would have to: that the callee writes nothing its caller can still see
++    /// and no static field (here read off the class files beforehand,
++    /// examples/307-*/records/callee-footprint); that the list of exceptions is every one the callee can throw;
++    /// that its result is a non-null String of at most 64 units; that the reach the fingerprint follows is closed
++    /// (I010); and that the callee ends. A state with no key runs the callee as written.
++    fn one_function(&mut self, path: &mut Path) -> Option<Step> {
++        const THROWS: &[&str] = &["java/lang/IllegalArgumentException", "java/lang/ArrayIndexOutOfBoundsException", "java/lang/NullPointerException", "java/lang/NegativeArraySizeException", "java/lang/StringIndexOutOfBoundsException", "java/lang/NumberFormatException", "java/lang/ArithmeticException", "java/lang/ClassCastException"];
++        const UNITS: usize = 64;
++        if self.one.is_empty() || path.frames.len() < 2 {
++            return None;
++        }
++        let previous = self.previous.clone()?;
++        let frame = path.frames.last()?;
++        if frame.at != 0 {
++            return None;
++        }
++        let owner = ties::unprefixed(&frame.class.name, &previous);
++        if !self.one.iter().any(|(o, n, d)| *o == owner && *n == frame.method && *d == frame.code.descriptor) {
++            return None;
++        }
++        let code = (owner, frame.method.clone(), frame.code.descriptor.clone());
++        let bytes = code.2.ends_with(")[B");
++        let args: Vec<OneArg> = frame.locals.iter().flatten().map(|v| match v {
++            Val::I(bits) | Val::J(bits) => OneArg::Bits(bits.clone()),
++            Val::R(None) => OneArg::Null,
++            Val::R(Some(o)) => {
++                let obj = &path.objects[*o];
++                match &obj.array {
++                    Some(a) if !obj.unknown && obj.limit.is_none() && obj.same.is_empty() && a.refs.is_empty() && obj.lambda.is_none() => OneArg::Content(a.length.clone(), a.cells.clone()),
++                    None if obj.fields.is_empty() && obj.lambda.is_none() && obj.same.is_empty() => OneArg::Plain(ties::unprefixed(&obj.class, &previous)),
++                    _ => OneArg::Made(obj.made),
++                }
++            }
++            Val::C(choice) => OneArg::Choice(choice.0.iter().map(|(guard, target)| (*guard, target.map(|o| path.objects[o].made))).collect()),
++        }).collect();
++        let (key, _) = self.state_key(path)?;
++        let (kind, _) = self.ties.bits(&mut self.b, key, vec![6, 0], 4);
++        if std::env::var("JVMCONTRACT_PROTOTYPE_ONE_FUNCTION_BY_CONTENT").is_ok() {
++            let earlier: Vec<(u64, Vec<OneArg>)> = self.one_calls.iter().filter(|(c, k, a)| *c == code && *k != key && a.len() == args.len()).map(|(_, k, a)| (*k, a.clone())).collect();
++            for (other, theirs) in earlier {
++                let mut equal = TRUE;
++                for (mine, their) in args.iter().zip(&theirs) {
++                    let e = self.one_equal(mine, their);
++                    equal = self.b.and(equal, e);
++                }
++                if equal == FALSE {
++                    continue;
++                }
++                let mut alike = TRUE;
++                let places: Vec<(Vec<i64>, usize)> = [(vec![6, 0], 4), (vec![6, 1], 32)].into_iter().chain((0..64).map(|i| (vec![6, 2, i as i64], 16))).collect();
++                for (place, width) in places {
++                    let (a, _) = self.ties.bits(&mut self.b, key, place.clone(), width);
++                    let (b, _) = self.ties.bits(&mut self.b, other, place, width);
++                    let e = self.b.eq(&a, &b);
++                    alike = self.b.and(alike, e);
++                }
++                let implied = self.b.or(-equal, alike);
++                path.cond.push(implied);
++            }
++            if !self.one_calls.iter().any(|(c, k, _)| *c == code && *k == key) {
++                self.one_calls.push((code, key, args));
++            }
++        }
++        while path.one < THROWS.len() {
++            let which = self.b.constant(path.one as i64 + 1, 4);
++            let c = self.b.eq(&kind, &which);
++            let exception = THROWS[path.one];
++            let sides = match self.sides(path, c) {
++                Ok(sides) => sides,
++                Err(stop) => return Some(Err(stop)),
++            };
++            match sides {
++                Sides::Both { then_models, else_models } => {
++                    let mut twin = self.split(path, c, then_models, else_models, false);
++                    twin.one += 1;
++                    self.pending.push(twin);
++                    path.one = 0;
++                    path.frames.pop();
++                    return Some(self.raise(path, exception));
++                }
++                Sides::Then => {
++                    path.cond.push(c);
++                    path.one = 0;
++                    path.frames.pop();
++                    return Some(self.raise(path, exception));
++                }
++                Sides::Else => {
++                    path.cond.push(-c);
++                    path.one += 1;
++                }
++                Sides::Undecided { model_takes_then: true } => {
++                    let mut twin = self.split_undecided(path, c, true);
++                    twin.one += 1;
++                    self.pending.push(twin);
++                    path.one = 0;
++                    path.frames.pop();
++                    return Some(self.raise(path, exception));
++                }
++                Sides::Undecided { model_takes_then: false } => {
++                    let twin = self.split_undecided(path, c, false);
++                    match self.settle(twin) {
++                        Err(stop) => return Some(Err(stop)),
++                        Ok(Some(mut twin)) => {
++                            twin.one = 0;
++                            twin.frames.pop();
++                            if let Err(stop) = self.raise(&mut twin, exception) {
++                                return Some(Err(stop));
++                            }
++                            self.pending.push(twin);
++                        }
++                        Ok(None) => {}
++                    }
++                    path.one += 1;
++                }
++            }
++        }
++        path.one = 0;
++        path.frames.pop();
++        let (length, _) = self.ties.bits(&mut self.b, key, vec![6, 1], 32);
++        let cells: Vec<Bits> = (0..UNITS).map(|i| self.ties.bits(&mut self.b, key, vec![6, 2, i as i64], 16).0).collect();
++        let (zero, most) = (self.b.constant(0, 32), self.b.constant(UNITS as i64, 32));
++        let (negative, beyond) = (self.b.slt(&length, &zero), self.b.slt(&most, &length));
++        path.cond.push(-negative);
++        path.cond.push(-beyond);
++        // A `byte[]` result (307's and 287's `crypt_raw`) is the same places' low bytes. What the callee wrote to its
++        // receiver is NOT in the outcome: right only where the caller never reads the receiver again.
++        if bytes {
++            let cells = cells.iter().map(|c| self.b.trunc(c, 8)).collect();
++            path.objects.push(Obj { array: Some(Array { element: Type::Byte, length, cells, refs: Vec::new() }), ..Obj::new("[B") });
++        } else {
++            path.objects.push(Obj { array: Some(Array { element: Type::Char, length, cells, refs: Vec::new() }), ..Obj::new(STRING) });
++        }
++        let o = path.objects.len() - 1;
++        self.push(path, Val::R(Some(o)));
++        self.advance(path);
++        Some(Ok(None))
++    }
++
++    /// PROTOTYPE: whether two arguments of a callee taken as one function are equal by content.
++    fn one_equal(&mut self, a: &OneArg, b: &OneArg) -> Lit {
++        match (a, b) {
++            (OneArg::Bits(x), OneArg::Bits(y)) if x.len() == y.len() => self.b.eq(x, y),
++            (OneArg::Null, OneArg::Null) => TRUE,
++            (OneArg::Made(x), OneArg::Made(y)) if x == y => TRUE,
++            (OneArg::Choice(x), OneArg::Choice(y)) if x == y => TRUE,
++            (OneArg::Plain(x), OneArg::Plain(y)) if x == y => TRUE,
++            (OneArg::Content(xl, xc), OneArg::Content(yl, yc)) => {
++                if xc.first().map(Vec::len) != yc.first().map(Vec::len) && !xc.is_empty() && !yc.is_empty() {
++                    return FALSE;
++                }
++                let mut equal = self.b.eq(xl, yl);
++                for i in 0..xc.len().max(yc.len()) {
++                    let at = self.b.constant(i as i64, 32);
++                    let within = self.b.slt(&at, xl);
++                    let same = match (xc.get(i), yc.get(i)) {
++                        (Some(x), Some(y)) => self.b.eq(x, y),
++                        _ => FALSE,
++                    };
++                    let here = self.b.or(-within, same);
++                    equal = self.b.and(equal, here);
++                }
++                equal
++            }
++            _ => FALSE,
++        }
++    }
++
+     /// Executes the instruction at the top frame's `at`.
+     fn step(&mut self, path: &mut Path) -> Step {
++        if let Some(step) = self.one_function(path) {
++            return step;
++        }
+         let frame = path.frames.last().expect("a frame");
+         let insn = frame.code.insns[frame.at].clone();
+         let class = frame.class.clone();

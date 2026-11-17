@@ -1,0 +1,413 @@
+{
+  "verdict": "unverifiable",
+  "target": "example287.adapter.PasswordMatchAdapter#matches",
+  "domain": "candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null",
+  "counterexample": null,
+  "proof": null,
+  "problem": "a loop was not fully unwound with --unwind 16 (before.org.springframework.security.crypto.bcrypt.BCrypt.key at pc 39; no invariant was found that covers its further iterations: an iteration changes local 1, which holds a reference (at the head one of [B 115, [B 1972 by a condition; back at it one of [B 115, [B 1972 by a condition))",
+  "statement": "verification/.work-287/preservation-closed-reach/preservation/work/pair/RegressionPair.java",
+  "findings": [
+    {
+      "rule_id": "unverifiable",
+      "message": "RegressionPair#agree cannot be verified: a loop was not fully unwound with --unwind 16 (before.org.springframework.security.crypto.bcrypt.BCrypt.key at pc 39; no invariant was found that covers its further iterations: an iteration changes local 1, which holds a reference (at the head one of [B 115, [B 1972 by a condition; back at it one of [B 115, [B 1972 by a condition))",
+      "uri": null,
+      "line": 47
+    }
+  ],
+  "output": "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-287/preservation-closed-reach/preservation/work/pair/RegressionPair.java) calls the previous version's example287.adapter.PasswordMatchAdapter#matches, relocated under `before`, and then the new one's on the same inputs, each on its own dependency closure, outside the inputs the change is meant to affect (`candidate != null && candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72`, read on the new version), each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n✗ example287.adapter.PasswordMatchAdapter#matches cannot be verified as a property of the pair of versions (below)\n✗ RegressionPair#agree cannot be verified: a loop was not fully unwound with --unwind 16 (before.org.springframework.security.crypto.bcrypt.BCrypt.key at pc 39; no invariant was found that covers its further iterations: an iteration changes local 1, which holds a reference (at the head one of [B 115, [B 1972 by a condition; back at it one of [B 115, [B 1972 by a condition))\n",
+  "work": "verification/.work-287/preservation-closed-reach/preservation/work",
+  "search": {
+    "engine": "native",
+    "checker": "jvmcontract's own checker (CaDiCaL)",
+    "seconds": 471.566928528,
+    "properties": 1,
+    "unwind": 16,
+    "max_array_length": 80,
+    "stage": null,
+    "native": {
+      "paths": 1187,
+      "merges": 161,
+      "solver_calls": 4663,
+      "solving_seconds": 375.143479812,
+      "gates_evaluated": 249138863,
+      "evaluating_seconds": 5.276330265,
+      "divisions": 910,
+      "divisions_built": 1,
+      "multiplications": 0,
+      "multiplications_built": 0,
+      "variables": 19711639,
+      "clauses": 9187030,
+      "seconds": 471.137807677,
+      "loading_seconds": 0.004582218,
+      "decoding_seconds": 0.004317489,
+      "encoding_seconds": 46.569307642,
+      "witness_seconds": 0.0,
+      "assumed": [
+        "a record given to a logger goes to the handler the JDK's default logging configuration gives the root logger and nowhere else: no logger has a filter, a handler of its own or a resource bundle, and the root's one handler is a ConsoleHandler, which writes the record to System.err (no check observes it) and reports to its ErrorManager, without throwing, an exception its formatting throws",
+        "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
+        "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+        "the loop of before.org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 130 ends: no local of its frame was found that every iteration leaves greater, or every iteration leaves less, so what is proved holds of the runs in which it ends",
+        "the loop of org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 130 ends: no local of its frame was found that every iteration leaves greater, or every iteration leaves less, so what is proved holds of the runs in which it ends"
+      ],
+      "loops": [
+        "before.org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 130",
+        "before.org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 165",
+        "before.org.springframework.security.crypto.bcrypt.BCrypt.ekskey at pc 260",
+        "before.org.springframework.security.crypto.bcrypt.BCrypt.ekskey at pc 60",
+        "before.org.springframework.security.crypto.bcrypt.BCrypt.key at pc 151",
+        "before.org.springframework.security.crypto.bcrypt.BCrypt.key at pc 39",
+        "org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 130",
+        "org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 165",
+        "org.springframework.security.crypto.bcrypt.BCrypt.ekskey at pc 260",
+        "org.springframework.security.crypto.bcrypt.BCrypt.ekskey at pc 60",
+        "org.springframework.security.crypto.bcrypt.BCrypt.key at pc 151",
+        "org.springframework.security.crypto.bcrypt.BCrypt.key at pc 39"
+      ],
+      "tied": 87189,
+      "summaries_reused": 208
+    },
+    "gap_mode": "strict",
+    "deadline_seconds": 12600.0,
+    "runs": [
+      {
+        "checker": "native",
+        "purpose": "proof",
+        "stage": null,
+        "budget_seconds": 12600.0,
+        "seconds": 471.138,
+        "ended": "no-verdict",
+        "ending": "unwinding-failure",
+        "phases": {
+          "loading": 0.005,
+          "lowering": 0.004,
+          "symbolic": 49.416,
+          "encoding": 46.569,
+          "solving": 375.143,
+          "trace": 0.0,
+          "other": 0.0
+        },
+        "formula": {
+          "variables": 19711639,
+          "clauses": 9187030
+        }
+      }
+    ]
+  },
+  "stated": {
+    "kind": "property",
+    "domain": {
+      "parameters": [
+        {
+          "name": "candidate",
+          "type": "java.lang.String",
+          "kind": "value",
+          "null": true,
+          "max_length": 80
+        },
+        {
+          "name": "storedHash",
+          "type": "java.lang.String",
+          "kind": "value",
+          "null": true,
+          "max_length": 80
+        }
+      ],
+      "shared_arrays": false,
+      "text": "candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null"
+    },
+    "assumptions": [
+      {
+        "kind": "initialization",
+        "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+        "basis": "engine"
+      },
+      {
+        "kind": "library",
+        "text": "a record given to a logger goes to the handler the JDK's default logging configuration gives the root logger and nowhere else: no logger has a filter, a handler of its own or a resource bundle, and the root's one handler is a ConsoleHandler, which writes the record to System.err (no check observes it) and reports to its ErrorManager, without throwing, an exception its formatting throws",
+        "basis": "engine"
+      },
+      {
+        "kind": "library",
+        "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
+        "basis": "engine"
+      },
+      {
+        "kind": "library",
+        "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+        "basis": "engine"
+      },
+      {
+        "kind": "library",
+        "text": "the loop of before.org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 130 ends: no local of its frame was found that every iteration leaves greater, or every iteration leaves less, so what is proved holds of the runs in which it ends",
+        "basis": "engine"
+      },
+      {
+        "kind": "library",
+        "text": "the loop of org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 130 ends: no local of its frame was found that every iteration leaves greater, or every iteration leaves less, so what is proved holds of the runs in which it ends",
+        "basis": "engine"
+      }
+    ],
+    "observations": {
+      "result": "the result and the parameters, against result",
+      "exceptions": "none may be thrown"
+    },
+    "bounds": {
+      "unwind": 16,
+      "max_array_length": null,
+      "complete": false,
+      "max_value_length": 80
+    },
+    "models": {
+      "used": true,
+      "digest": "sha256:d3cb60427833314ef7f913b8bc6ef4ca4c79b923fd15a09a6224d63099b17d02",
+      "classes": 31,
+      "jdk": "25.0.5",
+      "values": [
+        {
+          "source": "jvmcontract String model 6: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
+          "jdk": "25.0.5",
+          "level": "tested",
+          "leaves_out": [
+            "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
+            "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
+            "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
+            "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
+          ]
+        }
+      ]
+    },
+    "checker": {
+      "engine": "native",
+      "name": "jvmcontract's own checker (CaDiCaL)",
+      "solver": "CaDiCaL 1.9.5 (bundled)",
+      "fallback": null,
+      "sat": {
+        "solver": "CaDiCaL",
+        "version": "1.9.5",
+        "source": "bundled by the Rust crate cadical 0.1.16",
+        "configuration": [
+          "CaDiCaL's default options",
+          "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+          "the run's deadline through CaDiCaL's terminate callback",
+          "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+        ]
+      }
+    },
+    "gap_mode": "strict",
+    "confirmation": null
+  },
+  "pair": {
+    "verdict": "unverifiable",
+    "target": "RegressionPair#agree",
+    "domain": "candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null",
+    "assume": null,
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "a loop was not fully unwound with --unwind 16 (before.org.springframework.security.crypto.bcrypt.BCrypt.key at pc 39; no invariant was found that covers its further iterations: an iteration changes local 1, which holds a reference (at the head one of [B 115, [B 1972 by a condition; back at it one of [B 115, [B 1972 by a condition))",
+    "statement": "verification/.work-287/preservation-closed-reach/preservation/work/pair-work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "RegressionPair#agree cannot be verified: a loop was not fully unwound with --unwind 16 (before.org.springframework.security.crypto.bcrypt.BCrypt.key at pc 39; no invariant was found that covers its further iterations: an iteration changes local 1, which holds a reference (at the head one of [B 115, [B 1972 by a condition; back at it one of [B 115, [B 1972 by a condition))",
+        "uri": null,
+        "line": 47
+      }
+    ],
+    "output": "✗ RegressionPair#agree cannot be verified: a loop was not fully unwound with --unwind 16 (before.org.springframework.security.crypto.bcrypt.BCrypt.key at pc 39; no invariant was found that covers its further iterations: an iteration changes local 1, which holds a reference (at the head one of [B 115, [B 1972 by a condition; back at it one of [B 115, [B 1972 by a condition))\n",
+    "work": "verification/.work-287/preservation-closed-reach/preservation/work/pair-work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 471.566928528,
+      "properties": 1,
+      "unwind": 16,
+      "max_array_length": 80,
+      "stage": null,
+      "native": {
+        "paths": 1187,
+        "merges": 161,
+        "solver_calls": 4663,
+        "solving_seconds": 375.143479812,
+        "gates_evaluated": 249138863,
+        "evaluating_seconds": 5.276330265,
+        "divisions": 910,
+        "divisions_built": 1,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 19711639,
+        "clauses": 9187030,
+        "seconds": 471.137807677,
+        "loading_seconds": 0.004582218,
+        "decoding_seconds": 0.004317489,
+        "encoding_seconds": 46.569307642,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "a record given to a logger goes to the handler the JDK's default logging configuration gives the root logger and nowhere else: no logger has a filter, a handler of its own or a resource bundle, and the root's one handler is a ConsoleHandler, which writes the record to System.err (no check observes it) and reports to its ErrorManager, without throwing, an exception its formatting throws",
+          "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
+          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+          "the loop of before.org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 130 ends: no local of its frame was found that every iteration leaves greater, or every iteration leaves less, so what is proved holds of the runs in which it ends",
+          "the loop of org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 130 ends: no local of its frame was found that every iteration leaves greater, or every iteration leaves less, so what is proved holds of the runs in which it ends"
+        ],
+        "loops": [
+          "before.org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 130",
+          "before.org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 165",
+          "before.org.springframework.security.crypto.bcrypt.BCrypt.ekskey at pc 260",
+          "before.org.springframework.security.crypto.bcrypt.BCrypt.ekskey at pc 60",
+          "before.org.springframework.security.crypto.bcrypt.BCrypt.key at pc 151",
+          "before.org.springframework.security.crypto.bcrypt.BCrypt.key at pc 39",
+          "org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 130",
+          "org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 165",
+          "org.springframework.security.crypto.bcrypt.BCrypt.ekskey at pc 260",
+          "org.springframework.security.crypto.bcrypt.BCrypt.ekskey at pc 60",
+          "org.springframework.security.crypto.bcrypt.BCrypt.key at pc 151",
+          "org.springframework.security.crypto.bcrypt.BCrypt.key at pc 39"
+        ],
+        "tied": 87189,
+        "summaries_reused": 208
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 12600.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 12600.0,
+          "seconds": 471.138,
+          "ended": "no-verdict",
+          "ending": "unwinding-failure",
+          "phases": {
+            "loading": 0.005,
+            "lowering": 0.004,
+            "symbolic": 49.416,
+            "encoding": 46.569,
+            "solving": 375.143,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 19711639,
+            "clauses": 9187030
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 471.575,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 471.138,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.436
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "candidate",
+            "type": "java.lang.String",
+            "kind": "value",
+            "null": true,
+            "max_length": 80
+          },
+          {
+            "name": "storedHash",
+            "type": "java.lang.String",
+            "kind": "value",
+            "null": true,
+            "max_length": 80
+          }
+        ],
+        "shared_arrays": false,
+        "text": "candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null"
+      },
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "a record given to a logger goes to the handler the JDK's default logging configuration gives the root logger and nowhere else: no logger has a filter, a handler of its own or a resource bundle, and the root's one handler is a ConsoleHandler, which writes the record to System.err (no check observes it) and reports to its ErrorManager, without throwing, an exception its formatting throws",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the loop of before.org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 130 ends: no local of its frame was found that every iteration leaves greater, or every iteration leaves less, so what is proved holds of the runs in which it ends",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the loop of org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 130 ends: no local of its frame was found that every iteration leaves greater, or every iteration leaves less, so what is proved holds of the runs in which it ends",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 16,
+        "max_array_length": null,
+        "complete": false,
+        "max_value_length": 80
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:d3cb60427833314ef7f913b8bc6ef4ca4c79b923fd15a09a6224d63099b17d02",
+        "classes": 31,
+        "jdk": "25.0.5",
+        "values": [
+          {
+            "source": "jvmcontract String model 6: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
+            "jdk": "25.0.5",
+            "level": "tested",
+            "leaves_out": [
+              "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
+              "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
+              "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
+              "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
+            ]
+          }
+        ]
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+}
