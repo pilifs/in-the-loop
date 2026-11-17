@@ -17,9 +17,9 @@ loop or not.
 | Category | Loops | Runs | Cycles | With a commit | Commits | Jobs | Active | Tokens written | Cost | Per committed cycle |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | moonshot | 6 | 7 | 56 | 53 | 96 | 64 (57 passed, 7 failed) | 2.3 d | 7,291,647 | $855.37 | $16.14 |
-| brief | 30 | 57 | 312 | 309 | 383 | 209 (163 passed, 45 failed, 1 pending) | 3.3 d | 13,409,485 | $1,127.90 | $3.65 |
+| brief | 31 | 58 | 315 | 312 | 388 | 209 (163 passed, 45 failed, 1 pending) | 3.4 d | 13,528,354 | $1,136.68 | $3.64 |
 | verification | 1 | 62 | 0 | 0 | 242 | 0 | 18 h 17 min | 263,932 | $16.18 | n/a |
-| **all** | 37 | 126 | 368 | 362 | 721 | 273 (220 passed, 52 failed, 1 pending) | 6.4 d | 20,965,064 | $1,999.45 | $5.52 |
+| **all** | 38 | 127 | 371 | 365 | 726 | 273 (220 passed, 52 failed, 1 pending) | 6.5 d | 21,083,933 | $2,008.23 | $5.50 |
 
 The moonshot row includes `examples-by-hand` (3 cycles, $55.22), which a person ran by hand before the script existed. See the note under [Moonshots](#moonshots).
 
@@ -173,7 +173,8 @@ streams for a brief that ran them. The *with its streams* row adds the streams t
 | **`stream-conductor`** | 1 | 3 | 3 | 4 | 0 | `claude-opus-5-5` | 2026-11-14 | 37 min | 32 min | 12 min | 165,911 | $9.54 | $3.30 | $2.39 |
 | **`test-cost`** | 2 | 11 | 11 | 12 | 0 | `claude-opus-5-5` | 2026-11-15 | 2 h 30 min | 1 h 55 min | 9.4 min | 378,927 | $25.69 | $2.34 | $2.14 |
 | **`rehearsal`** | 2 | 2 | 2 | 2 | 0 | `claude-sonnet-5-5` | 2026-11-17 | 3.2 min | 2.3 min | 1.1 min | 8,137 | $0.51 | $0.19 | $0.26 |
-| **`domain-advances-evidence`** | 1 | 7 | 7 | 9 | 4 (3 passed, 1 pending) | `claude-opus-5-5` | 2026-11-17 | 82 min | 69 min | 8.7 min | 163,096 | $13.83 | $1.83 | $1.54 |
+| **`domain-advances-evidence`** | 1 | 8 | 8 | 12 | 4 (3 passed, 1 pending) | `claude-opus-5-5` | 2026-11-17 | 90 min | 75 min | 8.7 min | 170,072 | $14.78 | $1.83 | $1.23 |
+| **`domain-advances-challenge`** | 1 | 2 | 2 | 2 | 0 | `claude-opus-5-5` | 2026-11-17 | 40 min | 35 min | 18 min | 111,893 | $7.84 | $5.27 | $3.92 |
 
 ## Verification loop
 
@@ -249,7 +250,8 @@ run before 2026-11-06) is read from its session's prompts and marked *transcript
 | 2026-11-16 19:41 | [`2026-11-16-194140-prove-examples`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/runs/2026-11-16-194140-prove-examples.md) | templated moonshot | `claude-fable-5-2` | 4 | 29 | 5 h 19 min | 4 h 35 min | $80.01 | stopped after its item | record |
 | 2026-11-17 02:54 | [`2026-11-17-025420-rehearsal`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/runs/2026-11-17-025420-rehearsal.md) | brief | `claude-sonnet-5-5` | 1 | 1 | 1.6 min | 1.3 min | $0.22 | blocked | record |
 | 2026-11-17 02:56 | [`2026-11-17-025646-rehearsal`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/runs/2026-11-17-025646-rehearsal.md) | brief | `claude-sonnet-5-5` | 1 | 1 | 1.5 min | 1.1 min | $0.29 | work done | record |
-| 2026-11-17 12:56 | `2026-11-17-125650-domain-advances-evidence` | brief | `claude-opus-5-5` | 7 | 9 | 82 min | 69 min | $13.83 | no end recorded | transcript |
+| 2026-11-17 12:56 | `2026-11-17-125650-domain-advances-evidence` | brief | `claude-opus-5-5` | 8 | 12 | 90 min | 75 min | $14.78 | no end recorded | transcript |
+| 2026-11-17 12:56 | `2026-11-17-125651-domain-advances-challenge` | brief | `claude-opus-5-5` | 2 | 2 | 40 min | 35 min | $7.84 | no end recorded | transcript |
 
 ## Reading these numbers
 

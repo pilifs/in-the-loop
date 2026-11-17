@@ -1,0 +1,166 @@
+//! Countermodels of an observed class initializer (`jvmcontract::observed`, `--observed-initializer`) and of a class
+//! file the tool reads where a JVM reads another. The fixtures are `tests/fixtures/observed-countermodels`: `app/oc`
+//! (the entry points and the classes whose initializers are observed), a library `mr.Release` built into a
+//! multi-release JAR from `base/` and `versioned/` (the class file for Java 17 on), and `shadow/`, a class path copy
+//! of the JDK's `org.xml.sax.helpers.AttributesImpl`. `oc.M.main` runs one entry point on a JVM, and the first test
+//! holds the fixtures to what a JVM says. The checker's side of the observed initializers, the proofs it should not
+//! make, is in the fixtures' README for the stream that binds an observation (domain-advances-evidence, 2026-11-17);
+//! the two class files are refused here (`ClassPath::refused`), and the last test holds that.
+
+use std::path::{Path, PathBuf};
+use std::process::Command;
+use std::sync::OnceLock;
+
+use jvmcontract::{equivalence, property, Engine, Verdict};
+
+const NO_JBMC: &str = "/nonexistent/jbmc";
+
+fn has(tool: &str) -> bool {
+    Command::new(tool).arg("--version").output().is_ok()
+}
+
+/// The entry points' classes and the multi-release JAR, compiled: `None` without a JDK.
+struct Classes {
+    app: PathBuf,
+    jar: PathBuf,
+    shadow: PathBuf,
+}
+
+fn classes() -> Option<&'static Classes> {
+    static OUT: OnceLock<Option<Classes>> = OnceLock::new();
+    OUT.get_or_init(|| {
+        if !has("javac") || !has("java") || !has("jar") {
+            return None;
+        }
+        let sources = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/observed-countermodels");
+        let out = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("observed-countermodels-classes");
+        let _ = std::fs::remove_dir_all(&out);
+        let javac = |dir: &str, release: &str, classpath: Option<&Path>| {
+            let mut c = Command::new("javac");
+            c.args(["-g", "-proc:none", "-nowarn", "-Xlint:-options", "--release", release, "-d"]).arg(out.join(dir));
+            if let Some(cp) = classpath {
+                c.arg("-cp").arg(cp);
+            }
+            assert!(c.args(walk(&sources.join(dir))).status().expect("javac runs").success(), "{dir} compiles");
+            out.join(dir)
+        };
+        let base = javac("base", "11", None);
+        let versioned = javac("versioned", "17", None);
+        let jar = out.join("mr.jar");
+        let made = Command::new("jar").arg("--create").arg("--file").arg(&jar).arg("-C").arg(&base).arg(".").args(["--release", "17", "-C"]).arg(&versioned).arg(".").status().expect("jar runs");
+        assert!(made.success(), "the multi-release JAR is made");
+        let shadow = out.join("sax.jar");
+        let sax = javac("shadow", "8", None);
+        assert!(Command::new("jar").arg("--create").arg("--file").arg(&shadow).arg("-C").arg(&sax).arg(".").status().expect("jar runs").success(), "the copy of the JDK's class is a JAR");
+        let app = javac("app", "21", Some(&jar));
+        Some(Classes { app, jar, shadow })
+    })
+    .as_ref()
+}
+
+fn walk(dir: &Path) -> Vec<PathBuf> {
+    let mut files = Vec::new();
+    for entry in std::fs::read_dir(dir).unwrap() {
+        let path = entry.unwrap().path();
+        if path.is_dir() {
+            files.extend(walk(&path));
+        } else if path.extension().is_some_and(|e| e == "java") {
+            files.push(path);
+        }
+    }
+    files.sort();
+    files
+}
+
+/// What `oc.M` prints for each entry point, each in a JVM of its own: in English and with no `oc.value`, then the
+/// two whose initializer reads the JVM's settings once more, in Turkish and with `-Doc.value=xyz`.
+#[test]
+fn each_entry_point_is_what_a_jvm_says_it_is() {
+    jvmcontract::tool_tier!();
+    let Some(c) = classes() else { return };
+    let cp = std::env::join_paths([c.app.as_path(), c.jar.as_path(), c.shadow.as_path()]).unwrap();
+    let run = |settings: &[&str], m: &str| {
+        let out = Command::new("java").args(settings).arg("-cp").arg(&cp).args(["oc.M", m]).output().expect("java runs");
+        assert!(out.status.success(), "{m}: {}", String::from_utf8_lossy(&out.stderr));
+        String::from_utf8_lossy(&out.stdout).trim().to_string()
+    };
+    let english = ["-Duser.language=en", "-Duser.country=US"];
+    let all: Vec<String> = ["crossed", "lowered", "configured", "released", "releasedField", "shadowed"].iter().map(|m| run(&english, m)).collect();
+    assert_eq!(all.join(" "), "crossed=1 lowered=105 configured=6 released=20 releasedField=2 shadowed=0");
+    assert_eq!(run(&["-Duser.language=tr", "-Duser.country=TR"], "lowered"), "lowered=305");
+    assert_eq!(run(&["-Doc.value=xyz"], "configured"), "configured=3");
+}
+
+fn work(name: &str) -> PathBuf {
+    PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("observed-countermodels").join(name)
+}
+
+fn proving(target: &str, assert: &str, name: &str) -> property::Options {
+    let c = classes().unwrap();
+    let mut o = property::Options::new(&[c.app.clone()], target);
+    o.classpath = vec![c.jar.clone(), c.shadow.clone()];
+    o.engine = Engine::Native;
+    o.jbmc = NO_JBMC.into();
+    o.assert = Some(assert.into());
+    o.work = Some(work(name));
+    o
+}
+
+/// A class a multi-release JAR holds a class file of for Java 17 on is the one a JVM 17+ runs: `mr.Release.get()`
+/// is 20 there, not the base file's 1. The tool read only the base, and so proved `released() == 1` and
+/// `releasedField() == 1`, found `released() == 20` violated on a witness whose outcome was 1, and, with the class's
+/// initializer observed (on the JVM, the versioned file's: `a == 2`), proved `released() == 2`, the observation of
+/// one class file given to another. Now the class is refused by name wherever it is read: no verdict on any of them,
+/// and a pair whose previous version has its own copy of the JAR is an error that says why.
+#[test]
+fn a_class_a_multi_release_jar_holds_for_its_own_release_of_java_is_refused_not_read_as_its_base() {
+    jvmcontract::tool_tier!();
+    let Some(c) = classes() else { return };
+    for (target, assert, name) in [("oc.M#released", "result == 1", "base"), ("oc.M#released", "result == 20", "versioned"), ("oc.M#releasedField", "result == 1", "field")] {
+        let o = property::run(&proving(target, assert, name)).unwrap();
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{name}: {}", o.output);
+    }
+    let mut observing = proving("oc.M#released", "result == 2", "observed");
+    observing.observed_initializers = vec!["mr.Release".into()];
+    match property::run(&observing) {
+        Ok(o) => assert_eq!(o.verdict, Verdict::Unverifiable, "observed: {}", o.output),
+        Err(e) => assert!(e.to_string().contains("mr.Release"), "observed: {e}"),
+    }
+
+    let mut pair = equivalence::Options::new(&c.app, &c.app, "oc.M#released");
+    pair.engine = Engine::Native;
+    pair.jbmc = NO_JBMC.into();
+    pair.classpath = vec![c.jar.clone()];
+    pair.before_classpath = Some(vec![c.jar.clone()]);
+    pair.work = Some(work("pair"));
+    let refused = equivalence::run(&pair).unwrap_err().to_string();
+    assert!(refused.contains("mr.Release is a class of a multi-release JAR") && refused.contains("for Java 17"), "{refused}");
+
+    let mut cp = jvmcontract::classpath::ClassPath::new().with_default_jdk();
+    cp.add(&c.jar).unwrap();
+    cp.add(&c.shadow).unwrap();
+    let said = cp.load("mr/Release").map(|_| ()).unwrap_err().to_string();
+    assert!(said.contains("the tool reads only the base, so the class is refused"), "{said}");
+    assert!(cp.application_classes().unwrap().contains_key("mr/Release"), "the walks that ask which classes there are still see it");
+    if cp.has_jdk() {
+        let said = cp.load("org/xml/sax/helpers/AttributesImpl").map(|_| ()).unwrap_err().to_string();
+        assert!(said.contains("in the package org.xml.sax.helpers of the JDK's module java.xml, which a JVM loads from the module"), "{said}");
+    }
+}
+
+/// A class path copy of a class of a package of the JDK's modules (`org.xml.sax.helpers.AttributesImpl`, as
+/// xml-apis carries one) is never the one a JVM runs: `shadowed()` is 0 there. The tool read the entries before the
+/// JDK, and so proved `shadowed() == 42` and found `shadowed() == 0` violated on a witness whose outcome was 42. Now
+/// the copy is refused by name, and the class is the JDK's to the checker, a call into it a gap as anywhere else.
+#[test]
+fn a_class_path_copy_of_a_class_of_the_jdks_modules_is_refused_not_read() {
+    jvmcontract::tool_tier!();
+    if classes().is_none() {
+        return;
+    }
+    for (assert, name) in [("result == 42", "shadow-copy"), ("result == 0", "shadow-jdk")] {
+        let o = property::run(&proving("oc.M#shadowed", assert, name)).unwrap();
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{name}: {}", o.output);
+        assert!(o.output.contains("org.xml.sax.helpers.AttributesImpl.<init>()"), "{name}: the JDK's constructor is the gap: {}", o.output);
+    }
+}

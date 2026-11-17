@@ -96,7 +96,55 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
 
 ## Progress
 
-- Nothing yet.
+- 2026-11-17, item 1, pairing (`yypzyxmwluyt`): **all four holes reproduced** as false proofs on the checker as it
+  was (`lupovnmv`), with five countermodels in `lib/tests/fixtures/pairing-countermodels` (its README has the table,
+  the reproduction and the checker-side test). Each pair differs when each version runs alone on a JVM
+  (`each_version_alone_is_what_a_jvm_says_it_is`) and is **Verified** as agreeing: `locale` (the previous version sets
+  a Turkish default the new one lowers under), `flag` (a library static shared without `--before-classpath`),
+  `thrown` (two unrelated `RuntimeException`s), `argument` (`IllegalArgumentException` against a subclass), `scoped`
+  (a scope that is false everywhere but sets the default locale, run before both calls). The order is observable:
+  with the roles swapped `flag` is a violation, and so is `flag` with `--before-classpath` in either order (test
+  `in_the_other_order_or_on_its_own_library_the_pair_sees_the_static_differ`); `locale` swapped is unverifiable
+  only because the interpreter lowers without the locale (`interp/natives.rs`, a conservative miss, not a false
+  proof). The pairing is the preservation stream's this run, so no refusal is committed here: the failing checker
+  test is sent to `domain-advances-preservation` as a `failure` item, to land with its fix.
+  *Audit*: the accepted results that used the pair are 289's and 290's `preservation`. Both pass
+  `--before-classpath`, their allowed changes call no release code, their adapters set no default locale: not
+  affected by `locale`, `flag` or `scoped`. Both claims say "throw the same exception", which the pair checks by
+  category: **to the watcher**, each says less than its claim on any input where the releases throw different
+  classes of one category; whether one exists is not shown, so they stand open on that point until a rerun under
+  exact classes (notes added to both examples). 288's adapter sets the default before each read, and 286, 287
+  and 307 have no decided preservation.
+- Test note: `test_costs.py run --changed` chose `llm-dlc/tools/test_brief_run.py`, which fails inside a stream
+  because it inherits `RUN_STREAMS_WATCHER` and puts its made-up streams to the real watcher (the watcher answered
+  `leave`, citing its D001); it passes with the variable unset (39 tests).
+- 2026-11-17, item 2, observed initializers: **reproduced, three handed over and two refused**.
+  - The fixtures are in `lib/tests/fixtures/observed-countermodels`; its README has the table, the audit and the checker-side test.
+  - `lib/tests/observed_countermodels.rs` holds each fixture to a JVM.
+  - These were proved on the checker as it was (`yypzyxmw`), where a JVM says otherwise:
+    - `crossed`, the outside review's `A.<clinit> { B.x = 1; k = 7; }`: `result == 0` is proved where a JVM gives 1. Only `A`'s own fields are taken.
+    - `lowered`, `"I".toLowerCase()` observed in a Turkish JVM: `result == 305` is proved, and the result no longer states the locale assumption it states without the observation. The observer's JVM takes its locale from the environment.
+    - `configured`, `System.getProperty` observed with the property set: proved.
+    - `released`, a multi-release JAR. Without any observation, `result == 1` is proved where a JVM 17+ gives 20. With the class observed, the versioned file's state is put on the base file's code: the observation is taken on one class file and used on another.
+    - `shadowed`, a class path copy of the JDK's `org.xml.sax.helpers.AttributesImpl`: `result == 42` is proved where a JVM gives 0.
+  - The observation's stated assumption covers none of the first three. The last two are holes in the class path reader rather than in the observation.
+  - Class path order was otherwise tried and found guarded: the observer gets the check's class path in the check's order (`observed.rs`), and both it and `ClassPath::load` take the first entry. The JDK's packages were the exception, and are now refused.
+  - **Handed over**: `crossed`, `lowered` and `configured` go to `domain-advances-evidence`, whose brief's item 5 binds an observation. The test is in the fixtures' README, and it is sent as a `failure` item citing this commit, once the commit is in (the inbox needs a commit). Its id goes in the next entry.
+  - **Refused here**: `released` and `shadowed`, by `ClassPath::refused` in `lib/src/classpath.rs`. No stream owns the class path reader.
+    - A class is refused by name, on load or when copied for a pair, if a multi-release JAR holds a versioned file of it, or if an entry holds it in a package of the JDK's image.
+    - Exempt from the second case: a class file identical to the image's own, and the tool's own models. The tool puts both on a class path itself (a contract's proof against the JDK's bytecode, and JBMC's class path); 13 tests caught the first, broader version.
+    - Enumerating every class still reads the first entry's file.
+    - Not covered: an override that only a versioned file declares, and resources.
+  - *Audit*:
+    - 290's `fixed-security` and `preservation` rest on five observed classes. Read from the hash-checked JARs, no `<clinit>` of the five writes another class's static. The two servlet classes read the default locale, but into a field the observation does not hold, so a read of it is refused. Not affected.
+    - Of the examples' JARs, only 288's spring-core 6.1.13/14 are multi-release, with one versioned class (`VirtualThreadDelegate`). 288's adapter reaches none of the 7 classes that name it.
+    - No example's JAR holds a class of a JDK package.
+    - No accepted result rests on these holes, so there is nothing for the watcher.
+- Inbox:
+  - `domain-advances-challenge-I001`: `test_brief_run.py` inherits the watcher. Noted, and neither changed nor blocked on: this cycle's runs unset `RUN_STREAMS_WATCHER`.
+  - Last cycle's pairing failure item went to preservation as `domain-advances-preservation-I003`.
+- Tests: `test_costs.py run --changed`, which is the whole Rust default tier since `lib/src` changed, passed on the final code. Its only failure was the JBMC timing test `jbmc::tests::a_run_that_dies_gives_no_verdict_whatever_it_printed`, which is flaky: it failed once and passed on retry, and it is unrelated. An earlier run had the same with `..._never_meets_the_second_attempt`.
+- Next: item 3, what the foundation's fixes leave (`Engine::reads` and `Engine::keeps`), starting with the final static that an initializer cycle leaves unset at a lemma's call.
 - Status: working
 
 ## Loop settings

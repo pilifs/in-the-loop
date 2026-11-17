@@ -19,7 +19,28 @@ use crate::Error;
 
 enum Entry {
     Dir(PathBuf),
-    Jar(crate::zip::ZipArchive, PathBuf),
+    /// A jar, and the class files it holds for a release of Java of their own where its manifest says it is a
+    /// multi-release JAR ([`versioned_classes`]).
+    Jar(crate::zip::ZipArchive, PathBuf, BTreeMap<String, Vec<u32>>),
+}
+
+/// The classes a multi-release JAR holds a class file of for a release of Java of their own
+/// (`META-INF/versions/N/x/Y.class`), each with those releases: none unless the manifest's main section says
+/// `Multi-Release: true`, without which a JVM reads only the base class files.
+fn versioned_classes(zip: &crate::zip::ZipArchive) -> Result<BTreeMap<String, Vec<u32>>, Error> {
+    let mut out: BTreeMap<String, Vec<u32>> = BTreeMap::new();
+    let Some(manifest) = zip.read("META-INF/MANIFEST.MF")? else { return Ok(out) };
+    let text = String::from_utf8_lossy(&manifest);
+    let main = text.split("\n").map(|l| l.trim_end_matches('\r')).take_while(|l| !l.is_empty());
+    if !main.filter_map(|l| l.split_once(':')).any(|(k, v)| k.trim().eq_ignore_ascii_case("Multi-Release") && v.trim().eq_ignore_ascii_case("true")) {
+        return Ok(out);
+    }
+    for name in zip.names() {
+        let Some((release, class)) = name.strip_prefix("META-INF/versions/").and_then(|r| r.split_once('/')) else { continue };
+        let (Ok(release), Some(class)) = (release.parse::<u32>(), class.strip_suffix(".class")) else { continue };
+        out.entry(class.to_string()).or_default().push(release);
+    }
+    Ok(out)
 }
 
 impl Entry {
@@ -33,7 +54,7 @@ impl Entry {
                     Err(e) => Err(Error::new(format!("cannot read {}: {e}", file.display()))),
                 }
             }
-            Entry::Jar(zip, _) => zip.read(&format!("{class_name}.class")),
+            Entry::Jar(zip, _, _) => zip.read(&format!("{class_name}.class")),
         }
     }
 
@@ -45,7 +66,7 @@ impl Entry {
                 names.sort();
                 Ok(names)
             }
-            Entry::Jar(zip, _) => Ok(zip
+            Entry::Jar(zip, _, _) => Ok(zip
                 .names()
                 .filter(|n| n.ends_with(".class") && !n.starts_with("META-INF/"))
                 .map(|n| n.trim_end_matches(".class").to_string())
@@ -56,7 +77,7 @@ impl Entry {
     fn display(&self) -> String {
         match self {
             Entry::Dir(d) => d.display().to_string(),
-            Entry::Jar(_, p) => p.display().to_string(),
+            Entry::Jar(_, p, _) => p.display().to_string(),
         }
     }
 }
@@ -121,6 +142,10 @@ pub struct ClassPath {
     pub(crate) requested_models: RefCell<std::collections::BTreeSet<String>>,
     /// The time spent reading and parsing class files, for a checker's phases ([`crate::phases`]).
     loading: std::cell::Cell<std::time::Duration>,
+    /// Each class asked about, and why it is refused if it is ([`ClassPath::refused`]).
+    refusals: RefCell<HashMap<String, Option<String>>>,
+    /// The packages of the JDK's image, once asked.
+    jdk_packages: std::cell::OnceCell<std::collections::HashSet<String>>,
 }
 
 impl Default for ClassPath {
@@ -133,7 +158,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jdk: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default() }
+        ClassPath { entries: Vec::new(), jdk: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -155,13 +180,16 @@ impl ClassPath {
         if path.is_dir() {
             self.entries.push(Entry::Dir(path.to_path_buf()));
         } else if path.is_file() {
-            self.entries.push(Entry::Jar(crate::zip::ZipArchive::open(path)?, path.to_path_buf()));
+            let zip = crate::zip::ZipArchive::open(path)?;
+            let versioned = versioned_classes(&zip)?;
+            self.entries.push(Entry::Jar(zip, path.to_path_buf(), versioned));
         } else {
             return Err(Error::new(format!("{} is neither a directory nor a jar", path.display())));
         }
         self.cache.borrow_mut().clear();
         self.classes.replace(None);
         self.initializer_runs.borrow_mut().clear();
+        self.refusals.borrow_mut().clear();
         Ok(self)
     }
 
@@ -179,12 +207,16 @@ impl ClassPath {
     /// Uses the JDK found through `JAVA_HOME` or `PATH` for JDK class shapes, if there is one.
     pub fn with_default_jdk(mut self) -> ClassPath {
         self.jdk = JImage::open_default();
+        self.refusals.borrow_mut().clear();
+        self.jdk_packages = Default::default();
         self.initializer_runs.borrow_mut().clear();
         self
     }
 
     pub fn with_jdk(mut self, jdk: JImage) -> ClassPath {
         self.jdk = Some(jdk);
+        self.refusals.borrow_mut().clear();
+        self.jdk_packages = Default::default();
         self.initializer_runs.borrow_mut().clear();
         self
     }
@@ -215,7 +247,7 @@ impl ClassPath {
                     }
                     std::fs::read(&file).map_err(|e| Error::new(format!("cannot read {}: {e}", file.display())))?
                 }
-                Entry::Jar(zip, _) => match zip.read(name)? {
+                Entry::Jar(zip, _, _) => match zip.read(name)? {
                     Some(bytes) => bytes,
                     None => continue,
                 },
@@ -237,6 +269,9 @@ impl ClassPath {
     /// An application class's file as its first entry holds it, unparsed, or none: for a copy of it
     /// ([`crate::relocate::with_closure`]).
     pub fn application_bytes(&self, name: &str) -> Result<Option<Vec<u8>>, Error> {
+        if let Some(refused) = self.refused(name) {
+            return Err(Error::new(refused));
+        }
         for entry in &self.entries {
             if let Some(bytes) = entry.read(name)? {
                 return Ok(Some(bytes));
@@ -252,7 +287,7 @@ impl ClassPath {
             if out.contains_key(&name) {
                 continue;
             }
-            if let Some(loaded) = self.load(&name)? {
+            if let Some(loaded) = self.load_base(&name)? {
                 out.insert(name, loaded.class);
             }
         }
@@ -272,8 +307,95 @@ impl ClassPath {
     }
 
     /// Loads a class by internal name: the application entries first, then the JDK, then the tool's models. `None`
-    /// if nowhere.
+    /// if nowhere. An error for a class the tool would read another class file of than a JVM
+    /// ([`ClassPath::refused`]).
     pub fn load(&self, name: &str) -> Result<Option<Loaded>, Error> {
+        if let Some(refused) = self.refused(name) {
+            return Err(Error::new(refused));
+        }
+        self.load_base(name)
+    }
+
+    /// Why a class is refused by name, where the class file the tool would read of it is not the one a JVM loads
+    /// (`lib/tests/observed_countermodels.rs`, where each was a false proof):
+    /// - the first entry that holds it is a multi-release JAR with a class file of it for a release of Java of its
+    ///   own (`META-INF/versions/N/`), which a JVM of that release or later loads in place of the base one, and the
+    ///   tool reads only the base;
+    /// - an entry holds it in a package of the JDK's image (`org.xml.sax.helpers`, `javax.xml.parsers`): a JVM
+    ///   loads a class of a package of a module of the boot layer from that module, never from the class path,
+    ///   where the tool reads the entries first. Not where the entry's class file is the image's own, byte for
+    ///   byte, or one of the tool's models: the tool puts those on a class path itself.
+    ///
+    /// Refused, not read, until the class file taken is the JVM's.
+    pub fn refused(&self, name: &str) -> Option<String> {
+        if let Some(known) = self.refusals.borrow().get(name) {
+            return known.clone();
+        }
+        let refused = self.versioned(name).or_else(|| self.shadows_the_jdk(name));
+        self.refusals.borrow_mut().insert(name.to_string(), refused.clone());
+        refused
+    }
+
+    /// [`ClassPath::refused`]'s first case.
+    fn versioned(&self, name: &str) -> Option<String> {
+        if !self.entries.iter().any(|e| matches!(e, Entry::Jar(_, _, versioned) if versioned.contains_key(name))) {
+            return None;
+        }
+        for entry in &self.entries {
+            match entry {
+                Entry::Jar(zip, path, versioned) if zip.contains(&format!("{name}.class")) || versioned.contains_key(name) => {
+                    let releases = versioned.get(name)?;
+                    let releases: Vec<String> = releases.iter().map(u32::to_string).collect();
+                    return Some(format!(
+                        "{} is a class of a multi-release JAR ({}) that holds a class file of it for Java {} (META-INF/versions/), which a JVM of that release or later loads in place of the base class file; the tool reads only the base, so the class is refused (lib/src/classpath.rs)",
+                        name.replace('/', "."),
+                        path.display(),
+                        releases.join(", ")
+                    ));
+                }
+                Entry::Jar(..) => {}
+                Entry::Dir(dir) => {
+                    if dir.join(format!("{name}.class")).is_file() {
+                        return None;
+                    }
+                }
+            }
+        }
+        None
+    }
+
+    /// [`ClassPath::refused`]'s second case.
+    fn shadows_the_jdk(&self, name: &str) -> Option<String> {
+        // The tool's own models are put on a class path as an entry (`models::write_to`, JBMC's): each is a stand-in
+        // for the JDK's class by design, and none is the application's.
+        if crate::models::find(name).is_some() {
+            return None;
+        }
+        let jdk = self.jdk.as_ref()?;
+        let package = name.rsplit_once('/').map_or("", |(p, _)| p);
+        let packages = self.jdk_packages.get_or_init(|| jdk.class_names().filter_map(|c| c.rsplit_once('/').map(|(p, _)| p.to_string())).collect());
+        if !packages.contains(package) {
+            return None;
+        }
+        let (entry, bytes) = self.entries.iter().find_map(|e| e.read(name).ok().flatten().map(|b| (e, b)))?;
+        // The JDK's own class file, put on a class path so that its bytecode is run (`contract_proving`, JBMC's
+        // class path), is the class a JVM loads.
+        if jdk.read_class(name).ok().flatten().is_some_and(|own| own == bytes) {
+            return None;
+        }
+        let module = jdk.module_of(name).or_else(|| jdk.class_names().find(|c| c.rsplit_once('/').is_some_and(|(p, _)| p == package)).and_then(|c| jdk.module_of(c)));
+        Some(format!(
+            "{} is on the class path ({}) in the package {} of the JDK's module {}, which a JVM loads from the module and never from the class path; the tool would read the class path's class file, so the class is refused (lib/src/classpath.rs)",
+            name.replace('/', "."),
+            entry.display(),
+            package.replace('/', "."),
+            module.as_deref().unwrap_or("of the boot layer")
+        ))
+    }
+
+    /// [`ClassPath::load`] of the class file the entries hold first, which the enumeration of every class reads: a
+    /// class refused by name is still one of the application's, for the walks that ask which classes there are.
+    fn load_base(&self, name: &str) -> Result<Option<Loaded>, Error> {
         if let Some(cached) = self.cache.borrow().get(name) {
             return Ok(cached.clone());
         }
