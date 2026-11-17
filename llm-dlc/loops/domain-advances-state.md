@@ -270,6 +270,18 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
   the property's type through the same reflection (`AbstractPropertyBindingResult.getFieldType`, `getPropertyType`),
   so a stand-in for `processLocalProperty` alone leaves that read on the real path: the stand-in has to answer the
   property's type too, or stand at `BeanWrapperImpl.getLocalPropertyHandler`.
+- 2026-11-17, a soundness fix to the effect contract's stub (nothing of 286 decided; the frozen claim unchanged).
+  Inbox: `domain-advances-state-I013` taken. The challenge stream's countermodels (`uqrzluvx`, `sc.Store`, `sc.Touch`)
+  showed the stub's `effect` intrinsic put each written field into the object without asking `Engine::keeps`, the gate
+  every `putfield` meets, so a proof by induction (`Store.f`, where a JVM gives `f(2) == -1`) and an empty write set
+  (`Touch.touch`, which writes a static's bean) were proved through `sc.Bean#setLevel`'s contract. The README's first
+  option is taken: each write of the stub now asks `keeps` before it is made, so both are refused for the same write
+  as when the method runs as written. And the verdict now states a write set ("and writes nothing that was there before
+  the call"), also where no field is left to read after the call. The fixture, its README and its JVM
+  test are copied unchanged from `uqrzluvx`; the README's test is added to `lib/tests/effect_countermodels.rs`
+  (`an_effect_contracts_writes_meet_the_induction_and_the_write_set`), also requiring the contract to be proved and
+  the refusal to name the write. It fails with the gate removed (by mutation). No example rests on it (no example has
+  `writes:`, and the one `decreases:` is a lemma whose proof takes no contract).
 - Next: step 3, option 2. A stand-in for `AbstractNestablePropertyAccessor.processLocalProperty(PropertyTokenHolder,
   PropertyValue)` on a wrapped object of exactly one class, checked on a JVM by sampling against the real method:
   - Spring's lookup (exact, uncapitalized, capitalized) over the property names and write methods the JVM's

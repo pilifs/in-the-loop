@@ -782,7 +782,7 @@ fn an_effect_contract_stands_in_for_the_honest_setter_and_the_adversarial_one_is
     };
     let honest = app("honestRename", "result", Some(effect_contract("Honest", "")), "honest");
     assert_eq!(honest.verdict, Verdict::Verified, "{}", honest.output);
-    assert!(honest.output.contains("effect: ✓ claims.Frames$Honest#setDisplayName satisfies `(this.displayName == name) && this.admin == \\old(this.admin)`"), "{}", honest.output);
+    assert!(honest.output.contains("effect: ✓ claims.Frames$Honest#setDisplayName satisfies `(this.displayName == name) && this.admin == \\old(this.admin)`, and writes this.displayName and nothing else that was there before the call"), "{}", honest.output);
     let stated = honest.stated.as_ref().expect("a statement");
     assert!(stated.assumptions.iter().any(|a| a.text == "the effect contract of claims.Frames$Honest.setDisplayName(Ljava/lang/String;)V, proved beside this check"), "the contract stood in for the call: {:?}", stated.assumptions);
     let refuted = app("adminAfterRename", "!result", Some(effect_contract("Adversarial", "")), "adversarial");

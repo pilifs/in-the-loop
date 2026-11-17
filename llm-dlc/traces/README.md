@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 137, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-17 16:43 UTC |
-| Prompts | 2,921 |
-| Model calls | 29,400 |
-| Tool calls | 30,363 (536 failed) |
-| Compactions | 431 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-17 17:01 UTC |
+| Prompts | 2,926 |
+| Model calls | 29,437 |
+| Tool calls | 30,399 (536 failed) |
+| Compactions | 432 |
 | Subagents | 21 |
-| Tokens written | 29,528,572 |
-| Tokens read | 4,876,180,319 (98.1% from cache) |
-| Commits with a trace | 905 |
-| Log snapshots | 1,182 (2613.1 MB gzipped, 1,162 uploaded) |
+| Tokens written | 29,545,152 |
+| Tokens read | 4,879,167,878 (98.1% from cache) |
+| Commits with a trace | 906 |
+| Log snapshots | 1,183 (2616.0 MB gzipped, 1,162 uploaded) |
 
 ## Sessions
 
@@ -164,7 +164,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 12 | 21 | 17 | 2 | 2 | 56,861 | 1 |
 | 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | open | 7 min | `claude-opus-5-5` | 2 | 5 | 4 | 0 | 0 | 56,756 | 1 |
 | 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | open | 13 min | `claude-opus-5-5` | 1 | 48 | 49 | 1 | 0 | 148,170 | 1 |
-| 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | open | 3 h 46 min | `claude-opus-5-5` | 85 | 558 | 523 | 8 | 10 | 234,168 | 14 |
+| 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | open | 4 h 4 min | `claude-opus-5-5` | 90 | 595 | 559 | 8 | 11 | 234,168 | 15 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -310,15 +310,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 8,137 | 42 | 87,022 | 814,514 | 90.3% | 111 |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 2,242 | 10 | 28,745 | 226,501 | 88.7% | 114 |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 38,033 | 96 | 136,827 | 4,652,464 | 97.1% | 126 |
-| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 409,781 | 1,186 | 1,426,370 | 60,242,208 | 97.7% | 150 |
+| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 426,361 | 1,260 | 1,518,591 | 63,137,472 | 97.6% | 152 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 26,980 | 88.9% | 137 |
-| `Read` | 1,272 | 4.2% | 56 |
-| `Edit` | 957 | 3.2% | 54 |
+| `Bash` | 27,015 | 88.9% | 137 |
+| `Read` | 1,273 | 4.2% | 56 |
+| `Edit` | 957 | 3.1% | 54 |
 | `Write` | 645 | 2.1% | 54 |
 | `ToolSearch` | 166 | 0.5% | 42 |
 | `Monitor` | 122 | 0.4% | 49 |
@@ -1244,6 +1244,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 903 | change `vvpxytqs` | Under --gaps assume, an object a JDK call is taken to return is of its declared class only where that class is final: HashSet.clone() and Date.clone() are no longer proved to return no HashSet and no Date | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/0c20377bf1c203036d989aff2a21b2dc5989bb24f418a37309eb534c503a91d4.jsonl.gz)) |
 | 904 | change `twtuqvvr` | An effect contract's proof reads no final field of its receiver or arguments: the challenge stream's two callers through a caller-made final field are refused | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/59a978ebae41f83dd51f046b07d362ccc2eb4015c6893eada0b5da9c1c513010.jsonl.gz)) |
 | 905 | change `uxomquou` | The state line takes the evidence line's observation binding of mmnoqopr whole; the fix of the binding countermodels is left to the evidence line | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/ed6bcf793b4ac68371ff0b167752b986b6b7faf42d8ea6d46242d636212670bd.jsonl.gz)) |
+| 906 | change `kktznxnk` | An effect contract's stub meets the write gate: the challenge stream's proof by induction and empty write set through a contracted setter are refused | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/aba1f6e54b7f740b9a9525eaa7cfa374c7bd00cb8c710266fe75e665a5be7a96.jsonl.gz)) |
 
 ## Logs
 
@@ -1387,7 +1388,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 1 | 1 | 0.3 MB | [`965570933c02`](https://terminalvalue.net/raw-traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/965570933c0206c64a18c5652f4f74be1de3807449c6f9f9a26e20a3211055fc.jsonl.gz) |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 1 | 0 | 0.1 MB | `887466d85ae2`, not uploaded |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 1 | 0 | 0.2 MB | `fadef0a55901`, not uploaded |
-| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 13 | 0 | 17.6 MB | `ed6bcf793b4a`, not uploaded |
+| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 14 | 0 | 20.5 MB | `aba1f6e54b7f`, not uploaded |
 
 ## Session notes
 

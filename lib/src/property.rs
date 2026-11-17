@@ -1158,6 +1158,13 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let and_throws = if throws_text.is_empty() { String::new() } else { format!(", and {}", throws_text.join(", and ")) };
     // A property that is its throws clauses alone claims that the method returns elsewhere.
     let claim = if assertion == "true" && !signals.is_empty() { "returns".to_string() } else { format!("satisfies `{assertion}`") };
+    // A write set is part of what is claimed, also where no field is left to read after the call and the engine's
+    // refusals are the whole frame.
+    let claim = match &options.writes {
+        Some(writes) if writes.is_empty() => format!("{claim}, and writes nothing that was there before the call"),
+        Some(writes) => format!("{claim}, and writes {} and nothing else that was there before the call", writes.join(", ")),
+        None => claim,
+    };
 
     let mut findings = Vec::new();
     let mut counterexample = None;

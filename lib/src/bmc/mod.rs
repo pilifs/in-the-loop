@@ -4051,7 +4051,8 @@ impl<'a> Engine<'a> {
             // No run of the call takes the path: what it returned does not satisfy the contract's assertion.
             ("infeasible", []) => return Ok(Some(End::Infeasible)),
             // A checked effect contract's writes, from the stub's frame ([`Effect`]): each field it writes holds the
-            // parameter its assertion says, or any value of its primitive type; nothing else changes.
+            // parameter its assertion says, or any value of its primitive type; nothing else changes. Each write
+            // passes [`Engine::keeps`] as the method's own would.
             ("effect", [Val::I(index)]) => {
                 let index = self.b.constant_value(index).ok_or_else(|| Stop::Unsupported("an effect contract's number is not a constant".into()))? as usize;
                 let effect = self.effects.get(index).cloned().ok_or_else(|| Stop::Unsupported(format!("no effect contract {index}")))?;
@@ -4081,6 +4082,8 @@ impl<'a> Engine<'a> {
                             other => return unsupported(format!("an effect contract leaves the field {} of type {other} any value", write.field)),
                         },
                     };
+                    // The gate the method's own putfield meets: a proof by induction and a write set rest on it.
+                    self.keeps(path, Some(o), "writes a field of an object made before it was called")?;
                     let key = self.field_key(path, o, &write.owner, &write.field, &write.descriptor)?;
                     path.objects[o].fields.insert(key, value);
                 }
