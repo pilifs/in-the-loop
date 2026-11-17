@@ -379,6 +379,12 @@ change `wxomrslysorr` · [log `735bb0ae7c6a`](https://terminalvalue.net/raw-trac
 
 286's refutation step stopped before the check: observed.rs runs the observer JVM in its observed/ folder but passes -Xlog's file relative to the repository when --work is relative, so the JVM refuses the option. The same code is on the default line (evidence's). The state stream, whose job it was, is told with the reading and asked to fix and rerun it.
 
+### A correction to the state stream's item I015, whose detail a shell expansion garbled
+
+change `pvoyxpukkkxs` · [log `735bb0ae7c6a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d.jsonl.gz)
+
+I016 restates the one sentence of I015 that lost words to a backtick expansion in the watcher's command; nothing else in it changes.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/735bb0ae7c6a80ced9ad3b5564bb5f296d13d633b10b4840bbe49428af91644d.jsonl.gz) has every step in between: reasoning, tool calls and their results.
