@@ -659,7 +659,8 @@ def tier_runs(tier, doc, root=ROOT, only=None, tests=(), test_threads=None):
     if tier not in RUN_TIERS:
         raise ValueError(f"tier {tier!r}: the tiers to run are {', '.join(RUN_TIERS)}")
     value = {"default": "tool", "unit": "unit", "proof": "proof"}[tier]
-    env = {"JVMCONTRACT_TEST_TIER": value, "TEST_COST": value}
+    # VERIFY_MACHINE_CONFIG empty: no test reads this machine's runner settings (verification/pipeline.py).
+    env = {"JVMCONTRACT_TEST_TIER": value, "TEST_COST": value, "VERIFY_MACHINE_CONFIG": ""}
     runs = []
     if only in (None, "rust"):
         # The default and unit tiers in the test-fast profile (lib/Cargo.toml: dev, lightly optimised), the proof

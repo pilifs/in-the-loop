@@ -10,7 +10,8 @@ intervals. This is what it runs. BRIEF is a brief's name or file, as run-streams
         in its way (`blocking`), what to know (`notes`), and the verification runner's budget beside this many
         loops. Exit 1 while anything blocks.
     brief_run.py budget BRIEF [--apply | --restore]
-        the runner's budget beside the run's loops, against verification/pipeline.local.toml; --apply lowers the
+        the runner's budget beside the run's loops, against the file the runner takes it from (this checkout's
+        verification/pipeline.local.toml, else the machine's ~/.config/in-the-loop/pipeline.local.toml); --apply lowers the
         file's values to it and keeps the old ones, --restore puts them back when the run has ended.
     brief_run.py foundation BRIEF [--model ID] [--effort LEVEL] [--memory SIZE] [--prompt TEXT]
         the foundation stage: one session (Fable 5.2, high effort) that reads the brief before any stream
@@ -223,11 +224,19 @@ LOCAL = "verification/pipeline.local.toml"
 BUDGET_KEYS = ("workers", "cpus", "memory")
 
 
-def local_budget(root: Path) -> dict:
-    """The [runner] values verification/pipeline.local.toml sets, of the three the budget names."""
+def machine_config() -> Path | None:
+    """The machine's runner settings, read by every workspace (verification/pipeline.py's machine_config)."""
+    named = os.environ.get("VERIFY_MACHINE_CONFIG")
+    if named is not None:
+        return Path(named) if named else None
+    return Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config") / "in-the-loop" / "pipeline.local.toml"
+
+
+def file_budget(path: Path | None) -> dict:
+    """The [runner] values a settings file sets, of the three the budget names."""
     out, section = {}, None
     try:
-        lines = (root / LOCAL).read_text().splitlines()
+        lines = path.read_text().splitlines() if path else []
     except OSError:
         return out
     for line in lines:
@@ -236,6 +245,20 @@ def local_budget(root: Path) -> dict:
         elif section == "runner" and (m := re.match(r'^(workers|cpus|memory)\s*=\s*"?([^"#\s]+)"?', line)):
             out[m[1]] = m[2]
     return out
+
+
+def budget_file(root: Path) -> Path:
+    """The file the runner takes its budget from: this checkout's verification/pipeline.local.toml when it sets one,
+    which outranks the machine's, else the machine's file (pipeline.py reads both)."""
+    own, machine = root / LOCAL, machine_config()
+    if file_budget(own) or not (machine and machine.exists()):
+        return own
+    return machine
+
+
+def local_budget(root: Path) -> dict:
+    """The [runner] values the runner's budget file sets (budget_file), of the three the budget names."""
+    return file_budget(budget_file(root))
 
 
 def gib(text) -> float:
@@ -256,7 +279,7 @@ def over_budget(have: dict, want: dict) -> list[str]:
 
 
 def write_budget(root: Path, values: dict) -> None:
-    path = root / LOCAL
+    path = budget_file(root)
     lines, section, left = path.read_text().splitlines(), None, dict(values)
     for i, line in enumerate(lines):
         if m := re.match(r"^\[([^\]]+)\]", line):
@@ -266,7 +289,7 @@ def write_budget(root: Path, values: dict) -> None:
             comment = re.search(r"\s+#.*$", line)
             lines[i] = f'{m[1]}{m[2]}{json.dumps(value) if m[1] == "memory" else int(value)}{comment[0] if comment else ""}'
     if left:
-        raise Problem(f"{LOCAL} sets no [runner] {', '.join(left)}: add them by hand, as verification/README.md shows")
+        raise Problem(f"{path} sets no [runner] {', '.join(left)}: add them by hand, as verification/README.md shows")
     tmp = path.with_name(path.name + ".tmp")
     tmp.write_text("\n".join(lines) + "\n")
     os.replace(tmp, path)
@@ -282,13 +305,13 @@ def cmd_budget(run: Run, apply: bool, restore: bool) -> int:
             return 0
         write_budget(run.root, kept)
         run.update(budgetBefore=None)
-        print(f"{LOCAL} has its values of before the run again: {kept}. A runner at work keeps its budget until its run ends.")
+        print(f"{budget_file(run.root)} has its values of before the run again: {kept}. A runner at work keeps its budget until its run ends.")
         return 0
     over = over_budget(have, want)
     if apply and over:
         run.update(budgetBefore=kept or {k: have[k] for k in BUDGET_KEYS if k in have})
         write_budget(run.root, {k: want[k] for k in BUDGET_KEYS if k in have})
-        print(f"lowered in {LOCAL}: {'; '.join(over)}. A runner at work keeps its budget until its run ends: "
+        print(f"lowered in {budget_file(run.root)}: {'; '.join(over)}. A runner at work keeps its budget until its run ends: "
               f"`brief_run.py budget {run.name} --restore` puts the old values back after the run.")
         return 0
     print(json.dumps({"beside": f"{want['loops']} loop(s) of {want['loopMemory']}", "runner": {k: want[k] for k in BUDGET_KEYS},
@@ -361,7 +384,7 @@ def preflight(run: Run) -> dict:
     budget = runner_budget(len(run.plan["streams"]), bool(out["integration"]))
     over = over_budget(local_budget(root), budget)
     if over:
-        notes.append(f"{LOCAL} gives the runner more than is left beside {budget['loops']} loop(s): {'; '.join(over)}. "
+        notes.append(f"{budget_file(run.root)} gives the runner more than is left beside {budget['loops']} loop(s): {'; '.join(over)}. "
                      f"`brief_run.py budget {run.name} --apply` lowers it for the run")
     foundation = run.read().get("foundation") or {}
     out.update(foundation={k: foundation.get(k) for k in ("session", "ended", "ok", "commit", "landed", "cost")} if foundation else None,
@@ -842,7 +865,7 @@ def collect(run: Run) -> dict | None:
 
 def start_runner(run: Run, status: dict) -> dict | None:
     """Start the runner (verification/pipeline.py run, no model) when jobs this machine can run wait and no runner
-    is at work. It takes the budget verification/pipeline.local.toml gives (`budget --apply`), runs until the queue
+    is at work. It takes the budget the runner's settings give (`budget --apply`), runs until the queue
     is empty and ends; the next look starts it again when more jobs come. A job committed while it runs is
     announced to it (nudge), once."""
     root = run.root

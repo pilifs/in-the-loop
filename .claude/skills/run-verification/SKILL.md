@@ -24,7 +24,8 @@ commands by hand to see: the runner is how they run, under limits.
    budget allows, so a run ends only when nothing is left. Give it the budget the machine has now: check
    `free -h`, which feature loops are running (`systemctl --user list-units 'feature-loop-*'`), each in a scope
    of its own with its cap (3.5 GB unless its brief or `FEATURE_LOOP_MEMORY_MAX` sets another), and whether
-   `run-streams.sh` is running (`pgrep -fa run-streams.sh`). A machine with `verification/pipeline.local.toml` gives,
+   `run-streams.sh` is running (`pgrep -fa run-streams.sh`). A machine with settings of its own (`~/.config/in-the-loop/pipeline.local.toml`, or a checkout's
+   `verification/pipeline.local.toml`) gives,
    in its header, a table of the runner's `--memory`, `--cpus` and `--workers` for each of those situations: pass the
    row that matches. Its `[runner]` values are the row for the most loops at once, so a plain `run` is always safe;
    never go above a row for fewer loops than are running, since memory left to a loop is what keeps it from being

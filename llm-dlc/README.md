@@ -232,7 +232,8 @@ under way (`brief_run.py status NAME` first). The watcher does none of the brief
    session and status) and what `run-streams.sh` would otherwise stop at once it had started: a stream without a
    brief or a workspace, two streams naming one workspace, a forgotten workspace's folder in the way, a brief
    without a status line, another run already under way. It also says what is left for the verification runner
-   beside this many loops, and `brief_run.py budget NAME --apply` lowers `verification/pipeline.local.toml` to
+   beside this many loops, and `brief_run.py budget NAME --apply` lowers the runner's settings file (the machine's,
+   `~/.config/in-the-loop/pipeline.local.toml`, unless the checkout's own sets a budget) to
    it for the run (`--restore` afterwards): a runner budgeted for one loop beside four would take the machine
    past its memory.
 2. **The foundation** (`brief_run.py foundation NAME`): one session on Fable 5.2 at high effort, given the brief
