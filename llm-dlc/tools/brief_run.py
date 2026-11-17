@@ -28,6 +28,9 @@ intervals. This is what it runs. BRIEF is a brief's name or file, as run-streams
         or leave), `attention` (the integration check stopped passing, or a decision is open for the user),
         `verification` (no verification loop ran while jobs waited: one was started), `summary` (every 30
         minutes, or `interval`), or `ended`. Exit 3 with nothing after the timeout: wait again.
+    brief_run.py verification BRIEF start|stop|status|nudge
+        the verification loop, as `watch.py verification`, recorded with this run: `start` leaves one that is
+        running alone, and `stop` ends the one this run started, after its job under way.
     brief_run.py interval BRIEF SECONDS
         how often `wait` returns a summary from now on.
     brief_run.py status BRIEF
@@ -392,7 +395,7 @@ def cmd_foundation(run: Run, model: str | None, effort: str | None, memory: str 
     started = conductor.now()
     base = watch.head_change(folder)
     run.update(foundation={"session": session, "workspace": ws, "folder": str(folder), "started": started, "log": str(log),
-                           "attempt": before.get("attempt", 0) + 1})
+                           "offset": log.stat().st_size if log.exists() else 0, "attempt": before.get("attempt", 0) + 1})
     result = None
     with open(log, "a") as out:
         p = subprocess.Popen(command, cwd=folder, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE, text=True)
@@ -432,6 +435,9 @@ def commit_id(where: Path, rev: str) -> str:
 
 def is_ancestor(where: Path, a: str, b: str) -> bool:
     return bool(jj(where, "log", "--no-graph", "-r", f"{a} & ::{b}", "-T", "commit_id", snapshot=False).stdout.strip())
+
+
+GENERATED = ("llm-dlc/", "README.md")  # what sync.py regenerate writes
 
 
 def land(run: Run, workspace: str) -> dict:
@@ -474,7 +480,15 @@ def land(run: Run, workspace: str) -> dict:
                        cwd=root, capture_output=True, text=True, stdin=subprocess.DEVNULL)
     if r.returncode != 0:
         raise Problem(f"the merge is made but its commit reported: {(r.stderr or r.stdout).strip()[-600:]}")
-    return {"landed": "merged: the line had moved since the workspace was made", "commit": watch.head_change(root)}
+    # A clean merge changes nothing itself but the files regenerated from the session files (llm-dlc/, and
+    # README.md's table). Anything else in it was written into this working copy by another session while the merge
+    # was being made (the result collector's results, say): it goes back to being uncommitted, on top, the files
+    # on disk as they are, for that session's own commit.
+    foreign = [f for f in jj(root, "diff", "-r", "@-", "--name-only").stdout.splitlines() if not f.startswith(GENERATED)]
+    if foreign:
+        jj(root, "squash", "--from", "@-", "--into", "@", "-u", "--", *foreign)
+    return {"landed": "merged: the line had moved since the workspace was made", "commit": watch.head_change(root),
+            **({"leftUncommitted": foreign} if foreign else {})}
 
 
 REPORT_LIMIT = 6000  # characters of the foundation's report an inbox item carries: an inbox is read every cycle
@@ -613,7 +627,8 @@ def state(run: Run) -> dict:
     return {"name": run.name, "brief": run.brief, "running": watch.alive((data.get("run") or {}).get("pid")),
             "started": (data.get("run") or {}).get("started"), "stopping": (run.dir / "stop-after").exists(),
             "elapsed": watch.span(watch.now() - started) if started else None,
-            "foundation": check["foundation"], "loops": rows, "spent": round(sum(r["spent"] for r in rows), 2),
+            "foundation": check["foundation"], "loops": rows,
+            "spent": round(sum(r["spent"] for r in rows) + ((check["foundation"] or {}).get("cost") or 0), 2),
             "integration": result[1] if result else None,
             "openDecisions": record,
             "jobs": {k: queue.get(k) or [] for k in ("pending", "running", "finished")}, "blocking": check["blocking"]}
@@ -635,6 +650,11 @@ def open_decisions(run: Run) -> list[str]:
 def summary(run: Run, s: dict) -> str:
     last = (run.read().get("lastSummary") or {}).get("loops") or {}
     lines = [f"### {watch.clock(watch.now())} UTC · {s['elapsed'] or 'not started'} into the run of {s['brief']} · ${s['spent']:.2f}"]
+    f = s.get("foundation") or {}
+    if f.get("ended"):
+        lines.append(f"- **foundation**: {'ended' if f.get('ok') else 'ended with an error'}"
+                     + (f", ${f['cost']:.2f}" if f.get("cost") is not None else ", cost not known")
+                     + ("; landed" if f.get("landed") else "; not landed"))
     for r in s["loops"]:
         was = last.get(r["loop"]) or {}
         moved = r["commits"] - was.get("commits", 0)
@@ -655,6 +675,20 @@ def summary(run: Run, s: dict) -> str:
     return "\n".join(lines)
 
 
+def foundation_progress(foundation: dict) -> dict:
+    """Where the foundation session stands while it runs, from its stream and its workspace. What it has spent is
+    known only when it ends: Claude Code reports a session's cost with its result."""
+    act = watch.activity({"log": foundation.get("log"), "offset": foundation.get("offset") or 0})
+    folder = Path(foundation.get("folder") or ".")
+    started = watch.stamp(foundation.get("started"))
+    return {"running": watch.span(watch.now() - started) if started else None, "toolCalls": act["toolCalls"],
+            "lastOutput": f"{watch.span(watch.now() - act['lastOutput'])} ago" if act.get("lastOutput") else None,
+            "command": act.get("command"), "lastCommit": watch.head_change(folder) if folder.exists() else None,
+            "uncommitted": len(jj(folder, "diff", "-r", "@", "--name-only").stdout.split()) if folder.exists() else None,
+            "note": "the foundation session is still at work: nothing to do. To end it early, interrupt its "
+                    "background task; what it committed is kept, and the stage run again continues the session."}
+
+
 def next_thing(run: Run, interval: float) -> dict | None:
     data = run.read()
     told = list(data.get("told") or [])
@@ -671,6 +705,12 @@ def next_thing(run: Run, interval: float) -> dict | None:
                 "inbox": f"python3 llm-dlc/tools/inbox.py list {Path(event.get('brief', run.brief)).stem} --open",
                 "answer": f"python3 llm-dlc/tools/conductor.py decide {run.dir.relative_to(run.root)} {event['n']} "
                           f"{'|'.join(conductor.answers(event))} --reason TEXT [--confidence medium]"}
+    foundation = data.get("foundation") or {}
+    if foundation.get("pid") and not foundation.get("ended") and watch.alive(foundation["pid"]):
+        last = foundation.get("told") or watch.stamp(foundation.get("started")) or 0
+        if watch.now() - last >= interval:
+            run.update(foundation={**run.read()["foundation"], "told": watch.now()})
+            return {"kind": "foundation", **foundation_progress(foundation)}
     started = (data.get("run") or {}).get("started")
     if started and not watch.alive(data["run"].get("pid")) and once(f"ended:{started}"):
         return {"kind": "ended", "state": state(run)}
@@ -758,6 +798,9 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
     w.add_argument("brief")
     w.add_argument("--interval", type=float)
     w.add_argument("--timeout", type=float, default=3300)
+    v = sub.add_parser("verification")
+    v.add_argument("brief")
+    v.add_argument("action", choices=("start", "stop", "status", "nudge"))
     i = sub.add_parser("interval")
     i.add_argument("brief")
     i.add_argument("seconds", type=float)
@@ -776,6 +819,8 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
             return cmd_start(run)
         if args.command == "wait":
             return cmd_wait(run, args.interval, args.timeout)
+        if args.command == "verification":
+            return watch.cmd_verification(run, args.action)
         if args.command == "interval":
             run.update(interval=args.seconds)
             print(f"a summary every {watch.span(args.seconds)} from now on")

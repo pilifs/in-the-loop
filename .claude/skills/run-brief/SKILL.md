@@ -74,7 +74,7 @@ It prints what the run would start and what stands in its way.
 - A brief whose status is `done` is not run: say so and stop.
 
 Then start the verification loop, unless the brief says `verification: separate`
-(`python3 llm-dlc/tools/watch.py verification start`, which leaves one that is running alone), and tell the user
+(`python3 llm-dlc/tools/brief_run.py verification BRIEF start`, which leaves one that is running alone), and tell the user
 in a few lines what will run: the streams, each one's workspace and model, and the budget.
 
 ## 2. The foundation
@@ -88,6 +88,10 @@ As a background task:
 python3 llm-dlc/tools/brief_run.py foundation BRIEF
 ```
 
+While it runs, run `brief_run.py wait BRIEF` as a second background task, as in stage 3: at each interval it returns
+`"kind": "foundation"` with how long the session has run, its tool calls, the command under way and its last
+commit. Say it in a line and wait again; its spend is known only when it ends.
+
 One session on Fable 5.2 at high effort, in a workspace of its own, with the user's instruction for this stage: to
 start the work itself, build whatever foundation it sees fit for the most benefit, and update the brief for the
 agents that take over after it. When it
@@ -96,7 +100,8 @@ returns, read its `report` and act on `next`:
 - It left uncommitted files: run the stage again, which continues the same session.
 - It committed: `python3 llm-dlc/tools/brief_run.py land BRIEF` brings its commits to the line the streams start
   from, and puts the session's report into each stream's inbox as an item the stream acknowledges (`handedOff`).
-  A merge that conflicts in real work is taken back and says so: resolve it as "Between two examples" in
+  Files another session wrote into the working copy while the merge was made stay
+  uncommitted (`leftUncommitted`): they are that session's. A merge that conflicts in real work is taken back and says so: resolve it as "Between two examples" in
   `llm-dlc/runtime.md` shows for a queued workspace, or run the stage again so the session rebuilds on the line as
   it is now.
 - It committed nothing: read why before going on. A brief that needs no foundation is a fine answer.
@@ -123,7 +128,8 @@ as a background task, act on what it returns, and run it again, until it returns
   is settled, or you can settle it (another stream's answer that is committed, a decision that is yours), record
   the decision, send the stream the item that says so (`inbox.py send NAME-STREAM --kind answer|unblocked ...`),
   and answer `rerun`. If it waits for the user, ask them when they are there; otherwise answer `leave`, and the
-  merge lists it. Answer with the command the question prints; each answer is recorded as a decision.
+  merge lists it. Answer with the command the question prints; each answer is recorded as a decision. A loop is run again
+  this way twice at most: the third time it ends blocked it is left without a question.
 - **`attention`**: the integration check stopped passing, or a decision is open. The check has already told the
   streams it concerns. Read what it names and decide what is yours, as above.
 - **`verification`**: no verification loop was running while jobs waited, and one was started. Say so, and go on.
@@ -131,7 +137,8 @@ as a background task, act on what it returns, and run it again, until it returns
 
 The user may ask about the run at any time: answer from `brief_run.py status BRIEF`, the run's output
 (`llm-dlc/loop-summaries/run-streams-NAME/streams.log`) and the queue (`python3 verification/pipeline.py status`).
-Fix what is small yourself (a verification loop that died, a job that hangs), say what you did, and leave the
+Fix what is small yourself (a verification loop that died, a job that hangs, a workspace jj calls stale:
+`python3 llm-dlc/tools/unstale.py` from that workspace), say what you did, and leave the
 rest to the user. `brief_run.py stop BRIEF` stops the run at a boundary: every loop ends after its cycle under way,
 nothing is run again and the merge is not started, so nothing is cut off; `wait` returns `ended` when it has, and
 `start` continues. Use it at the user's word, or when the run should not go on as it is. `stop BRIEF --now`
@@ -139,7 +146,9 @@ interrupts mid-cycle instead: only when the run is doing damage.
 
 ## 4. Report
 
-When the run has ended, put the budget back (`brief_run.py budget BRIEF --restore`) and tell the user:
+When the run has ended, put the budget back (`brief_run.py budget BRIEF --restore`), stop the verification loop
+once the queue is clear (`brief_run.py verification BRIEF stop`, which ends only one this run started), and tell
+the user:
 
 - each loop's last status, and for the brief its `Done when` table, criterion by criterion: met, not met, or
   waiting on which jobs;

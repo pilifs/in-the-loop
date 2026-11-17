@@ -52,7 +52,9 @@
 # to it before it counts as finished (conductor.py's `blocked` question): `rerun` runs the loop again, for a
 # stream whose inbox now holds the answer it was blocked on, and `leave`, or no answer within
 # RUN_STREAMS_BLOCKED_WAIT seconds (1800), leaves it for the merge to list, as without a watcher. So a decision
-# made during the run reaches its stream during the run, not after it.
+# made during the run reaches its stream during the run, not after it. A loop is run again this way
+# RUN_STREAMS_RERUNS times (2) in one run of this script: the next time it ends blocked it is left without asking,
+# as the brief template's timebox leaves an item that failed twice.
 #
 # A run is stopped at a boundary by the file stop-after in its state directory (brief_run.py stop writes it, and
 # tells each loop to end after its cycle under way): a loop that ends is then not run again, one waiting on jobs
@@ -152,6 +154,8 @@ POLL=${RUN_STREAMS_POLL:-60}
 JOB_WAIT=${RUN_STREAMS_JOB_WAIT:-43200}
 INTEGRATION_EVERY=${RUN_STREAMS_INTEGRATION_EVERY:-3600}
 BLOCKED_WAIT=${RUN_STREAMS_BLOCKED_WAIT:-1800}
+RERUNS=${RUN_STREAMS_RERUNS:-2}
+[[ "$RERUNS" =~ ^[0-9]+$ ]] || usage
 [[ "$POLL" =~ ^[1-9][0-9]*$ && "$JOB_WAIT" =~ ^[0-9]+$ && "$INTEGRATION_EVERY" =~ ^[0-9]+$ && "$BLOCKED_WAIT" =~ ^[0-9]+$ ]] || usage
 
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd) || exit 1
@@ -404,7 +408,7 @@ rerun_blocked() {
 # brief says done, 3 when it is blocked, 130 if interrupted.
 supervise() {
   local label=$1 dir=$2 loop=$4 brief=$2/$4 code status failed=0 waited ids
-  local commands=
+  local commands= reruns=0
   if [[ -n "${RUN_STREAMS_WATCHER:-}" ]]; then
     commands=$STATE/loops/$label
     mkdir -p "$commands"
@@ -453,7 +457,12 @@ supervise() {
     stopping && continue
     case "$status" in
       blocked*)
+        if [[ -n "${RUN_STREAMS_WATCHER:-}" ]] && (( reruns >= RERUNS )); then
+          log "[$label] blocked again after $reruns rerun(s): left for the merge, the watcher is not asked again"
+          exit 3
+        fi
         rerun_blocked "$label" "$status" "$4" || exit 3
+        reruns=$(( reruns + 1 ))
         failed=0
         continue
         ;;

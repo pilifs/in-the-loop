@@ -75,6 +75,8 @@ llm-dlc/
   tools/loop_stats.py               adds up the loops from the metrics tables, the run records and the verification jobs;
                                     test_loop_stats.py tests it
   tools/streams_status.py           the state and status bar of run-streams.sh; test_streams_status.py tests it
+  tools/unstale.py                  puts a jj workspace right after another session's operation met its own (stale, or a
+                                    second copy of the working-copy change); test_unstale.py tests it
   tools/brief_run.py                the watcher's tools for a brief's run (/run-brief): preflight, the foundation
                                     stage, start, wait, status; test_brief_run.py tests it and run-streams.sh's part
   decisions/<name>.jsonl            a run's decision record: what its conductor decided (a parallel run's conductor, or the
@@ -276,6 +278,14 @@ the findings, the examples table, the outputs it applied), and a loop's cycle is
 collector in a workspace of its own was considered and not built: every reader of results (a stream waiting on
 its jobs, the watcher, the push gate) reads them on the default line, so its commits would have to be landed
 there one by one, which brings the shared working copy back.
+
+**While the foundation runs**, `wait` says at each interval how long it has run, its tool calls, the command under
+way and its last commit; its spend is known when it ends, and is then in every summary's total. **A blocked loop
+is run again twice at most** (`RUN_STREAMS_RERUNS`); the third time it is left for the merge without a question.
+**A workspace jj calls stale** is put right with [`tools/unstale.py`](tools/unstale.py), which keeps the edits
+that `jj workspace update-stale` alone would take off the disk. [`loops/rehearsal.md`](loops/rehearsal.md) is a
+throwaway brief of two streams that exercises all of this with real sessions for little money: its second
+stream stops blocked on purpose, for a word only the watcher can pass on.
 
 **Any brief runs.** `run-streams.sh NAME` takes a brief of `llm-dlc/loops/` by name or file and reads its
 streams from the brief's Loop settings (`- streams: a, b`); a brief that names none is run as its own loop

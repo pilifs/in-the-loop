@@ -37,15 +37,17 @@ from cost_tier import cost  # noqa: E402
 COPIED = ("run-streams.sh", "loop-common.sh", "streams_status.py", "run_records.py", "conductor.py", "decisions.py",
           "mode.py")
 
-# sync.py's stand-in: generated.txt lists the session files, as the trace files list sessions; `commit` commits.
+# sync.py's stand-in: llm-dlc/generated.txt lists the session files, as the trace files list sessions; `commit` commits.
 FAKE_SYNC = textwrap.dedent('''\
-    import subprocess, sys
+    import os, subprocess, sys
     from pathlib import Path
     if sys.argv[1] == "adopt-logs":
-        import os
         open(os.environ["STATUSES"] + "/adopted", "a").write(os.getcwd() + "\\n")
         sys.exit(0)
-    Path("generated.txt").write_text("".join(sorted(p.name + "\\n" for p in Path("sessions").glob("*"))))
+    Path("llm-dlc/generated.txt").write_text("".join(sorted(p.name + "\\n" for p in Path("sessions").glob("*"))))
+    if os.environ.get("STANDIN_LATE") == "1":  # another session writes into the working copy meanwhile
+        Path("verification").mkdir(exist_ok=True)
+        Path("verification/late.txt").write_text("a result collected during the merge\\n")
     if sys.argv[1] == "commit":
         sys.exit(subprocess.run(["jj", "commit", "-m", sys.argv[3]]).returncode)
 ''')
@@ -72,7 +74,7 @@ CLAUDE = textwrap.dedent('''\
     if os.environ.get("STANDIN_COMMITS") == "1":
         open("lib-foundation.txt", "w").write("shared\\n")
         open("sessions/foundation", "w").write("")
-        open("generated.txt", "w").write("base\\nfoundation\\n")
+        open("llm-dlc/generated.txt", "w").write("base\\nfoundation\\n")
         subprocess.run(["jj", "commit", "-m", "the foundation: a shared piece"], check=True, capture_output=True)
     print(json.dumps({"type": "result", "subtype": "success", "total_cost_usd": 1.5, "result": "Built the shared piece."}))
 ''')
@@ -110,7 +112,7 @@ class Fixture(unittest.TestCase):
         for key in ("TMUX", "TMUX_PANE"):
             os.environ.pop(key, None)
         files = {".gitignore": "llm-dlc/loop-summaries/\nverification/pipeline.local.toml\n", "llm-dlc/tools/sync.py": FAKE_SYNC, "sessions/base": "",
-                 "generated.txt": "base\n", "lib.txt": "one\n",
+                 "llm-dlc/generated.txt": "base\n", "lib.txt": "one\n",
                  "llm-dlc/loops/made-up.md": brief(self.STREAMS)}
         for s in self.STREAMS:
             files[f"llm-dlc/loops/made-up-{s}.md"] = brief(workspace=f"made-up-{s}")
@@ -328,13 +330,24 @@ class TheFoundation(Fixture):
     def test_a_line_that_moved_takes_them_by_a_merge_with_the_generated_files_regenerated(self):
         self.foundation()
         self.write("sessions/collector", "")
-        self.write("generated.txt", "base\ncollector\n", message="the line moves: a result is collected")
+        self.write("llm-dlc/generated.txt", "base\ncollector\n", message="the line moves: a result is collected")
         code, out, err = self.run_tool("land", "made-up")
         self.assertEqual(code, 0, err)
         self.assertIn("merged", json.loads(out)["landed"])
-        self.assertEqual((self.root / "generated.txt").read_text(), "base\ncollector\nfoundation\n")
+        self.assertEqual((self.root / "llm-dlc/generated.txt").read_text(), "base\ncollector\nfoundation\n")
         self.assertIn("Merge the foundation of the made-up run", self.jj(self.root, "log", "--no-graph", "-r", "@-", "-T", "description"))
         self.assertEqual(self.jj(self.root, "diff", "-r", "@", "--name-only"), "")
+
+    @cost("tool")
+    def test_what_another_session_wrote_during_the_merge_stays_uncommitted(self):
+        self.foundation()
+        self.write("lib.txt", "two\n", message="the line moves")
+        with mock.patch.dict(os.environ, {"STANDIN_LATE": "1"}):
+            code, out, err = self.run_tool("land", "made-up")
+        self.assertEqual((code, json.loads(out)["leftUncommitted"]), (0, ["verification/late.txt"]), err)
+        self.assertNotIn("verification/late.txt", self.jj(self.root, "diff", "-r", "@-", "--name-only"))
+        self.assertEqual(self.jj(self.root, "diff", "-r", "@", "--name-only").split(), ["verification/late.txt"])
+        self.assertTrue((self.root / "verification/late.txt").exists())
 
     @cost("tool")
     def test_a_merge_that_conflicts_in_real_work_is_taken_back(self):
@@ -390,14 +403,30 @@ class Watching(Fixture):
         self.assertEqual(json.loads(self.wait()[1])["kind"], "nothing")
 
     @cost("tool")
+    def test_while_the_foundation_runs_the_watcher_is_told_where_it_stands_at_the_interval(self):
+        run = self.run_of()
+        stamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() - 4000))
+        log = self.dir / "foundation.jsonl"
+        self.dir.mkdir(parents=True)
+        log.write_text(json.dumps({"type": "assistant", "message": {"content": [{"type": "tool_use", "id": "t1", "name": "Bash",
+                                                                               "input": {"description": "Build the fixture"}}]}}) + "\n")
+        run.update(foundation={"pid": os.getpid(), "started": stamp, "log": str(log), "folder": str(self.root)})
+        thing = json.loads(self.wait()[1])
+        self.assertEqual((thing["kind"], thing["toolCalls"], thing["command"]), ("foundation", 1, "Bash: Build the fixture"))
+        self.assertRegex(thing["running"], r"^1 h 0\d min$")
+        self.assertIn("base: a made-up brief", thing["lastCommit"])
+        self.assertEqual(json.loads(self.wait()[1])["kind"], "nothing")  # the next one is an interval away
+
+    @cost("tool")
     def test_a_summary_comes_at_the_interval_and_says_what_moved_since_the_last(self):
-        self.started(ago=4000)
+        self.started(ago=4000).update(foundation={"ended": "2026-01-01T00:00:00Z", "ok": True, "cost": 3.0, "landed": "abc"})
         (self.dir / "a.phase").write_text("running\n")
         (self.dir / "a.cycle").write_text("3\n")
         (self.dir / "a.cost").write_text("2.50\n")
         code, out = self.wait()
         self.assertEqual(code, 0)
-        self.assertRegex(out.splitlines()[0], r"^### .* UTC · 1 h 0\d min into the run of llm-dlc/loops/made-up.md · \$2.50$")
+        self.assertRegex(out.splitlines()[0], r"^### .* UTC · 1 h 0\d min into the run of llm-dlc/loops/made-up.md · \$5.50$")
+        self.assertIn("- **foundation**: ended, $3.00; landed", out)
         self.assertIn("- **a**: working; cycle 3, 0 commits, $2.50; at ", out)
         self.assertIn("- **merge**: working; cycle -, 0 commits, $0.00", out)
         self.assertEqual(json.loads(self.wait()[1])["kind"], "nothing")  # the next one is an interval away
@@ -465,6 +494,22 @@ class ARunOfStreams(Fixture):
         self.assertEqual(self.runs()[-1], "made-up")
         self.assertIn("the streams fork no session", out)
         self.assertNotIn("compacting", out)
+
+    @cost("tool")
+    def test_a_stream_is_run_again_twice_at_most_and_then_left_without_asking(self):
+        p = self.streams(("made-up-a", ["blocked: an answer"]), ("made-up-b", ["done"]), ("made-up", ["done"]),
+                         RUN_STREAMS_WATCHER=str(self.dir), RUN_STREAMS_BLOCKED_WAIT="60")
+        asked, until = 0, time.time() + 90
+        while p.poll() is None and time.time() < until:
+            event = conductor.pending(self.dir)
+            if event is not None:
+                asked += 1
+                conductor.cmd_decide(self.dir, event["n"], "rerun", "made up: run it again")
+            time.sleep(0.2)
+        out, _ = p.communicate(timeout=60)
+        self.assertEqual((p.returncode, asked), (0, 2), out)
+        self.assertEqual(self.runs().count("made-up-a"), 3)
+        self.assertIn("[a] blocked again after 2 rerun(s): left for the merge", out)
 
     @cost("tool")
     def test_without_an_answer_or_a_watcher_a_blocked_stream_is_left_for_the_merge(self):
