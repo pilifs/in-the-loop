@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.021Z",
-  "ended": "2026-11-17T16:23:50.734Z",
-  "duration_seconds": 12420,
+  "ended": "2026-11-17T16:24:58.426Z",
+  "duration_seconds": 12487,
   "stats": {
     "turns": 21,
-    "api_calls": 313,
-    "tool_calls": 314,
+    "api_calls": 316,
+    "tool_calls": 317,
     "tool_errors": 4,
     "compactions": 4,
-    "peak_context_tokens": 235931,
+    "peak_context_tokens": 239131,
     "usage": {
-      "input_tokens": 628,
-      "output_tokens": 286636,
-      "cache_read_input_tokens": 37848720,
-      "cache_creation_input_tokens": 827946
+      "input_tokens": 634,
+      "output_tokens": 289365,
+      "cache_read_input_tokens": 38559040,
+      "cache_creation_input_tokens": 831146
     }
   },
   "tools": {
-    "Bash": 304,
+    "Bash": 307,
     "Edit": 7,
     "Write": 3
   },
@@ -101,24 +101,24 @@
     {
       "index": 4,
       "started": "2026-11-17T15:19:53.139Z",
-      "ended": "2026-11-17T16:23:50.734Z",
+      "ended": "2026-11-17T16:24:58.426Z",
       "turns": 4,
-      "api_calls": 69,
+      "api_calls": 72,
       "usage": {
-        "input_tokens": 138,
-        "output_tokens": 106155,
-        "cache_read_input_tokens": 10794849,
-        "cache_creation_input_tokens": 222658
+        "input_tokens": 144,
+        "output_tokens": 108884,
+        "cache_read_input_tokens": 11505169,
+        "cache_creation_input_tokens": 225858
       },
-      "peak_context_tokens": 235931
+      "peak_context_tokens": 239131
     }
   ],
   "log": {
-    "sha256": "b436d23dc5500d8df0f8ce9da820c55a060649ad0a2ee1fb09aaca95ba6e32ea",
-    "bytes": 8530940,
-    "lines": 2844,
-    "gzip_bytes": 1437755,
-    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/b436d23dc5500d8df0f8ce9da820c55a060649ad0a2ee1fb09aaca95ba6e32ea.jsonl.gz"
+    "sha256": "d44f39ebfd2cbe3f25464ba506b3155df145d7427ec754550b02e4e84c48d32e",
+    "bytes": 8602332,
+    "lines": 2867,
+    "gzip_bytes": 1450503,
+    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/d44f39ebfd2cbe3f25464ba506b3155df145d7427ec754550b02e4e84c48d32e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -297,6 +297,14 @@
       "summary": "A pair of versions' two runs of one loop past the bound go on from one state where they run the same code from the same state",
       "body": "Example 287's preservation stopped at a counterexample no run has: past bcrypt's loops each side's state was free bits of its own, so two runs equal in fact were two states in the formula. The tool's own checker now names those bits by the state the loop is summarized from (lib/src/bmc/ties.rs, wired into bmc/loops.rs and bmc/mod.rs, with shared::fingerprint comparing the code). A summary of the same code from the same state, on either side, takes the same bits, and a read past such a loop at an index the path does not follow is named by the array's content and the index. The key is everything an iteration can read: the code with everything it reaches, the head, the live locals, the objects reachable from them and from the static fields that code uses (numbered as reached, so an alias is part of it), the JDK's statics and the classes' initialization. Only values are shared; each side leaves the loop by its own code. This is step 2's boundary, chosen over the unchanged callee as one function (which would have to carry crypt_raw's effects across heaps) and a coupled invariant; the brief's Progress says why.\n\nCountermodels first (lib/tests/pairing.rs, seven variants of one table-mixing loop): a callee changed inside the loop, a cell, an alias on one side, a mutable static, a shorter array and a write past the loop on one side each differ on a JVM and are not proved, and five of them were Verified with their side condition taken out (checked by hand with a switch since removed). The variant with no difference, 'cannot be verified' before, is proved in 0.5 s. A capped probe of 287 at bound 80: the new release's summaries of ekskey and crypt_raw take the previous release's bits and the spurious counterexample is gone; the check then reaches the key schedule and stops at the 240 s limit, mostly in crypt_raw's rounds loop's invariant search (287's notes). test_costs.py run --changed passes; validate_example.py 287 passes.",
       "log_sha256": "b436d23dc5500d8df0f8ce9da820c55a060649ad0a2ee1fb09aaca95ba6e32ea"
+    },
+    {
+      "change_id": "pswwplozumxokpxmykuxvvlzvwplqnqo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The preservation stream acknowledges inbox items I006 to I009 and takes the two soundness ones next",
+      "body": "I006 (the logging model admits a LogRecord subclass whose getters write or sneak-throw) and I009 (a handler still tells exceptions apart by interface, message or field) are this stream's soundness work and come before step 5's cost. I007 and I008 ask for new or changed claims in 287 and 307, which the brief keeps frozen and CLAUDE.md leaves to the user: recorded, not acted on.",
+      "log_sha256": "d44f39ebfd2cbe3f25464ba506b3155df145d7427ec754550b02e4e84c48d32e"
     }
   ],
   "logs": {
@@ -328,6 +336,12 @@
       "bytes": 8530940,
       "lines": 2844,
       "gzip_bytes": 1437755,
+      "url": null
+    },
+    "d44f39ebfd2cbe3f25464ba506b3155df145d7427ec754550b02e4e84c48d32e": {
+      "bytes": 8602332,
+      "lines": 2867,
+      "gzip_bytes": 1450503,
       "url": null
     },
     "e41f2c4d702ac713bfe202b895a8b1166472b9b3ac35124558b19988e8a514ab": {

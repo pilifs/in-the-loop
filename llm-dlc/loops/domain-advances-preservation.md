@@ -189,7 +189,18 @@ relational result needs a new check (the rule's applications recorded in the out
   record it. `test_costs.py run --changed` passes. Its first try failed
   `the_encoding_estimate_does_not_count_a_large_circuit_many_times_over`, which passes alone (load, not this
   change). No new inbox items. I001 to I005 were acknowledged above.
-- Next: step 5's cost. Make the rounds loop's search cheaper before a job:
+- 2026-11-17, the inbox read after that commit (no step moved). Four items came in during the cycle:
+  - I006: a soundness hole in this stream's logging model (step 1): `confined_record` admits a `LogRecord` subclass
+    whose getters write a static of their own class or sneak-throw a `Throwable`. Taken next: merge `lqvlvwsm` and
+    make its `lg` test pass.
+  - I009: the pair still lets a caller's handler tell two exceptions apart by an interface, the message or an
+    exception's own field. The brief's step 4 asks for "the same exception", so this is in scope. Taken next with
+    I006: merge `pklttqzw`, then compare more or state the limit, choosing by what 287's, 289's and 290's claims
+    say.
+  - I007 (287's claims accept a check-only guard) and I008 (307's claim accepts the platform default charset) each
+    call for a new or changed claim, which the brief leaves frozen and CLAUDE.md leaves to the user. I record them
+    here and in each example's step and change no claim. They are a question for the user, not a blocker.
+- Next: I006 and I009 (soundness first). Then step 5's cost: make the rounds loop's search cheaper before a job:
   - keep out of `written` the places of objects nothing reachable holds;
   - let a summary whose key and invariant the path already has (the other side's, on this path) go on without
     searching again.
