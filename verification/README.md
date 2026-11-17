@@ -77,8 +77,8 @@ The slow tests are the proof tier: the ignored Rust tests, tagged `cost:proof:`,
 inputs it touched. CLAUDE.md allows one exception inline: a single proof-tier test, once, when the change targets it
 directly and its row records a past run of it alone under a minute. The slow tests also include, until they move, the
 63 Rust tests marked `retier: pending` in the inventory: proof tier by what they call or took, but still in the default
-run until the next test-cost loop moves them behind proxies. They are a large part of why a default `cargo test` takes about
-11 minutes. While iterating, run the tests of what you changed, not them, unless the change targets one.
+run until the next test-cost loop moves them behind proxies. They are a large part of what the default run costs.
+While iterating, run the tests of what you changed, not them, unless the change targets one.
 
 A demo example, by id, fills in the step, the outputs, the requirements and the approach. The requirements are the
 tools `build.py`'s plan of the run says it calls (`python3 examples/tools/build.py --plan ID` shows them), optional ones
@@ -165,8 +165,9 @@ machine. Say so in the description if you know.
 
 **The default test run as a job.** `python3 verification/default_tests.py queue [--rev REV] [--why TEXT]` writes a job
 that runs `lib/tools/test_costs.py run` at commit REV (`@-` by default), at low priority and with its cargo target
-directory kept warm between runs. Commit the job file like any other, from any workspace. Nobody waits for it: a run
-of `/prove-java-change` queues one when an example is done and at each merge, and its watcher triages the result.
+directory kept warm between runs. Commit the job file like any other, from any workspace. Nobody waits for it. A passed run is
+required before a release and before a push; one is worth queuing when an example is done and after a merge, and not
+for every commit. A run of `/prove-java-change` queues those, and its watcher triages the result.
 Of several waiting together only the newest runs; the others' step says `default tests: superseded by ID` and exits.
 A job started again after a newer one has finished is superseded too. Only one default run runs at a time: the runs
 share a warm cargo target directory and the tests' work folders under it, so a step holds a lock beside it
