@@ -165,6 +165,33 @@ Don't change `verification/pipeline.py`.
   comes after step 4 by the brief's order; its audit of 290 (no other class's static written, the locale read only
   into a field the observation does not hold) goes into 290's notes with step 5.
 - Next: step 4 (the vacuity control); the records and `accept.py` for 286, 287 and 288 when their jobs are back.
+- 2026-11-17, cycle 5. **Step 4 done: the engine had the hole.** What the probe guarantees for a pair: 289's and 290's
+  preservation go through `lib/src/pairing.rs`, where `RegressionPair.agree` returns true on an input inside the allowed
+  change without calling either version, and the property check's probe asks only for an input of the assumption. So
+  the probe's witness was inside the assumption, not known to be outside the change. The control, 289's preservation
+  through its own driver with only `--unchanged-unless` replaced by `true` (a capped probe, 5 s): verified and
+  *non-vacuous* before the fix. 290's recorded witness, `servlets=[]`, does lie inside its change. The fix (this stream's
+  and the preservation stream's area): a verified pair with an allowed change is checked once more, `meantToChange`
+  against `result` over the same assumption, domain and class path. A proof makes the statement vacuous; a witness, replayed
+  as any is, becomes the statement's, with `stated.vacuity.outside` naming the change. The regression harness's own probe
+  marks `outside` too, since its harness returns before the probe on an input in the scope. Now the `true` control is
+  vacuous; 289 with its own change is non-vacuous with `servletPath=""` (0.3 s more), 290 with `servlets=[0]` (both capped
+  probes, notes in each example). `accept.py` refuses an establishment of a task with an allowed change whose outcome does
+  not say its witness lies outside that change (`unbound`), or names another change (`fail`). Controls:
+  `lib/tests/pairing.rs` `a_pairs_proof_is_vacuous_when_the_allowed_change_covers_every_assumed_input` (fails without the
+  fix: NonVacuous), three cases in `test_accept.py`. *Consequence*: 289's and 290's preservation answers are now refused
+  (their outcomes predate `outside`), and so the Done-when's first row needs them rerun on a checker with this fix.
+- Repeated work measured (step 7): the preservation stream's job `20261117-134306-…-289-and-290-preservation-again` (~10 min)
+  will be refused as its outcomes are written, having run without this fix. One rerun of both after the merge answers
+  both its change and this one.
+- Inbox: `domain-advances-evidence-I005` (accept 289's and 290's preservation from job `20261117-134306`, and perhaps check
+  that the pair has `thrown(t, ...)` and `fresh()`): taken in part. That job's outcomes say nothing of `outside`, so
+  `accept.py` refuses them as this cycle's check stands, and they are not recorded as they are. The answer comes from one
+  rerun of 289's and 290's preservation on a checker with both `zmvkptqz` and this fix, which needs the two lines merged
+  (`zmvkptqz` is on neither this line nor the default one yet). The check on the pair's source waits until `zmvkptqz`
+  is here, so that it is tested against what the generator writes. Sent to the preservation stream's inbox.
+- Next: step 5 (observed initialization, with I004); the records and `accept.py` for 286, 287 and 288 when their jobs
+  are back (still pending, not started); the rerun of 289's and 290's preservation once this line and `zmvkptqz` meet.
 - Status: working
 
 ## Loop settings

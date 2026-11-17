@@ -25,7 +25,9 @@ when every one of these holds; one that fails, or that the evidence has nothing 
                 that may be null are the claim's
     mode        the engine and the gap mode are the task's
     complete    (established) no unfinished unwinding and no problem
-    non-vacuous (established) some input reaches the property: the probe's witness
+    non-vacuous (established) some input reaches the property: the probe's witness; for a task with an allowed
+                change, one the outcome says lies outside that change (`vacuity.outside`), since the versions are
+                compared on no input inside it
     replay      (refuted) the witness reproduced on a JVM
     mutant      (a constructed mutant's task) the JAR's hash in the step's log is the one the mutant replay's receipt
                 records
@@ -407,8 +409,16 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
         else:
             said("complete", OK, f"no problem, and the unwinding ({bounds.get('unwind')}) is complete")
         vacuity = stated.get("vacuity") or {}
-        if vacuity.get("status") == "non-vacuous" and vacuity.get("witness"):
-            said("non-vacuous", OK, f"{vacuity.get('basis')}: {vacuity.get('witness')}")
+        change = task.get("allowedChange")
+        if vacuity.get("status") == "non-vacuous" and vacuity.get("witness") and change is not None and vacuity.get("outside") != change:
+            # An input inside the allowed change is one the versions need not agree on: the pair's `agree` returns
+            # true on it without calling either. A witness there shows nothing compared.
+            if vacuity.get("outside") is None:
+                said("non-vacuous", UNBOUND, f"the outcome does not say whether its witness, {vacuity.get('witness')}, lies outside the allowed change, where the versions are compared: one inside it reaches no comparison (an outcome from before the checker said so)")
+            else:
+                said("non-vacuous", FAIL, f"the witness is said to lie outside `{vacuity.get('outside')}`, which is not the task's allowed change")
+        elif vacuity.get("status") == "non-vacuous" and vacuity.get("witness"):
+            said("non-vacuous", OK, f"{vacuity.get('basis')}: {vacuity.get('witness')}" + (", outside the allowed change" if change is not None else ""))
         else:
             said("non-vacuous", FAIL if vacuity.get("status") else UNBOUND, f"the outcome names no input that reaches the property (vacuity: {vacuity.get('status') or 'not recorded'})")
     elif actual == "refuted":

@@ -46,7 +46,8 @@ def outcome_of(task: dict, claim: dict, answer: str, bound: int | None) -> dict 
                                                                          "value": {"kind": "string", "units": [97, 98]}}]} if refuted else None,
         "search": {"engine": task.get("engine"), "gap_mode": task.get("gaps"), "max_array_length": bound, "unwind": 16},
         "stated": {"bounds": {"unwind": 16, "complete": not refuted},
-                   "vacuity": {} if refuted else {"status": "non-vacuous", "basis": "probe", "witness": "allowed(field=\"\")"},
+                   "vacuity": {} if refuted else {"status": "non-vacuous", "basis": "probe", "witness": "allowed(field=\"\")",
+                                                  **({"outside": task["allowedChange"]} if "allowedChange" in task else {})},
                    "domain": {"parameters": [{"name": n, "null": True} for n in claim.get("nullable") or []]},
                    "assumptions": [{"kind": "precondition", "text": claim.get("assume") or "true", "basis": "stated"},
                                    {"kind": "library", "text": "made up: what the checker assumed", "basis": "engine"}],
@@ -294,6 +295,19 @@ class MissingResult(Checkout):
 
 
 class ChangedArtifact(Checkout):
+    def test_a_preservation_whose_witness_is_not_said_to_lie_outside_the_allowed_change_is_refused(self):
+        """A pair's versions are compared only outside the allowed change: a witness inside it reaches no comparison, so
+        an establishment is accepted only when its outcome says its witness lies outside the task's change."""
+        for change, check, words in (
+                (lambda o: o["stated"]["vacuity"].pop("outside"), "non-vacuous", "does not say whether its witness"),
+                (lambda o: o["stated"]["vacuity"].update(outside="true"), "non-vacuous", "which is not the task's allowed change"),
+                (lambda o: o["stated"].update(vacuity={"status": "vacuous", "text": "inside the allowed change"}), "non-vacuous", "names no input that reaches the property")):
+            with self.subTest(words=words):
+                paths = self.beside("preservation", "established")
+                self.assertTrue(self.check("preservation")["accepted"])
+                rewrite(self.root, paths, change)
+                self.refused("preservation", check, words)
+
     def test_an_outcome_changed_after_the_job_is_refused(self):
         paths = self.beside("regex-probe", "refuted")
         rewrite(self.root, paths, lambda o: o.update(verdict="verified"), as_the_job_wrote_it=False)
@@ -512,7 +526,9 @@ class ThisCheckout(unittest.TestCase):
         """The four results an outside review checked by hand (llm-dlc/loop-summaries/prove-change/expert-review.md,
         c2), run again by the job that recorded what it ran (evidence.json): the claim files and the allowed change
         unchanged, the outputs at their recorded hashes, bound 8, strict gaps, both refutations reproduced on a JVM,
-        the mutant's JAR the replay's, and every JAR, the adapter and the verifier recorded, so no limit is left."""
+        the mutant's JAR the replay's, and every JAR, the adapter and the verifier recorded, so no limit is left.
+        Preservation is refused: its outcome is from before the checker said whether its witness lies outside the
+        allowed change, and a run that says so answers it."""
         source = accept.Source(REPO)
         git = source.git_dir()
         if not git or subprocess.run([*git, "cat-file", "-e", "150c4a2557ebd284bbb73f1084e5ac7d6e1d7523^{commit}"], capture_output=True).returncode:
@@ -521,6 +537,10 @@ class ThisCheckout(unittest.TestCase):
         self.assertEqual(sorted(tasks), ["fixed-security", "mutant-security", "preservation", "vulnerable-security"])
         for task in tasks:
             r = accept.check(REPO, "289", task, source)
+            if task == "preservation" and r["job"] == "20261117-122454-example-289-the-four-proof-tasks-again-w":
+                self.assertFalse(r["accepted"])
+                self.assertIn(("non-vacuous", "unbound"), [(c["check"], c["status"]) for c in r["checks"]])
+                continue
             self.assertTrue(r["accepted"], f"{task}: {r.get('why')}")
             self.assertEqual(r["limits"], [], task)
             self.assertIn(("artifacts", "ok"), [(c["check"], c["status"]) for c in r["checks"]], task)

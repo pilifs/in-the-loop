@@ -115,6 +115,37 @@ fn two_versions_over_a_string_array_agree_outside_the_allowed_change_and_differ_
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
 }
 
+/// A proof of the pair says something only about an input outside the allowed change: `agree` returns true on one
+/// inside it without calling either version. An allowed change that covers every assumed input (`true`) leaves a
+/// proof that compares the versions on none, which the statement calls vacuous, though the property check's own
+/// probe finds an input of the assumption; with the change the claim allows, the statement's witness is an assumed
+/// input outside it, and the statement says which change it lies outside.
+#[test]
+fn a_pairs_proof_is_vacuous_when_the_allowed_change_covers_every_assumed_input() {
+    jvmcontract::tool_tier!();
+    let f = fixture();
+    let mut everything = options(&f.entries.0, &f.entries.1, "app.Entry#allowed", "allowed-everything");
+    everything.assume = Some(ASCII.into());
+    everything.unchanged_unless = Some("true".into());
+    let o = equivalence::run(&everything).unwrap();
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let vacuity = o.stated.as_ref().and_then(|s| s.vacuity.as_ref()).expect("a verified statement says whether it is vacuous");
+    assert_eq!(vacuity.status, jvmcontract::statement::VacuityStatus::Vacuous, "{}", o.output);
+    assert!(o.vacuous.as_deref().is_some_and(|r| r.contains("inside the allowed change `true`")), "{}", o.output);
+
+    let mut preserved = options(&f.entries.0, &f.entries.1, "app.Entry#allowed", "allowed-dotless");
+    preserved.assume = Some(ASCII.into());
+    preserved.unchanged_unless = Some(DOTLESS.into());
+    let o = equivalence::run(&preserved).unwrap();
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let vacuity = o.stated.as_ref().and_then(|s| s.vacuity.as_ref()).expect("a verified statement says whether it is vacuous");
+    assert_eq!(vacuity.status, jvmcontract::statement::VacuityStatus::NonVacuous, "{}", o.output);
+    assert_eq!(vacuity.outside.as_deref(), Some(DOTLESS), "{}", o.output);
+    let witness = vacuity.witness.as_deref().expect("the witness");
+    assert!(witness.starts_with("agree(") && (witness.contains("locale=0") || !witness.contains('I')), "{witness} is outside the Turkish capital I");
+    assert!(o.vacuous.is_none(), "{}", o.output);
+}
+
 /// Each version is given its own copy of an array: a previous version that writes into the array it was given does
 /// not change what the next one reads.
 #[test]
