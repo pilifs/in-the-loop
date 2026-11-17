@@ -251,6 +251,18 @@ Don't change `verification/pipeline.py`.
 - Next: 287's records and `accept.py 287` (its job `20261117-133148-…-287-…` is back, collected on the default line
   while this cycle ran); step 5's last piece, 290's restated preservation claim (option B), prepared with its freeze
   recorded as the user's; then step 6 (VF-030); the 289/290 preservation rerun once this line and `zmvkptqz` meet.
+- 2026-11-17, cycle 9. **Step 3, 287's part, done.** `20261117-133148-…-287-…` passed (44m48s, 3.0 GiB, against its 45 min
+  estimate): vulnerable-security refuted (948.5 s) and mutant-security refuted (966.9 s), both at a candidate of 25
+  characters and 73 UTF-8 bytes against a valid `$2a$04$` hash, where `matches` returns false instead of throwing, each
+  run on a JVM, the mutant's JAR the replay's (`1d099295…`); fixed-security verified and not vacuous (746.0 s). Its
+  result folder and `verification/.work-287/recorded` came from the default line as they are (`jj restore` from
+  `lwoqsztz`, no merge). Each 287 task's `besideRoute` names that job, and `accept.py 287` accepts all three with no limit
+  (12, 13 and 13 checks); 287's notes say so. With 286, 288 and 290 done, step 3 waits only on the rerun of 289's and
+  290's preservation, which needs `zmvkptqz` (still on neither this line nor the default one).
+- Repeated work measured (step 7): none; the job's estimate was right (0.996 of it).
+- Inbox: no open items.
+- Next: step 5's last piece, 290's restated preservation claim (option B), prepared with its freeze recorded as the
+  user's; then step 6 (VF-030); the 289/290 preservation rerun once this line and `zmvkptqz` meet.
 - Status: working
 
 ## Loop settings

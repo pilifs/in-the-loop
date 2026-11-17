@@ -1,0 +1,51 @@
+{
+ "schema": "beside-route-evidence/v1",
+ "example": "287",
+ "task": "mutant-security",
+ "claim": {
+  "file": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/claims/overlong-candidate-rejected.json",
+  "sha256": "5373b4b4a1bd77fe7837fadabb777aa2b5f1770070e6cb58d74acc1e0802a797"
+ },
+ "bound": {
+  "maxArrayLength": 80,
+  "unwind": null,
+  "trial": false
+ },
+ "artifacts": [
+  {
+   "revision": "mutant",
+   "name": "spring-security-crypto-6.3.8.jar",
+   "sha256": "1d099295f80e4cc1b010eff67c0c8c20540aa67c534465702d62c491c9050edc",
+   "constructed": true
+  },
+  {
+   "revision": "mutant",
+   "name": "spring-jcl-6.1.18.jar",
+   "sha256": "6c2617dc157ecaaac744fb7d14efa9389b6364e3eb2fd3e083b558c51ddf5247"
+  }
+ ],
+ "adapter": {
+  "sources": {
+   "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/replay/adapter/example287/adapter/PasswordMatchAdapter.java": "e662bf6e324a3c80fa565cf6a9e8b786e918ae015898ec67746ff1ddf482cf99"
+  },
+  "classes": [
+   {
+    "folder": "adapter-mutant",
+    "sha256": "0cf7efd6b37766b1afc38394a496ff735a17cb667fd83258598c6ff42ee568f9"
+   }
+  ]
+ },
+ "jvmcontract": {
+  "path": "jvmcontract",
+  "sha256": "14673718807c819f960679dfb66dc55d07b233b5195b4c835ff75cf4496baa8f"
+ },
+ "driver": {
+  "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
+  "sha256": "998a6c0ca98e8569b9e23cff27f4e3d6c07b5b6dc0da08568edde3e2f767e75e"
+ },
+ "mutant": {
+  "sha256": "1d099295f80e4cc1b010eff67c0c8c20540aa67c534465702d62c491c9050edc",
+  "replayed": "1d099295f80e4cc1b010eff67c0c8c20540aa67c534465702d62c491c9050edc",
+  "patch": "controls/char-count-guard.patch"
+ }
+}
