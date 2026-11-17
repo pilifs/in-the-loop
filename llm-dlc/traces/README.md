@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 137, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-17 16:08 UTC |
-| Prompts | 2,910 |
-| Model calls | 29,477 |
-| Tool calls | 30,476 (539 failed) |
-| Compactions | 434 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-17 16:28 UTC |
+| Prompts | 2,915 |
+| Model calls | 29,523 |
+| Tool calls | 30,522 (540 failed) |
+| Compactions | 435 |
 | Subagents | 21 |
-| Tokens written | 29,529,613 |
-| Tokens read | 4,877,085,037 (98.1% from cache) |
-| Commits with a trace | 909 |
-| Log snapshots | 1,186 (2618.7 MB gzipped, 1,162 uploaded) |
+| Tokens written | 29,577,295 |
+| Tokens read | 4,882,680,637 (98.1% from cache) |
+| Commits with a trace | 910 |
+| Log snapshots | 1,187 (2621.8 MB gzipped, 1,162 uploaded) |
 
 ## Sessions
 
@@ -163,7 +163,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 02:26 UTC | [6da9b537-ecce-46cf-99fa-7cae16e7ce99](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | ended | 6 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 40,446 | 2 |
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 12 | 21 | 17 | 2 | 2 | 56,861 | 1 |
 | 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | open | 7 min | `claude-opus-5-5` | 2 | 5 | 4 | 0 | 0 | 56,756 | 1 |
-| 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | open | 3 h 11 min | `claude-opus-5-5` | 67 | 539 | 535 | 10 | 12 | 186,120 | 18 |
+| 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | open | 3 h 31 min | `claude-opus-5-5` | 72 | 585 | 581 | 11 | 13 | 186,120 | 19 |
 | 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | open | 39 min | `claude-opus-5-5` | 8 | 144 | 150 | 2 | 1 | 190,201 | 2 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
@@ -309,15 +309,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`6da9b537`](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 1,385 | 12 | 28,987 | 187,799 | 86.6% | 157 |
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 8,137 | 42 | 87,022 | 814,514 | 90.3% | 111 |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 2,242 | 10 | 28,745 | 226,501 | 88.7% | 114 |
-| [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 336,962 | 1,098 | 1,372,028 | 49,575,109 | 97.3% | 151 |
+| [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 384,644 | 1,190 | 1,526,517 | 55,016,128 | 97.3% | 147 |
 | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 111,893 | 294 | 296,879 | 16,118,461 | 98.2% | 147 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 27,072 | 88.8% | 137 |
-| `Read` | 1,278 | 4.2% | 57 |
+| `Bash` | 27,115 | 88.8% | 137 |
+| `Read` | 1,281 | 4.2% | 57 |
 | `Edit` | 968 | 3.2% | 55 |
 | `Write` | 646 | 2.1% | 54 |
 | `ToolSearch` | 168 | 0.6% | 43 |
@@ -1248,6 +1248,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 907 | change `nosxvunt` | VF-030's Python half was empty and the default run covers it; the Rust proof tier is queued after the foundation's checker changes (verification pending) | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) ([log](https://terminalvalue.net/raw-traces/7ece8184-b148-4351-92d8-d634606b823e/96185023a5f7c5001e2cdc50fa00f956d727e5b0a3e89b10df15428486d5094b.jsonl.gz)) |
 | 908 | change `kqxwrwrx` | accept.py refuses or leaves unbound the seven answers the challenge stream's controls showed it accepting without evidence | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) ([log](https://terminalvalue.net/raw-traces/7ece8184-b148-4351-92d8-d634606b823e/b1f1b0ca255cc47cbc548e7e49c7694fe751f52a10d36107f0e4190f1a5370f8.jsonl.gz)) |
 | 909 | change `nsnxmlmt` | VF-030 is closed: the Rust proof tier passed whole after the foundation's checker changes and the evidence line's | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) ([log](https://terminalvalue.net/raw-traces/7ece8184-b148-4351-92d8-d634606b823e/b13b6fe4c4e9b4041a7c1b1d578f3b703bf138756f9c50145577827789b2a845.jsonl.gz)) |
+| 910 | change `mmnoqopr` | An observation is bound to its supertypes' state, to a property read through the Properties map, to the time zone and to the environment; the state stream's lambda naming is kept | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) ([log](https://terminalvalue.net/raw-traces/7ece8184-b148-4351-92d8-d634606b823e/3707869acc3d2706d24a8da43ed8d4d5f3c60c235fcbc8c1d1daf74c45a70a8f.jsonl.gz)) |
 
 ## Logs
 
@@ -1390,7 +1391,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`6da9b537`](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 2 | 2 | 0.2 MB | [`d5b3ff93d2f4`](https://terminalvalue.net/raw-traces/6da9b537-ecce-46cf-99fa-7cae16e7ce99/d5b3ff93d2f464f79d4c2c3b63c435663917ad81d37a274a6519c9da315b7f3d.jsonl.gz) |
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 1 | 1 | 0.3 MB | [`965570933c02`](https://terminalvalue.net/raw-traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/965570933c0206c64a18c5652f4f74be1de3807449c6f9f9a26e20a3211055fc.jsonl.gz) |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 1 | 0 | 0.1 MB | `887466d85ae2`, not uploaded |
-| [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 16 | 0 | 22.7 MB | `b13b6fe4c4e9`, not uploaded |
+| [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 17 | 0 | 25.8 MB | `3707869acc3d`, not uploaded |
 | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 2 | 0 | 0.7 MB | `0ea0585d20f7`, not uploaded |
 
 ## Session notes

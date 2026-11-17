@@ -359,7 +359,44 @@ Don't change `verification/pipeline.py`.
   - The 289/290 preservation rerun once this line and `zmvkptqz` meet. The job `20261117-151521-…-289-and-290-preservation-once-m`
     has run, and the watcher collected it on the default line (`vzovllpr`). `zmvkptqz` is still on neither line.
   - 290's restated claim waits on the user's freeze.
-- Status: working
+- 2026-11-17, cycle 14. **I008 and I009 done: the observation binding covers supertypes, the properties map, the time
+  zone and the environment, and it keeps the state stream's `nameOf`.**
+  - Brought in by copying, not merging: the challenge stream's `ob` fixtures from `lqvlvwsm`, byte for byte, so the
+    lines meet without a conflict there. From `llyzwmyp`, `ObservedInitializer.java` whole (`lzpqszyo`'s observer plus
+    `Dump.nameOf`), `claims.Hooked` and its four lines in `tests/claims.rs`, and the doc sentence in `observed.rs`.
+  - The observer now compares a superclass or superinterface the initialization initialized as it compares any other
+    class. `ob.Derived` is refused: "initialized ob.Base … its field x was 1 after it and is 0 alone". `ob.Filled` is
+    refused on `ob.Table`'s array.
+  - `Recording` records a key read through `get`, `getOrDefault` or `containsKey`, so `ob.Bypassed` states
+    `ob.value = "xyz"`. A read of the properties as a whole (keys, entries, values, a copy, a listing) names its class,
+    and `observe` refuses it.
+  - The default time zone is stated with the locale. `ob.Zoned` is verified at 9 with "default time zone Asia/Tokyo".
+  - A class the initialization ran whose class file calls or holds a handle to `System.getenv` or
+    `ProcessBuilder.environment` is refused by name (`ob.Environ`).
+  - The format gains `on.zone` and `on.allProperties`. `Slot`, `Object` and the identity are unchanged. Sent to the
+    state stream's inbox.
+  - Test: `an_observation_is_bound_to_its_writes_outside_the_class_and_to_every_setting_it_read`, in
+    `tests/observed_countermodels.rs` beside I004's, with the README's five cases and how each comes out. Plus one unit
+    test in `observed.rs`.
+  - 290 still binds. Capped probes of fixed-security and preservation verified both with the same path counts (659,
+    573). HttpServlet's initialization now lists its superclass GenericServlet, the same alone, and nothing read the
+    environment or the properties as a whole. Recorded in 290's notes and VF-033's audit entry; `lib/README.md`'s
+    paragraph updated.
+  - Not seen, and said in `observed.rs`: the environment read by reflection or another JDK method, and the properties
+    read through `equals` or `hashCode`.
+  - `run --changed` passed 28 of 28, the whole `cargo test` among them.
+- Repeated work measured (step 7): the state line copied `lzpqszyo`'s files rather than merging them. Both lines have
+  now changed `ObservedInitializer.java`, `observed.rs` and `lib/README.md`'s paragraph, so a merge of the two meets
+  conflicts there. This line's versions hold all of the state line's changes to those files, so that merge takes them.
+- Inbox: `domain-advances-evidence-I008` and `domain-advances-evidence-I009` were acknowledged in cycle 13 and are done
+  here. No new open items.
+- Next:
+  - The 289/290 preservation rerun once this line and `zmvkptqz` meet (still on neither line).
+  - 290's restated claim waits on the user's freeze.
+
+  Nothing else needs only me.
+- Status: blocked: the 289/290 preservation rerun needs `zmvkptqz` merged onto this line (the watcher's or the
+  preservation stream's merge), and 290's restated preservation claim needs the user's freeze
 
 ## Loop settings
 

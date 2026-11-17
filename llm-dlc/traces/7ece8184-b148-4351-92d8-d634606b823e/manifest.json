@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:50.868Z",
-  "ended": "2026-11-17T16:08:22.341Z",
-  "duration_seconds": 11491,
+  "ended": "2026-11-17T16:28:45.643Z",
+  "duration_seconds": 12715,
   "stats": {
-    "turns": 67,
-    "api_calls": 539,
-    "tool_calls": 535,
-    "tool_errors": 10,
-    "compactions": 12,
+    "turns": 72,
+    "api_calls": 585,
+    "tool_calls": 581,
+    "tool_errors": 11,
+    "compactions": 13,
     "peak_context_tokens": 186120,
     "usage": {
-      "input_tokens": 1098,
-      "output_tokens": 336962,
-      "cache_read_input_tokens": 49575109,
-      "cache_creation_input_tokens": 1372028
+      "input_tokens": 1190,
+      "output_tokens": 384644,
+      "cache_read_input_tokens": 55016128,
+      "cache_creation_input_tokens": 1526517
     }
   },
   "tools": {
-    "Bash": 501,
+    "Bash": 544,
     "Edit": 13,
-    "Read": 9,
+    "Read": 12,
     "ToolSearch": 4,
     "Write": 4,
     "Monitor": 3,
@@ -220,24 +220,38 @@
     {
       "index": 12,
       "started": "2026-11-17T15:33:55.519Z",
-      "ended": "2026-11-17T16:08:22.341Z",
-      "turns": 5,
-      "api_calls": 21,
+      "ended": "2026-11-17T16:08:57.772Z",
+      "turns": 6,
+      "api_calls": 24,
       "usage": {
-        "input_tokens": 44,
-        "output_tokens": 13765,
-        "cache_read_input_tokens": 1568749,
-        "cache_creation_input_tokens": 85891
+        "input_tokens": 50,
+        "output_tokens": 14776,
+        "cache_read_input_tokens": 1868696,
+        "cache_creation_input_tokens": 88873
       },
-      "peak_context_tokens": 99164
+      "peak_context_tokens": 102146
+    },
+    {
+      "index": 13,
+      "started": "2026-11-17T16:09:44.082Z",
+      "ended": "2026-11-17T16:28:45.643Z",
+      "turns": 4,
+      "api_calls": 43,
+      "usage": {
+        "input_tokens": 86,
+        "output_tokens": 46671,
+        "cache_read_input_tokens": 5141072,
+        "cache_creation_input_tokens": 151507
+      },
+      "peak_context_tokens": 164780
     }
   ],
   "log": {
-    "sha256": "b13b6fe4c4e9b4041a7c1b1d578f3b703bf138756f9c50145577827789b2a845",
-    "bytes": 15588695,
-    "lines": 4963,
-    "gzip_bytes": 2844946,
-    "path": "llm-dlc/traces/7ece8184-b148-4351-92d8-d634606b823e/logs/b13b6fe4c4e9b4041a7c1b1d578f3b703bf138756f9c50145577827789b2a845.jsonl.gz"
+    "sha256": "3707869acc3d2706d24a8da43ed8d4d5f3c60c235fcbc8c1d1daf74c45a70a8f",
+    "bytes": 17173061,
+    "lines": 5415,
+    "gzip_bytes": 3150161,
+    "path": "llm-dlc/traces/7ece8184-b148-4351-92d8-d634606b823e/logs/3707869acc3d2706d24a8da43ed8d4d5f3c60c235fcbc8c1d1daf74c45a70a8f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -384,6 +398,14 @@
       "summary": "VF-030 is closed: the Rust proof tier passed whole after the foundation's checker changes and the evidence line's",
       "body": "Job 20261117-152112-the-rust-proof-tier-after-the-domain-adv (at 9ec6e448674f) passed in 42m14s at 4.2 GiB, against an estimate of 55 min and 8 GiB. It ran cargo test --release --no-fail-fast -- --ignored, 19 tests: every Rust row lib/tests/costs.json marks ignored, none left out, and all 19 passed. Among them were VF-018's three heap tests, the seven tests wvvtwkos moved, and conformance's two (1228 s). The commit the job ran at holds the foundation's checker changes (qkqpsmqk) and this line's pair and observation checks. The Python half has no tests (no Python test is tagged proof tier, cycle 11), so VF-030 is closed with nothing left. The result folder was taken from the collector's commit xnlsuqmu unchanged. Verified by reading the job's log against costs.json's ignored rows, and with test_costs.py run --changed (4 of 4).\n\nThe brief's Progress records cycle 13 and acknowledges inbox items domain-advances-evidence-I008 and I009. I008: the observation binding misses supertypes, Properties.get, the time zone and the environment. I009: keep the state stream's Dump.nameOf. Both are the next cycle's work, so the status is working. Also out of date in the brief: the 'Where it stands' paragraph (as said since ymzlyksq), and step 6's Python proof tier, which has no tests (as said in nosxvunt).",
       "log_sha256": "b13b6fe4c4e9b4041a7c1b1d578f3b703bf138756f9c50145577827789b2a845"
+    },
+    {
+      "change_id": "mmnoqoprrzmrtqovvnqruywlxrzwkmpu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "An observation is bound to its supertypes' state, to a property read through the Properties map, to the time zone and to the environment; the state stream's lambda naming is kept",
+      "body": "The challenge stream's ob countermodels (inbox item I008, lqvlvwsm) showed five holes in the observed-initializer binding of lzpqszyo. Each is now refused or stated. An initializer that writes a superclass's static (ob.Derived) or a superinterface's array (ob.Filled) is refused with the field: the observer had skipped supertypes when comparing each class the initialization initialized with that class initialized alone. A property read by key through System.getProperties() (ob.Bypassed) is recorded and stated like a getProperty read. A read of the properties as a whole is refused. The default time zone is stated beside the locale (ob.Zoned, verified at 9 under Asia/Tokyo, which the result says). A class whose code calls System.getenv or ProcessBuilder.environment is refused (ob.Environ). The observation format gains on.zone and on.allProperties; Slot, Object and the identity are unchanged.\n\nI009: ObservedInitializer.java is taken whole from the state line (llyzwmyp), whose Dump.nameOf names a lambda's hidden class without the address the JVM appends, with its claims.Hooked fixture and test lines. The ob fixtures are copied byte for byte from lqvlvwsm rather than merged.\n\nVerified: the new test an_observation_is_bound_to_its_writes_outside_the_class_and_to_every_setting_it_read (lib/tests/observed_countermodels.rs) passes and asserts how each case comes out. A new unit test in observed.rs passes. claims.rs's observed test, with Hooked, passes. test_costs.py run --changed passed 28 of 28, including the whole cargo test. Capped probes of example 290's fixed-security and preservation verified both again with the same path counts (659, 573) under the wider binding. Recorded in 290's notes, VF-033 and lib/README.md.\n\nThe brief's 'Where it stands' paragraph is out of date: every besideRoute answer of 286 to 290 except 289's and 290's preservation is now accepted with no limit.",
+      "log_sha256": "3707869acc3d2706d24a8da43ed8d4d5f3c60c235fcbc8c1d1daf74c45a70a8f"
     }
   ],
   "logs": {
@@ -397,6 +419,12 @@
       "bytes": 10363499,
       "lines": 3298,
       "gzip_bytes": 1838604,
+      "url": null
+    },
+    "3707869acc3d2706d24a8da43ed8d4d5f3c60c235fcbc8c1d1daf74c45a70a8f": {
+      "bytes": 17173061,
+      "lines": 5415,
+      "gzip_bytes": 3150161,
       "url": null
     },
     "3e094d753f1148b94c24cb84bb696b57b32dd898b37d93409c7354a7fc3bcdd7": {

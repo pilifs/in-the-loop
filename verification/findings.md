@@ -98,7 +98,11 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   (`lib/src/observed.rs`, `On`): the class file, the class path order, each class the initialization also initialized
   (left as it is alone, else refused: the countermodel `A.<clinit> { B.x = 1; k = 7; }`), a default locale the check's
   lowering agrees with, and the properties read, stated with their values; `lib/tests/observed_countermodels.rs`
-  holds it. A capped probe verified 290's fixed-security and preservation again under it.
+  holds it. A capped probe verified 290's fixed-security and preservation again under it. Widened the same day after
+  the challenge stream's `ob` countermodels (`lib/tests/fixtures/rule-countermodels`): the supertypes the
+  initialization initialized are compared too, a property read by key through `System.getProperties()` is stated, a
+  read of the properties as a whole and code that reads the environment are refused, and the default time zone is
+  stated; 290's two tasks verified again under it in capped probes, with the same path counts.
 - **Prepared** (2026-11-17, the evidence stream): the restated claim (B),
   `claims/lone-dispatcher-matchers-preserved.json` (sha256 `4185eea3f4ef…`), with its entry
   `MatcherDescriptionAdapter#describe` (each matcher's exact class and the library's rendering of its pattern, servlet
