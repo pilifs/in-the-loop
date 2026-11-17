@@ -12,32 +12,34 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.005Z",
-  "ended": "2026-11-17T19:22:32.935Z",
-  "duration_seconds": 23142,
+  "ended": "2026-11-17T21:03:58.255Z",
+  "duration_seconds": 29227,
   "stats": {
-    "turns": 115,
-    "api_calls": 875,
-    "tool_calls": 836,
+    "turns": 120,
+    "api_calls": 982,
+    "tool_calls": 942,
     "tool_errors": 9,
-    "compactions": 16,
+    "compactions": 17,
     "peak_context_tokens": 252174,
     "usage": {
-      "input_tokens": 1824,
-      "output_tokens": 682152,
-      "cache_read_input_tokens": 99316863,
-      "cache_creation_input_tokens": 2241462
+      "input_tokens": 2040,
+      "output_tokens": 752506,
+      "cache_read_input_tokens": 114008864,
+      "cache_creation_input_tokens": 2441515
     }
   },
   "tools": {
-    "Bash": 796,
+    "Bash": 896,
     "Edit": 15,
-    "Read": 14,
-    "Write": 5,
-    "Monitor": 3,
-    "ToolSearch": 3
+    "Read": 15,
+    "Write": 9,
+    "ToolSearch": 4,
+    "Monitor": 3
   },
   "files_touched": [
+    "lib/models/java/util/joiner/StringJoiner.java",
     "lib/models/java/util/lists/ArrayDeque.java",
+    "lib/models/java/util/lists/LinkedHashSet.java",
     "lib/src/bmc/mod.rs",
     "lib/src/observed.rs",
     "lib/src/stand_in.rs",
@@ -45,6 +47,8 @@
     "lib/tests/fixtures/claims/claims/Cloned.java",
     "lib/tests/fixtures/claims/claims/Deques.java",
     "lib/tests/fixtures/claims/claims/Frames.java",
+    "lib/tests/fixtures/claims/claims/Joiners.java",
+    "lib/tests/fixtures/claims/claims/LinkedSets.java",
     "llm-dlc/loops/domain-advances-state.md"
   ],
   "context_windows": [
@@ -275,24 +279,38 @@
     {
       "index": 16,
       "started": "2026-11-17T19:12:36.556Z",
-      "ended": "2026-11-17T19:22:32.935Z",
-      "turns": 4,
-      "api_calls": 26,
+      "ended": "2026-11-17T19:23:00.282Z",
+      "turns": 5,
+      "api_calls": 28,
       "usage": {
-        "input_tokens": 52,
-        "output_tokens": 11361,
-        "cache_read_input_tokens": 1773000,
-        "cache_creation_input_tokens": 71393
+        "input_tokens": 56,
+        "output_tokens": 12127,
+        "cache_read_input_tokens": 1944289,
+        "cache_creation_input_tokens": 74728
       },
-      "peak_context_tokens": 84666
+      "peak_context_tokens": 88001
+    },
+    {
+      "index": 17,
+      "started": "2026-11-17T19:23:43.848Z",
+      "ended": "2026-11-17T21:03:58.255Z",
+      "turns": 4,
+      "api_calls": 105,
+      "usage": {
+        "input_tokens": 212,
+        "output_tokens": 69588,
+        "cache_read_input_tokens": 14520712,
+        "cache_creation_input_tokens": 196718
+      },
+      "peak_context_tokens": 209991
     }
   ],
   "log": {
-    "sha256": "59b45cc7a99b4be003319705fd3f392051a272d5547b96e421c31e1e3ae4d653",
-    "bytes": 23871139,
-    "lines": 8289,
-    "gzip_bytes": 4258686,
-    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/59b45cc7a99b4be003319705fd3f392051a272d5547b96e421c31e1e3ae4d653.jsonl.gz"
+    "sha256": "9c447dca2aa4caa3a2a7f5fae56f654107df27751214c2227737f43faa935c6e",
+    "bytes": 26059603,
+    "lines": 9171,
+    "gzip_bytes": 4599868,
+    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/9c447dca2aa4caa3a2a7f5fae56f654107df27751214c2227737f43faa935c6e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -455,6 +473,14 @@
       "summary": "An observed initializer is observed with a relative --work, and example 286's protected-state tasks run again (verification pending)",
       "body": "Job 20261117-181750 (286's protected-state tasks through the bean wrapper's stand-in) failed before the check ran: with a relative --work, the observer's JVM runs in the observed/ folder and was given the -Xlog file and the log argument relative to the repository, so it refused the option. lib/src/observed.rs now makes that folder absolute. The new test an_observed_initializer_is_observed_with_a_relative_work_folder (lib/tests/claims.rs) runs the CLI from another directory with a relative --work: before the fix it failed with the job's 'Invalid -Xlog option', and now it proves claims.M#observed with the log in the work folder. A capped probe of 286's driver with a relative --work refutes the vulnerable task at a trial bound 3. Taken from the inbox: domain-advances-state-I015, with its correction I016.\n\nJob 20261117-192205-example-286-protected-state-tasks-at-the runs both tasks at the claim's bound 8 with 2 CPUs (the observer's and samplers' JVMs need two): the refutation on 5.3.18 for accept.py, and the fixed task's blocker (non-ASCII toLowerCase() at DataBinder.isAllowed:828) for the record. ProtectedBeanStandIn.java is unchanged, as accept.py compares it with what the job compiled. Verified with test_costs.py run --changed (all passed) after estimate. The rest of the brief stands.",
       "log_sha256": "59b45cc7a99b4be003319705fd3f392051a272d5547b96e421c31e1e3ae4d653"
+    },
+    {
+      "change_id": "xokwnwqoptwvlrnwwltnqskxtnlzowqz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 286's someMap mismatch path runs through the message codes: LinkedHashSet and StringJoiner models on request, String.lastIndexOf(int) and Class.isArray() of a class literal",
+      "body": "The state stream's step 3 continued. Binding \"32\" to someMap records a binding error, and DefaultMessageCodesResolver.resolveMessageCodes now runs to its end in the own checker. Two models on request: java.util.LinkedHashSet (the HashSet model with its elements in the order first added: add, toArray(), toArray(T[]); asking for it also runs the HashSet model, models::BRINGS, and the result names both) and java.util.StringJoiner (add, toString; an empty join is the JDK's new String(), a gap, since the checker's builder gives the literal \"\" where the JDK's join makes a new String). Each is proved against its definition written out (claims.LinkedSets, claims.Joiners), sampled on a JVM, shows a left-out method still the JDK's call, and fails under mutation (no null after the elements, reversed order, no delimiter, \"\" for an empty join, \"nul\" for null). String.lastIndexOf(int) is modelled (claims.T#lastIndexOfPoint, and an evidence record whose ten boundary cases agree on the JVM, the interpreter and the checker), and Class.isArray() of a class literal (claims.Arrayed).\n\nA fix found on the way: a Class method with a primitive result on a class the engine holds no literal of (isAssignableFrom, now isArray) was met under --gaps assume as an assumable reference gap that pushed no value, ending in 'operand stack underflow' with no verdict (never a false one). It is now a primitive gap, refused by name in both modes; the test fails with the old kind. The new tests run their JVMs with -XX:-UsePerfData after a parallel run printed an hsperfdata warning into the sampled output.\n\n286's driver gives the protected-state tasks both new models; a capped probe still refutes 5.3.18 at trial bound 3. A capped probe with field restricted to someMap/SomeMap (not the frozen claim) now stops at PropertyAccessException.getLocalizedMessage() in DefaultBindingErrorProcessor.processPropertyAccessException:79: the exception's message and cause, which the JDK's exception constructors drop today. Verified: test_costs run --changed (26 of 26), validate_example 286, the mutations above. Job 20261117-192205 still has no result; ProtectedBeanStandIn.java is unchanged.",
+      "log_sha256": "9c447dca2aa4caa3a2a7f5fae56f654107df27751214c2227737f43faa935c6e"
     }
   ],
   "logs": {
@@ -504,6 +530,12 @@
       "bytes": 11703596,
       "lines": 3957,
       "gzip_bytes": 2015997,
+      "url": null
+    },
+    "9c447dca2aa4caa3a2a7f5fae56f654107df27751214c2227737f43faa935c6e": {
+      "bytes": 26059603,
+      "lines": 9171,
+      "gzip_bytes": 4599868,
       "url": null
     },
     "a3ad388bcc53c6d97f04d9927c36b676984c9bcdcf5113a5d45ade9739803514": {

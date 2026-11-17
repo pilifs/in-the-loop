@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 137, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-17 19:22 UTC |
-| Prompts | 2,951 |
-| Model calls | 29,717 |
-| Tool calls | 30,676 (537 failed) |
-| Compactions | 437 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-17 21:03 UTC |
+| Prompts | 2,956 |
+| Model calls | 29,824 |
+| Tool calls | 30,782 (537 failed) |
+| Compactions | 438 |
 | Subagents | 21 |
-| Tokens written | 29,800,943 |
-| Tokens read | 4,916,070,704 (98.1% from cache) |
-| Commits with a trace | 911 |
-| Log snapshots | 1,188 (2634.6 MB gzipped, 1,162 uploaded) |
+| Tokens written | 29,871,297 |
+| Tokens read | 4,930,962,974 (98.1% from cache) |
+| Commits with a trace | 912 |
+| Log snapshots | 1,189 (2639.2 MB gzipped, 1,162 uploaded) |
 
 ## Sessions
 
@@ -164,7 +164,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 12 | 21 | 17 | 2 | 2 | 56,861 | 1 |
 | 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | open | 7 min | `claude-opus-5-5` | 2 | 5 | 4 | 0 | 0 | 56,756 | 1 |
 | 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | open | 13 min | `claude-opus-5-5` | 1 | 48 | 49 | 1 | 0 | 148,170 | 1 |
-| 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | open | 6 h 25 min | `claude-opus-5-5` | 115 | 875 | 836 | 9 | 16 | 252,174 | 20 |
+| 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | open | 8 h 7 min | `claude-opus-5-5` | 120 | 982 | 942 | 9 | 17 | 252,174 | 21 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -310,17 +310,17 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 8,137 | 42 | 87,022 | 814,514 | 90.3% | 111 |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 2,242 | 10 | 28,745 | 226,501 | 88.7% | 114 |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 38,033 | 96 | 136,827 | 4,652,464 | 97.1% | 126 |
-| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 682,152 | 1,824 | 2,241,462 | 99,316,863 | 97.8% | 149 |
+| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 752,506 | 2,040 | 2,441,515 | 114,008,864 | 97.9% | 155 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 27,281 | 88.9% | 137 |
-| `Read` | 1,280 | 4.2% | 56 |
+| `Bash` | 27,381 | 89.0% | 137 |
+| `Read` | 1,281 | 4.2% | 56 |
 | `Edit` | 960 | 3.1% | 54 |
-| `Write` | 646 | 2.1% | 54 |
-| `ToolSearch` | 166 | 0.5% | 42 |
+| `Write` | 650 | 2.1% | 54 |
+| `ToolSearch` | 167 | 0.5% | 42 |
 | `Monitor` | 122 | 0.4% | 49 |
 | `AskUserQuestion` | 63 | 0.2% | 16 |
 | `TaskStop` | 44 | 0.1% | 18 |
@@ -1250,6 +1250,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 909 | change `krxzxzow` | Example 286's binding runs through the bean wrapper by a stand-in sampled on 5.3.19, and the protected-state claim is refuted on 5.3.18 at its own bound in a probe (verification pending) | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/bb857afcabfcc6b3121c5cb93d689e4bbdc10bd7b3836f8e98d1bc718085f52c.jsonl.gz)) |
 | 910 | change `lwxvoqsy` | Example 286's someMap mismatch path gets past the exception and the property's type: a PropertyChangeEvent model on request, ClassUtils' class facts, and a second sampled stand-in | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/53807bc5596cedef2fc46eb9978cfe1dad971c9909af66472c4d1e2c97a9736a.jsonl.gz)) |
 | 911 | change `zlvqxmst` | An observed initializer is observed with a relative --work, and example 286's protected-state tasks run again (verification pending) | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/59b45cc7a99b4be003319705fd3f392051a272d5547b96e421c31e1e3ae4d653.jsonl.gz)) |
+| 912 | change `xokwnwqo` | Example 286's someMap mismatch path runs through the message codes: LinkedHashSet and StringJoiner models on request, String.lastIndexOf(int) and Class.isArray() of a class literal | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/9c447dca2aa4caa3a2a7f5fae56f654107df27751214c2227737f43faa935c6e.jsonl.gz)) |
 
 ## Logs
 
@@ -1393,7 +1394,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 1 | 1 | 0.3 MB | [`965570933c02`](https://terminalvalue.net/raw-traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/965570933c0206c64a18c5652f4f74be1de3807449c6f9f9a26e20a3211055fc.jsonl.gz) |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 1 | 0 | 0.1 MB | `887466d85ae2`, not uploaded |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 1 | 0 | 0.2 MB | `fadef0a55901`, not uploaded |
-| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 19 | 0 | 39.0 MB | `59b45cc7a99b`, not uploaded |
+| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 20 | 0 | 43.6 MB | `9c447dca2aa4`, not uploaded |
 
 ## Session notes
 

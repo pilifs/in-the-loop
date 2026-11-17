@@ -13,6 +13,7 @@
 //! - `indexOf(int)`, `indexOf(int, int)`: the first index at or after the start (below zero is zero) whose unit is
 //!   the character, or whose two units are the surrogate pair of a supplementary one; `-1` for none, and for a
 //!   value that is no code point.
+//! - `lastIndexOf(int)`: the same test at every index, the last one that meets it.
 //! - `indexOf(String)`, `indexOf(String, int)`: `NullPointerException` for null; the first index at or after the
 //!   start (held to the length) where the other's units all are; the start itself for the empty String.
 //! - `endsWith(String)`: `NullPointerException` for null; the other's units at the end.
@@ -59,7 +60,7 @@ pub const LOCALE_ASSUMPTION: &str = "the default locale's language is not Turkis
 pub fn models(name: &str, descriptor: &str) -> bool {
     matches!(
         (name, descriptor),
-        ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
+        ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("lastIndexOf", "(I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
     )
 }
 
@@ -155,6 +156,13 @@ impl Engine<'_> {
     /// The first index of `s` at or after `from` where the code point `ch` is: its unit, or the surrogate pair of
     /// a supplementary one; `-1` where there is none (`String.indexOf(int, int)`).
     fn index_of_unit(&mut self, s: &Array, ch: &Bits, from: &Bits) -> Bits {
+        self.unit_hit(s, ch, from, false)
+    }
+
+    /// The first (or, with `last`, the last) index at or after `from` where `s` holds the code point `ch`: its one
+    /// unit, or for a supplementary one its surrogate pair, both inside the String; -1 where there is none, as
+    /// `String.indexOf(int, int)` and `String.lastIndexOf(int)` give it (the latter from 0, every index).
+    fn unit_hit(&mut self, s: &Array, ch: &Bits, from: &Bits, last: bool) -> Bits {
         let bmp_limit = self.b.constant(0x1_0000, 32);
         let limit = self.b.constant(0x11_0000, 32);
         let is_bmp = self.b.ult(ch, &bmp_limit);
@@ -173,7 +181,9 @@ impl Engine<'_> {
         let low = self.b.add(&bottom, &low_base);
         let low = self.b.trunc(&low, 16);
         let mut result = self.b.constant(-1, 32);
-        for i in (0..s.cells.len()).rev() {
+        // Each hit overrides the ones met before it, so the order of the indices is which hit wins.
+        let order: Vec<usize> = if last { (0..s.cells.len()).collect() } else { (0..s.cells.len()).rev().collect() };
+        for i in order {
             let here = self.b.constant(i as i64, 32);
             let inside = self.b.slt(&here, &s.length);
             let after = self.b.sle(from, &here);
@@ -291,6 +301,13 @@ impl Engine<'_> {
             ("indexOf", "(I)I", [Val::I(ch)]) => {
                 let zero = self.b.constant(0, 32);
                 let at = self.index_of_unit(s, ch, &zero);
+                self.push(path, Val::I(at));
+                self.advance(path);
+                Ok(None)
+            }
+            ("lastIndexOf", "(I)I", [Val::I(ch)]) => {
+                let zero = self.b.constant(0, 32);
+                let at = self.unit_hit(s, ch, &zero, true);
                 self.push(path, Val::I(at));
                 self.advance(path);
                 Ok(None)

@@ -1007,7 +1007,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     if !options.requested_models.is_empty() && options.engine == crate::Engine::Jbmc {
         return Err(Error::new("--model is for the tool's own checker (--engine native or auto): JBMC has its own class path"));
     }
-    let requested = std::sync::Arc::new(options.requested_models.iter().map(|m| crate::models::requested(m).map(String::from)).collect::<Result<std::collections::BTreeSet<_>, _>>()?);
+    let requested = std::sync::Arc::new(options.requested_models.iter().map(|m| crate::models::requested(m)).collect::<Result<Vec<_>, _>>()?.into_iter().flatten().map(String::from).collect::<std::collections::BTreeSet<_>>());
     gap_setting.models = requested.clone();
     // The stand-ins: the own checker's alone, each sampled on a JVM now, on this class path.
     if !options.stand_ins.is_empty() && options.engine == crate::Engine::Jbmc {

@@ -12,6 +12,8 @@
 //! - `Class.getName()` of a class literal: the class's binary name, the interned String (the JVM interns it).
 //!   `Class.getTypeName()` of the literal of a class that is no array: the same String, as the JDK's returns
 //!   `getName()` for such a class (an array's is its element type's name and `[]`, the JDK call it was).
+//!   `Class.isArray()` of a class literal: whether it names an array class (a name that starts with `[`). Spring's
+//!   `ObjectUtils.isArray` asks it of the class of every value a binding error records.
 //! - `java.lang.reflect.Proxy.isProxyClass(Class)` of a class literal: false. The engine makes the literal of a
 //!   class it finds on the class path or in the JDK, by a constant name, and a proxy class is one the JVM generates
 //!   while it runs, which neither has. `NullPointerException` for null. Spring's `ClassUtils.getDescriptiveType`
@@ -123,6 +125,7 @@ pub fn models_instance(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!(
         (owner, name, descriptor),
         (CLASS, "getName" | "getTypeName", "()Ljava/lang/String;")
+            | (CLASS, "isArray", "()Z")
             | (CLASS, "getClassLoader", "()Ljava/lang/ClassLoader;")
             | (CLASS, "isAssignableFrom", "(Ljava/lang/Class;)Z")
             | ("java/lang/Object", "getClass", "()Ljava/lang/Class;")
@@ -160,7 +163,7 @@ impl Engine<'_> {
         s.cells.get(..length)?.iter().map(|c| self.b.constant_value(c).map(|u| u as u16)).collect()
     }
 
-    /// `Class.getName()` and `Class.getClassLoader()` on the object `o`, and `getClass()` on it: see the module's
+    /// `Class.getName()`, `Class.isArray()` and `Class.getClassLoader()` on the object `o`, and `getClass()` on it: see the module's
     /// notes. `None` where the call stays the JDK's.
     pub(super) fn class_method(&mut self, path: &mut Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Option<Step> {
         if (name, descriptor) == ("getClass", "()Ljava/lang/Class;") {
@@ -188,6 +191,12 @@ impl Engine<'_> {
             return None;
         }
         let class = self.class_named(path, o)?;
+        if name == "isArray" {
+            let value = self.b.constant(i64::from(class.starts_with('[')), 32);
+            self.push(path, Val::I(value));
+            self.advance(path);
+            return Some(Ok(None));
+        }
         let value = match name {
             "getName" | "getTypeName" => {
                 if name == "getTypeName" && class.starts_with('[') {

@@ -902,6 +902,17 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         calls: &["indexOf(I)I"],
     },
     OperationEvidence {
+        operation: "java.lang.String.lastIndexOf(I)I",
+        family: Family::String,
+        source: STRINGS_SOURCE,
+        admits: "a String with content and any int: the last index of a code unit, or of a supplementary code point's surrogate pair, and -1 for none and for a value that is no code point",
+        throws: &[NPE],
+        leaves_out: &[],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["lastIndexOfChar"],
+        calls: &["lastIndexOf(I)I"],
+    },
+    OperationEvidence {
         operation: "java.lang.String.indexOf(II)I",
         family: Family::String,
         source: STRINGS_SOURCE,
@@ -1259,7 +1270,7 @@ mod tests {
             assert_eq!(json["level"], "tested");
             assert!(json["sampled_by"].as_array().is_some_and(|c| !c.is_empty()), "{}", record.operation);
         }
-        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 22);
+        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 23);
         assert!(OPERATIONS.iter().any(|r| r.family == Family::List && r.throws.contains(&"java.lang.ArrayIndexOutOfBoundsException")));
     }
 

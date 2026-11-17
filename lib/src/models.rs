@@ -78,6 +78,8 @@ pub const MODELS: &[Model] = &[
     model!(checker "java/util/ArrayList", "java/util/lists/ArrayList.java", "java/util/ArrayList.class", "an ArrayList as an array of its elements and their number: ArrayList() and ArrayList(int), size, isEmpty, get, add, addAll, remove(Object), toArray() and toArray(T[]), and iterator() with its fail-fast iterator; run only for a check that asks for it (--model java.util.ArrayList); the own checker only"),
     model!(checker "java/util/ArrayList$Itr", "java/util/lists/ArrayList.java", "java/util/ArrayList$Itr.class", "the iterator of the ArrayList model: hasNext and next, fail-fast; the own checker only"),
     model!(checker "java/util/HashSet", "java/util/lists/HashSet.java", "java/util/HashSet.class", "a HashSet as the keys of the HashMap model, as the JDK's: HashSet(), add, contains, size and isEmpty, an element found by hashCode and equals; run only for a check that asks for it (--model java.util.HashSet); the own checker only"),
+    model!(checker "java/util/LinkedHashSet", "java/util/lists/LinkedHashSet.java", "java/util/LinkedHashSet.class", "a LinkedHashSet as the HashSet model with its elements in the order first added: LinkedHashSet(), add, toArray() and toArray(T[]) in that order, and the HashSet model's contains, size and isEmpty; run only for a check that asks for it (--model java.util.LinkedHashSet), which runs the HashSet model too; the own checker only"),
+    model!(checker "java/util/StringJoiner", "java/util/lists/StringJoiner.java", "java/util/StringJoiner.class", "a StringJoiner as its delimiter and the elements added: StringJoiner(CharSequence), add, and toString joining them with the delimiter into a new String (an empty one is the JDK's new String()); run only for a check that asks for it (--model java.util.StringJoiner); the own checker only"),
     model!(checker "java/util/ArrayDeque", "java/util/lists/ArrayDeque.java", "java/util/ArrayDeque.class", "an ArrayDeque used as a stack, its elements in an array: ArrayDeque(), push (NullPointerException for null), pop (NoSuchElementException when empty), peek, size, isEmpty and clear; run only for a check that asks for it (--model java.util.ArrayDeque); the own checker only"),
     model!(checker "java/beans/PropertyChangeEvent", "java/beans/PropertyChangeEvent.java", "java/beans/PropertyChangeEvent.class", "a PropertyChangeEvent as its fields: the constructor, getPropertyName, getNewValue, getOldValue and the propagation id, the source kept by the model of EventObject; run only for a check that asks for it (--model java.beans.PropertyChangeEvent); the own checker only"),
     model!(checker "java/util/EventObject", "java/beans/EventObject.java", "java/util/EventObject.class", "an EventObject as its source: the constructor (IllegalArgumentException for a null source) and getSource; run with the model of PropertyChangeEvent and only for a check that asks for that one; the own checker only"),
@@ -136,10 +138,18 @@ pub const CHECKER_RUNS: &[&str] = &[
 /// library, the conformance corpus and the examples' recorded refusals are written about: a check that needs what
 /// a list holds asks for the model, and its result says so ([`requested_assumption`]). `java.util.ArrayDeque` is
 /// one for the same reason, and `java.util.HashSet`: their constructors are gaps of every binding result Spring's
-/// `AbstractErrors` and `AbstractBindingResult` make (example 286, `DataBinder.bind`). `java.beans.PropertyChangeEvent`
+/// `AbstractErrors` and `AbstractBindingResult` make (example 286, `DataBinder.bind`). `java.util.LinkedHashSet` is
+/// one for the message codes Spring's `DefaultMessageCodesResolver` collects for each binding error, and runs the
+/// `HashSet` model above it ([`BRINGS`]), and `java.util.StringJoiner` for each code it joins. `java.beans.PropertyChangeEvent`
 /// is one for the event the bean wrapper makes for a value it cannot convert, and brings the model of the class above
 /// it, `java.util.EventObject` ([`COMPANIONS`]).
-pub const ON_REQUEST: &[&str] = &["java/util/ArrayList", "java/util/ArrayDeque", "java/util/HashSet", "java/beans/PropertyChangeEvent"];
+pub const ON_REQUEST: &[&str] = &["java/util/ArrayList", "java/util/ArrayDeque", "java/util/HashSet", "java/util/LinkedHashSet", "java/util/StringJoiner", "java/beans/PropertyChangeEvent"];
+
+/// The models on request a check that asks for another also runs, as if it had asked for them too: the model above
+/// it that it extends and whose constructor and methods it calls, itself a model on request of its own
+/// (`java.util.LinkedHashSet` over `java.util.HashSet`). Unlike a companion ([`COMPANIONS`]), such a model may be
+/// asked for alone, and its result then names it alone.
+pub const BRINGS: &[(&str, &str)] = &[("java/util/LinkedHashSet", "java/util/HashSet")];
 
 /// The models run with a model on request and only with it, each with the one it comes with: a class above the
 /// model whose constructor the model's calls.
@@ -154,10 +164,12 @@ pub fn on_request(name: &str) -> Option<&'static str> {
     ON_REQUEST.iter().copied().find(|r| name == *r || name.strip_prefix(r).is_some_and(|rest| rest.starts_with('$')))
 }
 
-/// The internal name of the model `--model CLASS` asks for, or what to say when there is none.
-pub fn requested(class: &str) -> Result<&'static str, Error> {
+/// The internal names of the models `--model CLASS` runs: the one it asks for and those that one brings
+/// ([`BRINGS`]); or what to say when there is none.
+pub fn requested(class: &str) -> Result<Vec<&'static str>, Error> {
     let name = class.replace('.', "/");
-    ON_REQUEST.iter().copied().find(|r| *r == name).ok_or_else(|| Error::new(format!("--model {class}: no model on request of that class; there is one of {}", ON_REQUEST.iter().map(|r| r.replace('/', ".")).collect::<Vec<_>>().join(", "))))
+    let model = ON_REQUEST.iter().copied().find(|r| *r == name);
+    model.map(|m| std::iter::once(m).chain(BRINGS.iter().filter(|(by, _)| *by == m).map(|(_, brought)| *brought)).collect()).ok_or_else(|| Error::new(format!("--model {class}: no model on request of that class; there is one of {}", ON_REQUEST.iter().map(|r| r.replace('/', ".")).collect::<Vec<_>>().join(", "))))
 }
 
 /// What a result rests on when its check asked for a model ([`ON_REQUEST`]), in the words it states.

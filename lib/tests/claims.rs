@@ -69,7 +69,7 @@ fn proved(classes: &Path, target: &str, bound: u32) {
 fn the_string_and_builder_methods_are_the_definitions_written_out_over_char_at() {
     jvmcontract::tool_tier!();
     let Some(classes) = classes() else { return };
-    for method in ["indexOfString", "indexOfChar", "substring", "endsWith", "lower", "builder", "deleteClamps"] {
+    for method in ["indexOfString", "indexOfChar", "lastIndexOfPoint", "substring", "endsWith", "lower", "builder", "deleteClamps"] {
         proved(classes, &format!("claims.T#{method}"), 3);
     }
     proved(classes, "claims.S#ends", 3);
@@ -383,7 +383,7 @@ fn an_array_list_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_defin
     assert!(left_out.output.contains("java.util.ArrayList.contains(Ljava/lang/Object;)Z"), "{}", left_out.output);
 
     let none = property::run(&asking("claims.M#swept", "M-none", "java.util.Vector")).unwrap_err().to_string();
-    assert!(none.contains("--model java.util.Vector: no model on request of that class; there is one of java.util.ArrayList, java.util.ArrayDeque, java.util.HashSet, java.beans.PropertyChangeEvent"), "{none}");
+    assert!(none.contains("--model java.util.Vector: no model on request of that class; there is one of java.util.ArrayList, java.util.ArrayDeque, java.util.HashSet, java.util.LinkedHashSet, java.util.StringJoiner, java.beans.PropertyChangeEvent"), "{none}");
     let mut cached = asking("claims.M#swept", "M-cached", "java.util.ArrayList");
     cached.cache = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("claims").join("no-cache"));
     assert!(property::run(&cached).unwrap_err().to_string().contains("--model with --cache"));
@@ -478,6 +478,94 @@ fn a_hash_set_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_definiti
     let left_out = run(&asking("removed"));
     assert_eq!(left_out.verdict, Verdict::Unverifiable, "{}", left_out.output);
     assert!(left_out.output.contains("remove(Ljava/lang/Object;)Z"), "{}", left_out.output);
+}
+
+/// A `java.util.LinkedHashSet` of names, as Spring's `DefaultMessageCodesResolver` collects a binding error's message
+/// codes (`claims.LinkedSets`, example 286): the JDK's until a check asks for the model (`--model
+/// java.util.LinkedHashSet`, which runs the `HashSet` model above it too), then the definition written out over
+/// `equals` on every input of the bound, the elements in the order first added; `iterator`, which it does not keep,
+/// is still the JDK call it names. The same methods hold on a JVM over sampled names.
+#[test]
+fn a_linked_hash_set_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_definition_written_out() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let sampled = Command::new("java").arg("-XX:-UsePerfData").arg("-cp").arg(classes).args(["claims.LinkedSets", "5000"]).output().expect("java runs");
+    assert_eq!(String::from_utf8_lossy(&sampled.stdout).trim(), "ok", "{}", String::from_utf8_lossy(&sampled.stderr));
+
+    let unasked = run(&options(classes, "claims.LinkedSets#ordered", 2, "LinkedSets-unasked"));
+    assert_eq!(unasked.verdict, Verdict::Unverifiable, "{}", unasked.output);
+    assert!(unasked.output.contains("java.util.LinkedHashSet.<init>()V"), "{}", unasked.output);
+
+    let asking = |method: &str| {
+        let mut o = options(classes, &format!("claims.LinkedSets#{method}"), 3, &format!("LinkedSets-{method}"));
+        o.requested_models = vec!["java.util.LinkedHashSet".to_string()];
+        o
+    };
+    let o = run(&asking("ordered"));
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let stated = o.stated.as_ref().expect("a statement");
+    for model in ["java.util.LinkedHashSet", "java.util.HashSet"] {
+        assert!(stated.assumptions.iter().any(|a| a.text.starts_with(&format!("{model} is the tool's model of the class wherever the check runs it (--model)"))), "{model}: {:?}", stated.assumptions);
+    }
+    let left_out = run(&asking("iterated"));
+    assert_eq!(left_out.verdict, Verdict::Unverifiable, "{}", left_out.output);
+    assert!(left_out.output.contains("iterator()Ljava/util/Iterator;"), "{}", left_out.output);
+}
+
+/// A `java.util.StringJoiner`, as Spring's `DefaultMessageCodesResolver.Format.toDelimitedString` joins a message
+/// code (`claims.Joiners`, example 286): the JDK's until a check asks for the model (`--model
+/// java.util.StringJoiner`), then the definition written out over `charAt` on every input of the bound; an empty
+/// join, which the model leaves to the JDK's `new String()`, is still that JDK call. The same methods hold on a JVM
+/// over sampled Strings.
+#[test]
+fn a_string_joiner_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_definition_written_out() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let sampled = Command::new("java").arg("-XX:-UsePerfData").arg("-cp").arg(classes).args(["claims.Joiners", "5000"]).output().expect("java runs");
+    assert_eq!(String::from_utf8_lossy(&sampled.stdout).trim(), "ok", "{}", String::from_utf8_lossy(&sampled.stderr));
+
+    let unasked = run(&options(classes, "claims.Joiners#addedNull", 2, "Joiners-unasked"));
+    assert_eq!(unasked.verdict, Verdict::Unverifiable, "{}", unasked.output);
+    assert!(unasked.output.contains("java.util.StringJoiner.<init>(Ljava/lang/CharSequence;)V"), "{}", unasked.output);
+
+    let asking = |method: &str| {
+        let mut o = options(classes, &format!("claims.Joiners#{method}"), 2, &format!("Joiners-{method}"));
+        o.requested_models = vec!["java.util.StringJoiner".to_string()];
+        o
+    };
+    for method in ["joined", "addedNull"] {
+        let o = run(&asking(method));
+        assert_eq!(o.verdict, Verdict::Verified, "{method}: {}", o.output);
+        let stated = o.stated.as_ref().expect("a statement");
+        assert!(stated.assumptions.iter().any(|a| a.text.starts_with("java.util.StringJoiner is the tool's model of the class wherever the check runs it (--model)")), "{method}: {:?}", stated.assumptions);
+    }
+    let left_out = run(&asking("empty"));
+    assert_eq!(left_out.verdict, Verdict::Unverifiable, "{}", left_out.output);
+    assert!(left_out.output.contains("java.lang.String.<init>()V"), "{}", left_out.output);
+}
+
+/// `Class.isArray()` of a class literal, as Spring's `ObjectUtils.isArray` asks it of a rejected value's class
+/// (`claims.Arrayed`, example 286): whether the literal names an array class. On a class the engine holds no literal
+/// of, it and `isAssignableFrom` stay the JDK calls they are, and under `--gaps assume` too, since no assumption makes
+/// up a primitive result: the run is refused by name, where a JVM answers true.
+#[test]
+fn a_class_literal_says_whether_it_is_an_array_class_and_another_class_is_the_jdks_to_say() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let jvm = Command::new("java").arg("-XX:-UsePerfData").arg("-cp").arg(classes).arg("claims.Arrayed").output().expect("java runs");
+    assert_eq!(String::from_utf8_lossy(&jvm.stdout).trim(), "true true true", "{}", String::from_utf8_lossy(&jvm.stderr));
+    proved(classes, "claims.Arrayed#arrayed", 2);
+    for (method, call) in [("ofAnArray", "java.lang.Class.isArray()"), ("assignableOfAnArray", "java.lang.Class.isAssignableFrom(java.lang.Class)")] {
+        // Under strict the run stops at the array's `getClass()`; under assume that gives a Class the engine holds
+        // no literal of, and the run stops at the call on it.
+        for (mode, stop) in [(jvmcontract::bmc::gaps::GapMode::Strict, "java.lang.Object.getClass()"), (jvmcontract::bmc::gaps::GapMode::Assume, call)] {
+            let mut o = options(classes, &format!("claims.Arrayed#{method}"), 1, &format!("Arrayed-{method}-{mode:?}"));
+            o.gaps = mode;
+            let o = run(&o);
+            assert_eq!(o.verdict, Verdict::Unverifiable, "{method} {mode:?}: {}", o.output);
+            assert!(o.output.contains(stop), "{method} {mode:?}: {}", o.output);
+        }
+    }
 }
 
 /// Under `--gaps assume` a JDK call that returns an object returns one of its declared class or of any below it

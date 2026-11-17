@@ -371,15 +371,46 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
   - **The job.** Job `20261117-192205-example-286-protected-state-tasks-at-the` runs both tasks at bound 8 with 2
     CPUs, through the driver as it now is (with the `PropertyChangeEvent` model, `ClassUtils` observed and both
     stand-ins). `ProtectedBeanStandIn.java` is unchanged, as `accept.py` compares it.
+- 2026-11-17, step 3 continued: the mismatch path through the message codes (frozen claim unchanged; nothing
+  accepted yet). Inbox: nothing open. Job 192205 has no result yet.
+  - **`java.util.LinkedHashSet`, a model on request** (`--model java.util.LinkedHashSet`). It is the `HashSet` model
+    with its elements in the order first added: `add`, `toArray()` and `toArray(T[])`. A check that asks for it also
+    runs the `HashSet` model, as if asked (`models::BRINGS`; `models::requested` now gives each model a request
+    runs), and the result names both.
+  - **`java.util.StringJoiner`, a model on request** (`--model java.util.StringJoiner`): `add` and `toString`. The
+    JDK's join is always a new String, but the checker's builder gives the literal `""` when empty, so an empty
+    result is the JDK's `new String()`, a gap.
+  - Each model's fixture (`claims.LinkedSets`, `claims.Joiners`) is proved with the model against its definition,
+    sampled on a JVM, and shows a left-out method still the JDK's.
+    - Mutations, each failing the test: no null after the elements (the test now pre-fills the given array, after the
+      first version let it pass), reversed order, no delimiter, `""` for an empty join, `"nul"` for null.
+  - **`String.lastIndexOf(int)`** (`bmc/strings.rs`, `index_of_unit`'s test at every index, the last hit kept):
+    `claims.T#lastIndexOfPoint` is proved; with the first hit taken (by mutation) it is not. Its evidence record
+    (`values::OPERATIONS`, ten boundary cases in `tests/values.rs`) gives one outcome on the JVM, in the interpreter
+    and in the checker.
+  - **`Class.isArray()` of a class literal** (`bmc/runtime.rs`): `claims.Arrayed`.
+  - **A fix found on the way:** a `Class` method of a primitive result on a class the engine holds no literal of
+    (`isAssignableFrom`, now `isArray`) was met under `--gaps assume` as an assumable reference gap that pushed no
+    value: "operand stack underflow", no verdict.
+    - It is now a primitive gap, refused by name in both modes (`mod.rs`, the class-method fallback).
+    - The test requires the name and fails with the old kind (by mutation). It was never a false verdict.
+  - **The driver** runs the protected-state tasks with both new models; 5.3.18 is still refuted (a trial at bound 3).
+  - The new tests run their JVMs with `-XX:-UsePerfData`: in a parallel run a JVM printed an hsperfdata warning to
+    stdout, and the sampled "ok" was missed.
+  - **Where the path stops now** (capped probe, `field` restricted to `someMap`/`SomeMap`, bound 7):
+    `resolveMessageCodes` runs to its end, and the next stop is `PropertyAccessException.getLocalizedMessage()` in
+    `DefaultBindingErrorProcessor.processPropertyAccessException:79`, the error's default message.
 - Next:
   - Once job 192205 passes, record `besideRoute` on `vulnerable-protected-state-mutation` and check
     `accept.py 286 vulnerable-protected-state-mutation`.
-  - The rest of the mismatch path:
-    - a `LinkedHashSet` model (the `HashSet` model's keys in order, with `toArray(T[])`);
-    - `java.util.StringJoiner`, for `MessageCodeFormatter.toDelimitedString`;
-    - `Class.isArray()` of a literal, for `ObjectUtils.isArray`;
-    - a `Throwable`'s message and cause, read by `getLocalizedMessage` through `NestedRuntimeException.getMessage`
-      and by the cause's `toString`.
+  - The rest of the mismatch path, the exception's message:
+    - exceptions built by the JDK's `(String)` and `(String, Throwable)` constructors keep their message and cause
+      (today `gaps::exact_jdk_call` drops them, as no proof read them), with `getMessage` and `getCause` on them;
+    - `getLocalizedMessage` and `toString` dispatched as the JDK's, since `NestedRuntimeException` overrides
+      `getMessage` and `NestedExceptionUtils.buildMessage` appends the cause;
+    - `getClass()` of a JDK exception made by `new` (the stand-in's `IllegalStateException`);
+    - `StringBuilder(int)` and `append(Object)`.
+    - Then `DefaultMessageSourceResolvable`, `FieldError` and `addError`.
   - Then the beans beside `ProtectedBean`, and the effect contract at the stand-in's setter call.
   - Still open from cycle 1: non-ASCII `toLowerCase()` (the fixed task's blocker under the frozen claim), and the
     corrected formalization (I009's two values, an ASCII `field`).
