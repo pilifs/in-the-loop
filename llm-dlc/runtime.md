@@ -602,12 +602,14 @@ there leaves the run unmeasured). It works the same in both modes, and the watch
   A cycle that makes no commit ends the run, as in every loop.
 - **The order** is the order of its arguments, with a waiting example taken up again as its proof comes in. Every
   example it is given is worked on, decided or not: `changes.py --pending` gives the ones still to prove.
-- **Tests.** No session of a run runs the default test run inline: it takes about 16 minutes, and a cycle commits
-  often. A commit is checked by what it changed: `examples/tools/validate_example.py NNN` for an example's own
-  files, and the tests of any shared code it touched (`lib/tools/test_costs.py run --changed`). The default run is queued as a job nobody waits for
-  ([`verification/default_tests.py`](../verification/default_tests.py) `queue`) when an example is done and at
-  every merge between examples; it runs in a clean export of that commit, and of several waiting together only the
-  newest runs. The watcher triages what it finds, and a push requires a passed one covering the commit it pushes
+- **Tests.** No session of a run runs the default test run before a commit: it costs far more than the tests of one
+  change, and a cycle commits often. A commit is checked by what it changed: `examples/tools/validate_example.py NNN`
+  for an example's own files, and the tests of any shared code it touched (`lib/tools/test_costs.py run --changed`).
+  The default run is required before a release and before a push, and worth having when an example is done and after
+  a merge between examples: there it is queued as a job nobody waits for
+  ([`verification/default_tests.py`](../verification/default_tests.py) `queue`). It runs in a clean export of that
+  commit, one at a time, and of several waiting together only the newest runs. The watcher triages what it finds, and
+  a push requires a passed one covering the commit it pushes
   ([`CLAUDE.md`](../CLAUDE.md#tests)).
 - **The jobs.** The proof queues its long runs as [verification jobs](../verification/README.md), as everything here
   does. The watcher's verification loop runs them; started by hand, `prove-loop.sh` starts one itself unless one
