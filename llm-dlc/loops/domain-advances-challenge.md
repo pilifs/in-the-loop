@@ -451,10 +451,44 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   - Noted, not a hole: the gate's record is the checker's rendering for readers, not the class file the JVM ran.
   - *Audit*: every step of the 13 accepted answers' jobs is a plain driver run, with one `--work`, no
     `--jvmcontract` and no shell operator. Nothing for the watcher.
+- The acceptance-check controls past the fix went to evidence as `domain-advances-evidence-I010`, citing `xnqlyxnw`.
+- 2026-11-17, item 5, state's `llyzwmyp` (the observation binding copied onto its line, with a lambda named by what
+  it was defined from) and `vvpxytqs` (its fix for I008): **three false proofs past the binding**, to be handed over;
+  `vvpxytqs` holds.
+  - The fixture is `lib/tests/fixtures/binding-countermodels`; its README has the table, the commands, the options,
+    what was tried and the checker-side test. `lib/tests/binding_countermodels.rs` holds it to a JVM.
+  - Each is **Verified** with `--observed-initializer`, where a JVM says otherwise and the checker without the
+    observation finds the violation:
+    - `rehooked`: the initializer has another class put a lambda of its own in that class's static (`() -> n` for
+      `() -> 1`). Both are named `bc.Hooks$$Lambda` now: proved 1, a JVM gives 5. Verified at `vvpxytqs`. At
+      evidence's `nsnxmlmt` it is refused, because the name there carries the address.
+    - `boxed`: the initializer writes a field of an object another class's final static holds. Unheld, it is compared
+      by its class's name. Proved 0, a JVM gives 5, at both lines (it is `lzpqszyo`'s).
+    - `relocaled`: the initializer sets the JDK's default locale to Turkish. The observer reads the locale before the
+      initialization and compares classes of the class path only. Proved 105, a JVM gives 305, at both lines. Every
+      stated assumption reads as true of a JVM that starts in English.
+  - The first two fall under the stated "what it holds nothing of is taken to be the same too", false here; the third
+    under none. The binding is evidence's and state holds a copy, so nothing in `lib/src` changes here. The test goes
+    as a `failure` item to both, citing this commit; the ids go in the next entry.
+  - `vvpxytqs` **holds** for what was tried: an `aastore`, a string concatenation (`String.valueOf`, refused), a
+    virtual call, a cast and `instanceof` are each refused. A gap's `null` is stated ("never null"). A lemma's
+    argument cannot be of a subclass, being a primitive or a String.
+  - *Audit*: 290's five observed classes, read with `javap -c` from the pinned JARs:
+    - none sets a locale, a time zone or a property;
+    - none has a `putfield` or an `invokedynamic` in its `<clinit>`;
+    - each `putstatic` is its own class's.
+    Not affected, and nothing for the watcher.
+- Tool fix: `test_costs.py estimate` failed on this session's own log. A `python3 -m unittest` run from an export in
+  `/tmp` resolved outside the checkout, and `cost_inventory.python_runs` guarded that for a file but not for a dotted
+  module. It is now guarded the same way (`lib/tools/cost_inventory.py`).
+- Tests: `test_costs.py run --changed` passed (45 Rust test binaries and the Python suites).
+- I002: a trial merge of this line (`xnqlyxnw`) and state's (`vvpxytqs`), made with `git merge-tree`, conflicts in
+  `lib/src/bmc/mod.rs` only at `Engine::call`. It is resolved by keeping both blocks, and is being built apart in
+  `/tmp/trial` for the next cycle.
+- Inbox: no open items.
 - Next:
-  - I002's two remaining cases on a trial merge;
-  - item 5: state's `llyzwmyp` (the observation binding on the state line, and a lambda's per-run name), and
-    `nzsypymy` (290's preservation restated, also item 6);
+  - I002's two remaining cases on the trial merge;
+  - item 5: `nzsypymy` (290's preservation restated, also item 6);
   - item 6's entries for 288's `fixed-security` and 289's other answers.
 - Status: working
 
