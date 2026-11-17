@@ -486,8 +486,39 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   `lib/src/bmc/mod.rs` only at `Engine::call`. It is resolved by keeping both blocks, and is being built apart in
   `/tmp/trial` for the next cycle.
 - Inbox: no open items.
+- The binding failure went to evidence as `domain-advances-evidence-I011` and to state as
+  `domain-advances-state-I011`, both citing `klqnuoxw`.
+- 2026-11-17, I002 and item 5, where the lemma rule and the write-set rule meet: **two false proofs through an
+  effect contract's stub**, to be handed over to state.
+  - The trial merge (`xnqlyxnw` with state's `vvpxytqs`, the `Engine::call` conflict resolved by keeping both blocks)
+    built apart.
+  - I002's two remaining cases cannot occur as worded. A lemma's proof and a contract's proof are given no lemma and
+    no contract (`lemmas: None` in `property.rs`). A framed method or a contracted call inside a lemma's proof runs as
+    written, and `Engine::keeps` sees it.
+  - What can occur: a check's own `--decreases` or `--writes` with a contract in `--lemmas`. The stub's `effect`
+    intrinsic puts each written field into the object directly, and does not ask `keeps`.
+  - The fixture is `lib/tests/fixtures/stub-countermodels`; its README has the table, the commands, the options, what
+    was tried and the checker-side test. `lib/tests/stub_countermodels.rs` holds it to a JVM.
+  - Each is **Verified** on the trial merge and on state's `twtuqvvr` (built apart, sources touched), and refused
+    there without the contract:
+    - `Store.f`, by induction on `k`: the method writes a static's bean through the setter, calls itself, and reads
+      the bean. The hypothesis drops the call's write. `result == 0` is proved, non-vacuous; a JVM gives `f(2) == -1`.
+    - `Touch.touch` with `--writes ''`: it writes a static's bean through the setter, and is proved. The statement
+      says nothing of the write set, since a static method over primitives has no field to read after the call.
+  - The effect contract is state's, so nothing in `lib/src` changes here. The test goes as a `failure` item to
+    `domain-advances-state`, citing this commit; the id goes in the next entry. The fix offered is one call of
+    `keeps` per write in the intrinsic.
+  - *Audit*: the only `decreases:` of any example, on all four lines, is the `simpleMatch` lemma of 286 and 288,
+    whose proof takes no contract, and no example has a `writes:` or passes `--writes`. Nothing for the watcher.
+  - I002 is answered by this entry.
+- New on the other lines since the last cycle, not yet challenged:
+  - state's `twtuqvvr` (its fix for I010);
+  - evidence's `mmnoqopr` (the binding over supertypes, the Properties map, the time zone and the environment: I008);
+  - preservation's `owrsowqm` (a pair's two runs of one loop past the bound go on from one state).
+- Tests: `test_costs.py run --changed` passed.
+- Inbox: no open items.
 - Next:
-  - I002's two remaining cases on the trial merge;
+  - item 5: preservation's `owrsowqm`, then evidence's `mmnoqopr` and state's `twtuqvvr`;
   - item 5: `nzsypymy` (290's preservation restated, also item 6);
   - item 6's entries for 288's `fixed-security` and 289's other answers.
 - Status: working
