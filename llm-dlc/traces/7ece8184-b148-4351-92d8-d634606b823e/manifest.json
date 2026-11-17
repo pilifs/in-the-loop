@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:50.868Z",
-  "ended": "2026-11-17T13:10:41.772Z",
-  "duration_seconds": 831,
+  "ended": "2026-11-17T13:11:18.616Z",
+  "duration_seconds": 868,
   "stats": {
     "turns": 1,
-    "api_calls": 48,
-    "tool_calls": 49,
+    "api_calls": 52,
+    "tool_calls": 53,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 148170,
+    "peak_context_tokens": 151321,
     "usage": {
-      "input_tokens": 96,
-      "output_tokens": 38033,
-      "cache_read_input_tokens": 4652464,
-      "cache_creation_input_tokens": 136827
+      "input_tokens": 104,
+      "output_tokens": 39618,
+      "cache_read_input_tokens": 5250678,
+      "cache_creation_input_tokens": 139978
     }
   },
   "tools": {
-    "Bash": 47,
+    "Bash": 51,
     "Write": 2
   },
   "files_touched": [
@@ -40,24 +40,24 @@
     {
       "index": 0,
       "started": "2026-11-17T12:56:50.868Z",
-      "ended": "2026-11-17T13:10:41.772Z",
+      "ended": "2026-11-17T13:11:18.616Z",
       "turns": 1,
-      "api_calls": 48,
+      "api_calls": 52,
       "usage": {
-        "input_tokens": 96,
-        "output_tokens": 38033,
-        "cache_read_input_tokens": 4652464,
-        "cache_creation_input_tokens": 136827
+        "input_tokens": 104,
+        "output_tokens": 39618,
+        "cache_read_input_tokens": 5250678,
+        "cache_creation_input_tokens": 139978
       },
-      "peak_context_tokens": 148170
+      "peak_context_tokens": 151321
     }
   ],
   "log": {
-    "sha256": "fadef0a55901ed98be485baeba4c8742903eb5ab48c947d75dc6027ef66d3a30",
-    "bytes": 1376070,
-    "lines": 410,
-    "gzip_bytes": 221814,
-    "path": "llm-dlc/traces/7ece8184-b148-4351-92d8-d634606b823e/logs/fadef0a55901ed98be485baeba4c8742903eb5ab48c947d75dc6027ef66d3a30.jsonl.gz"
+    "sha256": "d5cd4bb1f46a722e14a6d5131d8d6bfe827722ab624a8a511873b254dbfe5c37",
+    "bytes": 1484019,
+    "lines": 439,
+    "gzip_bytes": 238631,
+    "path": "llm-dlc/traces/7ece8184-b148-4351-92d8-d634606b823e/logs/d5cd4bb1f46a722e14a6d5131d8d6bfe827722ab624a8a511873b254dbfe5c37.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -68,9 +68,23 @@
       "summary": "Every example's proof driver records identities, ends the run on a mutant that is not the replay's, and marks a trial",
       "body": "The evidence stream's step 2. examples/tools/beside_route.py holds what the five drivers (examples 286 to 290) did each in their own copy: the pinned JARs, the constructed mutant, the record (accept.record's evidence.json) and the verdict. Each driver keeps its own entry, lemmas, models, observed initializers and verifier arguments. What 289's driver alone did, all five now do: the record of the claim, the bound, each JAR, the adapter, the verifier's binary and the driver; a mutant whose JAR is not the one the newest mutant replay's receipt records ends the run; --max-array-length or --unwind (now on every driver) marks the run a trial.\n\nFinding: 286's, 287's and 288's drivers built their mutant by another recipe than the route's (a fixed --release, no -g or -parameters, every entry recompressed), so their JAR was not the bytes the mutant replay ran, which is why acceptance could not tie their mutant-security answers to the replay. The shared module uses the route's published-mutant recipe; run offline on the pinned JARs it gives each of the five examples exactly the JAR its replay ran (286 48323d21, 287 1d099295, 288 5c72df16, 289 a3a3dbff, 290 4ee35d0b).",
       "log_sha256": "fadef0a55901ed98be485baeba4c8742903eb5ab48c947d75dc6027ef66d3a30"
+    },
+    {
+      "change_id": "zlxkxlstvktrsztnrmynsyukqwrokplu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The evidence stream acknowledges inbox item I001",
+      "body": "Progress records domain-advances-evidence-I001 (a test of the brief runner that can hang inside a stream until the watcher's fixture fix is merged): noted, not changed and not blocked on. Nothing else changed.",
+      "log_sha256": "d5cd4bb1f46a722e14a6d5131d8d6bfe827722ab624a8a511873b254dbfe5c37"
     }
   ],
   "logs": {
+    "d5cd4bb1f46a722e14a6d5131d8d6bfe827722ab624a8a511873b254dbfe5c37": {
+      "bytes": 1484019,
+      "lines": 439,
+      "gzip_bytes": 238631,
+      "url": null
+    },
     "fadef0a55901ed98be485baeba4c8742903eb5ab48c947d75dc6027ef66d3a30": {
       "bytes": 1376070,
       "lines": 410,

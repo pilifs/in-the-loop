@@ -103,7 +103,8 @@ Don't change `verification/pipeline.py`.
   a run leaves `evidence.json` marked a trial); `validate_example.py` 286 to 290 pass. Announced to the
   preservation and state inboxes (`--kind interface`).
 - Repeated work measured (step 7): none for the owners yet.
-- Inbox: none at this cycle.
+- Inbox: `domain-advances-evidence-I001` (test_brief_run.py's watcher-inheriting test may hang or fail in a stream):
+  noted; it did not come up in this cycle's `run --changed`, and I will neither change it nor block on it.
 - Next: step 3, the reruns of 286 and 287 `mutant-security` with the new drivers (independent of step 1), then
   step 1 when its jobs are back.
 - Status: working
