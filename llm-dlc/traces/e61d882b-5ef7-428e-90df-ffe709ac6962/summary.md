@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (ended) |
+| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (open) |
 | When | 2026-11-17 12:37 UTC to 2026-11-17 15:09 UTC (151 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.326 |
@@ -229,6 +229,12 @@ change `nzsypymyqxtw` · [log `5fdbc05d089c`](https://terminalvalue.net/raw-trac
 VF-033's option B, the user's choice: claims/lone-dispatcher-matchers-preserved.json keeps the old claim's table, assumption, allowed change and bound, and compares each returned matcher's exact class, pattern, HTTP method and servlet path, in order, for both overloads of requestMatchers, rather than the count of matchers by type. Its entry is a new adapter class, MatcherDescriptionAdapter#describe, which reports each matcher's exact class and the library's own rendering of it. The old adapter and claim are unchanged, since the frozen claims and the accepted answers name them. Run on a JVM against both releases' pinned closures, describe agrees on all 28 probes with the DispatcherServlet alone and differs on 132 of the other 140, where the fix changes the selection by design. The claim states the rendering's one blind spot: a null pattern and "null" render alike in an MvcRequestMatcher.
 
 Two capped probes in a scratch copy where the task points at the new claim: at bound 1 (a trial) the checker stops at a gap, StringBuilder.append(Object) in MvcRequestMatcher.toString; at the frozen bound it reached the 4 GiB cap after 133 s. So the proof needs that gap closed, then one job. Freezing is the user's, as VF-033 and 290's notes record: the hash in a claims ledger, the task pointed at the file, and the adapter source listed. proofs/prove.py then picks the entry by the task's claim. accept.py's task check now compares the adapter sources listed at the job's commit, the ones it compiled. A source listed since is reported, not refused, so 290's three security answers stay accepted after the freeze. The control in test_accept.py fails on the old check. Verified: test_costs.py run --changed (27 of 27), validate_example.py 290, accept.py 286-290 unchanged (the 289/290 preservation answers still await their rerun).
+
+### The challenge stream is left unmerged until its loop can be continued after the run
+
+change `zmxknqtytrmm` · [log `5fdbc05d089c`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/5fdbc05d089c8341bdc0b2c1e0ddfd20fe18222609a7f6f3a52da36f83c56979.jsonl.gz)
+
+Its session was killed by the OOM killer (VF-037) with uncommitted work in its workspace, so brief_run.py merge refuses it. It is continued with brief_run.py start once the other streams end, and merged before state, as the user's merge order (D021) asks.
 
 ## Conversation
 
