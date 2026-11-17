@@ -84,6 +84,12 @@ change `qzwtllkxtrwx` · [log `960a57323376`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 1 of the 1 job(s). 20261117-133148-example-286-the-three-answers-beside-the: passed: 3 passed step(s) in 36m01s, peak 1.4 GiB (estimated 40m00s, 4.0 GiB); 22 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1 Applied 22 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
 
+### Record verification results for 1 job(s)
+
+change `lwoqsztzkqwu` · [log `960a57323376`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/960a57323376cb1f5a65fd1a1f8fd0788409448e6f410d81968cdcf02552f60f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-133148-example-287-the-three-answers-beside-the: passed: 3 passed step(s) in 44m48s, peak 3.0 GiB (estimated 45m00s, 6.0 GiB); 18 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1 Applied 18 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/960a57323376cb1f5a65fd1a1f8fd0788409448e6f410d81968cdcf02552f60f.jsonl.gz) has every step in between: reasoning, tool calls and their results.
