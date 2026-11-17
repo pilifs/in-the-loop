@@ -96,7 +96,30 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
 
 ## Progress
 
-- Nothing yet.
+- 2026-11-17, item 1, pairing (`yypzyxmwluyt`): **all four holes reproduced** as false proofs on the checker as it
+  was (`lupovnmv`), with five countermodels in `lib/tests/fixtures/pairing-countermodels` (its README has the table,
+  the reproduction and the checker-side test). Each pair differs when each version runs alone on a JVM
+  (`each_version_alone_is_what_a_jvm_says_it_is`) and is **Verified** as agreeing: `locale` (the previous version sets
+  a Turkish default the new one lowers under), `flag` (a library static shared without `--before-classpath`),
+  `thrown` (two unrelated `RuntimeException`s), `argument` (`IllegalArgumentException` against a subclass), `scoped`
+  (a scope that is false everywhere but sets the default locale, run before both calls). The order is observable:
+  with the roles swapped `flag` is a violation, and so is `flag` with `--before-classpath` in either order (test
+  `in_the_other_order_or_on_its_own_library_the_pair_sees_the_static_differ`); `locale` swapped is unverifiable
+  only because the interpreter lowers without the locale (`interp/natives.rs`, a conservative miss, not a false
+  proof). The pairing is the preservation stream's this run, so no refusal is committed here: the failing checker
+  test is sent to `domain-advances-preservation` as a `failure` item, to land with its fix.
+  *Audit*: the accepted results that used the pair are 289's and 290's `preservation`. Both pass
+  `--before-classpath`, their allowed changes call no release code, their adapters set no default locale: not
+  affected by `locale`, `flag` or `scoped`. Both claims say "throw the same exception", which the pair checks by
+  category: **to the watcher**, each says less than its claim on any input where the releases throw different
+  classes of one category; whether one exists is not shown, so they stand open on that point until a rerun under
+  exact classes (notes added to both examples). 288's adapter sets the default before each read, and 286, 287
+  and 307 have no decided preservation.
+- Test note: `test_costs.py run --changed` chose `llm-dlc/tools/test_brief_run.py`, which fails inside a stream
+  because it inherits `RUN_STREAMS_WATCHER` and puts its made-up streams to the real watcher (the watcher answered
+  `leave`, citing its D001); it passes with the variable unset (39 tests).
+- Next: item 2, the observed initializers (`lib/src/observed.rs`): the outside review's `A.<clinit>` countermodel
+  first.
 - Status: working
 
 ## Loop settings
