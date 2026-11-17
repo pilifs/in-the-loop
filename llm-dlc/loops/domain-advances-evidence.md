@@ -306,7 +306,38 @@ Don't change `verification/pipeline.py`.
   since it is this stream's own check and none of the 13 accepted answers rests on these holes (per the item's audit).
 - Next: I007 (the controls from `zwrpkwnl`'s README into `test_accept.py`, and `accept.py` refusing or leaving each
   unbound); VF-030 when its job is back; the 289/290 preservation rerun once this line and `zmvkptqz` meet.
-- Status: working
+- 2026-11-17, cycle 12. **I007 done: the seven controls are in `test_accept.py` (`Countermodels`) and `accept.py` refuses
+  or leaves each unbound.** The holes it closes, by check:
+  - `entry`: whole `Class#method` names, the invocation's entry or the one an assumption names as the "adapter entry"
+    (286's and 287's route), never a part of one or a method an assumption mentions otherwise;
+  - `step`: exactly `python3 [-I] <folder>/proofs/prove.py TASK`; and `artifacts` holds `evidence.json`'s driver hash to
+    the driver at the job's source commit;
+  - `domain`: the claim's bound alone, a task's `bounds` no longer lowering it; a witness's null input must be of a
+    parameter the claim makes nullable;
+  - `replay`: where the claim assumes something, a refutation needs a record that the assumption held on its witness.
+    The record is the harness source the job collected (`work/harness/PropertyHarness.java`). Its `check` returns
+    first wherever the outcome's assumption does not hold, so the JVM's failure of that harness is on an assumed input.
+    Without that source as the job wrote it the answer is unbound. Every claim of 286 to 290 has an `assume`, and all
+    eight refutations' harnesses gate on it exactly;
+  - `expressions`: a task with no allowed change is refused when the generated pair has `meantToChange` or the outcome
+    says it ran with one.
+
+  Each control fails on the old check: 8 tests, 11 failures with subtests, the README's 10 and the driver hash. Beside
+  each is the evidence of the same kind that is still accepted. `accept.py 286` to `290` still accepts the same 13
+  answers with no limit; 289's and 290's preservation are still refused for `outside`. `test_accept.py` 38 tests and
+  `run --changed` 7 of 7 pass.
+- Repeated work measured (step 7): `llm-dlc/tools/test_brief_run.py` (I001) failed once in `run --changed` and passed
+  on its second run, about 49 s.
+- Inbox: no open items. `domain-advances-evidence-I007` was acknowledged in cycle 11 and is done here.
+- Next:
+  - VF-030, when job `20261117-152112-the-rust-proof-tier-after-the-domain-adv` is back (pending, not started).
+  - The 289/290 preservation rerun, once this line and `zmvkptqz` meet (still on neither line).
+  - 290's restated claim waits on the user's freeze.
+
+  Nothing else needs only me.
+  Then blocked: the 289/290 preservation rerun needs `zmvkptqz` merged onto this line, and 290's restated claim
+  needs the user's freeze.
+- Status: waiting on jobs 20261117-152112-the-rust-proof-tier-after-the-domain-adv
 
 ## Loop settings
 

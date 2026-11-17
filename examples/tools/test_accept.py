@@ -64,12 +64,13 @@ def outcome_of(task: dict, claim: dict, answer: str, bound: int | None) -> dict 
 
 
 def beside(root: Path, folder: Path, task_id: str, answer: str, job: str, status: str | None = "passed", names=None,
-           trial: int | None = None, outcome: str | None = None, mutant: str | None = None) -> dict:
+           trial: int | None = None, outcome: str | None = None, mutant: str | None = None, harness: str | None = None) -> dict:
     """An answer given beside the route, as a sidecar records it, with what the pipeline and a driver leave: the job
     (naming the examples in NAMES, by default this one), its result (none when STATUS is None), the step's log and the
     collected outcome, of the answer or of OUTCOME where the two are to differ, run at the claim's bound or at TRIAL;
-    and the claim file frozen in a ledger. MUTANT is the hash the step's log says the mutant's JAR had. Returns the
-    paths, relative to ROOT."""
+    and the claim file frozen in a ledger. MUTANT is the hash the step's log says the mutant's JAR had. HARNESS is the
+    assumption the collected harness source returns first without (`work/harness/PropertyHarness.java`, as the checker
+    writes it), where there is to be one. Returns the paths, relative to ROOT."""
     number, rel = folder.name[:3], folder.relative_to(root).as_posix()
     target = json.loads((folder / "target.json").read_text())
     task = next(t for t in target["tasks"] if t["id"] == task_id)
@@ -95,13 +96,21 @@ def beside(root: Path, folder: Path, task_id: str, answer: str, job: str, status
     (root / paths["outcome"]).parent.mkdir(parents=True, exist_ok=True)
     bound = trial or {**(claim.get("bounds") or {}), **(task.get("bounds") or {})}.get("maxArrayLength")
     (root / paths["outcome"]).write_text(json.dumps(outcome_of(task, claim, outcome or answer, bound)))
+    outputs = [{"path": paths["outcome"], "change": "added", "sha256": sha(root / paths["outcome"])}]
+    if harness is not None:
+        paths["harness"] = f"{work}/{task_id}/work/harness/PropertyHarness.java"
+        (root / paths["harness"]).parent.mkdir(parents=True, exist_ok=True)
+        (root / paths["harness"]).write_text("public final class PropertyHarness {\n    public static void check(java.lang.String field) {\n"
+                                             f"        if (!({harness})) {{ return; }} // the inputs the property is about\n"
+                                             "        assert false; // made up\n    }\n}\n")
+        outputs.append({"path": paths["harness"], "change": "added", "sha256": sha(root / paths["harness"])})
     (root / paths["log"]).parent.mkdir(parents=True, exist_ok=True)
     (root / paths["log"]).write_text((f"mutant: gate.jar with Gate recompiled, sha256 {mutant}: made up\n" if mutant else "") + "verdict: made up\n")
     (root / paths["result"]).write_text(json.dumps({
         "id": job, "status": status, "job": {"sha256": hashlib.sha256(json.dumps(spec, sort_keys=True).encode()).hexdigest()},
         "sourceCommit": COMMIT, "jvmcontract": {"libTree": "t" * 40},
         "steps": [{"index": 1, "status": "passed", "run": run, "log": {"path": "logs/1.log", "sha256": sha(root / paths["log"])}}],
-        "outputs": [{"path": paths["outcome"], "change": "added", "sha256": sha(root / paths["outcome"])}]}))
+        "outputs": outputs}))
     return paths
 
 
@@ -519,12 +528,131 @@ class DriverRecord(Checkout):
             self.assertEqual(artifacts["status"], status, artifacts["detail"])
         self.assertIn("gate-1.0.jar of mutant is not the JAR target.json pins", artifacts["detail"])
 
+    def test_a_driver_that_is_not_the_one_at_the_jobs_commit_is_refused(self):
+        """The record names the driver that ran; at the job's source commit the driver at that path is another."""
+        self.recorded()
+        committed = AsCommitted(self.root)
+        self.assertTrue(self.check("fixed-security", committed)["accepted"], self.check("fixed-security", committed).get("why"))
+        committed.files["examples/900-made-up-change/proofs/prove.py"] = b"# another driver\n"
+        self.refused("fixed-security", "artifacts", "is not examples/900-made-up-change/proofs/prove.py at the source commit", committed)
+
     def test_a_record_changed_after_the_job_or_of_another_task_is_refused(self):
         self.recorded()
         file = self.root / "verification/.work-900/fixed-security/evidence.json"
         data = json.loads(file.read_text())
         file.write_text(json.dumps({**data, "task": "regex-probe"}))
         self.refused("fixed-security", "artifacts", "is not the file the job wrote")
+
+
+def task_of(t: dict, task_id: str) -> dict:
+    return next(x for x in t["tasks"] if x["id"] == task_id)
+
+
+class Countermodels(Checkout):
+    """The challenge stream's controls of this check (lib/tests/fixtures/accept-countermodels/README.md, `zwrpkwnl`):
+    evidence the check once accepted for an answer the evidence does not give. Each failed before the check was
+    tightened; beside each, the evidence of the same kind that is still accepted."""
+
+    def test_an_outcome_about_another_method_whose_name_the_entry_contains_is_refused(self):
+        """The entry was matched as a substring of the invocation's entry, so an outcome about `GateAdapter#allowed`
+        stood in for one about `GateAdapter#allowedTwice`: the same expressions over other code."""
+        paths = self.beside("regex-probe", "refuted")
+        self.edit("target.json", lambda t: task_of(t, "regex-probe").update(invocation={
+            "how": "adapter", "checked": "2026-01-02", "evidence": "made up",
+            "entry": "fixture.adapter.GateAdapter#allowedTwice(Ljava/lang/String;)Z, made up"}))
+        rewrite(self.root, paths, lambda o: o.update(target="fixture.adapter.GateAdapter#allowedTwice"))
+        self.assertTrue(self.check("regex-probe")["accepted"], "the entry the task names")
+        for other in ("fixture.adapter.GateAdapter#allowed", "adapter.GateAdapter#allowedTwice", "GateAdapter#allowed"):
+            with self.subTest(other=other):
+                rewrite(self.root, paths, lambda o: o.update(target=other))
+                self.refused("regex-probe", "entry", other)
+
+    def test_an_outcome_about_a_method_an_assumption_mentions_is_refused_and_the_adapter_entry_it_names_is_not(self):
+        """A method the claim's assumptions name in passing (how the input is read) is not the entry. One an assumption
+        names as the adapter entry is: 286's and 287's tasks have no invocation entry and name theirs so."""
+        paths = self.beside("regex-probe", "refuted")
+        self.edit("claims/regex-probe.json", lambda c: c.update(assumptions=[
+            {"text": "the field is read by fixture.RegexGate#field from the request, made up"},
+            {"text": "the parameters are those of the adapter entry fixture.adapter.GateAdapter#allowed(Ljava/lang/String;)Z: made up"}]))
+        self.beside("regex-probe", "refuted")  # the ledger freezes the edited claim
+        rewrite(self.root, paths, lambda o: o.update(target="fixture.RegexGate#field"))
+        self.refused("regex-probe", "entry", "fixture.RegexGate#field")
+        rewrite(self.root, paths, lambda o: o.update(target="fixture.adapter.GateAdapter#allowed"))
+        self.assertTrue(self.check("regex-probe")["accepted"], self.check("regex-probe").get("why"))
+
+    def test_a_step_that_ran_a_driver_at_another_path_is_refused(self):
+        """Any word that ended in proofs/prove.py and contained the example's folder was taken: a driver of another
+        checkout, which the identity then named as this commit's, or no driver run at all. `python3 -I` is a run."""
+        for run, taken in (("python3 /elsewhere/examples/900-made-up-change/proofs/prove.py fixed-security --timeout 60 --work verification/.work-900", False),
+                           ("echo examples/900-made-up-change/proofs/prove.py fixed-security --work verification/.work-900", False),
+                           ("python3 -I examples/900-made-up-change/proofs/prove.py fixed-security --timeout 60 --work verification/.work-900", True)):
+            with self.subTest(run=run):
+                paths = self.beside("fixed-security", "established")
+                spec = json.loads((self.root / paths["job"]).read_text())
+                result = json.loads((self.root / paths["result"]).read_text())
+                spec["steps"][0]["run"] = result["steps"][0]["run"] = run
+                (self.root / paths["job"]).write_text(json.dumps(spec))
+                result["job"]["sha256"] = hashlib.sha256(json.dumps(spec, sort_keys=True).encode()).hexdigest()
+                (self.root / paths["result"]).write_text(json.dumps(result))
+                if taken:
+                    self.assertTrue(self.check("fixed-security")["accepted"], self.check("fixed-security").get("why"))
+                else:
+                    self.refused("fixed-security", "step", "prove.py")
+
+    def test_a_refutation_whose_witness_is_null_where_the_claim_says_not_null_is_refused(self):
+        """The domain check compared the outcome's stated nullable parameters with the claim's, never the witness's
+        values: a witness with field null refuted a claim over non-null fields only, which it lies outside."""
+        paths = self.beside("regex-probe", "refuted")
+        rewrite(self.root, paths, lambda o: o.update(counterexample={"input": "allowed(field=null)", "inputs": [
+            {"name": "field", "type": "java.lang.String", "value": None}]}))
+        self.refused("regex-probe", "domain", "null")
+        self.edit("claims/regex-probe.json", lambda c: c.update(nullable=["field"]))
+        self.beside("regex-probe", "refuted")
+        rewrite(self.root, paths, lambda o: o.update(counterexample={"input": "allowed(field=null)", "inputs": [
+            {"name": "field", "type": "java.lang.String", "value": None}]}))
+        self.assertTrue(self.check("regex-probe")["accepted"], self.check("regex-probe").get("why"))
+
+    def test_a_refutation_whose_witness_the_claims_assumption_excludes_is_left_unbound(self):
+        """A replay that reproduced the assertion's failure said nothing of whether the input was assumed: a witness of
+        length 2 refuted a claim about length 3 only. What says it is the harness the JVM ran, which returns first
+        where the assumption does not hold; with no such source collected, or one that does not return first, nothing
+        does."""
+        self.edit("claims/regex-probe.json", lambda c: c.update(assume="field.length() == 3"))
+        self.beside("regex-probe", "refuted")
+        r = self.check("regex-probe")
+        self.assertFalse(r["accepted"], "witness allowed(field=\"ab\") is outside `field.length() == 3`, and no record says it is inside")
+        self.assertIn(("replay", accept.UNBOUND), [(c["check"], c["status"]) for c in r["checks"]])
+        self.assertIn("collected no harness source", r["why"])
+        self.beside("regex-probe", "refuted", harness="field != null")
+        self.refused("regex-probe", "replay", "does not return first where `field.length() == 3` does not hold")
+        self.beside("regex-probe", "refuted", harness="field.length() == 3")
+        r = self.check("regex-probe")
+        self.assertTrue(r["accepted"], r.get("why"))
+        self.assertIn("returns before the call where the assumption does not hold", next(c["detail"] for c in r["checks"] if c["check"] == "replay"))
+
+    def test_a_pair_run_with_an_allowed_change_the_task_does_not_allow_is_refused(self):
+        """The expressions check asked nothing of the pair when the task allows no change, so a pair that ran with
+        `code == 97` established `preservation` everywhere, where the versions differ at 97. The generated pair, where
+        the job collected it, says so as well."""
+        paths = self.beside("preservation", "established")
+        self.edit("target.json", lambda t: task_of(t, "preservation").pop("allowedChange"))
+        self.assertIn("meant to affect (`code == 97`", json.loads((self.root / paths["outcome"]).read_text())["output"])
+        self.refused("preservation", "expressions", "code == 97")
+        pair = self.root / "verification/.work-900/preservation/work/pair/RegressionPair.java"
+        pair.parent.mkdir(parents=True)
+        pair.write_text("static boolean meantToChange(int code) { return code == 97; }")
+        result = json.loads((self.root / paths["result"]).read_text())
+        result["outputs"].append({"path": pair.relative_to(self.root).as_posix(), "change": "added", "sha256": sha(pair)})
+        (self.root / paths["result"]).write_text(json.dumps(result))
+        self.refused("preservation", "expressions", "skips the inputs of an allowed change")
+
+    def test_a_task_bound_below_the_claims_does_not_establish_the_claim(self):
+        """`want` was the claim's bound overridden by the task's, so a task that lowered it to 2 made a proof at 2 the
+        claim's bound of 8: the trial-bound control by another route."""
+        self.bound("fixed-security", 8)
+        self.edit("target.json", lambda t: task_of(t, "fixed-security").update(bounds={"maxArrayLength": 2}))
+        self.beside("fixed-security", "established")
+        self.refused("fixed-security", "domain", "8")
 
 
 class ThisCheckout(unittest.TestCase):
