@@ -18,6 +18,23 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-039: 287's claims accept a wrong fix that keeps the 72-byte guard for checking only
+
+- **Status**: open (the user's decision on 2026-11-17, run-streams-domain-advances-D032: defer to after the
+  domain-advances run; no new claim in it).
+- **Raised**: 2026-11-17 15:35 UTC by the challenge stream of the domain-advances run, as the preservation stream's
+  inbox item I007.
+- **Found**: the mutant `examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/controls/check-only-guard.patch`
+  keeps 6.3.8's guard only when checking (`if (for_check && passwordb.length > 72)`), so `matches` and `checkpw` are the
+  fix's: all three of 287's claims are predicted to accept it, and its driver lines equal 6.3.8's on all 33 probes. But
+  `encode` of a 73-byte password returns a hash again, and the 72-byte prefix matches it: the advisory's defect,
+  reached through the encoder. 287's notes ("Could a wrong implementation satisfy the claims?") record the case.
+- **Needs**: a claim that `encode` / `hashpw(String, String)` throws `IllegalArgumentException` exactly beyond 72 UTF-8
+  bytes would tell the mutant from the fix. A new claim is the user's to freeze. Until then, 287's results are read as
+  not telling a check-only guard from the fix.
+- **Tracked in**: run-streams-domain-advances-D032; the preservation stream's item I007.
+- **Closes when**: the user freezes such a claim and it refutes the mutant, or decides the limit stands.
+
 ### VF-038: 307's frozen claim justifies its encoding assumption by a specification that says no such thing for `getBytes(String)`
 
 - **Status**: open, minor (the user's decision on 2026-11-17, run-streams-domain-advances-D029: keep the frozen claim and
