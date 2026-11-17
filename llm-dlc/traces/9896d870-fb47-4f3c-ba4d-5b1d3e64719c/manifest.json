@@ -12,31 +12,32 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.005Z",
-  "ended": "2026-11-17T13:56:08.929Z",
-  "duration_seconds": 3558,
+  "ended": "2026-11-17T14:17:12.669Z",
+  "duration_seconds": 4822,
   "stats": {
-    "turns": 6,
-    "api_calls": 121,
-    "tool_calls": 123,
+    "turns": 11,
+    "api_calls": 199,
+    "tool_calls": 201,
     "tool_errors": 3,
-    "compactions": 1,
-    "peak_context_tokens": 179162,
+    "compactions": 2,
+    "peak_context_tokens": 231497,
     "usage": {
-      "input_tokens": 242,
-      "output_tokens": 82952,
-      "cache_read_input_tokens": 12687740,
-      "cache_creation_input_tokens": 275488
+      "input_tokens": 398,
+      "output_tokens": 147810,
+      "cache_read_input_tokens": 24742293,
+      "cache_creation_input_tokens": 498419
     }
   },
   "tools": {
-    "Bash": 117,
-    "Edit": 4,
-    "Write": 2
+    "Bash": 193,
+    "Edit": 5,
+    "Write": 3
   },
   "files_touched": [
     "lib/models/java/util/lists/ArrayDeque.java",
     "lib/tests/claims.rs",
     "lib/tests/fixtures/claims/claims/Deques.java",
+    "lib/tests/fixtures/claims/claims/Frames.java",
     "llm-dlc/loops/domain-advances-state.md"
   ],
   "context_windows": [
@@ -57,24 +58,38 @@
     {
       "index": 1,
       "started": "2026-11-17T13:14:36.229Z",
-      "ended": "2026-11-17T13:56:08.929Z",
-      "turns": 4,
-      "api_calls": 83,
+      "ended": "2026-11-17T13:56:44.455Z",
+      "turns": 5,
+      "api_calls": 86,
       "usage": {
-        "input_tokens": 166,
-        "output_tokens": 55953,
-        "cache_read_input_tokens": 9582987,
-        "cache_creation_input_tokens": 165889
+        "input_tokens": 172,
+        "output_tokens": 57470,
+        "cache_read_input_tokens": 10122517,
+        "cache_creation_input_tokens": 170596
       },
-      "peak_context_tokens": 179162
+      "peak_context_tokens": 183869
+    },
+    {
+      "index": 2,
+      "started": "2026-11-17T13:57:46.556Z",
+      "ended": "2026-11-17T14:17:12.669Z",
+      "turns": 4,
+      "api_calls": 75,
+      "usage": {
+        "input_tokens": 150,
+        "output_tokens": 63341,
+        "cache_read_input_tokens": 11515023,
+        "cache_creation_input_tokens": 218224
+      },
+      "peak_context_tokens": 231497
     }
   ],
   "log": {
-    "sha256": "e02c99011dda56df411f19ce57cdc2a5834214ee214a4e0cf6663e5490120468",
-    "bytes": 3215028,
-    "lines": 1080,
-    "gzip_bytes": 544452,
-    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/e02c99011dda56df411f19ce57cdc2a5834214ee214a4e0cf6663e5490120468.jsonl.gz"
+    "sha256": "14c3eb3e4b95f2df5bcf919b4d77f270cb17c2f705aa95a9adf8675f63cdc58a",
+    "bytes": 5262429,
+    "lines": 1802,
+    "gzip_bytes": 876630,
+    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/14c3eb3e4b95f2df5bcf919b4d77f270cb17c2f705aa95a9adf8675f63cdc58a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -117,9 +132,23 @@
       "summary": "The state stream's line takes the evidence stream's trace-check fix for a shared commit another stream's session stamped",
       "body": "Rebasing this line onto the evidence stream's rkxyyqwn (inbox domain-advances-state-I002) brought in a commit the preservation stream's session had stamped with its LLM-Trace line (session f28025bc), whose manifest is only on the preservation line, so sync.py check failed here with 'session f28025bc... has no manifest'. The evidence stream fixed the check in mktymxvt (a note, not an error, while another workspace's manifest lists the log); this applies exactly that commit's diff to llm-dlc/tools/sync.py and test_workspaces.py, so the two lines merge cleanly. sync.py check now reports 0 errors; test_workspaces passes (14 tests). Note for the conductor: sync.py commit also restamped rkxyyqwn with this session's trace line, as it stamps every change made while a session runs, which rebased the evidence and preservation lines' descendants of it.",
       "log_sha256": "e02c99011dda56df411f19ce57cdc2a5834214ee214a4e0cf6663e5490120468"
+    },
+    {
+      "change_id": "qrqtplwqnrmltxolxywstktrwvklxypv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A write set, a first effect contract: prove --writes refutes the setter that writes a protected field and proves its honest twin",
+      "body": "The state stream's steps 4 and 5, the checking side. prove --writes this.displayName (own checker only) states which fields of a method's receiver and object parameters it may write. The check proves the frame with the property: after a normal return every other field of those inputs is unchanged, a primitive by value and a String or object by identity through the new p == \\old(p) term. The frame is conjoined to the assertion, so a write outside the set is refuted by the harness and its witness runs on a JVM. Inside the call the engine refuses, by name, a write to anything else that existed before it: a static field, an array, an object no input is (even one a named field holds), or a class initialization, whose objects would look new to the call. This generalizes Engine::keeps through bmc::Options::frame. The cache refuses such a check, since its key does not read the write set.",
+      "log_sha256": "14c3eb3e4b95f2df5bcf919b4d77f270cb17c2f705aa95a9adf8675f63cdc58a"
     }
   ],
   "logs": {
+    "14c3eb3e4b95f2df5bcf919b4d77f270cb17c2f705aa95a9adf8675f63cdc58a": {
+      "bytes": 5262429,
+      "lines": 1802,
+      "gzip_bytes": 876630,
+      "url": null
+    },
     "a3ad388bcc53c6d97f04d9927c36b676984c9bcdcf5113a5d45ade9739803514": {
       "bytes": 1048215,
       "lines": 307,

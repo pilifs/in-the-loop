@@ -4086,11 +4086,16 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
     // The field paths the assertion reads under \old (step H2), each read before the call into its local, with
     // whether it could be: a path through null leaves 0 there, and reading it in the assertion throws.
     for (path, value) in assertion_expr.old_fields() {
-        let kind = if path.ty == Type::Long { Kind::Long } else { Kind::Int };
-        if kind == Kind::Long {
-            code.op(0x09); // lconst_0
-        } else {
-            code.iconst(0);
+        // A path that ends at a reference is kept for a comparison by identity (`this.name == \old(this.name)`).
+        let kind = match path.ty {
+            Type::Long => Kind::Long,
+            Type::Object(_) | Type::Array(_) => Kind::Ref,
+            _ => Kind::Int,
+        };
+        match kind {
+            Kind::Long => code.op(0x09), // lconst_0
+            Kind::Ref => code.op(0x01),  // aconst_null
+            _ => code.iconst(0),
         }
         code.store(kind, value);
         code.iconst(0);

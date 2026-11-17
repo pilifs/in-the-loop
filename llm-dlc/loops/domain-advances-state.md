@@ -118,14 +118,29 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
   `Method.invoke`, after type conversion by the default editors. Sent `domain-advances-evidence-I006`: coordinate
   `observed.rs`'s format with the evidence stream's binding change before step 3 adds held kinds. Job
   `20261117-130335-…` (queued in cycle 1) runs the driver as it now is.
-- Next: step 3 needs the evidence stream's answer on `observed.rs`; meanwhile steps 4 and 5, which do not need the
-  binding path: the adversarial bean beside `ProtectedBean` (a `setDisplayName` that writes `isAdmin`) and its honest
-  twin, and a first effect contract stated over a method (a write set, its frame and the rest of step 4) that the
-  checker establishes on the honest setter and refutes on the adversarial one, generalizing `Engine::keeps`. Then step
-  3's form: an introspection contract (name to write method for the bean, sampled on a JVM) and an effect contract at
-  the property accessor, likely a smaller account than running `Introspector`, `Method.invoke` and the default
-  editors. Still open from cycle 1: non-ASCII `toLowerCase()` (a Unicode lowering model or an ASCII claim for the
-  user).
+- 2026-11-17, steps 4 and 5, the checking side of a first effect contract (nothing of 286 decided; the frozen claim
+  unchanged). Inbox: nothing open. **A write set** (`prove --writes this.displayName`, own checker only): the
+  fields of the receiver and object parameters a method may write. The check proves the frame with the property:
+  after a normal return, every other field of those inputs is unchanged (a primitive by value, a String or object by
+  identity, through the new `p == \old(p)`). That frame is conjoined to the assertion, so a write outside the set is
+  refuted by the harness and replayed on a JVM. Inside the call, generalizing `Engine::keeps` (`Options::frame`), the
+  engine refuses a write to anything else that existed before the call: a static field, an array, an object no input
+  is (even one a named field holds), or a class initialization (an object the initializer makes would look new to the
+  call). Fixture `claims.Frames` (`lib/tests/fixtures/claims`): the brief's adversarial `setDisplayName` (also writes
+  `admin`) is refuted, its witness run on a JVM. The honest twin and a setter that writes `admin` and puts it back
+  are established. A copy of a String counts as a write. One countermodel per refusal, each writing on a JVM
+  (`Frames.main`), and a mutation switching the engine's frame off makes the refusal test fail. The beans are the
+  lib fixture's, not yet beside `ProtectedBean`: a new adapter source in 286's `target.json` changes the adapter set
+  `accept.py` compares for every 286 task (its line 326), under the evidence stream's queued jobs, and the
+  application-level statement they serve needs the binding path (step 3). Not yet: the reads, allocation and alias
+  parts of step 4, and the contract's use at a call.
+- Next: step 4's use side. The write set stands in for a call: the frame's fields keep their values, the written ones
+  take any value the postcondition allows, and the use checks that the contract's reads and frame match the call's
+  state, with an `Effects`-style countermodel per side condition. Then step 3 (which still needs the evidence stream's
+  answer to I006): an introspection contract (property name to write method, sampled on a JVM) and this effect
+  contract at the property accessor, then the adversarial bean and twin beside `ProtectedBean`, with the app-level
+  refutation through `displayName`. Still open from cycle 1: non-ASCII `toLowerCase()` (a Unicode lowering model or an
+  ASCII claim for the user).
 - Status: working
 
 ## Loop settings

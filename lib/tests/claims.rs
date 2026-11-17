@@ -642,6 +642,87 @@ fn a_summary_is_not_of_a_method_that_reads_what_a_caller_can_change() {
     assert!(o.output.contains("lemma: ✓ claims.Effects#limit"), "{}", o.output);
 }
 
+/// A write set (`prove --writes`) on the beans of `claims.Frames`, the state stream's first effect contract: "the
+/// setter writes `displayName` and nothing else". The frame is part of the assertion, so the adversarial setter's
+/// write of `admin` is refuted with a witness the JVM replays; its honest twin, and a setter that puts the field
+/// back, meet it. Without the write set the same check says nothing of `admin`.
+#[test]
+fn a_write_set_tells_the_setter_that_writes_a_protected_field_from_its_honest_twin() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let framed = |bean: &str, writes: &[&str], tag: &str| {
+        let mut o = options(classes, &format!("claims.Frames${bean}#setDisplayName"), 8, &format!("frames-{tag}"));
+        o.writes = Some(writes.iter().map(|w| w.to_string()).collect());
+        run(&o)
+    };
+    let adversarial = framed("Adversarial", &["this.displayName"], "adversarial");
+    assert_eq!(adversarial.verdict, Verdict::Violation, "{}", adversarial.output);
+    // What was checked is the frame, conjoined to the assertion (none here).
+    assert_eq!(adversarial.assert.as_deref(), Some("this.admin == \\old(this.admin)"), "{}", adversarial.output);
+    assert!(adversarial.output.contains("frame: setDisplayName writes this.displayName; after the call, this.admin == \\old(this.admin)"), "{}", adversarial.output);
+    assert!(adversarial.output.contains("violated: `this.admin == \\old(this.admin)`"), "{}", adversarial.output);
+    assert_eq!(adversarial.replay.as_ref().map(|r| (r.by.as_str(), r.reproduced)), Some(("jvm", true)), "{}", adversarial.output);
+    for bean in ["Honest", "Restoring"] {
+        let o = framed(bean, &["this.displayName"], bean);
+        assert_eq!(o.verdict, Verdict::Verified, "{bean}: {}", o.output);
+    }
+    // Named, the protected field is the setter's to write.
+    let both = framed("Adversarial", &["this.displayName", "this.admin"], "adversarial-both");
+    assert_eq!(both.verdict, Verdict::Verified, "{}", both.output);
+    // With no write set the check states nothing about what the setter leaves.
+    let mut plain = options(classes, "claims.Frames$Adversarial#setDisplayName", 8, "frames-plain");
+    plain.assert = Some("true".into());
+    assert_eq!(run(&plain).verdict, Verdict::Verified);
+    // A reference is kept by identity: a String of the same content is another object, and a write.
+    let copying = framed("Copying", &["this.displayName"], "copying");
+    assert_eq!(copying.verdict, Verdict::Violation, "{}", copying.output);
+    assert!(copying.output.contains("violated: `this.title == \\old(this.title)`"), "{}", copying.output);
+    assert_eq!(copying.replay.as_ref().map(|r| (r.by.as_str(), r.reproduced)), Some(("jvm", true)), "{}", copying.output);
+}
+
+/// The side conditions of a write set: the harness reads the inputs' fields after the call and nothing else, so the
+/// own checker refuses inside the call a write to anything else that was there before it, each by name, and a
+/// write set that names no field is refused. Each setter here
+/// writes what `Frames.main` shows on a JVM, so a `Verified` would be a false proof.
+#[test]
+fn a_write_set_refuses_every_write_its_frame_does_not_read() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let framed = |bean: &str, writes: &[&str], tag: &str| {
+        let mut o = options(classes, &format!("claims.Frames${bean}#setDisplayName"), 3, &format!("frames-{tag}"));
+        o.writes = Some(writes.iter().map(|w| w.to_string()).collect());
+        run(&o)
+    };
+    for (bean, writes, why) in [
+        ("Remembering", &["this.displayName"][..], "writes a static field, outside its write set"),
+        ("Auditing", &["this.displayName"][..], "initializes the class claims.Frames, outside its write set"),
+        ("Counting", &["this.displayName"][..], "writes a field of an object made before it was called and none of its inputs, outside its write set"),
+        // The field is named, the object behind it is not.
+        ("Counting", &["this.displayName", "this.audit"][..], "writes a field of an object made before it was called and none of its inputs"),
+        ("Filling", &["this.displayName"][..], "stores into an array made before it was called and none of its inputs"),
+    ] {
+        let o = framed(bean, writes, &format!("{bean}-{}", writes.len()));
+        assert_ne!(o.verdict, Verdict::Verified, "{bean}: {}", o.output);
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{bean}: {}", o.output);
+        assert!(o.problem.as_deref().unwrap_or_default().contains(why), "{bean}: {}", o.output);
+    }
+    let unknown = framed("Honest", &["this.name"], "unknown");
+    assert!(unknown.problem.as_deref().unwrap_or_default().contains("this.name is no field of the receiver or an object parameter; a write set names some of this.displayName, this.admin"), "{}", unknown.output);
+}
+
+/// What the write-set tests call writes are writes on a JVM.
+#[test]
+fn the_frame_countermodels_are_what_a_jvm_says_they_are() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let out = Command::new("java").arg("-cp").arg(classes).arg("claims.Frames").output().expect("java runs");
+    assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+    assert_eq!(
+        String::from_utf8_lossy(&out.stdout).trim(),
+        "adversarial.admin=true honest.admin=false restoring.admin=false copying.title.same=false copying.title.equal=true lastName=x audit.writes=1 counting.audit.same=true held.writes=1 seen[0]=1"
+    );
+}
+
 /// What the two tests above call false is false on a JVM: the fixture says what each method returns there.
 #[test]
 fn the_countermodels_are_what_a_jvm_says_they_are() {

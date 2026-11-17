@@ -171,6 +171,12 @@ pub struct Options {
     /// are made in the state of the call under proof, which nothing it runs may write. So what it reads is not
     /// refused, where a summary's method may read nothing a caller can change ([`Engine::reads`]).
     pub own_induction: bool,
+    /// The method whose call by the harness a stated write set frames (its class, name and descriptor;
+    /// `prove --writes`, [`crate::property`]): the harness checks after the call that each field of its receiver
+    /// and object parameters outside the write set is what it was, and inside the call the engine refuses a write
+    /// to anything else that was there before it, a static field or another object, which the harness does not
+    /// read ([`Engine::in_frame`]).
+    pub frame: Option<(String, String, String)>,
     /// The classes whose initializer the engine does not run, by internal name, each with the static state the
     /// initializer left on a JVM ([`crate::observed`], `--observed-initializer`): a use that initializes one gives
     /// the path that state, and the run states what that rests on ([`Outcome::assumed`]).
@@ -196,7 +202,7 @@ pub struct Summary {
 
 impl Default for Options {
     fn default() -> Self {
-        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, merge_heaps_after: 1024, invariants: true, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured, parameters: Parameters::default(), summaries: Default::default(), pure: None, own_induction: false, observed: Default::default(), models: Default::default(), previous: None }
+        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, merge_heaps_after: 1024, invariants: true, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured, parameters: Parameters::default(), summaries: Default::default(), pure: None, own_induction: false, frame: None, observed: Default::default(), models: Default::default(), previous: None }
     }
 }
 
@@ -1163,6 +1169,8 @@ struct Engine<'a> {
     summaries: std::sync::Arc<Vec<Summary>>,
     pure: Option<(String, String, String)>,
     own_induction: bool,
+    /// The method a stated write set frames ([`Options::frame`]).
+    frame: Option<(String, String, String)>,
     b: Blaster,
     codes: HashMap<(String, String, String), Rc<Decoded>>,
     pending: Vec<Path>,
@@ -1313,6 +1321,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         summaries: options.summaries.clone(),
         pure: options.pure.clone(),
         own_induction: options.own_induction,
+        frame: options.frame.clone(),
         applied: BTreeMap::new(),
         hides: HashMap::new(),
         supers: HashMap::new(),
@@ -1608,15 +1617,15 @@ pub fn solver_signature() -> String {
 #[allow(clippy::too_many_arguments)] // the settings a proof driver passes on
 #[allow(clippy::too_many_arguments)]
 pub fn run_for_proof(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &GapSetting, parameters: &Parameters, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
-    run_for_proof_with(entries, models, class, method, unwind, max_array_length, timeout, gaps, parameters, &[], None, false, work)
+    run_for_proof_with(entries, models, class, method, unwind, max_array_length, timeout, gaps, parameters, &[], None, false, None, work)
 }
 
 /// [`run_for_proof`] with the calls checked summaries stand in for (`summaries`), and the method the check proves a
 /// summary of, or proves by induction (`pure`; `own_induction` says which, [`Options::own_induction`]).
 #[allow(clippy::too_many_arguments)]
-pub fn run_for_proof_with(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &GapSetting, parameters: &Parameters, summaries: &[Summary], pure: Option<(String, String, String)>, own_induction: bool, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
+pub fn run_for_proof_with(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &GapSetting, parameters: &Parameters, summaries: &[Summary], pure: Option<(String, String, String)>, own_induction: bool, frame: Option<(String, String, String)>, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
     let cp = crate::witness::classpath(entries.iter().chain(&gaps.class_dir).map(std::path::PathBuf::as_path))?.with_models(models);
-    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps: gaps.mode, contracts: gaps.contracts.clone(), observed: gaps.observed.clone(), models: gaps.models.clone(), previous: gaps.previous.clone(), parameters: parameters.clone(), summaries: std::sync::Arc::new(summaries.to_vec()), pure, own_induction, ..Options::default() })?;
+    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps: gaps.mode, contracts: gaps.contracts.clone(), observed: gaps.observed.clone(), models: gaps.models.clone(), previous: gaps.previous.clone(), parameters: parameters.clone(), summaries: std::sync::Arc::new(summaries.to_vec()), pure, own_induction, frame, ..Options::default() })?;
     let log = work.join("bmc.log");
     let _ = std::fs::write(&log, format!("jvmcontract's own checker on {class}.{method}\n{}\n", outcome.summary()));
     Ok(outcome.into_jbmc_result(log))
@@ -4026,6 +4035,7 @@ impl<'a> Engine<'a> {
             if self.in_summary(path) {
                 return unsupported(format!("the method initializes the class {}, whose initializer is observed, {}", class.replace('/', "."), self.result_only()));
             }
+            self.initializes_in_frame(path, class)?;
             self.take_observed(path, class)?;
             path.classes.insert(class.to_string(), ClassState::Done);
             return Ok(Initialising::Ready);
@@ -4046,6 +4056,7 @@ impl<'a> Engine<'a> {
             let (owner, name, _) = self.pure.as_ref().expect("in a summary");
             return unsupported(format!("{}.{name} initializes the class {}, {}", owner.replace('/', "."), class.replace('/', "."), self.result_only()));
         }
+        self.initializes_in_frame(path, class)?;
         if runs {
             self.call(path, class, "<clinit>", "()V", Vec::new())?;
             path.frames.last_mut().expect("a frame").initializes = Some(class.to_string());
@@ -4499,6 +4510,16 @@ impl<'a> Engine<'a> {
         if path.frames.len() == 1 && (owner == crate::harness::expr::CLAIM_CLASS && self.pure.is_some() || self.pure.as_ref().is_some_and(|(o, n, d)| o == owner && n == name && d == descriptor)) {
             path.objects.iter_mut().for_each(|o| o.given = true);
         }
+        // What is there when the harness calls a framed method was there before the call, and the receiver and the
+        // object arguments are its inputs, whose fields the harness reads after it: every other such object is one
+        // the write set leaves.
+        if path.frames.len() == 1 && self.frame.as_ref().is_some_and(|(o, n, d)| o == owner && n == name && d == descriptor) {
+            // An array argument is no input: the harness reads no array's cells after the call.
+            let inputs: Vec<usize> = locals.iter().flatten().filter_map(Val::options).flat_map(|options| options.into_iter().filter_map(|(_, t)| t)).collect();
+            for (i, o) in path.objects.iter_mut().enumerate() {
+                o.given = o.array.is_some() || !inputs.contains(&i);
+            }
+        }
         // A model run on request is what the result then rests on.
         if let Some(model) = crate::models::on_request(&cf.name).filter(|_| !self.cp.is_application(&cf.name)) {
             self.assumed.insert(crate::models::requested_assumption(model));
@@ -4518,12 +4539,37 @@ impl<'a> Engine<'a> {
         self.pure.as_ref().is_some_and(|(owner, name, _)| path.frames.get(1).is_some_and(|f| f.class.name == *owner && f.method == *name))
     }
 
+    /// Whether the path is inside the method whose call a stated write set frames ([`Options::frame`]), called by
+    /// the harness.
+    fn in_frame(&self, path: &Path) -> bool {
+        self.frame.as_ref().is_some_and(|(owner, name, _)| path.frames.get(1).is_some_and(|f| f.class.name == *owner && f.method == *name))
+    }
+
     /// Refuses, inside a summarized method, a write to the object `o` when it was there before the call (`None`:
     /// to a static field).
+    /// Inside a framed method ([`Engine::in_frame`]), the same write is refused where it is to a static field or to
+    /// an object that was there before the call and is none of its inputs: the write set names fields of the
+    /// receiver and the object parameters only.
     fn keeps(&self, path: &Path, o: Option<usize>, what: &str) -> Result<(), Stop> {
         if self.in_summary(path) && o.map_or(true, |o| path.objects[o].given) {
             let (owner, name, _) = self.pure.as_ref().expect("in a summary");
             return unsupported(format!("{}.{name} {what}, {}", owner.replace('/', "."), self.result_only()));
+        }
+        if self.in_frame(path) && o.map_or(true, |o| path.objects[o].given) {
+            let (owner, name, _) = self.frame.as_ref().expect("in a frame");
+            let what = if o.is_some() { format!("{what} and none of its inputs") } else { what.to_string() };
+            return unsupported(format!("{}.{name} {what}, outside its write set: a write set names fields of the receiver and the object parameters, and the method may write nothing else that was there before the call", owner.replace('/', ".")));
+        }
+        Ok(())
+    }
+
+    /// Refuses, inside a framed method ([`Engine::in_frame`]), the initialization of a class with an initializer:
+    /// the static state it makes would be new to the call, and a write to it allowed, where a caller that had
+    /// initialized the class before would see that write.
+    fn initializes_in_frame(&self, path: &Path, class: &str) -> Result<(), Stop> {
+        if self.in_frame(path) {
+            let (owner, name, _) = self.frame.as_ref().expect("in a frame");
+            return unsupported(format!("{}.{name} initializes the class {}, outside its write set: what the initializer makes would be new to the call, where a caller that initialized the class before has it already, and the method may write nothing that was there before the call but the fields its write set names", owner.replace('/', "."), class.replace('/', ".")));
         }
         Ok(())
     }

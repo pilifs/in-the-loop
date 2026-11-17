@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 137, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-17 13:56 UTC |
-| Prompts | 2,842 |
-| Model calls | 28,963 |
-| Tool calls | 29,963 (531 failed) |
-| Compactions | 422 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-17 14:17 UTC |
+| Prompts | 2,847 |
+| Model calls | 29,041 |
+| Tool calls | 30,041 (531 failed) |
+| Compactions | 423 |
 | Subagents | 21 |
-| Tokens written | 29,201,743 |
-| Tokens read | 4,827,474,025 (98.1% from cache) |
-| Commits with a trace | 896 |
-| Log snapshots | 1,173 (2597.0 MB gzipped, 1,162 uploaded) |
+| Tokens written | 29,266,601 |
+| Tokens read | 4,839,751,665 (98.1% from cache) |
+| Commits with a trace | 897 |
+| Log snapshots | 1,174 (2597.8 MB gzipped, 1,162 uploaded) |
 
 ## Sessions
 
@@ -164,7 +164,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 12 | 21 | 17 | 2 | 2 | 56,861 | 1 |
 | 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | open | 7 min | `claude-opus-5-5` | 2 | 5 | 4 | 0 | 0 | 56,756 | 1 |
 | 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | open | 13 min | `claude-opus-5-5` | 1 | 48 | 49 | 1 | 0 | 148,170 | 1 |
-| 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | open | 59 min | `claude-opus-5-5` | 6 | 121 | 123 | 3 | 1 | 179,162 | 5 |
+| 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | open | 1 h 20 min | `claude-opus-5-5` | 11 | 199 | 201 | 3 | 2 | 231,497 | 6 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -310,16 +310,16 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 8,137 | 42 | 87,022 | 814,514 | 90.3% | 111 |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 2,242 | 10 | 28,745 | 226,501 | 88.7% | 114 |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 38,033 | 96 | 136,827 | 4,652,464 | 97.1% | 126 |
-| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 82,952 | 242 | 275,488 | 12,687,740 | 97.9% | 156 |
+| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 147,810 | 398 | 498,419 | 24,742,293 | 98.0% | 171 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 26,602 | 88.8% | 137 |
+| `Bash` | 26,678 | 88.8% | 137 |
 | `Read` | 1,266 | 4.2% | 55 |
-| `Edit` | 949 | 3.2% | 54 |
-| `Write` | 643 | 2.1% | 54 |
+| `Edit` | 950 | 3.2% | 54 |
+| `Write` | 644 | 2.1% | 54 |
 | `ToolSearch` | 163 | 0.5% | 41 |
 | `Monitor` | 119 | 0.4% | 48 |
 | `AskUserQuestion` | 63 | 0.2% | 16 |
@@ -1235,6 +1235,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 894 | change `mpquxryx` | The router carries example 286's note on its protected-state driver | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/a3ad388bcc53c6d97f04d9927c36b676984c9bcdcf5113a5d45ade9739803514.jsonl.gz)) |
 | 895 | change `kztoupry` | Models on request of ArrayDeque and HashSet take example 286's DataBinder.bind past its binding result, to the reflection | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/eae4f9d131c064759e27a9e7da4d318804d7fbd64c628d2958fd021db1e8dad0.jsonl.gz)) |
 | 896 | change `rzzuvvwl` | The state stream's line takes the evidence stream's trace-check fix for a shared commit another stream's session stamped | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/e02c99011dda56df411f19ce57cdc2a5834214ee214a4e0cf6663e5490120468.jsonl.gz)) |
+| 897 | change `qrqtplwq` | A write set, a first effect contract: prove --writes refutes the setter that writes a protected field and proves its honest twin | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) ([log](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/14c3eb3e4b95f2df5bcf919b4d77f270cb17c2f705aa95a9adf8675f63cdc58a.jsonl.gz)) |
 
 ## Logs
 
@@ -1378,7 +1379,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 1 | 1 | 0.3 MB | [`965570933c02`](https://terminalvalue.net/raw-traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/965570933c0206c64a18c5652f4f74be1de3807449c6f9f9a26e20a3211055fc.jsonl.gz) |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 1 | 0 | 0.1 MB | `887466d85ae2`, not uploaded |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 1 | 0 | 0.2 MB | `fadef0a55901`, not uploaded |
-| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 4 | 0 | 1.4 MB | `e02c99011dda`, not uploaded |
+| [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 5 | 0 | 2.3 MB | `14c3eb3e4b95`, not uploaded |
 
 ## Session notes
 

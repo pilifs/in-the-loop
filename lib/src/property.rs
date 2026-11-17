@@ -129,6 +129,14 @@ pub struct Options {
     /// ([`Options::observed_initializers`] are the new version's), by their own names, each on the previous
     /// version's class path ([`crate::observed::observe_previous`]). Set by that check, never by a command line.
     pub previous: Option<(crate::relocate::Previous, Vec<String>)>,
+    /// The method's write set (`prove --writes`), a first effect contract: the fields of its receiver and object
+    /// parameters it may write, each as `this.name` or `p.name`; empty, it writes nothing that was there before
+    /// the call. The check then also proves the frame: after a call that returns, every other field of those
+    /// inputs is what it was (by value, a reference by identity, `p.f == \old(p.f)`, conjoined to the assertion,
+    /// so that a witness of a write outside the set is the harness's to replay), and the tool's own checker
+    /// refuses inside the call a write to anything else that was there before it: a static field, an array, an
+    /// object none of the inputs is ([`crate::bmc::Options::frame`]). With `--engine native`.
+    pub writes: Option<Vec<String>>,
 }
 
 impl Options {
@@ -170,6 +178,7 @@ impl Options {
             observed_initializers: Vec::new(),
             requested_models: Vec::new(),
             previous: None,
+            writes: None,
         }
     }
 }
@@ -302,6 +311,34 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
 
 /// [`run`], whose phases it times.
 /// The name of the claim's method for the condition of the `i`th throws clause.
+/// The frame of a write set over the `inputs` (the receiver and the object parameters, each by name with its
+/// fields): each field none of `writes` names is after the call what it was before, a primitive by value and a
+/// reference by identity. `None` where the inputs have no field; an entry that names no field of an input, or a
+/// field the expressions can't read (an array), is refused by name.
+fn frame(inputs: &[(String, harness::Fields)], writes: &[String]) -> Result<Option<String>, String> {
+    for w in writes {
+        let known = inputs.iter().any(|(name, fields)| w.strip_prefix(name.as_str()).and_then(|rest| rest.strip_prefix('.')).is_some_and(|f| fields.fields.iter().any(|(n, _)| n == f)));
+        if !known {
+            let all: Vec<String> = inputs.iter().flat_map(|(name, fields)| fields.fields.iter().map(move |(n, _)| format!("{name}.{n}"))).collect();
+            return Err(format!("{w} is no field of the receiver or an object parameter; a write set names some of {}", if all.is_empty() { "none: there is no such field".to_string() } else { all.join(", ") }));
+        }
+    }
+    let mut kept = Vec::new();
+    for (name, fields) in inputs {
+        for (f, kind) in &fields.fields {
+            let path = format!("{name}.{f}");
+            if writes.contains(&path) {
+                continue;
+            }
+            match kind {
+                harness::FieldKind::Array(t) => return Err(format!("{path} is an array field ({}), which a frame does not read yet; name it in the write set to leave it unframed, and the check then refuses a write into its array", t.java_name())),
+                _ => kept.push(format!("{path} == \\old({path})")),
+            }
+        }
+    }
+    Ok((!kept.is_empty()).then(|| kept.join(" && ")))
+}
+
 fn thrown_name(i: usize) -> String {
     format!("thrown{i}")
 }
@@ -464,6 +501,34 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     }
     let mut layout = if over_objects { harness::Layout::new(receiver, &names, &descriptor.params, &records, (None, None)) } else { harness::Layout::plain(&names, &descriptor.params) };
     layout.result_fields.0 = result_fields;
+    // A write set (`--writes`): its frame is part of the assertion, and the own checker refuses what the harness
+    // can't read after the call.
+    let framed = match &options.writes {
+        None => options.assert.clone(),
+        Some(writes) => {
+            if options.engine != crate::Engine::Native {
+                return refuse(&mut out, line, "a write set's frame is the tool's own checker's alone (--engine native): only it refuses a write to a static field or to an object that is none of the inputs, which the harness does not read".into());
+            }
+            let inputs: Vec<(String, harness::Fields)> = layout.receiver.iter().chain(&layout.args).filter_map(|slot| match slot {
+                harness::Slot::Record { name, record, .. } if record.given.is_none() => record.fields.clone().map(|f| (name.clone(), f)),
+                _ => None,
+            }).collect();
+            match frame(&inputs, writes) {
+                // No field to read after the call: the engine's refusals are the frame, and a void method's
+                // property is that it returns.
+                Ok(None) => options.assert.clone().or_else(|| (descriptor.ret == Type::Void).then(|| "true".to_string())),
+                Ok(Some(frame)) => {
+                    let _ = writeln!(out, "frame: {method_name} writes {}; after the call, {frame}", if writes.is_empty() { "nothing".to_string() } else { writes.join(", ") });
+                    Some(match (&options.assert, &descriptor.ret) {
+                        (Some(a), _) => format!("({a}) && {frame}"),
+                        (None, Type::Boolean) => format!("{} && {frame}", harness::RESULT),
+                        (None, _) => frame,
+                    })
+                }
+                Err(problem) => return refuse(&mut out, line, format!("the write set {}: {problem}", writes.join(", "))),
+            }
+        }
+    };
     // A String inside an object (a leaf of its construction, as the regression check makes one since J1's O2, or a
     // given implementation's accessor): a value of the values stream's adapter, of at most --max-array-length code
     // units and never null, which only the own checker takes.
@@ -661,7 +726,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let own_induction = !options.summary;
     let generate = |assume: Option<&str>, assertion: Option<&str>, signals: &[Signal]| harness::generate_property_over(&class_internal, &method_name, &layout, &descriptor.ret, assume, assertion, signals, options.max_array_length);
     // With such members the claim's class is needed whatever the expressions are.
-    let own = if members.is_empty() { generate(options.assume.as_deref(), options.assert.as_deref(), &signals) } else { Err(Error::new("the check uses a lemma or a proof by induction")) };
+    let own = if members.is_empty() { generate(options.assume.as_deref(), framed.as_deref(), &signals) } else { Err(Error::new("the check uses a lemma or a proof by induction")) };
     let harness = match own {
         Ok(h) => h,
         // Java the tool's own compiler doesn't take (a lambda, a stream, a library call) is javac's ([`crate::claim`]):
@@ -867,7 +932,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             }
         }
         let budget = crate::equivalence::own_budget(&deadline, options.engine);
-        let result = crate::bmc::run_for_proof_with(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, options.max_array_length, budget, &gap_setting, &parameters, &summaries, pure.clone(), own_induction, &work)?;
+        let result = crate::bmc::run_for_proof_with(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, options.max_array_length, budget, &gap_setting, &parameters, &summaries, pure.clone(), own_induction, options.writes.as_ref().map(|_| (class_internal.clone(), method_name.clone(), method.descriptor.clone())), &work)?;
         runs.push(Run::of(&result, "proof", budget));
         if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || crate::equivalence::refuses_gaps(&result) || widened {
             if options.engine == crate::Engine::Auto && result.verdict == Verdict::Unverifiable {

@@ -712,6 +712,14 @@ struct ProveArgs {
     /// integral and boolean parameters and Strings, with the tool's own checker (`--engine native`).
     #[arg(long)]
     decreases: Option<String>,
+    /// The method's write set, a first effect contract: the fields of its receiver and object parameters it may
+    /// write, comma-separated (`this.displayName`), or nothing (`--writes ''`). The check then also proves the
+    /// frame: after a call that returns, every other field of those inputs is what it was (a primitive by value, a
+    /// String or an object by identity), stated in the assertion so that a witness replays; and the tool's own
+    /// checker refuses inside the call a write to anything else that was there before it (a static field, an
+    /// array, an object none of the inputs is). With the tool's own checker (`--engine native`).
+    #[arg(long)]
+    writes: Option<String>,
     /// Lemmas, as a properties file (a target line, then indented `assume:`, `assert:` and `decreases:` lines):
     /// each is proved first, at this check's bounds, and its method's calls in this check are then its summary:
     /// within its assumption and those bounds a call returns what the lemma states, and any other runs the method
@@ -992,6 +1000,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.plan = args.plan.as_deref().map(jvmcontract::construction::load).transpose().map_err(|u| Error::new(u.to_string()))?;
                 options.cache = args.cache.clone();
                 options.decreases = declaration.decreases.clone();
+                options.writes = args.writes.as_deref().map(|w| w.split(',').map(str::trim).filter(|f| !f.is_empty()).map(String::from).collect());
                 options.lemmas = args.lemmas.clone();
                 options.observed_initializers = args.observed_initializer.clone();
                 options.requested_models = args.model.clone();

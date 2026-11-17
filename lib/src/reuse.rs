@@ -99,6 +99,7 @@ pub const PROPERTY_OPTIONS: &[(&str, &str)] = &[
     ("observed_initializers", "what the proof rests on, an observation on a JVM: refused under the cache, which does not key it (property::run)"),
     ("previous", "set only by a regression check made as a property of the pair of versions: refused under the cache"),
     ("requested_models", "what the proof rests on, a model run on request: refused under the cache, which does not key it (property::run)"),
+    ("writes", "part of the claim, a write set and its frame: refused under the cache, which does not key it"),
 ];
 
 /// The first assumption of every property claim: no regression claim has it, so the two never share a key.
@@ -230,6 +231,9 @@ pub fn property_claim(options: &Options) -> Result<Option<CanonicalClaim>, Unsup
     check_fields(&format!("{options:?}"), PROPERTY_OPTIONS)?;
     if options.decreases.is_some() || options.lemmas.is_some() || options.summary {
         return Err(uncacheable("it is proved by induction or with lemmas (--decreases, --lemmas), which the key does not read: run it without --cache"));
+    }
+    if options.writes.is_some() {
+        return Err(uncacheable("it states a write set (--writes), which the key does not read: run it without --cache"));
     }
     if options.engine != crate::Engine::Native {
         return Err(uncacheable("JBMC may decide it (--engine jbmc or auto), and JBMC's own identity is not yet part of the key: use the cache with --engine native"));
