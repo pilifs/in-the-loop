@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (ended) |
+| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (open) |
 | When | 2026-11-15 19:24 UTC to 2026-11-17 13:35 UTC (2531 min) |
 | Models | `claude-fable-5-2` |
 | Client | claude-code 2.1.325 |
@@ -1158,6 +1158,12 @@ Outputs applied for 1 of the 1 job(s). 20261117-133148-example-290-the-four-answ
 change `vyspnsorlxnr` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261117-133148-example-288-fixed-security-again-with-th: passed: 1 passed step(s) in 20m39s, peak 1.4 GiB (estimated 25m00s, 4.0 GiB); 10 output file(s) changed; signals: jvmcontract:holds×1 Applied 10 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
+### The preservation stream is told why a call-level rule keyed on the fingerprint declines on JDK 25
+
+change `xqxvxrmxqwsn` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
+
+The 307 specialist found that since the I010 fix the unchanged callee hashpw(byte[],String) has no fingerprint on JDK 25, where Integer.parseInt reaches String.format(String, Object[]); preservation's 307 probe was dying at 4 GB while it traced where its new rule declines. Passed on as optional guidance (I017, under D030), with the two ways out the specialist sees.
 
 ## Conversation
 
