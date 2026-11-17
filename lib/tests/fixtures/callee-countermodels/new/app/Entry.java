@@ -80,6 +80,13 @@ public final class Entry {
         return Pairing.digest(b, b, salt);
     }
 
+    /** The same call in three statements, as `same`; the callee reads its rounds with `Integer.parseInt`. */
+    public static String parsed(String password, String salt) {
+        byte[] b = bytes(password);
+        String digest = Parsing.digest(b, salt);
+        return digest;
+    }
+
     /** Each method on a few inputs, one line a method: `name password/salt=result ...`. An exception is its
      * class's name. Each call starts from a state no other call has touched only for the first input: the
      * differences shown are those of one call each, in a JVM of its own (the README's table, `check.py`). */
@@ -99,6 +106,7 @@ public final class Entry {
                 case "counted": got = counted(password, salt); break;
                 case "caught": got = caught(password, salt); break;
                 case "aliased": got = aliased(password, salt); break;
+                case "parsed": got = parsed(password, salt); break;
                 default: throw new IllegalStateException(args[0]);
             }
         } catch (RuntimeException e) {

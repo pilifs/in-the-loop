@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-17T20:20:22.495Z",
-  "duration_seconds": 27759,
+  "ended": "2026-11-17T20:20:48.072Z",
+  "duration_seconds": 27785,
   "stats": {
     "turns": 18,
-    "api_calls": 136,
-    "tool_calls": 129,
+    "api_calls": 138,
+    "tool_calls": 130,
     "tool_errors": 2,
     "compactions": 1,
     "peak_context_tokens": 288290,
     "usage": {
-      "input_tokens": 300,
-      "output_tokens": 103136,
-      "cache_read_input_tokens": 19531552,
-      "cache_creation_input_tokens": 505626
+      "input_tokens": 304,
+      "output_tokens": 104371,
+      "cache_read_input_tokens": 19788082,
+      "cache_creation_input_tokens": 507995
     }
   },
   "tools": {
-    "Bash": 120,
+    "Bash": 121,
     "Read": 5,
     "Edit": 3,
     "Write": 1
@@ -56,24 +56,24 @@
     {
       "index": 1,
       "started": "2026-11-17T19:59:47.700Z",
-      "ended": "2026-11-17T20:20:22.495Z",
+      "ended": "2026-11-17T20:20:48.072Z",
       "turns": 4,
-      "api_calls": 39,
+      "api_calls": 41,
       "usage": {
-        "input_tokens": 82,
-        "output_tokens": 28556,
-        "cache_read_input_tokens": 3690531,
-        "cache_creation_input_tokens": 93158
+        "input_tokens": 86,
+        "output_tokens": 29791,
+        "cache_read_input_tokens": 3947061,
+        "cache_creation_input_tokens": 95527
       },
-      "peak_context_tokens": 127275
+      "peak_context_tokens": 129644
     }
   ],
   "log": {
-    "sha256": "8f62256b957f5a02e768f81ba665e62c35d7158998d8cd06cf5c0743f69abe5d",
-    "bytes": 3142469,
-    "lines": 1029,
-    "gzip_bytes": 588866,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/8f62256b957f5a02e768f81ba665e62c35d7158998d8cd06cf5c0743f69abe5d.jsonl.gz"
+    "sha256": "06ba1b4f1103ea7e9ad67e320baf772c7a68e945e117a3e51f64f3bcfbc65f6f",
+    "bytes": 3281808,
+    "lines": 1046,
+    "gzip_bytes": 612337,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/06ba1b4f1103ea7e9ad67e320baf772c7a68e945e117a3e51f64f3bcfbc65f6f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -596,9 +596,23 @@
       "summary": "VF-037: what the challenge stream's OOM kill cost the run, and what run-streams.sh lacks to start one stream again",
       "body": "Amended from a read-only review of the domain-advances run, beside its watcher. The second of the two stops that counted challenge blocked was only the refusal beside the killed session's orphans. brief_run.py can stop and start a whole run but not one stream, so challenge sat idle for over three hours while preservation wrote its riskiest rules. A loop restarted by hand is outside run-streams.sh's bookkeeping (merge question, phase, reruns, start and wait). Needs now names the interim test-run cap (I003), a rerun of one stream inside a run, and not counting a scope refusal as a stop, together with the deferred RUN_STREAMS_WATCHER leak fix. Also removed the restart time the entry gave (20:35): at 20:19 UTC no challenge loop was running yet. No code changed; nothing to test.",
       "log_sha256": "8f62256b957f5a02e768f81ba665e62c35d7158998d8cd06cf5c0743f69abe5d"
+    },
+    {
+      "change_id": "wtlwyxyqyxkonukwkvnkltmlumwzlsoz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the 307 specialist's call-level prototype into the line",
+      "body": "The specialist's second commit (qtxkqsmt, its own files only): records/step-6-call-level.md and its probes, where a prototype relation at crypt_raw verifies 307's preservation at the frozen parameters on JDK 25 in 79 s and refutes mutant-preservation with a JVM-replayed witness; a prototype patch to read; and callee countermodel rows, with a new one (parsed) that shows a fingerprint-keyed rule declining on JDK 25. Merged so the preservation and challenge streams can take it with the default line.",
+      "log_sha256": "06ba1b4f1103ea7e9ad67e320baf772c7a68e945e117a3e51f64f3bcfbc65f6f"
     }
   ],
   "logs": {
+    "06ba1b4f1103ea7e9ad67e320baf772c7a68e945e117a3e51f64f3bcfbc65f6f": {
+      "bytes": 3281808,
+      "lines": 1046,
+      "gzip_bytes": 612337,
+      "url": null
+    },
     "2d880c8187c0ecb5eaa7ef48c34a1a70f48fe089833a751ccbb079c61c179390": {
       "bytes": 2097538,
       "lines": 715,

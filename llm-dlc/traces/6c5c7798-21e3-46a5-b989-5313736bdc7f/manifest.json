@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-17T20:20:24.787Z",
-  "duration_seconds": 183178,
+  "ended": "2026-11-17T20:24:29.581Z",
+  "duration_seconds": 183423,
   "stats": {
     "turns": 210,
-    "api_calls": 1381,
-    "tool_calls": 1256,
+    "api_calls": 1386,
+    "tool_calls": 1260,
     "tool_errors": 26,
     "compactions": 6,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 3178,
-      "output_tokens": 918030,
-      "cache_read_input_tokens": 318263835,
-      "cache_creation_input_tokens": 2160913
+      "input_tokens": 3190,
+      "output_tokens": 920908,
+      "cache_read_input_tokens": 319928508,
+      "cache_creation_input_tokens": 2165947
     }
   },
   "tools": {
-    "Bash": 1196,
+    "Bash": 1200,
     "ToolSearch": 11,
     "SendMessage": 10,
     "Edit": 8,
@@ -143,24 +143,24 @@
     {
       "index": 6,
       "started": "2026-11-17T12:55:11.414Z",
-      "ended": "2026-11-17T20:20:24.787Z",
+      "ended": "2026-11-17T20:24:29.581Z",
       "turns": 58,
-      "api_calls": 280,
+      "api_calls": 285,
       "usage": {
-        "input_tokens": 674,
-        "output_tokens": 122499,
-        "cache_read_input_tokens": 53403150,
-        "cache_creation_input_tokens": 294318
+        "input_tokens": 686,
+        "output_tokens": 125377,
+        "cache_read_input_tokens": 55067823,
+        "cache_creation_input_tokens": 299352
       },
-      "peak_context_tokens": 330739
+      "peak_context_tokens": 336281
     }
   ],
   "log": {
-    "sha256": "798f87fa61079c9d4ed3861406b04fe5e96a233218d3b35ce97fc1392f6571c3",
-    "bytes": 26608847,
-    "lines": 11401,
-    "gzip_bytes": 4465494,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/798f87fa61079c9d4ed3861406b04fe5e96a233218d3b35ce97fc1392f6571c3.jsonl.gz"
+    "sha256": "066768a3f8fa1b1f07fef407d5c0223b7082a5b03e2fd98b6fec2e028dd6c7e4",
+    "bytes": 26668799,
+    "lines": 11439,
+    "gzip_bytes": 4473520,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/066768a3f8fa1b1f07fef407d5c0223b7082a5b03e2fd98b6fec2e028dd6c7e4.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1875,6 +1875,22 @@
       "summary": "VF-037: what the challenge stream's OOM kill cost the run, and what run-streams.sh lacks to start one stream again",
       "body": "Amended from a read-only review of the domain-advances run, beside its watcher. The second of the two stops that counted challenge blocked was only the refusal beside the killed session's orphans. brief_run.py can stop and start a whole run but not one stream, so challenge sat idle for over three hours while preservation wrote its riskiest rules. A loop restarted by hand is outside run-streams.sh's bookkeeping (merge question, phase, reruns, start and wait). Needs now names the interim test-run cap (I003), a rerun of one stream inside a run, and not counting a scope refusal as a stop, together with the deferred RUN_STREAMS_WATCHER leak fix. Also removed the restart time the entry gave (20:35): at 20:19 UTC no challenge loop was running yet. No code changed; nothing to test.",
       "log_sha256": "798f87fa61079c9d4ed3861406b04fe5e96a233218d3b35ce97fc1392f6571c3"
+    },
+    {
+      "change_id": "qtxkqsmtopqzrznlvpusvouzsovtrprx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 307: a prototype of the relation at the unchanged callee closes both tasks at crypt_raw on JDK 25, and the callee's code has no fingerprint there at hashpw(byte[], String)",
+      "body": "A second delivery from the session the user brought in ahead of the preservation stream's step 6, for the stream to compare its own call-level rule against. New files, and edits to this session's own fixture; no checker source and no test changes.\n\nexamples/307-*/records/step-6-call-level.md is the note and step-6-call-level-probes.json the runs. lib/tests/fixtures/callee-countermodels/prototype-one-function.patch (against kskmpmny, git 10b5d9c0, after prototype-model.patch) names a callee's outcome by the key of the state at its entry, as a loop's state past the bound is named, and checks no side condition. With it, at the claim's frozen parameters and assumption, in capped probes (4 GB, 300 s): with the relation at crypt_raw on JDK 25, preservation is verified in 79 s (878 MB) and the mutant is a violation in 58 s, replayed on a JVM; with it at hashpw(byte[], String), preservation is verified in 53 s on JDK 21 and the run is killed at 4 GB on JDK 25, and the mutant has no verdict under the claim's seven salts (the first candidate has salt = null) and is a violation under one valid salt. Without a relation the runs die at 4 GB.\n\nThe JDK 25 difference: hashpw(byte[], String) calls Integer.parseInt, whose bytecode the checker follows, and JDK 25's parseInt(String, int) calls String.format(String, Object[]), which shared::reach takes as a way back into the application since kskmpmny. The fixture gains the row parsed (Parsing.java, a callee that calls Integer.parseInt): verified on JDK 21 and no verdict on JDK 25 on kskmpmny, in under a second.\n\nThe prototype against the fixture's rows: by formula it falsely proves wiped and counted (what the callee writes is not in its outcome); with a relation by content added it falsely proves table, seeded, helped and aliased too. No other row turns. So the rows separate a rule with its side conditions from one without.",
+      "log_sha256": "066768a3f8fa1b1f07fef407d5c0223b7082a5b03e2fd98b6fec2e028dd6c7e4"
+    },
+    {
+      "change_id": "wtlwyxyqyxkonukwkvnkltmlumwzlsoz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the 307 specialist's call-level prototype into the line",
+      "body": "The specialist's second commit (qtxkqsmt, its own files only): records/step-6-call-level.md and its probes, where a prototype relation at crypt_raw verifies 307's preservation at the frozen parameters on JDK 25 in 79 s and refutes mutant-preservation with a JVM-replayed witness; a prototype patch to read; and callee countermodel rows, with a new one (parsed) that shows a fingerprint-keyed rule declining on JDK 25. Merged so the preservation and challenge streams can take it with the default line.",
+      "log_sha256": "066768a3f8fa1b1f07fef407d5c0223b7082a5b03e2fd98b6fec2e028dd6c7e4"
     }
   ],
   "logs": {
@@ -1895,6 +1911,12 @@
       "lines": 6233,
       "gzip_bytes": 2418907,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/051ee11748d91b5d3c54960de9759a4061093fc708b9aa97887be830b0dc52dc.jsonl.gz"
+    },
+    "066768a3f8fa1b1f07fef407d5c0223b7082a5b03e2fd98b6fec2e028dd6c7e4": {
+      "bytes": 26668799,
+      "lines": 11439,
+      "gzip_bytes": 4473520,
+      "url": null
     },
     "0aae5bdb8cff71f45639045db56724c1bd775c00269201187386363efa0bf65d": {
       "bytes": 24697374,

@@ -22,7 +22,9 @@ It exits 1 when a verdict is one the fixtures forbid:
 - a pair that agrees is `violation` (a false alarm; a witness that does not replay is to be dropped);
 - with --rule-landed, also when `same` is not `verified`: a rule that refuses everything passes the seven
   countermodels and proves nothing. `copied` and `twice` are positive controls a rule may leave undecided (arguments
-  equal only by content; two calls on one side), and must never refute.
+  equal only by content; two calls on one side), and must never refute. `parsed` is `same` over a callee that calls
+  Integer.parseInt: it is not required either, but a rule that proves `same` and not `parsed` on JDK 25 will not
+  fire on example 307's hashpw(byte[], String) there (the README's section on JDK 25).
 """
 import argparse
 import json
@@ -48,6 +50,7 @@ PAIRS = {
     "counted": (False, "the static state the callee reads and writes is part of its arguments and outcome"),
     "caught": (False, "an exception is an outcome, shared like a result"),
     "aliased": (False, "arguments equal by content are not the same arguments when one side's are one array"),
+    "parsed": (True, "none: `same` with a callee that calls Integer.parseInt, which JDK 25 writes with String.format(String, Object[]); a control a rule keyed on the callee's code must still prove on JDK 25"),
 }
 
 

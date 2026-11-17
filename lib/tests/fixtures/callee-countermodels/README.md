@@ -15,7 +15,7 @@ The fixture is a miniature of that shape. `Hash.digest(byte[] data, String salt)
 `private static final int[]` table, keeps its state in an object it makes, runs 600 rounds (601 for some salts)
 that no unwinding in use covers, and returns a new String or throws `IllegalArgumentException` for a null or empty
 salt. `Entry`'s methods convert a password as 307's new revision does and call it. The callee classes `Hash`,
-`Seeded`, `Wiping`, `Counting` and `Pairing` compile to the same bytes in `old/` and `new/`; `Entry`, `Helped` and
+`Seeded`, `Wiping`, `Counting`, `Pairing` and `Parsing` compile to the same bytes in `old/` and `new/`; `Entry`, `Helped` and
 `Seed` differ.
 
 | Method | What differs between the versions | A JVM | The side condition it holds a rule to |
@@ -30,6 +30,7 @@ salt. `Entry`'s methods convert a password as 307's new revision does and call i
 | `counted` | the callee counts its calls in a static; the new version calls twice | differ | static state the callee writes is part of its arguments and its outcome |
 | `caught` | the previous version catches the callee's `IllegalArgumentException` | differ at an empty or null salt | an exception is an outcome, shared like a result, not assumed away |
 | `aliased` | the callee takes two arrays; the new version passes one array twice | differ | arguments equal by content are not the same arguments when one side's are one object |
+| `parsed` | as `same`, over `Parsing`, whose rounds come through `Integer.parseInt(String)` | agree | none: a control for the JDK the check runs on (below) |
 
 Each difference is one a single call shows, in a JVM of its own (`check.py` runs each input so), as the pair of
 versions gives each version a fresh state.
@@ -43,7 +44,8 @@ jvmcontract equivalence --before old --after new --target app.Entry#NAME --nulla
 ```
 
 at the checker's default unwinding, which the 600 rounds are past. On the preservation stream's `rmvpqswzxlyv`
-(git `e461ac1d2c5f`, built apart; its last commit before the I010 fix), JDK 25.0.5, 12 s for the ten:
+(git `e461ac1d2c5f`, built apart; its last commit before the I010 fix), JDK 25.0.5, 12 s for the first ten
+(`parsed` has its own section):
 
 | Method | Verdict | Note |
 |---|---|---|
@@ -60,6 +62,45 @@ tied, and at the default unwinding the summaries cost what 287's do.
 a sound one. A rule should be tried with each of its side conditions switched off in turn: with the condition a row
 names off, that row is the one that must turn **verified**, as the stream did for its `mix` countermodels
 (`lib/tests/pairing.rs`). If no row turns, the condition has no countermodel here and needs one.
+
+## `parsed`, and the JDK the check runs on
+
+Added later the same day. Example 307's `hashpw(byte[], String)` reads its cost with `Integer.parseInt(String)`,
+and the checker runs `Integer`'s own bytecode. On JDK 25 `parseInt(String, int)` builds its messages with
+`String.format(String, Object[])`; on JDK 21 with a `StringBuilder`. Since the preservation stream's kskmpmny
+(git `10b5d9c0cf06`), `lib/src/shared.rs`'s `reach` takes a JDK call given an `Object` as a way back into the
+application, so on JDK 25 the callee's code has no fingerprint and a state inside it has no key. `Parsing` is
+`Hash` with that one call.
+
+| Checker | JDK 21.0.13 | JDK 25.0.5 |
+|---|---|---|
+| rmvpqswzxlyv, before that fix | | `parsed` **verified** (170 tied) |
+| kskmpmny | `parsed` **verified** (170 tied) | `parsed` no verdict: a spurious witness past the loop, nothing tied |
+| kskmpmny with the prototype below | **verified** | no verdict, the same |
+
+`same` is verified in all five. So a rule that names the callee's code by its fingerprint proves `same` and
+silently declines on `parsed` on JDK 25, which is what it will do on 307 at `hashpw(byte[], String)`. A test of
+such a rule belongs on JDK 25; on JDK 21 it passes by accident. The other ten rows on kskmpmny are as in the
+table above (no false proof, `same` verified).
+
+## Against a prototype of the rule
+
+`prototype-one-function.patch` is a prototype of the relation at the call, written to see whether 307 closes with
+it (`examples/307-*/records/step-6-call-level.md` has what it is and the runs on 307). It checks no side
+condition, on purpose, so it is also a rule with every condition switched off:
+
+| Prototype | Falsely **verified** | The others |
+|---|---|---|
+| by formula (the outcome is named by the key of the state at the callee's entry) | `wiped`, `counted` | `same` verified; `caught` a violation; `table`, `seeded`, `helped`, `aliased` no verdict (a spurious first candidate, where today's loop ties give a violation); `copied`, `twice` no verdict |
+| by content as well (equal arguments, then equal outcomes) | `table`, `seeded`, `helped`, `wiped`, `counted`, `aliased` | `same` and `copied` verified; `caught` a violation; `twice` no verdict |
+
+Every row whose side condition the prototype lacks turns verified, and no other does. `check.py --rule-landed`
+exits 1 on both.
+
+To run it: `JVMCONTRACT_PROTOTYPE_ONE_FUNCTION` lists the callees, separated by spaces, each
+`app/Hash#digest#([BLjava/lang/String;)Ljava/lang/String;` (and `Parsing`, `Seeded`, `Helped`, `Wiping`,
+`Counting`; `Pairing`'s descriptor begins `([B[B`); `JVMCONTRACT_PROTOTYPE_ONE_FUNCTION_BY_CONTENT=1` adds the
+relation by content.
 
 ## What this set does not cover
 
