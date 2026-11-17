@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T19:24:01.389Z",
-  "ended": "2026-11-17T00:10:15.330Z",
-  "duration_seconds": 103574,
+  "ended": "2026-11-17T00:30:01.458Z",
+  "duration_seconds": 104760,
   "stats": {
-    "turns": 27,
-    "api_calls": 721,
-    "tool_calls": 758,
-    "tool_errors": 21,
+    "turns": 28,
+    "api_calls": 725,
+    "tool_calls": 761,
+    "tool_errors": 22,
     "compactions": 6,
     "peak_context_tokens": 466382,
     "usage": {
-      "input_tokens": 1474,
-      "output_tokens": 1028696,
-      "cache_read_input_tokens": 178542944,
-      "cache_creation_input_tokens": 2339105
+      "input_tokens": 1484,
+      "output_tokens": 1031897,
+      "cache_read_input_tokens": 179493234,
+      "cache_creation_input_tokens": 2343022
     }
   },
   "tools": {
-    "Bash": 672,
+    "Bash": 675,
     "Write": 43,
     "Read": 16,
     "Edit": 8,
@@ -163,24 +163,24 @@
     {
       "index": 6,
       "started": "2026-11-16T17:06:47.678Z",
-      "ended": "2026-11-17T00:10:15.330Z",
-      "turns": 3,
-      "api_calls": 47,
+      "ended": "2026-11-17T00:30:01.458Z",
+      "turns": 4,
+      "api_calls": 51,
       "usage": {
-        "input_tokens": 96,
-        "output_tokens": 72615,
-        "cache_read_input_tokens": 8183034,
-        "cache_creation_input_tokens": 206842
+        "input_tokens": 106,
+        "output_tokens": 75816,
+        "cache_read_input_tokens": 9133324,
+        "cache_creation_input_tokens": 210759
       },
-      "peak_context_tokens": 236367
+      "peak_context_tokens": 240284
     }
   ],
   "log": {
-    "sha256": "e2ed028c608343e9aeedef683a4df41a6503e9491a1d113a7f8531bb94c67455",
-    "bytes": 19171685,
-    "lines": 6689,
-    "gzip_bytes": 3268255,
-    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/e2ed028c608343e9aeedef683a4df41a6503e9491a1d113a7f8531bb94c67455.jsonl.gz"
+    "sha256": "a50e7c636c07b9b4f8643a8a77ec629924163226ae16251aee8ee603421a3e5c",
+    "bytes": 19218644,
+    "lines": 6721,
+    "gzip_bytes": 3275416,
+    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/a50e7c636c07b9b4f8643a8a77ec629924163226ae16251aee8ee603421a3e5c.jsonl.gz"
   },
   "subagents": [
     {
@@ -838,6 +838,22 @@
       "summary": "Record verification results: example 290 vulnerable-security through the adapter entry is refuted at the frozen bound, as expected",
       "body": "Job 20261117-000856-example-290-vulnerable-security-through passed on vm-1 (1 step, 3.4 s, peak 187 MiB against an estimate of 5 min and 4 GiB): the frozen claim on 5.8.4 is refuted as the job expected. Outputs applied: the work folder's outcome and harness. No findings.",
       "log_sha256": "e2ed028c608343e9aeedef683a4df41a6503e9491a1d113a7f8531bb94c67455"
+    },
+    {
+      "change_id": "lxywqktlwtqvrrzqxuoykyrqkmlpruut",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290: preservation is established in a probe at the frozen bound, the previous version's questions by name answered on its own class path; one job for all four tasks is queued (verification pending)",
+      "body": "preservation (the release pair 5.8.4 to 5.8.5 through the adapter entry) needed four things of the verifier, each now there. (1) In a regression check made as a property of the pair of versions the previous version's classes are copies under the package before, and a question its code asks by a name it computes was answered from the program's class path, the new version's: Class.forName called by a copy now finds the copy of the class named and no class only the new version has, and a copy's getName() is the class's own name (lib/src/relocate.rs Previous, lib/src/bmc/runtime.rs). 5.8.4's initializer asks this way whether Spring MVC is present. (2) jvmcontract equivalence takes --observed-initializer and --model for such a check; an initializer is observed in each version that has the class, on that version's own class path, and the result says which. (3) new ConcurrentHashMap() and new ConcurrentHashMap(int) make an object with no content, a negative capacity refused: the caches an AntPathMatcher's constructor makes. (4) proofs/prove.py observes two more library initializers, UrlPathHelper's and AntPathMatcher's, met only where a release goes on to make MvcRequestMatchers.\n\nVerified inline: tests/pairing.rs has two versions of a library that return the same number only if each one's lookup by name, class name and observed initializer are its own, both ways round (verified), with the refusals; claims.M#cached proves the map's constructors against their definition and claims.Samples runs it on a JVM; the unit tests (288), claims (15), pairing (4), values, conformance, loops, object_strings and value_parameters pass; test_costs lint agrees; validate_example.py 290 passes. At the frozen bound of 8, proofs/prove.py preservation was established in 2.1 s (573 paths), and a control with a wider region that must agree was refuted on select(servlets=[1], ...), run on a JVM, where the fix changes the selection by design. The other three tasks give their recorded verdicts with the final script (4, 659 and 708 paths). Jobs: 20261117-012215-example-290-the-four-proof-tasks-through (all four tasks at one commit) and 20261117-012216-the-proof-tier-after-example-290-s-secon. vulnerable-security's own job, 20261117-000856-example-290-vulnerable-security-through, passed in 3.4 s (collected in onkqouut); its record in target.json follows with the others'. The commit also holds four allow-list proposals for scratch file names this session printed.",
+      "log_sha256": "a50e7c636c07b9b4f8643a8a77ec629924163226ae16251aee8ee603421a3e5c"
+    },
+    {
+      "change_id": "zkoptlxkvvtspwqlkqrkztzluntqqtyr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: example 290's four proof tasks through the adapter entry passed",
+      "body": "Job 20261117-002240-example-290-the-four-proof-tasks-through passed (4 steps, 38.9s, 189 MiB; estimated 5m, 4 GiB). 4 output files applied, none conflicting. Collected by the unattended run-verification loop on vm-1.",
+      "log_sha256": "a50e7c636c07b9b4f8643a8a77ec629924163226ae16251aee8ee603421a3e5c"
     }
   ],
   "logs": {
@@ -924,6 +940,12 @@
       "lines": 3817,
       "gzip_bytes": 1955164,
       "url": "https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/a3f2391d6970f282935bc8d408198d2d91a8ca64dff65e22e90fa4c76d9d67db.jsonl.gz"
+    },
+    "a50e7c636c07b9b4f8643a8a77ec629924163226ae16251aee8ee603421a3e5c": {
+      "bytes": 19218644,
+      "lines": 6721,
+      "gzip_bytes": 3275416,
+      "url": null
     },
     "a6acf0d0026c78336987a2cf87fe4c8bc18ef663cf57a3213caa730d61ff092c": {
       "bytes": 11707352,
