@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "3e8cabab-4a28-4a79-8207-69568d9e8162",
-  "status": "ended",
+  "status": "open",
   "title": "Prove-java-change skill and in-the-loop runtime",
   "first_prompt": "<command-name>/model</command-name>\n            <command-message>model</command-message>\n            <command-args></command-args>",
   "client": {
@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T19:24:01.389Z",
-  "ended": "2026-11-17T00:30:01.458Z",
-  "duration_seconds": 104760,
+  "ended": "2026-11-17T00:44:50.339Z",
+  "duration_seconds": 105649,
   "stats": {
-    "turns": 28,
-    "api_calls": 725,
-    "tool_calls": 761,
+    "turns": 29,
+    "api_calls": 733,
+    "tool_calls": 768,
     "tool_errors": 22,
     "compactions": 6,
     "peak_context_tokens": 466382,
     "usage": {
-      "input_tokens": 1484,
-      "output_tokens": 1031897,
-      "cache_read_input_tokens": 179493234,
-      "cache_creation_input_tokens": 2343022
+      "input_tokens": 1502,
+      "output_tokens": 1043021,
+      "cache_read_input_tokens": 181467441,
+      "cache_creation_input_tokens": 2355757
     }
   },
   "tools": {
-    "Bash": 675,
+    "Bash": 682,
     "Write": 43,
     "Read": 16,
     "Edit": 8,
@@ -163,24 +163,24 @@
     {
       "index": 6,
       "started": "2026-11-16T17:06:47.678Z",
-      "ended": "2026-11-17T00:30:01.458Z",
-      "turns": 4,
-      "api_calls": 51,
+      "ended": "2026-11-17T00:44:50.339Z",
+      "turns": 5,
+      "api_calls": 59,
       "usage": {
-        "input_tokens": 106,
-        "output_tokens": 75816,
-        "cache_read_input_tokens": 9133324,
-        "cache_creation_input_tokens": 210759
+        "input_tokens": 124,
+        "output_tokens": 86940,
+        "cache_read_input_tokens": 11107531,
+        "cache_creation_input_tokens": 223494
       },
-      "peak_context_tokens": 240284
+      "peak_context_tokens": 253019
     }
   ],
   "log": {
-    "sha256": "a50e7c636c07b9b4f8643a8a77ec629924163226ae16251aee8ee603421a3e5c",
-    "bytes": 19218644,
-    "lines": 6721,
-    "gzip_bytes": 3275416,
-    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/a50e7c636c07b9b4f8643a8a77ec629924163226ae16251aee8ee603421a3e5c.jsonl.gz"
+    "sha256": "ecc1eb3d68bde95235d6693d63840fed64f2cdc40060c431705ef1afb5210b49",
+    "bytes": 19330425,
+    "lines": 6784,
+    "gzip_bytes": 3291398,
+    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/ecc1eb3d68bde95235d6693d63840fed64f2cdc40060c431705ef1afb5210b49.jsonl.gz"
   },
   "subagents": [
     {
@@ -854,6 +854,22 @@
       "summary": "Record verification results: example 290's four proof tasks through the adapter entry passed",
       "body": "Job 20261117-002240-example-290-the-four-proof-tasks-through passed (4 steps, 38.9s, 189 MiB; estimated 5m, 4 GiB). 4 output files applied, none conflicting. Collected by the unattended run-verification loop on vm-1.",
       "log_sha256": "a50e7c636c07b9b4f8643a8a77ec629924163226ae16251aee8ee603421a3e5c"
+    },
+    {
+      "change_id": "yrxntpunonzpoluswmlxytzvlquvxost",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results: the default test run at lptpzxuplxky passed",
+      "body": "Job 20261117-003114-default-test-run-at-lptpzxuplxky passed: 1 step in 8m37s, peak 6.0 GiB (estimated 25m, 4 GiB; memory under-estimated). No outputs to apply. Collected by the unattended run-verification loop on vm-1.",
+      "log_sha256": "ecc1eb3d68bde95235d6693d63840fed64f2cdc40060c431705ef1afb5210b49"
+    },
+    {
+      "change_id": "xtkpoqknmqkxznnwknstomrlzpztxmxz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 290: all four proof tasks are decided beside the route at the frozen bound, and the page says what each verdict rests on",
+      "body": "Job 20261117-002240-example-290-the-four-proof-tasks-through ran proofs/prove.py on the four tasks at one commit (lxywqktl) and passed, 38.9 s after the build: vulnerable-security refuted on select(servlets=[0, 0], method=0, patterns={}), which returns 0 on 5.8.4, run on a JVM; fixed-security established (659 paths); mutant-security refuted on select(servlets=[1, 0], method=0, patterns={}), run on a JVM; preservation established for the pair 5.8.4 to 5.8.5 (573 paths, 7,907 variables). target.json records each as besideRoute with that job, dates the notes of the two blockers the work closed, and says in handoff.next what is left: the route has no adapter entry, so there are no route receipts. example.json's verdict and notes and the README's section follow, with what the verdicts rest on beyond the bytecode: up to five library initializers per release observed on a JVM instead of run by the checker, the hand-written ArrayList model run on request, and the stated class-loader assumptions.",
+      "log_sha256": "ecc1eb3d68bde95235d6693d63840fed64f2cdc40060c431705ef1afb5210b49"
     }
   ],
   "logs": {
@@ -999,6 +1015,12 @@
       "bytes": 19171685,
       "lines": 6689,
       "gzip_bytes": 3268255,
+      "url": null
+    },
+    "ecc1eb3d68bde95235d6693d63840fed64f2cdc40060c431705ef1afb5210b49": {
+      "bytes": 19330425,
+      "lines": 6784,
+      "gzip_bytes": 3291398,
       "url": null
     },
     "fa64e2e8a004344cfbffc44ce8bf23c177248204cb7f7a39c3ae9639872cb803": {
