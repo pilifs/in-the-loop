@@ -568,6 +568,40 @@ fn a_class_literal_says_whether_it_is_an_array_class_and_another_class_is_the_jd
     }
 }
 
+/// An exception's message and cause, kept from the JDK's constructor that set them (`lib/src/bmc/throwables.rs`,
+/// `claims.Thrown`, example 286's binding error): `getMessage`, `getCause`, `getLocalizedMessage` (an application's
+/// `getMessage` runs in its place), `toString`, `getClass()`, and a builder's `StringBuilder(int)` and
+/// `append(Object)`, each proved as `Throwable`'s Javadoc gives it and true on a JVM. What the engine does not know
+/// stays the JDK's, each where a JVM breaks the statement: an application's `fillInStackTrace()`, which the JVM runs
+/// inside the constructor, is refused by name; a JDK constructor that does more than pass its arguments up
+/// (`UnknownFormatConversionException(null)` throws) is the gap it is, as are `toString()` where the class overrides
+/// it or the message, and `append` of such an exception.
+#[test]
+fn an_exceptions_message_and_cause_are_kept_from_the_jdks_constructor() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let jvm = Command::new("java").arg("-XX:-UsePerfData").arg("-cp").arg(classes).arg("claims.Thrown").output().expect("java runs");
+    assert_eq!(
+        String::from_utf8_lossy(&jvm.stdout).trim(),
+        "kept=true true shown=true true nested=true appended=true countsNothing=false nullConversion=false shownAppended=false nestedShown=false",
+        "{}",
+        String::from_utf8_lossy(&jvm.stderr)
+    );
+    for method in ["kept", "shown", "nested", "appended"] {
+        proved(classes, &format!("claims.Thrown#{method}"), 3);
+    }
+    for (method, why) in [
+        ("countsNothing", "whose claims.Thrown$Counting.fillInStackTrace() the JVM runs inside the constructor"),
+        ("nullConversion", "java.util.UnknownFormatConversionException.<init>"),
+        ("shownAppended", "java.lang.StringBuilder.append(Ljava/lang/Object;)"),
+        ("nestedShown", "jdk-reference-method:claims.Thrown$Nested.toString()"),
+    ] {
+        let o = run(&options(classes, &format!("claims.Thrown#{method}"), 1, &format!("Thrown-{method}")));
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{method}: {}", o.output);
+        assert!(o.output.contains(why), "{method}: {}", o.output);
+    }
+}
+
 /// Under `--gaps assume` a JDK call that returns an object returns one of its declared class or of any below it
 /// (`claims.Cloned`: `Object.clone()` of a `Cloned` is one). The engine does not know which, so a virtual call on it
 /// (the class's override runs on a JVM) and a type test the declared class does not settle are refused by name, and

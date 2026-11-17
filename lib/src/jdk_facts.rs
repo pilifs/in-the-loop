@@ -111,6 +111,41 @@ const METHODS: &[(&str, &[&str])] = &[
     ("java/lang/AbstractStringBuilder", &["append", "length", "charAt", "toString", "reverse", "insert", "delete", "deleteCharAt", "setLength", "setCharAt", "indexOf", "lastIndexOf", "substring", "replace", "capacity", "isEmpty", "chars", "compareTo"]),
 ];
 
+/// The JDK exceptions whose constructors of no arguments (`0`), a message (`1`) and a message and a cause (`2`), as
+/// listed, only pass their arguments up to `Throwable`'s, for when no JDK image shows their bytecode
+/// ([`crate::bmc::gaps::exact_jdk_call`]). A test reads each against the image's bytecode where there is one.
+const PLAIN_THROWABLE_CONSTRUCTORS: &[(&str, &[usize])] = &[
+    ("java/lang/Throwable", &[0, 1, 2]),
+    ("java/lang/Exception", &[0, 1, 2]),
+    ("java/lang/Error", &[0, 1, 2]),
+    ("java/lang/RuntimeException", &[0, 1, 2]),
+    ("java/lang/AssertionError", &[0]),
+    ("java/lang/IllegalArgumentException", &[0, 1, 2]),
+    ("java/lang/IllegalStateException", &[0, 1, 2]),
+    ("java/lang/NullPointerException", &[0, 1]),
+    ("java/lang/ArithmeticException", &[0, 1]),
+    ("java/lang/ClassCastException", &[0, 1]),
+    ("java/lang/IndexOutOfBoundsException", &[0, 1]),
+    ("java/lang/ArrayIndexOutOfBoundsException", &[0, 1]),
+    ("java/lang/StringIndexOutOfBoundsException", &[0, 1]),
+    ("java/lang/NumberFormatException", &[0, 1]),
+    ("java/lang/UnsupportedOperationException", &[0, 1, 2]),
+    ("java/lang/NegativeArraySizeException", &[0, 1]),
+    ("java/lang/ArrayStoreException", &[0, 1]),
+    ("java/util/NoSuchElementException", &[0, 1, 2]),
+    ("java/util/ConcurrentModificationException", &[0, 1, 2]),
+];
+
+/// Whether the facts list `class`'s constructor of `arguments` arguments as only passing them up to `Throwable`'s.
+pub fn plain_throwable_constructor(class: &str, arguments: usize) -> bool {
+    PLAIN_THROWABLE_CONSTRUCTORS.iter().any(|(c, a)| *c == class && a.contains(&arguments))
+}
+
+/// Every `(class, arguments)` [`plain_throwable_constructor`] holds of.
+pub fn plain_throwable_constructors() -> impl Iterator<Item = (&'static str, usize)> {
+    PLAIN_THROWABLE_CONSTRUCTORS.iter().flat_map(|(c, a)| a.iter().map(move |n| (*c, *n)))
+}
+
 pub fn superclass(name: &str) -> Option<&'static str> {
     SUPERCLASSES.iter().find(|(c, _)| *c == name).map(|(_, s)| *s)
 }

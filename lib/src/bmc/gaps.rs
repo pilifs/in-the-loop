@@ -492,8 +492,10 @@ pub fn jdk_release() -> Option<String> {
 }
 
 /// Whether the engine reproduces a call into the JDK exactly: the constructors of `Object` and `Record`, which do
-/// nothing, and those of the JDK's exceptions that take nothing, a message, or a message and a cause, which set
-/// what no proof observes (the engine compares exceptions by class) and throw nothing.
+/// nothing, and those of the JDK's exceptions that take nothing, a message, or a message and a cause, and only pass
+/// them up to `Throwable`'s ([`super::throwables::plain_constructor`]), which sets the message and the cause (the
+/// own checker keeps them, [`super::throwables`]) and throws nothing. A JDK exception's constructor that does more
+/// (`UnknownFormatConversionException(String)` throws `NullPointerException` for null) is a gap like any other.
 pub fn exact_jdk_call(cp: &ClassPath, owner: &str, name: &str, descriptor: &str) -> bool {
     if name != "<init>" {
         return false;
@@ -505,7 +507,7 @@ pub fn exact_jdk_call(cp: &ClassPath, owner: &str, name: &str, descriptor: &str)
     if (owner == "java/lang/Object" || owner == "java/lang/Record" || owner == "java/util/AbstractCollection" || owner == "java/util/AbstractList" || owner == "java/util/AbstractSet") && descriptor == "()V" {
         return true;
     }
-    matches!(descriptor, "()V" | "(Ljava/lang/String;)V" | "(Ljava/lang/String;Ljava/lang/Throwable;)V") && crate::classpath::is_jdk_name(owner) && cp.is_subtype(owner, "java/lang/Throwable")
+    crate::classpath::is_jdk_name(owner) && super::throwables::plain_constructor(cp, owner, descriptor)
 }
 
 /// The JDK interfaces the immutable-list models and the `HashMap` model implement that no other object the engine

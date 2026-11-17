@@ -423,18 +423,54 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
     - every source in `evidence.json` (the adapter and both stand-ins), by hash.
     - So changing any of them, or adding a bean to the adapter set, un-accepts the refutation until the task runs
       again. Step 5's beans go beside them, in files of their own.
+- 2026-11-17, step 3: the mismatch path to its end, and the fixed task proved over ASCII names in a probe (frozen
+  claim unchanged; nothing newly accepted). Inbox: nothing open.
+  - **An exception's message and cause** (`lib/src/bmc/throwables.rs`). The own checker keeps what a JDK
+    exception's constructor sets: `()`, `(String)` and `(String, Throwable)`. On such an exception it models
+    `Throwable`'s `getMessage`, `getCause`, `getLocalizedMessage` and `toString`, where the method the JVM runs is
+    `Throwable`'s own. `getLocalizedMessage` runs an application's `getMessage` in its place, as Spring's
+    `NestedRuntimeException` needs.
+    - Also modelled: `getClass()` of a JDK exception no JDK call returned, and the builder's `StringBuilder(int)` (a
+      constant capacity) and `append(Object)` (a String, null, or such an exception).
+    - A read of the kept message goes through the effect contract's read gate, like a field's.
+  - **Two holes closed, each a false proof before.**
+    - A JDK exception's constructor was exact whatever its code. It is now exact only where its bytecode just
+      passes its arguments up to `Throwable`'s (`plain_constructor`; JDK 25's flight-recorder hook in `Error`'s is
+      allowed). `UnknownFormatConversionException(null)` throws on a JVM, and is now a gap.
+    - An application's `fillInStackTrace()` override runs inside `Throwable`'s constructor. That constructor is now
+      refused by name.
+    - Without a JDK image, `jdk_facts` lists the plain constructors. A unit test checks that list against the
+      image.
+  - **The concatenation cap is 256 code units** (was 64): `TypeMismatchException`'s message is about 150.
+    `values.rs`'s cap test moved with it: 72 units proved, 261 a named limit.
+  - **Tests.**
+    - `claims.Thrown` (`an_exceptions_message_and_cause_are_kept_from_the_jdks_constructor`): four statements
+      proved and true on a JVM. Four cases a JVM breaks stay unverifiable by name.
+    - Each of five mutations makes a test fail: no `fillInStackTrace` refusal, the old exact rule, the `toString`
+      override ignored, no cause sentinel, the JFR hook refused.
+    - `run --changed`: 23 of 23 pass. The first run caught the engine's unit tests, whose class path has no JDK
+      image; the built-in facts fixed that.
+  - **Where the path is now** (capped probes):
+    - with `field` restricted to `someMap`/`SomeMap`, bound 7: proved (113 s);
+    - with `field` ASCII (I009's other half aside), bound 7, through `prove.py`: **proved** in 108 s.
+      - It rests on the five models, both stand-ins (sampled), `PropertyEditorRegistrySupport` and `ClassUtils`
+        observed, the locale assumption and the `simpleMatch` lemma.
+    - the frozen claim's whole domain at bound 8: past the 5-minute cap, so a job.
+  - **The driver.** `prove.py --assume-also EXPR` conjoins EXPR to the claim's assumption as a trial. Its record
+    says so, and `accept.py` refuses its answer, since the assumption is not the claim file's.
+    - `accept.py` reads the driver at the job's commit, so the accepted refutation stands.
+  - **Job `20261117-222610-example-286-s-fixed-protected-state-task`**, each step with a work folder of its own:
+    - the frozen claim at bound 8, expected to stop only at non-ASCII `toLowerCase()`;
+    - the ASCII trial at bound 8, expected proved.
 - Next:
-  - The rest of the mismatch path, the exception's message:
-    - exceptions built by the JDK's `(String)` and `(String, Throwable)` constructors keep their message and cause
-      (today `gaps::exact_jdk_call` drops them, as no proof read them), with `getMessage` and `getCause` on them;
-    - `getLocalizedMessage` and `toString` dispatched as the JDK's, since `NestedRuntimeException` overrides
-      `getMessage` and `NestedExceptionUtils.buildMessage` appends the cause;
-    - `getClass()` of a JDK exception made by `new` (the stand-in's `IllegalStateException`);
-    - `StringBuilder(int)` and `append(Object)`.
-    - Then `DefaultMessageSourceResolvable`, `FieldError` and `addError`.
-  - Then the beans beside `ProtectedBean`, and the effect contract at the stand-in's setter call.
-  - Still open from cycle 1: non-ASCII `toLowerCase()` (the fixed task's blocker under the frozen claim), and the
-    corrected formalization (I009's two values, an ASCII `field`).
+  - Step 5: the adversarial and honest beans beside `ProtectedBean`, in files of their own, and the
+    application-level refutation through `displayName`. The adapter set and the stand-in sources stay as they are,
+    or the acceptance breaks. Then the effect contract at the stand-in's setter call.
+  - Job 222610's result: record the fixed task's blocker under the frozen claim, and the ASCII trial.
+  - Still open from cycle 1:
+    - non-ASCII `toLowerCase()`, the fixed task's one blocker under the frozen claim;
+    - the corrected formalization: I009's two values and an ASCII `field`. It is a new claim file, the user's
+      decision; the trial is its evidence.
 - Status: working
 
 ## Loop settings

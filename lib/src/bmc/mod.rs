@@ -66,7 +66,8 @@
 //! | `invokespecial`/`invokevirtual` of `java.lang.Enum`'s constructor, `name()`, `ordinal()`, `toString()` and `equals` ([`ClassPath::checker_runs`]) | modelled: the model's bytecode (`lib/models/java/lang/Enum.java`, which JBMC runs too) sets and reads the enum's `name` and `ordinal` fields; the interpreter's natives do the same. `Enum`'s other methods (`compareTo`, `hashCode`, `valueOf` …) stay JDK gaps |
 //! | `invokestatic` of `List.of` (its fixed forms, up to ten elements) and `List.copyOf`, and `invokevirtual`/`invokeinterface` of the immutable lists' methods an evidence record of `values::OPERATIONS` samples (`size`, `isEmpty`, `get`, `iterator`, the iterator's `hasNext` and `next`, and the changes `add`, `set`, `remove(int)`, `clear` and the iterator's `remove`) ([`ClassPath::checker_runs`]); a call from outside the models of any other method they implement (`contains`, `indexOf`, `equals`, `hashCode`, `toArray`, `addAll`, `sort` …, and `List.of(E...)`) is the JDK call it names, a gap or a refusal as any JDK call is ([`gaps::outside_the_list_records`]) | modelled: the models' bytecode (`lib/models/java/util/`, which JBMC runs too: `List12` for one or two elements, `ListN` over an array of its own otherwise, one empty list), `ImmutableCollections`' initializer run as an application class's ([`ClassPath::checker_class`]); order, duplicates and aliases between elements are the elements' references, null rejected, every change `UnsupportedOperationException`, `get` out of range an `IndexOutOfBoundsException` from a `List12` and an `ArrayIndexOutOfBoundsException` from a `ListN`. The interpreter's natives do the same. `copyOf` of another implementation meets its methods as JDK calls |
 //! | `new HashMap()` and `new HashMap(int)`, and `invokevirtual`/`invokeinterface` of `put`, `get`, `containsKey`, `size` and `isEmpty` on the map ([`ClassPath::checker_runs`]) | modelled: the model's bytecode (`lib/models/java/util/HashMap.java`, which JBMC runs too), a map's entries one chain of objects, a key found by its `hashCode` and `equals` as the JDK finds one; each call has an evidence record of `values::OPERATIONS`. The model has no other method: any other (`remove`, `keySet`, `Map`'s default methods) is the JDK call it names |
-//! | `invokespecial` of `Object.<init>()`, `Record.<init>()`, and a JDK exception's `()`, `(String)` or `(String, Throwable)` constructor ([`gaps::exact_jdk_call`]) | modelled exactly: they change nothing a proof observes |
+//! | `invokespecial` of `Object.<init>()`, `Record.<init>()`, and a JDK exception's `()`, `(String)` or `(String, Throwable)` constructor that only passes its arguments up to `Throwable`'s ([`gaps::exact_jdk_call`]) | modelled exactly: the first two change nothing a proof observes, and an exception's keeps its message and cause ([`throwables`]), refused on a class whose application override of `fillInStackTrace()` the constructor would run |
+//! | `getMessage()`, `getCause()`, `getLocalizedMessage()` and `toString()` of `Throwable` on an exception whose message and cause the engine kept, `getClass()` of an exception of a JDK class no JDK call returned ([`throwables`]) | modelled as `Throwable`'s, where the method the JVM runs is `Throwable`'s own; `getLocalizedMessage()` calls an application's `getMessage()`; the JDK call (a gap) elsewhere |
 //! | `invokespecial` of any other JDK constructor, `invokevirtual`/`invokeinterface` of a JDK method returning `void` or an object | gap: `jdk-constructor`, `jdk-void-method`, `jdk-reference-method` |
 //! | `invokevirtual`/`invokeinterface` of `String.length()`, `isEmpty()`, `charAt(int)`, `equals(Object)`, `startsWith(String)` and `hashCode()` on a String whose content the engine holds, whatever class the call names (`Object.equals`, `CharSequence.length`: the receiver's class picks the method) ([`Engine::string_method`]) | modelled, as their Javadoc specifies: `StringIndexOutOfBoundsException` from `charAt` out of range, `NullPointerException` from `startsWith(null)`, `equals` true of the same object, false of null and of another class, else the lengths and every code unit compared, `hashCode` the sum `s[0]*31^(n-1) + … + s[n-1]` in `int` arithmetic; on an opaque String they are the JDK calls below; on one past the content cap, a named limit with no verdict |
 //! | `invokevirtual`/`invokeinterface` of a JDK method returning an integer, a `char` or a `boolean` | gap: `jdk-primitive-method`, with no assume form |
@@ -112,6 +113,7 @@ mod regex;
 pub mod runtime;
 pub mod sat;
 pub mod strings;
+mod throwables;
 pub mod transcript;
 
 use std::collections::{BTreeMap, HashMap};
@@ -515,8 +517,10 @@ fn is_string(t: &Type) -> bool {
 
 /// The most code units the engine computes a String's content to: a concatenation that could make more gives a
 /// String whose content is a named limit ([`Obj::limit`]), never a truncated one. An input's length is its own
-/// bound ([`Parameters::max_string_length`]), and a literal has the units it has.
-pub const MAX_STRING_CONTENT: usize = 64;
+/// bound ([`Parameters::max_string_length`]), and a literal has the units it has. It was 64 until a library's
+/// error message needed more: Spring's `TypeMismatchException` names the value's type, the required type and the
+/// property, some 150 units for a binding of a short name.
+pub const MAX_STRING_CONTENT: usize = 256;
 
 /// A cell of a `String[]` parameter in a witness ([`Outcome::raw_arrays`]): `null`, or `s:` and the String's code
 /// units in decimal, comma-separated (`s:65,71,69`; `s:` for the empty String).
@@ -4672,6 +4676,12 @@ impl<'a> Engine<'a> {
         // no approximation, and is refused there too.
         // A builder's call that its model did not take (the builder's content is not the engine's) is the call
         // it is to a checker with no such model.
+        // An exception's message and cause, kept from the JDK's constructor that set them ([`throwables`]).
+        if !contracted {
+            if let Some(step) = self.throwable_method(path, o, special, member, &args) {
+                return step;
+            }
+        }
         match if contracted || strings::models_builder(&member.owner, &member.name, &member.descriptor) { unmodelled } else { gaps::jdk_instance_call(self.cp, &member.owner, &member.name, &member.descriptor) } {
             JdkCall::Exact => {}
             JdkCall::Gap(kind) => {

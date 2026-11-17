@@ -7,8 +7,10 @@
 //! run states ([`CLASS_PATH_ASSUMPTION`]), and stays the JDK call it was elsewhere.
 //!
 //! - `Object.getClass()` of an object of an application class that the run made with `new`, and of a String (a
-//!   final class): that class's literal, the one object a class literal of it is (JLS §15.8.2). Of any other object
-//!   (an array, a lambda's, another JDK class's) it is the JDK call it was.
+//!   final class), and of an exception of a JDK class below `Throwable` that no JDK call returned (its class is the
+//!   one `new` or the engine's own throw named, [`super::throwables`]): that class's literal, the one object a class
+//!   literal of it is (JLS §15.8.2). Of any other object (an array, a lambda's, another JDK class's) it is the JDK
+//!   call it was.
 //! - `Class.getName()` of a class literal: the class's binary name, the interned String (the JVM interns it).
 //!   `Class.getTypeName()` of the literal of a class that is no array: the same String, as the JDK's returns
 //!   `getName()` for such a class (an array's is its element type's name and `[]`, the JDK call it was).
@@ -168,7 +170,10 @@ impl Engine<'_> {
     pub(super) fn class_method(&mut self, path: &mut Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Option<Step> {
         if (name, descriptor) == ("getClass", "()Ljava/lang/Class;") {
             let class = path.objects[o].class.clone();
-            if class.starts_with('[') || path.objects[o].lambda.is_some() || !(self.cp.is_application(&class) || class == STRING) {
+            // An exception of a JDK class that no JDK call returned is of the class `new` or the engine's own throw
+            // named ([`super::throwables`]).
+            let exception = super::throwables::jdk_throwable(self.cp, &class) && !path.objects[o].assumed;
+            if class.starts_with('[') || path.objects[o].lambda.is_some() || !(self.cp.is_application(&class) || class == STRING || exception) {
                 return None;
             }
             let literal = self.literal(path, Literal::Class(class), CLASS);
