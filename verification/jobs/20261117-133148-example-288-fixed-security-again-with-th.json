@@ -1,0 +1,56 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-133148-example-288-fixed-security-again-with-th",
+  "title": "Example 288: fixed-security again, with the driver's record of what it ran (evidence.json)",
+  "description": "The evidence stream's acceptance check (examples/tools/accept.py) accepts an answer given beside the route only with no limit when the driver recorded what it ran: the JARs of the class path with their hashes, the adapter's sources and compiled classes, the claim file, the bound and the verifier's binary (evidence.json, written by accept.record). Every example's proofs/prove.py now does this through examples/tools/beside_route.py, and ends the run when the mutant's JAR is not the one the mutant replay's receipt records. Example 288's one verified task, fixed-security (job 20261116-201436-example-288-fixed-security-through-the-a), was never recorded as an answer beside the route: its driver recorded nothing of what it ran. This job reruns it unchanged at the frozen bound, with its simpleMatch lemma proved first under the checker's tightened lemma checks, into a work folder of its own (verification/.work-288/recorded). Its answer is recorded only if python3 examples/tools/accept.py 288 accepts it.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B9",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "288"
+    ],
+    "paths": [
+      "examples/tools/beside_route.py",
+      "examples/tools/accept.py",
+      "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py"
+    ]
+  },
+  "expected": "exits 0: prove.py prints verified at the frozen bound; outcome.json and evidence.json come back",
+  "submitted": {
+    "at": "2026-11-17T13:31:48+00:00",
+    "session": "7ece8184-b148-4351-92d8-d634606b823e"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "patch",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "25m",
+    "timeout": "1h30m",
+    "notes": "the earlier job took 1182 s at 1.4 GiB; plus the release build of lib/ and the fetch of the pinned JARs"
+  },
+  "steps": [
+    {
+      "name": "fixed-security at the frozen bound",
+      "run": "python3 examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py fixed-security --timeout 3300 --work verification/.work-288/recorded",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/.work-288/recorded/fixed-security/outcome.json",
+    "verification/.work-288/recorded/fixed-security/evidence.json",
+    "verification/.work-288/recorded/fixed-security/work/harness",
+    "verification/.work-288/recorded/fixed-security/work/lemma-0/harness"
+  ]
+}

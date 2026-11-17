@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 136, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-17 13:21 UTC |
-| Prompts | 2,842 |
-| Model calls | 28,895 |
-| Tool calls | 29,892 (530 failed) |
-| Compactions | 422 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-17 13:32 UTC |
+| Prompts | 2,850 |
+| Model calls | 28,922 |
+| Tool calls | 29,915 (530 failed) |
+| Compactions | 423 |
 | Subagents | 21 |
-| Tokens written | 29,139,983 |
-| Tokens read | 4,819,204,183 (98.1% from cache) |
-| Commits with a trace | 894 |
-| Log snapshots | 1,171 (2596.2 MB gzipped, 1,162 uploaded) |
+| Tokens written | 29,155,635 |
+| Tokens read | 4,820,982,996 (98.1% from cache) |
+| Commits with a trace | 895 |
+| Log snapshots | 1,172 (2596.8 MB gzipped, 1,162 uploaded) |
 
 ## Sessions
 
@@ -163,7 +163,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 02:26 UTC | [6da9b537-ecce-46cf-99fa-7cae16e7ce99](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | ended | 6 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 40,446 | 2 |
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 12 | 21 | 17 | 2 | 2 | 56,861 | 1 |
 | 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | open | 7 min | `claude-opus-5-5` | 2 | 5 | 4 | 0 | 0 | 56,756 | 1 |
-| 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | open | 24 min | `claude-opus-5-5` | 7 | 101 | 101 | 3 | 1 | 153,766 | 3 |
+| 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | open | 35 min | `claude-opus-5-5` | 15 | 128 | 124 | 3 | 2 | 153,766 | 4 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -308,15 +308,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`6da9b537`](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 1,385 | 12 | 28,987 | 187,799 | 86.6% | 157 |
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 8,137 | 42 | 87,022 | 814,514 | 90.3% | 111 |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 2,242 | 10 | 28,745 | 226,501 | 88.7% | 114 |
-| [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 59,225 | 206 | 236,337 | 9,246,472 | 97.5% | 160 |
+| [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 74,877 | 262 | 299,657 | 10,961,909 | 97.3% | 150 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 26,535 | 88.8% | 136 |
+| `Bash` | 26,557 | 88.8% | 136 |
 | `Read` | 1,266 | 4.2% | 55 |
-| `Edit` | 945 | 3.2% | 53 |
+| `Edit` | 946 | 3.2% | 54 |
 | `Write` | 641 | 2.1% | 53 |
 | `ToolSearch` | 164 | 0.5% | 42 |
 | `Monitor` | 120 | 0.4% | 49 |
@@ -1231,6 +1231,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 892 | change `rkxyyqwn` | Every example's proof driver records identities, ends the run on a mutant that is not the replay's, and marks a trial | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) ([log](https://terminalvalue.net/raw-traces/7ece8184-b148-4351-92d8-d634606b823e/fadef0a55901ed98be485baeba4c8742903eb5ab48c947d75dc6027ef66d3a30.jsonl.gz)) |
 | 893 | change `zlxkxlst` | The evidence stream acknowledges inbox item I001 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) ([log](https://terminalvalue.net/raw-traces/7ece8184-b148-4351-92d8-d634606b823e/d5cd4bb1f46a722e14a6d5131d8d6bfe827722ab624a8a511873b254dbfe5c37.jsonl.gz)) |
 | 894 | change `kynmlzxk` | Example 289's four answers beside the route are accepted from the job that recorded what it ran, with no limit | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) ([log](https://terminalvalue.net/raw-traces/7ece8184-b148-4351-92d8-d634606b823e/7bc6a2b7eb4d304bc6e83eb680cf8e6590b39879fed0aa01e0017219c6131027.jsonl.gz)) |
+| 895 | change `vsttntoz` | Examples 286, 287, 288 and 290 are rerun at the frozen bound with drivers that record what they ran (verification pending) | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) ([log](https://terminalvalue.net/raw-traces/7ece8184-b148-4351-92d8-d634606b823e/7f5943191c9bef9e4c236655ec4798f06327300d784a2b2b90ec9aaefbd99b1c.jsonl.gz)) |
 
 ## Logs
 
@@ -1373,7 +1374,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`6da9b537`](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 2 | 2 | 0.2 MB | [`d5b3ff93d2f4`](https://terminalvalue.net/raw-traces/6da9b537-ecce-46cf-99fa-7cae16e7ce99/d5b3ff93d2f464f79d4c2c3b63c435663917ad81d37a274a6519c9da315b7f3d.jsonl.gz) |
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 1 | 1 | 0.3 MB | [`965570933c02`](https://terminalvalue.net/raw-traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/965570933c0206c64a18c5652f4f74be1de3807449c6f9f9a26e20a3211055fc.jsonl.gz) |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 1 | 0 | 0.1 MB | `887466d85ae2`, not uploaded |
-| [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 3 | 0 | 0.9 MB | `7bc6a2b7eb4d`, not uploaded |
+| [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 4 | 0 | 1.5 MB | `7f5943191c9b`, not uploaded |
 
 ## Session notes
 

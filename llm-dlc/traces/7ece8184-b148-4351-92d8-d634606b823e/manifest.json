@@ -12,31 +12,33 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:50.868Z",
-  "ended": "2026-11-17T13:21:25.146Z",
-  "duration_seconds": 1474,
+  "ended": "2026-11-17T13:32:14.305Z",
+  "duration_seconds": 2123,
   "stats": {
-    "turns": 7,
-    "api_calls": 101,
-    "tool_calls": 101,
+    "turns": 15,
+    "api_calls": 128,
+    "tool_calls": 124,
     "tool_errors": 3,
-    "compactions": 1,
+    "compactions": 2,
     "peak_context_tokens": 153766,
     "usage": {
-      "input_tokens": 206,
-      "output_tokens": 59225,
-      "cache_read_input_tokens": 9246472,
-      "cache_creation_input_tokens": 236337
+      "input_tokens": 262,
+      "output_tokens": 74877,
+      "cache_read_input_tokens": 10961909,
+      "cache_creation_input_tokens": 299657
     }
   },
   "tools": {
-    "Bash": 97,
+    "Bash": 119,
     "Write": 2,
+    "Edit": 1,
     "Monitor": 1,
     "ToolSearch": 1
   },
   "files_touched": [
     "examples/tools/beside_route.py",
-    "examples/tools/test_beside_route.py"
+    "examples/tools/test_beside_route.py",
+    "llm-dlc/loops/domain-advances-evidence.md"
   ],
   "context_windows": [
     {
@@ -56,24 +58,38 @@
     {
       "index": 1,
       "started": "2026-11-17T13:12:35.507Z",
-      "ended": "2026-11-17T13:21:25.146Z",
-      "turns": 5,
-      "api_calls": 47,
+      "ended": "2026-11-17T13:28:40.442Z",
+      "turns": 9,
+      "api_calls": 52,
       "usage": {
-        "input_tokens": 98,
-        "output_tokens": 18533,
-        "cache_read_input_tokens": 3692448,
-        "cache_creation_input_tokens": 93914
+        "input_tokens": 110,
+        "output_tokens": 19680,
+        "cache_read_input_tokens": 4228702,
+        "cache_creation_input_tokens": 99397
       },
-      "peak_context_tokens": 105257
+      "peak_context_tokens": 110740
+    },
+    {
+      "index": 2,
+      "started": "2026-11-17T13:29:35.177Z",
+      "ended": "2026-11-17T13:32:14.305Z",
+      "turns": 4,
+      "api_calls": 22,
+      "usage": {
+        "input_tokens": 44,
+        "output_tokens": 14505,
+        "cache_read_input_tokens": 1179183,
+        "cache_creation_input_tokens": 57837
+      },
+      "peak_context_tokens": 71110
     }
   ],
   "log": {
-    "sha256": "7bc6a2b7eb4d304bc6e83eb680cf8e6590b39879fed0aa01e0017219c6131027",
-    "bytes": 2678948,
-    "lines": 869,
-    "gzip_bytes": 457107,
-    "path": "llm-dlc/traces/7ece8184-b148-4351-92d8-d634606b823e/logs/7bc6a2b7eb4d304bc6e83eb680cf8e6590b39879fed0aa01e0017219c6131027.jsonl.gz"
+    "sha256": "7f5943191c9bef9e4c236655ec4798f06327300d784a2b2b90ec9aaefbd99b1c",
+    "bytes": 3510273,
+    "lines": 1148,
+    "gzip_bytes": 618406,
+    "path": "llm-dlc/traces/7ece8184-b148-4351-92d8-d634606b823e/logs/7f5943191c9bef9e4c236655ec4798f06327300d784a2b2b90ec9aaefbd99b1c.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -100,6 +116,14 @@
       "summary": "Example 289's four answers beside the route are accepted from the job that recorded what it ran, with no limit",
       "body": "The evidence stream's step 1, 289's half. Job 20261117-122454-example-289-the-four-proof-tasks-again-w passed (the four tasks at the frozen bound 8, the same verdicts, with the driver's evidence.json beside each outcome). The watcher collected it on the default line; this workspace took its result folder and verification/.work-289/recorded from there unchanged (jj restore from pulrzyrl, no merge). Each 289 task's besideRoute now names that job. python3 examples/tools/accept.py 289 says:\n✓ 289 vulnerable-security: refuted, accepted (job 20261117-122454-example-289-the-four-proof-tasks-again-w; 12 checks)\n✓ 289 fixed-security: established, accepted (job 20261117-122454-example-289-the-four-proof-tasks-again-w; 13 checks)\n✓ 289 preservation: established, accepted (job 20261117-122454-example-289-the-four-proof-tasks-again-w; 13 checks)\n✓ 289 mutant-security: refuted, accepted (job 20261117-122454-example-289-the-four-proof-tasks-again-w; 13 checks)\nand --json shows an empty limits list and the artifacts check ok on each: no limit about unrecorded artifacts is left.\n\nFinding, the check's (fixed here): its first run refused mutant-security, 'spring-web-5.3.20.jar of mutant is not the JAR target.json pins' and the same for three more. The driver records the mutant's class path under the revision mutant, which is the class path it ran; target.json pins those JARs under the mutant's base (fixed-release). The artifacts check now looks a constructed mutant's JARs up under its base; the mutant's own JAR stays the mutant check's. test_accept.py has a control for it (fails without the fix) and its checkout test now holds 289 to the new job, its source commit and lib tree, with no limit.",
       "log_sha256": "7bc6a2b7eb4d304bc6e83eb680cf8e6590b39879fed0aa01e0017219c6131027"
+    },
+    {
+      "change_id": "vsttntoznvymvlwkrpnxpyvuulmnozqu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Examples 286, 287, 288 and 290 are rerun at the frozen bound with drivers that record what they ran (verification pending)",
+      "body": "Step 3 of the evidence stream's brief. Example 286's and 287's mutant-security answers are refused by examples/tools/accept.py, because their old drivers built the mutant with another recipe and its JAR's hash is in no record; every other accepted answer of 286, 287 and 290 carries the limit that the JARs, the compiled adapter and the verifier's binary were not recorded; 288's one verified task (fixed-security) was never recorded at all. Every driver now goes through examples/tools/beside_route.py, which writes evidence.json and ends the run on a mutant that is not the replay's. Four jobs rerun those tasks unchanged at the frozen bound into verification/.work-NNN/recorded, one job per example, every step run whatever the one before gave; estimates come from the earlier jobs' measured steps. When they are back, each task's besideRoute.job is switched to its job and accept.py must accept with no limit; 288's answer is recorded only if accept.py accepts it.\n\nJobs: 20261117-133148-example-286-the-three-answers-beside-the, 20261117-133148-example-287-the-three-answers-beside-the, 20261117-133148-example-288-fixed-security-again-with-th, 20261117-133148-example-290-the-four-answers-beside-the.\n\nInbox items domain-advances-evidence-I002 and I003 (286's and 287's drivers already have the three properties in the state and preservation streams) are acknowledged in Progress: both drivers are built on this stream's shared module, and their security tasks run the same code as this line's. The brief's 'Where it stands' paragraph is out of date since step 2: every driver, not only 289's, now records evidence.json.",
+      "log_sha256": "7f5943191c9bef9e4c236655ec4798f06327300d784a2b2b90ec9aaefbd99b1c"
     }
   ],
   "logs": {
@@ -107,6 +131,12 @@
       "bytes": 2678948,
       "lines": 869,
       "gzip_bytes": 457107,
+      "url": null
+    },
+    "7f5943191c9bef9e4c236655ec4798f06327300d784a2b2b90ec9aaefbd99b1c": {
+      "bytes": 3510273,
+      "lines": 1148,
+      "gzip_bytes": 618406,
       "url": null
     },
     "d5cd4bb1f46a722e14a6d5131d8d6bfe827722ab624a8a511873b254dbfe5c37": {

@@ -122,6 +122,28 @@ Don't change `verification/pipeline.py`.
 - Inbox: no open items.
 - Next: step 3, the reruns of 286 and 287 `mutant-security` (and the other accepted answers of 286, 287, 290) as
   jobs with the new drivers; the lemma half of step 1 when its job is back.
+- 2026-11-17, cycle 3. **Step 3 queued.** The lemma job is still pending, so the reruns went first, one job per
+  example, each task at the frozen bound through its new driver into `verification/.work-NNN/recorded` (the earlier
+  outputs stay as their results record them), every step run whatever the one before gave, `outcome.json` and
+  `evidence.json` among the outputs: `20261117-133148-example-286-the-three-answers-beside-the` (vulnerable, fixed
+  with its lemma, mutant), `20261117-133148-example-287-the-three-answers-beside-the` (the same three),
+  `20261117-133148-example-288-fixed-security-again-with-th` (288's one verified task, recorded only if `accept.py`
+  accepts it) and `20261117-133148-example-290-the-four-answers-beside-the` (the four, with the same observed
+  initializers; their audit is step 5). Estimates from the earlier jobs' measured steps (286: 492 to 1015 s at 1.6
+  GiB; 287: 659 to 823 s at 3.0 GiB; 288: 1182 s; 290: under 15 s each). The 286 and 288 runs prove the simpleMatch
+  lemma under the tightened checks too, so they also answer what the lemma job asks, with the record. The other
+  streams' changes to 286's and 287's drivers since step 2 add their own tasks only (no claim or target change), so
+  a rerun from this line's drivers holds after the merge: `accept.py` reads the driver at the job's own commit.
+- Repeated work measured (step 7): none; the state and preservation streams built 286's and 287's new tasks on the
+  shared module rather than beside it.
+- Inbox: `domain-advances-evidence-I002` (286's driver already has the three properties, state stream `tvxyzwqv`):
+  taken; that driver is built on this stream's step 2 (`beside_route`), its security tasks run the same code as this
+  line's, so 286's `mutant-security` is rerun with it as the item asks, and `ENTRIES` and the per-claim models stay in
+  286's driver. `domain-advances-evidence-I003` (287's driver has them, preservation stream `oqsnoyom`): taken the
+  same way; 287's equivalence branch is the preservation stream's and untouched, and the rerun of `mutant-security`
+  uses the shared recipe (the replay's JAR, `1d099295…`).
+- Next: step 4 (the vacuity control) while the step 3 jobs and the lemma job run; then the records and `accept.py`
+  for 286, 287, 288 and 290, and the lemma half of step 1, when they are back.
 - Status: working
 
 ## Loop settings
