@@ -1,0 +1,67 @@
+{
+ "schema": "beside-route-evidence/v1",
+ "example": "289",
+ "task": "mutant-security",
+ "claim": {
+  "file": "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/claims/protected-prefix-matched-across-line-terminators.json",
+  "sha256": "8f1c7824373d005251ada1dec6abd54f8a406a1d81cd9e90e9e3017eede48af0"
+ },
+ "bound": {
+  "maxArrayLength": 8,
+  "unwind": 26,
+  "trial": false
+ },
+ "artifacts": [
+  {
+   "revision": "mutant",
+   "name": "spring-security-web-5.6.4.jar",
+   "sha256": "a3a3dbff86c14e75ebcdfd6302069d42abe859c1ceb82416aff1d4c8feeb0847",
+   "constructed": true
+  },
+  {
+   "revision": "mutant",
+   "name": "spring-web-5.3.20.jar",
+   "sha256": "d6db8d7a8239a0403f4fc2066b765f5209e1b14af58b5bb8215482188ef640bc"
+  },
+  {
+   "revision": "mutant",
+   "name": "spring-core-5.3.20.jar",
+   "sha256": "42d70d78b8822601a3b61c88dadf4be6a0021dde169a772c3fd4a6b8b2b61c90"
+  },
+  {
+   "revision": "mutant",
+   "name": "spring-jcl-5.3.20.jar",
+   "sha256": "fb6c6bf524b19a03103812e0104eaf0bcbc178ae8f425db8b547963b13483e28"
+  },
+  {
+   "revision": "mutant",
+   "name": "javax.servlet-api-4.0.1.jar",
+   "sha256": "83a03dd877d3674576f0da7b90755c8524af099ccf0607fc61aa971535ad7c60"
+  }
+ ],
+ "adapter": {
+  "sources": {
+   "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/replay/carrier/example289/carrier/PathOnlyRequest.java": "4fd25981e050fef0cd5df36c9ebd954e7597a455460edfebb593e3790b762a18",
+   "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/replay/adapter/example289/adapter/RegexMatchAdapter.java": "36395f81038c2764ebd82f8f58ae833c94ef2ce6eda45816c544d2d7a25ad3cf"
+  },
+  "classes": [
+   {
+    "folder": "adapter-mutant",
+    "sha256": "5203b45eef81e22428bfa57fba78d307b49ec3deb5c9a464135e840664ca04de"
+   }
+  ]
+ },
+ "jvmcontract": {
+  "path": "jvmcontract",
+  "sha256": "14673718807c819f960679dfb66dc55d07b233b5195b4c835ff75cf4496baa8f"
+ },
+ "driver": {
+  "path": "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py",
+  "sha256": "af0dd1d1f7f72485008a57d90e5b59c1f0f2c05e21d83bcfbc6bbc00db9ca027"
+ },
+ "mutant": {
+  "sha256": "a3a3dbff86c14e75ebcdfd6302069d42abe859c1ceb82416aff1d4c8feeb0847",
+  "replayed": "a3a3dbff86c14e75ebcdfd6302069d42abe859c1ceb82416aff1d4c8feeb0847",
+  "patch": "controls/case-insensitive-without-dotall.patch"
+ }
+}

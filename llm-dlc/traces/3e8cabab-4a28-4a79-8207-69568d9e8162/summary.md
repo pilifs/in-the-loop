@@ -1048,6 +1048,12 @@ change `lupovnmvlpnm` · [log `db8426e717da`](https://terminalvalue.net/raw-trac
 
 The commit that makes verification/pipeline.py read ~/.config/in-the-loop/pipeline.local.toml was made in the workspace machine-config while this line took the domain-advances foundation; nothing but the generated trace files met, and they were regenerated.
 
+### Record verification results for 1 job(s)
+
+change `pulrzyrlllyv` · [log `db8426e717da`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/db8426e717da05b1e78c67f4e65b6179a6bf872f0b3f46ae84d4c14b708e5287.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-122454-example-289-the-four-proof-tasks-again-w: passed: 4 passed step(s) in 1m33s, peak 551.4 MiB (estimated 20m00s, 4.0 GiB); 15 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1; jvmcontract:holds×2 Applied 15 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/db8426e717da05b1e78c67f4e65b6179a6bf872f0b3f46ae84d4c14b708e5287.jsonl.gz) has every step in between: reasoning, tool calls and their results.
