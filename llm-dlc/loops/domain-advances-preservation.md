@@ -200,7 +200,37 @@ relational result needs a new check (the rule's applications recorded in the out
   - I007 (287's claims accept a check-only guard) and I008 (307's claim accepts the platform default charset) each
     call for a new or changed claim, which the brief leaves frozen and CLAUDE.md leaves to the user. I record them
     here and in each example's step and change no claim. They are a question for the user, not a blocker.
-- Next: I006 and I009 (soundness first). Then step 5's cost: make the rounds loop's search cheaper before a job:
+- 2026-11-17, I006 and I009 (soundness of steps 1 and 4; no step of 287 moved). Merged `pklttqzw`, which brings
+  `lqvlvwsm`; the default run passed after it.
+  - I006 (the logging model, `bmc/runtime.rs`): `confined_record` now also refuses an `athrow` and a write of any
+    field but a number field (`int`, `boolean`, `byte`, `char`, `short`, `long`). After a modelled `log`, each such
+    field the record's own classes declare holds any value, on every object of those classes (`Engine::formatted`),
+    since a getter the handler's formatting calls may have written it on a record the caller holds. The README's `lg`
+    test is in `lib/tests/rule_countermodels.rs` and passes:
+    - `seen` is a violation, replayed at 1;
+    - `escaped` stops at the `log` gap.
+    Spring's `LocationResolvingLogRecord` writes only its `boolean resolved` and throws nothing. A trial probe of
+    287 at bound 8 still verifies through the logging path.
+  - I009 (the pair's exceptions, `pairing.rs`): two exceptions now agree only if their classes also implement the
+    same interfaces, transitively. That is compared in the class files when the pair is written: a copy whose
+    interfaces are not its twin's is named in `apart`, and `same` takes it for two answers. So `marked` is a
+    violation and `based` stays one.
+    What is not compared is stated instead, in the outcome's note, the module and `lib/README.md`: the message,
+    the cause and the exception's own fields. So `messaged` and `coded` are proved under that note, and `wrapped`
+    stops at a gap.
+    Why the limit and not a wider comparison: the brief asks for "exception classes compared exactly" and expects
+    307's `preservation` established. For a null password, a JVM's `NullPointerException` message names the method
+    the null met, and 307's two versions call `getBytes(String)` and `getBytes(Charset)`. A message comparison would
+    refute what the claim means to hold.
+    The README's test is in `lib/tests/thrown_pair_countermodels.rs`. It passes, and holds `messaged` and `coded`
+    to the note.
+    Capped probes at the frozen bounds:
+    - 289 and 290 still verify;
+    - `apart` is empty for 287, 289 and 290, as the challenge stream's audit found.
+    For the evidence stream: the rerun of job `20261117-151521-…` compared what this checker compares on those
+    two examples. A claim that says "the same exception" is now held to the note's reading. If `accept.py` should
+    check that the note is there, that check is the evidence stream's to add.
+- Next: step 5's cost: make the rounds loop's search cheaper before a job:
   - keep out of `written` the places of objects nothing reachable holds;
   - let a summary whose key and invariant the path already has (the other side's, on this path) go on without
     searching again.

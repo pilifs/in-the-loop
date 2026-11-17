@@ -11,7 +11,8 @@
 //!     static boolean meantToChange(P...) { try { return SCOPE; } catch (Throwable t) { return false; } }
 //!     static void fresh() { ... }
 //!     static String named(Class<?> c, boolean previous) { ... c.getName(), `before.` taken off for the previous ... }
-//!     static boolean same(Class<?> a, Class<?> b) { ... one name, and same(a.getSuperclass(), b.getSuperclass()) ... }
+//!     static boolean apart(String name) { ... the classes whose interfaces differ between the versions ... }
+//!     static boolean same(Class<?> a, Class<?> b) { ... one name, not apart, and same(a.getSuperclass(), b.getSuperclass()) ... }
 //!     public static boolean agree(P...) {
 //!         fresh();
 //!         if (meantToChange(COPIES)) { return true; }
@@ -47,8 +48,17 @@
 //!   `tests/fixtures/pairing-countermodels`, 2026-11-17, which a comparison by the categories of
 //!   [`crate::harness::EXCEPTIONS`] proved to agree), and so are two classes of one name of which one extends
 //!   `IllegalArgumentException` and the other `IllegalStateException` (`tests/fixtures/fresh-pair-countermodels`,
-//!   `failing`, which a comparison by the class's name alone proved to agree). The interfaces a class implements are
-//!   not compared: an `instanceof` of an interface may tell two such answers apart. A method that declares checked exceptions is refused, not yet taken;
+//!   `failing`, which a comparison by the class's name alone proved to agree). A class whose interfaces, through its
+//!   superclasses and superinterfaces, are not the same in both versions (found in the class files when the pair is
+//!   written: `apart`) is two answers too, so that an `instanceof` or a cast of an interface takes both or neither
+//!   (`tests/fixtures/thrown-pair-countermodels`, `marked`). So two exceptions agree when nothing that asks of an
+//!   exception only its class can tell them apart. **What is not compared** is the rest of what a handler can read
+//!   of an exception: its message, its cause and the values of its own fields (`messaged`, `wrapped` and `coded`
+//!   there). This is the reading of "the same exception" the claims of 287 and 307 are checked under: a JVM's
+//!   message for a `NullPointerException` the JVM raises names the method the null was called with, so the two
+//!   versions of 307 (`getBytes(String)` against `getBytes(Charset)`) throw for a null password exceptions whose
+//!   messages differ, which the claim means to be the same. The outcome's note says so. A method that declares
+//!   checked exceptions is refused, not yet taken;
 //! - **the result** is compared by `==` for a primitive and by content for a String, two nulls agreeing;
 //! - **each version starts as if it ran alone** ([`FRESH`]): the scope, the previous version and the new one each
 //!   begin where the checker has given the path a fresh state, the static fields and the classes' initialization
@@ -67,6 +77,7 @@
 //! by a `String[]` parameter, or by a String parameter named `--nullable`; every other regression check is the
 //! harness's, as before.
 
+use std::collections::BTreeSet;
 use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 
@@ -133,7 +144,7 @@ pub const FRESH: &str = "fresh";
 const RELOCATED: &str = "before.";
 
 /// The pair's class as Java: see the module's notes.
-pub fn source(class: &str, method: &str, names: &[String], params: &[Type], ret: &Type, scope: Option<&str>) -> String {
+pub fn source(class: &str, method: &str, names: &[String], params: &[Type], ret: &Type, scope: Option<&str>, apart: &[String]) -> String {
     let declared = names.iter().zip(params).map(|(n, t)| format!("{} {n}", t.java_name())).collect::<Vec<_>>().join(", ");
     // Each version writes into its own copy of an array.
     let copies = names.iter().zip(params).map(|(n, t)| if matches!(t, Type::Array(_)) { format!("{n} == null ? null : {n}.clone()") } else { n.clone() }).collect::<Vec<_>>().join(", ");
@@ -156,8 +167,11 @@ pub fn source(class: &str, method: &str, names: &[String], params: &[Type], ret:
     let _ = writeln!(s, "    static void {FRESH}() {{\n        if (start == null) {{\n            start = java.util.Locale.getDefault();\n        }} else {{\n            java.util.Locale.setDefault(start);\n        }}\n    }}\n");
     s.push_str("    /** A class's own name: a copy of the previous version's class is that class. */\n");
     let _ = writeln!(s, "    static String named(Class<?> c, boolean previous) {{\n        String name = c.getName();\n        return previous && name.indexOf(\"{RELOCATED}\") == 0 ? name.substring({}) : name;\n    }}\n", RELOCATED.len());
-    s.push_str("    /** Whether the previous version's class and the new one's have one name, and so do the classes above them, up to Object. */\n");
-    s.push_str("    static boolean same(Class<?> a, Class<?> b) {\n        if (a == null || b == null) {\n            return a == b;\n        }\n        return named(a, true).equals(named(b, false)) && same(a.getSuperclass(), b.getSuperclass());\n    }\n\n");
+    s.push_str("    /** Whether the class of this name implements other interfaces in one version than in the other, as the generator found them. */\n");
+    let differ = if apart.is_empty() { "false".to_string() } else { apart.iter().map(|n| format!("name.equals(\"{n}\")")).collect::<Vec<_>>().join("\n            || ") };
+    let _ = writeln!(s, "    static boolean apart(String name) {{\n        return {differ};\n    }}\n");
+    s.push_str("    /** Whether the previous version's class and the new one's have one name and implement the same interfaces, and so do the classes above them, up to Object. */\n");
+    s.push_str("    static boolean same(Class<?> a, Class<?> b) {\n        if (a == null || b == null) {\n            return a == b;\n        }\n        String name = named(b, false);\n        return named(a, true).equals(name) && !apart(name) && same(a.getSuperclass(), b.getSuperclass());\n    }\n\n");
     let _ = writeln!(s, "    public static boolean {METHOD}({declared}) {{");
     // The first call keeps the state every version is to start in, before the scope can change it.
     let _ = writeln!(s, "        {FRESH}();");
@@ -192,7 +206,8 @@ pub fn run(options: &Options, work: &Path, relocated_dir: &Path, class: &ClassFi
     let descriptor = method.parsed_descriptor()?;
     let dir = work.join("pair");
     std::fs::create_dir_all(&dir)?;
-    let java = source(&class.name.replace('/', "."), &method.name, names, &descriptor.params, &descriptor.ret, options.unchanged_unless.as_deref());
+    let apart = differing(options, relocated_dir, &previous)?;
+    let java = source(&class.name.replace('/', "."), &method.name, names, &descriptor.params, &descriptor.ret, options.unchanged_unless.as_deref(), &apart);
     let statement = dir.join(format!("{CLASS}.java"));
     std::fs::write(&statement, &java)?;
     let home = match &options.java_home {
@@ -247,11 +262,39 @@ pub fn run(options: &Options, work: &Path, relocated_dir: &Path, class: &ClassFi
         None => String::new(),
     };
     let note = format!(
-        "note: checked as a property of the pair of versions: {CLASS}.{METHOD} ({}) calls the previous version's {target}, relocated under `before`, and then the new one's on the same inputs{own}{scope}, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name that extend classes of one name up to Object (a copy's class being its own; the interfaces are not compared). Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale",
+        "note: checked as a property of the pair of versions: {CLASS}.{METHOD} ({}) calls the previous version's {target}, relocated under `before`, and then the new one's on the same inputs{own}{scope}, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale",
         statement.display(),
         target = options.target,
     );
     Ok(Ok(Paired { outcome, statement, note }))
+}
+
+/// The binary names of the classes the previous version holds as copies whose every interface, through their
+/// superclasses and superinterfaces and a copy's interface taken for its own, is not the new version's class's of
+/// that name: an `instanceof` or a cast of an interface may take an exception of one and not of the other, though
+/// the two have one name and so do the classes above them (`tests/fixtures/thrown-pair-countermodels`, `marked`).
+/// The JDK's classes and a library both versions share are one class on both sides.
+fn differing(options: &Options, relocated_dir: &Path, previous: &crate::relocate::Previous) -> Result<Vec<String>, crate::Error> {
+    let mut cp = crate::classpath::ClassPath::new();
+    cp.add(&options.after)?;
+    cp.add(relocated_dir)?;
+    for entry in options.classpath.iter().filter(|e| e.exists()) {
+        cp.add(entry)?;
+    }
+    let own = |name: String| previous.original(&name).map(str::to_string).unwrap_or(name);
+    let mut apart = Vec::new();
+    for name in &previous.relocated {
+        let copy = format!("{}/{name}", previous.prefix);
+        if !cp.exists(&copy) || !cp.exists(name) {
+            continue;
+        }
+        let before: BTreeSet<String> = cp.all_interfaces(&copy).into_iter().map(own).collect();
+        let after: BTreeSet<String> = cp.all_interfaces(name).into_iter().collect();
+        if before != after {
+            apart.push(name.replace('/', "."));
+        }
+    }
+    Ok(apart)
 }
 
 /// The name of the generated method that says whether an input is inside the allowed change.
@@ -315,18 +358,18 @@ mod tests {
     fn the_pairs_class_calls_both_versions_on_copies_from_fresh_states_and_compares_results_and_classes() {
         let names: Vec<String> = ["k", "patterns", "field"].iter().map(|s| s.to_string()).collect();
         let params = vec![Type::Int, Type::Array(Box::new(Type::Object("java/lang/String".into()))), Type::Object("java/lang/String".into())];
-        let java = source("x.Adapter", "allowed", &names, &params, &Type::Boolean, Some("k == 2"));
+        let java = source("x.Adapter", "allowed", &names, &params, &Type::Boolean, Some("k == 2"), &[]);
         assert!(java.contains("static boolean meantToChange(int k, java.lang.String[] patterns, java.lang.String field)"), "{java}");
         assert!(java.contains("return k == 2;") && java.contains("catch (Throwable t) {\n            return false;"), "{java}");
         let fresh = |at: &str| java.find(at).unwrap_or_else(|| panic!("{at}: {java}"));
         let calls = [fresh("public static boolean agree"), fresh("        fresh();\n        if (meantToChange(k, patterns == null ? null : patterns.clone(), field)) { return true; }\n        fresh();\n        boolean a"), fresh("a = before.x.Adapter.allowed(k, patterns == null ? null : patterns.clone(), field);"), fresh("        fresh();\n        boolean b"), fresh("b = x.Adapter.allowed(k, patterns == null ? null : patterns.clone(), field);")];
         assert!(calls.windows(2).all(|w| w[0] < w[1]), "{java}");
         assert!(java.contains("Class<?> ea = null;\n        try { a = before.x.Adapter") && java.contains("catch (Throwable t) { ea = t.getClass(); }") && java.contains("catch (Throwable t) { eb = t.getClass(); }"), "{java}");
-        assert!(java.contains("return previous && name.indexOf(\"before.\") == 0 ? name.substring(7) : name;") && java.contains("return named(a, true).equals(named(b, false)) && same(a.getSuperclass(), b.getSuperclass());"), "{java}");
+        assert!(java.contains("return previous && name.indexOf(\"before.\") == 0 ? name.substring(7) : name;") && java.contains("return named(a, true).equals(name) && !apart(name) && same(a.getSuperclass(), b.getSuperclass());") && java.contains("static boolean apart(String name) {\n        return false;"), "{java}");
         assert!(java.contains("return ea == null ? eb == null && a == b : eb != null && same(ea, eb);"), "{java}");
-        let text = source("x.A", "name", &names[..1], &params[..1], &Type::Object("java/lang/String".into()), None);
-        assert!(!text.contains("meantToChange") && text.contains("(a == null ? b == null : a.equals(b))"), "{text}");
-        let nothing = source("x.A", "run", &names[..1], &params[..1], &Type::Void, None);
+        let text = source("x.A", "name", &names[..1], &params[..1], &Type::Object("java/lang/String".into()), None, &["x.E".into()]);
+        assert!(!text.contains("meantToChange") && text.contains("(a == null ? b == null : a.equals(b))") && text.contains("return name.equals(\"x.E\");"), "{text}");
+        let nothing = source("x.A", "run", &names[..1], &params[..1], &Type::Void, None, &[]);
         assert!(nothing.contains("try { before.x.A.run(k); }") && nothing.contains("return ea == null ? eb == null && true : eb != null && same(ea, eb);"), "{nothing}");
     }
 

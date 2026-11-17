@@ -62,7 +62,8 @@
 //!   `getResourceBundle()`: null, since nothing gave it a bundle ([`PUBLISHING_ASSUMPTION`]); and `Logger.log(record)`:
 //!   `NullPointerException` for null, and for a record whose class is confined to itself ([`Engine::confined_record`])
 //!   a normal return, under [`PUBLISHING_ASSUMPTION`]: the default handler writes it to `System.err` and swallows what
-//!   its formatting throws. Formatting calls the record's getters, a subclass's overrides included, so a record of a
+//!   its formatting throws, and each number field the record's own classes declare, on any object of them, holds any
+//!   value afterwards ([`Engine::formatted`]), since a getter may have written it. Formatting calls the record's getters, a subclass's overrides included, so a record of a
 //!   class that could write elsewhere from one of them stays the JDK call. A level, a handler, a filter or a bundle
 //!   set on a Logger is a call of it no model takes, so a check that sets one stops there.
 //! - `new ArrayList()`: the JDK's no-argument constructor only sets the list's own fields, so the object is made
@@ -312,6 +313,11 @@ impl Engine<'_> {
                 }
                 self.assumed.insert(LOGGING_ASSUMPTION.to_string());
                 self.assumed.insert(PUBLISHING_ASSUMPTION.to_string());
+                // The formatting ran the getters, which may have written the number fields of the record's own
+                // classes, on this record or another the caller holds: each such field now holds any value.
+                if let Err(stop) = self.formatted(path, &class) {
+                    return Some(Err(stop));
+                }
             }
             _ => return None,
         }
@@ -319,14 +325,45 @@ impl Engine<'_> {
         Some(Ok(None))
     }
 
+    /// What logging a record of `class` (a [`Engine::confined_record`]) leaves: every object of the classes from
+    /// `class` down to `LogRecord` (the record, or another the getters reach) holds any value in each number field
+    /// those classes declare, since a getter the formatting called may have written it. Nothing else changes: those
+    /// classes write no other field, no static and no array element.
+    fn formatted(&mut self, path: &mut Path, class: &str) -> Result<(), Stop> {
+        let chain: Vec<String> = std::iter::once(class.to_string()).chain(self.cp.superclasses(class)).take_while(|c| c != LOG_RECORD).collect();
+        let mut fields = Vec::new();
+        for c in &chain {
+            let Ok(Some(cf)) = self.cp.bytecode(c) else { return unsupported(&format!("no class {c}")) };
+            fields.extend(cf.fields.iter().filter(|f| !f.is_static()).map(|f| (c.clone(), f.name.clone(), f.descriptor.clone())));
+        }
+        for o in 0..path.objects.len() {
+            let held = path.objects[o].class.clone();
+            for (owner, name, descriptor) in &fields {
+                if !self.cp.is_subtype(&held, owner) {
+                    continue;
+                }
+                let key = self.field_key(path, o, owner, name, descriptor)?;
+                let value = if descriptor == "J" { Val::J(self.b.fresh(64)) } else { Val::I(self.b.fresh(32)) };
+                path.objects[o].fields.insert(key, value);
+            }
+        }
+        Ok(())
+    }
+
     /// Whether what the default handler calls on a record of `class` when it formats it (its getters, which a
-    /// subclass may override) can do nothing a check observes: the class is `LogRecord`, or an application class
-    /// below it each of whose classes down from `LogRecord` has, in its methods other than its constructors and
-    /// initializer (which the engine runs itself), no write of a static field or an array element, no
-    /// `invokedynamic` and no native method, reads only final static fields, writes only fields of those classes,
-    /// and calls only methods of those classes, of `LogRecord`, `Object`, `String` and `StackTraceElement`, and a
+    /// subclass may override) can do nothing a check observes beyond what [`Engine::formatted`] makes of it: the
+    /// class is `LogRecord`, or an application class below it each of whose classes down from `LogRecord` has, in
+    /// its methods other than its constructors and initializer (which the engine runs itself), no write of a static
+    /// field or an array element, no `athrow`, no `invokedynamic` and no native method, reads only final static
+    /// fields, writes only number fields (`int`, `boolean`, `byte`, `char`, `short`, `long`) of those classes, and
+    /// calls only methods of those classes, of `LogRecord`, `Object`, `String` and `StackTraceElement`, and a
     /// `Throwable`'s constructors and getters. Spring's `LocationResolvingLogRecord` is such a class: it finds the
     /// caller in a new `Throwable`'s stack trace and keeps it in its own fields.
+    ///
+    /// The handler catches `Exception` around the formatting, and what else can leave a getter is an `Error` the
+    /// engine does not model or a `Throwable` an `athrow` throws, which is why there is none. A field the getters
+    /// write is one the caller may read after `log` (a record it holds), which is why each is any value afterwards
+    /// and only number fields are taken: a reference written there would be any object.
     pub(super) fn confined_record(&self, class: &str) -> bool {
         use crate::classfile::Insn;
         let chain: Vec<String> = std::iter::once(class.to_string()).chain(self.cp.superclasses(class)).take_while(|c| c != LOG_RECORD).collect();
@@ -347,11 +384,11 @@ impl Engine<'_> {
                 let Some(code) = &m.code else { return true };
                 let Ok(insns) = code.instructions() else { return false };
                 insns.into_iter().all(|(_, insn)| match insn {
-                    Insn::PutStatic(_) | Insn::ArrayStore(_) | Insn::InvokeDynamic(_) => false,
+                    Insn::PutStatic(_) | Insn::ArrayStore(_) | Insn::InvokeDynamic(_) | Insn::AThrow => false,
                     Insn::GetStatic(i) => cf.pool.member(i).is_ok_and(|f| {
                         self.cp.bytecode(&f.owner).ok().flatten().and_then(|owner| owner.field(&f.name).map(|d| d.is_static() && d.is_final())).unwrap_or(false)
                     }),
-                    Insn::PutField(i) => cf.pool.member(i).is_ok_and(|f| chain.iter().any(|c| *c == f.owner)),
+                    Insn::PutField(i) => cf.pool.member(i).is_ok_and(|f| chain.iter().any(|c| *c == f.owner) && matches!(f.descriptor.as_str(), "I" | "Z" | "B" | "C" | "S" | "J")),
                     Insn::InvokeVirtual(i) | Insn::InvokeSpecial(i) | Insn::InvokeStatic(i) | Insn::InvokeInterface(i) => cf.pool.member(i).is_ok_and(|m| allowed(&m.owner, &m.name)),
                     _ => true,
                 })

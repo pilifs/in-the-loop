@@ -12,26 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.021Z",
-  "ended": "2026-11-17T16:29:52.050Z",
-  "duration_seconds": 12781,
+  "ended": "2026-11-17T16:53:50.967Z",
+  "duration_seconds": 14220,
   "stats": {
     "turns": 26,
-    "api_calls": 335,
-    "tool_calls": 334,
+    "api_calls": 379,
+    "tool_calls": 379,
     "tool_errors": 4,
     "compactions": 5,
     "peak_context_tokens": 244847,
     "usage": {
-      "input_tokens": 672,
-      "output_tokens": 298576,
-      "cache_read_input_tokens": 40033526,
-      "cache_creation_input_tokens": 900780
+      "input_tokens": 762,
+      "output_tokens": 336971,
+      "cache_read_input_tokens": 45464836,
+      "cache_creation_input_tokens": 984775
     }
   },
   "tools": {
-    "Bash": 324,
+    "Bash": 368,
     "Edit": 7,
-    "Write": 3
+    "Write": 3,
+    "ToolSearch": 1
   },
   "files_touched": [
     "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
@@ -115,24 +116,24 @@
     {
       "index": 5,
       "started": "2026-11-17T16:26:25.312Z",
-      "ended": "2026-11-17T16:29:52.050Z",
+      "ended": "2026-11-17T16:53:50.967Z",
       "turns": 4,
-      "api_calls": 17,
+      "api_calls": 61,
       "usage": {
-        "input_tokens": 34,
-        "output_tokens": 7952,
-        "cache_read_input_tokens": 993729,
-        "cache_creation_input_tokens": 63918
+        "input_tokens": 124,
+        "output_tokens": 46347,
+        "cache_read_input_tokens": 6425039,
+        "cache_creation_input_tokens": 147913
       },
-      "peak_context_tokens": 77191
+      "peak_context_tokens": 161186
     }
   ],
   "log": {
-    "sha256": "ead8e28575e05eb0ba6cebc7020a937be38829f3070e13b2cc34d2460895314f",
-    "bytes": 9599478,
-    "lines": 3081,
-    "gzip_bytes": 1660108,
-    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/ead8e28575e05eb0ba6cebc7020a937be38829f3070e13b2cc34d2460895314f.jsonl.gz"
+    "sha256": "8026afd239d466a9a3185bb713b604a030b2247358b75659f8d6e3559ccf4b33",
+    "bytes": 10551194,
+    "lines": 3447,
+    "gzip_bytes": 1800948,
+    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/8026afd239d466a9a3185bb713b604a030b2247358b75659f8d6e3559ccf4b33.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -383,6 +384,14 @@
       "summary": "Merge the challenge stream's countermodels of the logging model and of the pair's exceptions into the preservation stream",
       "body": "Takes lqvlvwsm (inbox I006 to I008: the rule-countermodels fixtures, among them lg for the logging model's confined record, and the wrong-implementation controls of 287 and 307) and pklttqzw (I009: the thrown-pair countermodels marked, messaged, coded and wrapped). The conflicts were in generated or appended files: 289's and 290's notes (both sides' notes kept), lib/tests/costs.json (rows merged by test, then test_costs.py estimate; lint agrees), and the trace pages (sync.py regenerate). validate_example.py passes for 289 and 290. The fixes the two items ask for come next.",
       "log_sha256": "ead8e28575e05eb0ba6cebc7020a937be38829f3070e13b2cc34d2460895314f"
+    },
+    {
+      "change_id": "lqkwokqqmsvxkytspkoumstnkstkzlrt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A logged record's getters may write its number fields and may not throw a Throwable, and the pair of versions tells apart two exception classes whose interfaces differ",
+      "body": "Inbox I006 and I009, from the challenge stream. The checker's model of java.util.logging (bmc/runtime.rs) took Logger.log(record) of a 'confined' LogRecord subclass to change nothing. But the default handler's formatting calls the record's getters, which could write a field of a record the caller holds, or throw a Throwable that its catch (Exception) lets out. The confinement scan now refuses athrow and any field write but a number field's. After log, every such field of the record's own classes holds any value. Spring's LocationResolvingLogRecord writes only a boolean and still passes, and 287's trial at bound 8 still verifies through it. The lg test from lib/tests/fixtures/rule-countermodels is in rule_countermodels.rs and passes: seen is a violation, escaped a gap.\n\nThe pair of versions (pairing.rs) compared an exception by its class's name and its superclasses' names. It now also compares the interfaces each class implements, transitively, in the class files when the pair is written: a copy whose interfaces differ from its twin's is named in the generated apart(), so marked (tests/fixtures/thrown-pair-countermodels) is refuted. The message, the cause and an exception's own fields are not compared. That limit is stated in the outcome's note, the module and lib/README.md, since the brief asks for exception classes compared exactly and expects 307 established, where a JVM's NullPointerException messages for a null password differ between getBytes(String) and getBytes(Charset). The README's test is in thrown_pair_countermodels.rs and passes, with messaged and coded proved only under that note. Capped probes: 289 and 290 still verify at their frozen bounds, and apart() is empty for 287, 289 and 290. test_costs.py run --changed, the pairing test files and the default run (54 of 54) pass.",
+      "log_sha256": "8026afd239d466a9a3185bb713b604a030b2247358b75659f8d6e3559ccf4b33"
     }
   ],
   "logs": {
@@ -396,6 +405,12 @@
       "bytes": 6724018,
       "lines": 2188,
       "gzip_bytes": 1143410,
+      "url": null
+    },
+    "8026afd239d466a9a3185bb713b604a030b2247358b75659f8d6e3559ccf4b33": {
+      "bytes": 10551194,
+      "lines": 3447,
+      "gzip_bytes": 1800948,
       "url": null
     },
     "a47cab4adf6d544cb78ceb6d8d743562c004fb828269e2a8c94efee80a13d6de": {

@@ -58,3 +58,33 @@ fn each_handler_tells_the_versions_apart_on_a_jvm() {
     assert_eq!(alone(old), "marked=retried | messaged=argument negative | coded=code 403 | wrapped=argument inside | based=argument bad");
     assert_eq!(alone(new), "marked=escaped app.Marked | messaged=argument too long | coded=code 404 | wrapped=escaped java.lang.RuntimeException | based=escaped app.Based");
 }
+
+/// The checker's side: a caller's handler tells each pair of versions apart when each runs alone (the test above), so
+/// a proof that they agree is false, but for what the pair states it does not compare. `marked` (an interface) and
+/// `based` (a superclass's superclass) are what `catch`, `instanceof` and a cast see of an exception's class, and are
+/// compared. `wrapped` (the cause) stops at a gap. `messaged` (the message) and `coded` (an own field) are outside
+/// the pair's reading of "the same exception", one class: the brief's claims of 287 and 307 mean that reading, since
+/// a JVM's message for the `NullPointerException` it raises names the method the null met, and 307's two versions
+/// call `getBytes` with two different descriptors. So those two may be proved, and then the outcome's note says what
+/// was not compared.
+#[test]
+fn the_pair_does_not_prove_two_versions_agree_whose_exceptions_a_handler_tells_apart() {
+    jvmcontract::tool_tier!();
+    use jvmcontract::{equivalence, Engine, Verdict};
+    let Some((old, new)) = classes() else { return };
+    let mut wrong = Vec::new();
+    for name in ["marked", "messaged", "coded", "wrapped", "based"] {
+        let mut o = equivalence::Options::new(old, new, &format!("app.Entry#{name}"));
+        o.engine = Engine::Native;
+        o.jbmc = "/nonexistent/jbmc".into();
+        o.assume = Some("k >= 0 && k < 4".into());
+        o.work = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("thrown-pair-countermodels").join(name));
+        let out = equivalence::run(&o).unwrap();
+        eprintln!("--- {name}: {:?}\n{}", out.verdict, out.output);
+        let stated = out.output.contains("an exception's message, cause and own fields are not compared");
+        if out.verdict == Verdict::Verified && !(matches!(name, "messaged" | "coded") && stated) {
+            wrong.push(name);
+        }
+    }
+    assert!(wrong.is_empty(), "proved to agree, though a caller's handler tells the versions apart by what the pair compares or without saying what it does not: {wrong:?}");
+}
