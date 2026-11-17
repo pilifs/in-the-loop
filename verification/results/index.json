@@ -2,6 +2,44 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261117-181750-example-286-protected-state-tasks-at-the",
+      "title": "Example 286 protected-state tasks at the frozen bound through the bean wrapper's stand-in: the refutation on 5.3.18, and where the fixed task stops",
+      "status": "failed",
+      "summary": "failed: 1 failed, 1 passed step(s) in 10.6s, peak 114.2 MiB (estimated 15m00s, 4.0 GiB); 6 output file(s) changed",
+      "attention": [
+        "step 1 (vulnerable-protected-state-mutation at the frozen bound 8 (5.3.18): the refutation) exited 1, expected 0",
+        "step 1 (vulnerable-protected-state-mutation at the frozen bound 8 (5.3.18): the refutation) was held back 5.8s by its 1-CPU quota in 5.4s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 2 (fixed-protected-state-mutation at the frozen bound 8 (5.3.19): where it stops) was held back 5.2s by its 1-CPU quota in 5.2s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "286"
+        ],
+        "paths": [
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/stand-ins/org/springframework/beans/ProtectedBeanStandIn.java",
+          "lib/src/stand_in.rs",
+          "lib/models/java/util/lists/ArrayList.java"
+        ]
+      },
+      "sourceCommit": "1585d7e03c274112dc00d564e847b58de2257c0b",
+      "finishedAt": "2026-11-17T18:21:54+00:00",
+      "wallSeconds": 10.6,
+      "peakMemoryBytes": 119721984,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 900.0,
+        "notes": "the inline probe of the vulnerable step at bound 8 took 63 s in under 4 GB, the lemma's proof included; the fixed step stops at its gap within minutes; each stand-in sampler runs about 2 s"
+      },
+      "host": "vm-1",
+      "result": "20261117-181750-example-286-protected-state-tasks-at-the/result.json"
+    },
+    {
       "id": "20261117-180758-example-287-preservation-at-the-frozen-b",
       "title": "Example 287 preservation at the frozen bound 80, the two releases' bcrypt loops tied and their summaries taken over",
       "status": "failed",
