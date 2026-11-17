@@ -12,31 +12,32 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:50.868Z",
-  "ended": "2026-11-17T14:03:30.248Z",
-  "duration_seconds": 3999,
+  "ended": "2026-11-17T14:11:49.128Z",
+  "duration_seconds": 4498,
   "stats": {
-    "turns": 25,
-    "api_calls": 242,
-    "tool_calls": 238,
-    "tool_errors": 4,
-    "compactions": 4,
-    "peak_context_tokens": 157884,
+    "turns": 30,
+    "api_calls": 272,
+    "tool_calls": 269,
+    "tool_errors": 5,
+    "compactions": 5,
+    "peak_context_tokens": 161880,
     "usage": {
-      "input_tokens": 492,
-      "output_tokens": 136769,
-      "cache_read_input_tokens": 21416544,
-      "cache_creation_input_tokens": 550483
+      "input_tokens": 552,
+      "output_tokens": 154471,
+      "cache_read_input_tokens": 23741053,
+      "cache_creation_input_tokens": 640034
     }
   },
   "tools": {
-    "Bash": 230,
-    "Edit": 3,
+    "Bash": 257,
+    "Edit": 5,
+    "Read": 3,
     "Write": 2,
     "Monitor": 1,
-    "Read": 1,
     "ToolSearch": 1
   },
   "files_touched": [
+    "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/target.json",
     "examples/tools/beside_route.py",
     "examples/tools/test_beside_route.py",
     "llm-dlc/loops/domain-advances-evidence.md"
@@ -101,24 +102,38 @@
     {
       "index": 4,
       "started": "2026-11-17T13:47:59.022Z",
-      "ended": "2026-11-17T14:03:30.248Z",
-      "turns": 4,
-      "api_calls": 72,
+      "ended": "2026-11-17T14:04:17.071Z",
+      "turns": 5,
+      "api_calls": 76,
       "usage": {
-        "input_tokens": 144,
-        "output_tokens": 39521,
-        "cache_read_input_tokens": 7262224,
-        "cache_creation_input_tokens": 144611
+        "input_tokens": 152,
+        "output_tokens": 41386,
+        "cache_read_input_tokens": 7899163,
+        "cache_creation_input_tokens": 148607
       },
-      "peak_context_tokens": 157884
+      "peak_context_tokens": 161880
+    },
+    {
+      "index": 5,
+      "started": "2026-11-17T14:05:14.822Z",
+      "ended": "2026-11-17T14:11:49.128Z",
+      "turns": 4,
+      "api_calls": 26,
+      "usage": {
+        "input_tokens": 52,
+        "output_tokens": 15837,
+        "cache_read_input_tokens": 1687570,
+        "cache_creation_input_tokens": 85555
+      },
+      "peak_context_tokens": 98828
     }
   ],
   "log": {
-    "sha256": "170f4ee1b342f5af2dc37922ebbfa2bb9b08ae2d5b12009a3ee882d23afb6c94",
-    "bytes": 6507488,
-    "lines": 2198,
-    "gzip_bytes": 1125013,
-    "path": "llm-dlc/traces/7ece8184-b148-4351-92d8-d634606b823e/logs/170f4ee1b342f5af2dc37922ebbfa2bb9b08ae2d5b12009a3ee882d23afb6c94.jsonl.gz"
+    "sha256": "9d5ad02c63d36046cd3e76f8335d23aa0132368d0a6062eb48795c354a53cc0e",
+    "bytes": 7499622,
+    "lines": 2503,
+    "gzip_bytes": 1320944,
+    "path": "llm-dlc/traces/7ece8184-b148-4351-92d8-d634606b823e/logs/9d5ad02c63d36046cd3e76f8335d23aa0132368d0a6062eb48795c354a53cc0e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -177,6 +192,14 @@
       "summary": "A preservation proof is non-vacuous only with a witness outside the allowed change, and accept.py asks the outcome to say so",
       "body": "Step 4 of the evidence stream's brief. A regression check made as a property of the pair of versions (lib/src/pairing.rs, the route of examples 289's and 290's preservation) proves RegressionPair.agree, which returns true on an input inside the allowed change without calling either version. The property check's vacuity probe asked only for an input of the assumption, so it called a proof non-vacuous even when every assumed input lay inside the change. The control: example 289's preservation through its own driver, with only --unchanged-unless replaced by true, was verified and non-vacuous (a capped 5 s probe). 290's recorded witness, servlets=[], lies inside its own allowed change.\n\nThe fix: a verified pair with an allowed change is checked once more, meantToChange against result over the same assumption, domain and class path. A proof makes the statement vacuous; a witness, replayed as any is, becomes the statement's, with the new stated.vacuity.outside naming the change. The regression harness's own probe sets outside too, since that harness returns before the probe on an input in the scope. Now the true control is vacuous, 289 with its own change is non-vacuous at servletPath=\"\" (0.3 s more) and 290 at servlets=[0] (capped probes, recorded in both examples' notes). accept.py refuses an establishment of a task with an allowed change whose outcome does not say its witness lies outside that change (unbound) or names another (fail). So 289's and 290's accepted preservation answers are refused until a rerun on a checker with this fix; the other six stay accepted.\n\nVerified: lib/tests/pairing.rs a_pairs_proof_is_vacuous_when_the_allowed_change_covers_every_assumed_input (tool tier, fails without the fix with NonVacuous), three new cases in examples/tools/test_accept.py, the 289 checkout test now expecting preservation refused for this reason; test_costs.py run --changed 8 of 8, estimate, tag and lint clean; validate_example.py 289 and 290 pass. lib/README.md describes the check.\n\nThe brief's 'Where it stands' paragraph is out of date: 289's and 290's preservation are refused now, and every accepted answer of 289 and 290 carries no limit about unrecorded artifacts.",
       "log_sha256": "170f4ee1b342f5af2dc37922ebbfa2bb9b08ae2d5b12009a3ee882d23afb6c94"
+    },
+    {
+      "change_id": "mzllzmkqlsyqqwqsznvswmoptrunxmru",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 288's fixed-security is recorded beside the route from the rerun that recorded what it ran, and accept.py accepts it with no limit",
+      "body": "Step 3 of the evidence stream's brief, 288's part. Its one verified task had never been recorded as an answer, because its driver recorded nothing of what it ran. Job 20261117-133148-example-288-fixed-security-again-with-th reran it unchanged at the frozen bound through the shared driver module. It passed in 20m39s: the simpleMatch lemma was proved by induction under the tightened lemma checks (106.0 s), and fixed-security was verified (1130.9 s, 4678 paths) and is not vacuous. The result folder and its work folder were taken from the default line as they are, with no merge. The task's besideRoute names the job; python3 examples/tools/accept.py 288 accepts it with all 13 checks ok and no limit, artifacts included. 288's notes record this, and its verdict label now names this answer. The two refutations and preservation stay undecided at the frozen bound (VF-031).\n\nProgress also answers inbox item I006 before observed.rs changes. Slot and Object do not change. Observed gains one record of what it was observed on: the class bytes, the class path, the initialized classes, the JDK, the locale and the properties read. An observation is taken only where the bytes the check loads are the bound ones. Step 5 needs the challenge stream's mqkqvvmw, which is on neither this line nor the default one, so the next cycle merges it here first.",
+      "log_sha256": "9d5ad02c63d36046cd3e76f8335d23aa0132368d0a6062eb48795c354a53cc0e"
     }
   ],
   "logs": {
@@ -208,6 +231,12 @@
       "bytes": 3510273,
       "lines": 1148,
       "gzip_bytes": 618406,
+      "url": null
+    },
+    "9d5ad02c63d36046cd3e76f8335d23aa0132368d0a6062eb48795c354a53cc0e": {
+      "bytes": 7499622,
+      "lines": 2503,
+      "gzip_bytes": 1320944,
       "url": null
     },
     "d5cd4bb1f46a722e14a6d5131d8d6bfe827722ab624a8a511873b254dbfe5c37": {

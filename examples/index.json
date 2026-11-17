@@ -7700,7 +7700,7 @@
       "severity": "low",
       "changeKind": "bug-fix",
       "verdict": null,
-      "verdictLabel": "not run: replay ✗ on 6.1.13 at the 14 locale triggers, ✓ on 6.1.14, ✗ on the mutant at 8; no proof verdict yet",
+      "verdictLabel": "replay ✗ on 6.1.13 at the 14 locale triggers, ✓ on 6.1.14, ✗ on the mutant at 8; ✓ the decision claim established on 6.1.14 at the frozen bound (through its adapter entry, beside the route, with the simpleMatch lemma proved by induction); the two refutations and preservation not decided at that bound (VF-031)",
       "vacuous": false,
       "snapshot": null,
       "existingTestsPassed": null,
@@ -7717,7 +7717,8 @@
         "Revisions checked against upstream on 2026-11-14, and again on 2026-11-16 for the setup: the release tags resolved to commits, each fix commit and its parent read from github.com, and the fix an ancestor of the fixed release and not of the vulnerable one.",
         "Proof boundary (research): a locale-invariance theorem is separate from case-insensitive protection. The 2022 parent may satisfy the former while violating the latter; never call it generally secure.",
         "Feasibility (research): requires honest String/Locale models; a solver stub treating all toLowerCase calls identically would conceal this CVE. The mutant is the check on that: it differs from 6.1.14 only where the field is lower-cased under tr-TR or az-AZ.",
-        "The simpleMatch lemma under the tightened lemma checks (2026-11-17). The checker's rule for a lemma (prove --lemmas) now refuses a lemma whose method or expressions read a static field that is not final, a non-final field or array cell of an object that was there before the call, or the default locale, and holds a method proved by induction to the write checks. Job 20261117-122546-examples-286-and-288-the-simplematch-lem reran fixed-security at the frozen bound with the lemma under those checks (into verification/.work-288/tightened): the lemma is still proved by induction on pattern.length() (108.5 s), and fixed-security is verified with it (1037.5 s, 4678 paths), so the earlier result did not rest on the hole and nothing was refused."
+        "The simpleMatch lemma under the tightened lemma checks (2026-11-17). The checker's rule for a lemma (prove --lemmas) now refuses a lemma whose method or expressions read a static field that is not final, a non-final field or array cell of an object that was there before the call, or the default locale, and holds a method proved by induction to the write checks. Job 20261117-122546-examples-286-and-288-the-simplematch-lem reran fixed-security at the frozen bound with the lemma under those checks (into verification/.work-288/tightened): the lemma is still proved by induction on pattern.length() (108.5 s), and fixed-security is verified with it (1037.5 s, 4678 paths), so the earlier result did not rest on the hole and nothing was refused.",
+        "Recorded beside the route (2026-11-17, the evidence stream). fixed-security had one verified run (job 20261116-201436-example-288-fixed-security-through-the-a) whose driver recorded nothing of what it ran, so it was never recorded as an answer. Job 20261117-133148-example-288-fixed-security-again-with-th reran it unchanged at the frozen bound through the shared driver module (examples/tools/beside_route.py), into verification/.work-288/recorded: passed in 20m39s at 1.4 GiB, the simpleMatch lemma proved by induction on pattern.length() in 106.0 s under the tightened lemma checks, and fixed-security verified in 1130.9 s (4678 paths, 8753 solver calls), not vacuous at allowed(configLocale=4, bindLocale=4, allowedPatterns=null, disallowedPatterns=null, field=\"\"). The task's besideRoute names that job, and python3 examples/tools/accept.py 288 accepts it with no limit: the outcome is the one the step wrote, its expressions the frozen claim's, at bound 8 with strict gaps, complete, and the 4 JARs, the adapter sources and the claim the driver recorded (evidence.json) the ones target.json pins, the verifier's binary recorded (sha256 14673718…). What it rests on besides the checker's own assumptions: the simpleMatch lemma, proved beside it at the same bounds and applied at its calls within the lemma's ASCII domain. The verdict label now names this one answer; vulnerable-security, mutant-security and preservation are still undecided at the frozen bound (VF-031)."
       ],
       "source": "https://github.com/spring-projects/spring-framework/commit/23656aebc6c7d0f9faff1080981eb4d55eff296c",
       "target": {
@@ -7784,7 +7785,7 @@
           "verifier-interface"
         ],
         "historical": {
-          "verdictLabel": "not run: replay ✗ on 6.1.13 at the 14 locale triggers, ✓ on 6.1.14, ✗ on the mutant at 8; no proof verdict yet",
+          "verdictLabel": "replay ✗ on 6.1.13 at the 14 locale triggers, ✓ on 6.1.14, ✗ on the mutant at 8; ✓ the decision claim established on 6.1.14 at the frozen bound (through its adapter entry, beside the route, with the simpleMatch lemma proved by induction); the two refutations and preservation not decided at that bound (VF-031)",
           "source": "https://github.com/spring-projects/spring-framework/commit/23656aebc6c7d0f9faff1080981eb4d55eff296c",
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },

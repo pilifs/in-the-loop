@@ -1,0 +1,311 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261117-133148-example-288-fixed-security-again-with-th",
+  "title": "Example 288: fixed-security again, with the driver's record of what it ran (evidence.json)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 20m39s, peak 1.4 GiB (estimated 25m00s, 4.0 GiB); 10 output file(s) changed; signals: jvmcontract:holds×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261117-133148-example-288-fixed-security-again-with-th.json",
+    "sha256": "406638cb254fd1555862783a392adb71c2f89d78b99c69702c7ebcb827b6d016",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261117-133148-example-288-fixed-security-again-with-th",
+      "title": "Example 288: fixed-security again, with the driver's record of what it ran (evidence.json)",
+      "description": "The evidence stream's acceptance check (examples/tools/accept.py) accepts an answer given beside the route only with no limit when the driver recorded what it ran: the JARs of the class path with their hashes, the adapter's sources and compiled classes, the claim file, the bound and the verifier's binary (evidence.json, written by accept.record). Every example's proofs/prove.py now does this through examples/tools/beside_route.py, and ends the run when the mutant's JAR is not the one the mutant replay's receipt records. Example 288's one verified task, fixed-security (job 20261116-201436-example-288-fixed-security-through-the-a), was never recorded as an answer beside the route: its driver recorded nothing of what it ran. This job reruns it unchanged at the frozen bound, with its simpleMatch lemma proved first under the checker's tightened lemma checks, into a work folder of its own (verification/.work-288/recorded). Its answer is recorded only if python3 examples/tools/accept.py 288 accepts it.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "B9",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "288"
+        ],
+        "paths": [
+          "examples/tools/beside_route.py",
+          "examples/tools/accept.py",
+          "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py"
+        ]
+      },
+      "expected": "exits 0: prove.py prints verified at the frozen bound; outcome.json and evidence.json come back",
+      "submitted": {
+        "at": "2026-11-17T13:31:48+00:00",
+        "session": "7ece8184-b148-4351-92d8-d634606b823e"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "patch",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "25m",
+        "timeout": "1h30m",
+        "notes": "the earlier job took 1182 s at 1.4 GiB; plus the release build of lib/ and the fetch of the pinned JARs"
+      },
+      "steps": [
+        {
+          "name": "fixed-security at the frozen bound",
+          "run": "python3 examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py fixed-security --timeout 3300 --work verification/.work-288/recorded",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/.work-288/recorded/fixed-security/outcome.json",
+        "verification/.work-288/recorded/fixed-security/evidence.json",
+        "verification/.work-288/recorded/fixed-security/work/harness",
+        "verification/.work-288/recorded/fixed-security/work/lemma-0/harness"
+      ]
+    }
+  },
+  "sourceCommit": "0835cfd01e0bdd7a8a58bd549fd5fec2f151ab1c",
+  "startedAt": "2026-11-17T13:32:29+00:00",
+  "finishedAt": "2026-11-17T13:57:10+00:00",
+  "wallSeconds": 1481.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1451051,
+    "workers": 10,
+    "cpus": 20.0,
+    "memoryBudgetBytes": 47244640256,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 5400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1500.0,
+    "notes": "the earlier job took 1182 s at 1.4 GiB; plus the release build of lib/ and the fetch of the pinned JARs"
+  },
+  "usage": {
+    "peakMemoryBytes": 1467281408,
+    "wallSeconds": 1239.6,
+    "cpuSeconds": 1239.7,
+    "memoryOfEstimate": 0.34,
+    "durationOfEstimate": 0.83
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 240.012,
+      "cpuSeconds": 239.792,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1896456192,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "b892f7899c81e8afc3e6d43af02f12dc9c9ccb18857f7120e3dd57b26b5a2839",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261117-133148-example-288-fixed-security-again-with-th/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 59s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "fixed-security at the frozen bound",
+      "run": "python3 examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py fixed-security --timeout 3300 --work verification/.work-288/recorded",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5400.0,
+      "cancelled": false,
+      "wallSeconds": 1239.578,
+      "cpuSeconds": 1239.692,
+      "cpuThrottledSeconds": 0.238,
+      "peakMemoryBytes": 1467281408,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-fixed-security-at-the-frozen-b.log",
+        "lines": 10,
+        "bytes": 3998,
+        "sha256": "8bfc48e8b8d6bfff01e9da935a23f7250591ddff4b0c1779701ce9bf1e5252a1",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 7,
+          "text": "✓ example288.adapter.LocaleDecisionAdapter#allowed satisfies `!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropert",
+          "groups": [
+            "example288.adapter.LocaleDecisionAdapter#allowed satisfies `!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(p).split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.CASE_INSENSITIVE | java.util.regex.Pattern.DOTALL).matcher(field).matches())` on every input where configLocale >= 0 && configLocale < 5 && bindLocale >= 0 && bindLocale < 5 && field != null && field.equals(org.springframework.beans.PropertyAccessorUtils.canonicalPropertyName(field)) && field.chars().allMatch(c -> c < 128) && (allowedPatterns == null || java.util.Arrays.stream(allowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) && (disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).allMatch(p -> p == null || p.chars().allMatch(c -> c < 128))) (jvmcontract's own checker (CaDiCaL): 1 properties proved over configLocale: int × bindLocale: int × allowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × disallowedPatterns: String[] of length ≤ 8, or null, each element a String of ≤ 8 code units of its own or null × field: String of ≤ 8 code units, not null; no two the same array in 1130.9 s; loops unwound 16 times with unwinding assertions)"
+          ]
+        }
+      ],
+      "tail": [
+        "lemma: note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "lemma: note: by induction on `pattern.length()`: a call simpleMatch makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with n",
+        "lemma: ✓ org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pat",
+        "lemma:   not vacuous: simpleMatch(pattern=\"\", str=\"\") reaches the calls",
+        "note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "note: lemma, proved above by induction on `pattern.length()` in 106.0 s: org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.re",
+        "✓ example288.adapter.LocaleDecisionAdapter#allowed satisfies `!result || disallowedPatterns == null || java.util.Arrays.stream(disallowedPatterns).noneMatch(p -> java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(org.springframework.beans.PropertyAccessorUtils.canonicalPropert",
+        "  not vacuous: allowed(configLocale=4, bindLocale=4, allowedPatterns=null, disallowedPatterns=null, field=\"\") reaches the calls",
+        "",
+        "verdict: verified (expected verified); paths 4678, solver calls 8753, variables 2532581; outcome in verification/.work-288/recorded/fixed-security/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-288/recorded/fixed-security/outcome.json",
+      "change": "added",
+      "bytes": 15551,
+      "sha256": "407dde8cdb320d1012d845d4edf31d886941e64ac76feff18611b915216204c2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-288/recorded/fixed-security/evidence.json",
+      "change": "added",
+      "bytes": 2414,
+      "sha256": "86159966dcae79934e16198483d99004864ea6370503ab06980dc559b117295d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-288/recorded/fixed-security/work/harness/PropertyClaim.class",
+      "change": "added",
+      "bytes": 4984,
+      "sha256": "9dde9e49190b66f9d41494806c0249ad61be0a8bc848dbe6fec3d2ae2f605c82",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-288/recorded/fixed-security/work/harness/PropertyClaim.java",
+      "change": "added",
+      "bytes": 2861,
+      "sha256": "532f4c3789d4116c3fade9af92a244638e7eb36b67baba3480bb12eee55cbf4c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-288/recorded/fixed-security/work/harness/PropertyHarness.class",
+      "change": "added",
+      "bytes": 1572,
+      "sha256": "eda3d354cab9dc65b491de5d44ea055eaeeb1fd1eca525d4b6eda4d1b6724f97",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-288/recorded/fixed-security/work/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 2453,
+      "sha256": "e6b2ce9661e60f0b2af3a7563cbb4f2edcf0a04887b4308d746510b72d8c7f19",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-288/recorded/fixed-security/work/lemma-0/harness/PropertyClaim.class",
+      "change": "added",
+      "bytes": 3329,
+      "sha256": "dd19f598a369c4dbbd170bc2788bda8cb0b06b8f201cb31f4aa639465ca12a3f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-288/recorded/fixed-security/work/lemma-0/harness/PropertyClaim.java",
+      "change": "added",
+      "bytes": 2095,
+      "sha256": "dfc4b8f66b21a89869a9906f05fff50385acfea8b4c6afad5c5b3121e129e809",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-288/recorded/fixed-security/work/lemma-0/harness/PropertyHarness.class",
+      "change": "added",
+      "bytes": 1530,
+      "sha256": "3613a8b4bb95bea890a928303c52d4472158516a159a5dfd3b15cc9a4308ab7e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-288/recorded/fixed-security/work/lemma-0/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1728,
+      "sha256": "a21211e1c1ef55147570fabd2af0353a34946da8d23a435fd86509b8bc2ae47f",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-17T13:57:23+00:00",
+    "applied": [
+      "verification/.work-288/recorded/fixed-security/outcome.json",
+      "verification/.work-288/recorded/fixed-security/evidence.json",
+      "verification/.work-288/recorded/fixed-security/work/harness/PropertyClaim.class",
+      "verification/.work-288/recorded/fixed-security/work/harness/PropertyClaim.java",
+      "verification/.work-288/recorded/fixed-security/work/harness/PropertyHarness.class",
+      "verification/.work-288/recorded/fixed-security/work/harness/PropertyHarness.java",
+      "verification/.work-288/recorded/fixed-security/work/lemma-0/harness/PropertyClaim.class",
+      "verification/.work-288/recorded/fixed-security/work/lemma-0/harness/PropertyClaim.java",
+      "verification/.work-288/recorded/fixed-security/work/lemma-0/harness/PropertyHarness.class",
+      "verification/.work-288/recorded/fixed-security/work/lemma-0/harness/PropertyHarness.java"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "78d61eac5020f98d4be95dcfd3045225c9847cb5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/78d61eac5020f98d4be95dcfd3045225c9847cb5/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

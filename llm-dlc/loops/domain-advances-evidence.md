@@ -192,6 +192,30 @@ Don't change `verification/pipeline.py`.
   is here, so that it is tested against what the generator writes. Sent to the preservation stream's inbox.
 - Next: step 5 (observed initialization, with I004); the records and `accept.py` for 286, 287 and 288 when their jobs
   are back (still pending, not started); the rerun of 289's and 290's preservation once this line and `zmvkptqz` meet.
+- 2026-11-17, cycle 6. **Step 3, 288's part, done.** `20261117-133148-…-288-…` passed (20m39s, 1.4 GiB, under its 25 min
+  estimate): the simpleMatch lemma proved by induction (106.0 s), `fixed-security` verified (1130.9 s, 4678 paths), not
+  vacuous. Its result folder and `verification/.work-288/recorded` came from the default line as they are (`jj restore`
+  from `vyspnsorlxnr`). The task now has a `besideRoute` naming that job, and `accept.py 288` accepts it with no limit,
+  every check ok (13), `artifacts` among them; 288's notes say so and its verdict label names this one answer, the other
+  three still undecided at the frozen bound (VF-031). Step 3 still waits on 286's and 287's reruns (pending, not
+  started) and on the 289/290 preservation rerun.
+- Step 5 needs `mqkqvvmw` (the challenge stream's fixtures, `lib/tests/observed_countermodels.rs` and
+  `ClassPath::refused`), which is on neither this line nor the default one: the next cycle merges it here first.
+- Repeated work measured (step 7): none.
+- Inbox: `domain-advances-evidence-I006` (say what the binding changes in `Slot`, `Object` and the observation's
+  identity before changing `observed.rs`): answered here and by an item to `domain-advances-state`, before any change.
+  `Slot` and `Object` do not change: the state stream adds held kinds as new `Object` variants (an empty
+  `ConcurrentHashMap`, a bean class's property descriptors), and the binding never reads inside them. `Observed` gains
+  one record of what it was observed on, written by the observer on its line as `"on": {...}`: the class file's sha256
+  and the class path entry it came from; the class path, in order, with each entry's sha256; the classes initialized
+  while it was observed, each with its class file's sha256; the JDK (`java.version`, `java.vendor`, `java.home`'s
+  release); the default locale (all three categories); and the system properties read during the initialization, with
+  the value each had (or none). Identity: an observation stays keyed by the class's internal name, and the check takes
+  it only where the bytes it loads for that class are the bound ones; any mismatch or missing record ends the run by
+  name. A held object the state stream observes for reflection binds to its class's bytes the same way, through the
+  same record.
+- Next: merge `mqkqvvmw` onto this line, then step 5 (the binding, I004's test, the countermodel); 286's and 287's
+  records when their jobs are back; the 289/290 preservation rerun once this line and `zmvkptqz` meet.
 - Status: working
 
 ## Loop settings
