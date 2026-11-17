@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "b74acbd8-95de-40d7-8793-79948e8c27ae",
-  "status": "open",
+  "status": "ended",
   "title": "Window 11 verification loop",
   "first_prompt": "<command-name>/model</command-name>\n            <command-message>model</command-message>\n            <command-args></command-args>",
   "client": {
@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T02:13:32.150Z",
-  "ended": "2026-11-17T02:44:34.803Z",
-  "duration_seconds": 1863,
+  "ended": "2026-11-17T02:53:42.154Z",
+  "duration_seconds": 2410,
   "stats": {
-    "turns": 9,
-    "api_calls": 74,
-    "tool_calls": 73,
+    "turns": 10,
+    "api_calls": 83,
+    "tool_calls": 80,
     "tool_errors": 1,
     "compactions": 0,
-    "peak_context_tokens": 177517,
+    "peak_context_tokens": 188578,
     "usage": {
-      "input_tokens": 158,
-      "output_tokens": 49846,
-      "cache_read_input_tokens": 8171904,
-      "cache_creation_input_tokens": 146165
+      "input_tokens": 178,
+      "output_tokens": 54381,
+      "cache_read_input_tokens": 9814709,
+      "cache_creation_input_tokens": 157097
     }
   },
   "tools": {
-    "Bash": 66,
+    "Bash": 73,
     "Edit": 4,
     "Write": 2,
     "ToolSearch": 1
@@ -43,24 +43,24 @@
     {
       "index": 0,
       "started": "2026-11-17T02:13:32.150Z",
-      "ended": "2026-11-17T02:44:34.803Z",
-      "turns": 9,
-      "api_calls": 74,
+      "ended": "2026-11-17T02:53:42.154Z",
+      "turns": 10,
+      "api_calls": 83,
       "usage": {
-        "input_tokens": 158,
-        "output_tokens": 49846,
-        "cache_read_input_tokens": 8171904,
-        "cache_creation_input_tokens": 146165
+        "input_tokens": 178,
+        "output_tokens": 54381,
+        "cache_read_input_tokens": 9814709,
+        "cache_creation_input_tokens": 157097
       },
-      "peak_context_tokens": 177517
+      "peak_context_tokens": 188578
     }
   ],
   "log": {
-    "sha256": "8a758c81b7e2381c1664737b0b6c6c57f3e2b913ba15b4eb6af7f4e8bcfb6812",
-    "bytes": 1697553,
-    "lines": 571,
-    "gzip_bytes": 306499,
-    "path": "llm-dlc/traces/b74acbd8-95de-40d7-8793-79948e8c27ae/logs/8a758c81b7e2381c1664737b0b6c6c57f3e2b913ba15b4eb6af7f4e8bcfb6812.jsonl.gz"
+    "sha256": "8d65665e5879a89b319b3b48c5a2e80b08caf9dcc3b3194e59065e9cd326490e",
+    "bytes": 1926712,
+    "lines": 639,
+    "gzip_bytes": 355045,
+    "path": "llm-dlc/traces/b74acbd8-95de-40d7-8793-79948e8c27ae/logs/8d65665e5879a89b319b3b48c5a2e80b08caf9dcc3b3194e59065e9cd326490e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -114,11 +114,19 @@
     },
     {
       "change_id": "pnysnkmzllotvlspxyqrnrpzvxnlypkz",
-      "commit_id": null,
+      "commit_id": "1ba6d2ed715c2904ed95251654c87de604d76406",
       "immutable": false,
       "summary": "The default test run runs inline again, never as a verification job, and a passed run is recorded for the push and release gates",
       "body": "The user decided to take the default run out of the verification pipeline: as a job it overlapped other runs in one cargo target directory (VF-034), was cut off with its runner at the Bash tool's 10-minute limit, and skipped the one-at-a-time lock when queued from a line that predated it. verification/default_tests.py (queue, step, supersede, bisect, the unread-file list, flaky counts) and its tests are removed, with verification/default-tests-unread.txt and the watcher's default-tests event.\n\nNew lib/tools/default_run.py: a whole default run (test_costs.py run) that passes records the git tree it tested, as jj snapshots the working copy, and only when no file changed during the run, in ~/.cache/in-the-loop/default-runs.jsonl. The record covers a commit of the same tree, or one differing only in traces, decisions and job records. sync.py push and release.py cut ask default_run.py gate --run, which runs the default run inline when no record covers @-; --skip-tests stays the user's alone. Every test_costs.py run holds a lock in the workspace's cargo target directory, so two runs in one workspace take turns.\n\nDocs follow: CLAUDE.md (Verification jobs exempts the default run; Tests says inline, the record and the gate; the tests: queued brief bullet is gone), runtime.md (merges run the default run inline, the watcher's default-tests row and the release gate), the prove-java-change skill, verification/README.md, lib/README.md, llm-dlc/README.md, brief-template.md (one inline test rule replaces the Inline/Queued policy, which also settles the mismatch left by the run-brief merge), validate_example.py's docstring, and a line in VF-034.",
       "log_sha256": "8a758c81b7e2381c1664737b0b6c6c57f3e2b913ba15b4eb6af7f4e8bcfb6812"
+    },
+    {
+      "change_id": "mxnsvkvwqoswsvumosrvquwnuwwuzlwl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record session traces",
+      "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
+      "log_sha256": "8d65665e5879a89b319b3b48c5a2e80b08caf9dcc3b3194e59065e9cd326490e"
     }
   ],
   "logs": {
@@ -138,7 +146,13 @@
       "bytes": 1697553,
       "lines": 571,
       "gzip_bytes": 306499,
-      "url": null
+      "url": "https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/8a758c81b7e2381c1664737b0b6c6c57f3e2b913ba15b4eb6af7f4e8bcfb6812.jsonl.gz"
+    },
+    "8d65665e5879a89b319b3b48c5a2e80b08caf9dcc3b3194e59065e9cd326490e": {
+      "bytes": 1926712,
+      "lines": 639,
+      "gzip_bytes": 355045,
+      "url": "https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/8d65665e5879a89b319b3b48c5a2e80b08caf9dcc3b3194e59065e9cd326490e.jsonl.gz"
     },
     "feb1181ae1ed5ed3aa4ec53f4fd0ed0d42ba14aebb4e9f5636905e9649fdf40b": {
       "bytes": 703050,
