@@ -95,3 +95,48 @@ fn a_stand_in_its_samples_do_not_bear_out_is_refused() {
         assert!(error.to_string().contains(said), "{stand_in}: {error}");
     }
 }
+
+/// The challenge stream's `sn` fixture (`tests/fixtures/stand-in-countermodels`), compiled once.
+fn sn_classes() -> Option<&'static Path> {
+    static OUT: OnceLock<Option<PathBuf>> = OnceLock::new();
+    OUT.get_or_init(|| {
+        if !has("javac") || !has("java") {
+            return None;
+        }
+        let sources = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/stand-in-countermodels/sn");
+        let out = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("stand-in-sn-classes");
+        let _ = std::fs::remove_dir_all(&out);
+        let files: Vec<PathBuf> = std::fs::read_dir(&sources).unwrap().map(|e| e.unwrap().path()).filter(|p| p.extension().is_some_and(|e| e == "java")).collect();
+        let status = Command::new("javac").args(["-g", "-parameters", "-proc:none", "-nowarn", "--release", "21", "-d"]).arg(&out).args(files).status().expect("javac runs");
+        assert!(status.success(), "the fixture compiles");
+        Some(out)
+    })
+    .as_deref()
+}
+
+/// A check that uses a lemma whose proof made a stand-in's call states the stand-in, or gives no proof
+/// (`domain-advances-state-I017`, the fixture's README): `sn.Use#viaLemma` calls the property writer only through the
+/// lemma `age.lemmas`, whose proof took `sn.NarrowStandIn`, a narrow sampler that never tries "Age", where a JVM gives
+/// 32. The check states what the lemma's proof rested on, under the lemma's name, in its statement and its text.
+#[test]
+fn a_check_through_a_lemma_states_the_stand_in_the_lemmas_proof_rested_on() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = sn_classes() else { return };
+    let dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/stand-in-countermodels");
+    let mut o = property::Options::new(&[classes.to_path_buf()], "sn.Use#viaLemma");
+    o.engine = Engine::Native;
+    o.jbmc = "/nonexistent/jbmc".into();
+    o.assume = Some("name.length() == 3 && name.charAt(0) != 'a'".into());
+    o.assert = Some("result == 0".into());
+    o.lemmas = Some(dir.join("age.lemmas"));
+    o.stand_ins = vec!["sn.NarrowStandIn".into()];
+    o.work = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("stand-ins").join("through-a-lemma"));
+    let out = property::run(&o).unwrap();
+    let named = out.stated.as_ref().map(|s| s.assumptions.iter().any(|a| a.text.contains("sn.NarrowStandIn.set stands in"))).unwrap_or(false);
+    assert!(out.verdict != Verdict::Verified || named, "proved through the lemma with no word of the stand-in: {}", out.output);
+    // It is proved (the stand-in is wrong, but sampled), and says so where a reader looks.
+    assert_eq!(out.verdict, Verdict::Verified, "{}", out.output);
+    let stated = out.stated.as_ref().expect("a statement");
+    assert!(stated.assumptions.iter().any(|a| a.text.contains("sn.NarrowStandIn.set stands in") && a.text.contains("what the proof of the lemma about sn.Use#ageAfter")), "{:?}", stated.assumptions);
+    assert!(out.output.contains("note: and so this check rests on: sn.NarrowStandIn.set stands in"), "{}", out.output);
+}

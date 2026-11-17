@@ -462,6 +462,20 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
   - **Job `20261117-222610-example-286-s-fixed-protected-state-task`**, each step with a work folder of its own:
     - the frozen claim at bound 8, expected to stop only at non-ASCII `toLowerCase()`;
     - the ASCII trial at bound 8, expected proved.
+- 2026-11-17, a soundness fix to lemmas proved through a stand-in (nothing of 286 decided; the frozen claim
+  unchanged). Inbox: `domain-advances-state-I017` taken, the README's first option.
+  - **The hole.** A check that used a lemma (or an effect contract) stated it as `proved` and nothing of what its
+    proof rested on. `sn.Use#viaLemma` was proved through a lemma whose proof took a narrow stand-in, with no word of
+    the stand-in, where a JVM gives 32.
+  - **The fix.** `property.rs`'s lemma loop now carries each lemma's and effect contract's engine, gap and contract
+    assumptions into the using check's statement, each marked "(what the proof of the lemma about X rested on)",
+    where the check's own run does not state it already. It also adds a text note.
+  - **Tests.**
+    - The fixture, its README and the JVM test are copied unchanged from `mnwtrnrp`.
+    - The README's test `a_check_through_a_lemma_states_the_stand_in_the_lemmas_proof_rested_on` is added to
+      `lib/tests/stand_in.rs`. It also requires the lemma's name and the text note.
+    - It fails with the carry-over switched off (by mutation).
+  - **The audit holds.** 286's `simpleMatch` lemma calls only String methods, so its statements lose nothing.
 - Next:
   - Step 5: the adversarial and honest beans beside `ProtectedBean`, in files of their own, and the
     application-level refutation through `displayName`. The adapter set and the stand-in sources stay as they are,

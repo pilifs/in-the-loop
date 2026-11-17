@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.005Z",
-  "ended": "2026-11-17T22:27:32.128Z",
-  "duration_seconds": 34241,
+  "ended": "2026-11-17T22:41:31.136Z",
+  "duration_seconds": 35080,
   "stats": {
     "turns": 130,
-    "api_calls": 1121,
-    "tool_calls": 1082,
+    "api_calls": 1140,
+    "tool_calls": 1101,
     "tool_errors": 11,
     "compactions": 19,
-    "peak_context_tokens": 252174,
+    "peak_context_tokens": 270181,
     "usage": {
-      "input_tokens": 2322,
-      "output_tokens": 853380,
-      "cache_read_input_tokens": 134016397,
-      "cache_creation_input_tokens": 2776025
+      "input_tokens": 2360,
+      "output_tokens": 863579,
+      "cache_read_input_tokens": 138917924,
+      "cache_creation_input_tokens": 2801874
     }
   },
   "tools": {
-    "Bash": 1027,
+    "Bash": 1046,
     "Read": 19,
     "Edit": 16,
     "Write": 11,
@@ -323,24 +323,24 @@
     {
       "index": 19,
       "started": "2026-11-17T21:12:40.495Z",
-      "ended": "2026-11-17T22:27:32.128Z",
+      "ended": "2026-11-17T22:41:31.136Z",
       "turns": 4,
-      "api_calls": 109,
+      "api_calls": 128,
       "usage": {
-        "input_tokens": 220,
-        "output_tokens": 85935,
-        "cache_read_input_tokens": 17261989,
-        "cache_creation_input_tokens": 231059
+        "input_tokens": 258,
+        "output_tokens": 96134,
+        "cache_read_input_tokens": 22163516,
+        "cache_creation_input_tokens": 256908
       },
-      "peak_context_tokens": 244332
+      "peak_context_tokens": 270181
     }
   ],
   "log": {
-    "sha256": "0164458bb4f28ceaa09bbc9fc53953a60695d3d9c30298083a24edb4a9c84281",
-    "bytes": 29550891,
-    "lines": 10432,
-    "gzip_bytes": 5182178,
-    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/0164458bb4f28ceaa09bbc9fc53953a60695d3d9c30298083a24edb4a9c84281.jsonl.gz"
+    "sha256": "442eb57b58cffc14fa10d14bdc94970e996703c9ec279708eba1be8b356f1f98",
+    "bytes": 29957680,
+    "lines": 10589,
+    "gzip_bytes": 5235430,
+    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/442eb57b58cffc14fa10d14bdc94970e996703c9ec279708eba1be8b356f1f98.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -527,6 +527,14 @@
       "summary": "Example 286's someMap mismatch path runs to its end: a JDK exception keeps its message and cause, and the fixed task is proved over ASCII names in a probe (verification pending)",
       "body": "The binding error's default message is ex.getLocalizedMessage(), which Spring's NestedRuntimeException builds from Throwable's message and the cause's toString(). The own checker (lib/src/bmc/throwables.rs) now keeps a JDK exception's message and cause from its (), (String) and (String, Throwable) constructors. It models Throwable's getMessage, getCause, getLocalizedMessage (an application's getMessage runs in its place) and toString where they are Throwable's own, plus getClass() of a JDK exception and the builder's StringBuilder(int) and append(Object). The concatenation cap rose from 64 to 256 code units, since TypeMismatchException's message is about 150.\n\nTwo false proofs closed. A JDK exception's constructor is now exact only where its bytecode just passes its arguments up to Throwable's (JDK 25's flight-recorder hook allowed): UnknownFormatConversionException(null) throws on a JVM and is now a gap. An application's fillInStackTrace() override, which the JVM runs inside the constructor, is refused by name. With no JDK image, jdk_facts lists the plain constructors, and a unit test checks that list against the image's bytecode.\n\nVerified: claims.Thrown (lib/tests/claims.rs) proves four statements a JVM confirms and leaves four a JVM breaks unverifiable by name. Each of five mutations makes a test fail. test_costs run --changed passes 23 of 23, and validate_example 286 passes. Capped probes: the fixed task (5.3.19) is proved at bound 7 with field restricted to someMap/SomeMap (113 s) and, through prove.py's new --assume-also trial, with field ASCII (108 s). The frozen claim's whole domain at bound 8 exceeds the probe cap.\n\nJob 20261117-222610-example-286-s-fixed-protected-state-task runs the frozen claim at bound 8 (expected to stop only at non-ASCII toLowerCase()) and the ASCII trial at bound 8 (expected proved), each in a work folder apart from the accepted refutation's. The brief's Next is updated: step 5's beans come next; the rest of the brief is current.",
       "log_sha256": "0164458bb4f28ceaa09bbc9fc53953a60695d3d9c30298083a24edb4a9c84281"
+    },
+    {
+      "change_id": "plplrxrtxspxtxvkwxollzozqlluyvsq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A check through a lemma states what the lemma's proof rested on: a stand-in, a model on request, an assumed gap or a contract",
+      "body": "Inbox domain-advances-state-I017 (the challenge stream's mnwtrnrp): a check that used a lemma or an effect contract stated it as proved and nothing of what its proof rested on, so sn.Use#viaLemma was proved through a lemma whose proof took a narrow stand-in, with no word of the stand-in, where a JVM gives 32. property.rs now carries each lemma's and effect contract's engine, gap and contract assumptions into the using check's statement, marked with the lemma's name, wherever the check's own run does not state them already, and adds a text note.\n\nVerified: the fixture, its README and JVM test are copied unchanged from mnwtrnrp. The README's checker-side test, a_check_through_a_lemma_states_the_stand_in_the_lemmas_proof_rested_on (lib/tests/stand_in.rs), passes, and fails with the carry-over switched off (by mutation). test_costs run --changed passes. Example 286 loses nothing, since its simpleMatch lemma calls only String methods. The brief is current.",
+      "log_sha256": "442eb57b58cffc14fa10d14bdc94970e996703c9ec279708eba1be8b356f1f98"
     }
   ],
   "logs": {
@@ -552,6 +560,12 @@
       "bytes": 9246295,
       "lines": 3183,
       "gzip_bytes": 1562533,
+      "url": null
+    },
+    "442eb57b58cffc14fa10d14bdc94970e996703c9ec279708eba1be8b356f1f98": {
+      "bytes": 29957680,
+      "lines": 10589,
+      "gzip_bytes": 5235430,
       "url": null
     },
     "53807bc5596cedef2fc46eb9978cfe1dad971c9909af66472c4d1e2c97a9736a": {

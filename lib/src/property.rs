@@ -701,6 +701,13 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // with its frame and as reading nothing that was there before the call, and then the stub that stands in for its
     // method's calls.
     let mut effects: Vec<(Declaration, crate::summary::EffectSignature, Vec<crate::bmc::EffectWrite>, u32, f64)> = Vec::new();
+    // What each one's proof rested on beyond the code (a stand-in, a model on request, an observed initializer, an
+    // assumed gap, a contract): the check that applies it rests on that too, and states it with the lemma's name.
+    let mut rested: Vec<crate::statement::Assumption> = Vec::new();
+    let rested_on = |proved: &Outcome, what: &str| -> Vec<crate::statement::Assumption> {
+        use crate::statement::AssumptionKind as K;
+        proved.stated.iter().flat_map(|s| &s.assumptions).filter(|a| matches!(a.kind, K::Library | K::Gap | K::Contract)).map(|a| crate::statement::Assumption { text: format!("{} (what the proof of {what} rested on)", a.text), ..a.clone() }).collect()
+    };
     if let Some(file) = &options.lemmas {
         if options.engine != crate::Engine::Native {
             return refuse(&mut out, line, "a lemma's summary is the tool's own checker's alone (--engine native): JBMC is not given one".into());
@@ -749,6 +756,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 if proved.verdict != Verdict::Verified {
                     return refuse(&mut out, line, format!("the effect contract of {} in {} is not proved ({}), and the check would rest on it", declaration.target, file.display(), proved.problem.unwrap_or_else(|| "it is refuted: see above".into())));
                 }
+                rested.extend(rested_on(&proved, &format!("the effect contract of {}", declaration.target)));
                 effects.push((declaration, signature, written, bound, seconds));
                 continue;
             }
@@ -789,6 +797,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             if proved.verdict != Verdict::Verified {
                 return refuse(&mut out, line, format!("the lemma about {} in {} is not proved ({}), and the check would rest on it", declaration.target, file.display(), proved.problem.unwrap_or_else(|| "it is refuted: see above".into())));
             }
+            rested.extend(rested_on(&proved, &format!("the lemma about {}", declaration.target)));
             lemmas.push((declaration, signature, bound, seconds));
         }
     }
@@ -901,6 +910,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             for (declaration, _, _, bound, seconds) in &effects {
                 let _ = writeln!(out, "note: effect contract, proved above in {seconds:.1} s: {}", effect_text(declaration, *bound));
             }
+            for a in &rested {
+                let _ = writeln!(out, "note: and so this check rests on: {}", a.text);
+            }
             h
         }
         Err(e) => return refuse(&mut out, line, format!("the property is not well-formed: {e}")),
@@ -931,7 +943,15 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 basis: crate::statement::Basis::Stated,
                 id: None,
             }))
-            .chain(crate::statement::checker_assumptions(last))
+            .chain({
+                // What a lemma's or an effect contract's proof rested on, where this check's own run does not say
+                // it already.
+                let own = crate::statement::checker_assumptions(last);
+                let carried: Vec<_> = rested.iter().filter(|r| !own.iter().any(|a| r.text.starts_with(&a.text))).cloned().collect();
+                let mut seen = std::collections::HashSet::new();
+                let carried: Vec<_> = carried.into_iter().filter(|r| seen.insert(r.text.clone())).collect();
+                own.into_iter().chain(carried)
+            })
             .chain(lemmas.iter().map(|(declaration, _, bound, _)| crate::statement::Assumption {
                 kind: crate::statement::AssumptionKind::Summary,
                 text: format!(
