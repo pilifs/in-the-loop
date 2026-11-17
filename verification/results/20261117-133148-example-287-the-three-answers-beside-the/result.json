@@ -1,0 +1,464 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261117-133148-example-287-the-three-answers-beside-the",
+  "title": "Example 287: the three answers beside the route again, with the driver's record of what it ran (evidence.json)",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 44m48s, peak 3.0 GiB (estimated 45m00s, 6.0 GiB); 18 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261117-133148-example-287-the-three-answers-beside-the.json",
+    "sha256": "ba4d2bb0a4e692cc59eba95bd9f735984baaa70e00d1fce179319da22a90b203",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261117-133148-example-287-the-three-answers-beside-the",
+      "title": "Example 287: the three answers beside the route again, with the driver's record of what it ran (evidence.json)",
+      "description": "The evidence stream's acceptance check (examples/tools/accept.py) accepts an answer given beside the route only with no limit when the driver recorded what it ran: the JARs of the class path with their hashes, the adapter's sources and compiled classes, the claim file, the bound and the verifier's binary (evidence.json, written by accept.record). Every example's proofs/prove.py now does this through examples/tools/beside_route.py, and ends the run when the mutant's JAR is not the one the mutant replay's receipt records. Example 287's mutant-security is refused today: the old driver built its mutant with another recipe (--release 17 without -g), so the mutant's JAR hash is in no record. This job reruns vulnerable-security, fixed-security and mutant-security unchanged at the frozen bound into a work folder of their own (verification/.work-287/recorded), so the earlier jobs' outputs stay as their results record them. When it has passed, each task's besideRoute.job is switched to it and python3 examples/tools/accept.py 287 must accept all three with no limit.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "B9",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "287"
+        ],
+        "paths": [
+          "examples/tools/beside_route.py",
+          "examples/tools/accept.py",
+          "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py"
+        ]
+      },
+      "expected": "exits 0: prove.py prints violation, verified and violation, each the expected one, at the frozen bound; each task's outcome.json and evidence.json come back",
+      "submitted": {
+        "at": "2026-11-17T13:31:48+00:00",
+        "session": "7ece8184-b148-4351-92d8-d634606b823e"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "patch",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "6G",
+        "duration": "45m",
+        "timeout": "3h",
+        "notes": "the earlier jobs took 820 s, 659 s and 823 s at 2.5 to 3.0 GiB peak; plus the release build of lib/ and the fetch of the pinned JARs"
+      },
+      "steps": [
+        {
+          "name": "vulnerable-security at the frozen bound",
+          "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py vulnerable-security --timeout 1800 --work verification/.work-287/recorded",
+          "cwd": "."
+        },
+        {
+          "name": "fixed-security at the frozen bound",
+          "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py fixed-security --timeout 1800 --work verification/.work-287/recorded",
+          "cwd": "."
+        },
+        {
+          "name": "mutant-security at the frozen bound",
+          "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py mutant-security --timeout 1800 --work verification/.work-287/recorded",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/.work-287/recorded/vulnerable-security/outcome.json",
+        "verification/.work-287/recorded/vulnerable-security/evidence.json",
+        "verification/.work-287/recorded/vulnerable-security/work/harness",
+        "verification/.work-287/recorded/fixed-security/outcome.json",
+        "verification/.work-287/recorded/fixed-security/evidence.json",
+        "verification/.work-287/recorded/fixed-security/work/harness",
+        "verification/.work-287/recorded/mutant-security/outcome.json",
+        "verification/.work-287/recorded/mutant-security/evidence.json",
+        "verification/.work-287/recorded/mutant-security/work/harness"
+      ]
+    }
+  },
+  "sourceCommit": "0835cfd01e0bdd7a8a58bd549fd5fec2f151ab1c",
+  "startedAt": "2026-11-17T13:32:29+00:00",
+  "finishedAt": "2026-11-17T14:21:19+00:00",
+  "wallSeconds": 2930.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1451051,
+    "workers": 10,
+    "cpus": 20.0,
+    "memoryBudgetBytes": 47244640256,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 10800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 2700.0,
+    "notes": "the earlier jobs took 820 s, 659 s and 823 s at 2.5 to 3.0 GiB peak; plus the release build of lib/ and the fetch of the pinned JARs"
+  },
+  "usage": {
+    "peakMemoryBytes": 3242553344,
+    "wallSeconds": 2688.3,
+    "cpuSeconds": 2688.7,
+    "memoryOfEstimate": 0.5,
+    "durationOfEstimate": 1.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "vulnerable-security at the frozen bound",
+      "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py vulnerable-security --timeout 1800 --work verification/.work-287/recorded",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 951.349,
+      "cpuSeconds": 951.065,
+      "cpuThrottledSeconds": 0.019,
+      "peakMemoryBytes": 3241361408,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-vulnerable-security-at-the-fro.log",
+        "lines": 9,
+        "bytes": 1652,
+        "sha256": "85a2594066f31bb2f93bb053870b55e069b81f31d4924c1458341fc92ba088c8",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 2,
+          "text": "✗ Property of example287.adapter.PasswordMatchAdapter#matches violated: `!result || candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length <= 72` where candidate != null && storedHash != null && storedHash.matches(\"\\\\$2[aby]\\\\$(0[4-9]|[12][0-9]|30)\\\\$[./A-Za-z0-9]{53}\"), and throws java.",
+          "groups": [
+            "Property of example287.adapter.PasswordMatchAdapter#matches violated: `!result || candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length <= 72` where candidate != null && storedHash != null && storedHash.matches(\"\\\\$2[aby]\\\\$(0[4-9]|[12][0-9]|30)\\\\$[./A-Za-z0-9]{53}\"), and throws java.lang.IllegalArgumentException when candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72:"
+          ]
+        }
+      ],
+      "tail": [
+        "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter candidate has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode,",
+        "✗ Property of example287.adapter.PasswordMatchAdapter#matches violated: `!result || candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length <= 72` where candidate != null && storedHash != null && storedHash.matches(\"\\\\$2[aby]\\\\$(0[4-9]|[12][0-9]|30)\\\\$[./A-Za-z0-9]{53}\"), and throws java.",
+        "  matches(candidate=\"\\u0000\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\", storedHash=\"$2a$04$.....................................................\")",
+        "    outcome: false",
+        "  (found by jvmcontract's own checker (CaDiCaL) in 948.5 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain candidate: String of ≤ 80 code units, not null × storedHash: String of ≤ 80 code units, not null)",
+        "",
+        "The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.",
+        "",
+        "verdict: violation (expected violation); paths 645, solver calls 5378, variables 13469249, loops covered by invariants 6; outcome in verification/.work-287/recorded/vulnerable-security/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "fixed-security at the frozen bound",
+      "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py fixed-security --timeout 1800 --work verification/.work-287/recorded",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 767.505,
+      "cpuSeconds": 767.653,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 3242553344,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-fixed-security-at-the-frozen-b.log",
+        "lines": 5,
+        "bytes": 1824,
+        "sha256": "50d833df2eb842ac888fca087a8d24523213ac82d6a6ebf1845b767d59b10481",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 2,
+          "text": "✓ example287.adapter.PasswordMatchAdapter#matches satisfies `!result || candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length <= 72` on every input where candidate != null && storedHash != null && storedHash.matches(\"\\\\$2[aby]\\\\$(0[4-9]|[12][0-9]|30)\\\\$[./A-Za-z0-9]{53}\"), and throws ja",
+          "groups": [
+            "example287.adapter.PasswordMatchAdapter#matches satisfies `!result || candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length <= 72` on every input where candidate != null && storedHash != null && storedHash.matches(\"\\\\$2[aby]\\\\$(0[4-9]|[12][0-9]|30)\\\\$[./A-Za-z0-9]{53}\"), and throws java.lang.IllegalArgumentException when candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72 (jvmcontract's own checker (CaDiCaL): 1 properties proved over candidate: String of ≤ 80 code units, not null × storedHash: String of ≤ 80 code units, not null in 746.0 s; loops unwound 16 times with unwinding assertions; 6 loops beyond the bound covered by invariants the checker found and proved (org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 130, org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw at pc 165, org.springframework.security.crypto.bcrypt.BCrypt.ekskey at pc 260, org.springframework.security.crypto.bcrypt.BCrypt.ekskey at pc 60, org.springframework.security.crypto.bcrypt.BCrypt.key at pc 151, org.springframework.security.crypto.bcrypt.BCrypt.key at pc 39))"
+          ]
+        }
+      ],
+      "tail": [
+        "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter candidate has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode,",
+        "✓ example287.adapter.PasswordMatchAdapter#matches satisfies `!result || candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length <= 72` on every input where candidate != null && storedHash != null && storedHash.matches(\"\\\\$2[aby]\\\\$(0[4-9]|[12][0-9]|30)\\\\$[./A-Za-z0-9]{53}\"), and throws ja",
+        "  not vacuous: matches(candidate=\"\\u7ea0\\ufea0\\u407c}}\\ufea0\\u06a0\\ufea0\\udbfd\\udea0\\u7ea0\", storedHash=\"$2a$09$ppppppppppppppppppppppppppppppppppppppppppppppppppppp\") reaches the calls",
+        "",
+        "verdict: verified (expected verified); paths 641, solver calls 4709, variables 13455455, loops covered by invariants 6; outcome in verification/.work-287/recorded/fixed-security/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "mutant-security at the frozen bound",
+      "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py mutant-security --timeout 1800 --work verification/.work-287/recorded",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 969.462,
+      "cpuSeconds": 969.969,
+      "cpuThrottledSeconds": 0.234,
+      "peakMemoryBytes": 2705838080,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-mutant-security-at-the-frozen.log",
+        "lines": 10,
+        "bytes": 1861,
+        "sha256": "64fa699528f83329ab16e7b38375a74b2b7674231b61541e93f66e17fe2123c9",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 3,
+          "text": "✗ Property of example287.adapter.PasswordMatchAdapter#matches violated: `!result || candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length <= 72` where candidate != null && storedHash != null && storedHash.matches(\"\\\\$2[aby]\\\\$(0[4-9]|[12][0-9]|30)\\\\$[./A-Za-z0-9]{53}\"), and throws java.",
+          "groups": [
+            "Property of example287.adapter.PasswordMatchAdapter#matches violated: `!result || candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length <= 72` where candidate != null && storedHash != null && storedHash.matches(\"\\\\$2[aby]\\\\$(0[4-9]|[12][0-9]|30)\\\\$[./A-Za-z0-9]{53}\"), and throws java.lang.IllegalArgumentException when candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72:"
+          ]
+        }
+      ],
+      "tail": [
+        "mutant: spring-security-crypto-6.3.8.jar with 1 class(es) of BCrypt recompiled (--release 17 -g -parameters), sha256 1d099295f80e4cc1b010eff67c0c8c20540aa67c534465702d62c491c9050edc: the JAR the mutant replay ran",
+        "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter candidate has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode,",
+        "✗ Property of example287.adapter.PasswordMatchAdapter#matches violated: `!result || candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length <= 72` where candidate != null && storedHash != null && storedHash.matches(\"\\\\$2[aby]\\\\$(0[4-9]|[12][0-9]|30)\\\\$[./A-Za-z0-9]{53}\"), and throws java.",
+        "  matches(candidate=\"\\u0000\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\\u0800\", storedHash=\"$2a$04$.....................................................\")",
+        "    outcome: false",
+        "  (found by jvmcontract's own checker (CaDiCaL) in 966.9 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain candidate: String of ≤ 80 code units, not null × storedHash: String of ≤ 80 code units, not null)",
+        "",
+        "The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.",
+        "",
+        "verdict: violation (expected violation); paths 646, solver calls 5910, variables 13468591, loops covered by invariants 6; outcome in verification/.work-287/recorded/mutant-security/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-287/recorded/vulnerable-security/outcome.json",
+      "change": "added",
+      "bytes": 15882,
+      "sha256": "4800a9ca7c748a4b86ea0b8c7a1d55e9167806b3a4e0968493bb7fc077189d6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/recorded/vulnerable-security/evidence.json",
+      "change": "added",
+      "bytes": 1465,
+      "sha256": "e2c9b29728a4bf796b96ba4937d475005ec845c921fe4b151b7dd19d37e6091b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/recorded/vulnerable-security/work/harness/PropertyClaim.class",
+      "change": "added",
+      "bytes": 1024,
+      "sha256": "505dddc30e48a87257f3aff21642e592ae5e37f36e6fc0bcbba48b24c853e13b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/recorded/vulnerable-security/work/harness/PropertyClaim.java",
+      "change": "added",
+      "bytes": 809,
+      "sha256": "b29f524b03c1946de62d20fd7829880b81d9b2848c715207feee22f01fbe1128",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/recorded/vulnerable-security/work/harness/PropertyHarness.class",
+      "change": "added",
+      "bytes": 1554,
+      "sha256": "8c319045af18031a696c689353aa493037baa71c177772deb721a819b2625fbe",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/recorded/vulnerable-security/work/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1989,
+      "sha256": "9e983bef3df94d102534c3a466567bd9db7cd98ac093d27baff877eebeda3d74",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/recorded/fixed-security/outcome.json",
+      "change": "added",
+      "bytes": 11461,
+      "sha256": "c81acb15c067f9f27b76f3110f247d9c33089dee96530a0ce50ed184e9aebc89",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/recorded/fixed-security/evidence.json",
+      "change": "added",
+      "bytes": 1445,
+      "sha256": "342acd6f933072dd6ba3ae4bd71157a550ec39f6b32e9376198641d74a0e357d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/recorded/fixed-security/work/harness/PropertyClaim.class",
+      "change": "added",
+      "bytes": 1024,
+      "sha256": "505dddc30e48a87257f3aff21642e592ae5e37f36e6fc0bcbba48b24c853e13b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/recorded/fixed-security/work/harness/PropertyClaim.java",
+      "change": "added",
+      "bytes": 809,
+      "sha256": "b29f524b03c1946de62d20fd7829880b81d9b2848c715207feee22f01fbe1128",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/recorded/fixed-security/work/harness/PropertyHarness.class",
+      "change": "added",
+      "bytes": 1554,
+      "sha256": "8c319045af18031a696c689353aa493037baa71c177772deb721a819b2625fbe",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/recorded/fixed-security/work/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1989,
+      "sha256": "9e983bef3df94d102534c3a466567bd9db7cd98ac093d27baff877eebeda3d74",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/recorded/mutant-security/outcome.json",
+      "change": "added",
+      "bytes": 15882,
+      "sha256": "1c950a61606ffc10bbf0a08041d6c09e6f7e6ff3cfb17e5116d264652cb037ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/recorded/mutant-security/evidence.json",
+      "change": "added",
+      "bytes": 1673,
+      "sha256": "628d9851ef4563a526ea8bb843bf17918f432c46741426e7d8153eae4158865a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/recorded/mutant-security/work/harness/PropertyClaim.class",
+      "change": "added",
+      "bytes": 1024,
+      "sha256": "505dddc30e48a87257f3aff21642e592ae5e37f36e6fc0bcbba48b24c853e13b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/recorded/mutant-security/work/harness/PropertyClaim.java",
+      "change": "added",
+      "bytes": 809,
+      "sha256": "b29f524b03c1946de62d20fd7829880b81d9b2848c715207feee22f01fbe1128",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/recorded/mutant-security/work/harness/PropertyHarness.class",
+      "change": "added",
+      "bytes": 1554,
+      "sha256": "8c319045af18031a696c689353aa493037baa71c177772deb721a819b2625fbe",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/recorded/mutant-security/work/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1989,
+      "sha256": "9e983bef3df94d102534c3a466567bd9db7cd98ac093d27baff877eebeda3d74",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-17T14:21:38+00:00",
+    "applied": [
+      "verification/.work-287/recorded/vulnerable-security/outcome.json",
+      "verification/.work-287/recorded/vulnerable-security/evidence.json",
+      "verification/.work-287/recorded/vulnerable-security/work/harness/PropertyClaim.class",
+      "verification/.work-287/recorded/vulnerable-security/work/harness/PropertyClaim.java",
+      "verification/.work-287/recorded/vulnerable-security/work/harness/PropertyHarness.class",
+      "verification/.work-287/recorded/vulnerable-security/work/harness/PropertyHarness.java",
+      "verification/.work-287/recorded/fixed-security/outcome.json",
+      "verification/.work-287/recorded/fixed-security/evidence.json",
+      "verification/.work-287/recorded/fixed-security/work/harness/PropertyClaim.class",
+      "verification/.work-287/recorded/fixed-security/work/harness/PropertyClaim.java",
+      "verification/.work-287/recorded/fixed-security/work/harness/PropertyHarness.class",
+      "verification/.work-287/recorded/fixed-security/work/harness/PropertyHarness.java",
+      "verification/.work-287/recorded/mutant-security/outcome.json",
+      "verification/.work-287/recorded/mutant-security/evidence.json",
+      "verification/.work-287/recorded/mutant-security/work/harness/PropertyClaim.class",
+      "verification/.work-287/recorded/mutant-security/work/harness/PropertyClaim.java",
+      "verification/.work-287/recorded/mutant-security/work/harness/PropertyHarness.class",
+      "verification/.work-287/recorded/mutant-security/work/harness/PropertyHarness.java"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "78d61eac5020f98d4be95dcfd3045225c9847cb5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/78d61eac5020f98d4be95dcfd3045225c9847cb5/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

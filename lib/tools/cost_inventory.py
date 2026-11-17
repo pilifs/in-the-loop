@@ -641,7 +641,10 @@ def python_runs(command: str, text: str, root: Path = ROOT, known: dict | None =
         for base in (root / cwd, root / cwd / "examples" / "tools"):
             if (base / mod).exists():
                 rest = ".".join(parts[k + 1:])
-                found.append((str((base / mod).resolve().relative_to(root.resolve())), rest or None))
+                try:
+                    found.append((str((base / mod).resolve().relative_to(root.resolve())), rest or None))
+                except ValueError:
+                    pass  # run in a folder outside the checkout (an export of another line): not this tree's test
                 break
     if len(set(found)) != 1:
         return []

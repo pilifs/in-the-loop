@@ -362,3 +362,48 @@ fn two_versions_summarize_a_loop_at_its_entry_alike_on_every_fork() {
     let native = o.search.as_ref().and_then(|s| s.native.as_ref()).expect("the own checker's account");
     assert!(native.loops.iter().any(|l| l.starts_with("app.nested.Mix.inner at pc")) && native.summaries_reused >= 2, "{native:?}");
 }
+
+/// The code two versions are taken to share, with nothing to prove, is the code a call runs: a class's initializer
+/// runs on the first use of the class, so it is part of it. Here the target and the empty method it calls are the
+/// same in both versions, and the class of that method sets, as it is initialized, the static field the target
+/// reads: 31 against 33. Before, the target was "identical in both versions; nothing to prove" (checked by hand,
+/// 2026-11-17); on a JVM `value(1)` is 31 against 33.
+#[test]
+fn a_class_initializer_the_code_runs_is_part_of_the_code_compared() {
+    jvmcontract::tool_tier!();
+    let source = |k: i32| {
+        vec![
+            ("app/late/Entry.java", "package app.late;\npublic final class Entry {\n    static int K = 31;\n    public static int value(int x) {\n        Late.touch();\n        return K * x;\n    }\n}\n".to_string()),
+            ("app/late/Late.java", format!("package app.late;\nfinal class Late {{\n    static {{ Entry.K = {k}; }}\n    static void touch() {{}}\n}}\n")),
+        ]
+    };
+    let old = compile("late-old", &source(31), &[]);
+    let new = compile("late-new", &source(33), &[]);
+    let mut o = equivalence::Options::new(&old, &new, "app.late.Entry#value");
+    o.jbmc = NO_JBMC.into();
+    o.work = Some(tmp("late"));
+    let o = equivalence::run(&o).unwrap();
+    assert!(o.verdict != Verdict::Verified && !o.output.contains("nothing to prove"), "{}", o.output);
+}
+
+/// The same for a JDK method the code reaches given an application object: `String.valueOf(Object)` calls the
+/// object's `toString`, whose private helper is what the versions change ("aa" against "a"). Before, the JDK's static
+/// method was taken to run no application code, and the target was "identical in both versions; nothing to prove"
+/// (checked by hand, 2026-11-17); on a JVM `shown(1)` is 2 against 1.
+#[test]
+fn a_jdk_method_given_an_application_object_leaves_the_code_compared_open() {
+    jvmcontract::tool_tier!();
+    let source = |text: &str| {
+        vec![
+            ("app/shown/Entry.java", "package app.shown;\npublic final class Entry {\n    public static int shown(int x) {\n        return String.valueOf(new Shown(x)).length();\n    }\n}\n".to_string()),
+            ("app/shown/Shown.java", format!("package app.shown;\nfinal class Shown {{\n    private final int x;\n    Shown(int x) {{ this.x = x; }}\n    @Override public String toString() {{ return text(); }}\n    private String text() {{ return x > 0 ? \"{text}\" : \"\"; }}\n}}\n")),
+        ]
+    };
+    let old = compile("shown-old", &source("aa"), &[]);
+    let new = compile("shown-new", &source("a"), &[]);
+    let mut o = equivalence::Options::new(&old, &new, "app.shown.Entry#shown");
+    o.jbmc = NO_JBMC.into();
+    o.work = Some(tmp("shown"));
+    let o = equivalence::run(&o).unwrap();
+    assert!(o.verdict != Verdict::Verified && !o.output.contains("nothing to prove"), "{}", o.output);
+}

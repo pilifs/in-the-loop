@@ -17,7 +17,10 @@
 //! than the rerun a counterexample through its stub usually brings ([`trivial`]).
 //!
 //! The same comparison of the two versions' bytecode settles a prior question: when the target and everything it
-//! reaches is identical in both versions, there is nothing to prove ([`Plan::identical`]).
+//! reaches is identical in both versions, there is nothing to prove ([`Plan::identical`]). What it reaches is the
+//! code a call may run: the application's methods, the initializers of the application classes it uses, and the
+//! JDK's code where no call into it may come back into the application ([`inert_jdk_call`]); where one may, the reach
+//! is open and nothing is identical. The tool's own checker's ties ([`fingerprint`]) rest on the same reach.
 //!
 //! **A changed helper proved equivalent** (`llm-dlc/loops/foundations-summaries.md`, S4) is shared the same way,
 //! narrowly. A callee both versions call whose code differs is a candidate when, in each version, it is a pure
@@ -282,7 +285,8 @@ struct Reach {
     instance_calls: BTreeSet<MemberRef>,
     /// Application classes whose static fields the methods read or write.
     statics: BTreeSet<String>,
-    /// Whether every call could be followed: false when a virtual call may reach an implementation not listed.
+    /// Whether every call could be followed: false when a virtual call may reach an implementation not listed, or a
+    /// call into the JDK may come back into application code ([`inert_jdk_call`]).
     closed: bool,
 }
 
@@ -318,6 +322,7 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
             match insn {
                 Insn::GetStatic(i) | Insn::PutStatic(i) => {
                     if let Ok(field) = class.pool.member(i) {
+                        out.initialized(cp, &field.owner, &mut work);
                         if cp.is_application(&field.owner) {
                             if let Ok(Some(owner)) = cp.application(&field.owner) {
                                 out.classes.insert(field.owner.clone(), owner);
@@ -326,9 +331,26 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
                         }
                     }
                 }
+                Insn::New(i) => {
+                    if let Ok(made) = class.pool.class_name(i) {
+                        out.initialized(cp, &made, &mut work);
+                    }
+                }
                 Insn::InvokeStatic(i) | Insn::InvokeSpecial(i) => {
                     let Ok(callee) = class.pool.member(i) else { continue };
+                    if matches!(insn, Insn::InvokeStatic(_)) {
+                        out.initialized(cp, &callee.owner, &mut work);
+                    }
                     if !followed(cp, &callee.owner) {
+                        // The JDK is the same in both versions, but a call into it may come back into the
+                        // application: through an argument, or, from a constructor of the application's own class,
+                        // through the object it makes.
+                        let on_self = callee.name == "<init>" && reference.name == "<init>" && class.super_class.as_deref() == Some(callee.owner.as_str()) && cp.is_application(&class.name);
+                        let call = if matches!(insn, Insn::InvokeStatic(_)) { JdkCall::Static } else { JdkCall::Special };
+                        let inert = JDK_INERT.contains(&(callee.owner.as_str(), callee.name.as_str(), callee.descriptor.as_str()));
+                        if (on_self && !inert) || !inert_jdk_call(cp, &callee, call, cp.is_application(&class.name)) {
+                            out.closed = false;
+                        }
                         continue;
                     }
                     if matches!(insn, Insn::InvokeStatic(_)) {
@@ -342,7 +364,13 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
                 Insn::InvokeVirtual(i) | Insn::InvokeInterface(i) => {
                     let Ok(callee) = class.pool.member(i) else { continue };
                     if !cp.is_application(&callee.owner) {
-                        continue; // the JDK is the same in both versions
+                        // The JDK is the same in both versions, but an interface or an overridable method may be
+                        // the application's, and so may an argument's methods the JDK calls.
+                        let call = if matches!(insn, Insn::InvokeInterface(_)) { JdkCall::Interface } else { JdkCall::Virtual };
+                        if !inert_jdk_call(cp, &callee, call, cp.is_application(&class.name)) {
+                            out.closed = false;
+                        }
+                        continue;
                     }
                     if matches!(insn, Insn::InvokeVirtual(_)) {
                         out.instance_call(cp, &callee, &declared);
@@ -359,12 +387,20 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
                     let Ok((bootstrap_index, _, _)) = class.pool.invoke_dynamic(i) else { continue };
                     let bootstraps = class.bootstrap_methods().unwrap_or_default();
                     let Some(bootstrap) = bootstraps.get(bootstrap_index as usize) else { continue };
-                    if bootstrap.method.member.owner == "java/lang/invoke/LambdaMetafactory" {
-                        match bootstrap.args.get(1) {
+                    match bootstrap.method.member.owner.as_str() {
+                        "java/lang/invoke/LambdaMetafactory" => match bootstrap.args.get(1) {
                             Some(BootstrapArg::MethodHandle(handle)) if cp.is_application(&handle.member.owner) => work.push_back(handle.member.clone()),
                             Some(BootstrapArg::MethodHandle(_)) => {}
                             _ => out.closed = false,
+                        },
+                        // A string concatenation calls `toString` of an object it is given.
+                        "java/lang/invoke/StringConcatFactory" => {
+                            let given = class.pool.invoke_dynamic(i).ok().and_then(|(_, _, d)| crate::classfile::MethodDescriptor::parse(d).ok());
+                            if !given.is_some_and(|d| d.params.iter().all(sealed_type)) {
+                                out.closed = false;
+                            }
                         }
+                        _ => out.closed = false,
                     }
                 }
                 _ => {}
@@ -375,6 +411,24 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
 }
 
 impl Reach {
+    /// Adds the initializers a use of `class` may run (an instance made, a static method called, a static field
+    /// read or written), its own and its superclasses', where it is the application's: they run as part of the code.
+    fn initialized(&mut self, cp: &ClassPath, class: &str, work: &mut VecDeque<MemberRef>) {
+        if !cp.is_application(class) {
+            return;
+        }
+        for c in std::iter::once(class.to_string()).chain(cp.superclasses(class)) {
+            if !cp.is_application(&c) {
+                continue;
+            }
+            if let Ok(Some(declared)) = cp.application(&c) {
+                if declared.method("<clinit>", "()V").is_some() {
+                    work.push_back(MemberRef::new(&c, "<clinit>", "()V"));
+                }
+            }
+        }
+    }
+
     /// Records a call of the instance method `callee` (as the instruction names it) from `caller`, as the class
     /// path resolves it.
     fn instance_call(&mut self, cp: &ClassPath, callee: &MemberRef, caller: &MemberRef) {
@@ -385,6 +439,92 @@ impl Reach {
         let declared = MemberRef::new(&class.name, &callee.name, &callee.descriptor);
         self.callers.entry(declared.clone()).or_default().insert(caller.clone());
         self.instance_calls.insert(declared);
+    }
+}
+
+/// JDK classes whose objects hold no reference an application class could be behind, and which no application
+/// class extends: a call on one runs no application code but through its arguments.
+const JDK_SEALED: &[&str] = &[
+    "java/lang/String",
+    "java/lang/StringBuilder",
+    "java/lang/StringBuffer",
+    "java/lang/Integer",
+    "java/lang/Long",
+    "java/lang/Short",
+    "java/lang/Byte",
+    "java/lang/Character",
+    "java/lang/Boolean",
+    "java/lang/Float",
+    "java/lang/Double",
+    "java/lang/Math",
+    "java/lang/StrictMath",
+];
+
+/// JDK methods given an object of any class that call none of its methods.
+const JDK_INERT: &[(&str, &str, &str)] = &[
+    ("java/lang/Object", "<init>", "()V"),
+    ("java/lang/Record", "<init>", "()V"),
+    ("java/lang/Enum", "<init>", "(Ljava/lang/String;I)V"),
+    ("java/lang/Object", "getClass", "()Ljava/lang/Class;"),
+    ("java/lang/System", "arraycopy", "(Ljava/lang/Object;ILjava/lang/Object;II)V"),
+    ("java/lang/System", "identityHashCode", "(Ljava/lang/Object;)I"),
+    ("java/lang/System", "nanoTime", "()J"),
+    ("java/lang/System", "currentTimeMillis", "()J"),
+    ("java/util/Objects", "requireNonNull", "(Ljava/lang/Object;)Ljava/lang/Object;"),
+    ("java/util/Objects", "requireNonNull", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;"),
+];
+
+/// How a call into the JDK is made.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum JdkCall {
+    Static,
+    /// `invokespecial`: a constructor of an object the code makes, or a superclass's method on the object itself.
+    Special,
+    Virtual,
+    Interface,
+}
+
+/// A value of this type is one no application class is behind: a primitive, one of [`JDK_SEALED`], or an array of
+/// those.
+fn sealed_type(t: &Type) -> bool {
+    match t {
+        Type::Object(c) => JDK_SEALED.contains(&c.as_str()),
+        Type::Array(e) => sealed_type(e),
+        _ => true,
+    }
+}
+
+/// Whether a call into JDK code the reach does not follow runs no application code, so that what the code reached
+/// does is the application code listed and the JDK's. The JDK is the same in both versions, but a call into it comes
+/// back into the application through an interface or an overridable method an application class may implement,
+/// through an argument whose methods the JDK calls (`toString`, `compareTo`, `applyAsInt`), and through a name the
+/// JDK looks a class up by (`Class.forName`, a charset's name, a service). So: a method of [`JDK_INERT`]; or every
+/// argument of a [`sealed_type`] and either a virtual call on a [`JDK_SEALED`] class or an array, or a static method
+/// or a constructor of one, or a constructor of a `java.lang` or `java.util` exception. From the JDK's own code (a
+/// class the proof analyses, [`JDK_SHAREABLE`]), every static method and constructor given such arguments too. A
+/// sealed class's `equals(Object)` compares by its own class first, and is inert too.
+fn inert_jdk_call(cp: &ClassPath, callee: &MemberRef, call: JdkCall, from_application: bool) -> bool {
+    let owner = callee.owner.as_str();
+    if JDK_INERT.contains(&(owner, callee.name.as_str(), callee.descriptor.as_str())) {
+        return true;
+    }
+    let sealed = JDK_SEALED.contains(&owner);
+    if call == JdkCall::Virtual && (sealed || owner.starts_with('[')) && callee.name == "equals" && callee.descriptor == "(Ljava/lang/Object;)Z" {
+        return true;
+    }
+    if owner == "java/lang/String" && callee.descriptor.contains("Ljava/lang/String;") && (callee.name == "getBytes" || (callee.name == "<init>" && callee.descriptor.starts_with("([B"))) {
+        return false; // a charset by name, which may be the application's
+    }
+    let Ok(descriptor) = crate::classfile::MethodDescriptor::parse(&callee.descriptor) else { return false };
+    if !descriptor.params.iter().all(sealed_type) {
+        return false;
+    }
+    match call {
+        JdkCall::Interface => false,
+        JdkCall::Virtual => sealed || owner.starts_with('['),
+        JdkCall::Special if callee.name != "<init>" => false,
+        JdkCall::Special => !from_application || sealed || ((owner.starts_with("java/lang/") || owner.starts_with("java/util/")) && cp.is_subtype(owner, "java/lang/Throwable")),
+        JdkCall::Static => !from_application || sealed || owner == "java/util/Arrays",
     }
 }
 

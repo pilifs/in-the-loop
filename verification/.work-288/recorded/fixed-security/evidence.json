@@ -1,0 +1,58 @@
+{
+ "schema": "beside-route-evidence/v1",
+ "example": "288",
+ "task": "fixed-security",
+ "claim": {
+  "file": "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/claims/disallowed-field-denied-in-every-locale.json",
+  "sha256": "659c626889c2e21d28ada7a8165905c28aa10ae7fe58ca36b8ff81664ed0deec"
+ },
+ "bound": {
+  "maxArrayLength": 8,
+  "unwind": null,
+  "trial": false
+ },
+ "artifacts": [
+  {
+   "revision": "fixed-release",
+   "name": "spring-context-6.1.14.jar",
+   "sha256": "da76b53f6a20f09b38052a300435f3245780d30deb46ec5dd75314cda06fd365"
+  },
+  {
+   "revision": "fixed-release",
+   "name": "spring-beans-6.1.14.jar",
+   "sha256": "6cad84b2a35a33a85a313a19445a43e5432b68e4f0bbf6c2bfc4a885a93dd727"
+  },
+  {
+   "revision": "fixed-release",
+   "name": "spring-core-6.1.14.jar",
+   "sha256": "e15a1179fc9642ffed13ca55e2863e2da524ccd1083b7c6f1b5cfd5733f3b2c5"
+  },
+  {
+   "revision": "fixed-release",
+   "name": "spring-jcl-6.1.14.jar",
+   "sha256": "9975c462bacee7a0c1aa79e55aa4faed02bd28dc78d1252404da87f5f7fb4cb1"
+  }
+ ],
+ "adapter": {
+  "sources": {
+   "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/replay/adapter/example288/adapter/ProtectedBean.java": "211bca0270d2fb799dfd7e63c944b285129c40de788c2a87ea68e666f113d17e",
+   "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/replay/adapter/example288/adapter/ExposedDataBinder.java": "8696eb20d7393c9334c8cf94bf8cfa49bc99b604c5400289f4b6767bd6f43b4e",
+   "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/replay/adapter/example288/adapter/LocaleDecisionAdapter.java": "10866c02457645567f34de80f600e39d4d548f9411f1d5e27889805f887a2ebf",
+   "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/replay/adapter/example288/adapter/BindingAdapter.java": "cb9a4bdfd41e71d774939d903b6a2edb800204a79028c226c6a4f57b960f26c9"
+  },
+  "classes": [
+   {
+    "folder": "adapter-fixed-release",
+    "sha256": "b8e20f2a56ada9b89326c7a24052fe510cbf28c94bd50017d8cbaf5f6b596239"
+   }
+  ]
+ },
+ "jvmcontract": {
+  "path": "jvmcontract",
+  "sha256": "14673718807c819f960679dfb66dc55d07b233b5195b4c835ff75cf4496baa8f"
+ },
+ "driver": {
+  "path": "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py",
+  "sha256": "f6ee1a84466edc322d5f97fa150f78d433177ef0c941d9ab4a93660b26030e76"
+ }
+}

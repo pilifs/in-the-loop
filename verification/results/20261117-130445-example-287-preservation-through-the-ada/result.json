@@ -1,0 +1,233 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261117-130445-example-287-preservation-through-the-ada",
+  "title": "Example 287 preservation through the adapter entry: where the frozen claim stops on today's checker",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 15.8s, peak 817.1 MiB (estimated 5m00s, 4.0 GiB); 4 output file(s) changed; signals: jvmcontract:fails×2",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261117-130445-example-287-preservation-through-the-ada.json",
+    "sha256": "ac12018a2826532940a07b4a39aa55a385f4bf623c7a94ba1bacf536dc83137c",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261117-130445-example-287-preservation-through-the-ada",
+      "title": "Example 287 preservation through the adapter entry: where the frozen claim stops on today's checker",
+      "description": "The first attempt of example 287's preservation task (claims/in-range-matching-preserved.json, frozen, bound 80) on the checker as it is, by proofs/prove.py preservation, which now has an equivalence branch in the shape of example 289's driver: jvmcontract equivalence of example287.adapter.PasswordMatchAdapter#matches with the adapter compiled against each release, 6.3.7 on its own pinned JARs (--before-classpath), --nullable candidate and storedHash as the claim says, and the task's allowed change as --unchanged-unless; native, strict gaps. The driver also writes evidence.json (accept.record). The last observation (2026-11-16) was a refusal before any proof, at the nullable String (VF-028) and at a String expression in the allowed change; both are gone, since a regression check with a nullable String is now made as a property of the pair (lib/src/pairing.rs), which javac compiles. A capped probe (13 s) found the next stop: RegressionPair#agree cannot be verified, outside the fragment: reads static field java.util.logging.Level.WARNING. That is BCryptPasswordEncoder.matches's logger.warn for a null, empty or non-bcrypt stored hash, through spring-jcl's JavaUtilLog.warn, which reads Level.WARNING and writes a LogRecord through java.util.logging; the checker models java.util.logging only below INFO (lib/src/bmc/runtime.rs). This job records that stop at the frozen bound as the preservation stream's first failure. It is no answer to the claim. The step passes when the driver ends unverified with exactly that refusal, and fails on a verdict or on any other stop.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "B9",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "287"
+        ],
+        "paths": [
+          "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
+          "lib/src/pairing.rs",
+          "lib/src/bmc/runtime.rs"
+        ]
+      },
+      "expected": "exits 0: prove.py ends 'verdict: unverifiable (expected verified)' and outcome.json's problem is 'outside the fragment: reads static field java.util.logging.Level.WARNING'",
+      "submitted": {
+        "at": "2026-11-17T13:04:45+00:00",
+        "session": "f28025bc-e46b-4a87-a943-bfb79dea5465"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "1h",
+        "notes": "one capped probe of this step took 13 s and stopped before any loop; plus the release build of lib/ and the fetch of the four pinned JARs"
+      },
+      "steps": [
+        {
+          "name": "preservation at the frozen bound, 80",
+          "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py preservation --timeout 1800 --work verification/.work-287/preservation-first-failure; status=$?; echo \"prove.py exit $status\"; test $status = 1 && python3 -c \"import json,sys; o=json.load(open('verification/.work-287/preservation-first-failure/preservation/outcome.json')); print(o['verdict'], '|', o['problem']); sys.exit(0 if o['verdict']=='unverifiable' and o['problem']=='outside the fragment: reads static field java.util.logging.Level.WARNING' else 1)\"",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/.work-287/preservation-first-failure/preservation/outcome.json",
+        "verification/.work-287/preservation-first-failure/preservation/evidence.json",
+        "verification/.work-287/preservation-first-failure/preservation/stderr.txt",
+        "verification/.work-287/preservation-first-failure/preservation/work/pair/RegressionPair.java"
+      ]
+    }
+  },
+  "sourceCommit": "170269edebfe68cd390443247ff6d89775686c04",
+  "startedAt": "2026-11-17T13:14:28+00:00",
+  "finishedAt": "2026-11-17T13:17:01+00:00",
+  "wallSeconds": 153.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1451051,
+    "workers": 10,
+    "cpus": 20.0,
+    "memoryBudgetBytes": 47244640256,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": "one capped probe of this step took 13 s and stopped before any loop; plus the release build of lib/ and the fetch of the four pinned JARs"
+  },
+  "usage": {
+    "peakMemoryBytes": 856838144,
+    "wallSeconds": 15.8,
+    "cpuSeconds": 16.7,
+    "memoryOfEstimate": 0.2,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "preservation at the frozen bound, 80",
+      "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py preservation --timeout 1800 --work verification/.work-287/preservation-first-failure; status=$?; echo \"prove.py exit $status\"; test $status = 1 && python3 -c \"import json,sys; o=json.load(open('verification/.work-287/preservation-first-failure/preservation/outcome.json')); print(o['verdict'], '|', o['problem']); sys.exit(0 if o['verdict']=='unverifiable' and o['problem']=='outside the fragment: reads static field java.util.logging.Level.WARNING' else 1)\"",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 15.837,
+      "cpuSeconds": 16.703,
+      "cpuThrottledSeconds": 0.223,
+      "peakMemoryBytes": 856838144,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-preservation-at-the-frozen-bou.log",
+        "lines": 7,
+        "bytes": 1313,
+        "sha256": "e8fd96ec33f35189ebf0f2d2e6194b561dcab4e1a5c4bad7b648fed1ab34f692",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 2
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 2,
+          "text": "✗ example287.adapter.PasswordMatchAdapter#matches cannot be verified as a property of the pair of versions (below)",
+          "groups": [
+            "example287.adapter.PasswordMatchAdapter#matches cannot be verified as a property of the pair of versions (below)"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 3,
+          "text": "✗ RegressionPair#agree cannot be verified: outside the fragment: reads static field java.util.logging.Level.WARNING",
+          "groups": [
+            "RegressionPair#agree cannot be verified: outside the fragment: reads static field java.util.logging.Level.WARNING"
+          ]
+        }
+      ],
+      "tail": [
+        "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-287/preservation-first-failure/preservation/work/pair/RegressionPair.java) calls the previous version's example287.adapter.PasswordMatchAdapter#matches, relocated under `before`, and then the new one's on t",
+        "✗ example287.adapter.PasswordMatchAdapter#matches cannot be verified as a property of the pair of versions (below)",
+        "✗ RegressionPair#agree cannot be verified: outside the fragment: reads static field java.util.logging.Level.WARNING",
+        "",
+        "verdict: unverifiable (expected verified); paths 2, solver calls 3, variables 780894, loops covered by invariants 0; outcome in verification/.work-287/preservation-first-failure/preservation/outcome.json",
+        "prove.py exit 1",
+        "unverifiable | outside the fragment: reads static field java.util.logging.Level.WARNING"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-287/preservation-first-failure/preservation/outcome.json",
+      "change": "added",
+      "bytes": 14241,
+      "sha256": "d83bdeba0e925650322fe3b9d396a4391c440260d3686bf27132b9c27fd3c0a1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/preservation-first-failure/preservation/evidence.json",
+      "change": "added",
+      "bytes": 1914,
+      "sha256": "8b8291a5abb05fcb50686ad8ae2fce4b123fd1d6ccdf6d41a934ae3359e75fca",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/preservation-first-failure/preservation/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/preservation-first-failure/preservation/work/pair/RegressionPair.java",
+      "change": "added",
+      "bytes": 2878,
+      "sha256": "404173cd64c574d32d914395f47efae287a20334937b86eaffa6b30e5882d195",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-17T13:17:15+00:00",
+    "applied": [
+      "verification/.work-287/preservation-first-failure/preservation/outcome.json",
+      "verification/.work-287/preservation-first-failure/preservation/evidence.json",
+      "verification/.work-287/preservation-first-failure/preservation/stderr.txt",
+      "verification/.work-287/preservation-first-failure/preservation/work/pair/RegressionPair.java"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "785699c33555dcfbc97faa1b9574c3cf4696cfef",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/785699c33555dcfbc97faa1b9574c3cf4696cfef/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

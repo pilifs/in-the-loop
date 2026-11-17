@@ -1,0 +1,423 @@
+--- /dev/null
++++ b/verification/.work-287/preservation-first-failure/preservation/outcome.json
+@@ -0,0 +1,333 @@
++{
++  "verdict": "unverifiable",
++  "target": "example287.adapter.PasswordMatchAdapter#matches",
++  "domain": "candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null",
++  "counterexample": null,
++  "proof": null,
++  "problem": "outside the fragment: reads static field java.util.logging.Level.WARNING",
++  "statement": "verification/.work-287/preservation-first-failure/preservation/work/pair/RegressionPair.java",
++  "findings": [
++    {
++      "rule_id": "unverifiable",
++      "message": "RegressionPair#agree cannot be verified: outside the fragment: reads static field java.util.logging.Level.WARNING",
++      "uri": null,
++      "line": 15
++    }
++  ],
++  "output": "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-287/preservation-first-failure/preservation/work/pair/RegressionPair.java) calls the previous version's example287.adapter.PasswordMatchAdapter#matches, relocated under `before`, and then the new one's on the same inputs, each on its own dependency closure, outside the inputs the change is meant to affect (`candidate != null && candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72`, read on the new version), each array argument a copy of its own, and returns whether they returned equal results or threw in the same category. The two share the JDK and its state (a default locale one sets is the other's to start under); the previous version runs first\n✗ example287.adapter.PasswordMatchAdapter#matches cannot be verified as a property of the pair of versions (below)\n✗ RegressionPair#agree cannot be verified: outside the fragment: reads static field java.util.logging.Level.WARNING\n",
++  "work": "verification/.work-287/preservation-first-failure/preservation/work",
++  "search": {
++    "engine": "native",
++    "checker": "jvmcontract's own checker (CaDiCaL)",
++    "seconds": 13.889758835,
++    "properties": 1,
++    "unwind": 16,
++    "max_array_length": 80,
++    "stage": null,
++    "native": {
++      "paths": 2,
++      "merges": 0,
++      "solver_calls": 3,
++      "solving_seconds": 13.069822412,
++      "gates_evaluated": 9413,
++      "evaluating_seconds": 0.000385673,
++      "divisions": 0,
++      "divisions_built": 0,
++      "multiplications": 0,
++      "multiplications_built": 0,
++      "variables": 780894,
++      "clauses": 2905095,
++      "seconds": 13.870864619,
++      "loading_seconds": 0.001703144,
++      "decoding_seconds": 0.000217295,
++      "encoding_seconds": 0.756914434,
++      "witness_seconds": 0.0,
++      "assumed": [
++        "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++      ]
++    },
++    "gap_mode": "strict",
++    "deadline_seconds": 1800.0,
++    "runs": [
++      {
++        "checker": "native",
++        "purpose": "proof",
++        "stage": null,
++        "budget_seconds": 1800.0,
++        "seconds": 13.871,
++        "ended": "no-verdict",
++        "ending": "no-verdict",
++        "phases": {
++          "loading": 0.002,
++          "lowering": 0.0,
++          "symbolic": 0.042,
++          "encoding": 0.757,
++          "solving": 13.07,
++          "trace": 0.0,
++          "other": 0.0
++        },
++        "formula": {
++          "variables": 780894,
++          "clauses": 2905095
++        }
++      }
++    ]
++  },
++  "stated": {
++    "kind": "property",
++    "domain": {
++      "parameters": [
++        {
++          "name": "candidate",
++          "type": "java.lang.String",
++          "kind": "value",
++          "null": true,
++          "max_length": 80
++        },
++        {
++          "name": "storedHash",
++          "type": "java.lang.String",
++          "kind": "value",
++          "null": true,
++          "max_length": 80
++        }
++      ],
++      "shared_arrays": false,
++      "text": "candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null"
++    },
++    "assumptions": [
++      {
++        "kind": "initialization",
++        "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++        "basis": "engine"
++      },
++      {
++        "kind": "library",
++        "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++        "basis": "engine"
++      }
++    ],
++    "observations": {
++      "result": "the result and the parameters, against result",
++      "exceptions": "none may be thrown"
++    },
++    "bounds": {
++      "unwind": 16,
++      "max_array_length": null,
++      "complete": false,
++      "max_value_length": 80
++    },
++    "models": {
++      "used": true,
++      "digest": "sha256:d3cb60427833314ef7f913b8bc6ef4ca4c79b923fd15a09a6224d63099b17d02",
++      "classes": 31,
++      "jdk": "25.0.5",
++      "values": [
++        {
++          "source": "jvmcontract String model 6: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++          "jdk": "25.0.5",
++          "level": "tested",
++          "leaves_out": [
++            "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++            "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++            "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++            "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
++          ]
++        }
++      ]
++    },
++    "checker": {
++      "engine": "native",
++      "name": "jvmcontract's own checker (CaDiCaL)",
++      "solver": "CaDiCaL 1.9.5 (bundled)",
++      "fallback": null,
++      "sat": {
++        "solver": "CaDiCaL",
++        "version": "1.9.5",
++        "source": "bundled by the Rust crate cadical 0.1.16",
++        "configuration": [
++          "CaDiCaL's default options",
++          "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++          "the run's deadline through CaDiCaL's terminate callback",
++          "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++        ]
++      }
++    },
++    "gap_mode": "strict",
++    "confirmation": null
++  },
++  "pair": {
++    "verdict": "unverifiable",
++    "target": "RegressionPair#agree",
++    "domain": "candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "outside the fragment: reads static field java.util.logging.Level.WARNING",
++    "statement": "verification/.work-287/preservation-first-failure/preservation/work/pair-work/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "RegressionPair#agree cannot be verified: outside the fragment: reads static field java.util.logging.Level.WARNING",
++        "uri": null,
++        "line": 15
++      }
++    ],
++    "output": "✗ RegressionPair#agree cannot be verified: outside the fragment: reads static field java.util.logging.Level.WARNING\n",
++    "work": "verification/.work-287/preservation-first-failure/preservation/work/pair-work",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 13.889758835,
++      "properties": 1,
++      "unwind": 16,
++      "max_array_length": 80,
++      "stage": null,
++      "native": {
++        "paths": 2,
++        "merges": 0,
++        "solver_calls": 3,
++        "solving_seconds": 13.069822412,
++        "gates_evaluated": 9413,
++        "evaluating_seconds": 0.000385673,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 780894,
++        "clauses": 2905095,
++        "seconds": 13.870864619,
++        "loading_seconds": 0.001703144,
++        "decoding_seconds": 0.000217295,
++        "encoding_seconds": 0.756914434,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 1800.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 1800.0,
++          "seconds": 13.871,
++          "ended": "no-verdict",
++          "ending": "no-verdict",
++          "phases": {
++            "loading": 0.002,
++            "lowering": 0.0,
++            "symbolic": 0.042,
++            "encoding": 0.757,
++            "solving": 13.07,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 780894,
++            "clauses": 2905095
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 13.901,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 13.871,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.028
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "candidate",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": true,
++            "max_length": 80
++          },
++          {
++            "name": "storedHash",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": true,
++            "max_length": 80
++          }
++        ],
++        "shared_arrays": false,
++        "text": "candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null"
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 16,
++        "max_array_length": null,
++        "complete": false,
++        "max_value_length": 80
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d3cb60427833314ef7f913b8bc6ef4ca4c79b923fd15a09a6224d63099b17d02",
++        "classes": 31,
++        "jdk": "25.0.5",
++        "values": [
++          {
++            "source": "jvmcontract String model 6: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++            "jdk": "25.0.5",
++            "level": "tested",
++            "leaves_out": [
++              "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++              "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++              "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++              "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
++            ]
++          }
++        ]
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++}
+--- /dev/null
++++ b/verification/.work-287/preservation-first-failure/preservation/evidence.json
+@@ -0,0 +1,59 @@
++{
++ "schema": "beside-route-evidence/v1",
++ "example": "287",
++ "task": "preservation",
++ "claim": {
++  "file": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/claims/in-range-matching-preserved.json",
++  "sha256": "0d5994f6284bc7f179b63d914eacf704bcae468242a4116ffa39a598f7491934"
++ },
++ "bound": {
++  "maxArrayLength": 80,
++  "unwind": null,
++  "trial": false
++ },
++ "artifacts": [
++  {
++   "revision": "vulnerable-release",
++   "name": "spring-security-crypto-6.3.7.jar",
++   "sha256": "fa517a6ebb30ec92a0d1cd5d9ab87bbcb119a1619caa63cf991373d3ac4a3226"
++  },
++  {
++   "revision": "vulnerable-release",
++   "name": "spring-jcl-6.1.17.jar",
++   "sha256": "a25f70775fe84885ebe69d7083b69ba6738d4a9842f5a48330e2d50e3db0bd3f"
++  },
++  {
++   "revision": "fixed-release",
++   "name": "spring-security-crypto-6.3.8.jar",
++   "sha256": "a38448c5aac161dee28887fbd59b617ed3577b8b26c710096c96e07799f01156"
++  },
++  {
++   "revision": "fixed-release",
++   "name": "spring-jcl-6.1.18.jar",
++   "sha256": "6c2617dc157ecaaac744fb7d14efa9389b6364e3eb2fd3e083b558c51ddf5247"
++  }
++ ],
++ "adapter": {
++  "sources": {
++   "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/replay/adapter/example287/adapter/PasswordMatchAdapter.java": "e662bf6e324a3c80fa565cf6a9e8b786e918ae015898ec67746ff1ddf482cf99"
++  },
++  "classes": [
++   {
++    "folder": "adapter-vulnerable-release",
++    "sha256": "0cf7efd6b37766b1afc38394a496ff735a17cb667fd83258598c6ff42ee568f9"
++   },
++   {
++    "folder": "adapter-fixed-release",
++    "sha256": "0cf7efd6b37766b1afc38394a496ff735a17cb667fd83258598c6ff42ee568f9"
++   }
++  ]
++ },
++ "jvmcontract": {
++  "path": "jvmcontract",
++  "sha256": "14673718807c819f960679dfb66dc55d07b233b5195b4c835ff75cf4496baa8f"
++ },
++ "driver": {
++  "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
++  "sha256": "d9db1ef6ddcc62c520fb145811dc91ebaab1afd09ace10c23493df7e353b295d"
++ }
++}
+--- /dev/null
++++ b/verification/.work-287/preservation-first-failure/preservation/work/pair/RegressionPair.java
+@@ -0,0 +1,22 @@
++/** Generated by jvmcontract: both versions of a method called on the same inputs, as one method that says whether they agree (lib/src/pairing.rs). */
++public final class RegressionPair {
++    private RegressionPair() {}
++
++    /** The inputs the change is meant to affect, read on the new version; an input on which the expression throws is not among them. */
++    static boolean meantToChange(java.lang.String candidate, java.lang.String storedHash) {
++        try {
++            return candidate != null && candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72;
++        } catch (Throwable t) {
++            return false;
++        }
++    }
++
++    public static boolean agree(java.lang.String candidate, java.lang.String storedHash) {
++        if (meantToChange(candidate, storedHash)) { return true; }
++        boolean a = false; int ea = 0;
++        try { a = before.example287.adapter.PasswordMatchAdapter.matches(candidate, storedHash); } catch (java.lang.NumberFormatException t) { ea = 1; } catch (java.lang.ArithmeticException t) { ea = 2; } catch (java.lang.NullPointerException t) { ea = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { ea = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { ea = 5; } catch (java.lang.IndexOutOfBoundsException t) { ea = 6; } catch (java.lang.NegativeArraySizeException t) { ea = 7; } catch (java.lang.ClassCastException t) { ea = 8; } catch (java.lang.IllegalStateException t) { ea = 9; } catch (java.lang.IllegalArgumentException t) { ea = 10; } catch (java.lang.UnsupportedOperationException t) { ea = 11; } catch (java.util.NoSuchElementException t) { ea = 12; } catch (java.util.ConcurrentModificationException t) { ea = 13; } catch (java.lang.RuntimeException t) { ea = 14; } catch (java.lang.Error t) { ea = 15; } catch (Throwable t) { ea = 16; }
++        boolean b = false; int eb = 0;
++        try { b = example287.adapter.PasswordMatchAdapter.matches(candidate, storedHash); } catch (java.lang.NumberFormatException t) { eb = 1; } catch (java.lang.ArithmeticException t) { eb = 2; } catch (java.lang.NullPointerException t) { eb = 3; } catch (java.lang.ArrayIndexOutOfBoundsException t) { eb = 4; } catch (java.lang.StringIndexOutOfBoundsException t) { eb = 5; } catch (java.lang.IndexOutOfBoundsException t) { eb = 6; } catch (java.lang.NegativeArraySizeException t) { eb = 7; } catch (java.lang.ClassCastException t) { eb = 8; } catch (java.lang.IllegalStateException t) { eb = 9; } catch (java.lang.IllegalArgumentException t) { eb = 10; } catch (java.lang.UnsupportedOperationException t) { eb = 11; } catch (java.util.NoSuchElementException t) { eb = 12; } catch (java.util.ConcurrentModificationException t) { eb = 13; } catch (java.lang.RuntimeException t) { eb = 14; } catch (java.lang.Error t) { eb = 15; } catch (Throwable t) { eb = 16; }
++        return ea == eb && (ea != 0 || a == b);
++    }
++}

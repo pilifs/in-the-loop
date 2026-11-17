@@ -1,0 +1,62 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-185623-examples-289-and-290-preservation-on-one",
+  "title": "Examples 289 and 290: preservation on one checker with the pair's and the evidence stream's fixes and the closed reach (inbox I011)",
+  "description": "Inbox item I011 to the preservation stream (llm-dlc/loops/domain-advances-preservation.md): rerun 289's and 290's preservation on a checker that has the preservation stream's pair of versions (each version from a fresh state, the scope on copies, exceptions compared by class, superclass chain and interfaces) and the evidence stream's checker and acceptance changes (merged from the default line at qrxtwtlo), so that accept.py can settle both under one statement. The checker also has inbox item I010's fix: the code shared.rs takes as identical, and the ties rest on, leaves out nothing a call into the JDK may run back in the application. Neither example's pair takes the identical-bytecode shortcut (both pass --before-classpath). Capped probes on this checker: 289 verified in 1373 paths, 290 in 573. 290's restated claim is not part of this (D023, the user's question): the frozen claim is what runs.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "289",
+      "290"
+    ],
+    "paths": [
+      "lib/src/pairing.rs",
+      "lib/src/shared.rs"
+    ]
+  },
+  "expected": "exits 0: both drivers print verdict: verified (expected verified) at the frozen bound, not a trial, each with a line 'outside the allowed change: ...'; each outcome.json (with stated.vacuity.outside), evidence.json and work/pair/RegressionPair.java come back",
+  "submitted": {
+    "at": "2026-11-17T18:56:23+00:00",
+    "session": "f28025bc-e46b-4a87-a943-bfb79dea5465"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "patch",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "10m",
+    "timeout": "1h",
+    "notes": "capped probes: 289 within 280 s, 290 seconds, under 4 GiB; plus the release build and the fetch of the pinned JARs"
+  },
+  "steps": [
+    {
+      "name": "289 preservation at the frozen bound, after the merge of the default line",
+      "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py preservation --timeout 1800 --work verification/.work-289/one-checker",
+      "cwd": "."
+    },
+    {
+      "name": "290 preservation at the frozen bound, after the merge of the default line",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py preservation --timeout 1800 --work verification/.work-290/one-checker",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/.work-289/one-checker/preservation/outcome.json",
+    "verification/.work-289/one-checker/preservation/evidence.json",
+    "verification/.work-289/one-checker/preservation/work/pair/RegressionPair.java",
+    "verification/.work-290/one-checker/preservation/outcome.json",
+    "verification/.work-290/one-checker/preservation/evidence.json",
+    "verification/.work-290/one-checker/preservation/work/pair/RegressionPair.java"
+  ]
+}

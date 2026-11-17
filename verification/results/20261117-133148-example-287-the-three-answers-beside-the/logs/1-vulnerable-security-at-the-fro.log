@@ -1,0 +1,9 @@
+note: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter candidate has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target
+✗ Property of example287.adapter.PasswordMatchAdapter#matches violated: `!result || candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length <= 72` where candidate != null && storedHash != null && storedHash.matches("\\$2[aby]\\$(0[4-9]|[12][0-9]|30)\\$[./A-Za-z0-9]{53}"), and throws java.lang.IllegalArgumentException when candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72:
+  matches(candidate="\u0000\u0800\u0800\u0800\u0800\u0800\u0800\u0800\u0800\u0800\u0800\u0800\u0800\u0800\u0800\u0800\u0800\u0800\u0800\u0800\u0800\u0800\u0800\u0800\u0800", storedHash="$2a$04$.....................................................")
+    outcome: false
+  (found by jvmcontract's own checker (CaDiCaL) in 948.5 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain candidate: String of ≤ 80 code units, not null × storedHash: String of ≤ 80 code units, not null)
+
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves.
+
+verdict: violation (expected violation); paths 645, solver calls 5378, variables 13469249, loops covered by invariants 6; outcome in verification/.work-287/recorded/vulnerable-security/outcome.json

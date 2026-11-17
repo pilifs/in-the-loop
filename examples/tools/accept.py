@@ -10,7 +10,12 @@ script exited 0. This reads what the job left and derives the answer from it, an
 when every one of these holds; one that fails, or that the evidence has nothing to show (`unbound`), refuses it:
 
     job         the job's result is in the checkout, passed, of the job file as it is, and names the example
-    step        one of its steps ran the example's driver on this task; the outcome is the one that step wrote
+    step        one of its steps ran the example's driver on this task, `python3 [-I] <folder>/proofs/prove.py TASK`
+                with the driver at that path in the job's checkout; the outcome is the one that step wrote. Every step
+                of the job is such a plain run of a driver (the pipeline runs a step with bash -c, so anything else,
+                before or after, can write the outcome): plain words only, the flags --timeout, --work (once) and the
+                trial flags alone (not --jvmcontract, which runs another checker), no environment set by the job; and
+                no later step writes the same outcome folder
     outcome     the outcome file is among the job's collected outputs and has the bytes the result records
     conclusion  the outcome's own verdict is the recorded answer (verified: established, violation: refuted)
     claim       the claim file is the one the job ran (its bytes at the job's source commit) and the one frozen
@@ -18,23 +23,30 @@ when every one of these holds; one that fails, or that the evidence has nothing 
     task        the task's target, claim, expectation, engine, gap mode, revision or pair and allowed change are
                 what they were at the job's source commit
     expressions the outcome's assumption, assertion and throws clauses are the claim file's, and for a preservation
-                claim the allowed change is the one in the generated pair the job collected
-    entry       the outcome is about the entry the task's invocation names
-    domain      the bound is the claim's. A proof at a smaller bound establishes nothing about the claim's; a
-                witness found at a smaller bound refutes it, since it lies in the claim's domain; the parameters
-                that may be null are the claim's
+                claim the allowed change is the one in the generated pair the job collected, or none where the task
+                allows none
+    entry       the outcome is about the entry the task's invocation names, or the adapter entry a claim's assumption
+                names, or the task's own target: a whole `Class#method`, not a part of one
+    domain      the bound is the claim's (a task's own `bounds` does not lower it). A proof at a smaller bound
+                establishes nothing about the claim's; a witness found at a smaller bound refutes it, since it lies in
+                the claim's domain; the parameters that may be null are the claim's, and a witness's null input is of
+                one of them
     mode        the engine and the gap mode are the task's
     complete    (established) no unfinished unwinding and no problem
     non-vacuous (established) some input reaches the property: the probe's witness; for a task with an allowed
                 change, one the outcome says lies outside that change (`vacuity.outside`), since the versions are
                 compared on no input inside it
-    replay      (refuted) the witness reproduced on a JVM
+    replay      (refuted) the witness reproduced on a JVM, and where the claim assumes something, a record that the
+                assumption held on it: the harness the JVM ran, whose source the job collected
+                (`work/harness/PropertyHarness.java`), returns before the call wherever the outcome's assumption does
+                not hold, so its failure there is on an assumed input
     mutant      (a constructed mutant's task) the JAR's hash in the step's log is the one the mutant replay's receipt
                 records
     artifacts   the JARs, the adapter sources and the claim the driver recorded beside the outcome (evidence.json)
                 are the ones target.json pins (a constructed mutant's: its base's, but for its own JAR, which is the
-                `mutant` check's). A driver that records none leaves a limit, not a refusal: the pinned hashes were
-                then checked by the driver's own code and are in no record
+                `mutant` check's), and the driver it recorded is the one at the job's source commit. A driver that
+                records none leaves a limit, not a refusal: the pinned hashes were then checked by the driver's own
+                code and are in no record
 
 `limits` says what an accepted answer still rests on that no record shows; `restsOn` what the checker itself assumed.
 A driver writes evidence.json with `record` below. llm-dlc/tools/changes.py counts an answer beside the route only
@@ -47,6 +59,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import posixpath
 import re
 import shlex
 import subprocess
@@ -111,21 +124,84 @@ class Source:
         return self.cache[key]
 
 
-def driver_steps(result: dict, folder: str, task: str) -> list[dict]:
-    """The job's steps that ran the example's driver on the task: `python3 <folder>/proofs/prove.py TASK ...`."""
-    out = []
-    for step in result.get("steps") or []:
-        try:
-            words = shlex.split(step.get("run") or "")
-        except ValueError:
-            continue
-        at = next((i for i, w in enumerate(words) if w.endswith("proofs/prove.py") and folder in w), None)
-        if at is None or words[at + 1 : at + 2] != [task]:
-            continue
-        rest = words[at + 2 :]
-        work = next((rest[i + 1] for i, w in enumerate(rest[:-1]) if w == "--work"), None)
-        out.append({"step": step, "work": work, "trial": [w for w in rest if w.split("=", 1)[0] in TRIAL_FLAGS]})
-    return out
+ENTRY = re.compile(r"[\w.$]+#[\w$]+")
+ADAPTER_ENTRY = re.compile(r"\badapter entry ([\w.$]+#[\w$]+)")
+GATE = "{ return; } // the inputs the property is about"
+
+
+def read_text(path: Path) -> str:
+    try:
+        return path.read_text(errors="replace")
+    except OSError:
+        return ""
+
+
+def gates_on(source: str, assume: str) -> bool:
+    """Whether a property harness's source returns first, before anything else in `check`, wherever ASSUME does not
+    hold: `if (!(ASSUME)) { return; }`, as the checker writes it (lib/src/harness, `property_source`)."""
+    lines = [line.strip() for line in source.splitlines()]
+    at = next((i for i, line in enumerate(lines) if line.startswith("public static void check(")), None)
+    first = next((line for line in lines[at + 1 :] if line), "") if at is not None else ""
+    return first == f"if (!({assume})) {GATE}"
+
+
+# A step the job runs is a plain run of an example's driver, or the step can do anything: the pipeline runs it with
+# `bash -c`, so what follows a `;` runs too, and a step before the driver's can replace it or write its outcome.
+DRIVER = re.compile(r"examples/\d{3}-[A-Za-z0-9][\w-]*/proofs/prove\.py")
+PLAIN_WORD = re.compile(r"[\w./:+,=-]+")
+DRIVER_FLAGS = {"--timeout": "number", "--work": "folder", "--max-array-length": "number", "--unwind": "number"}
+# The pipeline's own build of the checker at the job's source commit, which it records as step 0.
+BUILD = re.compile(r"(?:\S*/)?cargo build --release --manifest-path lib/Cargo\.toml")
+
+
+def driver_run(run: str) -> dict | str:
+    """RUN as a plain run of an example's driver, `python3 [-I] examples/NNN-.../proofs/prove.py TASK` followed by
+    the flags every driver shares (`--timeout N`, `--work DIR`, the trial flags), each once and each as its own two
+    words; or why it is not one. A word that is not plain (a shell operator, a quote, an expansion), a flag of another
+    kind (`--jvmcontract`, which runs another checker, or `--jars`) or `--work=DIR` makes it not one."""
+    if re.search(r"[^\S ]", run):
+        return "it spans more than one line"
+    words = run.split()
+    odd = next((w for w in words if not PLAIN_WORD.fullmatch(w)), None)
+    if odd is not None:
+        return f"`{odd}` is not a plain word (the pipeline runs a step with bash -c)"
+    at = 2 if words[:2] == ["python3", "-I"] else 1
+    if words[:1] != ["python3"] or len(words) < at + 2 or not DRIVER.fullmatch(words[at]) or words[at + 1].startswith("-"):
+        return "it is not `python3 [-I] examples/NNN-.../proofs/prove.py TASK`"
+    flags: dict[str, str] = {}
+    rest = words[at + 2 :]
+    for flag, value in zip(rest[::2], rest[1::2] + [None]):
+        if flag not in DRIVER_FLAGS:
+            return f"`{flag}` is not one of the driver flags a run may give ({', '.join(DRIVER_FLAGS)})"
+        if flag in flags:
+            return f"`{flag}` is given twice"
+        if value is None or value.startswith("-") or (DRIVER_FLAGS[flag] == "number" and not value.isdigit()):
+            return f"`{flag}` has no {DRIVER_FLAGS[flag]} after it"
+        flags[flag] = value
+    work = flags.get("--work")
+    return {"folder": words[at].rsplit("/proofs/", 1)[0], "task": words[at + 1],
+            "work": posixpath.normpath(work) if work else None, "trial": [f for f in flags if f in TRIAL_FLAGS]}
+
+
+def job_steps(job: dict, result: dict) -> tuple[list[dict], str | None]:
+    """The result's steps, each with its run read as a driver run (`driver_run`), but for the pipeline's own build;
+    or why the job is not one whose outcomes a driver alone wrote: a step of the job file that is not a plain driver
+    run, a job that sets the steps' environment or a step's folder, or a result whose steps are not the job file's."""
+    if job.get("env"):
+        return [], f"the job sets the steps' environment ({', '.join(sorted(job['env']))}), which can change what a driver runs"
+    runs = []
+    for i, spec in enumerate(job.get("steps") or [], 1):
+        if spec.get("cwd", ".") not in (".", "./"):
+            return [], f"the job's step {i} runs in {spec.get('cwd')!r}, not the checkout's top"
+        parsed = driver_run(str(spec.get("run") or ""))
+        if isinstance(parsed, str):
+            return [], (f"the job's step {i} is not a plain driver run ({parsed}): every step must be one, since any "
+                        f"step can write what a driver step leaves")
+        runs.append(spec.get("run"))
+    steps = [s for s in result.get("steps") or [] if not (s.get("index") == 0 and BUILD.fullmatch(s.get("run") or ""))]
+    if [s.get("run") for s in steps] != runs[: len(steps)]:
+        return [], "the result's steps are not the job file's"
+    return [{"step": s, **driver_run(s["run"])} for s in steps], None
 
 
 def sizes(value) -> list[int]:
@@ -239,14 +315,23 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
     identity = {"sourceCommit": commit, "libTree": (result.get("jvmcontract") or {}).get("libTree")}
 
     # step
-    steps = [s for s in driver_steps(result, rel, task_id) if s["step"].get("status") == "passed"]
+    every, why = job_steps(job, result)
+    if why:
+        said("step", FAIL, f"job {job_id}: {why}")
+        return done(**base, actual=None, identity=identity)
+    steps = [s for s in every if s["folder"] == rel and s["task"] == task_id and s["step"].get("status") == "passed"]
     if not steps:
-        said("step", UNBOUND, f"no passed step of job {job_id} ran {rel}/proofs/prove.py {task_id}")
+        said("step", UNBOUND, f"no passed step of job {job_id} ran python3 [-I] {rel}/proofs/prove.py {task_id}")
         return done(**base, actual=None, identity=identity)
     chosen = next((s for s in reversed(steps) if not s["trial"]), steps[-1])
     step = chosen["step"]
     if not chosen["work"]:
         said("step", UNBOUND, f"step {step.get('index')} names no --work folder, so its outcome is in no collected file")
+        return done(**base, actual=None, identity=identity)
+    later = next((s for s in every[every.index(chosen) + 1 :] if (s["work"], s["task"]) == (chosen["work"], task_id)), None)
+    if later:
+        said("step", FAIL, f"step {later['step'].get('index')}, after step {step.get('index')}, writes the same outcome folder "
+                           f"({chosen['work']}/{task_id})")
         return done(**base, actual=None, identity=identity)
     said("step", OK, f"step {step.get('index')}: {step.get('run')}")
     work = f"{chosen['work'].rstrip('/')}/{task_id}"
@@ -325,14 +410,18 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
             said("task", FAIL, f"the task is not what it was at {commit[:12]}: " + (", ".join(moved) if then_task else "it was not there"))
         else:
             pins = lambda t: ((t.get("preparation") or {}).get("artifacts"), (t.get("history") or {}).get("revisions"))  # noqa: E731
-            adapters = (target.get("preparation") or {}).get("adapters") or []
+            # The sources the job compiled are the ones listed at its commit; each must be here as it was. One listed
+            # since (an entry for another claim) is not one it compiled, so it changes nothing the answer rests on.
+            adapters = ((then or {}).get("preparation") or {}).get("adapters") or []
+            added = [a for a in (target.get("preparation") or {}).get("adapters") or [] if a not in adapters]
             changed = [a for a in adapters if source(commit, f"{rel}/{a}") != ((root / rel / a).read_bytes() if (root / rel / a).is_file() else None)]
             if pins(then) != pins(target):
                 said("task", FAIL, f"target.json's pinned artifacts or revisions are not what they were at {commit[:12]}")
             elif changed:
                 said("task", FAIL, f"the adapter is not the one the job compiled at {commit[:12]}: {', '.join(changed)}")
             else:
-                said("task", OK, f"the task, the pinned artifacts and {len(adapters)} adapter source(s) are as at {commit[:12]}")
+                said("task", OK, f"the task, the pinned artifacts and {len(adapters)} adapter source(s) are as at {commit[:12]}"
+                     + (f" ({len(added)} listed since, which the job did not compile: {', '.join(added)})" if added else ""))
         driver = source(commit, f"{rel}/proofs/prove.py")
         identity["driver"] = {"path": f"{rel}/proofs/prove.py", "sha256": sha256(driver) if driver else None, "at": commit}
 
@@ -349,8 +438,13 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
         allowed = task.get("allowedChange")
         pair_java = f"{work}/work/pair/RegressionPair.java"
         text = (root / pair_java).read_text() if pair_java in outputs and file_sha256(root / pair_java) == outputs[pair_java].get("sha256") else None
-        if not allowed:
-            said("expressions", OK, "the assumption is the claim file's, and the task allows no change")
+        ran_with = re.search(r"meant to affect \(`([^`]*)`", outcome.get("output") or "")
+        if not allowed and text is not None and "meantToChange" in text:
+            said("expressions", FAIL, f"the generated pair ({pair_java}) skips the inputs of an allowed change, and the task allows none")
+        elif not allowed and ran_with:
+            said("expressions", FAIL, f"the outcome says it ran with an allowed change (`{ran_with.group(1)}`), and the task allows none")
+        elif not allowed:
+            said("expressions", OK, "the assumption is the claim file's, and the task allows no change, nor did the run")
         elif text is not None and allowed not in text:
             said("expressions", FAIL, f"the allowed change in the generated pair ({pair_java}) is not the task's")
         elif text is not None:
@@ -366,24 +460,32 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
         said("expressions", OK, "the assumption, the assertion and the throws clauses are the claim file's")
 
     # entry
-    named = " ".join([(task.get("invocation") or {}).get("entry") or ""] + [a.get("text", "") for a in claim.get("assumptions") or []])
+    # Whole names: the invocation's entry, and an adapter entry a claim's assumption names as such (286's and 287's
+    # tasks have no invocation entry). A method an assumption mentions otherwise is not the entry.
+    named = set(ENTRY.findall((task.get("invocation") or {}).get("entry") or ""))
+    named.update(m for a in claim.get("assumptions") or [] for m in ADAPTER_ENTRY.findall(a.get("text", "")))
     entry = outcome.get("target") or ""
     if entry and entry in named:
         said("entry", OK, f"the outcome is about {entry}, the entry the task names")
     elif entry and entry == (task.get("target") or "").split("(", 1)[0]:
         said("entry", OK, f"the outcome is about {entry}, the task's own target")
     else:
-        said("entry", FAIL if entry else UNBOUND, f"the outcome is about {entry or 'no target'}, which is neither the task's target nor an entry its invocation or the claim's assumptions name")
+        said("entry", FAIL if entry else UNBOUND, f"the outcome is about {entry or 'no target'}, which is neither the task's target nor the entry its invocation or the claim's assumptions name")
 
     # domain
-    want = {**(claim.get("bounds") or {}), **(task.get("bounds") or {})}.get("maxArrayLength")
+    want = (claim.get("bounds") or {}).get("maxArrayLength")
     ran_at = search.get("max_array_length")
     bound = {"claim": want, "ran": ran_at, "unwind": search.get("unwind"), "trialFlags": chosen["trial"]}
     witness = (outcome.get("counterexample") or inner.get("counterexample") or {})
     longest = max(sizes([i.get("value") for i in witness.get("inputs") or []]), default=0)
     nullable = sorted(p.get("name") for p in ((stated.get("domain") or {}).get("parameters") or []) if p.get("null"))
+    parameters = {a.get("name") for a in ((witness.get("call") or {}).get("arguments") or [])} or None
+    null_where_not = [i.get("name") for i in witness.get("inputs") or [] if i.get("value") is None
+                      and (parameters is None or i.get("name") in parameters) and i.get("name") not in (claim.get("nullable") or [])]
     if nullable != sorted(claim.get("nullable") or []):
         said("domain", FAIL, f"the parameters that may be null ({', '.join(nullable) or 'none'}) are not the claim's ({', '.join(sorted(claim.get('nullable') or [])) or 'none'})")
+    elif actual == "refuted" and null_where_not:
+        said("domain", FAIL, f"the witness's {', '.join(null_where_not)} is null, which the claim does not let it be (nullable: {', '.join(sorted(claim.get('nullable') or [])) or 'none'}): it lies outside the claim's domain")
     elif want is None and not chosen["trial"]:
         said("domain", OK, "the claim states no bound on lengths, and the step overrides none")
     elif want is None or ran_at is None:
@@ -426,7 +528,18 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
         if not witness:
             said("replay", FAIL, "the outcome has no witness")
         elif replay.get("by") == "jvm" and replay.get("reproduced") is True:
-            said("replay", OK, f"reproduced on a JVM: {witness.get('input')}")
+            assumed = inner.get("assume")
+            harness = f"{work}/work/harness/PropertyHarness.java"
+            source_ok = harness in outputs and file_sha256(root / harness) == outputs[harness].get("sha256")
+            if not assumed:
+                said("replay", OK, f"reproduced on a JVM: {witness.get('input')}")
+            elif source_ok and gates_on(read_text(root / harness), assumed):
+                said("replay", OK, f"reproduced on a JVM: {witness.get('input')}, by the harness the job collected ({harness}), "
+                     f"which returns before the call where the assumption does not hold")
+            else:
+                said("replay", UNBOUND, f"reproduced on a JVM, but no record says the claim's assumption held on {witness.get('input')}: "
+                     + (f"the harness the JVM ran ({harness}) does not return first where `{assumed}` does not hold" if source_ok
+                        else f"the job collected no harness source ({harness}) as it wrote it"))
         else:
             said("replay", FAIL, f"the witness was not reproduced on a JVM (replay: {json.dumps(replay) if replay else 'not recorded'})")
 
@@ -478,6 +591,9 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
             missing = [r for r in revisions_of(target, task) if r not in seen]
             if missing:
                 problems.append(f"it records no JAR for {', '.join(missing)}")
+            ran_driver, at_commit = (evidence.get("driver") or {}).get("sha256"), (identity.get("driver") or {}).get("sha256")
+            if have_commit and ran_driver != at_commit:
+                problems.append(f"the driver it recorded (sha256 {str(ran_driver)[:12]}) is not {rel}/proofs/prove.py at the source commit ({str(at_commit)[:12]})")
             for path, was in ((evidence.get("adapter") or {}).get("sources") or {}).items():
                 if file_sha256(root / path) != was:
                     problems.append(f"the adapter source {path} is not the one it compiled")

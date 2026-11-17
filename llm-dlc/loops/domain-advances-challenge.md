@@ -424,11 +424,133 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
     - Messages were not compared.
     - A note in both examples records this; it is also their item 6 entry for preservation. Nothing for the watcher.
 - Inbox: no open items.
+- The exception failure went to preservation as `domain-advances-preservation-I009`, citing `pklttqzw`.
+- 2026-11-17, items 5 and 7, evidence's `kqxwrwrx`, its fix for I007: **the fix holds, and four more controls
+  accepted past it**, to be handed over.
+  - All seven earlier controls pass against `accept.py` at `kqxwrwrx`, and its own `test_accept.py` passes 38 tests.
+  - The new hole is in the step check. It reads a step's words up to the task's name and the first `--work`. The
+    pipeline runs the whole step with `bash -c`, and nothing else in the job is read.
+  - Each control below is accepted with no limit on `test_accept.py`'s made-up checkout (4 tests, 7 failures with the
+    subtests):
+    - *a shell suffix*: `; cp …` or `&& sed -i …` after the driver rewrites the outcome. evidence.json does not hash
+      it.
+    - *an earlier step*: it replaces the driver in the job's checkout, or writes the outcome folder. The driver hash
+      the artifacts check compares is written by whatever driver ran.
+    - *`--work` given twice*: accept.py takes the first, the driver's argparse the last. `--work=DIR` is not read at
+      all.
+    - *`--jvmcontract PATH`*: the outcome comes from another binary. evidence.json names its sha256, which nothing
+      compares.
+  - Written in `lib/tests/fixtures/accept-countermodels/README.md`, "Past the fix", with the controls' code, the fix
+    options and what was tried. `accept.py` is the evidence stream's, so nothing is changed here. The controls go
+    as a `failure` item to `domain-advances-evidence`, citing this commit; its id goes in the next entry.
+  - **Tried and guarded**:
+    - a witness on which the assumption throws: only an `AssertionError` counts as reproduced, and `Threw` is
+      unverifiable;
+    - the gate's record over objects, which is left unbound;
+    - a null witness input, written as JSON `null`, which the check reads.
+  - Noted, not a hole: the gate's record is the checker's rendering for readers, not the class file the JVM ran.
+  - *Audit*: every step of the 13 accepted answers' jobs is a plain driver run, with one `--work`, no
+    `--jvmcontract` and no shell operator. Nothing for the watcher.
+- The acceptance-check controls past the fix went to evidence as `domain-advances-evidence-I010`, citing `xnqlyxnw`.
+- 2026-11-17, item 5, state's `llyzwmyp` (the observation binding copied onto its line, with a lambda named by what
+  it was defined from) and `vvpxytqs` (its fix for I008): **three false proofs past the binding**, to be handed over;
+  `vvpxytqs` holds.
+  - The fixture is `lib/tests/fixtures/binding-countermodels`; its README has the table, the commands, the options,
+    what was tried and the checker-side test. `lib/tests/binding_countermodels.rs` holds it to a JVM.
+  - Each is **Verified** with `--observed-initializer`, where a JVM says otherwise and the checker without the
+    observation finds the violation:
+    - `rehooked`: the initializer has another class put a lambda of its own in that class's static (`() -> n` for
+      `() -> 1`). Both are named `bc.Hooks$$Lambda` now: proved 1, a JVM gives 5. Verified at `vvpxytqs`. At
+      evidence's `nsnxmlmt` it is refused, because the name there carries the address.
+    - `boxed`: the initializer writes a field of an object another class's final static holds. Unheld, it is compared
+      by its class's name. Proved 0, a JVM gives 5, at both lines (it is `lzpqszyo`'s).
+    - `relocaled`: the initializer sets the JDK's default locale to Turkish. The observer reads the locale before the
+      initialization and compares classes of the class path only. Proved 105, a JVM gives 305, at both lines. Every
+      stated assumption reads as true of a JVM that starts in English.
+  - The first two fall under the stated "what it holds nothing of is taken to be the same too", false here; the third
+    under none. The binding is evidence's and state holds a copy, so nothing in `lib/src` changes here. The test goes
+    as a `failure` item to both, citing this commit; the ids go in the next entry.
+  - `vvpxytqs` **holds** for what was tried: an `aastore`, a string concatenation (`String.valueOf`, refused), a
+    virtual call, a cast and `instanceof` are each refused. A gap's `null` is stated ("never null"). A lemma's
+    argument cannot be of a subclass, being a primitive or a String.
+  - *Audit*: 290's five observed classes, read with `javap -c` from the pinned JARs:
+    - none sets a locale, a time zone or a property;
+    - none has a `putfield` or an `invokedynamic` in its `<clinit>`;
+    - each `putstatic` is its own class's.
+    Not affected, and nothing for the watcher.
+- Tool fix: `test_costs.py estimate` failed on this session's own log. A `python3 -m unittest` run from an export in
+  `/tmp` resolved outside the checkout, and `cost_inventory.python_runs` guarded that for a file but not for a dotted
+  module. It is now guarded the same way (`lib/tools/cost_inventory.py`).
+- Tests: `test_costs.py run --changed` passed (45 Rust test binaries and the Python suites).
+- I002: a trial merge of this line (`xnqlyxnw`) and state's (`vvpxytqs`), made with `git merge-tree`, conflicts in
+  `lib/src/bmc/mod.rs` only at `Engine::call`. It is resolved by keeping both blocks, and is being built apart in
+  `/tmp/trial` for the next cycle.
+- Inbox: no open items.
+- The binding failure went to evidence as `domain-advances-evidence-I011` and to state as
+  `domain-advances-state-I011`, both citing `klqnuoxw`.
+- 2026-11-17, I002 and item 5, where the lemma rule and the write-set rule meet: **two false proofs through an
+  effect contract's stub**, to be handed over to state.
+  - The trial merge (`xnqlyxnw` with state's `vvpxytqs`, the `Engine::call` conflict resolved by keeping both blocks)
+    built apart.
+  - I002's two remaining cases cannot occur as worded. A lemma's proof and a contract's proof are given no lemma and
+    no contract (`lemmas: None` in `property.rs`). A framed method or a contracted call inside a lemma's proof runs as
+    written, and `Engine::keeps` sees it.
+  - What can occur: a check's own `--decreases` or `--writes` with a contract in `--lemmas`. The stub's `effect`
+    intrinsic puts each written field into the object directly, and does not ask `keeps`.
+  - The fixture is `lib/tests/fixtures/stub-countermodels`; its README has the table, the commands, the options, what
+    was tried and the checker-side test. `lib/tests/stub_countermodels.rs` holds it to a JVM.
+  - Each is **Verified** on the trial merge and on state's `twtuqvvr` (built apart, sources touched), and refused
+    there without the contract:
+    - `Store.f`, by induction on `k`: the method writes a static's bean through the setter, calls itself, and reads
+      the bean. The hypothesis drops the call's write. `result == 0` is proved, non-vacuous; a JVM gives `f(2) == -1`.
+    - `Touch.touch` with `--writes ''`: it writes a static's bean through the setter, and is proved. The statement
+      says nothing of the write set, since a static method over primitives has no field to read after the call.
+  - The effect contract is state's, so nothing in `lib/src` changes here. The test goes as a `failure` item to
+    `domain-advances-state`, citing this commit; the id goes in the next entry. The fix offered is one call of
+    `keeps` per write in the intrinsic.
+  - *Audit*: the only `decreases:` of any example, on all four lines, is the `simpleMatch` lemma of 286 and 288,
+    whose proof takes no contract, and no example has a `writes:` or passes `--writes`. Nothing for the watcher.
+  - I002 is answered by this entry.
+- New on the other lines since the last cycle, not yet challenged:
+  - state's `twtuqvvr` (its fix for I010);
+  - evidence's `mmnoqopr` (the binding over supertypes, the Properties map, the time zone and the environment: I008);
+  - preservation's `owrsowqm` (a pair's two runs of one loop past the bound go on from one state).
+- Tests: `test_costs.py run --changed` passed.
+- Inbox: no open items.
+- The stub failure went to state as `domain-advances-state-I013`, citing `uqrzluvx`.
+- 2026-11-17, item 5, preservation's `owrsowqm` (a pair's two summaries of one loop take one set of bits where the
+  code and the state are the same): **two false proofs past the ties, and one older false proof by the same cause**,
+  to be handed over.
+  - The cause is in `reach` (`lib/src/shared.rs`), which both rest on. It follows no call whose owner is a JDK class
+    or interface, so an application class's code run through `IntUnaryOperator` is in no fingerprint.
+  - The fixture is `lib/tests/fixtures/tie-countermodels`; its README has the table, the commands, the options, what
+    was tried, the checker-side test and the audit. `lib/tests/tie_countermodels.rs` holds it to a JVM.
+  - `old` and `new` differ only in `Step`'s private helper and in `Config`'s initializer. A JVM gives 2 against 1
+    past 1000:
+    - `summed` and `configured` are each **Verified** at `lmyvttyt` (preservation's line, built apart), non-vacuous,
+      with no assumption, `k < 2000`, `--unwind 2`. The class surface leaves out private methods, and a class that
+      only the operator reads is not in `uses`, so its static is not in the key. On this line, without the ties,
+      both get no verdict.
+    - `supplied`, under the defaults without `--assume`: "behaves as before on every input (... identical in both
+      versions; nothing to prove)". This is on every line, this one included: the shortcut `plan.identical` is older
+      than the run.
+  - The pairing and `shared.rs` are preservation's this run, so nothing in `lib/src` changes here. The test goes as
+    a `failure` item to `domain-advances-preservation`, citing this commit; the id goes in the next entry.
+  - *Audit*:
+    - The ties are on preservation's line only. They are made for 287's preservation, which is open, and its loops
+      call only `BCrypt`'s own statics.
+    - The shortcut is not taken with `--before-classpath`, which every decided pair of the run (289, 290) passes.
+    - Nothing for the watcher.
+- **To the watcher**: `sync.py check` on this line reports 15 `has no manifest` errors, up from 8. Preservation's
+  merge `lmyvttyt` stamped session f28025bc on seven more of my commits (`pklttqzw`, `ukukylmu`, `lqvlvwsm`,
+  `zwrpkwnl`, `qmtxwupn`, `synvlnls` and `lqyqxwqv`). The cause is the one recorded above (`link_commits`). I have
+  not touched the trace lines.
+- New on the other lines since the last cycle, not yet challenged: evidence's `wxpoysws` (its fix for I010, the step
+  check) and state's `uxomquou` (the binding of `mmnoqopr` taken whole).
+- Inbox: no open items.
 - Next:
-  - send the exception failure;
-  - I002's two remaining cases on a trial merge;
-  - item 5: evidence's `kqxwrwrx` (the fix for I007), state's `llyzwmyp` (the observation binding on the state line,
-    and a lambda's per-run name), and `nzsypymy` (290's preservation restated, also item 6);
+  - item 5: evidence's `mmnoqopr` and `wxpoysws`, state's `twtuqvvr`;
+  - item 5: `nzsypymy` (290's preservation restated, also item 6);
   - item 6's entries for 288's `fixed-security` and 289's other answers.
 - Status: working
 

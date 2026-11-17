@@ -266,7 +266,60 @@ relational result needs a new check (the rule's applications recorded in the out
   - I011: merge the default line (with the evidence stream's line, at `qrxtwtlo`), then rerun 289's and 290's
     preservation on one checker with both streams' fixes, and record what it gives. Taken with I010, so the
     rerun has the tie fix too.
-- Next: I010 and I011, then 287's job result (accept or record), then step 6 (307).
+- 2026-11-17, I010 and I011 (the merge and the tie's soundness; step 5's job read). Merged the default line (`zmxknqty`,
+  the evidence stream's line in it) and `qnlomnmx` (the challenge stream's tie countermodels). The notes of 287, 289
+  and 290 kept both sides'. `costs.json` was re-estimated and the trace pages regenerated. The merge had dropped 289's
+  job `20261117-122454-…` results and `.work-289/recorded`, because the challenge line never had them; they were
+  restored from the default line.
+  - I010 (`shared.rs`): the reach that both the identical-bytecode shortcut and the ties' code fingerprint rest on
+    is now open wherever a call into the JDK may come back into the application. That covers:
+    - a JDK interface or an overridable JDK method;
+    - an argument whose methods the JDK may call, such as `String.valueOf(Object)`, a `Comparator` or a string
+      concatenation of an object;
+    - a charset looked up by name;
+    - a JDK constructor called on an application object (`super(...)`), except `Object`, `Record` and `Enum`.
+
+    The reach also takes in the initializers of the application classes the code uses. The README's test is in
+    `lib/tests/tie_countermodels.rs` and passes; it failed on all three, as the item said. The initializer gap was
+    mine to find: `a_class_initializer_the_code_runs_is_part_of_the_code_compared` (`lib/tests/pairing.rs`) failed
+    with that part taken out ("nothing to prove"). A loop whose iteration initializes a class was already refused
+    by the loop summary, so it reached only the shortcut. The `mix` countermodels are still not proved.
+
+    287's fingerprints: bcrypt's loop methods call only an `int[]`'s `clone` and
+    `new IllegalArgumentException(String)`, and `BCrypt.<clinit>` calls nothing. A capped probe at bound 80 still
+    takes over 208 summaries.
+  - Job `20261117-180758-…` (step 5) failed undecided: after 424 s and 1187 paths, no invariant was found for the
+    previous release's `BCrypt.key` loop at pc 39, because "an iteration changes local 1, which holds a reference".
+    That local is `key`'s array argument, which the loop never assigns. Capped probes reach about 540 paths and do
+    not get there, and two miniatures of the shape I suspected (a choice of arrays split in a callee and merged
+    again) are proved. So the refusal now names what the reference held at the head and back at it.
+    - Job `20261117-185613-example-287-preservation-at-the-frozen-b` reruns 287 at bound 80 on the fixed checker,
+      which I010 called for anyway. Nothing was accepted from the job that failed.
+    - The third approach, if it stops there again, is in 287's notes: compare a reference by what it denotes under
+      the path's condition.
+  - I011: job `20261117-185623-examples-289-and-290-preservation-on-one` reruns both on one checker with both
+    streams' fixes and I010's. Capped probes on it verify both (289 in 1373 paths, 290 in 573). 290's restated
+    claim stays the user's question (D023).
+
+  The default run after the merge failed four tests, now fixed:
+  - the tier inventory (estimated and tagged);
+  - 289's acceptance (the dropped results);
+  - two shortcut tests over a record, whose `Record.<init>` the first rule took for a call back.
+- 2026-11-17, the inbox read before that commit (two items came in during the cycle).
+  - I012, an outside review: weighed against the brief, with nothing in it contradicting the brief.
+    - Its first point, closing I010 in `reach` and guarding both the fingerprint and `plan.identical`, is what this
+      entry did. That includes unknown bootstraps and initializers followed as code.
+    - It asked for more controls: a JDK static that calls back is added
+      (`a_jdk_method_given_an_application_object_leaves_the_code_compared_open`, which was "nothing to prove"
+      without the argument rule); the initializer one is above; an exceptional exit is the `mix` set's `shorter`.
+    - Its order (I010, I011's reruns, then 307, then a bounded decision on 287 rather than further 240-second
+      tuning) is the order taken here. Its suggestion for 287's cost is to move the relation outward to
+      `crypt_raw` as a checked unchanged callee, which is the brief's first candidate of step 2. It is recorded as
+      the alternative to the third approach in 287's notes and is weighed when job `20261117-185613-…` returns.
+    - I007 and I008 stay the user's questions.
+  - I013: job `20261117-180758-…` decided nothing, and nothing was taken from it (above).
+- Next: step 6 (307: the driver, the slice, the seven salts), then the results of jobs `20261117-185613-…` (accept
+  287, or the third approach) and `20261117-185623-…` (record 289's and 290's).
 - Status: working
 
 ## Loop settings

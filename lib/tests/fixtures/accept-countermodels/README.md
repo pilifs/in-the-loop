@@ -173,3 +173,149 @@ It refuses 289's and 290's `preservation`, because their outcomes do not say whe
 - *Task bounds.* No task of the run has `bounds`. Not affected.
 
 Nothing for the watcher.
+
+## Past the fix (`kqxwrwrx`)
+
+The evidence stream's fix for these seven (`domain-advances-evidence-I007`) holds. The seven controls above, run
+against `accept.py` at `kqxwrwrx`, all pass. The same commit's `test_accept.py` passes its 38 tests.
+
+What the fix leaves is in the step check. `driver_steps` reads a step's words up to the task's name and the first
+`--work`. The pipeline runs the whole step with `bash -c` (`verification/pipeline.py`, `WRAPPER`). Everything else
+in the job, and everything after those words, is unread. Four controls, 7 failures with the subtests, each accepted
+at `kqxwrwrx` with no limit:
+
+| Control | What the step check does not read | The answer it accepts |
+|---|---|---|
+| A step that goes on past the driver in the shell | what follows the task's name: `; cp verification/forged.json W/fixed-security/outcome.json`, `&& sed -i s/violation/verified/ …` | the forged outcome. evidence.json does not hash the outcome, so nothing ties it to the driver's run |
+| A step before the driver that replaces it | the job's other steps: `cp /elsewhere/prove.py examples/…/proofs/prove.py`, or `cp -r verification/forged/. W` | whatever the replaced driver or the copied folder leaves. The driver hash in evidence.json is written by the driver that ran, which can name the source commit's |
+| `--work` given twice | the step check takes the first `--work`; the driver's argparse keeps the last, and `--work=DIR` is not read as one at all | an outcome under a folder the driver step did not write |
+| `--jvmcontract PATH` | every driver takes it. The pipeline puts the build of the source commit's `lib/` first on `PATH`, which is the default | an outcome from another binary (another workspace's build, a stand-in script). evidence.json records its sha256, which nothing compares, and the identity still names the job's lib tree |
+
+**Fix options**, for the evidence stream:
+- Refuse a step that is not exactly `python3 [-I] <folder>/proofs/prove.py TASK` followed by known flags:
+  - `--timeout N`, `--work DIR` once, and the trial flags;
+  - no shell operator (`shlex.shlex(..., punctuation_chars=True)` sees `;`, `&&`, `|`, `>`);
+  - no `--jvmcontract` and no `--jars`. The driver checks the JARs' hashes, so `--jars` only costs a fallback.
+- Refuse a job any of whose steps before the chosen one is not such a run.
+- Or have the driver hash the outcome into evidence.json and record the binary's hash, and have the pipeline
+  record the hash of the binary it built (`result.jvmcontract`), so that the two can be compared.
+
+Every step of the 13 accepted answers' jobs is such a run, so either fix keeps them.
+
+The controls, beside `test_accept.py` (they reuse `DriverRecord.recorded`, so its own tests run again under this
+class):
+
+```python
+#!/usr/bin/env python3
+"""Controls of accept.py's step check past kqxwrwrx: a job's step that ran the example's driver, and did something
+else besides, or ran it on something else. Each test fails while the check accepts it."""
+from __future__ import annotations
+
+import hashlib
+import json
+import unittest
+
+from test_accept import AsCommitted, DriverRecord
+
+DRIVER = "examples/900-made-up-change/proofs/prove.py"
+WORK = "verification/.work-900"
+
+
+class StepControls(DriverRecord):
+    def steps(self, paths: dict, runs: list[str]) -> None:
+        """The job's steps are RUNS, each passed, the last one's log the step's log; the result records the job as
+        the runner read it."""
+        spec = json.loads((self.root / paths["job"]).read_text())
+        result = json.loads((self.root / paths["result"]).read_text())
+        log = result["steps"][0]["log"]
+        spec["steps"] = [{"name": f"step {i}", "run": run} for i, run in enumerate(runs, 1)]
+        result["steps"] = [{"index": i, "status": "passed", "run": run, "log": log} for i, run in enumerate(runs, 1)]
+        (self.root / paths["job"]).write_text(json.dumps(spec))
+        result["job"]["sha256"] = hashlib.sha256(json.dumps(spec, sort_keys=True).encode()).hexdigest()
+        (self.root / paths["result"]).write_text(json.dumps(result))
+
+    def accepted_as_it_is(self) -> AsCommitted:
+        paths = self.recorded()
+        committed = AsCommitted(self.root)
+        r = self.check("fixed-security", committed)
+        self.assertTrue(r["accepted"], r.get("why"))
+        self.assertEqual(r["limits"], [], "the evidence an honest job leaves")
+        self.paths = paths
+        return committed
+
+    def test_a_step_that_goes_on_past_the_driver_in_the_shell_is_refused(self):
+        """The pipeline runs a step with `bash -c`, and the step check reads its words only up to the task's name:
+        what follows a `;` or a `&&` runs after the driver and can write the outcome it collected. The outcome is then
+        not the driver's, and no record says so (evidence.json does not hash the outcome)."""
+        committed = self.accepted_as_it_is()
+        for after in (f" ; cp verification/forged.json {WORK}/fixed-security/outcome.json",
+                      f" && sed -i s/violation/verified/ {WORK}/fixed-security/outcome.json"):
+            with self.subTest(after=after):
+                self.steps(self.paths, [f"python3 {DRIVER} fixed-security --timeout 60 --work {WORK}{after}"])
+                r = self.check("fixed-security", committed)
+                self.assertFalse(r["accepted"], f"the outcome is whatever{after} left")
+
+    def test_a_step_before_the_driver_that_replaces_it_is_refused(self):
+        """A job's earlier step can replace the driver in the job's checkout (a `git archive` of the source commit)
+        before the step that runs it. The driver that runs then writes evidence.json, and can name in it the source
+        commit's driver hash, which is all the artifacts check compares: accepted with no limit. Or an earlier step
+        writes the outcome folder itself."""
+        committed = self.accepted_as_it_is()
+        driver = f"python3 {DRIVER} fixed-security --timeout 60 --work {WORK}"
+        for first in (f"cp /elsewhere/prove.py {DRIVER}", f"cp -r verification/forged/. {WORK}"):
+            with self.subTest(first=first):
+                self.steps(self.paths, [first, driver])
+                r = self.check("fixed-security", committed)
+                self.assertFalse(r["accepted"], f"step 1, `{first}`, decides what the driver step leaves")
+
+    def test_the_outcome_read_is_the_one_the_driver_wrote_where_work_is_given_twice(self):
+        """The step check takes the first `--work`; the driver's argparse keeps the last (and `--work=DIR` is not
+        read as one at all). The outcome read is then one the step did not write."""
+        committed = self.accepted_as_it_is()
+        for twice in (f"--work {WORK} --work verification/.work-elsewhere", f"--work {WORK} --work=verification/.work-elsewhere"):
+            with self.subTest(twice=twice):
+                self.steps(self.paths, [f"python3 {DRIVER} fixed-security --timeout 60 {twice}"])
+                r = self.check("fixed-security", committed)
+                self.assertFalse(r["accepted"], f"the driver wrote verification/.work-elsewhere, and {WORK} is read")
+
+    def test_a_step_that_runs_the_driver_on_another_checker_binary_is_refused(self):
+        """Every driver takes `--jvmcontract PATH`. The pipeline builds the checker from lib/ at the job's source
+        commit and puts it first on PATH, which is the driver's default; a step that names another binary (another
+        workspace's build, a stand-in script) gets an outcome from it. evidence.json records its sha256, which nothing
+        compares, and the result's identity still names the job's lib tree."""
+        committed = self.accepted_as_it_is()
+        self.steps(self.paths, [f"python3 {DRIVER} fixed-security --jvmcontract /elsewhere/lib/target/release/jvmcontract "
+                                f"--timeout 60 --work {WORK}"])
+        r = self.check("fixed-security", committed)
+        self.assertFalse(r["accepted"], "the outcome is another binary's, and the identity says the job's lib tree")
+
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+### Tried past the fix, and guarded
+
+- **A witness on which the assumption throws** (a nullable parameter that an assume dereferences unguarded). The JVM
+  replay counts only an `AssertionError` from `check` as reproduced (`jvm_witness::Check::Refuted`). A gate that
+  throws is `Threw`, which `property.rs` reports as unverifiable. None of 286 to 290's assumes dereferences a nullable
+  parameter unguarded.
+- **The gate's record**. `PropertyHarness.java` is the checker's rendering "for readers" (`harness::property_source`).
+  The JVM runs the generated class file. Both come from the same assume text, so the record is the checker's word,
+  not the class file's. Over objects (`property_source_over`) the objects are made before the gate, so `gates_on`
+  finds no gate first and leaves the answer unbound, which is conservative.
+- **A null witness input**. The checker writes a null as JSON `null` (`witness.rs`), which the null check reads.
+  Not tried: a null component (`p.c`, `this.c`). The claims' `nullable` names parameters, so whether a component may
+  be null is a question for the claim language, not for this check.
+- **Entry tokens**. Each of the 13 tasks' invocation entries names one `Class#method`, so a second token cannot occur
+  there. The adapter-entry route reads "adapter entry X#m" anywhere in an assumption, including a negated sentence.
+  No claim has one.
+
+### Audit, past the fix
+
+Every step of the jobs behind the 13 accepted answers is a plain driver run:
+- `python3 <folder>/proofs/prove.py TASK --timeout N --work verification/.work-NNN/recorded`;
+- one `--work` each, no `--jvmcontract`, no shell operator;
+- each job's other steps are driver runs of its other tasks.
+
+No accepted answer rests on these holes, so there is nothing for the watcher.

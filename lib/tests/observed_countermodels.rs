@@ -4,8 +4,13 @@
 //! multi-release JAR from `base/` and `versioned/` (the class file for Java 17 on), and `shadow/`, a class path copy
 //! of the JDK's `org.xml.sax.helpers.AttributesImpl`. `oc.M.main` runs one entry point on a JVM, and the first test
 //! holds the fixtures to what a JVM says. The checker's side of the observed initializers, the proofs it should not
-//! make, is in the fixtures' README for the stream that binds an observation (domain-advances-evidence, 2026-11-17);
-//! the two class files are refused here (`ClassPath::refused`), and the last test holds that.
+//! make, is in the fixtures' README; the evidence stream bound an observation to what it was observed on
+//! (`jvmcontract::observed::On`), and the test after the two class files' holds that it is. The two class files are
+//! refused here (`ClassPath::refused`), and the two tests before it hold that. The last test takes the challenge
+//! stream's `ob` fixtures (`tests/fixtures/rule-countermodels/ob`): writes to a supertype's static state, and a
+//! property, the time zone and the environment read where the first binding did not look. The one after it takes
+//! the challenge stream's binding countermodels (`tests/fixtures/binding-countermodels/bc`, from `klqnuoxw`): writes
+//! into a lambda or an object another class holds, and into the JDK's default locale.
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -163,4 +168,166 @@ fn a_class_path_copy_of_a_class_of_the_jdks_modules_is_refused_not_read() {
         assert_eq!(o.verdict, Verdict::Unverifiable, "{name}: {}", o.output);
         assert!(o.output.contains("org.xml.sax.helpers.AttributesImpl.<init>()"), "{name}: the JDK's constructor is the gap: {}", o.output);
     }
+}
+
+/// An observation is bound to what it was observed on: an initializer that writes another class's static is
+/// refused or its write carried, and one observed in a Turkish JVM, or with a property set, is refused or the result
+/// says so. On a JVM in English with no `oc.value`, crossed() is 1, lowered() 105 and configured() 6. The binding
+/// refuses the first two (`oc.A` left `oc.B.x` 1 where `oc.B` alone has 0; the default locale `tr-TR` is one the
+/// check takes the JVM's not to be) and states the property the third read, with its value.
+#[test]
+fn an_observed_initializer_is_bound_to_what_it_was_observed_on() {
+    jvmcontract::tool_tier!();
+    let Some(c) = classes() else { return };
+    let mut crossed = proving("oc.M#crossed", "result == 0", "crossed");
+    crossed.observed_initializers = vec!["oc.A".into()];
+    let crossed_run = property::run(&crossed);
+    let crossed_proved = matches!(crossed_run, Ok(ref o) if o.verdict == Verdict::Verified);
+    // The observer's JVM takes its settings from the environment; JAVA_TOOL_OPTIONS stands for a machine whose
+    // default locale is Turkish, or a launcher that sets a property.
+    let cli = |settings: &str, target: &str, assert: &str, class: &str, name: &str| {
+        let out = Command::new(env!("CARGO_BIN_EXE_jvmcontract"))
+            .env("JAVA_TOOL_OPTIONS", settings)
+            .args(["prove", target, "--assert", assert, "--observed-initializer", class, "--engine", "native", "--jbmc", NO_JBMC, "--details", "--classes"])
+            .arg(&c.app)
+            .arg("--classpath")
+            .arg(&c.jar)
+            .arg("--work")
+            .arg(work(name))
+            .output()
+            .unwrap();
+        String::from_utf8_lossy(&out.stdout).to_string() + &String::from_utf8_lossy(&out.stderr)
+    };
+    let lowered = cli("-Duser.language=tr -Duser.country=TR", "oc.M#lowered", "result == 305", "oc.Lowered", "lowered");
+    let configured = cli("-Doc.value=xyz", "oc.M#configured", "result == 3", "oc.Configured", "configured");
+    let lowered_unbound = lowered.starts_with("✓") && !lowered.contains("default locale");
+    let configured_unbound = configured.starts_with("✓") && !configured.contains("oc.value");
+    assert!(!crossed_proved && !lowered_unbound && !configured_unbound, "crossed proved: {crossed_proved}\nlowered: {lowered}\nconfigured: {configured}");
+    // And how: each refusal names what the observation was not bound to, and the property is stated with its value.
+    let crossed_said = match crossed_run {
+        Ok(o) => o.output,
+        Err(e) => e.to_string(),
+    };
+    assert!(crossed_said.contains("initialized oc.B and left it other than it is initialized alone (its field x was 1 after it and is 0 alone)"), "{crossed_said}");
+    assert!(lowered.contains("default locale is tr-TR"), "{lowered}");
+    assert!(configured.contains("oc.value = \"xyz\""), "{configured}");
+}
+
+/// The challenge stream's `ob` fixtures (`tests/fixtures/rule-countermodels/ob`, from `lqvlvwsm`), compiled: `None`
+/// without a JDK.
+fn ob() -> Option<&'static Path> {
+    static OUT: OnceLock<Option<PathBuf>> = OnceLock::new();
+    OUT.get_or_init(|| {
+        if !has("javac") || !has("java") {
+            return None;
+        }
+        let sources = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/rule-countermodels/ob");
+        let out = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("rule-countermodels-ob-classes");
+        let _ = std::fs::remove_dir_all(&out);
+        let status = Command::new("javac").args(["-g", "-parameters", "-proc:none", "-nowarn", "--release", "21", "-d"]).arg(&out).args(walk(&sources)).status().expect("javac runs");
+        assert!(status.success(), "the ob fixtures compile");
+        Some(out)
+    })
+    .as_deref()
+}
+
+/// The checker's side of the challenge stream's `ob` countermodels (`tests/fixtures/rule-countermodels/README.md`,
+/// for the evidence stream, `lzpqszyo`): an observation is bound to what it was observed on. An initializer that
+/// wrote a supertype's static or a superinterface's array is refused or its write carried; one that read a property
+/// through the `Properties` map, the default time zone or the environment is refused or the result says so. A JVM in
+/// UTC with neither setting gives inherited() 1, filled() 5, bypassed() 6, zoned() 0, environ() 6 (the challenge
+/// stream's `rule_countermodels.rs` holds the fixtures to that).
+#[test]
+fn an_observation_is_bound_to_its_writes_outside_the_class_and_to_every_setting_it_read() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = ob() else { return };
+    let work = |name: &str| PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("rule-countermodels").join(name);
+    let mut wrong = Vec::new();
+    let mut said = Vec::new();
+    for (entry, class, assertion) in [("inherited", "ob.Derived", "result == 0"), ("filled", "ob.Filled", "result == 0")] {
+        let mut o = property::Options::new(&[classes.to_path_buf()], &format!("ob.M#{entry}"));
+        o.engine = Engine::Native;
+        o.jbmc = NO_JBMC.into();
+        o.assert = Some(assertion.into());
+        o.observed_initializers = vec![class.into()];
+        o.work = Some(work(entry));
+        let run = property::run(&o);
+        eprintln!("--- {entry}: {run:?}");
+        if matches!(run, Ok(ref out) if out.verdict == Verdict::Verified) {
+            wrong.push(entry.to_string());
+        }
+        said.push(match run {
+            Ok(out) => out.output,
+            Err(e) => e.to_string(),
+        });
+    }
+    // The observer's JVM takes its settings from the environment: JAVA_TOOL_OPTIONS and OB_VALUE stand for a machine
+    // or a launcher that sets them.
+    let mut said_by_cli = Vec::new();
+    for (entry, class, assertion, env, said) in [
+        ("bypassed", "ob.Bypassed", "result == 3", ("JAVA_TOOL_OPTIONS", "-Dob.value=xyz"), "ob.value"),
+        ("zoned", "ob.Zoned", "result == 9", ("JAVA_TOOL_OPTIONS", "-Duser.timezone=Asia/Tokyo"), "Asia/Tokyo"),
+        ("environ", "ob.Environ", "result == 3", ("OB_VALUE", "xyz"), "OB_VALUE"),
+    ] {
+        let out = Command::new(env!("CARGO_BIN_EXE_jvmcontract"))
+            .env_remove("JAVA_TOOL_OPTIONS")
+            .env_remove("OB_VALUE")
+            .env(env.0, env.1)
+            .args(["prove", &format!("ob.M#{entry}"), "--assert", assertion, "--observed-initializer", class, "--engine", "native", "--jbmc", NO_JBMC, "--details", "--classes"])
+            .arg(classes)
+            .arg("--classpath")
+            .arg(classes)
+            .arg("--work")
+            .arg(work(entry))
+            .output()
+            .unwrap();
+        let text = String::from_utf8_lossy(&out.stdout).to_string() + &String::from_utf8_lossy(&out.stderr);
+        eprintln!("--- {entry}:\n{text}");
+        if text.starts_with("✓") && !text.contains(said) {
+            wrong.push(entry.to_string());
+        }
+        said_by_cli.push(text);
+    }
+    assert!(wrong.is_empty(), "proved from an observation that does not say what it rests on: {wrong:?}");
+    // And how: the two writes are refused with the supertype's field, the map's read and the time zone are stated,
+    // and the environment's read is refused by the call.
+    assert!(said[0].contains("initialized ob.Base and left it other than it is initialized alone (its field x was 1 after it and is 0 alone)"), "{}", said[0]);
+    assert!(said[1].contains("initialized ob.Table and left it other than it is initialized alone (an object its fields hold)"), "{}", said[1]);
+    assert!(said_by_cli[0].starts_with("✓") && said_by_cli[0].contains("it read the system properties ob.value = \"xyz\""), "{}", said_by_cli[0]);
+    assert!(said_by_cli[1].starts_with("✓") && said_by_cli[1].contains("default time zone Asia/Tokyo"), "{}", said_by_cli[1]);
+    assert!(said_by_cli[2].contains("--observed-initializer ob.Environ: its code reads the environment (java.lang.System.getenv)"), "{}", said_by_cli[2]);
+}
+
+/// An initializer that writes beside its own class: into a lambda or an object another class holds, or the JDK's
+/// default locale. Each is refused, or the write carried. On a JVM rehooked() is 5, boxed() 5 and relocaled() 305
+/// (tests/binding_countermodels.rs). The challenge stream's test (`tests/fixtures/binding-countermodels/README.md`),
+/// with how each is refused: Hooks' lambda and Boxes' Box by their descriptions, the locale by the setting.
+#[test]
+fn an_initializer_that_writes_beside_its_own_class_is_refused_or_carried() {
+    jvmcontract::tool_tier!();
+    if !has("javac") || !has("java") {
+        return;
+    }
+    let dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/binding-countermodels/bc");
+    let classes = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("binding-countermodels-checked");
+    let _ = std::fs::remove_dir_all(&classes);
+    let sources: Vec<PathBuf> = std::fs::read_dir(&dir).unwrap().map(|e| e.unwrap().path()).filter(|p| p.extension().is_some_and(|e| e == "java")).collect();
+    assert!(Command::new("javac").args(["-g", "-proc:none", "-nowarn", "--release", "21", "-d"]).arg(&classes).args(&sources).status().unwrap().success());
+    let mut said = Vec::new();
+    for (entry, assert, class) in [("bc.M#rehooked", "result == 1", "bc.Rehooked"), ("bc.M#boxed", "result == 0", "bc.Boxed"), ("bc.M#relocaled", "result == 105", "bc.Relocaled")] {
+        let out = Command::new(env!("CARGO_BIN_EXE_jvmcontract"))
+            .env_remove("JAVA_TOOL_OPTIONS")
+            .args(["prove", entry, "--assert", assert, "--observed-initializer", class, "--engine", "native", "--jbmc", NO_JBMC, "--classes"])
+            .arg(&classes)
+            .arg("--work")
+            .arg(work(class))
+            .output()
+            .unwrap();
+        let stdout = String::from_utf8_lossy(&out.stdout);
+        assert!(!stdout.starts_with("✓"), "{entry}: proved where a JVM says otherwise\n{stdout}");
+        said.push(stdout.to_string() + &String::from_utf8_lossy(&out.stderr));
+    }
+    assert!(said[0].contains("initialized bc.Hooks and left it other than it is initialized alone (its field hook was an object of bc.Hooks$$Lambda (bc.Hooks$$Lambda calling bc/Hooks.lambda$install$"), "{}", said[0]);
+    assert!(said[1].contains("initialized bc.Boxes and left it other than it is initialized alone (its field BOX was an object of bc.Box (bc.Box{value=Integer 5}) after it and is an object of bc.Box (bc.Box{value=Integer 0}) alone)"), "{}", said[1]);
+    assert!(said[2].contains("its initialization changed the JDK's settings (the default locale, from en-US to tr;"), "{}", said[2]);
 }

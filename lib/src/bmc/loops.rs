@@ -219,6 +219,20 @@ fn same(a: &Path, b: &Path, x: &Val, y: &Val) -> Option<bool> {
     }
 }
 
+/// What a reference of `path` denotes, for a reason: the class of each object it may be, each with the number it was
+/// made with, or null.
+fn held(path: &Path, v: &Val) -> String {
+    let one = |t: &Option<usize>| match t {
+        Some(o) => format!("{} {}", path.objects[*o].class.replace('/', "."), path.objects[*o].made),
+        None => "null".to_string(),
+    };
+    match v {
+        Val::R(t) => one(t),
+        Val::C(c) => format!("one of {} by a condition", c.0.iter().map(|(_, t)| one(t)).collect::<Vec<_>>().join(", ")),
+        _ => "a number".to_string(),
+    }
+}
+
 /// The width of a number and whether it is a long.
 fn kind(v: &Val) -> Option<(usize, bool)> {
     match v {
@@ -245,7 +259,7 @@ fn differences(start: &Path, back: &Path) -> Result<Vec<(Place, (usize, bool))>,
             (Some(x), Some(y)) => match same(start, back, &x, &y) {
                 Some(true) => {}
                 Some(false) => out.push((Place::Local(slot), kind(&y).expect("a number"))),
-                None => return Err(reference(format!("local {slot}"))),
+                None => return Err(format!("{} (at the head {}; back at it {})", reference(format!("local {slot}")), held(start, &x), held(back, &y))),
             },
             (x, y) => return Err(format!("local {slot} is set on one way to the loop's head and not on another ({} at the head, {} back at it; live at the back edge: {:?})", if x.is_some() { "set" } else { "unset" }, if y.is_some() { "set" } else { "unset" }, after.code.live[after.at].get(slot))),
         }
