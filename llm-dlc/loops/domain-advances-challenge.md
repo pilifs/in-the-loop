@@ -548,8 +548,44 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
 - New on the other lines since the last cycle, not yet challenged: evidence's `wxpoysws` (its fix for I010, the step
   check) and state's `uxomquou` (the binding of `mmnoqopr` taken whole).
 - Inbox: no open items.
+- The tie failure went to preservation as `domain-advances-preservation-I010`, citing `qnlomnmx`.
+- 2026-11-17, item 5, evidence's `mmnoqopr` (its fix for I008) and `vqquvmnm` (its fix for I011): **both hold, and six
+  false proofs past the binding**, to be handed over.
+  - Built apart at `qxstltmq` and `vqquvmnm`, with the sources touched. `observed_countermodels.rs` passes at both, so
+    I008's five cases are refused or stated. At `vqquvmnm` the I011 test passes too.
+  - The new holes are settings the binding does not see.
+  - The fixture is `lib/tests/fixtures/setting-countermodels`. Its README has the table, the commands, what was tried,
+    the options and the checker-side test. `lib/tests/setting_countermodels.rs` holds each case to a JVM, under the
+    setting and under another.
+  - Each is **Verified** at `vqquvmnm` with the class observed under its setting. The result says "it read no system
+    property" and nothing of the setting:
+    - `mapped`: `Optional.of(k).map(System::getProperty)`. A lambda's frame is hidden, so the recorder takes
+      `java.util.Optional` for the reader and counts the read as the JDK's own.
+    - `kept`: the value `Properties.putIfAbsent` returns where the property is set. It is not overridden, and nothing
+      changes. `clearProperty`'s return value was Verified at `qxstltmq`; `vqquvmnm` refuses it as a changed setting.
+    - `looked`: `getenv` through a method handle looked up by name. The module documents this limit, but the result
+      does not state it.
+    - three settings the JDK takes at startup: `availableProcessors()` (`counted`), the working directory through
+      `File.getAbsolutePath` (`rooted`), and the default charset through `getBytes()` (`encoded`).
+  - The README's checker-side test fails on all six at `vqquvmnm`, as it should. The binding is evidence's, and state's
+    `uxomquou` takes it whole, so nothing in `lib/src` changes here. The test goes as a `failure` item to
+    `domain-advances-evidence`, citing this commit; the id goes in the next entry.
+  - *Audit*: 290's five observed classes, read with `javap -c -p` from the hash-checked JARs:
+    - none of their initializers calls any of these methods;
+    - `UrlPathHelper`'s logger setup reaches JUL's configuration through JDK frames, but the observation does not hold
+      the logger (`{"u": ...}`), and a read of it is refused.
+    Not affected, and nothing for the watcher.
+- Inbox: `domain-advances-challenge-I003` (cycle 17 OOM-killed, VF-037).
+  - The uncapped run this cycle started again was stopped by its own process group.
+  - The changed tests ran under `MemoryMax=8G` with `--rust-jobs 1` and passed: 48 test binaries, exit 0.
+  - After `cleared` became `kept`, the new test and `test_costs.py lint` were run again under the cap and pass.
+  - Its next step, preservation's call-level rule, is taken next. Preservation's `kskmpmny` looks like it: "closed
+    against calls back through the JDK", merged with this stream's tie countermodels.
+- Not yet challenged: preservation's `kskmpmny` and `lqkwokqq` (I006, I009); evidence's `wxpoysws`; state's
+  `twtuqvvr`, `qlylowvo` (a stand-in sampled on a JVM) and `krxzxzow`/`lwxvoqsy`.
 - Next:
-  - item 5: evidence's `mmnoqopr` and `wxpoysws`, state's `twtuqvvr`;
+  - item 5: preservation's `kskmpmny` first, as I003 asks; then state's `qlylowvo` stand-ins and `twtuqvvr`, and
+    evidence's `wxpoysws`;
   - item 5: `nzsypymy` (290's preservation restated, also item 6);
   - item 6's entries for 288's `fixed-security` and 289's other answers.
 - Status: working

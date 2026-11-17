@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:50.898Z",
-  "ended": "2026-11-17T16:57:35.602Z",
-  "duration_seconds": 14445,
+  "ended": "2026-11-17T20:32:02.507Z",
+  "duration_seconds": 27312,
   "stats": {
-    "turns": 82,
-    "api_calls": 830,
-    "tool_calls": 834,
-    "tool_errors": 15,
-    "compactions": 15,
+    "turns": 89,
+    "api_calls": 889,
+    "tool_calls": 896,
+    "tool_errors": 19,
+    "compactions": 16,
     "peak_context_tokens": 294636,
     "usage": {
-      "input_tokens": 1686,
-      "output_tokens": 711709,
-      "cache_read_input_tokens": 96267809,
-      "cache_creation_input_tokens": 2284405
+      "input_tokens": 1804,
+      "output_tokens": 762115,
+      "cache_read_input_tokens": 103572419,
+      "cache_creation_input_tokens": 2580223
     }
   },
   "tools": {
-    "Bash": 760,
-    "Edit": 28,
-    "Write": 23,
-    "Read": 15,
+    "Bash": 814,
+    "Edit": 30,
+    "Write": 25,
+    "Read": 19,
     "ToolSearch": 5,
     "Monitor": 3
   },
@@ -50,6 +50,7 @@
     "lib/tests/fixtures/model-countermodels/README.md",
     "lib/tests/fixtures/observed-countermodels/README.md",
     "lib/tests/fixtures/rule-countermodels/README.md",
+    "lib/tests/fixtures/setting-countermodels/README.md",
     "lib/tests/fixtures/thrown-pair-countermodels/README.md",
     "lib/tests/fixtures/tie-countermodels/README.md",
     "lib/tests/fresh_pair_countermodels.rs",
@@ -58,6 +59,7 @@
     "lib/tests/observed_countermodels.rs",
     "lib/tests/pairing_countermodels.rs",
     "lib/tests/rule_countermodels.rs",
+    "lib/tests/setting_countermodels.rs",
     "lib/tests/tie_countermodels.rs",
     "lib/tools/cost_inventory.py",
     "llm-dlc/loops/domain-advances-challenge.md",
@@ -278,24 +280,38 @@
     {
       "index": 15,
       "started": "2026-11-17T16:44:09.656Z",
-      "ended": "2026-11-17T16:57:35.602Z",
-      "turns": 4,
-      "api_calls": 46,
+      "ended": "2026-11-17T16:58:33.760Z",
+      "turns": 5,
+      "api_calls": 50,
       "usage": {
-        "input_tokens": 92,
-        "output_tokens": 41916,
-        "cache_read_input_tokens": 4822825,
-        "cache_creation_input_tokens": 132351
+        "input_tokens": 102,
+        "output_tokens": 43972,
+        "cache_read_input_tokens": 5411369,
+        "cache_creation_input_tokens": 136494
       },
-      "peak_context_tokens": 145624
+      "peak_context_tokens": 149769
+    },
+    {
+      "index": 16,
+      "started": "2026-11-17T16:59:09.666Z",
+      "ended": "2026-11-17T20:32:02.507Z",
+      "turns": 6,
+      "api_calls": 55,
+      "usage": {
+        "input_tokens": 108,
+        "output_tokens": 48350,
+        "cache_read_input_tokens": 6716066,
+        "cache_creation_input_tokens": 291675
+      },
+      "peak_context_tokens": 187790
     }
   ],
   "log": {
-    "sha256": "9e917f0041d3856829e33339f6139eebd15644b9b6172a6a4b80fd3f3f42eea0",
-    "bytes": 22129011,
-    "lines": 7384,
-    "gzip_bytes": 3946382,
-    "path": "llm-dlc/traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/logs/9e917f0041d3856829e33339f6139eebd15644b9b6172a6a4b80fd3f3f42eea0.jsonl.gz"
+    "sha256": "9cee85d0e7e8dae858b6fabbb5079362b51882a38a582f636de56f9141725c1e",
+    "bytes": 23824083,
+    "lines": 7914,
+    "gzip_bytes": 4285641,
+    "path": "llm-dlc/traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/logs/9cee85d0e7e8dae858b6fabbb5079362b51882a38a582f636de56f9141725c1e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -434,6 +450,14 @@
       "summary": "Countermodels of what the pair of versions takes as the same code: a loop's ties and the identical-bytecode shortcut, each proved where a JVM tells the versions apart",
       "body": "Item 5 of the challenge brief, against the preservation stream's owrsowqm (lib/src/bmc/ties.rs). In a pair of versions, two summaries of one loop take one set of free bits where the code and the state are the same. Both rest on reach in lib/src/shared.rs, and so does the older shortcut that verifies a target identical in both versions with nothing to prove. reach follows no call whose owner is a JDK class or interface, so an application class's code run through IntUnaryOperator is in no fingerprint. A class's surface for the key also leaves out its private methods, and a class only that code reads is not in uses, so its statics are not in the key.\n\nlib/tests/fixtures/tie-countermodels: the old and new versions differ only in Step's private helper and Config's initializer, and a JVM gives 2 against 1 past 1000 (lib/tests/tie_countermodels.rs). At preservation's lmyvttyt, built apart, summed and configured are each Verified to agree on k < 2000 at --unwind 2, non-vacuous and with no assumption. On this line, without the ties, both get no verdict. supplied under the defaults is 'behaves as before on every input (identical in both versions; nothing to prove)' on every line, this one included. The README's checker-side test fails on all three at lmyvttyt. The pairing and shared.rs are preservation's this run, so nothing in lib/src changes here; the test goes to it as a failure item.",
       "log_sha256": "9e917f0041d3856829e33339f6139eebd15644b9b6172a6a4b80fd3f3f42eea0"
+    },
+    {
+      "change_id": "plqpmmopzxpyvzswlunyzmvpzoxnkwnt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of an observation bound to the settings it read: a property read under a JDK frame or through putIfAbsent, the environment by a looked-up handle, and three startup settings, each proved where a JVM under another setting says otherwise",
+      "body": "Item 5 against the evidence stream's mmnoqopr (its fix for I008) and vqquvmnm (its fix for I011). Both hold. Built apart with the sources touched, observed_countermodels.rs passes at qxstltmq and at vqquvmnm, and I011's test passes at vqquvmnm. Six initializers read a setting the binding does not see, and each is Verified at vqquvmnm with the class observed under that setting. The result says 'it read no system property' and nothing of the setting. The cases: a property read through Optional.map(System::getProperty), where the lambda's frame is hidden so the recorder takes the JDK's Optional for the reader; the value Properties.putIfAbsent returns, which Recording does not override; getenv through a method handle looked up by name; and the processor count, the working directory and the default charset, which the JDK reads at startup. lib/tests/setting_countermodels.rs holds each case to a JVM, under the setting and under another. The checker-side test is in lib/tests/fixtures/setting-countermodels/README.md, and it fails on all six at vqquvmnm; it goes to the evidence stream as a failure item. Nothing in lib/src changes.\n\nAudit: 290's five observed classes (hash-checked JARs, javap -c -p) call none of these methods. UrlPathHelper's logger reaches JUL's configuration through JDK frames, but the observation does not hold the logger, so a read of it is refused. No accepted result is affected.",
+      "log_sha256": "9cee85d0e7e8dae858b6fabbb5079362b51882a38a582f636de56f9141725c1e"
     }
   ],
   "logs": {
@@ -507,6 +531,12 @@
       "bytes": 9745115,
       "lines": 3520,
       "gzip_bytes": 1667785,
+      "url": null
+    },
+    "9cee85d0e7e8dae858b6fabbb5079362b51882a38a582f636de56f9141725c1e": {
+      "bytes": 23824083,
+      "lines": 7914,
+      "gzip_bytes": 4285641,
       "url": null
     },
     "9e917f0041d3856829e33339f6139eebd15644b9b6172a6a4b80fd3f3f42eea0": {
