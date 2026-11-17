@@ -398,14 +398,42 @@ relational result needs a new check (the rule's applications recorded in the out
     what this entry found.
   - I014, I015, I018 and I019 are taken next. They need the default line merged: the specialist's packets, the
     `callee-countermodels` and `reach-countermodels` fixtures, and the two job results.
+- 2026-11-17, the merge, I014 and I019 (no step of 287 or 307 moved; *working formalization* and *accepted claim*
+  unchanged).
+  - **The merge.** The default line (to `okuplpys`: the 307 specialist's two packets, `callee-countermodels`, and the
+    results of jobs `20261117-185613-…` and `20261117-185623-…`) and the challenge stream's `tqmpowvx`
+    (`reach-countermodels`). Only generated files conflicted. The default run passed on the merged tree.
+  - **I014 (290's relative `-Xlog` path).** The state stream had already fixed it (`zlvqxmst`). I took its line in
+    `observed.rs` and its test in `claims.rs` byte for byte, so the two lines merge cleanly. A capped probe of 290 with
+    the job's relative `--work` verifies (573 paths), and the observer's logs are in the work folder. Job
+    `20261117-213024-examples-289-and-290-preservation-again` reruns 290's step, and 289's beside it on this checker.
+  - **I019 (the reach, `shared.rs`).** Five changes, each needed:
+    - a field is compared by the class that declares it (JVMS §5.4.3.2), which closes `hidden`;
+    - a static's initializer is the declaring class's, which closes `constant` and `looped`;
+    - a class's use initializes each superinterface with a default method, which closes `defaulted`;
+    - the root's own class's initializer is part of the code, which closes `own`;
+    - the shortcut walks both versions' reaches, which closes `removed`.
+
+    The README's checker-side test is in `lib/tests/reach_countermodels.rs` and passes. With each change undone in
+    turn (a temporary edit, removed), exactly its own rows are proved again. The first five are no longer taken as
+    identical. `looped` is no verdict as on the challenge line: the spurious `agree(k=3)` does not replay, and nothing
+    ties, because the two `Limits` initializers differ in the fingerprint.
+
+    A capped probe of 307's `preservation` at the frozen bound still verifies, with the same 72 calls taken and 66
+    related, since BCrypt implements nothing and declares every field it uses. `lib/README.md` says what the reach
+    takes in.
+  - **Inbox.** I014 and I019 are done above. I015 (job `20261117-185613-…`: 287 unverifiable again at `BCrypt.key` pc
+    39, with the same counts) and I018 (`callee-countermodels`, and `crypt_raw` as the boundary) are the next piece:
+    287's third approach. I016 and I017 were done in step 6. No item came in after I019.
+  - **Warnings.** The commit check warns on bcrypt test hashes (`long-token`, `If6…`) in this session's log and two
+    others. They are 307's public test vectors and are already proposed for the allow list (`d6616e20`), awaiting
+    the user.
 - Next:
-  1. Merge the default line.
-  2. I014: 290's relative `-Xlog` path, then rerun 290's step.
-  3. I019: the reach countermodels.
-  4. I018: test the rule against `callee-countermodels`, then the rule at `crypt_raw` (an instance method whose
-     receiver it writes). That is 287's third approach after job `20261117-185613-…` (I015), and it makes 307's
-     mutant refutation independent of the solver's first candidate.
-  5. Then the 307 jobs' results, through `accept.py` once the evidence stream can read them.
+  1. I018: test the rule against `callee-countermodels` (`check.py --only ROW`, on JDK 25). Then extend it to
+     `crypt_raw`, an instance method whose receiver it writes and `hashpw` never reads again, for 287 and for 307's
+     mutant.
+  2. The results of the 307 jobs (`20261117-210114-…`) and of `20261117-213024-…`, then acceptance through `accept.py`
+     once the evidence stream can read them.
 - Status: working
 
 ## Loop settings

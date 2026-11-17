@@ -167,7 +167,7 @@ fn plan_untimed(before: &ClassPath, after: &ClassPath, before_target: &MemberRef
     let after_reach = reach(after, target);
     let before_reach = reach(before, before_target);
     let mut plan = Plan::default();
-    if plain && before_target == target && after_reach.closed && before_reach.closed && same_everywhere(before, &after_reach) {
+    if plain && before_target == target && after_reach.closed && before_reach.closed && same_everywhere(before, after, &before_reach, &after_reach) {
         plan.identical = Some(after_reach.methods.len());
         return plan;
     }
@@ -225,7 +225,8 @@ fn plan_untimed(before: &ClassPath, after: &ClassPath, before_target: &MemberRef
 pub fn identical_closure(before: &ClassPath, after: &ClassPath, roots: &[MemberRef]) -> bool {
     roots.iter().all(|root| {
         let reached = reach(after, root);
-        reached.closed && same_everywhere(before, &reached)
+        let previous = reach(before, root);
+        reached.closed && previous.closed && same_everywhere(before, after, &previous, &reached)
     })
 }
 
@@ -283,17 +284,22 @@ struct Reach {
     /// constructor), as the class path resolves them, with the methods that make the call (in `callers`): the
     /// read-only helpers a summary may stand for (R2).
     instance_calls: BTreeSet<MemberRef>,
-    /// Application classes whose static fields the methods read or write.
+    /// Application classes whose static fields the methods read or write, each the class that declares the field.
     statics: BTreeSet<String>,
+    /// Each application field the methods name, with the class that declares the field it resolves to (JVMS
+    /// §5.4.3.2): the same instruction reads another field where a version declares one that hides an inherited one.
+    fields: BTreeSet<String>,
     /// Whether every call could be followed: false when a virtual call may reach an implementation not listed, or a
     /// call into the JDK may come back into application code ([`inert_jdk_call`]).
     closed: bool,
 }
 
 fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
-    let mut out = Reach { methods: Vec::new(), classes: BTreeMap::new(), static_calls: BTreeSet::new(), callers: BTreeMap::new(), instance_calls: BTreeSet::new(), statics: BTreeSet::new(), closed: true };
+    let mut out = Reach { methods: Vec::new(), classes: BTreeMap::new(), static_calls: BTreeSet::new(), callers: BTreeMap::new(), instance_calls: BTreeSet::new(), statics: BTreeSet::new(), fields: BTreeSet::new(), closed: true };
     let mut seen: HashSet<MemberRef> = HashSet::new();
     let mut work: VecDeque<MemberRef> = VecDeque::from([root.clone()]);
+    // The root's own class is initialized by the call itself, before its first instruction.
+    out.initialized(cp, &root.owner, &mut work);
     while let Some(reference) = work.pop_front() {
         if !seen.insert(reference.clone()) {
             continue;
@@ -320,14 +326,26 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
         };
         for (_, insn) in insns {
             match insn {
-                Insn::GetStatic(i) | Insn::PutStatic(i) => {
-                    if let Ok(field) = class.pool.member(i) {
-                        out.initialized(cp, &field.owner, &mut work);
-                        if cp.is_application(&field.owner) {
-                            if let Ok(Some(owner)) = cp.application(&field.owner) {
-                                out.classes.insert(field.owner.clone(), owner);
+                Insn::GetStatic(i) | Insn::PutStatic(i) | Insn::GetField(i) | Insn::PutField(i) => {
+                    let Ok(field) = class.pool.member(i) else { continue };
+                    if !cp.is_application(&field.owner) {
+                        continue;
+                    }
+                    // The field the reference resolves to: an interface's for a constant read through a class that
+                    // implements it, a subclass's own where it hides an inherited one.
+                    let Some(declaring) = cp.resolve_field(&field.owner, &field.name, &field.descriptor) else {
+                        out.closed = false;
+                        continue;
+                    };
+                    out.fields.insert(format!("{}.{}:{} {declaring}", field.owner, field.name, field.descriptor));
+                    if matches!(insn, Insn::GetStatic(_) | Insn::PutStatic(_)) {
+                        // The JVM initializes the class that declares the field (JVMS §5.5).
+                        out.initialized(cp, &declaring, &mut work);
+                        if cp.is_application(&declaring) {
+                            if let Ok(Some(owner)) = cp.application(&declaring) {
+                                out.classes.insert(declaring.clone(), owner);
                             }
-                            out.statics.insert(field.owner);
+                            out.statics.insert(declaring);
                         }
                     }
                 }
@@ -427,12 +445,24 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
 
 impl Reach {
     /// Adds the initializers a use of `class` may run (an instance made, a static method called, a static field
-    /// read or written), its own and its superclasses', where it is the application's: they run as part of the code.
+    /// read or written), where they are the application's: they run as part of the code. Those are its own, and for
+    /// a class its superclasses' and those of every superinterface that declares a method neither abstract nor
+    /// static (JVMS §5.5); an interface's own initialization runs no other.
     fn initialized(&mut self, cp: &ClassPath, class: &str, work: &mut VecDeque<MemberRef>) {
         if !cp.is_application(class) {
             return;
         }
-        for c in std::iter::once(class.to_string()).chain(cp.superclasses(class)) {
+        let interface = cp.application(class).ok().flatten().is_some_and(|c| c.is_interface());
+        let mut run = vec![class.to_string()];
+        if !interface {
+            run.extend(cp.superclasses(class));
+            for i in cp.all_interfaces(class) {
+                if cp.application(&i).ok().flatten().is_some_and(|c| c.methods.iter().any(|m| !m.is_abstract() && !m.is_static())) {
+                    run.push(i);
+                }
+            }
+        }
+        for c in run {
             if !cp.is_application(&c) {
                 continue;
             }
@@ -548,25 +578,30 @@ fn followed(cp: &ClassPath, owner: &str) -> bool {
     cp.is_application(owner) || JDK_SHAREABLE.contains(&owner)
 }
 
-/// Whether every application method the after version reaches, and the static state it reads, is the same in
-/// the before version.
-fn same_everywhere(before: &ClassPath, after_reach: &Reach) -> bool {
-    if after_reach.methods.is_empty() {
+/// Whether every application method each version reaches, and the static state it reads, is the same in the
+/// other, and each field the code names resolves to the same declaring class in both. Both reaches are walked: a
+/// method the previous version declares and the new one inherits (an override removed, a static hidden) is in the
+/// previous version's reach alone.
+fn same_everywhere(before: &ClassPath, after: &ClassPath, before_reach: &Reach, after_reach: &Reach) -> bool {
+    if after_reach.methods.is_empty() || before_reach.fields != after_reach.fields || before_reach.statics != after_reach.statics {
         return false;
     }
-    for (m, after_shape) in &after_reach.methods {
-        if JDK_SHAREABLE.contains(&m.owner.as_str()) {
-            continue;
-        }
-        let Some(after_shape) = after_shape else { return false };
-        let Some((before_class, before_method)) = before.find_method(&m.owner, &m.name, &m.descriptor) else { return false };
-        if before_class.name != m.owner || shape(&before_class, &before_method).as_ref() != Some(after_shape) {
-            return false;
-        }
+    let found_in = |other: &ClassPath, reach: &Reach| {
+        reach.methods.iter().all(|(m, shaped)| {
+            if JDK_SHAREABLE.contains(&m.owner.as_str()) {
+                return true;
+            }
+            let Some(shaped) = shaped else { return false };
+            let Some((class, method)) = other.find_method(&m.owner, &m.name, &m.descriptor) else { return false };
+            class.name == m.owner && shape(&class, &method).as_ref() == Some(shaped)
+        })
+    };
+    if !found_in(before, after_reach) || !found_in(after, before_reach) {
+        return false;
     }
     for owner in &after_reach.statics {
-        let (Ok(Some(b)), Some(a)) = (before.application(owner), after_reach.classes.get(owner)) else { return false };
-        if initializer_shape(&b) != initializer_shape(a) || constant_values(&b) != constant_values(a) {
+        let (Some(b), Some(a)) = (before_reach.classes.get(owner), after_reach.classes.get(owner)) else { return false };
+        if initializer_shape(b) != initializer_shape(a) || constant_values(b) != constant_values(a) {
             return false;
         }
     }
@@ -592,6 +627,9 @@ pub(crate) fn fingerprint(cp: &ClassPath, root: &MemberRef, name: &dyn Fn(&str) 
     for owner in &reached.statics {
         let class = reached.classes.get(owner)?;
         parts.push(name(&format!("{owner}\n{:?}\n{:?}", initializer_shape(class), constant_values(class))));
+    }
+    for field in &reached.fields {
+        parts.push(name(&format!("field {field}")));
     }
     parts.sort();
     Some((parts.join("\n\n"), reached.classes.keys().cloned().collect()))
