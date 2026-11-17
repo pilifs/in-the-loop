@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-020349-default-test-run-at-sttksmqyyznx",
+  "title": "Default test run at sttksmqyyznx",
+  "description": "The default test run (python3 lib/tools/test_costs.py run: cargo test and every Python suite, the unit and tool tiers) at change sttksmqyyznx, \"/run-brief: the gaps the user settled before its first run, a tool for a stale workspace, and a throwaway brief to rehea\", queued run-brief after the gap fixes: unstale.py, the rerun limit, the foundation's progress, the landing clean-up. Nobody waits for it: the watcher or the next session reads the result, and sync.py push requires a passed run that covers the commit it pushes (verification/default_tests.py).",
+  "kind": "other",
+  "capabilities": [
+    "tests:default"
+  ],
+  "links": {
+    "commits": [
+      "sttksmqyyznx"
+    ]
+  },
+  "expected": "exits 0: every test of the default run passes",
+  "submitted": {
+    "at": "2026-11-17T02:03:49+00:00",
+    "session": "3e8cabab-4a28-4a79-8207-69568d9e8162"
+  },
+  "revision": "b6329be4329b07f07f362f46ab84be49d05e761e",
+  "requires": [
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 6.0,
+    "memory": "4G",
+    "duration": "12m",
+    "timeout": "1h",
+    "notes": "as a job on six CPUs the run took 19.5 minutes one test file after another, 14.5 with Rust beside Python and 8.6 with the Rust binaries and Python files several at a time (2026-11-17), longer beside proof jobs; its cargo target directory is kept warm between runs"
+  },
+  "steps": [
+    {
+      "name": "default tests",
+      "run": "nice -n 10 python3 verification/default_tests.py step",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/default-tests-unread.txt"
+  ]
+}
