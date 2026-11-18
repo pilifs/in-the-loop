@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 136, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-18 00:44 UTC |
-| Prompts | 2,967 |
-| Model calls | 30,080 |
-| Tool calls | 31,093 (557 failed) |
-| Compactions | 444 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-18 00:54 UTC |
+| Prompts | 2,972 |
+| Model calls | 30,113 |
+| Tool calls | 31,126 (557 failed) |
+| Compactions | 445 |
 | Subagents | 21 |
-| Tokens written | 30,159,521 |
-| Tokens read | 4,968,901,370 (98.0% from cache) |
-| Commits with a trace | 916 |
-| Log snapshots | 1,193 (2671.5 MB gzipped, 1,162 uploaded) |
+| Tokens written | 30,183,540 |
+| Tokens read | 4,972,230,518 (98.0% from cache) |
+| Commits with a trace | 917 |
+| Log snapshots | 1,194 (2678.0 MB gzipped, 1,162 uploaded) |
 
 ## Sessions
 
@@ -163,7 +163,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 02:26 UTC | [6da9b537-ecce-46cf-99fa-7cae16e7ce99](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | ended | 6 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 40,446 | 2 |
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 12 | 21 | 17 | 2 | 2 | 56,861 | 1 |
 | 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | open | 7 min | `claude-opus-5-5` | 2 | 5 | 4 | 0 | 0 | 56,756 | 1 |
-| 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | open | 11 h 47 min | `claude-opus-5-5` | 132 | 1,286 | 1,302 | 30 | 23 | 294,636 | 25 |
+| 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | open | 11 h 57 min | `claude-opus-5-5` | 137 | 1,319 | 1,335 | 30 | 24 | 294,636 | 26 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -308,15 +308,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`6da9b537`](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 1,385 | 12 | 28,987 | 187,799 | 86.6% | 157 |
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 8,137 | 42 | 87,022 | 814,514 | 90.3% | 111 |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 2,242 | 10 | 28,745 | 226,501 | 88.7% | 114 |
-| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 1,078,763 | 2,618 | 3,679,261 | 155,498,323 | 97.7% | 148 |
+| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 1,102,782 | 2,686 | 3,796,196 | 158,710,468 | 97.7% | 147 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 27,604 | 88.8% | 136 |
-| `Read` | 1,299 | 4.2% | 56 |
-| `Edit` | 1,000 | 3.2% | 54 |
+| `Bash` | 27,633 | 88.8% | 136 |
+| `Read` | 1,302 | 4.2% | 56 |
+| `Edit` | 1,001 | 3.2% | 54 |
 | `Write` | 672 | 2.2% | 53 |
 | `ToolSearch` | 172 | 0.6% | 42 |
 | `Monitor` | 124 | 0.4% | 49 |
@@ -1253,6 +1253,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 914 | change `wuotsmsr` | Countermodels of an exception's message kept from its constructor: a model of the JDK that throws the JDK's exception with another message, each proved to have none where a JVM gives the JDK's | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/b19c8f69854c8d34f182ce8c35d9f2bedd8892d6222c6626ca55255597b51d78.jsonl.gz)) |
 | 915 | change `vulpuymq` | State's last rules hold: a framed field of a type the check makes no object of, the LinkedHashSet and StringJoiner models, the PropertyChangeEvent model and the iterator, each probed with a property a JVM breaks and refused or refuted | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/6bce594fdc26af1a6a37abeb4ea408463e38cab2396c6ee23e7ddba7c026cf69.jsonl.gz)) |
 | 916 | change `twvzrvvw` | Two wrong binders satisfy 286's proposed two-value protected-state claim: one that stops after the second suppressed value, and one that drops every value once one is denied | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/4c282ea7bf9f0208252372bfdb9f7942a37a07200643fc6c501f0d624fae5ea7.jsonl.gz)) |
+| 917 | change `yqwmukvo` | Two wrong 6.1.14 binders satisfy 288's decided answer and the state stream's binding check: one that skips the allowed list once a disallowed list is set, and 286's first-suppressed-only on this release | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/7966731c4d2f3375117c02eedd7e19e13f274488b55634dd1b68e99d6b537caa.jsonl.gz)) |
 
 ## Logs
 
@@ -1395,7 +1396,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`6da9b537`](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 2 | 2 | 0.2 MB | [`d5b3ff93d2f4`](https://terminalvalue.net/raw-traces/6da9b537-ecce-46cf-99fa-7cae16e7ce99/d5b3ff93d2f464f79d4c2c3b63c435663917ad81d37a274a6519c9da315b7f3d.jsonl.gz) |
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 1 | 1 | 0.3 MB | [`965570933c02`](https://terminalvalue.net/raw-traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/965570933c0206c64a18c5652f4f74be1de3807449c6f9f9a26e20a3211055fc.jsonl.gz) |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 1 | 0 | 0.1 MB | `887466d85ae2`, not uploaded |
-| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 25 | 0 | 76.2 MB | `4c282ea7bf9f`, not uploaded |
+| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 26 | 0 | 82.7 MB | `7966731c4d2f`, not uploaded |
 
 ## Session notes
 

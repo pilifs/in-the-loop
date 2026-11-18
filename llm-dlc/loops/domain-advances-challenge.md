@@ -920,6 +920,36 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   `--rust-jobs 1` (22 of 22).
 - Next: item 6's entries for 288's `fixed-security` and binding (`ownxunnx`) and for 289's other answers;
   `srxyxsns`'s adversarial fixture; then `nzsypymy`.
+- The item 6 formalization of 286's proposed claim went to state as `domain-advances-state-I019`, citing `twvzrvvw`.
+- 2026-11-18, item 6, 288's `fixed-security` and state's binding check (`ownxunnx`): **two wrong 6.1.14 binders
+  satisfy what is decided**. Each is a patch of 6.1.14's `DataBinder.java` (blob `98157756`, checked) under 288's
+  `controls/`, used by no task, with the reasoning in 288's notes. 288's only decided proof is `fixed-security`;
+  its preservation is unverifiable at bound 8 (VF-031).
+  - `allowed-list-skipped-with-disallowed.patch`: `isAllowed` consults the allowed list only when no disallowed list
+    is set.
+    - Predicted: `fixed-security` established, since the claim reads the disallowed side alone and the mutant's is the
+      fix's; preservation refuted outside the allowed change (`Name` against the allowed `name`, root locale).
+    - On a JVM (JDK 25.0.5, the pinned JARs with the patched class first), allowed `name`, disallowed `id`:
+      `name=Ayla, title=Dr` binds `title`, where 6.1.14 suppresses it.
+    - The replay catches it at one legitimate probe (`name-capital-allowed-list-tr`); the property holds.
+  - `first-suppressed-only.patch`: 286's mutant on this release, `checkAllowedFields` returning after the first
+    suppressed value.
+    - Predicted: the decision tasks as on 6.1.14. The binding check (`ProtectedBinding#protectedKept`) binds one value,
+      so it is established as on 6.1.14.
+    - On a JVM with `id`, `ADMIN` disallowed: `id=5, Id=7` binds id 7, and `admin=false, Admin=true` makes an admin.
+    - **The replay misses it**: "holds" and "pass" on the 38 probes, as on 6.1.14, since no bind probe has two denied
+      names. It is I009's and I019's limit, carried to 288's binding.
+  - The packet already says it claims the decision only. The two halves left to other evidence are the allowed list
+    (preservation, unverified, and one probe) and the binding of more than one value (no claim, no probe).
+  - They go as inbox items: the first to `domain-advances-preservation` (288's preservation task is its), the second to
+    `domain-advances-state` (the binding check is its). Each cites this commit, and the ids go in the next entry.
+  - *Audit*: the decided answer is about `isAllowed`, as its statement says, and stands. No accepted result claims the
+    binding. Nothing for the watcher.
+- Inbox: no open items.
+- Tests: `validate_example.py 288` passed, and `test_costs.py run --changed` passed under `MemoryMax=8G` with
+  `--rust-jobs 1` (22 of 22).
+- Next: item 6's entry for 289's other answers; `srxyxsns`'s adversarial fixture; then `nzsypymy`; and preservation's
+  next commits (its last is still `qmsonuow`).
 - Status: working
 
 ## Loop settings
