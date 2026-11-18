@@ -515,9 +515,48 @@ relational result needs a new check (the rule's applications recorded in the out
     exception classes compared exactly, and wait only on that check. The pairing countermodels pass, with their
     limits stated.
   - **Inbox.** No item came in after I022.
+- 2026-11-18, step 7 (288's preservation profiled; *working formalization* and *accepted claim* unchanged; no job).
+  - **The profile.** Capped probes at the frozen bound (`--timeout 160`): the lemmas are proved first (69 s and 23 s),
+    then the pair stops undecided at about 4100 paths, 8700 solver calls and 1.8 million variables, 136 of 160 s in
+    the solver. A temporary log of every solver call by the frames it came from (removed) shows two costs, and the
+    brief's guess (the locale table) is neither:
+    - Configuring the binder takes about 72 of the 136 s: spring-beans' `canonicalPropertyName`, the same bytecode in
+      both releases, run over every pattern by the allowed change's scope, by 6.1.13 and by 6.1.14. The matcher
+      takes under 3 s.
+    - The cost grows steeply with the bound: trials verify in 13 s at 3 and 42 s at 4, and stay undecided after 150 s
+      at 5 and 6. At 4 the costliest call is the last, `RegressionPair.agree`'s comparison of the two results (15.9
+      s), so VF-031's 1h32m most likely ended in that query.
+    - That query is relational. Outside the allowed change, a disallowed pattern with a capital I configured under
+      tr-TR may match the field in no case. The releases' lower-cased patterns then differ, and only reasoning about
+      both matches shows neither matches.
+  - **Tried, not kept.** Relating the two releases' applications of the `simpleMatch` lemma by their inputs, as the
+    one-function rule relates its calls, with records kept through merges under the merged path's condition. At bound
+    4 it related 154 of 309 applications and saved nothing (46 s; the final query 17 s), since the hard case has
+    unequal inputs. Without the lemma the rule takes 826 `simpleMatch` calls and does not finish in 150 s.
+  - **The next approach** (in 288's notes): a fact about each release alone, a lemma that `simpleMatch` of the
+    lower-cased pattern and field under the claim's locales implies a match ignoring ASCII case. A job at the frozen
+    bound on today's checker would repeat VF-031, so none was queued. Per D035 (I025) this is VF-031's next data
+    point: the profile shows no route to bound 8 within an hour's job.
+  - **A fix found on the way** (`bmc/mod.rs`): a call's record names its result by object number, and a heap merge's
+    `collect` and `renumber` did not map those numbers. After a merge that let go of a call's result, a later related
+    call could take the cells of the array that moved into its place. Records now follow the renumbering and drop a
+    result the state no longer reaches.
+    - The unit test `a_calls_record_names_its_result_by_the_number_a_merge_gives_it` fails without the fix.
+    - Heaps merge only past 1024 paths, so 287 (53) and 307 (75) never met it. Capped probes at their frozen bounds
+      give the same verdicts and counts.
+  - **Inbox.** Four items came in during this cycle:
+    - I023: the one-function rule leaves out what a shared call's outcome can carry (array writes through
+      `Arrays.fill` and `System.arraycopy`, String identity, an `Error`), and `--no-shared-callees` does not turn it
+      off. Taken next.
+    - I024: 288's mutant control that skips the allowed list is told apart only by the preservation claim. Its answer
+      here is the profile above. Whether a new claim should tell it apart is the user's (VF-039's kind), recorded
+      with 288's result.
+    - I025: merge the default line, then rerun `accept.py 307`. Taken next.
+    - I026: 289's two wrong matchers. A decision on its probes, taken after I023; any claim goes to the user.
 - Next:
-  1. Step 7: 288's preservation, profiled first (VF-031).
-  2. When `accept.py` takes a typed target, rerun `accept.py 307` and record the result.
+  1. I025: merge the default line, run `accept.py 307 preservation mutant-preservation`, and record it.
+  2. I023: the `function-countermodels` fixture, `lib/tests/function_countermodels.rs`, and `--no-shared-callees`.
+  3. I026: 289's probes (`dot-inside-pattern`, or a probe whose pattern reads the query).
 - Status: working
 
 ## Loop settings

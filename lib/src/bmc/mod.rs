@@ -1099,6 +1099,15 @@ fn renumber(path: &mut Path, number: &dyn Fn(usize) -> usize) {
     for o in path.literals.values_mut() {
         *o = number(*o);
     }
+    // The results of the calls the path recorded ([`ties::Call`]): a later call related to one takes its result
+    // by the object's number.
+    if path.calls.iter().any(|c| matches!(c.result, Some(Val::R(Some(_)) | Val::C(_)))) {
+        for call in Rc::make_mut(&mut path.calls) {
+            if let Some(v) = &mut call.result {
+                value(v);
+            }
+        }
+    }
 }
 
 /// Whether an object of `class` holds text in its array: a String's content or a StringBuilder's, whose cells at
@@ -1148,6 +1157,19 @@ fn collect(path: &mut Path) {
     }
     if order.len() == path.objects.len() && order.iter().enumerate().all(|(i, o)| i == *o) {
         return;
+    }
+    // A call's result the state no longer reaches goes with it: that record relates no later call by its result.
+    let gone = |v: &Val| match v {
+        Val::R(Some(o)) => number[*o].is_none(),
+        Val::C(c) => c.0.iter().any(|(_, t)| t.is_some_and(|t| number[t].is_none())),
+        _ => false,
+    };
+    if path.calls.iter().any(|c| c.result.as_ref().is_some_and(gone)) {
+        for call in Rc::make_mut(&mut path.calls) {
+            if call.result.as_ref().is_some_and(gone) {
+                call.result = None;
+            }
+        }
     }
     path.objects = order.iter().map(|&o| path.objects[o].clone()).collect();
     renumber(path, &|o| number[o].expect("a reached object"));
@@ -5200,6 +5222,23 @@ mod tests {
     use super::*;
     use crate::classfile::flags;
     use crate::classfile::writer::{ClassWriter, CodeBuilder, MethodWriter};
+
+    /// A call's record names its result by the object's number ([`ties::Call`]), and a later call of the same code
+    /// on equal inputs takes that object's cells or the object itself. When a merge drops the objects the state
+    /// no longer reaches and numbers the rest again ([`collect`]), the record follows: a result still reached is
+    /// named by its new number, and one let go of is no longer the record's, since its number may be another
+    /// object's now. Before, the records kept the old numbers: the first named the array that moved into its place.
+    #[test]
+    fn a_calls_record_names_its_result_by_the_number_a_merge_gives_it() {
+        let mut path = Path { frames: Vec::new(), cond: Vec::new(), models: Vec::new(), undecided: false, resumed: false, objects: vec![Obj::new("[B"), Obj::new("[I"), Obj::new("[B")], literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, loose: false, summarized: Default::default(), calls: Default::default() };
+        // The state reaches the third object alone; the first was a call's result and nothing holds it now.
+        path.statics.insert(("app/A".into(), "kept".into()), Val::R(Some(2)));
+        path.calls = Rc::new(vec![ties::Call::returning(1, Val::R(Some(0))), ties::Call::returning(2, Val::R(Some(2)))]);
+        collect(&mut path);
+        assert_eq!(path.objects.len(), 1);
+        assert!(path.calls[0].result.is_none(), "a result let go of: {:?}", path.calls[0].result);
+        assert!(matches!(path.calls[1].result, Some(Val::R(Some(0)))), "a result reached, by its new number: {:?}", path.calls[1].result);
+    }
 
     /// The module's table says what the engine does with every instruction the decoder gives (each opcode decoded
     /// on its own, its operands zero), and the gap table of [`gaps`] has a row for every kind of gap: a new

@@ -145,9 +145,17 @@ pub(super) struct Call {
     threw: Bits,
     which: Bits,
     /// What it returned, if anything.
-    result: Option<Val>,
+    pub(super) result: Option<Val>,
     /// The cells of each array it reached, after it, in the order its inputs reach them.
     written: Vec<Vec<Bits>>,
+}
+
+#[cfg(test)]
+impl Call {
+    /// A record of a call that returned `result`, for the tests of what keeps it ([`super::collect`]).
+    pub(super) fn returning(id: u64, result: Val) -> Call {
+        Call { id, function: 0, shape: Vec::new(), inputs: Vec::new(), threw: vec![FALSE], which: vec![FALSE], result: Some(result), written: Vec::new() }
+    }
 }
 
 /// A value a call taken as one function reads: a number, the length and cells of an array or a String, or the

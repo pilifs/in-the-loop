@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 139, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-17 23:41 UTC |
-| Prompts | 3,194 |
-| Model calls | 32,238 |
-| Tool calls | 33,204 (587 failed) |
-| Compactions | 472 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-18 01:07 UTC |
+| Prompts | 3,199 |
+| Model calls | 32,336 |
+| Tool calls | 33,301 (589 failed) |
+| Compactions | 473 |
 | Subagents | 21 |
-| Tokens written | 31,904,447 |
-| Tokens read | 5,314,328,341 (98.1% from cache) |
-| Commits with a trace | 1,005 |
-| Log snapshots | 1,307 (2956.6 MB gzipped, 1,162 uploaded) |
+| Tokens written | 31,978,876 |
+| Tokens read | 5,328,726,254 (98.1% from cache) |
+| Commits with a trace | 1,006 |
+| Log snapshots | 1,308 (2961.4 MB gzipped, 1,162 uploaded) |
 
 ## Sessions
 
@@ -165,7 +165,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | open | 8 h 41 min | `claude-opus-5-5` | 22 | 165 | 159 | 2 | 1 | 288,290 | 75 |
 | 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | open | 4 h 3 min | `claude-opus-5-5` | 84 | 681 | 678 | 13 | 15 | 186,120 | 22 |
 | 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | open | 9 h 49 min | `claude-opus-5-5` | 109 | 1,079 | 1,088 | 24 | 19 | 294,636 | 21 |
-| 2026-11-17 12:56 UTC | [f28025bc-e46b-4a87-a943-bfb79dea5465](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | open | 10 h 44 min | `claude-opus-5-5` | 61 | 1,001 | 1,001 | 11 | 12 | 463,604 | 114 |
+| 2026-11-17 12:56 UTC | [f28025bc-e46b-4a87-a943-bfb79dea5465](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | open | 12 h 11 min | `claude-opus-5-5` | 66 | 1,099 | 1,098 | 13 | 13 | 463,604 | 115 |
 | 2026-11-17 18:37 UTC | [Agent brief preservation work 287 308](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | ended | 2 h 45 min | `claude-fable-5-2` | 7 | 171 | 189 | 3 | 2 | 466,832 | 22 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
@@ -313,15 +313,15 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 122,327 | 366 | 550,150 | 23,897,037 | 97.7% | 200 |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 469,172 | 1,388 | 1,808,399 | 65,588,806 | 97.3% | 144 |
 | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 916,845 | 2,198 | 3,056,035 | 128,156,029 | 97.7% | 143 |
-| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 903,878 | 2,016 | 2,529,338 | 155,941,551 | 98.4% | 175 |
+| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 978,307 | 2,214 | 2,743,230 | 170,125,374 | 98.4% | 177 |
 | [`88045564`](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | 267,328 | 348 | 615,072 | 43,806,783 | 98.6% | 166 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 29,621 | 89.2% | 139 |
-| `Read` | 1,324 | 4.0% | 60 |
+| `Bash` | 29,717 | 89.2% | 139 |
+| `Read` | 1,325 | 4.0% | 60 |
 | `Edit` | 1,027 | 3.1% | 58 |
 | `Write` | 685 | 2.1% | 57 |
 | `ToolSearch` | 184 | 0.6% | 45 |
@@ -1348,6 +1348,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 1003 | change `xuwlklyo` | The checker takes bcrypt's crypt_raw as one function of both releases: a call on a receiver nothing reads after it, returning an array it makes; 287's preservation verifies in a capped probe at bound 80 (verification pending) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/70f5ca6b65006ca5a10663bc49aa696662280ca46ba1124182e24756d7cd5ac1.jsonl.gz)) |
 | 1004 | change `sqprlwkv` | Merge the challenge stream's log, stand-in and supertype countermodels; a logged record's getter that can raise an Error, and a class whose header differs, are no longer taken as harmless or as the same code | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/312965c823dbfb7c0ae0089f463b893456985a94d0fbdff107853cab5779e904.jsonl.gz)) |
 | 1005 | change `qmsonuow` | Merge the default line's job results: 287's preservation established at bound 80 and accepted; 307's two tasks decided, refused by accept.py's entry check alone | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/e396977d47f36ff4cc48c88b446011f26862499db2cad66f9e6cfcdbf9264982.jsonl.gz)) |
+| 1006 | change `mwvyxxyr` | 288's preservation profiled: the binder's configuration and a last relational query hold the time, not the locale table; a call's record follows the objects a heap merge numbers again | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/8f43d8eb0e90ccdf23d581544387ab5dd3baf9ab5bc1fb40b3f88086624d964a.jsonl.gz)) |
 
 ## Logs
 
@@ -1492,7 +1493,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 14 | 0 | 6.5 MB | `b0ef12008f89`, not uploaded |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 20 | 0 | 36.3 MB | `b38cb00ee8e3`, not uploaded |
 | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 21 | 0 | 52.8 MB | `bbd1d15f7193`, not uploaded |
-| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 19 | 0 | 39.4 MB | `e396977d47f3`, not uploaded |
+| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 20 | 0 | 44.2 MB | `8f43d8eb0e90`, not uploaded |
 | [`88045564`](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | 14 | 0 | 8.2 MB | `bf1751029245`, not uploaded |
 
 ## Session notes
