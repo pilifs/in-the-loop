@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (ended) |
+| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (open) |
 | When | 2026-11-17 12:37 UTC to 2026-11-17 21:19 UTC (521 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.326 |
@@ -532,6 +532,12 @@ Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261117-225
 change `vpxltzttrssu` · [log `b0ef12008f89`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/b0ef12008f89c3a580f61ba79aaec00c30364093653b86e6ff301e48bef9e435.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261117-230459-example-287-preservation-at-the-frozen-b: passed: 1 passed step(s) in 1m50s, peak 2.2 GiB (estimated 10m00s, 6.0 GiB); 4 output file(s) changed; signals: jvmcontract:holds×2 Applied 4 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
+### State is done and held unmerged until challenge is merged, as the user's merge order asks
+
+change `nwsyrxqkypxs` · [log `b0ef12008f89`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/b0ef12008f89c3a580f61ba79aaec00c30364093653b86e6ff301e48bef9e435.jsonl.gz)
+
+Event 24 answered leave (D033): D021 merges challenge before state, and challenge is still running.
 
 ## Conversation
 
