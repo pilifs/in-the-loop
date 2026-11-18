@@ -414,6 +414,10 @@ class SingleRunTest(unittest.TestCase):
         self.assertEqual(self.calls(), [])
         text = self.record()
         self.assertIn("The session's turns are carried by codex, which runs gpt-6.2-sol for the claude-opus-5-5 this loop asks for.", text)
+        # and names the thread Codex gave the session, under which its trace is: the statistics and the published
+        # record find the run by it (loop_stats.record_session)
+        self.assertIn(f"Codex thread {thread} carries session {started['session']}.", text)
+        self.assertEqual(loop_stats.record_session(text), thread)
         self.assertRegex(text, r"Ended \S+ \S+ after 2 cycle\(s\): the run was ended there \(the watcher: The thing works\.\)")
         self.assertEqual(json.loads(self.tool("status", "thing")[1])["client"], "codex")
         # a run keeps its client, and a Codex session is not a fork of a Claude Code conversation

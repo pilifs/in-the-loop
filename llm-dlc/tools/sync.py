@@ -1094,7 +1094,8 @@ def run_records() -> list[tuple[Path, str | None]]:
     for path in sorted(LOOP_SUMMARIES.glob("*.md")) if LOOP_SUMMARIES.is_dir() else []:
         text = path.read_text(errors="replace")
         if text.startswith("# Feature loop:"):
-            out.append((path, m["sid"] if (m := RUN_HEADER.search(text)) else None))
+            # the session whose log holds the run: the Codex thread the record names, for a loop Codex carried
+            out.append((path, (loop_stats.record_session(text) or m["sid"]) if (m := RUN_HEADER.search(text)) else None))
     return out
 
 

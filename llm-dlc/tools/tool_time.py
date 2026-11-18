@@ -41,6 +41,7 @@ import sys
 import urllib.request
 from pathlib import Path
 
+import codex_rollout  # Codex sessions' logs, read as Claude Code transcripts
 import metrics
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -83,11 +84,20 @@ def discover(root: Path) -> dict[str, str]:
             if m:
                 found[m[1]] = brief.stem
     for record in sorted((root / "llm-dlc" / "loop-summaries").glob("*.md")):
-        m = re.search(r"\bsession ([0-9a-f]{8}-[0-9a-f-]{27})\b", record.read_text()[:4000])
+        text = record.read_text()
+        m = re.search(r"\bsession ([0-9a-f]{8}-[0-9a-f-]{27})\b", text[:4000])
         name = re.sub(r"^\d{4}-\d\d-\d\d-\d{6}-", "", record.stem)
         if m and name != record.stem:
             found.setdefault(m[1], name)
+        # A session Codex carried is traced under Codex's thread id, which its record names (feature-loop.sh):
+        # the thread is the session whose log holds the loop's time, for the brief the loop's session ran.
+        for thread, sid in THREAD.findall(text):
+            if sid in found:
+                found.setdefault(thread, found[sid])
     return found
+
+
+THREAD = re.compile(r"^Codex thread ([0-9a-f]{8}-[0-9a-f-]{27}) carries session ([0-9a-f]{8}-[0-9a-f-]{27})\.$", re.M)
 
 
 def loop_of(brief: str, briefs: set[str]) -> str:
@@ -125,7 +135,9 @@ def load_entries(root: Path, sid: str, fetch: bool, cache: Path = CACHE) -> list
         candidates[-1].write_bytes(raw)
     if data is None or hashlib.sha256(data).hexdigest() != sha:
         return None
-    return read_jsonl(data)
+    entries = read_jsonl(data)
+    # a Codex session's log is its rollout: read as sync.py reads it, one transcript entry per line
+    return codex_rollout.claude_view(entries) if codex_rollout.looks_like_rollout(entries) else entries
 
 
 def read_jsonl(data: bytes) -> list[dict]:
@@ -178,6 +190,10 @@ def read_calls(entries: list[dict]) -> list[dict]:
                     calls[b["id"]] = {"batch": msg.get("id") or e.get("requestId"), "name": b.get("name"),
                                       "input": inp, "category": classify(b.get("name"), inp),
                                       "start": metrics._ms(ts), "end": None, "text": ""}
+                    if (ran := b.get("codexResult")) is not None:
+                        # Codex: a command or a patch that a tool call ran, with its end and its output on the
+                        # same line (codex_rollout.claude_view). It is what the agent waited for.
+                        calls[b["id"]].update(end=metrics._ms(ran.get("end") or ts), text=_text(ran.get("content")), ran=True)
         elif e.get("type") == "user":
             for b in metrics._blocks(e.get("message")):
                 call = calls.get(b.get("tool_use_id")) if b.get("type") == "tool_result" else None
@@ -198,7 +214,16 @@ def read_calls(entries: list[dict]) -> list[dict]:
                     names = _redirects(inp.get("command") or "") | ({f"{tid}.output", tid} if tid else set())
                     if names:
                         background.append((names, call["category"].removeprefix(WAIT)))
-    return [c for c in calls.values() if c["end"] is not None]
+    done = [c for c in calls.values() if c["end"] is not None]
+    # Codex's model calls a tool (`exec`) that runs commands, and the log has both: the call, and each command
+    # with its own times. Where a call's batch holds the commands it ran, the commands are the calls: the wrapper
+    # would count the same wait twice and file it under no category.
+    ran: dict[str, list[dict]] = {}
+    for c in done:
+        if c.get("ran"):
+            ran.setdefault(c["batch"], []).append(c)
+    return [c for c in done if c.get("ran")
+            or not any(c["start"] <= r["end"] and r["start"] <= c["end"] for r in ran.get(c["batch"], []))]
 
 
 def batches(calls: list[dict]) -> list[tuple[str, int]]:

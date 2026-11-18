@@ -95,6 +95,17 @@ class View(unittest.TestCase):
         self.assertEqual(by_name["exec"]["status"], "ok")
         self.assertEqual(len(t["prompts"]), 1)
 
+    def test_a_model_call_starts_when_the_model_was_handed_the_turn(self):
+        # A response's items are written together when it ends: the call began at the prompt, and the next one at
+        # the tool call's output, so the model's share of the time is the wait for it and not a few milliseconds.
+        t = metrics.read_transcript(self.view, None, lambda s: s)
+        self.assertEqual([(c["start"][17:23], c["end"][17:23]) for c in t["calls"]], [("00.400", "03.400"), ("04.000", "05.010")])
+        prompt = metrics.session({"session_id": SID}, self.view, [], {"models": {}}, lambda s: s)["prompts"][0]
+        self.assertEqual((prompt["model_ms"], prompt["agent_ms"]), (3000 + 1010, 4610))
+        # a command or a patch that a tool call ran has its own times, and no call's start
+        self.assertEqual([("requestStart" in e) for e in self.view if e.get("type") == "assistant"
+                          and any("codexResult" in b for b in e["message"]["content"])], [False, False])
+
 
 class Finding(unittest.TestCase):
     def test_session_ids_and_repo_filter(self):

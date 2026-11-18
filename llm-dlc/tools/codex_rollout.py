@@ -21,6 +21,8 @@ What maps to what:
 - `item_completed` CommandExecution and FileChange, the shell commands and patches a tool call ran:
   a `Bash` or `apply_patch` tool_use of the response that made the call, with its result inline
   (`codexResult`), since both ends are on one line.
+- a model call's time: a response's items are written when it ends, so the call starts (`requestStart`) when
+  the model was last handed the turn, by a prompt, a tool call's output or a compaction.
 - usage: OpenAI's input_tokens includes cached and cache-written tokens, Claude's does not, so the
   cached ones move to cache_read_input_tokens and cache_creation_input_tokens. output_tokens includes
   reasoning in both; the reasoning share goes to output_tokens_details.thinking_tokens.
@@ -174,16 +176,23 @@ def claude_view(entries: list[dict]) -> list[dict]:
             usage[ids[i]] = _usage(e["payload"].get("usage") or {})
     out: list[dict] = []
     model, effort, last_response = None, None, None
+    asked = None  # when the model was last handed the turn: a prompt, a tool's output, a compaction
     for i, e in enumerate(entries):
         p = e.get("payload") if isinstance(e.get("payload"), dict) else {}
         kind, sub, ts = e.get("type"), p.get("type"), e.get("timestamp")
         filler = {"type": "codex", "codexType": f"{kind}/{sub}" if sub else kind, "timestamp": ts}
 
         def assistant(content: list[dict], rid: str | None = None, when: str | None = None) -> dict:
+            own = rid is None  # an item of the model's response, not a command or patch a tool call ran
             rid = rid or ids[i]
-            return {"type": "assistant", "timestamp": when or ts, "effort": effort,
-                    "message": {"id": rid, "role": "assistant", "model": model, "content": content,
-                                "usage": usage.get(rid, {})}}
+            entry = {"type": "assistant", "timestamp": when or ts, "effort": effort,
+                     "message": {"id": rid, "role": "assistant", "model": model, "content": content,
+                                 "usage": usage.get(rid, {})}}
+            if own and asked and ts and asked <= ts:
+                # A response's items are written together when it ends, so their own times say nothing of how long
+                # the model took: the call began when the model was handed the turn (metrics.py reads this).
+                entry["requestStart"] = asked
+            return entry
 
         if kind == "session_meta":
             out.append({**filler, "version": p.get("cli_version"), "cwd": p.get("cwd")})
@@ -192,6 +201,7 @@ def claude_view(entries: list[dict]) -> list[dict]:
             effort = ((p.get("collaboration_mode") or {}).get("settings") or {}).get("reasoning_effort") or p.get("effort")
             out.append(filler)
         elif kind == "compacted":
+            asked = ts
             out.append({"type": "system", "subtype": "compact_boundary", "timestamp": ts, "compactMetadata": {}})
         elif kind == "token_usage_record":
             last_response = ids[i]
@@ -204,6 +214,7 @@ def claude_view(entries: list[dict]) -> list[dict]:
             name, inp = _tool_input(p)
             out.append(assistant([{"type": "tool_use", "id": p.get("call_id") or p.get("id"), "name": name, "input": inp}]))
         elif kind == "response_item" and sub in OUTPUT_ITEMS:
+            asked = ts
             o = p.get("output")
             text = o if isinstance(o, str) else _text(o) if isinstance(o, list) else json.dumps(o)
             out.append({"type": "user", "timestamp": ts, "message": {"role": "user", "content": [
@@ -213,6 +224,7 @@ def claude_view(entries: list[dict]) -> list[dict]:
             item = p.get("item") or {}
             itype = item.get("type")
             if itype == "UserMessage":
+                asked = ts
                 out.append({"type": "user", "timestamp": ts, "message": {"role": "user", "content": _text(item.get("content"))}})
             elif itype in ("CommandExecution", "FileChange"):
                 end = _iso_ms(p.get("completed_at_ms")) or ts

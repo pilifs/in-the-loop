@@ -506,10 +506,15 @@ cycle, the commit check, the decision, the conductor's questions, the verificati
   transcript, so a commit a Codex worker makes with `sync.py commit` carries its own session's `LLM-Trace` line
   and `check` verifies it ([specification](specification.md)). A thread that was only asked a question is not a
   session of the checkout.
+- **Statistics.** Codex traces a session under its own thread id, not the id the loop gave it, so a loop's record
+  says which: `Codex thread THREAD carries session SESSION.`, written once the thread exists. The loop statistics
+  (`loop_stats.py`), the published record and the time report (`tool_time.py`) find the run's session by that
+  line. A Codex model call is timed from when the model was handed the turn (its items are written only when it
+  ends), a command a tool call ran is the call that is timed and filed by what it ran, and a cost that leaves out
+  calls of a model with no price is printed as `?` or `$1.50+?`, with a note naming the runs.
 - **Not yet.** Codex hooks (a project's hooks run only in a checkout Codex trusts, which a fresh sibling
   workspace is not, so nothing is exported to Langfuse while a Codex session runs, and a plain `jj commit` by a
-  Codex worker gets its trace at the next sync, not at once); the time and loop statistics (`tool_time.py`,
-  `loop_stats.py`) and subagent threads of a Codex session; the proof stages of `/prove-java-change` and the
+  Codex worker gets its trace at the next sync, not at once); subagent threads of a Codex session; the proof stages of `/prove-java-change` and the
   standalone verification loop; runtime (released) checkouts.
 
 ## Sessions

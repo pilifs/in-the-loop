@@ -162,6 +162,64 @@ class Sessions(unittest.TestCase):
         (d / "manifest.json").write_text(json.dumps(manifest))
         return data, sha
 
+    def test_a_codex_sessions_commands_are_the_calls_and_the_tool_that_ran_them_is_not_counted_twice(self):
+        def ran(second, end, mid, tid, command, output="ok"):
+            block = {"type": "tool_use", "id": tid, "name": "Bash", "input": {"command": command},
+                     "codexResult": {"end": at(end), "content": output, "is_error": False}}
+            return {"type": "assistant", "timestamp": at(second), "message": {"id": mid, "model": "m", "content": [block]}}
+
+        wrapper = lambda tid: {"type": "tool_use", "id": tid, "name": "exec", "input": {"code": "await tools.exec_command(...)"}}
+        entries = [
+            prompt(0),
+            reply(10, "r1", wrapper("w1")),           # the model's call of the tool
+            ran(10, 70, "r1", "c1", "cd lib && cargo test --test heap", CARGO_OUTPUT),
+            ran(10, 12, "r1", "c2", "jj status"),     # two commands of one call, side by side
+            result(40, "w1", "still running"),        # the tool answers before the long command ends
+            reply(80, "r2", wrapper("w2")),           # a call that ran no command: it stays a call
+            result(85, "w2"),
+        ]
+        calls = tt.read_calls(entries)
+        self.assertEqual(sorted((c["name"], c["category"], (c["end"] - c["start"]) // 1000) for c in calls),
+                         [("Bash", "cargo test", 60), ("Bash", tt.OTHER, 2), ("exec", tt.OTHER, 5)])
+        self.assertEqual(sorted(tt.batches(calls)), [("cargo test", 60_000), (tt.OTHER, 5_000)])
+        cargo = tt.session_time(SID, entries)["cargo"]  # cargo's own timings are read from the command's kept output
+        self.assertEqual((len(cargo), cargo[0]["ms"], cargo[0]["compile_s"], dict(cargo[0]["binaries"])["conformance.rs"]),
+                         (1, 60_000, 62.5, 60.5))
+
+    def test_a_codex_log_is_read_as_a_transcript_and_its_thread_stands_for_the_loops_session(self):
+        thread = "00000000-0000-7000-8000-00000000000c"
+        rollout = [
+            {"timestamp": at(0), "type": "session_meta", "payload": {"id": thread, "cwd": "/repo", "cli_version": "0.0"}},
+            {"timestamp": at(1), "type": "event_msg", "payload": {"type": "item_completed", "item": {
+                "type": "UserMessage", "content": [{"type": "text", "text": "Work on the brief"}]}}},
+            {"timestamp": at(5), "type": "response_item", "payload": {"type": "custom_tool_call", "call_id": "w1", "name": "exec",
+                                                                    "input": "await tools.exec_command({cmd: 'cargo build'})"}},
+            {"timestamp": at(5), "type": "token_usage_record", "payload": {"response_id": "r1", "usage": {"input_tokens": 1, "output_tokens": 1}}},
+            {"timestamp": at(35), "type": "event_msg", "payload": {"type": "item_completed", "started_at_ms": 946720805000,
+                                                                 "completed_at_ms": 946720835000, "item": {
+                "type": "CommandExecution", "id": "c1", "command": ["/bin/bash", "-lc", "cd lib && cargo build"], "exit_code": 0,
+                "aggregated_output": "Finished"}}},
+            {"timestamp": at(36), "type": "response_item", "payload": {"type": "custom_tool_call_output", "call_id": "w1", "output": "Finished"}},
+        ]
+        data = "".join(json.dumps(e) + "\n" for e in rollout).encode()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "llm-dlc/loops").mkdir(parents=True)
+            (root / "llm-dlc/loops/made-up.md").write_text(f"## Loop settings\n\n- session: {SID}\n")
+            (root / "llm-dlc/loop-summaries").mkdir()
+            (root / "llm-dlc/loop-summaries/2000-01-01-100000-made-up.md").write_text(
+                f"# Feature loop: made-up\n\nStarted 2000-01-01 10:00:00 UTC, 1 cycles, session {SID}, m at high effort.\n\n"
+                f"## Commits\n\nCodex thread {thread} carries session {SID}.\n\n")
+            traces = root / "llm-dlc/traces" / thread
+            (traces / "logs").mkdir(parents=True)
+            sha = hashlib.sha256(data).hexdigest()
+            (traces / "logs" / f"{sha}.jsonl.gz").write_bytes(gzip.compress(data))
+            (traces / "manifest.json").write_text(json.dumps({"log": {"sha256": sha, "path": f"llm-dlc/traces/{thread}/logs/{sha}.jsonl.gz"}}))
+            self.assertEqual(tt.discover(root), {SID: "made-up", thread: "made-up"})
+            entries = tt.load_entries(root, thread, fetch=False)
+        calls = tt.read_calls(entries)
+        self.assertEqual([(c["name"], c["category"], c["end"] - c["start"]) for c in calls], [("Bash", "cargo build", 30_000)])
+
     def test_discover_and_loop_of(self):
         self.brief("foundations", "11111111-1111-4111-8111-111111111111")
         self.brief("foundations-heap", "22222222-2222-4222-8222-222222222222")

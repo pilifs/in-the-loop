@@ -258,6 +258,8 @@ def read_transcript(entries: list[dict], agent: str | None, clean: Clean) -> dic
             call = calls.setdefault(msg.get("id") or e.get("requestId"), _new_call(e, msg, line, agent, window, prompt))
             if e.get("requestRef") in requests:
                 call["start"] = min(call["start"], requests[e["requestRef"]])
+            if e.get("requestStart"):  # a Codex call: when the model was handed the turn (codex_rollout.claude_view)
+                call["start"] = min(call["start"], e["requestStart"])
             call["end"] = max(call["end"], ts)
             call["stop_reason"] = msg.get("stop_reason") or call["stop_reason"]
             call["thinking_ms"] += e.get("thinkingDurationMs") or 0

@@ -563,6 +563,13 @@ if [[ -n "$BRIEF" ]]; then
   # sentence, with the precedence of the brief over the user's decisions over the conductor's messages.
   INSTRUCTION="$INSTRUCTION $(python3 llm-dlc/tools/inbox.py instruction "$PROMPT")" || exit 1
 fi
+# A session carried by Codex is traced under Codex's own thread id, which the record has to name for the run's
+# statistics and its published copy to find the session (loop_stats.py, sync.py). A session that is continued has
+# its thread already; a new one has it once its first turn has started, and the line is added then.
+CODEX_THREAD=
+if [[ "$CLIENT" == codex ]]; then
+  CODEX_THREAD=$(python3 "$AGENT_CLIENT" thread --session "$SESSION_ID" --cwd "$ROOT" 2>/dev/null) || CODEX_THREAD=
+fi
 {
   echo "# Feature loop: $PROMPT"
   echo
@@ -571,6 +578,10 @@ fi
   if [[ "$CLIENT" != claude ]]; then
     echo "The session's turns are carried by $CLIENT$([[ "$MODEL" != "$MODEL_ASKED" ]] && echo ", which runs $MODEL for the $MODEL_ASKED this loop asks for")."
     echo
+    if [[ -n "$CODEX_THREAD" ]]; then
+      echo "Codex thread $CODEX_THREAD carries session $SESSION_ID."
+      echo
+    fi
   fi
   if [[ -n "$SINGLE" ]]; then
     echo "> $(one_line "$INSTRUCTION")"
@@ -1179,6 +1190,13 @@ while :; do
   # What the cycle is told, by digest: the same task given to another client shows the same one.
   log "cycle $cycle: the instruction is ${#INSTRUCTION} characters, sha256 $(printf '%s' "$INSTRUCTION" | sha256sum | cut -c1-16), carried by $CLIENT ($MODEL at $EFFORT effort)"
   run_claude "$INSTRUCTION" "$STATE.turn" || log "cycle $cycle: $CLIENT exited with status $?"
+  if [[ "$CLIENT" == codex && -z "$CODEX_THREAD" ]]; then
+    CODEX_THREAD=$(python3 "$AGENT_CLIENT" thread --session "$SESSION_ID" --cwd "$ROOT" 2>/dev/null) || CODEX_THREAD=
+    if [[ -n "$CODEX_THREAD" ]]; then
+      note "Codex thread $CODEX_THREAD carries session $SESSION_ID."
+      note
+    fi
+  fi
   unset LOOP_WATCH_BASE LOOP_WATCH_PID LOOP_WATCH_MARK LOOP_WATCH_NOTES LOOP_WATCH_STOP LOOP_WATCH_CYCLE LOOP_WATCH_ITEM LOOP_WATCH_SESSION LOOP_WATCH_TRANSCRIPT
   if [[ -s "$STATE.compacted" ]]; then
     compacted=$(<"$STATE.compacted")

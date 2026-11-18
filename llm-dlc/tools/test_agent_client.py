@@ -180,6 +180,10 @@ class ATurn(Fixture):
         attempts = sorted(p.name for p in (self.base / "state" / "attempts" / self.session).glob("*.jsonl"))
         self.assertEqual([a[:4] for a in attempts], ["001-", "002-"])
         self.assertEqual(self.client("exists", "--client", "codex", "--session", self.session, "--cwd", str(self.cwd))[0], 0)
+        r = subprocess.run([sys.executable, str(TOOLS / "agent_client.py"), "thread", "--session", self.session, "--cwd", str(self.cwd)],
+                           env=self.env, capture_output=True, text=True)
+        self.assertEqual((r.returncode, r.stdout.strip()), (0, thread))  # what a loop writes into its record
+        self.assertEqual(self.client("thread", "--session", str(uuid.uuid4()), "--cwd", str(self.cwd))[0], 1)
         self.assertEqual(self.client("exists", "--client", "codex", "--session", str(uuid.uuid4()), "--cwd", str(self.cwd))[0], 1)
 
     @cost("tool")

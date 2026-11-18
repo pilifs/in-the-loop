@@ -600,6 +600,7 @@ def main(argv: list[str] | None = None) -> int:
     c.add_argument("--timeout", type=float, default=900)
     common(sub.add_parser("exists"))
     common(sub.add_parser("binding"), client=False)
+    common(sub.add_parser("thread"), client=False)
     common(sub.add_parser("instructions"), session=False)
     v = sub.add_parser("resolve")
     v.add_argument("--client", choices=CLIENTS, required=True)
@@ -617,6 +618,12 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(plan(a.client, a.model, a.effort)))
             return 0
         cwd = Path(a.cwd).resolve()
+        if a.command == "thread":  # the Codex thread a loop's session is bound to, for the loop's record
+            bound = binding(a.session, cwd) or {}
+            if not bound.get("thread"):
+                return 1
+            print(bound["thread"])
+            return 0
         if a.command == "binding":
             print(json.dumps(binding(a.session, cwd), indent=1))
             return 0
