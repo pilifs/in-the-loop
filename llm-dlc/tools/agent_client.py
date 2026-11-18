@@ -222,16 +222,24 @@ def codex_argv(model: str, effort: str, last: Path, thread: str | None, cwd: Pat
             "--skip-git-repo-check", "-m", model, "-c", f'model_reasoning_effort="{effort}"']
     for setting in CODEX_CONFIG:
         argv += ["-c", setting]
-    argv += ["-o", str(last)]
-    # A resumed thread keeps its sandbox, its approvals and its folder: `resume` takes none of them.
-    if thread:
-        return argv + [thread, prompt]
     # `auto` is the counterpart of the `--permission-mode auto` the loops give Claude Code: the workspace-write
     # sandbox, and a request to leave it (sync.py commit writes the repository's store, outside a sibling
-    # workspace) goes to Codex's automatic review, since nobody is there to answer. Tried 2026-11-18 on 0.169:
-    # with approval_policy on-request alone a headless turn cannot ask at all, and --add-dir does not open the
-    # store. A sandbox named outright (read-only, for a role that must not write) is given as it is.
-    return argv + (["--approve-for-me"] if sandbox == "auto" else ["-s", sandbox]) + ["-C", str(cwd), prompt]
+    # workspace) goes to Codex's automatic review, since nobody is there to answer. These three settings are what
+    # `--approve-for-me` sets, given as settings because **every turn needs them, a resumed one too**: `exec
+    # resume` takes no sandbox flag and does not keep the thread's (the first live rehearsal's second cycle found
+    # itself read-only with approvals off and could not commit, 2026-11-18, CLI 0.169). Tried the same day: with
+    # the approval policy alone, and no reviewer, a headless turn cannot ask at all, and --add-dir does not open
+    # the store. A sandbox named outright (read-only, for a role that must not write) is given as it is.
+    if sandbox == "auto":
+        for setting in ('sandbox_mode="workspace-write"', 'approval_policy="on-request"', 'approvals_reviewer="auto_review"'):
+            argv += ["-c", setting]
+    else:
+        argv += ["-c", f'sandbox_mode="{sandbox}"']
+    argv += ["-o", str(last)]
+    # A resumed thread keeps its folder: `resume` takes none.
+    if thread:
+        return argv + [thread, prompt]
+    return argv + ["-C", str(cwd), prompt]
 
 
 def cmd_run(session: str, model: str, effort: str, cwd: Path, sandbox: str, prompt: str) -> int:

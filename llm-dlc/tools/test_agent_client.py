@@ -117,7 +117,9 @@ class ATurn(Fixture):
         self.assertEqual(argv[argv.index("-m") + 1], "gpt-6.2-sol")  # Sol 6.2 for the brief's Opus 5.5
         self.assertIn('model_reasoning_effort="high"', argv)  # never the machine's own default
         self.assertIn('project_doc_fallback_filenames=["CLAUDE.md"]', argv)
-        self.assertIn("--approve-for-me", argv)  # nobody is there to answer a request to leave the sandbox
+        # the workspace-write sandbox, and nobody is there to answer a request to leave it: Codex's own review does
+        for setting in ('sandbox_mode="workspace-write"', 'approval_policy="on-request"', 'approvals_reviewer="auto_review"'):
+            self.assertIn(setting, argv)
         self.assertEqual((argv[argv.index("-C") + 1], argv[-1]), (str(self.cwd), "Do the first piece."))
         # the stream is the one the loops read from Claude Code
         self.assertEqual([e["type"] for e in events], ["system", "assistant", "assistant", "assistant", "result"])
@@ -147,8 +149,12 @@ class ATurn(Fixture):
         argv = self.calls()[1]["argv"]
         self.assertEqual(argv[:3], ["exec", "resume", "--json"])
         self.assertEqual(argv[-2:], [thread, "Go on."])
-        self.assertNotIn("-C", argv)  # a resumed thread keeps its folder and its sandbox
-        self.assertNotIn("--approve-for-me", argv)
+        self.assertNotIn("-C", argv)  # a resumed thread keeps its folder
+        # and not its sandbox or its approvals: a resumed turn that is not given them again is read-only
+        for setting in ('sandbox_mode="workspace-write"', 'approval_policy="on-request"', 'approvals_reviewer="auto_review"'):
+            self.assertIn(setting, argv)
+        self.assertEqual([a for a in argv if "sandbox_mode" in a or "approv" in a],
+                         [a for a in self.calls()[0]["argv"] if "sandbox_mode" in a or "approv" in a])
         self.assertEqual(self.calls()[1]["cwd"], str(self.cwd))
         self.assertIn("report of turn 2", events[-1]["result"])
         self.assertEqual((self.binding()["thread"], self.binding()["attempts"]), (thread, 2))

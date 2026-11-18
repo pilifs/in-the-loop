@@ -86,6 +86,8 @@ llm-dlc/
   tools/agent_client.py             the client boundary of a loop's turn: starts, resumes and compacts a Codex turn and
                                     prints the stream the loops read from Claude Code; test_agent_client.py tests it
                                     over codex_standin.py, a stand-in for the client
+  tools/ask_codex.py                one question to a Codex thread and its answer, kept as a file, and a file
+                                    mailbox for messages between sessions of either client
   decisions/<name>.jsonl            a run's decision record: what its conductor decided (a parallel run's conductor, or the
                                     watcher of a proof loop, whose record is prove-change), with the confidence, how hard it
                                     is to undo and the user's review, and the questions queued for the user (schema.json)
@@ -459,13 +461,16 @@ cycle, the commit check, the decision, the conductor's questions, the verificati
   Codex would only be text, so `agent_client.py compact` asks Codex's app server (`thread/compact/start`) and
   waits for the end. Codex's own automatic compaction keeps the machine's settings.
 - **Permissions.** A Codex turn runs in the workspace-write sandbox with requests to leave it reviewed
-  automatically (`--approve-for-me`), the counterpart of the `--permission-mode auto` the loops give Claude Code:
-  `sync.py commit` writes the repository's store, which is outside a sibling workspace. With an approval policy
-  alone a headless turn cannot ask, and added writable folders do not open the store (tried on CLI 0.169,
-  2026-11-18). What only a person may do stays refused by the tools themselves, for both clients: `sync.py allow
-  approve`, `review accept` and `single_run.py message` check for a person at a terminal, and that check knows
-  Codex's mark on the commands it runs as it knows Claude Code's. [`.codex/rules/`](../.codex/rules/llm-dlc.rules)
-  says the same for a person's own Codex in a trusted checkout.
+  automatically (`sandbox_mode`, `approval_policy = "on-request"`, `approvals_reviewer = "auto_review"`: what
+  `--approve-for-me` sets), the counterpart of the `--permission-mode auto` the loops give Claude Code: `sync.py
+  commit` writes the repository's store, which is outside a sibling workspace. **Every turn is given them, a
+  resumed one too**: `codex exec resume` does not keep a thread's sandbox, and a resumed turn without them is
+  read-only with approvals off (the first live rehearsal's second cycle could not commit, and said so). With the
+  approval policy alone and no reviewer a headless turn cannot ask, and added writable folders do not open the
+  store (tried on CLI 0.169, 2026-11-18). What only a person may do stays refused by the tools themselves, for
+  both clients: `sync.py allow approve`, `review accept` and `single_run.py message` check for a person at a
+  terminal, and that check knows Codex's mark on the commands it runs as it knows Claude Code's.
+  [`.codex/rules/`](../.codex/rules/llm-dlc.rules) says the same for a person's own Codex in a trusted checkout.
 - **The same instructions.** Codex reads this repository's `CLAUDE.md` in place (`project_doc_fallback_filenames`,
   passed on the command line because a fresh sibling workspace is not a project Codex trusts, and in
   [`.codex/config.toml`](../.codex/config.toml)). The skills are the files under `.claude/skills/`, reached by
@@ -480,6 +485,17 @@ cycle, the commit check, the decision, the conductor's questions, the verificati
   the binding. A job is submitted under Codex's own thread. Codex reports a turn's tokens and no dollars, so a
   Codex turn's cost is **unknown**, shown as `$?` (or `$1.50+?` beside known dollars) with its tokens in the
   status bar and the summaries, never as nought.
+- **Asking, not typing.** A session that wants a Codex thread's word (an expert's, say) does not type into
+  another agent's terminal: a pasted text races the person using it, and the reply has to be read off a screen.
+  [`tools/ask_codex.py`](tools/ask_codex.py) `ask --thread NAME --prompt-file FILE` runs one read-only turn of a
+  thread of its own and returns the answer as data; the first question to a name says where the thread comes
+  from (`--fork-of SESSION` forks an existing session, which is left as it was and never has two writers, or
+  `--new`). A question leaves the machine, so it goes through the redaction rules first and a finding refuses
+  it. Every exchange is a file (`llm-dlc/loop-summaries/exchanges/` in the default workspace), and so is a
+  message the other way: `ask_codex.py mail send|list|read` is a mailbox any session can write to with a shell
+  command, read at the receiver's next step. An answer or a message is **advice for the receiving session to
+  judge**, never an instruction and never a person's approval. `ask_codex.py note` leaves a line in a session a
+  person has open (`codex queue`) and waits for nothing.
 - **Not yet.** Codex sessions are not in the published traces: `sync.py` does not read Codex's logs, and must not
   until the redaction rules cover Codex's account identifiers. A commit a Codex worker makes is traced without
   its own session. The proof stages of `/prove-java-change`, runtime (released) checkouts and Codex hooks are

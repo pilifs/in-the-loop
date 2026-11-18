@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """A stand-in for the `codex` client, for the tests of agent_client.py and of the loops that use it: it speaks
-what Codex CLI 0.169 spoke on 2026-11-18 (`exec --json` events, `exec resume`, the app server's
+what Codex CLI 0.169 spoke on 2026-11-18 (`exec --json` events, `exec resume`, `exec fork`, `queue`, the app server's
 `thread/compact/start`, `debug prompt-input`) and calls no model. Tests point AGENT_CLIENT_CODEX at this file.
 
     CODEX_STANDIN_STATE   a folder for its threads and its call count
@@ -25,7 +25,8 @@ import time
 import uuid
 from pathlib import Path
 
-VALUE_FLAGS = {"-m", "-c", "-o", "-C", "-s", "--model", "--config", "--sandbox", "--cd", "--output-last-message"}
+VALUE_FLAGS = {"-m", "-c", "-o", "-C", "-s", "--model", "--config", "--sandbox", "--cd", "--output-last-message",
+               "--thread", "--message"}
 state = Path(os.environ.get("CODEX_STANDIN_STATE") or ".")
 state.mkdir(parents=True, exist_ok=True)
 
@@ -71,9 +72,13 @@ def next_mode():
 def run_exec(argv):
     options, flags, rest = parse(argv)
     resume = bool(rest) and rest[0] == "resume"
-    rest = rest[1:] if resume else rest
+    fork = bool(rest) and rest[0] == "fork"
+    rest = rest[1:] if resume or fork else rest
     mode = next_mode()
-    if resume:
+    if fork:  # a new thread that starts from another session, which is left as it was
+        thread, prompt = str(uuid.uuid4()), rest[1]
+        (state / f"thread-{thread}.forked-from").write_text(rest[0] + "\n")
+    elif resume:
         thread, prompt = rest[0], rest[1]
         if not (state / f"thread-{thread}").exists():
             print(f"no session {thread}", file=sys.stderr)
@@ -165,6 +170,11 @@ def main():
     log(argv)
     if argv[:1] == ["exec"]:
         return run_exec(argv[1:])
+    if argv[:1] == ["queue"]:
+        options, _, _ = parse(argv[1:])
+        with open(state / "queued", "a") as f:
+            f.write(json.dumps({"thread": options["--thread"][0], "message": options["--message"][0]}) + "\n")
+        return 0
     if argv[:1] == ["app-server"]:
         return app_server()
     if argv[:2] == ["debug", "prompt-input"]:
