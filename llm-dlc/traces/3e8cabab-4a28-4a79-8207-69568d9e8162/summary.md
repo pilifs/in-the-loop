@@ -1048,18 +1048,6 @@ change `lupovnmvlpnm` · [log `db8426e717da`](https://terminalvalue.net/raw-trac
 
 The commit that makes verification/pipeline.py read ~/.config/in-the-loop/pipeline.local.toml was made in the workspace machine-config while this line took the domain-advances foundation; nothing but the generated trace files met, and they were regenerated.
 
-### Record verification results for 1 job(s)
-
-change `pulrzyrlllyv` · [log `db8426e717da`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/db8426e717da05b1e78c67f4e65b6179a6bf872f0b3f46ae84d4c14b708e5287.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261117-122454-example-289-the-four-proof-tasks-again-w: passed: 4 passed step(s) in 1m33s, peak 551.4 MiB (estimated 20m00s, 4.0 GiB); 15 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1; jvmcontract:holds×2 Applied 15 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
-
-### The run-streams tests no longer inherit a real run's watcher, so run inside a stream they cannot ask it questions
-
-change `smxzwqlrvzxm` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
-
-test_brief_run.py's fixture now drops RUN_STREAMS_*, FEATURE_LOOP_* and LOOP_CONDUCTOR from the environment. A stream of the domain-advances run ran the test of a run 'without a watcher', which built its env from os.environ: inside the stream's loop that carries RUN_STREAMS_WATCHER, so the test's made-up run-streams.sh put two merge questions (streams a and b of made-up) to the real watcher, which answered them leave (run-streams-domain-advances D001, D002). Verified: the 39 tests pass with a decoy RUN_STREAMS_WATCHER and LOOP_CONDUCTOR set, and nothing is written to the decoy.
-
 ### Countermodels of the pair of versions: five false proofs of agreement, reproduced and handed to the preservation stream
 
 change `yypzyxmwluyt` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
@@ -1081,6 +1069,30 @@ change `rkxyyqwnvlqz` · [log `2ab16d90235b`](https://terminalvalue.net/raw-trac
 The evidence stream's step 2. examples/tools/beside_route.py holds what the five drivers (examples 286 to 290) did each in their own copy: the pinned JARs, the constructed mutant, the record (accept.record's evidence.json) and the verdict. Each driver keeps its own entry, lemmas, models, observed initializers and verifier arguments. What 289's driver alone did, all five now do: the record of the claim, the bound, each JAR, the adapter, the verifier's binary and the driver; a mutant whose JAR is not the one the newest mutant replay's receipt records ends the run; --max-array-length or --unwind (now on every driver) marks the run a trial.
 
 Finding: 286's, 287's and 288's drivers built their mutant by another recipe than the route's (a fixed --release, no -g or -parameters, every entry recompressed), so their JAR was not the bytes the mutant replay ran, which is why acceptance could not tie their mutant-security answers to the replay. The shared module uses the route's published-mutant recipe; run offline on the pinned JARs it gives each of the five examples exactly the JAR its replay ran (286 48323d21, 287 1d099295, 288 5c72df16, 289 a3a3dbff, 290 4ee35d0b).
+
+### Example 286's driver runs the protected-state tasks and records what it ran; where DataBinder.bind stops now (verification pending)
+
+change `tvxyzwqvsppz` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
+
+The state stream's step 1. proofs/prove.py now takes vulnerable- and fixed-protected-state-mutation: each claim on the adapter entry its first assumption names (BindingAdapter#ageAfterBinding for the protected-state claim), with the checker's model of java.util.ArrayList for the binding path. It has example 289's three properties: it writes evidence.json with accept.record, a constructed mutant that is not the JAR the mutant replay ran ends the run, and a run at another bound is marked a trial. The mutant is now built by the replay route's recipe (the class's own --release and debugging flags, entries copied with their compression and dates); checked inline, it is byte for byte the replay's JAR (48323d21...), where the old recipe gave 12be51f1...
+
+Where it stops: a probe at bound 2 (a trial, inline, capped) passes the ArrayList calls and stops under strict gaps at java.util.ArrayDeque.&lt;init>() in AbstractErrors.&lt;init>:44 and String.toLowerCase() in DataBinder.isAllowed:828 on a non-ASCII field. The second comes from the frozen claim, which, unlike the decision claim, does not restrict the field to ASCII. Job 20261117-130335-example-286-protected-state-tasks-at-the records both tasks at the frozen bound 8 and is expected to exit 1 with those gaps. The example's notes and the brief's Progress say the same.
+
+### The router carries example 286's note on its protected-state driver
+
+change `mpquxryxyqlx` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
+
+examples/index.json regenerated by validate_example.py 286 after the note the previous commit added to 286's example.json; nothing else changes.
+
+### Models on request of ArrayDeque and HashSet take example 286's DataBinder.bind past its binding result, to the reflection
+
+change `kztouprymmvt` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
+
+Every path of DataBinder.bind makes a binding result whose AbstractErrors keeps an ArrayDeque of nested paths and whose AbstractBindingResult a HashSet of suppressed fields; both constructors were JDK gaps under strict gaps. Two models on request now stand for them, as ArrayList's does (lib/models/java/util/lists, models::ON_REQUEST): ArrayDeque as a stack (ArrayDeque(), push with its NullPointerException for null, pop with its NoSuchElementException, peek, size, isEmpty, clear) and HashSet as the keys of the HashMap model (HashSet(), add, contains, size, isEmpty). Both are abstract, as the HashMap model is, so every method they do not keep stays the JDK call it names. AbstractSet() is now an exact JDK call (gaps::exact_jdk_call), as AbstractCollection() and AbstractList() were. Documented in lib/models/README.md and lib/README.md.
+
+Evidence: claims.Deques and claims.Sets (lib/tests/claims.rs, two tool-tier tests) prove each method's JDK answer against its definition written out on every input of a bound with the model, show the class is the JDK's gap when the check does not ask for it and that a method left out (offer, remove) is still the JDK call, and run the same methods on a JVM over 5000 sampled inputs. A mutated model (pop returning the first element; add always true) fails each test. test_costs.py run --changed passed (33 test binaries), validate_example.py 286 passed, examples/tools/test_beside_route.py passed.
+
+Example 286's driver: this line was rebased onto the evidence stream's rkxyyqwn (inbox domain-advances-state-I002), whose shared module examples/tools/beside_route.py now does the three properties; the conflict in proofs/prove.py was resolved into tvxyzwqv by taking the shared module's driver and keeping only each claim's own arguments (ENTRIES: entry, models, observed initializers, unwinding). The decision claim's runs are unchanged from the evidence stream's (no model, the verifier's default unwinding); the protected-state claim's take the three models, unwind 16 and --observed-initializer for PropertyEditorRegistrySupport and CachedIntrospectionResults. Probes at bound 2 (trials, capped at 5 min and 4 GB) of vulnerable-protected-state-mutation now stop at CachedIntrospectionResults.strongClassCache, a ConcurrentHashMap the observation does not hold: the reflection. Inbox item domain-advances-evidence-I006 asks the evidence stream to coordinate observed.rs's format before step 3 extends it. Nothing decided; the frozen claim and the accepted statement are unchanged. The queued job 20261117-130335-example-286-protected-state-tasks-at-the runs the driver as it is now.
 
 ### The evidence stream acknowledges inbox item I001
 
@@ -1116,6 +1128,18 @@ Inbox items domain-advances-evidence-I002 and I003 (286's and 287's drivers alre
 change `mktymxvtmltt` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
 
 The preservation stream's session merged the evidence stream's step 2 commit (rkxyyqwn) into its own line and, by sync.py's stamping of the changes made while a session runs, rewrote that commit's description with its own LLM-Trace line. The session's manifest is only on the preservation line, so sync.py check on the evidence line failed every commit with 'session f28025bc... has no manifest'. check_trailers already treated a shared commit restamped in another workspace as a note when that workspace's working copy holds a manifest listing the log, but only for a session this tree had a manifest of. It now does the same for a session this tree has no manifest of, unless the traced commit's own tree holds that session's manifest, in which case a merge lost it and it stays an error (the existing control for that still passes).
+
+### Record verification results for 1 job(s)
+
+change `pulrzyrlllyv` · [log `db8426e717da`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/db8426e717da05b1e78c67f4e65b6179a6bf872f0b3f46ae84d4c14b708e5287.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261117-122454-example-289-the-four-proof-tasks-again-w: passed: 4 passed step(s) in 1m33s, peak 551.4 MiB (estimated 20m00s, 4.0 GiB); 15 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1; jvmcontract:holds×2 Applied 15 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
+### The run-streams tests no longer inherit a real run's watcher, so run inside a stream they cannot ask it questions
+
+change `smxzwqlrvzxm` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
+
+test_brief_run.py's fixture now drops RUN_STREAMS_*, FEATURE_LOOP_* and LOOP_CONDUCTOR from the environment. A stream of the domain-advances run ran the test of a run 'without a watcher', which built its env from os.environ: inside the stream's loop that carries RUN_STREAMS_WATCHER, so the test's made-up run-streams.sh put two merge questions (streams a and b of made-up) to the real watcher, which answered them leave (run-streams-domain-advances D001, D002). Verified: the 39 tests pass with a decoy RUN_STREAMS_WATCHER and LOOP_CONDUCTOR set, and nothing is written to the decoy.
 
 ### The streams of domain-advances are told the leaking run-streams test is not their work
 
@@ -1170,30 +1194,6 @@ The 307 specialist found that since the I010 fix the unchanged callee hashpw(byt
 change `ptxnxsulpwqx` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261117-235132-example-288-s-binding-under-its-locales: passed: 1 passed step(s) in 2m59s, peak 2.6 GiB (estimated 10m00s, 2.0 GiB) Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
-
-### Example 286's driver runs the protected-state tasks and records what it ran; where DataBinder.bind stops now (verification pending)
-
-change `tvxyzwqvsppz` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
-
-The state stream's step 1. proofs/prove.py now takes vulnerable- and fixed-protected-state-mutation: each claim on the adapter entry its first assumption names (BindingAdapter#ageAfterBinding for the protected-state claim), with the checker's model of java.util.ArrayList for the binding path. It has example 289's three properties: it writes evidence.json with accept.record, a constructed mutant that is not the JAR the mutant replay ran ends the run, and a run at another bound is marked a trial. The mutant is now built by the replay route's recipe (the class's own --release and debugging flags, entries copied with their compression and dates); checked inline, it is byte for byte the replay's JAR (48323d21...), where the old recipe gave 12be51f1...
-
-Where it stops: a probe at bound 2 (a trial, inline, capped) passes the ArrayList calls and stops under strict gaps at java.util.ArrayDeque.&lt;init>() in AbstractErrors.&lt;init>:44 and String.toLowerCase() in DataBinder.isAllowed:828 on a non-ASCII field. The second comes from the frozen claim, which, unlike the decision claim, does not restrict the field to ASCII. Job 20261117-130335-example-286-protected-state-tasks-at-the records both tasks at the frozen bound 8 and is expected to exit 1 with those gaps. The example's notes and the brief's Progress say the same.
-
-### The router carries example 286's note on its protected-state driver
-
-change `mpquxryxyqlx` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
-
-examples/index.json regenerated by validate_example.py 286 after the note the previous commit added to 286's example.json; nothing else changes.
-
-### Models on request of ArrayDeque and HashSet take example 286's DataBinder.bind past its binding result, to the reflection
-
-change `kztouprymmvt` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
-
-Every path of DataBinder.bind makes a binding result whose AbstractErrors keeps an ArrayDeque of nested paths and whose AbstractBindingResult a HashSet of suppressed fields; both constructors were JDK gaps under strict gaps. Two models on request now stand for them, as ArrayList's does (lib/models/java/util/lists, models::ON_REQUEST): ArrayDeque as a stack (ArrayDeque(), push with its NullPointerException for null, pop with its NoSuchElementException, peek, size, isEmpty, clear) and HashSet as the keys of the HashMap model (HashSet(), add, contains, size, isEmpty). Both are abstract, as the HashMap model is, so every method they do not keep stays the JDK call it names. AbstractSet() is now an exact JDK call (gaps::exact_jdk_call), as AbstractCollection() and AbstractList() were. Documented in lib/models/README.md and lib/README.md.
-
-Evidence: claims.Deques and claims.Sets (lib/tests/claims.rs, two tool-tier tests) prove each method's JDK answer against its definition written out on every input of a bound with the model, show the class is the JDK's gap when the check does not ask for it and that a method left out (offer, remove) is still the JDK call, and run the same methods on a JVM over 5000 sampled inputs. A mutated model (pop returning the first element; add always true) fails each test. test_costs.py run --changed passed (33 test binaries), validate_example.py 286 passed, examples/tools/test_beside_route.py passed.
-
-Example 286's driver: this line was rebased onto the evidence stream's rkxyyqwn (inbox domain-advances-state-I002), whose shared module examples/tools/beside_route.py now does the three properties; the conflict in proofs/prove.py was resolved into tvxyzwqv by taking the shared module's driver and keeping only each claim's own arguments (ENTRIES: entry, models, observed initializers, unwinding). The decision claim's runs are unchanged from the evidence stream's (no model, the verifier's default unwinding); the protected-state claim's take the three models, unwind 16 and --observed-initializer for PropertyEditorRegistrySupport and CachedIntrospectionResults. Probes at bound 2 (trials, capped at 5 min and 4 GB) of vulnerable-protected-state-mutation now stop at CachedIntrospectionResults.strongClassCache, a ConcurrentHashMap the observation does not hold: the reflection. Inbox item domain-advances-evidence-I006 asks the evidence stream to coordinate observed.rs's format before step 3 extends it. Nothing decided; the frozen claim and the accepted statement are unchanged. The queued job 20261117-130335-example-286-protected-state-tasks-at-the runs the driver as it is now.
 
 ### Merge stream state of the domain-advances run into the line
 

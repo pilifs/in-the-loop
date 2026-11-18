@@ -1,0 +1,263 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261118-011232-example-286-s-vulnerable-protected-state",
+  "title": "Example 286's vulnerable protected-state task alone at the frozen bound, as one plain driver step that accept.py can read",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m15s, peak 899.3 MiB (estimated 15m00s, 4.0 GiB); 4 output file(s) changed; signals: jvmcontract:fails×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261118-011232-example-286-s-vulnerable-protected-state.json",
+    "sha256": "ff96b6d97744dce2c542de9fb391fdc4ba759924dd6b0053aacaf31d1dc8b419",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261118-011232-example-286-s-vulnerable-protected-state",
+      "title": "Example 286's vulnerable protected-state task alone at the frozen bound, as one plain driver step that accept.py can read",
+      "description": "A rerun of the vulnerable half of job 20261117-192205, which passed but which the merged examples/tools/accept.py refuses: its second step (the fixed task) ends in '|| test $? -eq 1', which is not a plain driver run, and the job did not collect the property harness the replay check now needs to see that the claim's assumption held on the witness. This job runs only examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py vulnerable-protected-state-mutation at the frozen claim's own bound (claims/protected-age-not-mutated.json, maxArrayLength 8, unwind 16, strict gaps; no trial flags) in a fresh --work folder, as one step with plain words, --timeout and one --work, and no environment, and collects the outcome, evidence.json, stderr and the harness the JVM ran (work/harness/PropertyHarness.java). Job 192205's vulnerable step refuted it in 73 s at ageAfterBinding(false, \"Age\"), which returns 32 on a JVM; nothing in the driver or the claim has changed since. The fixed task is not run: its blocker (non-ASCII toLowerCase at DataBinder.isAllowed:828) is recorded by job 20261117-233000. Asked by the watcher of the domain-advances run under the user's decision D036; once it passes, 286's vulnerable task's besideRoute is pointed at it and accept.py 286 rerun.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "286"
+        ],
+        "paths": [
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
+          "examples/tools/accept.py"
+        ]
+      },
+      "expected": "exits 0 with 'verdict: violation (expected violation)' at the claim's bound 8, with a witness reproduced on a JVM (field=\"Age\" or another case variant that binds age), and the four outputs collected",
+      "submitted": {
+        "at": "2026-11-18T01:12:32+00:00",
+        "session": "e61d882b-5ef7-428e-90df-ffe709ac6962"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "15m",
+        "timeout": "1h30m",
+        "notes": "job 192205's vulnerable step took 73 s plus the checker's build; 2 CPUs for the JVMs the observer and the stand-ins' samplers start"
+      },
+      "steps": [
+        {
+          "name": "vulnerable-protected-state-mutation at the frozen bound 8 (5.3.18): the refutation, alone",
+          "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py vulnerable-protected-state-mutation --timeout 1700 --work verification/.work-286/vulnerable-alone",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/.work-286/vulnerable-alone/vulnerable-protected-state-mutation/outcome.json",
+        "verification/.work-286/vulnerable-alone/vulnerable-protected-state-mutation/evidence.json",
+        "verification/.work-286/vulnerable-alone/vulnerable-protected-state-mutation/stderr.txt",
+        "verification/.work-286/vulnerable-alone/vulnerable-protected-state-mutation/work/harness/PropertyHarness.java"
+      ]
+    }
+  },
+  "sourceCommit": "a09dbaf269fdf6287e5d814735ffb226a327bd7b",
+  "startedAt": "2026-11-18T01:15:13+00:00",
+  "finishedAt": "2026-11-18T01:20:24+00:00",
+  "wallSeconds": 311.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1828247,
+    "workers": 10,
+    "cpus": 20.0,
+    "memoryBudgetBytes": 47244640256,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 5400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 900.0,
+    "notes": "job 192205's vulnerable step took 73 s plus the checker's build; 2 CPUs for the JVMs the observer and the stand-ins' samplers start"
+  },
+  "usage": {
+    "peakMemoryBytes": 943030272,
+    "wallSeconds": 75.2,
+    "cpuSeconds": 79.3,
+    "memoryOfEstimate": 0.22,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 234.584,
+      "cpuSeconds": 234.887,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1948160000,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "7bb1656888f30e568970147bfe05595d0a7d5b5a51be0ae06064971e55bff640",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261118-011232-example-286-s-vulnerable-protected-state/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 54s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "vulnerable-protected-state-mutation at the frozen bound 8 (5.3.18): the refutation, alone",
+      "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py vulnerable-protected-state-mutation --timeout 1700 --work verification/.work-286/vulnerable-alone",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5400.0,
+      "cancelled": false,
+      "wallSeconds": 75.183,
+      "cpuSeconds": 79.344,
+      "cpuThrottledSeconds": 1.331,
+      "peakMemoryBytes": 943030272,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-vulnerable-protected-state-mut.log",
+        "lines": 14,
+        "bytes": 3158,
+        "sha256": "a8d43ce72997d0f7c5897d5ae3b4fb849ae11e74b7a903641f7e13e6338b1765",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 7,
+          "text": "✗ Property of example286.adapter.BindingAdapter#ageAfterBinding violated: `result == 0` where field != null && field.indexOf('.') < 0 && field.indexOf('[') < 0 && field.indexOf(']') < 0:",
+          "groups": [
+            "Property of example286.adapter.BindingAdapter#ageAfterBinding violated: `result == 0` where field != null && field.indexOf('.') < 0 && field.indexOf('[') < 0 && field.indexOf(']') < 0:"
+          ]
+        }
+      ],
+      "tail": [
+        "lemma: note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "lemma: note: by induction on `pattern.length()`: a call simpleMatch makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with n",
+        "lemma: ✓ org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pat",
+        "lemma:   not vacuous: simpleMatch(pattern=\"\", str=\"\") reaches the calls",
+        "note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "note: lemma, proved above by induction on `pattern.length()` in 67.5 s: org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.reg",
+        "✗ Property of example286.adapter.BindingAdapter#ageAfterBinding violated: `result == 0` where field != null && field.indexOf('.') < 0 && field.indexOf('[') < 0 && field.indexOf(']') < 0:",
+        "  ageAfterBinding(upperCasePattern=false, field=\"Age\")",
+        "    outcome: 32",
+        "  (found by jvmcontract's own checker (CaDiCaL) in 5.0 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain upperCasePattern: boolean × field: String of ≤ 8 code units, not null)",
+        "",
+        "The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.",
+        "",
+        "verdict: violation (expected violation); paths 118, solver calls 432, variables 6636; outcome in verification/.work-286/vulnerable-alone/vulnerable-protected-state-mutation/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-286/vulnerable-alone/vulnerable-protected-state-mutation/outcome.json",
+      "change": "added",
+      "bytes": 19224,
+      "sha256": "e48b794acefa38fa9c3cb8119d8b79e437df91167dca3fddca8215a7e71ace68",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-286/vulnerable-alone/vulnerable-protected-state-mutation/evidence.json",
+      "change": "added",
+      "bytes": 3016,
+      "sha256": "17511a0e090c14496d5252761bd70582363459ca6a8a5b9f87fd5d4eb4aa2ed0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-286/vulnerable-alone/vulnerable-protected-state-mutation/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-286/vulnerable-alone/vulnerable-protected-state-mutation/work/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1495,
+      "sha256": "87f24710a8ded0be8529d8976a4795e1c8efeac9e2a4be16f436ea2089d44135",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-18T01:20:37+00:00",
+    "applied": [
+      "verification/.work-286/vulnerable-alone/vulnerable-protected-state-mutation/outcome.json",
+      "verification/.work-286/vulnerable-alone/vulnerable-protected-state-mutation/evidence.json",
+      "verification/.work-286/vulnerable-alone/vulnerable-protected-state-mutation/stderr.txt",
+      "verification/.work-286/vulnerable-alone/vulnerable-protected-state-mutation/work/harness/PropertyHarness.java"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "dde706a26dad69792bbc8b97fbce68603c6da3ea",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/dde706a26dad69792bbc8b97fbce68603c6da3ea/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}
