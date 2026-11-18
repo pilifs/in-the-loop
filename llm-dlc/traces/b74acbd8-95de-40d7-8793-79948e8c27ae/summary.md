@@ -84,7 +84,7 @@ Brings the published traces up to this point: conversation that came after a ses
 
 ### A proof by induction and a lemma's summary no longer stand in for a call that writes, throws, or reads what a caller can change
 
-change `qkqpsmqkswql` · [log `728f5d1c9588`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/728f5d1c9588b8ae8e3cffe6394cbaec4aea15cedce3a404b1811d7e89c710cb.jsonl.gz)
+[`1b724784543f`](https://github.com/pilifs/in-the-loop/commit/1b724784543f7da41ef5b56ec9b7e722c816f24a) · [log `728f5d1c9588`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/728f5d1c9588b8ae8e3cffe6394cbaec4aea15cedce3a404b1811d7e89c710cb.jsonl.gz)
 
 Three false proofs, each reproduced first on the checker as it was (lib/tests/fixtures/claims/claims/Effects.java, whose main prints what a JVM says): (1) prove --decreases on a method that counts its calls in a static field proved 'result == 1' where a JVM returns 2, because the induction hypothesis replaced the inner call and dropped its write; (2) with a throws clause, the hypothesis returned a value for an inner call the property itself says throws, and proved 'result == n' of a method that never returns; (3) a lemma about a getter, proved in the fresh state where its static field is 0, was used as a summary after the caller wrote the field, and proved 'result == 0' of a method that returns what it wrote. The same held through a callee, through an array a static field holds, for the default locale, and for a lemma whose own assertion reads a field.
 
@@ -94,19 +94,19 @@ Which existing results rest on these mechanisms: none uses prove --decreases dir
 
 ### A test run keeps what its tests leave in a temporary folder of its own, and removes it
 
-change `vqntqptvslos` · [log `728f5d1c9588`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/728f5d1c9588b8ae8e3cffe6394cbaec4aea15cedce3a404b1811d7e89c710cb.jsonl.gz)
+[`b6ef6a89e3f7`](https://github.com/pilifs/in-the-loop/commit/b6ef6a89e3f767249d7b5dda8e26e10f1af276b4) · [log `728f5d1c9588`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/728f5d1c9588b8ae8e3cffe6394cbaec4aea15cedce3a404b1811d7e89c710cb.jsonl.gz)
 
 On 2026-11-17 no command could start on the machine: /tmp, a 52 GB volume held in memory with 1,048,576 inodes, had none left. 640,000 of them were in 18,000 folders named jvmcontract-equivalence-PID-..., which a check run without a work folder makes in the temporary directory and keeps for whoever reads its outcome; a test that runs such a check has no reader, and every test run since the machine started had left its folders there. test_costs.py run now gives each run a folder under lib/target/test-tmp as TMPDIR for all its commands (Rust and Python tests alike), removes it when the run ends, and removes one a killed run left. What is already in /tmp is for the user to clear: it is not this change's to delete.
 
 ### Take the test run's own temporary folder back out: the user settled VF-036 with nothing to change now
 
-change `rlxvppwyvsqq` · [log `728f5d1c9588`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/728f5d1c9588b8ae8e3cffe6394cbaec4aea15cedce3a404b1811d7e89c710cb.jsonl.gz)
+[`550d84aee829`](https://github.com/pilifs/in-the-loop/commit/550d84aee829450393a77a554ec0fcf9b578dc56) · [log `728f5d1c9588`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/728f5d1c9588b8ae8e3cffe6394cbaec4aea15cedce3a404b1811d7e89c710cb.jsonl.gz)
 
 The change before this one gave test_costs.py run a TMPDIR of its own. While it was being written, the watcher of the rehearsals recorded the same problem as VF-036 and the user decided it: they raised /tmp's inode limit to 8,388,608, cleared it by hand, and nothing changes for now; who takes it up, and when, is theirs to say. So the folder is removed again here. It had also made two tests fail (test_claude_setup.py and test_performance.py look in the folders above a temporary project for CLAUDE.md, and found the checkout's when the folder was under lib/target), which a later attempt would avoid by putting it in the user's cache. The change stays in the history (vqntqptvslos) for whoever takes VF-036 up.
 
 ### Merge the foundation of the domain-advances brief into the line
 
-change `lplouoxuqunw` · [log `728f5d1c9588`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/728f5d1c9588b8ae8e3cffe6394cbaec4aea15cedce3a404b1811d7e89c710cb.jsonl.gz)
+[`752fee78c0a3`](https://github.com/pilifs/in-the-loop/commit/752fee78c0a3e1ebfc7fcbfbfcdc974427892fcc) · [log `728f5d1c9588`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/728f5d1c9588b8ae8e3cffe6394cbaec4aea15cedce3a404b1811d7e89c710cb.jsonl.gz)
 
 The foundation of the brief llm-dlc/loops/domain-advances.md (the checker's three soundness fixes, the acceptance check examples/tools/accept.py with changes.py on it, example 289's driver recording identities, two queued jobs, and the brief with its four stream briefs) was built in the workspace domain-advances-foundation by the user's own session while this line moved on (VF-036 was recorded here), so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.
 

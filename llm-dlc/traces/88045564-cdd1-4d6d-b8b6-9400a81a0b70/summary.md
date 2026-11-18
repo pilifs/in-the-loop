@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### An observed initializer is observed with a relative --work, and example 286's protected-state tasks run again (verification pending)
 
-change `zlvqxmstxnkp` · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
+[`ddcca5723712`](https://github.com/pilifs/in-the-loop/commit/ddcca57237128634d88506b0f740acea476a2a4e) · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
 
 Job 20261117-181750 (286's protected-state tasks through the bean wrapper's stand-in) failed before the check ran: with a relative --work, the observer's JVM runs in the observed/ folder and was given the -Xlog file and the log argument relative to the repository, so it refused the option. lib/src/observed.rs now makes that folder absolute. The new test an_observed_initializer_is_observed_with_a_relative_work_folder (lib/tests/claims.rs) runs the CLI from another directory with a relative --work: before the fix it failed with the job's 'Invalid -Xlog option', and now it proves claims.M#observed with the log in the work folder. A capped probe of 286's driver with a relative --work refutes the vulnerable task at a trial bound 3. Taken from the inbox: domain-advances-state-I015, with its correction I016.
 
@@ -28,7 +28,7 @@ Job 20261117-192205-example-286-protected-state-tasks-at-the runs both tasks at 
 
 ### Example 286's someMap mismatch path runs through the message codes: LinkedHashSet and StringJoiner models on request, String.lastIndexOf(int) and Class.isArray() of a class literal
 
-change `xokwnwqoptwv` · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
+[`603f1028399b`](https://github.com/pilifs/in-the-loop/commit/603f1028399bfce7001afcae0cda7cb9cca0a1c9) · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
 
 The state stream's step 3 continued. Binding "32" to someMap records a binding error, and DefaultMessageCodesResolver.resolveMessageCodes now runs to its end in the own checker. Two models on request: java.util.LinkedHashSet (the HashSet model with its elements in the order first added: add, toArray(), toArray(T[]); asking for it also runs the HashSet model, models::BRINGS, and the result names both) and java.util.StringJoiner (add, toString; an empty join is the JDK's new String(), a gap, since the checker's builder gives the literal "" where the JDK's join makes a new String). Each is proved against its definition written out (claims.LinkedSets, claims.Joiners), sampled on a JVM, shows a left-out method still the JDK's call, and fails under mutation (no null after the elements, reversed order, no delimiter, "" for an empty join, "nul" for null). String.lastIndexOf(int) is modelled (claims.T#lastIndexOfPoint, and an evidence record whose ten boundary cases agree on the JVM, the interpreter and the checker), and Class.isArray() of a class literal (claims.Arrayed).
 
@@ -38,13 +38,13 @@ A fix found on the way: a Class method with a primitive result on a class the en
 
 ### Example 286's protected-state claim is refuted on 5.3.18 beside the route and accepted: binding Age writes the protected age
 
-change `txzyyursolzz` · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
+[`aff11b549647`](https://github.com/pilifs/in-the-loop/commit/aff11b549647a34484a1ca61d1e95b0fb453c8cf) · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
 
 Job 20261117-192205 ran examples/286-…/proofs/prove.py vulnerable-protected-state-mutation at the frozen claim's own bound 8 (claims/protected-age-not-mutated.json, unchanged). It was refuted with the witness ageAfterBinding(false, "Age"), which returns 32 when run on a JVM, so the refutation rests on none of the models, observed initializers or stand-ins the run used. The task's besideRoute is now recorded in 286's target.json, and examples/tools/accept.py 286 vulnerable-protected-state-mutation accepts it, with all 12 checks ok: the claim and task as at the job's commit, the bound, the witness replayed, and the pinned JARs and adapter sources. accept.py reads a job's result and outputs from the checkout, and the result collector's commit is not on this stream's line. So the job's result folder and its outputs under verification/.work-286/state-stand-in/ are restored from that commit unchanged; a merge adds the same bytes on both sides. The same job left fixed-protected-state-mutation with no verdict, at two strict gaps: LinkedHashSet.&lt;init>(), modelled since, and String.toLowerCase() on a non-ASCII field. The example's README (its verdict row, a results paragraph and the open item), its verdict label (with the router regenerated) and a note say so. Verified with validate_example.py 286 and test_costs.py run --changed (26 of 26). Step 2 of llm-dlc/loops/domain-advances-state.md is done. The brief's step list is otherwise current.
 
 ### Example 286's someMap mismatch path runs to its end: a JDK exception keeps its message and cause, and the fixed task is proved over ASCII names in a probe (verification pending)
 
-change `vwrmzmstqquz` · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
+[`7678358d71ab`](https://github.com/pilifs/in-the-loop/commit/7678358d71abfbea52ee663493e85bcd705517fa) · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
 
 The binding error's default message is ex.getLocalizedMessage(), which Spring's NestedRuntimeException builds from Throwable's message and the cause's toString(). The own checker (lib/src/bmc/throwables.rs) now keeps a JDK exception's message and cause from its (), (String) and (String, Throwable) constructors. It models Throwable's getMessage, getCause, getLocalizedMessage (an application's getMessage runs in its place) and toString where they are Throwable's own, plus getClass() of a JDK exception and the builder's StringBuilder(int) and append(Object). The concatenation cap rose from 64 to 256 code units, since TypeMismatchException's message is about 150.
 
@@ -56,7 +56,7 @@ Job 20261117-222610-example-286-s-fixed-protected-state-task runs the frozen cla
 
 ### Example 307 ahead of the preservation stream's step 6: where the checker stops, the callee's footprint, the conversions on the pinned JDKs, and countermodels for the model and the rule
 
-change `nqturzqlsqnp` · [log `d18158c1df0d`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/d18158c1df0d1632c59c054778762ea0c9aae04ceeebadebf8d5ca49c6ed8012.jsonl.gz)
+[`d02d1a442ab0`](https://github.com/pilifs/in-the-loop/commit/d02d1a442ab0fdd53207aad9806e8bbdbc7fc043) · [log `d18158c1df0d`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/d18158c1df0d1632c59c054778762ea0c9aae04ceeebadebf8d5ca49c6ed8012.jsonl.gz)
 
 New files only, for the watcher of the domain-advances run to pass on as guidance within step 6; no claim, note, checker source or stream file is changed. examples/307-*/records/step-6-packet.md is the account. Six capped probes of the preservation stream's rmvpqswzxlyv (step-6-probes.json): 307's preservation stops in 1 s at the previous revision's getBytes("UTF-8"), the mutant's at StandardCharsets.US_ASCII, and with the conversions modelled the claim's unwind 513 leaves no loop summarized, so nothing is tied and the check is killed at 4 GB in 39 s; at the default unwinding it ends at the time limit as 287 does.
 
@@ -66,7 +66,7 @@ lib/tests/fixtures/conversion-countermodels (twelve pairs, a prototype model as 
 
 ### Example 307: a prototype of the relation at the unchanged callee closes both tasks at crypt_raw on JDK 25, and the callee's code has no fingerprint there at hashpw(byte[], String)
 
-change `qtxkqsmtopqz` · [log `a6cec13f811f`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/a6cec13f811f04dff808c61123c0a2195e8173fd446476e3239f2129ee8fb78c.jsonl.gz)
+[`4160d88ea2c4`](https://github.com/pilifs/in-the-loop/commit/4160d88ea2c47a4230a42a340bf9628780b034c7) · [log `a6cec13f811f`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/a6cec13f811f04dff808c61123c0a2195e8173fd446476e3239f2129ee8fb78c.jsonl.gz)
 
 A second delivery from the session the user brought in ahead of the preservation stream's step 6, for the stream to compare its own call-level rule against. New files, and edits to this session's own fixture; no checker source and no test changes.
 
@@ -78,145 +78,145 @@ The prototype against the fixture's rows: by formula it falsely proves wiped and
 
 ### VF-038: 307's frozen claim cites a specification getBytes(String) does not have; the user keeps the claim and defers the restatement and I008
 
-change `msusklystoqw` · [log `df61ff8551ea`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/df61ff8551ead1fdd65dedb5f8b23a477ad48de510116108afddd6d0ef674b32.jsonl.gz)
+[`780effe14c48`](https://github.com/pilifs/in-the-loop/commit/780effe14c484b7064766220d69ce6217cb7fae3) · [log `df61ff8551ea`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/df61ff8551ead1fdd65dedb5f8b23a477ad48de510116108afddd6d0ef674b32.jsonl.gz)
 
 The user decided (D028) to defer I008's companion claim under a non-UTF-8 default to after the run, and (D029) to keep 307's frozen claim with a finding for its wrong citation, restating the wording after the run in one freeze with the companion claim if there is one. The premise of the assumption holds on the pinned OpenJDK 21 and 25 by implementation; a 307 result is read as holding there.
 
 ### Record verification results for 1 job(s)
 
-change `vxxpmtltlmvt` · [log `700d985b34ce`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/700d985b34ce1143f80688db4cb6f0786dc03501fdca50813031fb51e9943355.jsonl.gz)
+[`cb9bbb9a90fc`](https://github.com/pilifs/in-the-loop/commit/cb9bbb9a90fc2619b5f9a08230629a052f11ab40) · [log `700d985b34ce`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/700d985b34ce1143f80688db4cb6f0786dc03501fdca50813031fb51e9943355.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261117-185623-examples-289-and-290-preservation-on-one: failed: 1 passed, 1 failed step(s) in 1m06s, peak 551.1 MiB (estimated 10m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:holds×2 Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
 
 ### Job 20261117-185623's 290 failure goes to the preservation stream: the same relative -Xlog path as state's 286 job
 
-change `rtllkuzmporr` · [log `a4fd0bcefd8b`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/a4fd0bcefd8b7524858a7cb0ffd0463de37ec524d0f7a0d5fb3401d99df5f41b.jsonl.gz)
+[`b07cba2dc8d1`](https://github.com/pilifs/in-the-loop/commit/b07cba2dc8d11fd0b851a297515bee688bb86ae9) · [log `a4fd0bcefd8b`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/a4fd0bcefd8b7524858a7cb0ffd0463de37ec524d0f7a0d5fb3401d99df5f41b.jsonl.gz)
 
 289's preservation passed on one checker with the pair's and evidence's fixes; 290's step stopped before the check, in the initializer observer that runs its JVM in another folder than the relative --work assumes. Told to preservation, with the note that state is fixing the same code.
 
 ### Record verification results for 1 job(s)
 
-change `vtpwwlrpxrts` · [log `745ca6ffecc3`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/745ca6ffecc3b0d02b269ec2272c791e679c645e53384cd73d61bb1e5de74181.jsonl.gz)
+[`47f9a96af891`](https://github.com/pilifs/in-the-loop/commit/47f9a96af8912fec95568c32b6df18a4f190c944) · [log `745ca6ffecc3`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/745ca6ffecc3b0d02b269ec2272c791e679c645e53384cd73d61bb1e5de74181.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261117-185613-example-287-preservation-at-the-frozen-b: failed: 1 failed step(s) in 7m53s, peak 2.3 GiB (estimated 30m00s, 8.0 GiB); 4 output file(s) changed; signals: jvmcontract:fails×2 Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
 
 ### Job 20261117-185613's verdict goes to the preservation stream: 287 at bound 80 is still unverifiable at BCrypt.key's loop
 
-change `qunuoqurxqsp` · [log `8418999c0387`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/8418999c0387c7ad4f09a57397528dcca4b62a276cd7c0ba6a6bd5a5778be0ba.jsonl.gz)
+[`34c4cfbacf0e`](https://github.com/pilifs/in-the-loop/commit/34c4cfbacf0ef1bfa79cc9fd5ab12af054896422) · [log `8418999c0387`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/8418999c0387c7ad4f09a57397528dcca4b62a276cd7c0ba6a6bd5a5778be0ba.jsonl.gz)
 
 The same wall as the run before I010 was closed, with the same counts; not out of time or memory, so not resubmitted.
 
 ### Record verification results for 1 job(s)
 
-change `lsuuqtnqqywx` · [log `2ef36d6ee144`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/2ef36d6ee1442001e3116ac2eb279192fdcef075ab506bc40ad2dd13700828ac.jsonl.gz)
+[`6cea40b0614e`](https://github.com/pilifs/in-the-loop/commit/6cea40b0614ecf9d7b756bfbc55a7de5f73a33ce) · [log `2ef36d6ee144`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/2ef36d6ee1442001e3116ac2eb279192fdcef075ab506bc40ad2dd13700828ac.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261117-192205-example-286-protected-state-tasks-at-the: passed: 2 passed step(s) in 2m28s, peak 897.8 MiB (estimated 15m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:fails×1 Applied 6 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
 
 ### Merge the 307 specialist's scaffold of step 6 into the line
 
-change `wpqrtyzvzvvl` · [log `d18158c1df0d`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/d18158c1df0d1632c59c054778762ea0c9aae04ceeebadebf8d5ca49c6ed8012.jsonl.gz)
+[`dad4b541c116`](https://github.com/pilifs/in-the-loop/commit/dad4b541c11659f6bcd1f04da9e9f08cfe2fa486) · [log `d18158c1df0d`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/d18158c1df0d1632c59c054778762ea0c9aae04ceeebadebf8d5ca49c6ed8012.jsonl.gz)
 
 A session the user brought in to get ahead of the preservation stream's step 6 (example 307) worked in a workspace of its own (307-specialist) and committed new files only (nqturzql): records/step-6-packet.md with where the checker stops on 307, the unchanged callee's footprint read from its bytecode, the two conversions compared on Temurin 8, 21 and 25, the mutant's witness, and countermodel fixtures for a conversion model and a callee rule. Merged so the preservation stream can take it with the default line; nothing in it changes the claim, the checker or any stream's files.
 
 ### Propose example 307's bcrypt test vectors for the allow list
 
-change `ywlkutrxplqr` · [log `ab581625d153`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/ab581625d15362f6c272cd1b64de9b8269278865656b1bf1b8099fea15445b49.jsonl.gz)
+[`5edc74a77d98`](https://github.com/pilifs/in-the-loop/commit/5edc74a77d985781c322b3e7f4a7e5808c6f16e1) · [log `ab581625d153`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/ab581625d15362f6c272cd1b64de9b8269278865656b1bf1b8099fea15445b49.jsonl.gz)
 
 Three long-token findings in the watcher's and the 307 specialist's session logs are bcrypt hashes under upstream BCryptTests' salt, which 307's committed claim and probes already hold. Proposed for the user's approval.
 
 ### The 307 specialist's scaffold goes to the preservation stream as one item of guidance within step 6
 
-change `vqmowvpwuyyq` · [log `ca8d3aefcb6a`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/ca8d3aefcb6a315c5ae5cf9ec24b81acdae5b43a9e9a49d36a043d5e659292e1.jsonl.gz)
+[`2e2622339f67`](https://github.com/pilifs/in-the-loop/commit/2e2622339f673a626fb087b851125d95eec91b3b) · [log `ca8d3aefcb6a`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/ca8d3aefcb6a315c5ae5cf9ec24b81acdae5b43a9e9a49d36a043d5e659292e1.jsonl.gz)
 
 D030: the specialist's commit is merged (wpqrtyzv) and preservation's inbox item I016 points at its packet, with the user's ask to consider call-level convergence for 287 too and the user's decisions on 307's claim (D028, D029).
 
 ### The preservation stream is told why a call-level rule keyed on the fingerprint declines on JDK 25
 
-change `xqxvxrmxqwsn` · [log `d5e2b748f541`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/d5e2b748f541ab8777f5472a319d8433ab97bc24f99a03bb392f99ec4c3dffaa.jsonl.gz)
+[`693e72027a86`](https://github.com/pilifs/in-the-loop/commit/693e72027a8669996da59a62ca5b952677918251) · [log `d5e2b748f541`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/d5e2b748f541ab8777f5472a319d8433ab97bc24f99a03bb392f99ec4c3dffaa.jsonl.gz)
 
 The 307 specialist found that since the I010 fix the unchanged callee hashpw(byte[],String) has no fingerprint on JDK 25, where Integer.parseInt reaches String.format(String, Object[]); preservation's 307 probe was dying at 4 GB while it traced where its new rule declines. Passed on as optional guidance (I017, under D030), with the two ways out the specialist sees.
 
 ### The challenge stream is restarted by hand, at the user's word, with an inbox item for its interrupted step
 
-change `qpwxnpxsyzys` · [log `727b6aa73290`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/727b6aa732907ae78c45a08579c58c367af7e95efeba9eacf19681aa85a37243.jsonl.gz)
+[`f5f53272928b`](https://github.com/pilifs/in-the-loop/commit/f5f53272928bd9dc9b8703075db65ecee5738c52) · [log `727b6aa73290`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/727b6aa732907ae78c45a08579c58c367af7e95efeba9eacf19681aa85a37243.jsonl.gz)
 
 D031: challenge's loop ended at 17:11 when the OOM killer took its session (VF-037) and run-streams.sh no longer supervises it; the user asked to restart it now rather than after the run, so it attacks preservation's call-level rule while that is written. Its inbox item I003 says how to finish the interrupted setting-countermodels step with the tests under a memory cap of their own, then to attack the call-level rule. VF-037 records the hand restart.
 
 ### VF-037: what the challenge stream's OOM kill cost the run, and what run-streams.sh lacks to start one stream again
 
-change `rwomprmzwrsn` · [log `920e81a3bf20`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/920e81a3bf2013d9cc21a9d1d51c1964f056ce1b8df246363de1335201238fd2.jsonl.gz)
+[`9561f3a076f0`](https://github.com/pilifs/in-the-loop/commit/9561f3a076f0fe70bf0fb25d09eb75b0993c8e8c) · [log `920e81a3bf20`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/920e81a3bf2013d9cc21a9d1d51c1964f056ce1b8df246363de1335201238fd2.jsonl.gz)
 
 Amended from a read-only review of the domain-advances run, beside its watcher. The second of the two stops that counted challenge blocked was only the refusal beside the killed session's orphans. brief_run.py can stop and start a whole run but not one stream, so challenge sat idle for over three hours while preservation wrote its riskiest rules. A loop restarted by hand is outside run-streams.sh's bookkeeping (merge question, phase, reruns, start and wait). Needs now names the interim test-run cap (I003), a rerun of one stream inside a run, and not counting a scope refusal as a stop, together with the deferred RUN_STREAMS_WATCHER leak fix. Also removed the restart time the entry gave (20:35): at 20:19 UTC no challenge loop was running yet. No code changed; nothing to test.
 
 ### Merge the 307 specialist's call-level prototype into the line
 
-change `wtlwyxyqyxko` · [log `a6cec13f811f`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/a6cec13f811f04dff808c61123c0a2195e8173fd446476e3239f2129ee8fb78c.jsonl.gz)
+[`1d0a0523d925`](https://github.com/pilifs/in-the-loop/commit/1d0a0523d92536cd57f95be04289a03205e1e1fc) · [log `a6cec13f811f`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/a6cec13f811f04dff808c61123c0a2195e8173fd446476e3239f2129ee8fb78c.jsonl.gz)
 
 The specialist's second commit (qtxkqsmt, its own files only): records/step-6-call-level.md and its probes, where a prototype relation at crypt_raw verifies 307's preservation at the frozen parameters on JDK 25 in 79 s and refutes mutant-preservation with a JVM-replayed witness; a prototype patch to read; and callee countermodel rows, with a new one (parsed) that shows a fingerprint-keyed rule declining on JDK 25. Merged so the preservation and challenge streams can take it with the default line.
 
 ### The 307 specialist's call-level prototype goes to the preservation stream as guidance and to the challenge stream as countermodels
 
-change `okuplpysxvlu` · [log `a6cec13f811f`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/a6cec13f811f04dff808c61123c0a2195e8173fd446476e3239f2129ee8fb78c.jsonl.gz)
+[`48ec3b2ca3e4`](https://github.com/pilifs/in-the-loop/commit/48ec3b2ca3e4988ffaf34b99f14964a7a273186a) · [log `a6cec13f811f`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/a6cec13f811f04dff808c61123c0a2195e8173fd446476e3239f2129ee8fb78c.jsonl.gz)
 
 Merged as wtlwyxyq: a prototype relation at crypt_raw closes both of 307's tasks at the frozen parameters on JDK 25. Preservation's item I018 points at its record and the fixtures to test its own rule against; challenge's item I004 points at the same fixture rows as a floor for its attack on preservation's rule.
 
 ### Record verification results for 1 job(s)
 
-change `lwkywnluvrmn` · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
+[`f0d01cc8e6cc`](https://github.com/pilifs/in-the-loop/commit/f0d01cc8e6ccd81eed4025c77155d82bb39ac3aa) · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261117-210114-example-307-mutant-preservation-after-ag: passed: 1 passed step(s) in 1m17s, peak 955.8 MiB (estimated 10m00s, 6.0 GiB); 5 output file(s) changed; signals: jvmcontract:fails×2 Applied 5 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
 
 ### D023 answered by the user: keep 290's frozen preservation claim for this run
 
-change `npqmxyrxryuw` · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
+[`d235f8d046c8`](https://github.com/pilifs/in-the-loop/commit/d235f8d046c875c504b6d411e97d1eaeae123ff0) · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
 
 The restated claim lone-dispatcher-matchers-preserved.json (VF-033 option B, prepared by the evidence stream) is not rejected. It stays in example 290 unfrozen. Its adoption, and the other options, are taken up after brief 3.5 (claim evolution), which can keep the count-by-type result as history beside the stronger claim's own outcome. Nothing in the domain-advances run acts on it. Recorded with decisions.py answer; nothing to test.
 
 ### Record verification results for 1 job(s)
 
-change `opypxzprprqm` · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
+[`638ff315a652`](https://github.com/pilifs/in-the-loop/commit/638ff315a6523eab9e1cdeb5d36bfe9550146b9e) · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261117-210114-example-307-preservation-at-the-frozen-b: passed: 1 passed step(s) in 2m22s, peak 2.7 GiB (estimated 10m00s, 6.0 GiB); 5 output file(s) changed; signals: jvmcontract:holds×2 Applied 5 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
 
 ### Apply the user's answer to D023: 290 keeps its frozen preservation claim
 
-change `povqtmtxpksx` · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
+[`fd06928aa4d9`](https://github.com/pilifs/in-the-loop/commit/fd06928aa4d92622eea3e5ab0b38275886fbb166) · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
 
 The conductor's side of D023, answered keep by the user (npqmxyrx): no stream acts on it in this run; the restated claim stays in 290, unfrozen.
 
 ### VF-039: 287's claims accept a check-only guard; the user defers a claim on encode to after the run
 
-change `mltlxwzuotmv` · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
+[`bc08605508df`](https://github.com/pilifs/in-the-loop/commit/bc08605508df888298d59762c318b0ccc26921ce) · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
 
 The user's answer to the preservation stream's I007 (D032): defer, recorded as a finding. Preservation is told through its inbox to prepare no new claim for 287 and to state the limit with 287's result.
 
 ### Record verification results for 1 job(s)
 
-change `uztvymnlnnoy` · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
+[`626e13f54dc8`](https://github.com/pilifs/in-the-loop/commit/626e13f54dc8d0a76733c74a201360bb2a987629) · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261117-222610-example-286-s-fixed-protected-state-task: passed: 2 passed step(s) in 11m13s, peak 2.1 GiB (estimated 40m00s, 6.0 GiB); 6 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1 Applied 6 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `kpsszpoxouzm` · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
+[`57ff877c45c2`](https://github.com/pilifs/in-the-loop/commit/57ff877c45c24346b667d0c73189ebee27c87ddf) · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261117-233000-example-286-s-fixed-protected-state-task: passed: 1 passed step(s) in 4m28s, peak 2.6 GiB (estimated 15m00s, 4.0 GiB); 3 output file(s) changed; signals: jvmcontract:holds×1 Applied 3 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
 
 ### VF-040: 286's protected-state claim binds one value; the user adds the two-value claim beside it after the run
 
-change `zwklnxnrkqqu` · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
+[`d1d152900057`](https://github.com/pilifs/in-the-loop/commit/d1d15290005736189e963cb467d215a6020aaef0) · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
 
 The user's answer to D034: the state stream's proposed claim (two values bound in order, ASCII names) is to become a further claim file of 286 beside the frozen one, not a replacement, as part of the coming claim enhancements. The frozen claim keeps every name and 5.3.18's accepted refutation; nothing changes in this run.
 
 ### Record the watcher's answers in the domain-advances run
 
-change `nvpulqtmswyr` · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
+[`ca616ded76b3`](https://github.com/pilifs/in-the-loop/commit/ca616ded76b32e29bd6023906045d826cead84e3) · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
 
 The decisions the watcher of the brief llm-dlc/loops/domain-advances.md took while it ran, committed before it merges a stream.
 
 ### Countermodels of the code two versions are taken to share past the reach's fix: an override removed, a hidden field, an interface's initializer two ways and the target's own class's, each taken as identical or tied where a JVM tells the versions apart
 
-change `tqmpowvxsrvq` · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
+[`ff7bf4763083`](https://github.com/pilifs/in-the-loop/commit/ff7bf476308354afc95baa758528fd9fff4fb87a) · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
 
 Item 5 of the challenge brief, against the preservation stream's kskmpmny (its fix for domain-advances-preservation-I010). The fix holds: built apart with the sources touched, tie_countermodels.rs passes there, its checker-side test included. Past it, lib/src/shared.rs's reach still leaves out five things, each shown by lib/tests/fixtures/reach-countermodels (old/ against new/), where each version alone gives 2 (0 for hidden) against 1 on a JVM (lib/tests/reach_countermodels.rs). Under the defaults, each of these is 'identical in both versions; nothing to prove' at kskmpmny and on this line alike, since the shortcut is older than the run: removed (an override the previous version declared and the new one inherits; only the new version's reach is walked and the old one is looked up by the new one's declaring class), hidden (a field the previous version declared that hides an inherited one; fields are not compared), constant (an interface's static read through an implementing class; the JVM initializes the interface, initialized() takes superclasses only), defaulted (making an object initializes a superinterface with a default method) and Own#f (the target's own class's initializer). looped, constant's read in a loop past the bound, is Verified under the ties at kskmpmny, non-vacuous; on this line it gets no verdict.
 
@@ -224,19 +224,19 @@ shared.rs is the preservation stream's this run, so nothing in lib/src changes h
 
 ### Countermodels of a stand-in a lemma's proof rested on, and of an Error a logged record's getter raises with no athrow, each proved with nothing stated where a JVM says otherwise
 
-change `mnwtrnrpzlqt` · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
+[`a20d280b82d0`](https://github.com/pilifs/in-the-loop/commit/a20d280b82d067ce68c939c5f764c33dda963c96) · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
 
 Item 5 of the challenge brief, against state's stand-ins (qlylowvo, prove --stand-in) and preservation's logging fix (lqkwokqq). A lemma's proof is a check of its own, given the check's stand-ins. The check that uses the lemma states the lemma as proved, and states only what its own run's engine noted. So at state's zlvqxmst, built apart, sn.Use#viaLemma is Verified through a lemma whose proof called a narrowly sampled stand-in, and its result names no stand-in; a JVM gives 32 where 0 is proved (lib/tests/fixtures/stand-in-countermodels). A model on request is lost the same way. Preservation's scan refuses athrow in a logged record's classes, but a JVM raises an Error without one: an OutOfMemoryError (new long[Integer.MAX_VALUE]) and a StackOverflowError (a recursion) in getMessage() each leave log through StreamHandler.publish's catch (Exception). Both are Verified 'log returned' at kskmpmny (lib/tests/fixtures/log-countermodels). The rules are those streams', so nothing in lib/src changes; each README has the checker-side test, which goes to the owner as a failure item. No accepted result rests on either: 286's simpleMatch lemma calls only String methods, and 287's LocationResolvingLogRecord neither recurses nor allocates by input.
 
 ### D037: 288 ends with preservation's current I028/I029 cycle, and VF-043 holds the per-release locale lemma as a proposed proof component
 
-change `zxwonqzrsxvz` · [log `75a9c12a10b4`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/75a9c12a10b4d8479b8b8c76ac481f00672cf19f5b3cd00efc5aa00f2a9eef13.jsonl.gz)
+[`83071a8a429f`](https://github.com/pilifs/in-the-loop/commit/83071a8a429f5be66f83c3afe35d7336199d0dbe) · [log `75a9c12a10b4`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/75a9c12a10b4d8479b8b8c76ac481f00672cf19f5b3cd00efc5aa00f2a9eef13.jsonl.gz)
 
 The user, from an outside review they asked for (Codex): 288's profile and stop are already in preservation's Progress, so its VF-031 closeout folds into the current I028/I029 cycle. There is no further 288 cycle and no long solver job. VF-043 now records the future experiment: for each release, a lemma on 288's frozen ASCII domain and locale table, that a simpleMatch of the locale-lowercased canonical pattern and field implies a match of the originals ignoring ASCII case. Its effect on the bound-8 final comparison is to be benchmarked before the full proof is reopened, and 288's parent claim stays open. VF-043 is cross-linked with VF-031 and VF-038. Preservation was told through its inbox item I030.
 
 ### 307 has a driver on the route's slices, and the checker takes a call both versions share as one function of both: preservation verified and the mutant refuted in capped probes at the frozen bound (verification pending)
 
-change `uxyusvsvswus` · [log `75a9c12a10b4`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/75a9c12a10b4d8479b8b8c76ac481f00672cf19f5b3cd00efc5aa00f2a9eef13.jsonl.gz)
+[`979cac743ed0`](https://github.com/pilifs/in-the-loop/commit/979cac743ed06e759a5e2236ffbf8e6eb844df86) · [log `75a9c12a10b4`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/75a9c12a10b4d8479b8b8c76ac481f00672cf19f5b3cd00efc5aa00f2a9eef13.jsonl.gz)
 
 Example 307 (Spring Security fe9e4549, BCrypt.hashpw with StandardCharsets.UTF_8) gets proofs/prove.py. It runs preservation and mutant-preservation on the route's own source slices (runtime.prepare), each slice JAR checked against the replay receipt that ran it, at the claim's bound (unwind 513, length 80), with its assumption and nullable password and salt. It keeps beside_route's record, mutant check and trial marking. Its first stop was String.getBytes(String), now modelled for the names the JDK takes for UTF-8, as getBytes(US_ASCII) is for the mutant (String model 7, sampled on the JVM, the interpreter and the checker).
 
@@ -244,13 +244,13 @@ At unwind 513 every bcrypt loop runs to its end, so the loop ties of 287 never a
 
 ### Merge the default line and the challenge stream's reach countermodels
 
-change `mqpxrmvuwmpm` · [log `75a9c12a10b4`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/75a9c12a10b4d8479b8b8c76ac481f00672cf19f5b3cd00efc5aa00f2a9eef13.jsonl.gz)
+[`d81e4719454f`](https://github.com/pilifs/in-the-loop/commit/d81e4719454f20c778cda803726147448b0ee223) · [log `75a9c12a10b4`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/75a9c12a10b4d8479b8b8c76ac481f00672cf19f5b3cd00efc5aa00f2a9eef13.jsonl.gz)
 
 Brings the 307 specialist's two packets (records/step-6-packet.md, step-6-call-level.md) and the callee-countermodels fixture, the results of jobs 20261117-185613 (287 at bound 80, unverifiable again at BCrypt.key pc 39) and 20261117-185623 (289 passed; 290 failed on the observer's relative -Xlog path), and the challenge stream's tqmpowvx (reach-countermodels and its JVM-side test). Only generated files conflicted: the trace pages were regenerated and lib/tests/costs.json re-estimated, tagged and linted. The default run passed on the merged tree (54 of 54).
 
 ### The code two versions are taken to share resolves each field to the class that declares it and takes in the initializers the JVM runs; the observer's log path is absolute; 289 and 290 rerun (verification pending)
 
-change `qopxypnnswvw` · [log `75a9c12a10b4`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/75a9c12a10b4d8479b8b8c76ac481f00672cf19f5b3cd00efc5aa00f2a9eef13.jsonl.gz)
+[`13abd1cfd154`](https://github.com/pilifs/in-the-loop/commit/13abd1cfd1540efc1aca518c386ac75a79c25105) · [log `75a9c12a10b4`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/75a9c12a10b4d8479b8b8c76ac481f00672cf19f5b3cd00efc5aa00f2a9eef13.jsonl.gz)
 
 I019, the challenge stream's reach countermodels (lib/tests/fixtures/reach-countermodels). shared::reach now records each application field the code names with the class that declares the field it resolves to (JVMS 5.4.3.2), and compares those in the identical-code shortcut and the ties' fingerprint, so a field a version declares to hide an inherited one is a difference (hidden). A static field's initializer is its declaring class's or interface's (constant, and looped under the ties). A class's use runs the initializers of every superinterface that declares a default method (defaulted, JVMS 5.5), and the root's own class's initializer is part of its code (Own#f). The shortcut walks both versions' reaches, so an override the previous version declared and the new one inherits is a difference (removed). The README's checker-side test is in lib/tests/reach_countermodels.rs and passes; with each change undone in turn exactly its own rows were proved again. looped is no verdict now (a spurious candidate past the loop that does not replay), as on a checker without ties. A capped probe of 307's preservation at the frozen bound still verifies with the same 72 calls taken as one function, 66 related.
 
