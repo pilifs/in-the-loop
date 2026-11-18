@@ -225,7 +225,10 @@ def claude_view(entries: list[dict]) -> list[dict]:
             itype = item.get("type")
             if itype == "UserMessage":
                 asked = ts
-                out.append({"type": "user", "timestamp": ts, "message": {"role": "user", "content": _text(item.get("content"))}})
+                # A prompt's id, as Claude Code gives each entry one: the turn and the line, which do not change
+                # as the log grows (what was sent to Langfuse is remembered by it).
+                out.append({"type": "user", "timestamp": ts, "uuid": f"codex-{p.get('turn_id') or 'turn'}-{i}",
+                            "message": {"role": "user", "content": _text(item.get("content"))}})
             elif itype in ("CommandExecution", "FileChange"):
                 end = _iso_ms(p.get("completed_at_ms")) or ts
                 if itype == "CommandExecution":

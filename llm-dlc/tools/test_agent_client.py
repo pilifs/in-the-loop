@@ -251,6 +251,73 @@ class ATurn(Fixture):
         self.assertEqual(self.calls(), [])
 
 
+class AfterATurn(Fixture):
+    """What the checkout's hooks do for a session is done by the adapter for a turn it ran: a fresh workspace is
+    not a project Codex trusts, so its own hooks are not loaded there."""
+
+    def setUp(self):
+        super().setUp()
+        tools = self.cwd / "llm-dlc" / "tools"
+        tools.mkdir(parents=True)
+        self.hooks = self.base / "hooks.jsonl"
+        # sync.py's stand-in: it writes down which hook it was run as, what it was given and for which session
+        (tools / "sync.py").write_text(
+            "import json, os, sys\n"
+            f"open({str(self.hooks)!r}, 'a').write(json.dumps({{'hook': sys.argv[1], 'payload': json.load(sys.stdin), 'cwd': os.getcwd(),\n"
+            "    'thread': os.environ.get('CODEX_THREAD_ID'), 'claude': os.environ.get('CLAUDE_CODE_SESSION_ID')}) + '\\n')\n")
+        self.env["CODEX_HOME"] = str(self.base / "codex-home")
+        subprocess.run(["jj", "--quiet", "git", "init", str(self.cwd)], check=True, capture_output=True,
+                       env={**self.env, "JJ_USER": "Made Up", "JJ_EMAIL": "made@up.invalid", "JJ_CONFIG": os.devnull})
+
+    def ran(self) -> list[dict]:
+        return [json.loads(line) for line in self.hooks.read_text().splitlines()] if self.hooks.exists() else []
+
+    @cost("tool")
+    def test_the_end_of_a_turn_runs_the_stop_hook_with_the_payload_codex_gives_one(self):
+        code, events, err = self.turn(CLAUDE_CODE_SESSION_ID="11111111-1111-4111-8111-111111111111", JJ_CONFIG=os.devnull)
+        self.assertEqual(code, 0, err)
+        thread = self.binding()["thread"]
+        (ran,) = self.ran()
+        self.assertEqual((ran["hook"], ran["payload"]["hook_event_name"], ran["payload"]["session_id"], ran["thread"], ran["claude"]),
+                         ("hook", "Stop", thread, thread, None))
+        self.assertEqual(Path(ran["payload"]["transcript_path"]).name, f"rollout-2026-01-01T00-00-00-{thread}.jsonl")
+        self.assertEqual(Path(ran["cwd"]), self.cwd)
+        self.assertEqual(events[-1]["subtype"], "success")  # the hooks come before the result: the turn is over when they are
+
+    @cost("tool")
+    def test_a_commit_made_without_sync_gets_the_commit_hook_and_a_hook_that_fails_stops_nothing(self):
+        env = {"JJ_USER": "Made Up", "JJ_EMAIL": "made@up.invalid", "JJ_CONFIG": os.devnull}
+        code, events, err = self.turn(CODEX_STANDIN_MODES="commit", **env)
+        self.assertEqual(code, 0, err)
+        self.assertEqual([(r["hook"], r["payload"]["hook_event_name"]) for r in self.ran()], [("hook-commit", "PostToolUse"), ("hook", "Stop")])
+        self.assertIn("jj commit", self.ran()[0]["payload"]["tool_input"]["command"])
+        self.assertEqual(self.ran()[0]["payload"]["tool_name"], "Bash")
+        # a hook that fails is written beside the attempt, and the turn's result is its own
+        (self.cwd / "llm-dlc/tools/sync.py").write_text("import sys\nprint('made-up failure', file=sys.stderr)\nsys.exit(3)\n")
+        code, events, err = self.turn("Go on.", **env)
+        self.assertEqual((code, events[-1]["subtype"]), (0, "success"))
+        self.assertIn("made-up failure", Path(events[-1]["attempt"]).with_suffix(".hooks.log").read_text())
+        # and with the hooks turned off, or no log of the thread to give them, nothing is run
+        self.hooks.unlink()
+        (self.cwd / "llm-dlc/tools/sync.py").write_text("raise SystemExit('not to be run')\n")
+        self.assertEqual(self.turn("Go on.", AGENT_CLIENT_HOOKS="off", **env)[0], 0)
+        self.assertFalse(Path(self.turn("Go on.", AGENT_CLIENT_HOOKS="off", **env)[1][-1]["attempt"]).with_suffix(".hooks.log").exists())
+
+
+class HookFiles(unittest.TestCase):
+    def test_codex_is_given_the_two_hook_commands_claude_code_is(self):
+        repo = TOOLS.parent.parent
+        claude = json.loads((repo / ".claude" / "settings.json").read_text())["hooks"]
+        codex = json.loads((repo / ".codex" / "hooks.json").read_text())["hooks"]
+        ends = lambda hooks, event: [h["command"].rsplit("sync.py", 1)[1] for group in hooks[event] for h in group["hooks"]]
+        self.assertEqual((ends(codex, "Stop"), ends(codex, "PostToolUse")), (ends(claude, "Stop"), ends(claude, "PostToolUse")))
+        self.assertEqual(ends(codex, "PostToolUse"), ['" hook-commit'])
+        self.assertEqual([g["matcher"] for g in codex["PostToolUse"]], ["^Bash$"])  # a shell command, as Codex names the tool
+        # the adapter reads a command as the hook does, so the two never disagree on what a plain commit is
+        import sync
+        self.assertEqual(agent_client.PLAIN_COMMIT.pattern, sync.PLAIN_COMMIT.pattern)
+
+
 class Compacting(Fixture):
     @cost("tool")
     def test_a_compaction_is_asked_of_the_app_server_for_the_sessions_thread_and_waited_for(self):

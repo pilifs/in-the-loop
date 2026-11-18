@@ -277,6 +277,46 @@ def codex_argv(model: str, effort: str, last: Path, thread: str | None, cwd: Pat
     return argv + ["-C", str(cwd), prompt]
 
 
+PLAIN_COMMIT = re.compile(r"\b(?:jj\s+(?:commit|ci|new)|git\s+commit)\b")  # as sync.py's hook-commit reads a command
+
+
+def rollout_of(thread: str) -> Path | None:
+    """The file Codex keeps a thread's log in."""
+    home = Path(os.environ.get("CODEX_HOME") or Path.home() / ".codex")
+    found = sorted((home / "sessions").glob(f"*/*/*/rollout-*{thread}.jsonl"))
+    return found[-1] if found else None
+
+
+def after_turn(cwd: Path, thread: str, model: str, committed: list[str], log: Path) -> None:
+    """What this checkout's hooks do for a session, done here for a turn this ran. The hooks are Claude Code's in
+    .claude/settings.json and Codex's in .codex/hooks.json, but Codex loads a project's hooks only where a person
+    has trusted the project and reviewed each hook, which a fresh sibling workspace is not, and the way round that
+    (--dangerously-bypass-hook-trust) would also run whatever other hooks nobody reviewed. So the two commands are
+    run from here with the payload Codex's hooks give: after a commit made without sync.py, `sync.py hook-commit`
+    (it gives the commit its session's trace when the commit is still the working copy's parent; otherwise the
+    next sync does), and at the turn's end `sync.py hook` (finished turns to Langfuse, where that is set up). Both
+    do nothing twice, so a checkout whose own hooks ran as well is none the worse. A failure is written beside
+    the attempt and stops nothing: no trace depends on a hook."""
+    tool, transcript = root_of(cwd) / "llm-dlc" / "tools" / "sync.py", rollout_of(thread)
+    if os.environ.get("AGENT_CLIENT_HOOKS") == "off" or not tool.is_file() or transcript is None:
+        return
+    env, _ = child_env()
+    env["CODEX_THREAD_ID"] = thread  # the session these commands are run for, as Codex names it to its own
+    base = {"session_id": thread, "transcript_path": str(transcript), "cwd": str(cwd), "model": model}
+    runs = [("hook-commit", {**base, "hook_event_name": "PostToolUse", "tool_name": "Bash", "tool_input": {"command": c}})
+            for c in committed[-1:]]
+    runs.append(("hook", {**base, "hook_event_name": "Stop"}))
+    with open(log, "a") as out:
+        for name, payload in runs:
+            try:
+                r = subprocess.run([sys.executable, str(tool), name], input=json.dumps(payload), cwd=cwd, env=env,
+                                   capture_output=True, text=True, timeout=120)
+                if r.returncode or r.stdout.strip() or r.stderr.strip():
+                    out.write(f"{now()} sync.py {name}: status {r.returncode}\n{r.stdout}{r.stderr}")
+            except (OSError, subprocess.TimeoutExpired) as e:
+                out.write(f"{now()} sync.py {name}: {e}\n")
+
+
 def cmd_run(session: str, model: str, effort: str, cwd: Path, sandbox: str, prompt: str) -> int:
     model = resolve("codex", model)
     if effort not in EFFORTS:
@@ -290,6 +330,7 @@ def cmd_run(session: str, model: str, effort: str, cwd: Path, sandbox: str, prom
     attempt = attempt_path(session, cwd, n)
     last = attempt.with_suffix(".last.md")
     turn = Turn(session, cwd, attempt)
+    committed: list[str] = []  # the commands of this turn that made a commit without sync.py
     tokens: dict | None = None  # the thread's totals, once the turn has ended
     env, parent = child_env(session)
     argv = codex_argv(model, effort, last, (before or {}).get("thread"), cwd, sandbox, prompt)
@@ -344,6 +385,9 @@ def cmd_run(session: str, model: str, effort: str, cwd: Path, sandbox: str, prom
                 turn.items += kind == "item.completed"
                 if kind == "item.completed" and item.get("type") == "agent_message" and (item.get("text") or "").strip():
                     turn.last_text = item["text"]
+                if (kind == "item.completed" and item.get("type") == "command_execution" and item.get("exit_code") == 0
+                        and PLAIN_COMMIT.search(item.get("command") or "")):
+                    committed.append(item["command"])
             elif kind == "turn.completed":
                 own, tokens = turn_tokens(event.get("usage") or {}, (before or {}).get("tokens"))
                 turn.usage = usage_of(own)
@@ -358,6 +402,8 @@ def cmd_run(session: str, model: str, effort: str, cwd: Path, sandbox: str, prom
     if before or turn.thread:
         bind(session, cwd, attempts=n, attempt=str(attempt), last={"ended": now(), "exit": code, "result": turn.ended and not turn.error},
              **({"tokens": tokens} if tokens else {}))
+    if turn.thread and not mismatch and not cancelled:
+        after_turn(cwd, turn.thread, model, committed, attempt.with_suffix(".hooks.log"))
     try:
         final = last.read_text().strip()
     except OSError:

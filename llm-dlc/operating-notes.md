@@ -121,7 +121,8 @@ in one that hid a real bug until the merge.
 
 A shell command whose text holds `jj commit`, `jj ci`, `jj new` or `git commit` sets off this repository's
 commit hook in a Claude Code session, whatever the command was for. Commit with `sync.py commit`, and make a
-merge with `jj rebase -r @ -d A -d B`. For the same reason, never start a headless probe of a client (`claude
+merge with `jj rebase -r @ -d A -d B`. The same holds for a Codex turn that `agent_client.py` carried: it runs the
+hook after the turn. For the same reason, never start a headless probe of a client (`claude
 -p`, `codex exec`) with a development checkout as its directory, where it would be traced as a session of the
 repository: probe from a scratch folder.
 

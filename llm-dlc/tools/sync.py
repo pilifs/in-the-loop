@@ -2343,8 +2343,14 @@ def hook_export(transcript: Path, redact: Redactor, live: bool = False) -> int:
     after a send succeeds, and over whole lines of the transcript: one that the decoder or the
     redactor splits in two (a carriage return, a raw U+2028) is read as the lines it gives.
     live: the last turn may still be running, so it is not sent and the cursor stays before it."""
-    sid, fingerprint = transcript.stem, sha256(f"{redact.fingerprint()}\0{tools_digest()}".encode())
+    sid, fingerprint = sid_of(transcript), sha256(f"{redact.fingerprint()}\0{tools_digest()}".encode())
     raw = transcript.read_bytes()
+    if codex_rollout.is_rollout(transcript):
+        # A Codex log is read whole: a line means what it means only among the others (which response an item
+        # belongs to), so there is no cursor to read on from. What was sent is remembered by each prompt's id.
+        with perf.phase("redact"):
+            log = redacted_incrementally(raw, sid, sid, redact, None if full_audit([]) else transcript_cache(redact))
+        return export_langfuse(sid, log_entries(log), {**load_manifest(sid), "title": None}, live=live)
     state, start, turns_before, title = langfuse_state(sid), 0, 0, None
     cursor = state.get("hook_cursor")
     if (isinstance(cursor, dict) and not full_audit([]) and cursor.get("fingerprint") == fingerprint
@@ -2393,7 +2399,9 @@ def hook_export(transcript: Path, redact: Redactor, live: bool = False) -> int:
 
 def cmd_hook() -> None:
     """Stop and SessionEnd: send finished turns to Langfuse, and leave the repo alone. A transcript
-    is kept on disk until a commit or a push records it, so nothing depends on this running."""
+    is kept on disk until a commit or a push records it, so nothing depends on this running. Codex's Stop hook
+    gives the same payload (`transcript_path` is the session's rollout), and so does agent_client.py after a
+    turn it ran."""
     try:
         payload = json.load(sys.stdin)
         if langfuse_config() is None:  # before reading and redacting the whole transcript
@@ -2406,9 +2414,9 @@ def cmd_hook() -> None:
             return
         # Marked before anything is read, cleared once all was sent: a hook that fails, times out
         # or is killed leaves the mark, which `check` reports and `sync.py langfuse --all` acts on.
-        mark_hook_unsent(transcript.stem, True)
+        mark_hook_unsent(sid_of(transcript), True)
         hook_export(transcript, Redactor())
-        mark_hook_unsent(transcript.stem, False)
+        mark_hook_unsent(sid_of(transcript), False)
     except OSError as e:  # Langfuse down: those turns are retried next time
         log(f"langfuse export deferred: {e}")
     except Exception:
@@ -2438,7 +2446,7 @@ def cmd_hook_commit() -> None:
         parents = jj_commits("parents(@)")
         if len(parents) != 1 or parents[0]["immutable"] or commit_summary(parents[0]["description"]) is None:
             return
-        if any(s == transcript.stem and sha for s, sha in session_trailers(parents[0]["description"])):
+        if any(s == sid_of(transcript) and sha for s, sha in session_trailers(parents[0]["description"])):
             return  # already recorded, for example by `sync.py commit`
         try:
             lock = Operation("hook-commit", wait=HOOK_LOCK_WAIT).__enter__()

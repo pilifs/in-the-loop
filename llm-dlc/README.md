@@ -512,9 +512,18 @@ cycle, the commit check, the decision, the conductor's questions, the verificati
   line. A Codex model call is timed from when the model was handed the turn (its items are written only when it
   ends), a command a tool call ran is the call that is timed and filed by what it ran, and a cost that leaves out
   calls of a model with no price is printed as `?` or `$1.50+?`, with a note naming the runs.
-- **Not yet.** Codex hooks (a project's hooks run only in a checkout Codex trusts, which a fresh sibling
-  workspace is not, so nothing is exported to Langfuse while a Codex session runs, and a plain `jj commit` by a
-  Codex worker gets its trace at the next sync, not at once); subagent threads of a Codex session; the proof stages of `/prove-java-change` and the
+- **Hooks.** The two hook commands of `.claude/settings.json` (`sync.py hook` at a turn's end, `sync.py
+  hook-commit` after a shell command) take Codex's payload as they take Claude Code's: `transcript_path` is
+  the session's rollout. `.codex/hooks.json` names them for a session a person runs in a checkout Codex trusts,
+  once that person has reviewed them there (`/hooks`): Codex loads a project's hooks only from a trusted
+  project, and runs only hooks someone approved. A loop's worker runs in a fresh sibling workspace, which is
+  neither, and the flag that would run them regardless (`--dangerously-bypass-hook-trust`) runs every other
+  unreviewed hook as well. So `agent_client.py` runs the two commands itself after each turn it carried, with
+  the same payload: `hook-commit` when the turn made a commit without `sync.py` (it traces the commit while it
+  is still the working copy's parent; otherwise the next sync does), then `hook`. Neither does anything twice,
+  and a failure is written beside the attempt (`*.hooks.log`) and stops nothing. `AGENT_CLIENT_HOOKS=off`
+  turns this off.
+- **Not yet.** Subagent threads of a Codex session; the proof stages of `/prove-java-change` and the
   standalone verification loop; runtime (released) checkouts.
 
 ## Sessions

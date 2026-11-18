@@ -15,6 +15,7 @@ what Codex CLI 0.169 spoke on 2026-11-18 (`exec --json` events, `exec resume`, `
                           mismatch  on a resume, reports another thread than the one asked for
                           compacts  the thread compacts itself in the middle of the turn
     CODEX_STANDIN_COMPACT `fail` makes the app server refuse a compaction
+    CODEX_HOME            with it, a thread's log is started there as Codex names one (sessions/Y/M/D/rollout-*-THREAD.jsonl)
     CODEX_STANDIN_PROMPT  a file whose text `debug prompt-input` renders (the folder's CLAUDE.md without one)
 """
 import json
@@ -91,6 +92,12 @@ def run_exec(argv):
     turns = state / f"thread-{thread}"
     n = (int(turns.read_text()) if turns.exists() else 0) + 1
     turns.write_text(str(n))
+    if os.environ.get("CODEX_HOME"):  # the log Codex keeps of a thread, as far as a hook's payload needs one
+        day = Path(os.environ["CODEX_HOME"]) / "sessions" / "2026" / "01" / "01"
+        day.mkdir(parents=True, exist_ok=True)
+        with open(day / f"rollout-2026-01-01T00-00-00-{thread}.jsonl", "a") as f:
+            f.write(json.dumps({"timestamp": "2026-01-01T00:00:00.000Z", "type": "session_meta",
+                                "payload": {"id": thread, "cwd": os.getcwd(), "cli_version": "stand-in"}}) + "\n")
     say({"type": "thread.started", "thread_id": thread})
     say({"type": "turn.started"})
     if mode == "hang":
