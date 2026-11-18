@@ -920,7 +920,201 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   `--rust-jobs 1` (22 of 22).
 - Next: item 6's entries for 288's `fixed-security` and binding (`ownxunnx`) and for 289's other answers;
   `srxyxsns`'s adversarial fixture; then `nzsypymy`.
-- Status: working
+- The item 6 formalization of 286's proposed claim went to state as `domain-advances-state-I019`, citing `twvzrvvw`.
+- 2026-11-18, item 6, 288's `fixed-security` and state's binding check (`ownxunnx`): **two wrong 6.1.14 binders
+  satisfy what is decided**. Each is a patch of 6.1.14's `DataBinder.java` (blob `98157756`, checked) under 288's
+  `controls/`, used by no task, with the reasoning in 288's notes. 288's only decided proof is `fixed-security`;
+  its preservation is unverifiable at bound 8 (VF-031).
+  - `allowed-list-skipped-with-disallowed.patch`: `isAllowed` consults the allowed list only when no disallowed list
+    is set.
+    - Predicted: `fixed-security` established, since the claim reads the disallowed side alone and the mutant's is the
+      fix's; preservation refuted outside the allowed change (`Name` against the allowed `name`, root locale).
+    - On a JVM (JDK 25.0.5, the pinned JARs with the patched class first), allowed `name`, disallowed `id`:
+      `name=Ayla, title=Dr` binds `title`, where 6.1.14 suppresses it.
+    - The replay catches it at one legitimate probe (`name-capital-allowed-list-tr`); the property holds.
+  - `first-suppressed-only.patch`: 286's mutant on this release, `checkAllowedFields` returning after the first
+    suppressed value.
+    - Predicted: the decision tasks as on 6.1.14. The binding check (`ProtectedBinding#protectedKept`) binds one value,
+      so it is established as on 6.1.14.
+    - On a JVM with `id`, `ADMIN` disallowed: `id=5, Id=7` binds id 7, and `admin=false, Admin=true` makes an admin.
+    - **The replay misses it**: "holds" and "pass" on the 38 probes, as on 6.1.14, since no bind probe has two denied
+      names. It is I009's and I019's limit, carried to 288's binding.
+  - The packet already says it claims the decision only. The two halves left to other evidence are the allowed list
+    (preservation, unverified, and one probe) and the binding of more than one value (no claim, no probe).
+  - They go as inbox items: the first to `domain-advances-preservation` (288's preservation task is its), the second to
+    `domain-advances-state` (the binding check is its). Each cites this commit, and the ids go in the next entry.
+  - *Audit*: the decided answer is about `isAllowed`, as its statement says, and stands. No accepted result claims the
+    binding. Nothing for the watcher.
+- Inbox: no open items.
+- Tests: `validate_example.py 288` passed, and `test_costs.py run --changed` passed under `MemoryMax=8G` with
+  `--rust-jobs 1` (22 of 22).
+- Next: item 6's entry for 289's other answers; `srxyxsns`'s adversarial fixture; then `nzsypymy`; and preservation's
+  next commits (its last is still `qmsonuow`).
+- 288's item 6 went to preservation as `domain-advances-preservation-I024` and to state as `domain-advances-state-I020`,
+  both citing `yqwmukvo`.
+- **To the watcher**: `sync.py check` here reports 25 `has no manifest` errors, up from 23. Session 88045564 is stamped on
+  `mnwtrnrp` and `tqmpowvx`, and its manifest is on the default line and preservation's. The cause is the one recorded
+  above (`link_commits`). I have not touched the trace lines.
+- 2026-11-18, item 6, 289's other answers (`fixed-security`, and the two refutations): **two wrong 5.6.4 matchers
+  satisfy both established claims**. Each is a patch of 5.6.4's `RegexRequestMatcher.java` (blob `a334afc7`, checked)
+  under 289's `controls/`, used by no task, with the reasoning in 289's notes.
+  - The claims leave no room inside their domain. On the family (a literal `P` and `.*`) at bound 8, `fixed-security`
+    says true wherever the URL begins with `P`, and preservation says 5.6.3's answer everywhere else. Together they fix
+    5.6.4's answer on every input, so a wrong matcher can differ only outside the domain.
+  - `dotall-for-trailing-wildcard-only.patch` sets DOTALL only where the pattern ends with `.*`.
+    - Predicted: both claims established, since every pattern of the family ends so.
+    - On a JVM (JDK 25.0.5, the pinned 5.6.4 JARs with the patched class first), `/admin/.*/edit` misses `/admin/`, a
+      line feed, `/edit`. 5.6.4 matches it. This is the advisory's bypass, for a `.` with more pattern after it.
+  - `query-dropped.patch` matches against the servlet path and path info, leaving the query out.
+    - Predicted: both claims established. `P` cannot hold `?`, so the query never decides whether the URL begins with
+      `P`.
+    - On a JVM, `/files/.*\?download=.*` misses `/files/a` with query `download=1`. Both releases match it.
+  - **The replay misses both**. Each gives "holds" and "pass" on the 44 probes, and `oracle.py compare` against 5.6.3 says
+    preserved. The first differs from 5.6.4 only at the out-of-domain probe `dot-inside-pattern`, which decides nothing,
+    and no probe's pattern reads the query.
+  - The refutations are about a given implementation, and their witnesses were run on a JVM, so no wrong implementation
+    can stand in for them.
+  - The packet states the family's narrowness but not what it leaves out. Making `dot-inside-pattern` a decided probe,
+    or adding a probe whose pattern reads the query, would catch each mutant. This goes as an inbox item to
+    `domain-advances-preservation`, which reran 289's preservation, citing this commit. The id goes in the next entry.
+  - *Audit*: both accepted answers say what they are about, on their stated domain, and stand. Nothing for the watcher.
+- Done when, third point: one decided claim is left without an entry, 290's security claim, whose answers the evidence
+  line accepts. 286, 287, 288 and 307 have theirs from earlier entries. 289's preservation has note 15 and its security
+  answers have this entry. 290's preservation has VF-033's note and the exception note.
+- Inbox: no open items.
+- Tests: `validate_example.py 289` passed, and `test_costs.py run --changed` passed (22 of 22) under `MemoryMax=8G` with
+  `--rust-jobs 1`.
+- Next: item 6's entry for 290's security claim; `srxyxsns`'s adversarial fixture; then `nzsypymy`; and
+  preservation's next commits (its last is still `qmsonuow`).
+- 289's item 6 went to preservation as `domain-advances-preservation-I026`, citing `rqtklpxv`.
+- 2026-11-18, `domain-advances-challenge-I006`, the default line merged onto this one: **done**, in this commit.
+  - The merge is of `rqtklpxv` and the default line's `qplqrrss`, which holds `xpmzppvn` (this line to `twvzrvvw` and
+    state's, merged by the watcher).
+  - The conflicts and how each was settled:
+    - the generated trace files, by `sync.py regenerate`;
+    - 288's notes: the default line's 15, then this line's item 6 note last (`yqwmukvo`), which was the only note
+      this line added;
+    - the router `examples/index.json`: the default line's, rebuilt with `build.py --index-only`.
+  - Nothing else conflicted. `Engine::call` is the watcher's resolution, unchanged: both rules, the lemma's first.
+  - I002's combination, now on one line: the default run on the merged tree includes every countermodel test file
+    and its checker-side test, the stub file among them (`an_effect_contracts_writes_meet_the_induction_and_the_write_set`).
+    The result is under Tests below.
+  - D035, the user's plan that I006 carries, is taken as given:
+    - preservation finishes its 288 cycle and at most one more;
+    - this stream then gets one last cycle to review what preservation committed, and ends.
+    It narrows the brief's "for as long as another stream is still working" and comes first, as the user's.
+- Tests:
+  - the default run on the merged tree passed, 54 of 54. It ran under `MemoryMax=8G` with `--rust-jobs 1` and
+    `RUN_STREAMS_WATCHER` unset. It was not recorded, because Progress was edited while it ran.
+  - `validate_example.py 288` and `289` passed.
+- New on preservation's line, not yet challenged: `mwvyxxyr`. Its call-level records now follow a heap merge's
+  renumbering in `collect`, and a record whose result the state no longer reaches is dropped.
+- Next:
+  - item 5: preservation's `mwvyxxyr` (a call's record and the objects a merge numbers again);
+  - item 6's entry for 290's security claim;
+  - `srxyxsns`'s adversarial fixture, then `nzsypymy`;
+  - per D035, a last cycle on what preservation commits after `mwvyxxyr`, then `done`.
+- The merge's `sync.py check` gave 0 errors and 42 warnings, and the warnings were relayed to the user. The 25
+  `has no manifest` errors recorded above cleared once the lines met.
+- 2026-11-18, item 5, preservation's `mwvyxxyr` (a call's record follows `collect`'s renumbering): **a false proof past
+  the record, and a wrong value after a merge**, to be handed over. It was built apart at `lxosnzun`, preservation's
+  merge of the default line, with the sources touched.
+  - The fixture is `lib/tests/fixtures/record-countermodels`. Its README has the table, the commands, the options, the
+    checker-side test and the audit. `lib/tests/record_countermodels.rs` holds it to a JVM.
+  - A later call on equal inputs takes the cells of the object the record names, read when the later call is made.
+    The record names an object, not the cells it was returned with.
+    - `stale` is **Verified** at `lxosnzun`, non-vacuous, with only the rule's own assumption that each call ends.
+      The previous version writes 99 into the first call's array, then returns the second call's cell. A JVM gives 0
+      at 0, and the new version gives 99. This is older than `mwvyxxyr`: `xuwlklyo` reads the cells the same way.
+    - `swapped` has no verdict. After 30 independent branches, so that heaps are merged (past 1024 paths), the first
+      call's array goes to `a` on one path and to `b` on the other, beside a new array. `absorb` keeps the records of
+      the path it merges into, with that path's numbers. So on the other path the merged record names the new array.
+      The checker gives a spurious witness (`k=16`), and the mirrored version gives one at `k=0`. Which path is kept
+      varies with the other branches, and the callee's result is an uninterpreted function. So a wrong value is
+      reproduced, and no false proof could be built from it.
+  - The README's checker-side test fails on `stale` at `lxosnzun`, as it should. The rule is preservation's, so
+    nothing in `lib/src` changes here. The test goes as a `failure` item to `domain-advances-preservation`, citing
+    this commit.
+  - *Audit*: in 287's pinned sources (6.3.7 and 6.3.8), `hashpw` passes `crypt_raw`'s result only to `encode_base64`,
+    which stores nothing into it, so `stale` cannot occur there.
+    - Not read: 307's slices, and whether a merge falls between two related calls in 287's or 307's harness.
+    - Nothing for the watcher.
+- Inbox: `domain-advances-challenge-I007` (the user's D036: my last pass). Taken on.
+  - *I023's seven on the merged checker.* At `lxosnzun` (01:20 UTC), preservation's last commit, its I023 fix is not
+    committed yet. Per D036 it is preservation's first item. All seven are still **Verified** there (`filled`,
+    `copied`, `interned`, `same`, `tagged`, `overflowed`, `exhausted`).
+    - **`--no-shared-callees` does not yield zero applications.** With it, each still takes 12 calls (13 for `same`)
+      "taken as one function of both".
+    - Of the controls, `hashed` and `encoded` get no verdict. `messaged` is now refuted, as on a JVM, since state's
+      `vwrmzmst` models `getMessage()`.
+    - The check is to be repeated once preservation commits the fix. If it does not, the seven stay open.
+  - *I002's two rules together on the merged line.* `lxosnzun`'s `lib/` holds the lemma rule, state's write set and
+    effect contracts, and preservation's call-level rule. This line's `lib/src` adds nothing to it. Built apart, all
+    eight test files pass, 52 tests in all:
+    - `claims.rs`, 35 tests;
+    - `contract_countermodels.rs`, 2, and `effect_countermodels.rs`, 3, the I013 test among them;
+    - `frame_countermodels.rs`, 3, and `function_countermodels.rs`, 1;
+    - `lemma_countermodels.rs`, 6, `stand_in_countermodels.rs`, 1, and `stub_countermodels.rs`, 1.
+    I002 holds on the merged line.
+- Tests: `test_costs.py run --changed` under `MemoryMax=8G` with `--rust-jobs 1` and `RUN_STREAMS_WATCHER` unset:
+  passed, with 56 Rust test binaries, `record_countermodels.rs` among them, and no failure. `estimate` and `tag` were
+  run for the new test file, and `lint` agrees.
+- Left for the end, by D035 and D036:
+  - I007's first point, on preservation's I023 fix, once committed;
+  - item 6's entry for 290's security claim;
+  - `srxyxsns`'s adversarial fixture;
+  - `nzsypymy`.
+  Any of these not done in the last cycle is listed there as unchallenged.
+- The record failure went to preservation as `domain-advances-preservation-I028`, citing `utvyrttk`.
+- 2026-11-18, the last cycle (D035, D036, I007): preservation's I023 fix, `puuwrruu` (01:50 UTC), built apart with the
+  sources touched (`/tmp/pres8`).
+  - *I007's first point, I023's seven at the fix*: **none is proved**. With `--engine native --assume 'k >= 0'`:
+    - `filled`, `copied`, `interned`, `same` and `tagged` are refuted, as on a JVM;
+    - `overflowed` and `exhausted` get no verdict, since each call runs as written and stops at a limit.
+    - Of the controls, `hashed` and `encoded` get no verdict, and `messaged` is refuted.
+  - **`--no-shared-callees` yields zero applications.** For all ten, the run with it takes no call as one function: no
+    count in the result, and none in `search.native.calls_as_one_function`. `filled` and `copied`, which take 2 calls
+    without the flag, are then unverifiable. `stale` and `swapped` (`record-countermodels`) are refuted with it, as on
+    a JVM.
+  - `stale` is still **Verified** at `puuwrruu`, as it was at `lxosnzun`. I028 reached preservation after the fix, and
+    its fix is not committed.
+  - *I002's two rules on the merged line*, at `puuwrruu`, which holds the default line through `lxosnzun`: the eight
+    test files pass, 53 tests in all (`function_countermodels.rs` now has 2, preservation's I023 test among them),
+    and so does `pairing.rs`, 20 tests. I002 holds on the merged line past the fix.
+  - At `puuwrruu`, `allocation_countermodels.rs`'s JVM test passes, and the README's checker-side test fails on
+    `kept` alone, as it should.
+  - Item 5, past the fix: **one more false proof**, to be handed over.
+    - The fix keeps an `OutOfMemoryError` out of a call's outcomes by checking each allocation's length on its own
+      (at most 65536). Nothing bounds how many arrays a run keeps.
+    - The fixture is `lib/tests/fixtures/allocation-countermodels`. Its README has the table, the commands, the
+      options, the checker-side test and the audit. `lib/tests/allocation_countermodels.rs` holds it to a JVM, on a
+      64 MiB heap.
+    - `kept` is **Verified** at `puuwrruu`, non-vacuous, with 12 calls taken. It keeps `long[16384]` arrays in rows
+      of `Object[16384]`, one row per round while `i < k`, 32 TiB once k >= 1. A JVM gives -1 against -2. With
+      `--no-shared-callees`, it gets no verdict.
+    - **Tried and guarded**: `around`, a recursion through an override (`Deep.f` calls `Node.g`, which calls `f`).
+      The recursion check follows each call to the method it names, not to an override, but the reach refuses `Node.f`
+      as overridable first, so the call runs as written. It is kept in the fixture as a control.
+    - The rule is preservation's, so nothing in `lib/src` changes here. The test goes as a `failure` item to
+      `domain-advances-preservation`, citing this commit.
+    - *Audit*: in 287's pinned 6.3.7 and 6.3.8 sources, every array `crypt_raw` reaches is of a length from constants
+      or static tables, and no reference to one is stored into an array. 287 and 307 are not affected. Nothing for
+      the watcher.
+- Inbox: no open items.
+- Tests: `test_costs.py run --changed` under `MemoryMax=8G` with `--rust-jobs 1` and `RUN_STREAMS_WATCHER` unset:
+  passed, with 57 Rust test binaries, `allocation_countermodels.rs` among them, and no failure. `estimate` and `tag`
+  were run for the new test file, and `lint` agrees.
+- **Left unchallenged**, as the stream ends by D035 and D036:
+  - item 6's entry for 290's security claim, the one decided claim without one (Done when, third point);
+  - state's `srxyxsns`, 286's adversarial fixture on 5.3.19 (a setter that writes the protected flag, told from its
+    honest twin);
+  - evidence's `nzsypymy`, 290's preservation claim restated for the user to freeze;
+  - preservation's `vyzppnku`, which reads 287's accepted preservation as agreement on terminating runs (notes only);
+  - whatever preservation commits after `puuwrruu`, the fixes for I028 and for `kept` among them;
+  - from earlier entries: whether 289's and 290's reruns take a call, and whether a heap merge falls between two related
+    calls in 287's or 307's harness.
+- The allocation failure went to preservation as `domain-advances-preservation-I029`, citing `orxlmwsv`.
+- Status: done
 
 ## Loop settings
 
