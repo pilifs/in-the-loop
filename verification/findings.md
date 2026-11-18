@@ -18,6 +18,61 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-044: what the domain-advances run left when the user stopped it, for a stronger agent to take on
+
+- **Status**: open (the user's decision on 2026-11-18: the run was stopped after preservation's cycle under way, and
+  what is outstanding is recorded here for a more capable agent to take on later).
+- **Raised**: 2026-11-18 03:22 UTC on `vm-1`, by the watcher of the domain-advances run (session 6c5c7798). The
+  preservation stream stopped at a boundary at `nwylyxlo` with its status still `working`, merged at `qtsxxpmp`.
+  The brief's status reads `blocked: stream preservation: working`. Evidence, state and challenge ended `done` and
+  are merged. Default line commits: challenge `rwptzvnl`, state `zlvumvvr`, preservation `qtsxxpmp`.
+- **Found**, by area:
+  - **The one-function rule's last fixes have not been challenged.** Preservation closed I028 (a call's record keeps
+    an array result's cells as returned; a merge chooses a String result by its guard; outcome bits are named by the
+    call's inputs) and I029 (the rule refuses arrays of references, application objects and grown Strings) in
+    `lib/src/bmc/ties.rs`, `bmc/mod.rs` and `shared::one_function`. The challenge stream ended before they landed,
+    so no adversarial pass has looked for a pair the fixed rule still proves where a JVM tells them apart.
+    - Preservation found no countermodel for a misnumbered record in `absorb` after two shapes. It needs two opaque
+      Strings merged object by object past the heap-merge threshold. The limit is stated in `lib/README.md`, not
+      tested. An outside review suggested a focused absorb test with two predecessor records: each branch keeps the
+      correct result, or an ambiguous record is dropped.
+    - The challenge stream's hand script `callee-countermodels/check.py --rule-landed` still expects `same`,
+      `copied` and `parsed` verified. The rule now refuses them (`new Hash()`, `StringBuilder` appends), so they run
+      as written: a loss of precision, not soundness. The script is out of date.
+  - **The accepted answers rest on jobs that ran on the earlier checker.** 287's and 307's preservation jobs, and
+    289's and 290's (job 20261117-213024), ran before I023, I028 and I029. Capped probes on the final checker give
+    the same verdicts and counts: 287 verified in 104 s (53 paths, 52 calls taken, 48 related), 307 in 80 s (55,
+    48, 44), 307's mutant refuted at a non-ASCII password, 289 and 290 verified (1373 and 573 paths). No
+    frozen-bound job has run on the final checker.
+  - **288 was not closed out.** Its profile and the decision to stop are in preservation's Progress (step 7). D037 asked
+    for the VF-031 closeout in the last cycle, but the cycle ended first. 288's preservation claim stays open (VF-031),
+    and so does the next approach, the per-release locale lemma, recorded as a proposed proof component in VF-043.
+    The status of 288's preservation work was never set to done.
+  - **Preservation's open inbox items.**
+    - I026: decide whether 289's packet tells its two established claims from two wrong 5.6.4 matchers (the patches
+      are under 289's `controls/`): decide the probe `dot-inside-pattern`, or add a probe whose pattern reads the
+      query. Any new claim file goes to the user.
+    - I030: the 288 closeout above, with a cross-link from VF-031 to VF-043.
+  - **The machine.** `/tmp`'s tmpfs reached this user's quota during preservation's probes: 42 of 53 GB used, most
+    of it not that cycle's (see VF-036). With `TMPDIR` inside the checkout, `test_claude_setup.py` and
+    `test_performance.py` fail, because their temporary folders sit below the repository's `CLAUDE.md`. They pass
+    with `TMPDIR` outside it.
+- **Needs**: a stronger agent, in this order:
+  1. An adversarial pass on I028 and I029, run like the challenge stream: countermodels a JVM tells apart, each with
+     a checker-side test. Include the absorb test above, and bring `check.py --rule-landed` up to date.
+  2. Frozen-bound jobs on the final checker for 287, 307 (both answers), 289 and 290. Then point each task record at
+     its new job and run `accept.py` again.
+  3. I026.
+  4. 288's closeout: the VF-031 entry, the cross-link to VF-043, and the status of 288's preservation work. Then the
+     locale lemma, if wanted, benchmarked first on the bound-8 final comparison.
+  5. The items in VF-042 (what state and evidence left open) and VF-043 (bindings over sequences of values).
+  
+  The claim questions the user deferred stay theirs: D023, D028, D029, D032 and D034, with VF-038, VF-039 and VF-040.
+- **Tracked in**: the domain-advances brief (`llm-dlc/loops/domain-advances.md`) and its preservation and challenge
+  briefs' Progress; run-streams-domain-advances-D035, D036 and D037; VF-031, VF-036, VF-042, VF-043.
+- **Closes when**: the fixed rule has had an adversarial pass with its countermodels tested; 287, 289, 290 and 307
+  are accepted on frozen-bound jobs that ran on the final checker; I026 is decided; and 288's closeout is recorded.
+
 ### VF-043: one-value binding checks accept wrong binders in 286 and 288; claims should bind sequences of permitted and denied updates
 
 - **Status**: open (the user's decision on 2026-11-18, run-streams-domain-advances-D036: for later, with the coming
