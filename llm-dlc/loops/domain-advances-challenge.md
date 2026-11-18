@@ -1014,7 +1014,58 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   - item 6's entry for 290's security claim;
   - `srxyxsns`'s adversarial fixture, then `nzsypymy`;
   - per D035, a last cycle on what preservation commits after `mwvyxxyr`, then `done`.
-- Status: working
+- The merge's `sync.py check` gave 0 errors and 42 warnings, and the warnings were relayed to the user. The 25
+  `has no manifest` errors recorded above cleared once the lines met.
+- 2026-11-18, item 5, preservation's `mwvyxxyr` (a call's record follows `collect`'s renumbering): **a false proof past
+  the record, and a wrong value after a merge**, to be handed over. It was built apart at `lxosnzun`, preservation's
+  merge of the default line, with the sources touched.
+  - The fixture is `lib/tests/fixtures/record-countermodels`. Its README has the table, the commands, the options, the
+    checker-side test and the audit. `lib/tests/record_countermodels.rs` holds it to a JVM.
+  - A later call on equal inputs takes the cells of the object the record names, read when the later call is made.
+    The record names an object, not the cells it was returned with.
+    - `stale` is **Verified** at `lxosnzun`, non-vacuous, with only the rule's own assumption that each call ends.
+      The previous version writes 99 into the first call's array, then returns the second call's cell. A JVM gives 0
+      at 0, and the new version gives 99. This is older than `mwvyxxyr`: `xuwlklyo` reads the cells the same way.
+    - `swapped` has no verdict. After 30 independent branches, so that heaps are merged (past 1024 paths), the first
+      call's array goes to `a` on one path and to `b` on the other, beside a new array. `absorb` keeps the records of
+      the path it merges into, with that path's numbers. So on the other path the merged record names the new array.
+      The checker gives a spurious witness (`k=16`), and the mirrored version gives one at `k=0`. Which path is kept
+      varies with the other branches, and the callee's result is an uninterpreted function. So a wrong value is
+      reproduced, and no false proof could be built from it.
+  - The README's checker-side test fails on `stale` at `lxosnzun`, as it should. The rule is preservation's, so
+    nothing in `lib/src` changes here. The test goes as a `failure` item to `domain-advances-preservation`, citing
+    this commit.
+  - *Audit*: in 287's pinned sources (6.3.7 and 6.3.8), `hashpw` passes `crypt_raw`'s result only to `encode_base64`,
+    which stores nothing into it, so `stale` cannot occur there.
+    - Not read: 307's slices, and whether a merge falls between two related calls in 287's or 307's harness.
+    - Nothing for the watcher.
+- Inbox: `domain-advances-challenge-I007` (the user's D036: my last pass). Taken on.
+  - *I023's seven on the merged checker.* At `lxosnzun` (01:20 UTC), preservation's last commit, its I023 fix is not
+    committed yet. Per D036 it is preservation's first item. All seven are still **Verified** there (`filled`,
+    `copied`, `interned`, `same`, `tagged`, `overflowed`, `exhausted`).
+    - **`--no-shared-callees` does not yield zero applications.** With it, each still takes 12 calls (13 for `same`)
+      "taken as one function of both".
+    - Of the controls, `hashed` and `encoded` get no verdict. `messaged` is now refuted, as on a JVM, since state's
+      `vwrmzmst` models `getMessage()`.
+    - The check is to be repeated once preservation commits the fix. If it does not, the seven stay open.
+  - *I002's two rules together on the merged line.* `lxosnzun`'s `lib/` holds the lemma rule, state's write set and
+    effect contracts, and preservation's call-level rule. This line's `lib/src` adds nothing to it. Built apart, all
+    eight test files pass, 52 tests in all:
+    - `claims.rs`, 35 tests;
+    - `contract_countermodels.rs`, 2, and `effect_countermodels.rs`, 3, the I013 test among them;
+    - `frame_countermodels.rs`, 3, and `function_countermodels.rs`, 1;
+    - `lemma_countermodels.rs`, 6, `stand_in_countermodels.rs`, 1, and `stub_countermodels.rs`, 1.
+    I002 holds on the merged line.
+- Tests: `test_costs.py run --changed` under `MemoryMax=8G` with `--rust-jobs 1` and `RUN_STREAMS_WATCHER` unset:
+  passed, with 56 Rust test binaries, `record_countermodels.rs` among them, and no failure. `estimate` and `tag` were
+  run for the new test file, and `lint` agrees.
+- Left for the end, by D035 and D036:
+  - I007's first point, on preservation's I023 fix, once committed;
+  - item 6's entry for 290's security claim;
+  - `srxyxsns`'s adversarial fixture;
+  - `nzsypymy`.
+  Any of these not done in the last cycle is listed there as unchallenged.
+- Status: blocked: waiting for the other streams' next commits (preservation's I023 fix, for I007's last check)
 
 ## Loop settings
 
