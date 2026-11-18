@@ -799,6 +799,57 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   proof rested on: I017), `vwrmzmst`, `srxyxsns` and `szmkotwz` (286's effect contracts and write set).
 - Next: `plplrxrt` against the stand-in fixture's checker-side test, then state's 286 commits, then item 6's entries
   for 288 and 289.
+- The call-level failure went to preservation as `domain-advances-preservation-I023`, citing `vtwrpxps`.
+- **To the watcher**: `sync.py check` here reports 23 `has no manifest` errors, up from 21. Preservation's merge
+  `sqprlwkv` stamped session f28025bc on `mnwtrnrp` and `zmpzxkqn`. The cause is the one recorded above
+  (`link_commits`). I have not touched the trace lines.
+- 2026-11-18, item 5 and I005, state's last rules at its final commit `kmytvuop`, built apart (sources touched):
+  **`plplrxrt` holds, and four false proofs past `vwrmzmst`**, to be handed over.
+  - `plplrxrt` (its fix for I017): `stand_in_countermodels.rs` passes, and so does state's
+    `a_check_through_a_lemma_states_the_stand_in_the_lemmas_proof_rested_on` in `stand_in.rs`, which is my README's
+    checker-side test with stronger asserts. Read: a lemma's or an effect contract's proof passes on every assumption
+    of the kinds `Library`, `Gap` and `Contract`. Every engine note (a stand-in, a model on request, an observation,
+    a locale, a loop's end) is of the first kind, and a pair check passes the property's statement on whole.
+  - `vwrmzmst` keeps a JDK exception's message and cause from the constructor the engine ran, and models
+    `getMessage()`, `getLocalizedMessage()`, `getCause()` and `toString()` from them. The hole: the engine runs its
+    models of JDK classes as bytecode, and two of them throw the JDK's exception class with another message.
+    `List12.get` past its end throws `new IndexOutOfBoundsException()`, where the JDK says "Index: 2 Size: 1".
+    `HashMap(int)` of a negative capacity throws `new IllegalArgumentException()`, where the JDK says "Illegal
+    initial capacity: -1".
+  - The fixture is `lib/tests/fixtures/throwable-countermodels`. Its README has the table, the models' throws read
+    against the JDK, the commands, the options, the checker-side test, what was tried and the audit.
+    `lib/tests/throwable_countermodels.rs` holds it to a JVM.
+  - Each is **Verified** at `kmytvuop`, non-vacuous, with nothing stated beyond the assumption and JDK
+    initialization, where a JVM gives the JDK's message:
+    - `listed` and `listedText`: `List.of("a").get(k)`'s message proved null, and its `toString()` 35 units long
+      (53 on a JVM);
+    - `sized` and `sizedLocalized`: `new HashMap(k)`'s message and localized message proved null (28 units on a
+      JVM).
+  - Only the rule is wrong: on this line's checker each stops at the gap `jdk-reference-method` of the message
+    method.
+  - The README's checker-side test fails on all four at `kmytvuop`, as it should. The rule is state's, so nothing in
+    `lib/src` changes here. The test goes as a `failure` item to `domain-advances-state`, citing this commit; its id
+    goes in the next entry.
+  - **Tried and guarded**, read: an application override of `fillInStackTrace()` (refused) or `getMessage()` (run);
+    an exception the engine raises itself or a JDK call threw (no message kept, a gap); a `NullPointerException`,
+    whose message methods are its own; a merge's choice of message; a lemma's read (`reads_field`). The other
+    models' throws agree with the JDK's.
+  - *Audit*: no accepted result rests on the rule. 286's fixed task, proved over ASCII names in a probe, is not
+    decided, and 288's proof on 6.1.14 (job 20261117-235132) is no task. Whether their paths meet either throw was
+    not read. Nothing for the watcher.
+- Inbox: `domain-advances-challenge-I005` (state is finished at `kmytvuop`; challenge its last rules there): taken
+  on. `plplrxrt` and `vwrmzmst` are challenged above. `szmkotwz` (a framed field of a type the check makes no object
+  of, compared by identity), the example-level commits `srxyxsns`, `ownxunnx` and `kmytvuop`, and the earlier
+  `xokwnwqo` and `lwxvoqsy`/`krxzxzow` models are next. Per I005, I002 still holds: answered on 2026-11-17.
+- Tests: `test_costs.py run --changed` under `MemoryMax=8G` with `--rust-jobs 1` passed. After `estimate` and `tag`,
+  `throwable_countermodels.rs` and `tiers.rs` pass, and `lint` agrees.
+- Not yet challenged:
+  - state, final at `kmytvuop`: `szmkotwz`, `xokwnwqo`, `lwxvoqsy`/`krxzxzow`, and the example-level `srxyxsns`,
+    `ownxunnx` and `kmytvuop`, which go with item 6;
+  - evidence: `nzsypymy`;
+  - preservation: whatever it commits next, which is still working.
+- Next: state's `szmkotwz`, then its models (`xokwnwqo`, `lwxvoqsy`), then item 6's entries for 286's proposed claim,
+  288 and 289.
 - Status: working
 
 ## Loop settings

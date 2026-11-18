@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:50.898Z",
-  "ended": "2026-11-18T00:14:54.251Z",
-  "duration_seconds": 40683,
+  "ended": "2026-11-18T00:27:23.833Z",
+  "duration_seconds": 41433,
   "stats": {
-    "turns": 117,
-    "api_calls": 1163,
-    "tool_calls": 1178,
-    "tool_errors": 25,
-    "compactions": 20,
+    "turns": 122,
+    "api_calls": 1214,
+    "tool_calls": 1230,
+    "tool_errors": 27,
+    "compactions": 21,
     "peak_context_tokens": 294636,
     "usage": {
-      "input_tokens": 2372,
-      "output_tokens": 984175,
-      "cache_read_input_tokens": 140892196,
-      "cache_creation_input_tokens": 3259907
+      "input_tokens": 2474,
+      "output_tokens": 1023083,
+      "cache_read_input_tokens": 147663169,
+      "cache_creation_input_tokens": 3423314
     }
   },
   "tools": {
-    "Bash": 1054,
-    "Edit": 52,
-    "Write": 31,
-    "Read": 26,
+    "Bash": 1101,
+    "Edit": 53,
+    "Write": 33,
+    "Read": 28,
     "ToolSearch": 9,
     "Monitor": 5,
     "TaskStop": 1
@@ -55,6 +55,7 @@
     "lib/tests/fixtures/setting-countermodels/README.md",
     "lib/tests/fixtures/stand-in-countermodels/README.md",
     "lib/tests/fixtures/supertype-countermodels/README.md",
+    "lib/tests/fixtures/throwable-countermodels/README.md",
     "lib/tests/fixtures/thrown-pair-countermodels/README.md",
     "lib/tests/fixtures/tie-countermodels/README.md",
     "lib/tests/fresh_pair_countermodels.rs",
@@ -67,6 +68,7 @@
     "lib/tests/rule_countermodels.rs",
     "lib/tests/setting_countermodels.rs",
     "lib/tests/stand_in_countermodels.rs",
+    "lib/tests/throwable_countermodels.rs",
     "lib/tests/tie_countermodels.rs",
     "lib/tools/cost_inventory.py",
     "llm-dlc/loops/domain-advances-challenge.md",
@@ -357,24 +359,38 @@
     {
       "index": 20,
       "started": "2026-11-17T23:46:25.665Z",
-      "ended": "2026-11-18T00:14:54.251Z",
-      "turns": 4,
-      "api_calls": 79,
+      "ended": "2026-11-18T00:15:51.897Z",
+      "turns": 5,
+      "api_calls": 83,
       "usage": {
-        "input_tokens": 160,
-        "output_tokens": 64942,
-        "cache_read_input_tokens": 12007545,
-        "cache_creation_input_tokens": 197585
+        "input_tokens": 168,
+        "output_tokens": 67804,
+        "cache_read_input_tokens": 12860259,
+        "cache_creation_input_tokens": 203609
       },
-      "peak_context_tokens": 211016
+      "peak_context_tokens": 217040
+    },
+    {
+      "index": 21,
+      "started": "2026-11-18T00:16:37.209Z",
+      "ended": "2026-11-18T00:27:23.833Z",
+      "turns": 4,
+      "api_calls": 47,
+      "usage": {
+        "input_tokens": 94,
+        "output_tokens": 36046,
+        "cache_read_input_tokens": 5918259,
+        "cache_creation_input_tokens": 157383
+      },
+      "peak_context_tokens": 170814
     }
   ],
   "log": {
-    "sha256": "611e52876cd2fb15a19d763d92e3fc9c670a9963a85643cd9d950548a3e13006",
-    "bytes": 30274529,
-    "lines": 10196,
-    "gzip_bytes": 5471692,
-    "path": "llm-dlc/traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/logs/611e52876cd2fb15a19d763d92e3fc9c670a9963a85643cd9d950548a3e13006.jsonl.gz"
+    "sha256": "b19c8f69854c8d34f182ce8c35d9f2bedd8892d6222c6626ca55255597b51d78",
+    "bytes": 31723255,
+    "lines": 10621,
+    "gzip_bytes": 5753986,
+    "path": "llm-dlc/traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/logs/b19c8f69854c8d34f182ce8c35d9f2bedd8892d6222c6626ca55255597b51d78.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -553,6 +569,14 @@
       "summary": "Countermodels of a call taken as one function of both versions: cells a JDK method writes, a String's identity and an Error the JVM raises, each proved to agree where a JVM tells the versions apart",
       "body": "Item 5 and inbox item I004 of the domain-advances challenge stream. The preservation stream's call-level rule (uxyusvsv, xuwlklyo; lib/src/bmc/ties.rs and shared::one_function) takes a call of code both versions share as a function of its inputs. Built apart at qmsonuow with the sources touched, on JDK 25.0.5, the I004 floor holds: callee-countermodels' check.py proves no countermodel, and same, copied and parsed verify.\n\nPast it, lib/tests/fixtures/function-countermodels has seven pairs whose Shared class is the same bytes in both versions. Each is Verified under --assume 'k >= 0', non-vacuous, where each version run alone on a JVM gives another answer: filled and copied (the callee writes an argument only through Arrays.fill or System.arraycopy, and writes_arrays looks only for an array store of the application's own); interned (the callee tests s == \"key\", and the inputs name a String by its content); same and tagged (two related calls return one object, and a returned literal is never the literal); overflowed and exhausted (no Error is among the outcomes, so two handlers of a StackOverflowError or an OutOfMemoryError are never reached). In a scratch copy with the rule off, none is proved. hashed, encoded and messaged were tried and are guarded (the reach left open, or a gap), and stay as controls. lib/tests/function_countermodels.rs holds every pair to a JVM; the fixtures' README has the checker-side test, which fails on exactly the seven at qmsonuow, and the options.\n\nAlso found: --no-shared-callees does not turn the rule off, though its help says it proves each callee as written. Nothing passes it to bmc::Options::calls_as_one_function. The rule is preservation's, so nothing in lib/src changes here; the test goes to that stream as a failure item. Audit: 287's accepted preservation and 307's tasks rest on the rule, but their BCrypt (read from hash-checked JARs and slices) has no identity test, no JDK array writer and no recursion, and no caller catches an Error, so they are not affected. Preservation's sqprlwkv (its fixes for I021 and I022) holds: the log, supertype and reach countermodel tests pass at qmsonuow. Verified with test_costs.py run --changed under an 8G cap, the new test and tiers.rs run alone, estimate, tag and lint.",
       "log_sha256": "611e52876cd2fb15a19d763d92e3fc9c670a9963a85643cd9d950548a3e13006"
+    },
+    {
+      "change_id": "wuotsmsrzmlxsmutmplzszrmypmzyztl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of an exception's message kept from its constructor: a model of the JDK that throws the JDK's exception with another message, each proved to have none where a JVM gives the JDK's",
+      "body": "Item 5 and inbox item domain-advances-challenge-I005: the state stream's last rules, at its final commit kmytvuop, built apart with the sources touched. Its fix for I017 (plplrxrt, a check through a lemma states what the lemma's proof rested on) holds: stand_in_countermodels.rs and state's own checker-side test pass there. Its vwrmzmst keeps a JDK exception's message and cause from the constructor the engine ran, and models getMessage, getLocalizedMessage, getCause and toString from them. The engine runs its models of JDK classes (lib/models) as bytecode, and two of them throw the JDK's exception class with another message: ImmutableCollections.List12.get past its end throws new IndexOutOfBoundsException() where the JDK says 'Index: 2 Size: 1', and HashMap(int) of a negative capacity throws new IllegalArgumentException() where the JDK says 'Illegal initial capacity: -1'. Four methods of lib/tests/fixtures/throwable-countermodels/tm/Thrown.java are each Verified at kmytvuop, non-vacuous, with nothing stated beyond the assumption and JDK initialization: the message proved null, the toString proved 35 units long (53 on a JVM), the localized message proved null (28 units). On this line's checker, without the rule, each stops at the gap of the message method.\n\nThe rule is the state stream's, so nothing in lib/src changes here: the checker-side test is in the fixture's README and goes to domain-advances-state as a failure item. lib/tests/throwable_countermodels.rs holds the fixture to a JVM. No accepted result rests on the rule (286's fixed task is not decided, and 288's 6.1.14 proof is no task). Verified: test_costs.py run --changed under an 8G cap with one Rust job passed; after estimate and tag the new test file, tiers.rs and lint pass; the README's checker-side test fails on all four at kmytvuop, as it should.",
+      "log_sha256": "b19c8f69854c8d34f182ce8c35d9f2bedd8892d6222c6626ca55255597b51d78"
     }
   ],
   "logs": {
@@ -650,6 +674,12 @@
       "bytes": 26952817,
       "lines": 9018,
       "gzip_bytes": 4863374,
+      "url": null
+    },
+    "b19c8f69854c8d34f182ce8c35d9f2bedd8892d6222c6626ca55255597b51d78": {
+      "bytes": 31723255,
+      "lines": 10621,
+      "gzip_bytes": 5753986,
       "url": null
     },
     "bbd1d15f7193100c25d3ad57ec48a4f507808e7eae415bd2547bc106ee9ef20b": {
