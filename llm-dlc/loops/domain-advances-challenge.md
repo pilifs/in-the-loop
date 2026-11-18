@@ -850,6 +850,50 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   - preservation: whatever it commits next, which is still working.
 - Next: state's `szmkotwz`, then its models (`xokwnwqo`, `lwxvoqsy`), then item 6's entries for 286's proposed claim,
   288 and 289.
+- The throwable failure went to state as `domain-advances-state-I018`, citing `wuotsmsr`. `sync.py check` here still
+  reports the 23 `has no manifest` errors recorded above; none is new.
+- 2026-11-18, item 5, state's remaining rules at `kmytvuop` (the `/tmp/st10` build, sources touched): **`szmkotwz`,
+  `xokwnwqo` and `lwxvoqsy`/`krxzxzow` hold for everything tried**, no false proof. Probes were inline and capped,
+  each with a property a JVM breaks; the sources are scratch and are not kept.
+  - `szmkotwz`: a field of a type the check makes no object of (`FieldKind::Reference`), framed by identity under
+    `--writes`. A setter under `--writes this.name` that writes into the object such a field holds is refused in each
+    form tried:
+    - an `Object` field holding an `int[]`: `aastore`/`iastore`, `Engine::keeps`;
+    - a `StringBuilder`'s `append`: `builder_method`'s `keeps`;
+    - an application object behind an `Object` field: `putfield`;
+    - an `ArrayList` with its model: the model's own `putfield`;
+    - `Throwable.initCause`: a JDK gap under strict.
+    The referent is no input, so `Obj::given`, and every write gate asks `keeps`. In a contract's proof, any read of a
+    receiver's field is refused before the referent is reached (`reads_field`), so a builder there can't be read the
+    way item 3's lemma read one. Under `--gaps assume` the `initCause` gap is taken to change nothing, which is false
+    of the JDK but stated in the verdict.
+  - `xokwnwqo`:
+    - `StringJoiner.toString()` gives a new String on JDK 17, 21 and 25 alike (run on each), for one element and on a
+      repeat, as the model does. The empty join is the JDK's `new String()`, a gap.
+    - The `LinkedHashSet` order with a re-add is refuted where it should be.
+    - `toArray(new Integer[k])` of a String element is refused at the `aastore` (`ArrayStoreException`).
+    - `lastIndexOf(int)` of a surrogate pair and of a lone low surrogate is refuted where it should be.
+    - `getClass()` of an `int[]` is a gap, so `isArray()` is met only on a literal.
+    - A conservative miss, not a false result: `toArray(new String[0])` is a `String[]` on the checker, as on a JVM,
+      but the interpreter's replay gives a non-`String[]`, so the true counterexample is called spurious.
+  - `lwxvoqsy`/`krxzxzow`:
+    - the `PropertyChangeEvent` model's `toString()` is a JDK gap;
+    - an application subclass's override is run, the model's getter beside it, both refuted where they should be;
+    - `ArrayList.remove(Object)` calls `o.equals(element)` in the JDK's order;
+    - the model's iterator's `hasNext()` is `cursor != size`, as the JDK's, so a removal that leaves the cursor past
+      the end throws on `next()` in both.
+    - `Boolean.TRUE`/`FALSE` are only the two constants, and a call on one stays the JDK's.
+    - A sampler's narrowness is stated in the result (see the `qlylowvo` entry).
+  - *Audit*: nothing to audit, since no hole was found.
+- Inbox: no open items.
+- Tests: no test changed this cycle (Progress only).
+- Not yet challenged:
+  - state, final at `kmytvuop`: the example-level `srxyxsns`, `ownxunnx` and `kmytvuop`, which go with item 6;
+  - evidence: `nzsypymy`;
+  - preservation: whatever it commits next, which is still working.
+- Next: item 6's entries for 286's proposed claim (`claims/proposed/protected-age-kept-two-values.json`), 288's
+  `fixed-security` and binding (`ownxunnx`), and 289's other answers; `srxyxsns`'s adversarial fixture; then
+  `nzsypymy`.
 - Status: working
 
 ## Loop settings
