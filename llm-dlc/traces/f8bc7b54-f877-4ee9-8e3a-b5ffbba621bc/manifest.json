@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:50.898Z",
-  "ended": "2026-11-18T01:38:17.174Z",
-  "duration_seconds": 45686,
+  "ended": "2026-11-18T02:03:22.038Z",
+  "duration_seconds": 47191,
   "stats": {
-    "turns": 155,
-    "api_calls": 1457,
-    "tool_calls": 1476,
+    "turns": 163,
+    "api_calls": 1510,
+    "tool_calls": 1528,
     "tool_errors": 31,
-    "compactions": 27,
+    "compactions": 28,
     "peak_context_tokens": 294636,
     "usage": {
-      "input_tokens": 2972,
-      "output_tokens": 1194535,
-      "cache_read_input_tokens": 173858845,
-      "cache_creation_input_tokens": 4190696
+      "input_tokens": 3084,
+      "output_tokens": 1228887,
+      "cache_read_input_tokens": 180604279,
+      "cache_creation_input_tokens": 4346921
     }
   },
   "tools": {
-    "Bash": 1314,
-    "Edit": 61,
-    "Read": 47,
-    "Write": 35,
-    "ToolSearch": 11,
+    "Bash": 1357,
+    "Edit": 63,
+    "Read": 51,
+    "Write": 37,
+    "ToolSearch": 12,
     "Monitor": 7,
     "TaskStop": 1
   },
@@ -41,8 +41,10 @@
     "/tmp/acc/test_accept_controls.py",
     "/tmp/ev-acc/examples/tools/test_step_controls.py",
     "lib/src/classpath.rs",
+    "lib/tests/allocation_countermodels.rs",
     "lib/tests/binding_countermodels.rs",
     "lib/tests/fixtures/accept-countermodels/README.md",
+    "lib/tests/fixtures/allocation-countermodels/README.md",
     "lib/tests/fixtures/binding-countermodels/README.md",
     "lib/tests/fixtures/effect-countermodels/README.md",
     "lib/tests/fixtures/frame-countermodels/README.md",
@@ -459,24 +461,38 @@
     {
       "index": 27,
       "started": "2026-11-18T01:20:52.060Z",
-      "ended": "2026-11-18T01:38:17.174Z",
-      "turns": 4,
-      "api_calls": 60,
+      "ended": "2026-11-18T01:39:08.140Z",
+      "turns": 5,
+      "api_calls": 65,
       "usage": {
-        "input_tokens": 120,
-        "output_tokens": 44792,
-        "cache_read_input_tokens": 6996437,
-        "cache_creation_input_tokens": 146677
+        "input_tokens": 130,
+        "output_tokens": 47051,
+        "cache_read_input_tokens": 7808083,
+        "cache_creation_input_tokens": 153847
       },
-      "peak_context_tokens": 160108
+      "peak_context_tokens": 167278
+    },
+    {
+      "index": 28,
+      "started": "2026-11-18T01:39:51.884Z",
+      "ended": "2026-11-18T02:03:22.038Z",
+      "turns": 7,
+      "api_calls": 48,
+      "usage": {
+        "input_tokens": 102,
+        "output_tokens": 32093,
+        "cache_read_input_tokens": 5933788,
+        "cache_creation_input_tokens": 149055
+      },
+      "peak_context_tokens": 162486
     }
   ],
   "log": {
-    "sha256": "d71b73d181163f9333d1db29e18f9137b41d7d61f6f96f5aed349806a10e1d74",
-    "bytes": 39381873,
-    "lines": 12782,
-    "gzip_bytes": 7289444,
-    "path": "llm-dlc/traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/logs/d71b73d181163f9333d1db29e18f9137b41d7d61f6f96f5aed349806a10e1d74.jsonl.gz"
+    "sha256": "b08ea89759d5649b7818b2275e6b734ae4ae7c55ac67d66fee6484ae9fb7230d",
+    "bytes": 40970274,
+    "lines": 13279,
+    "gzip_bytes": 7597262,
+    "path": "llm-dlc/traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/logs/b08ea89759d5649b7818b2275e6b734ae4ae7c55ac67d66fee6484ae9fb7230d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1615,6 +1631,14 @@
       "summary": "A call's record names an object, not the cells it returned: preservation's call-level rule proves a pair a JVM tells apart once the caller writes into the first call's array",
       "body": "Item 5 of the challenge brief, against preservation's mwvyxxyr (a call's record follows collect's renumbering), built apart at lxosnzun with the sources touched. New fixture lib/tests/fixtures/record-countermodels with its JVM test lib/tests/record_countermodels.rs. 'stale' is Verified there, non-vacuous, though a JVM gives 0 against 99: a later call on equal inputs takes the cells the first call's result holds when the later call is made, so a caller's write into it is taken as the function's value (older than mwvyxxyr; xuwlklyo reads it so). 'swapped' shows that absorb keeps one path's record numbers at a heap merge, so on the other path the record names another array: a wrong value, seen as spurious witnesses, with no false proof built. The README has the checker-side test, which fails on 'stale' at lxosnzun, and the fix options; it goes to preservation as a failure item. Audit: 287's hashpw never writes into crypt_raw's result; nothing for the watcher.\n\nInbox I007 (the user's D036), taken on: at lxosnzun preservation's I023 fix is not committed, all seven call-level cases are still Verified, and --no-shared-callees still takes 12-13 calls as one function. I002's rules together on the merged tree pass 52 tests across 8 files. Status is blocked on preservation's I023 fix, after which the last cycle repeats the check and ends. Tests: test_costs.py run --changed under MemoryMax=8G with --rust-jobs 1 passed (56 Rust test binaries); estimate, tag and lint agree.",
       "log_sha256": "d71b73d181163f9333d1db29e18f9137b41d7d61f6f96f5aed349806a10e1d74"
+    },
+    {
+      "change_id": "orxlmwsvykrtzsruzywrpsssokunlpty",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Preservation's I023 fix holds for the seven, and --no-shared-callees takes no call; past it, a loop that keeps arrays of a constant length is an OutOfMemoryError the call's outcome leaves out, and the pair is proved to agree",
+      "body": "The challenge stream's last cycle, by the user's D035 and D036 (inbox I007). Preservation's puuwrruu (its fix for domain-advances-preservation-I023), built apart with the sources touched. None of function-countermodels' seven is proved there: filled, copied, interned, same and tagged are refuted, and overflowed and exhausted get no verdict. Of the controls, hashed and encoded get no verdict and messaged is refuted. With --no-shared-callees, none of the ten takes a call as one function, and record-countermodels' stale and swapped are refuted, as on a JVM. Without the flag, stale (domain-advances-preservation-I028) is still Verified, since its fix is not committed. I002's rules on the merged line: claims.rs and the seven countermodel files of the lemma, write-set, contract and call-level rules pass at puuwrruu, 53 tests, and so does pairing.rs, 20.\n\nItem 5 past the fix: the fix checks each allocation's length on its own (at most 65536), and nothing bounds how many arrays a run keeps. New fixture lib/tests/fixtures/allocation-countermodels, held to a JVM on a 64 MiB heap by lib/tests/allocation_countermodels.rs. kept keeps long[16384] arrays in rows of Object[16384], one row per round while i < k, 32 TiB once k >= 1. It is Verified at puuwrruu, non-vacuous, with 12 calls taken as one function, where a JVM gives -1 against -2; with --no-shared-callees it gets no verdict. around, a recursion through an override, is guarded: the reach refuses the overridable method before the recursion check, which follows a call to the method it names, is asked. The README has the checker-side test, which fails on kept alone at puuwrruu, and the fix options; it goes to preservation as a failure item. Audit: every array 287's crypt_raw reaches is of a length from constants or static tables, and none is stored into an array, in both pinned releases. 287 and 307 are not affected; nothing for the watcher.\n\nStatus is done. Left unchallenged, listed in Progress: item 6 for 290's security claim, state's srxyxsns, evidence's nzsypymy, preservation's vyzppnku and anything it commits after puuwrruu, and two audit points from earlier entries. The brief's Loop until says to keep going while another stream works; preservation is still working, but D035 and D036 end this stream with this cycle, and come first. Verified: test_costs.py run --changed under MemoryMax=8G with --rust-jobs 1 (57 Rust test binaries, no failure), estimate, tag and lint.",
+      "log_sha256": "b08ea89759d5649b7818b2275e6b734ae4ae7c55ac67d66fee6484ae9fb7230d"
     }
   ],
   "logs": {
@@ -1730,6 +1754,12 @@
       "bytes": 26952817,
       "lines": 9018,
       "gzip_bytes": 4863374,
+      "url": null
+    },
+    "b08ea89759d5649b7818b2275e6b734ae4ae7c55ac67d66fee6484ae9fb7230d": {
+      "bytes": 40970274,
+      "lines": 13279,
+      "gzip_bytes": 7597262,
       "url": null
     },
     "b19c8f69854c8d34f182ce8c35d9f2bedd8892d6222c6626ca55255597b51d78": {

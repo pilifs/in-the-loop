@@ -1065,7 +1065,55 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   - `srxyxsns`'s adversarial fixture;
   - `nzsypymy`.
   Any of these not done in the last cycle is listed there as unchallenged.
-- Status: blocked: waiting for the other streams' next commits (preservation's I023 fix, for I007's last check)
+- The record failure went to preservation as `domain-advances-preservation-I028`, citing `utvyrttk`.
+- 2026-11-18, the last cycle (D035, D036, I007): preservation's I023 fix, `puuwrruu` (01:50 UTC), built apart with the
+  sources touched (`/tmp/pres8`).
+  - *I007's first point, I023's seven at the fix*: **none is proved**. With `--engine native --assume 'k >= 0'`:
+    - `filled`, `copied`, `interned`, `same` and `tagged` are refuted, as on a JVM;
+    - `overflowed` and `exhausted` get no verdict, since each call runs as written and stops at a limit.
+    - Of the controls, `hashed` and `encoded` get no verdict, and `messaged` is refuted.
+  - **`--no-shared-callees` yields zero applications.** For all ten, the run with it takes no call as one function: no
+    count in the result, and none in `search.native.calls_as_one_function`. `filled` and `copied`, which take 2 calls
+    without the flag, are then unverifiable. `stale` and `swapped` (`record-countermodels`) are refuted with it, as on
+    a JVM.
+  - `stale` is still **Verified** at `puuwrruu`, as it was at `lxosnzun`. I028 reached preservation after the fix, and
+    its fix is not committed.
+  - *I002's two rules on the merged line*, at `puuwrruu`, which holds the default line through `lxosnzun`: the eight
+    test files pass, 53 tests in all (`function_countermodels.rs` now has 2, preservation's I023 test among them),
+    and so does `pairing.rs`, 20 tests. I002 holds on the merged line past the fix.
+  - At `puuwrruu`, `allocation_countermodels.rs`'s JVM test passes, and the README's checker-side test fails on
+    `kept` alone, as it should.
+  - Item 5, past the fix: **one more false proof**, to be handed over.
+    - The fix keeps an `OutOfMemoryError` out of a call's outcomes by checking each allocation's length on its own
+      (at most 65536). Nothing bounds how many arrays a run keeps.
+    - The fixture is `lib/tests/fixtures/allocation-countermodels`. Its README has the table, the commands, the
+      options, the checker-side test and the audit. `lib/tests/allocation_countermodels.rs` holds it to a JVM, on a
+      64 MiB heap.
+    - `kept` is **Verified** at `puuwrruu`, non-vacuous, with 12 calls taken. It keeps `long[16384]` arrays in rows
+      of `Object[16384]`, one row per round while `i < k`, 32 TiB once k >= 1. A JVM gives -1 against -2. With
+      `--no-shared-callees`, it gets no verdict.
+    - **Tried and guarded**: `around`, a recursion through an override (`Deep.f` calls `Node.g`, which calls `f`).
+      The recursion check follows each call to the method it names, not to an override, but the reach refuses `Node.f`
+      as overridable first, so the call runs as written. It is kept in the fixture as a control.
+    - The rule is preservation's, so nothing in `lib/src` changes here. The test goes as a `failure` item to
+      `domain-advances-preservation`, citing this commit.
+    - *Audit*: in 287's pinned 6.3.7 and 6.3.8 sources, every array `crypt_raw` reaches is of a length from constants
+      or static tables, and no reference to one is stored into an array. 287 and 307 are not affected. Nothing for
+      the watcher.
+- Inbox: no open items.
+- Tests: `test_costs.py run --changed` under `MemoryMax=8G` with `--rust-jobs 1` and `RUN_STREAMS_WATCHER` unset:
+  passed, with 57 Rust test binaries, `allocation_countermodels.rs` among them, and no failure. `estimate` and `tag`
+  were run for the new test file, and `lint` agrees.
+- **Left unchallenged**, as the stream ends by D035 and D036:
+  - item 6's entry for 290's security claim, the one decided claim without one (Done when, third point);
+  - state's `srxyxsns`, 286's adversarial fixture on 5.3.19 (a setter that writes the protected flag, told from its
+    honest twin);
+  - evidence's `nzsypymy`, 290's preservation claim restated for the user to freeze;
+  - preservation's `vyzppnku`, which reads 287's accepted preservation as agreement on terminating runs (notes only);
+  - whatever preservation commits after `puuwrruu`, the fixes for I028 and for `kept` among them;
+  - from earlier entries: whether 289's and 290's reruns take a call, and whether a heap merge falls between two related
+    calls in 287's or 307's harness.
+- Status: done
 
 ## Loop settings
 
