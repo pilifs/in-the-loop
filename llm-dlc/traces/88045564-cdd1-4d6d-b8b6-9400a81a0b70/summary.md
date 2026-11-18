@@ -172,6 +172,12 @@ change `zwklnxnrkqqu` · [log `bf1751029245`](https://terminalvalue.net/raw-trac
 
 The user's answer to D034: the state stream's proposed claim (two values bound in order, ASCII names) is to become a further claim file of 286 beside the frozen one, not a replacement, as part of the coming claim enhancements. The frozen claim keeps every name and 5.3.18's accepted refutation; nothing changes in this run.
 
+### Record the watcher's answers in the domain-advances run
+
+change `nvpulqtmswyr` · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
+
+The decisions the watcher of the brief llm-dlc/loops/domain-advances.md took while it ran, committed before it merges a stream.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz) has every step in between: reasoning, tool calls and their results.
