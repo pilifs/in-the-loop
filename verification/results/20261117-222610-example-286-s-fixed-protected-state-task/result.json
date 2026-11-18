@@ -1,0 +1,342 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261117-222610-example-286-s-fixed-protected-state-task",
+  "title": "Example 286's fixed protected-state task at the frozen bound 8 now that the binding error's message is modelled: where it stops, and a trial over ASCII names",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 11m13s, peak 2.1 GiB (estimated 40m00s, 6.0 GiB); 6 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261117-222610-example-286-s-fixed-protected-state-task.json",
+    "sha256": "89b9ccc429a6777399b40051a2804e64559de3e65cb68f223c3c33165786f4fe",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261117-222610-example-286-s-fixed-protected-state-task",
+      "title": "Example 286's fixed protected-state task at the frozen bound 8 now that the binding error's message is modelled: where it stops, and a trial over ASCII names",
+      "description": "The state stream of the domain-advances brief, step 3. Binding \"32\" to someMap records a binding error whose default message is the exception's getLocalizedMessage(), which Spring's NestedRuntimeException.getMessage builds from Throwable's message and the cause's toString(). The own checker now keeps a JDK exception's message and cause from the constructor that set them (lib/src/bmc/throwables.rs: getMessage, getCause, getLocalizedMessage, toString, getClass(), StringBuilder(int) and append(Object)), counts a JDK exception's constructor as exact only where its bytecode just passes its arguments up to Throwable's (two false proofs closed, tested in lib/tests/claims.rs an_exceptions_message_and_cause_are_kept_from_the_jdks_constructor), and its concatenation cap is 256 code units instead of 64. Step 1 runs the frozen claim examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/claims/protected-age-not-mutated.json, unchanged, on 5.3.19 through proofs/prove.py at its own bound 8 (job 20261117-192205 stopped it at two gaps, LinkedHashSet.<init>() since modelled and non-ASCII toLowerCase()); a capped probe of the whole domain at bound 8 did not finish in 5 minutes. Step 2 is a trial, not the claim: the same run with --assume-also restricting field to ASCII (the corrected formalization the stream will propose), which a capped probe proved at bound 7 in 108 s, resting on the stand-ins (sampled), the models, ClassUtils and PropertyEditorRegistrySupport observed, the locale assumption and the simpleMatch lemma. Each step writes to a work folder of its own, apart from verification/.work-286/state-stand-in, whose files the accepted refutation reads.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "286"
+        ],
+        "paths": [
+          "lib/src/bmc/throwables.rs",
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py"
+        ]
+      },
+      "expected": "step 1 exits 1 with 'verdict: unverifiable' naming the one gap java.lang.String.toLowerCase() at DataBinder.isAllowed:828 (any other gap is a finding to record); step 2 exits 0 with 'verdict: verified (expected verified)' at bound 8 and the trial line",
+      "submitted": {
+        "at": "2026-11-17T22:26:10+00:00",
+        "session": "9896d870-fb47-4f3c-ba4d-5b1d3e64719c"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "6G",
+        "duration": "40m",
+        "memoryLimit": "10G",
+        "timeout": "3h",
+        "notes": "a capped probe of the whole frozen domain at bound 8 did not finish in 5 minutes under 4 GB; the ASCII trial at bound 7 took 146 s in under 4 GB; bound 8 is longer, each step's verifier timeout 5000 s"
+      },
+      "steps": [
+        {
+          "name": "fixed-protected-state-mutation at the frozen bound 8 (5.3.19): where it stops",
+          "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py fixed-protected-state-mutation --timeout 5000 --work verification/.work-286/state-messages || test $? -eq 1",
+          "cwd": "."
+        },
+        {
+          "name": "fixed-protected-state-mutation at bound 8 over ASCII names: a trial, not the claim",
+          "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py fixed-protected-state-mutation --assume-also 'field.chars().allMatch(c -> c < 128)' --timeout 5000 --work verification/.work-286/state-messages-ascii",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/.work-286/state-messages/fixed-protected-state-mutation/outcome.json",
+        "verification/.work-286/state-messages/fixed-protected-state-mutation/evidence.json",
+        "verification/.work-286/state-messages/fixed-protected-state-mutation/stderr.txt",
+        "verification/.work-286/state-messages-ascii/fixed-protected-state-mutation/outcome.json",
+        "verification/.work-286/state-messages-ascii/fixed-protected-state-mutation/evidence.json",
+        "verification/.work-286/state-messages-ascii/fixed-protected-state-mutation/stderr.txt"
+      ]
+    }
+  },
+  "sourceCommit": "3b4715b1c874b6c4d252f8598c7b83f5dec8d9e1",
+  "startedAt": "2026-11-17T22:28:14+00:00",
+  "finishedAt": "2026-11-17T22:42:03+00:00",
+  "wallSeconds": 829.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3441513,
+    "workers": 10,
+    "cpus": 20.0,
+    "memoryBudgetBytes": 47244640256,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 10737418240,
+    "timeoutSeconds": 10800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 2400.0,
+    "notes": "a capped probe of the whole frozen domain at bound 8 did not finish in 5 minutes under 4 GB; the ASCII trial at bound 7 took 146 s in under 4 GB; bound 8 is longer, each step's verifier timeout 5000 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 2269544448,
+    "wallSeconds": 673.0,
+    "cpuSeconds": 681.3,
+    "memoryOfEstimate": 0.35,
+    "durationOfEstimate": 0.28
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 155.396,
+      "cpuSeconds": 155.668,
+      "cpuThrottledSeconds": 0.001,
+      "peakMemoryBytes": 1974849536,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "d7d764892e3a1899d1d31a871d0a87f1c2cc738a91c47abf84186bdca91cb887",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261117-222610-example-286-s-fixed-protected-state-task/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 35s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "fixed-protected-state-mutation at the frozen bound 8 (5.3.19): where it stops",
+      "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py fixed-protected-state-mutation --timeout 5000 --work verification/.work-286/state-messages || test $? -eq 1",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 388.344,
+      "cpuSeconds": 392.542,
+      "cpuThrottledSeconds": 1.255,
+      "peakMemoryBytes": 2265505792,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-fixed-protected-state-mutation.log",
+        "lines": 9,
+        "bytes": 2991,
+        "sha256": "b954af5ad6fd0024b55c00cbafa7ff63f875bc5d46d690ee93cf971890c22366",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 7,
+          "text": "✗ example286.adapter.BindingAdapter#ageAfterBinding cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.String.toLowerCase()Ljava/lang/String;@jdk-25.0.5 (java.lang.String.toLowerCase(",
+          "groups": [
+            "example286.adapter.BindingAdapter#ageAfterBinding cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.String.toLowerCase()Ljava/lang/String;@jdk-25.0.5 (java.lang.String.toLowerCase() at org.springframework.validation.DataBinder.isAllowed:828). With --gaps assume it assumes instead that java.lang.String.toLowerCase() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption"
+          ]
+        }
+      ],
+      "tail": [
+        "lemma: note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "lemma: note: by induction on `pattern.length()`: a call simpleMatch makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with n",
+        "lemma: ✓ org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pat",
+        "lemma:   not vacuous: simpleMatch(pattern=\"\", str=\"\") reaches the calls",
+        "note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "note: lemma, proved above by induction on `pattern.length()` in 70.3 s: org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.reg",
+        "✗ example286.adapter.BindingAdapter#ageAfterBinding cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.String.toLowerCase()Ljava/lang/String;@jdk-25.0.5 (java.lang.String.toLowerCase(",
+        "",
+        "verdict: unverifiable (expected verified); paths 187, solver calls 828, variables 2744679; outcome in verification/.work-286/state-messages/fixed-protected-state-mutation/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "fixed-protected-state-mutation at bound 8 over ASCII names: a trial, not the claim",
+      "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py fixed-protected-state-mutation --assume-also 'field.chars().allMatch(c -> c < 128)' --timeout 5000 --work verification/.work-286/state-messages-ascii",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 284.656,
+      "cpuSeconds": 288.763,
+      "cpuThrottledSeconds": 1.04,
+      "peakMemoryBytes": 2269544448,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-fixed-protected-state-mutation.log",
+        "lines": 12,
+        "bytes": 3174,
+        "sha256": "27ba097e3c4f49fcf5591509dcb8b7983e45d97e3855ee6f3813b179bc7e621c",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 8,
+          "text": "✓ example286.adapter.BindingAdapter#ageAfterBinding satisfies `result == 0` on every input where (field != null && field.indexOf('.') < 0 && field.indexOf('[') < 0 && field.indexOf(']') < 0) && (field.chars().allMatch(c -> c < 128)) (jvmcontract's own checker (CaDiCaL): 1 properties proved over uppe",
+          "groups": [
+            "example286.adapter.BindingAdapter#ageAfterBinding satisfies `result == 0` on every input where (field != null && field.indexOf('.') < 0 && field.indexOf('[') < 0 && field.indexOf(']') < 0) && (field.chars().allMatch(c -> c < 128)) (jvmcontract's own checker (CaDiCaL): 1 properties proved over upperCasePattern: boolean × field: String of ≤ 8 code units, not null in 196.3 s; loops unwound 16 times with unwinding assertions)"
+          ]
+        }
+      ],
+      "tail": [
+        "a trial: the claim's assumption and also field.chars().allMatch(c -> c < 128), not the claim's domain: it is no answer to the claim",
+        "lemma: note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "lemma: note: by induction on `pattern.length()`: a call simpleMatch makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with n",
+        "lemma: ✓ org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pat",
+        "lemma:   not vacuous: simpleMatch(pattern=\"\", str=\"\") reaches the calls",
+        "note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "note: lemma, proved above by induction on `pattern.length()` in 86.0 s: org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.reg",
+        "✓ example286.adapter.BindingAdapter#ageAfterBinding satisfies `result == 0` on every input where (field != null && field.indexOf('.') < 0 && field.indexOf('[') < 0 && field.indexOf(']') < 0) && (field.chars().allMatch(c -> c < 128)) (jvmcontract's own checker (CaDiCaL): 1 properties proved over uppe",
+        "  not vacuous: ageAfterBinding(upperCasePattern=true, field=\"\") reaches the calls",
+        "",
+        "verdict: verified (expected verified); paths 193, solver calls 908, variables 2744679; outcome in verification/.work-286/state-messages-ascii/fixed-protected-state-mutation/outcome.json",
+        "a trial at bound 8 and unwinding 16, not the claim's (8): it is no answer to the claim, and evidence.json says so"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-286/state-messages/fixed-protected-state-mutation/outcome.json",
+      "change": "added",
+      "bytes": 25507,
+      "sha256": "3e152116b708df46d43445055ef1d646db83caaa53fc337b8f8c0ae17824ccd8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-286/state-messages/fixed-protected-state-mutation/evidence.json",
+      "change": "added",
+      "bytes": 2981,
+      "sha256": "140fca54815e172da43b6af4864f2bf8a78b888acec7b580c4461a58872a7eac",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-286/state-messages/fixed-protected-state-mutation/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-286/state-messages-ascii/fixed-protected-state-mutation/outcome.json",
+      "change": "added",
+      "bytes": 24899,
+      "sha256": "9e95bf4498cea5070cce82024d19215ce8fa9422f4c218d18defd677e326265b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-286/state-messages-ascii/fixed-protected-state-mutation/evidence.json",
+      "change": "added",
+      "bytes": 3036,
+      "sha256": "138a1d89c2c660a6106317e42c71fead96768a59237d8be3198b7021c8b6735a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-286/state-messages-ascii/fixed-protected-state-mutation/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-17T22:42:10+00:00",
+    "applied": [
+      "verification/.work-286/state-messages/fixed-protected-state-mutation/outcome.json",
+      "verification/.work-286/state-messages/fixed-protected-state-mutation/evidence.json",
+      "verification/.work-286/state-messages/fixed-protected-state-mutation/stderr.txt",
+      "verification/.work-286/state-messages-ascii/fixed-protected-state-mutation/outcome.json",
+      "verification/.work-286/state-messages-ascii/fixed-protected-state-mutation/evidence.json",
+      "verification/.work-286/state-messages-ascii/fixed-protected-state-mutation/stderr.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "f79a7bc0eeb518ccdf7df559a5f0f4ff53d347cd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f79a7bc0eeb518ccdf7df559a5f0f4ff53d347cd/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

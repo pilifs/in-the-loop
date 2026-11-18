@@ -34,7 +34,10 @@ superclass, seen through that enumeration only (an override the base lacks); res
 `META-INF/versions/` and resources of a JDK package (`ClassPath::resources`).
 
 **Handed over** (the evidence stream binds an observation, its brief's item 5): `crossed`, `lowered` and
-`configured`. The test it should make pass, in `lib/tests/observed_countermodels.rs` beside the others (it fails at
+`configured`. *Bound since* (2026-11-17, `lib/src/observed.rs`, `On`): `crossed` is refused (`oc.A`'s initialization
+left `oc.B.x` 1 where `oc.B` initialized alone has 0), `lowered` is refused (observed under the default locale
+`tr-TR`, which the check takes the JVM's not to be), and `configured` is stated (`oc.value = "xyz"` among what the
+result rests on); the test below passes. The test it should make pass, in `lib/tests/observed_countermodels.rs` beside the others (it fails at
 `yypzyxmw` on all three: `crossed` and both CLI runs are Verified with no word of the locale or the property):
 
 ```rust

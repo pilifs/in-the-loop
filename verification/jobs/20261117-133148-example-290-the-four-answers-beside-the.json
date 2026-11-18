@@ -1,0 +1,80 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-133148-example-290-the-four-answers-beside-the",
+  "title": "Example 290: the four answers beside the route again, with the driver's record of what it ran (evidence.json)",
+  "description": "The evidence stream's acceptance check (examples/tools/accept.py) accepts an answer given beside the route only with no limit when the driver recorded what it ran: the JARs of the class path with their hashes, the adapter's sources and compiled classes, the claim file, the bound and the verifier's binary (evidence.json, written by accept.record). Every example's proofs/prove.py now does this through examples/tools/beside_route.py, and ends the run when the mutant's JAR is not the one the mutant replay's receipt records. Example 290's four answers are accepted today with the limit that nothing the job left says which JARs, adapter classes and verifier binary were used. This job reruns the four tasks unchanged at the frozen bound (with the same observed initializers) into a work folder of its own (verification/.work-290/recorded), so the earlier job's outputs stay as its result records them. When it has passed, each task's besideRoute.job is switched to it and python3 examples/tools/accept.py 290 must accept all four with no limit about unrecorded artifacts. The audit of the observed initializers (VF-033) is separate work.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B9",
+    "B11",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "290"
+    ],
+    "paths": [
+      "examples/tools/beside_route.py",
+      "examples/tools/accept.py",
+      "examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py"
+    ]
+  },
+  "expected": "exits 0: prove.py prints verified, violation, verified and violation, each the expected one, at the frozen bound; each task's outcome.json and evidence.json come back",
+  "submitted": {
+    "at": "2026-11-17T13:31:48+00:00",
+    "session": "7ece8184-b148-4351-92d8-d634606b823e"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "patch",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "10m",
+    "timeout": "1h",
+    "notes": "the earlier job's four tasks took 8, 5, 13 and 13 s at under 0.2 GiB; the rest is the release build of lib/ (about 3.5 min, 1.9 GiB) and the fetch of the pinned JARs"
+  },
+  "steps": [
+    {
+      "name": "preservation at the frozen bound",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py preservation --timeout 1800 --work verification/.work-290/recorded",
+      "cwd": "."
+    },
+    {
+      "name": "vulnerable-security at the frozen bound",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py vulnerable-security --timeout 1800 --work verification/.work-290/recorded",
+      "cwd": "."
+    },
+    {
+      "name": "fixed-security at the frozen bound",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py fixed-security --timeout 1800 --work verification/.work-290/recorded",
+      "cwd": "."
+    },
+    {
+      "name": "mutant-security at the frozen bound",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py mutant-security --timeout 1800 --work verification/.work-290/recorded",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/.work-290/recorded/preservation/outcome.json",
+    "verification/.work-290/recorded/preservation/evidence.json",
+    "verification/.work-290/recorded/preservation/work/pair",
+    "verification/.work-290/recorded/vulnerable-security/outcome.json",
+    "verification/.work-290/recorded/vulnerable-security/evidence.json",
+    "verification/.work-290/recorded/vulnerable-security/work/harness",
+    "verification/.work-290/recorded/fixed-security/outcome.json",
+    "verification/.work-290/recorded/fixed-security/evidence.json",
+    "verification/.work-290/recorded/fixed-security/work/harness",
+    "verification/.work-290/recorded/mutant-security/outcome.json",
+    "verification/.work-290/recorded/mutant-security/evidence.json",
+    "verification/.work-290/recorded/mutant-security/work/harness"
+  ]
+}

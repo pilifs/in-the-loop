@@ -1,0 +1,67 @@
+{
+ "schema": "beside-route-evidence/v1",
+ "example": "286",
+ "task": "fixed-protected-state-mutation",
+ "claim": {
+  "file": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/claims/protected-age-not-mutated.json",
+  "sha256": "034f00f65990e3e8e33c873be6bdb64d88e20cbe0357fb4fa86d38374fa87354"
+ },
+ "bound": {
+  "maxArrayLength": 8,
+  "unwind": 16,
+  "trial": true,
+  "assumeAlso": "field.chars().allMatch(c -> c < 128)",
+  "contracts": "proofs/beans/protected-setters.contract"
+ },
+ "artifacts": [
+  {
+   "revision": "fixed-release",
+   "name": "spring-context-5.3.19.jar",
+   "sha256": "74e575519bd7b5ccb5eea7309b3fb17d2032ed8cf99f0bf33781bbd54c501410"
+  },
+  {
+   "revision": "fixed-release",
+   "name": "spring-beans-5.3.19.jar",
+   "sha256": "fe80777b5d5aea9fd92bdb697616058d551c751a98f19bf9b5e725a43274a8fe"
+  },
+  {
+   "revision": "fixed-release",
+   "name": "spring-core-5.3.19.jar",
+   "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992"
+  },
+  {
+   "revision": "fixed-release",
+   "name": "spring-jcl-5.3.19.jar",
+   "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8"
+  }
+ ],
+ "adapter": {
+  "sources": {
+   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/replay/adapter/example286/adapter/ProtectedBean.java": "cd7f42dec19cc30e12dc287f9282cabc2997762fc8ee010d3cb486cf2d6550c9",
+   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/replay/adapter/example286/adapter/ExposedDataBinder.java": "7078b9eeab977262bbddf456a5a98a31051e5f320c6c6b21fdb98ccaceab2621",
+   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/replay/adapter/example286/adapter/BinderDecisionAdapter.java": "3c751a2c1a30171944022746cd321990f98c0b3b2be16d4960f2f83433a98975",
+   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/replay/adapter/example286/adapter/BindingAdapter.java": "708dd4126be7b4051ddde0ac44bdecd5b65f5513179a55573de60a580b40aaf5",
+   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/stand-ins/org/springframework/beans/ProtectedBeanStandIn.java": "352ee64769bb8e24f2dc48e15cf2994ceadbb1607f70f81513648c1363a0d1d7",
+   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/stand-ins/org/springframework/beans/ProtectedBeanTypeStandIn.java": "04e731b84d4288b693d18f580eeb43f49acadff4a257faa5e468255899f0a780",
+   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/beans/protected-setters.contract": "a63ea1d100d08d0a9278f4f0c3d885f0509b8330bc16b89edafd2ad133c2828f"
+  },
+  "classes": [
+   {
+    "folder": "adapter-fixed-release",
+    "sha256": "7454b6c4ddc3deedb301bb115874ad02df2b22aa1b3b7c064c5e2295e9d38246"
+   },
+   {
+    "folder": "stand-ins-fixed-release",
+    "sha256": "a61ccf5d7ba5b53a4b8e263f1cf9463e1503bbe7a139425f187fc4715a613a4a"
+   }
+  ]
+ },
+ "jvmcontract": {
+  "path": "jvmcontract",
+  "sha256": "1e5aa43432298f7183866e47a8a60a6657202a06d30605979f7ff55471f117d6"
+ },
+ "driver": {
+  "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
+  "sha256": "feb5a6daa0eed7ed8fe475dc92801f86c38cd20f0e6b9d6376d4967836a68019"
+ }
+}

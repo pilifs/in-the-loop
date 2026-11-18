@@ -1,0 +1,59 @@
+{
+ "schema": "beside-route-evidence/v1",
+ "example": "287",
+ "task": "preservation",
+ "claim": {
+  "file": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/claims/in-range-matching-preserved.json",
+  "sha256": "0d5994f6284bc7f179b63d914eacf704bcae468242a4116ffa39a598f7491934"
+ },
+ "bound": {
+  "maxArrayLength": 80,
+  "unwind": null,
+  "trial": false
+ },
+ "artifacts": [
+  {
+   "revision": "vulnerable-release",
+   "name": "spring-security-crypto-6.3.7.jar",
+   "sha256": "fa517a6ebb30ec92a0d1cd5d9ab87bbcb119a1619caa63cf991373d3ac4a3226"
+  },
+  {
+   "revision": "vulnerable-release",
+   "name": "spring-jcl-6.1.17.jar",
+   "sha256": "a25f70775fe84885ebe69d7083b69ba6738d4a9842f5a48330e2d50e3db0bd3f"
+  },
+  {
+   "revision": "fixed-release",
+   "name": "spring-security-crypto-6.3.8.jar",
+   "sha256": "a38448c5aac161dee28887fbd59b617ed3577b8b26c710096c96e07799f01156"
+  },
+  {
+   "revision": "fixed-release",
+   "name": "spring-jcl-6.1.18.jar",
+   "sha256": "6c2617dc157ecaaac744fb7d14efa9389b6364e3eb2fd3e083b558c51ddf5247"
+  }
+ ],
+ "adapter": {
+  "sources": {
+   "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/replay/adapter/example287/adapter/PasswordMatchAdapter.java": "e662bf6e324a3c80fa565cf6a9e8b786e918ae015898ec67746ff1ddf482cf99"
+  },
+  "classes": [
+   {
+    "folder": "adapter-vulnerable-release",
+    "sha256": "0cf7efd6b37766b1afc38394a496ff735a17cb667fd83258598c6ff42ee568f9"
+   },
+   {
+    "folder": "adapter-fixed-release",
+    "sha256": "0cf7efd6b37766b1afc38394a496ff735a17cb667fd83258598c6ff42ee568f9"
+   }
+  ]
+ },
+ "jvmcontract": {
+  "path": "jvmcontract",
+  "sha256": "99383d455042c2fc8890b3438dbef7a23c13998210f5a630b1f113cb6749ccd8"
+ },
+ "driver": {
+  "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
+  "sha256": "1c0517ceacdd0459115e279c9882f984c2f4b5165323954107dbee67dd4b6ce0"
+ }
+}

@@ -2,6 +2,812 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261117-235132-example-288-s-binding-under-its-locales",
+      "title": "Example 288's binding under its locales, through the permitted setters' effect contracts: kept on 6.1.14, refuted on 6.1.13 (the state stream's second consumer)",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 2m59s, peak 2.6 GiB (estimated 10m00s, 2.0 GiB)",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "288"
+        ],
+        "paths": [
+          "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/beans.py"
+        ]
+      },
+      "sourceCommit": "99de6da61c6df0e8763388f3f488c0c749ddb202",
+      "finishedAt": "2026-11-17T23:58:47+00:00",
+      "wallSeconds": 179.8,
+      "peakMemoryBytes": 2806784000,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 600.0,
+        "notes": "each check took about 90 s in a capped probe, peak 830 MB (the simpleMatch lemma's proof is most of it); the stand-in's sampler prints about 230 MB, which the tool reads per sub-run"
+      },
+      "host": "vm-1",
+      "result": "20261117-235132-example-288-s-binding-under-its-locales/result.json"
+    },
+    {
+      "id": "20261117-233000-example-286-s-fixed-protected-state-task",
+      "title": "Example 286's fixed protected-state task through ProtectedBean's setter contracts: binding writes only what the permitted setters' proved effect contracts write (ASCII trial, bound 8)",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 4m28s, peak 2.6 GiB (estimated 15m00s, 4.0 GiB); 3 output file(s) changed; signals: jvmcontract:holds×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "286"
+        ],
+        "paths": [
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/beans/protected-setters.contract",
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
+          "lib/src/equivalence.rs"
+        ]
+      },
+      "sourceCommit": "be4ac525570efafc1daf4ebdcdde19b2d3737090",
+      "finishedAt": "2026-11-17T23:45:13+00:00",
+      "wallSeconds": 268.9,
+      "peakMemoryBytes": 2814767104,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 900.0,
+        "notes": "the same trial without contracts took 285 s at bound 8 in job 222610 (peak 2.1 GiB); the bound-7 probe with contracts took 93 s"
+      },
+      "host": "vm-1",
+      "result": "20261117-233000-example-286-s-fixed-protected-state-task/result.json"
+    },
+    {
+      "id": "20261117-230459-example-287-preservation-at-the-frozen-b",
+      "title": "Example 287 preservation at the frozen bound 80, with bcrypt's crypt_raw taken as one function of both releases",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 1m50s, peak 2.2 GiB (estimated 10m00s, 6.0 GiB); 4 output file(s) changed; signals: jvmcontract:holds×2",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "B9",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "287"
+        ],
+        "paths": [
+          "lib/src/bmc/ties.rs",
+          "lib/src/shared.rs"
+        ]
+      },
+      "sourceCommit": "4feea5477a44187eded6bcc029cd654561fbb8bb",
+      "finishedAt": "2026-11-17T23:18:45+00:00",
+      "wallSeconds": 110.1,
+      "peakMemoryBytes": 2374422528,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 6442450944,
+        "durationSeconds": 600.0,
+        "notes": "a capped probe verified in 112 s under 4 GB; plus the release build and the fetch of the four pinned JARs"
+      },
+      "host": "vm-1",
+      "result": "20261117-230459-example-287-preservation-at-the-frozen-b/result.json"
+    },
+    {
+      "id": "20261117-225439-example-286-s-adversarial-fixture-on-5-3",
+      "title": "Example 286's adversarial fixture on 5.3.19: a setter that writes the protected flag is told from its honest twin, by its effect contract and through the binder",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 3m53s, peak 1.3 GiB (estimated 10m00s, 4.0 GiB)",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "286"
+        ],
+        "paths": [
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/beans.py"
+        ]
+      },
+      "sourceCommit": "79fcf9568f145eaec3d012fa8eb695e8313b790d",
+      "finishedAt": "2026-11-17T23:15:36+00:00",
+      "wallSeconds": 233.3,
+      "peakMemoryBytes": 1432428544,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 600.0,
+        "notes": "each check took about a minute in a capped probe under 4 GB (the simpleMatch lemma's proof is most of each bind check)"
+      },
+      "host": "vm-1",
+      "result": "20261117-225439-example-286-s-adversarial-fixture-on-5-3/result.json"
+    },
+    {
+      "id": "20261117-222610-example-286-s-fixed-protected-state-task",
+      "title": "Example 286's fixed protected-state task at the frozen bound 8 now that the binding error's message is modelled: where it stops, and a trial over ASCII names",
+      "status": "passed",
+      "summary": "passed: 2 passed step(s) in 11m13s, peak 2.1 GiB (estimated 40m00s, 6.0 GiB); 6 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "286"
+        ],
+        "paths": [
+          "lib/src/bmc/throwables.rs",
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py"
+        ]
+      },
+      "sourceCommit": "3b4715b1c874b6c4d252f8598c7b83f5dec8d9e1",
+      "finishedAt": "2026-11-17T22:42:03+00:00",
+      "wallSeconds": 673.0,
+      "peakMemoryBytes": 2269544448,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 6442450944,
+        "durationSeconds": 2400.0,
+        "notes": "a capped probe of the whole frozen domain at bound 8 did not finish in 5 minutes under 4 GB; the ASCII trial at bound 7 took 146 s in under 4 GB; bound 8 is longer, each step's verifier timeout 5000 s"
+      },
+      "host": "vm-1",
+      "result": "20261117-222610-example-286-s-fixed-protected-state-task/result.json"
+    },
+    {
+      "id": "20261117-213024-examples-289-and-290-preservation-again",
+      "title": "Examples 289 and 290: preservation again with the observer's absolute log path and the reach resolving fields and initializers (inbox I014, I019)",
+      "status": "passed",
+      "summary": "passed: 2 passed step(s) in 1m03s, peak 551.0 MiB (estimated 10m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:holds×2",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "289",
+          "290"
+        ],
+        "paths": [
+          "lib/src/observed.rs",
+          "lib/src/shared.rs"
+        ]
+      },
+      "sourceCommit": "6d515865512144b80440f61ab981d2319d675728",
+      "finishedAt": "2026-11-17T21:35:13+00:00",
+      "wallSeconds": 63.2,
+      "peakMemoryBytes": 577806336,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 600.0,
+        "notes": "capped probes: 289 about 60 s, 290 seconds, under 4 GiB; plus the release build and the pinned JARs"
+      },
+      "host": "vm-1",
+      "result": "20261117-213024-examples-289-and-290-preservation-again/result.json"
+    },
+    {
+      "id": "20261117-210114-example-307-preservation-at-the-frozen-b",
+      "title": "example 307 preservation at the frozen bound, the unchanged hashpw(byte[], String) taken as one function of both versions",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 2m22s, peak 2.7 GiB (estimated 10m00s, 6.0 GiB); 5 output file(s) changed; signals: jvmcontract:holds×2",
+      "attention": [],
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "307"
+        ],
+        "paths": [
+          "lib/src/bmc/ties.rs",
+          "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/proofs/prove.py"
+        ]
+      },
+      "sourceCommit": "4735553c76c7bd550e526dbd7e3f876aa790436f",
+      "finishedAt": "2026-11-17T21:14:47+00:00",
+      "wallSeconds": 142.7,
+      "peakMemoryBytes": 2946641920,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 6442450944,
+        "durationSeconds": 600.0,
+        "notes": "capped probes: about 100 s (preservation) and 50 s (mutant), under 4 GB; plus the slice compile with JDK 8, the github.com fetch of the commit, the 5.2.0.M4 reference JAR and the release build"
+      },
+      "host": "vm-1",
+      "result": "20261117-210114-example-307-preservation-at-the-frozen-b/result.json"
+    },
+    {
+      "id": "20261117-210114-example-307-mutant-preservation-after-ag",
+      "title": "example 307 mutant-preservation (after against the us-ascii mutant) at the frozen bound, by the same rule",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 1m17s, peak 955.8 MiB (estimated 10m00s, 6.0 GiB); 5 output file(s) changed; signals: jvmcontract:fails×2",
+      "attention": [],
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "307"
+        ],
+        "paths": [
+          "lib/src/bmc/ties.rs",
+          "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/proofs/prove.py"
+        ]
+      },
+      "sourceCommit": "4735553c76c7bd550e526dbd7e3f876aa790436f",
+      "finishedAt": "2026-11-17T21:13:42+00:00",
+      "wallSeconds": 77.4,
+      "peakMemoryBytes": 1002201088,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 6442450944,
+        "durationSeconds": 600.0,
+        "notes": "capped probes: about 100 s (preservation) and 50 s (mutant), under 4 GB; plus the slice compile with JDK 8, the github.com fetch of the commit, the 5.2.0.M4 reference JAR and the release build"
+      },
+      "host": "vm-1",
+      "result": "20261117-210114-example-307-mutant-preservation-after-ag/result.json"
+    },
+    {
+      "id": "20261117-192205-example-286-protected-state-tasks-at-the",
+      "title": "Example 286 protected-state tasks at the frozen bound through the bean wrapper's stand-ins, again: the refutation on 5.3.18, and where the fixed task stops",
+      "status": "passed",
+      "summary": "passed: 2 passed step(s) in 2m28s, peak 897.8 MiB (estimated 15m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:fails×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "286"
+        ],
+        "paths": [
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
+          "lib/src/observed.rs",
+          "lib/src/stand_in.rs",
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/stand-ins/org/springframework/beans/ProtectedBeanStandIn.java",
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/stand-ins/org/springframework/beans/ProtectedBeanTypeStandIn.java"
+        ]
+      },
+      "sourceCommit": "d11d8b69a3ba1544928e6286ffbf0f61b206ace6",
+      "finishedAt": "2026-11-17T19:28:17+00:00",
+      "wallSeconds": 148.2,
+      "peakMemoryBytes": 941383680,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 900.0,
+        "notes": "the inline probe of the vulnerable step at bound 8 took 63 s in under 4 GB, the lemma's proof included; the fixed step stops at its gap within minutes; each stand-in sampler runs a few seconds"
+      },
+      "host": "vm-1",
+      "result": "20261117-192205-example-286-protected-state-tasks-at-the/result.json"
+    },
+    {
+      "id": "20261117-185613-example-287-preservation-at-the-frozen-b",
+      "title": "Example 287 preservation at the frozen bound 80 again, on a checker whose ties take only code that cannot call back through the JDK",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 7m53s, peak 2.3 GiB (estimated 30m00s, 8.0 GiB); 4 output file(s) changed; signals: jvmcontract:fails×2",
+      "attention": [
+        "step 1 (287 preservation at the frozen bound, 80, on the closed reach) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "B9",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "287"
+        ],
+        "paths": [
+          "lib/src/shared.rs",
+          "lib/src/bmc/loops.rs",
+          "lib/src/bmc/ties.rs"
+        ]
+      },
+      "sourceCommit": "10b5d9c0cf0673897d39814acaa6931a66d8bb8f",
+      "finishedAt": "2026-11-17T19:24:27+00:00",
+      "wallSeconds": 473.6,
+      "peakMemoryBytes": 2475433984,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 8589934592,
+        "durationSeconds": 1800.0,
+        "notes": "job 20261117-180758 ran 7 min (424 s of proof, peak 2.3 GiB) to its stop at 1187 paths; a run past it may take hours; plus the release build and the fetch of the four pinned JARs"
+      },
+      "host": "vm-1",
+      "result": "20261117-185613-example-287-preservation-at-the-frozen-b/result.json"
+    },
+    {
+      "id": "20261117-185623-examples-289-and-290-preservation-on-one",
+      "title": "Examples 289 and 290: preservation on one checker with the pair's and the evidence stream's fixes and the closed reach (inbox I011)",
+      "status": "failed",
+      "summary": "failed: 1 passed, 1 failed step(s) in 1m06s, peak 551.1 MiB (estimated 10m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:holds×2",
+      "attention": [
+        "step 2 (290 preservation at the frozen bound, after the merge of the default line) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "289",
+          "290"
+        ],
+        "paths": [
+          "lib/src/pairing.rs",
+          "lib/src/shared.rs"
+        ]
+      },
+      "sourceCommit": "10b5d9c0cf0673897d39814acaa6931a66d8bb8f",
+      "finishedAt": "2026-11-17T19:17:39+00:00",
+      "wallSeconds": 66.2,
+      "peakMemoryBytes": 577859584,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 600.0,
+        "notes": "capped probes: 289 within 280 s, 290 seconds, under 4 GiB; plus the release build and the fetch of the pinned JARs"
+      },
+      "host": "vm-1",
+      "result": "20261117-185623-examples-289-and-290-preservation-on-one/result.json"
+    },
+    {
+      "id": "20261117-181750-example-286-protected-state-tasks-at-the",
+      "title": "Example 286 protected-state tasks at the frozen bound through the bean wrapper's stand-in: the refutation on 5.3.18, and where the fixed task stops",
+      "status": "failed",
+      "summary": "failed: 1 failed, 1 passed step(s) in 10.6s, peak 114.2 MiB (estimated 15m00s, 4.0 GiB); 6 output file(s) changed",
+      "attention": [
+        "step 1 (vulnerable-protected-state-mutation at the frozen bound 8 (5.3.18): the refutation) exited 1, expected 0",
+        "step 1 (vulnerable-protected-state-mutation at the frozen bound 8 (5.3.18): the refutation) was held back 5.8s by its 1-CPU quota in 5.4s: it would run faster with more CPUs (a JVM needs 2)",
+        "step 2 (fixed-protected-state-mutation at the frozen bound 8 (5.3.19): where it stops) was held back 5.2s by its 1-CPU quota in 5.2s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "286"
+        ],
+        "paths": [
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/stand-ins/org/springframework/beans/ProtectedBeanStandIn.java",
+          "lib/src/stand_in.rs",
+          "lib/models/java/util/lists/ArrayList.java"
+        ]
+      },
+      "sourceCommit": "1585d7e03c274112dc00d564e847b58de2257c0b",
+      "finishedAt": "2026-11-17T18:21:54+00:00",
+      "wallSeconds": 10.6,
+      "peakMemoryBytes": 119721984,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 900.0,
+        "notes": "the inline probe of the vulnerable step at bound 8 took 63 s in under 4 GB, the lemma's proof included; the fixed step stops at its gap within minutes; each stand-in sampler runs about 2 s"
+      },
+      "host": "vm-1",
+      "result": "20261117-181750-example-286-protected-state-tasks-at-the/result.json"
+    },
+    {
+      "id": "20261117-180758-example-287-preservation-at-the-frozen-b",
+      "title": "Example 287 preservation at the frozen bound 80, the two releases' bcrypt loops tied and their summaries taken over",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 7m06s, peak 2.3 GiB (estimated 2h00m, 12.0 GiB); 4 output file(s) changed; signals: jvmcontract:fails×2",
+      "attention": [
+        "step 1 (287 preservation at the frozen bound, 80) exited 1, expected 0"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "B9",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "287"
+        ],
+        "paths": [
+          "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
+          "lib/src/bmc/loops.rs",
+          "lib/src/bmc/ties.rs",
+          "lib/src/pairing.rs"
+        ]
+      },
+      "sourceCommit": "0a713d684de092962c907a18dc154fdbd578ee3d",
+      "finishedAt": "2026-11-17T18:19:57+00:00",
+      "wallSeconds": 427.0,
+      "peakMemoryBytes": 2453872640,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 12884901888,
+        "durationSeconds": 7200.0,
+        "notes": "capped probes: 240 s reached 621 paths and 14 million variables under 4 GiB, unfinished; growth is mostly the previous release's runs over each stored-hash shape; plus the release build and the fetch of the four pinned JARs"
+      },
+      "host": "vm-1",
+      "result": "20261117-180758-example-287-preservation-at-the-frozen-b/result.json"
+    },
+    {
+      "id": "20261117-152112-the-rust-proof-tier-after-the-domain-adv",
+      "title": "The Rust proof tier after the domain-advances foundation's checker changes and the evidence line's pair and observation checks: every ignored Rust test in release, none hidden by a failure",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 42m14s, peak 4.2 GiB (estimated 55m00s, 8.0 GiB); signals: cargo:tests×35",
+      "attention": [],
+      "capabilities": [
+        "tests:proof"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/src/summary.rs",
+          "lib/src/property.rs",
+          "lib/src/pairing.rs",
+          "lib/src/observed.rs"
+        ]
+      },
+      "sourceCommit": "9ec6e448674f8bb65ffc07c4edad6ad8edc81bef",
+      "finishedAt": "2026-11-17T16:05:11+00:00",
+      "wallSeconds": 2534.1,
+      "peakMemoryBytes": 4488830976,
+      "estimate": {
+        "cpus": 4.0,
+        "memoryBytes": 8589934592,
+        "durationSeconds": 3300.0,
+        "notes": "the tier without VF-018's three took 35 to 67 min (peak 3.3 GiB); the heap tier alone took 12 min after VF-018's fix; the seven moved tests about 5 min"
+      },
+      "host": "vm-1",
+      "result": "20261117-152112-the-rust-proof-tier-after-the-domain-adv/result.json"
+    },
+    {
+      "id": "20261117-151521-examples-289-and-290-preservation-once-m",
+      "title": "Examples 289 and 290: preservation once more, with the scope on copies, exceptions compared up the class chain, and vacuity outside the change",
+      "status": "passed",
+      "summary": "passed: 2 passed step(s) in 57.3s, peak 550.7 MiB (estimated 10m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:holds×2",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "289",
+          "290"
+        ],
+        "paths": [
+          "lib/src/pairing.rs",
+          "lib/src/bmc/runtime.rs"
+        ]
+      },
+      "sourceCommit": "3186038154d1324d4382813c54bb892cd4603dfc",
+      "finishedAt": "2026-11-17T15:22:55+00:00",
+      "wallSeconds": 57.3,
+      "peakMemoryBytes": 577458176,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 600.0,
+        "notes": "capped probes: 289 55 s, 290 about 1 s, under 4 GiB; plus the release build and the fetch of the pinned JARs"
+      },
+      "host": "vm-1",
+      "result": "20261117-151521-examples-289-and-290-preservation-once-m/result.json"
+    },
+    {
+      "id": "20261117-133148-example-287-the-three-answers-beside-the",
+      "title": "Example 287: the three answers beside the route again, with the driver's record of what it ran (evidence.json)",
+      "status": "passed",
+      "summary": "passed: 3 passed step(s) in 44m48s, peak 3.0 GiB (estimated 45m00s, 6.0 GiB); 18 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B9",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "287"
+        ],
+        "paths": [
+          "examples/tools/beside_route.py",
+          "examples/tools/accept.py",
+          "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py"
+        ]
+      },
+      "sourceCommit": "0835cfd01e0bdd7a8a58bd549fd5fec2f151ab1c",
+      "finishedAt": "2026-11-17T14:21:19+00:00",
+      "wallSeconds": 2688.3,
+      "peakMemoryBytes": 3242553344,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 6442450944,
+        "durationSeconds": 2700.0,
+        "notes": "the earlier jobs took 820 s, 659 s and 823 s at 2.5 to 3.0 GiB peak; plus the release build of lib/ and the fetch of the pinned JARs"
+      },
+      "host": "vm-1",
+      "result": "20261117-133148-example-287-the-three-answers-beside-the/result.json"
+    },
+    {
+      "id": "20261117-133148-example-286-the-three-answers-beside-the",
+      "title": "Example 286: the three answers beside the route again, with the driver's record of what it ran (evidence.json)",
+      "status": "passed",
+      "summary": "passed: 3 passed step(s) in 36m01s, peak 1.4 GiB (estimated 40m00s, 4.0 GiB); 22 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B9",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "286"
+        ],
+        "paths": [
+          "examples/tools/beside_route.py",
+          "examples/tools/accept.py",
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py"
+        ]
+      },
+      "sourceCommit": "0835cfd01e0bdd7a8a58bd549fd5fec2f151ab1c",
+      "finishedAt": "2026-11-17T14:12:32+00:00",
+      "wallSeconds": 2161.1,
+      "peakMemoryBytes": 1496424448,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 2400.0,
+        "notes": "the earlier jobs took 501 s (vulnerable), 1015 s (fixed, with the lemma) and 492 s (mutant) at 1.4 to 1.6 GiB; plus the release build of lib/ (about 3 min, 2.3 GiB) and the fetch of the pinned JARs"
+      },
+      "host": "vm-1",
+      "result": "20261117-133148-example-286-the-three-answers-beside-the/result.json"
+    },
+    {
+      "id": "20261117-133148-example-288-fixed-security-again-with-th",
+      "title": "Example 288: fixed-security again, with the driver's record of what it ran (evidence.json)",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 20m39s, peak 1.4 GiB (estimated 25m00s, 4.0 GiB); 10 output file(s) changed; signals: jvmcontract:holds×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B9",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "288"
+        ],
+        "paths": [
+          "examples/tools/beside_route.py",
+          "examples/tools/accept.py",
+          "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/prove.py"
+        ]
+      },
+      "sourceCommit": "0835cfd01e0bdd7a8a58bd549fd5fec2f151ab1c",
+      "finishedAt": "2026-11-17T13:57:10+00:00",
+      "wallSeconds": 1239.6,
+      "peakMemoryBytes": 1467281408,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 1500.0,
+        "notes": "the earlier job took 1182 s at 1.4 GiB; plus the release build of lib/ and the fetch of the pinned JARs"
+      },
+      "host": "vm-1",
+      "result": "20261117-133148-example-288-fixed-security-again-with-th/result.json"
+    },
+    {
+      "id": "20261117-134306-examples-289-and-290-preservation-again",
+      "title": "Examples 289 and 290: preservation again with exceptions compared by class and each version from a fresh state",
+      "status": "passed",
+      "summary": "passed: 2 passed step(s) in 1m32s, peak 551.7 MiB (estimated 10m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:holds×2",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "289",
+          "290"
+        ],
+        "paths": [
+          "lib/src/pairing.rs",
+          "lib/src/bmc/mod.rs"
+        ]
+      },
+      "sourceCommit": "319627d611be638e4a575d9bc5d715415cdfc9e4",
+      "finishedAt": "2026-11-17T13:51:16+00:00",
+      "wallSeconds": 92.6,
+      "peakMemoryBytes": 578494464,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 600.0,
+        "notes": "capped probes: 289 62 s, 290 about 1 s, under 4 GiB; plus the release build and the fetch of the pinned JARs"
+      },
+      "host": "vm-1",
+      "result": "20261117-134306-examples-289-and-290-preservation-again/result.json"
+    },
+    {
+      "id": "20261117-133148-example-290-the-four-answers-beside-the",
+      "title": "Example 290: the four answers beside the route again, with the driver's record of what it ran (evidence.json)",
+      "status": "passed",
+      "summary": "passed: 4 passed step(s) in 45.9s, peak 188.6 MiB (estimated 10m00s, 4.0 GiB); 22 output file(s) changed; signals: jvmcontract:holds×2; jvmcontract:fails×1; jvmcontract:holds×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B9",
+        "B11",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "290"
+        ],
+        "paths": [
+          "examples/tools/beside_route.py",
+          "examples/tools/accept.py",
+          "examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py"
+        ]
+      },
+      "sourceCommit": "0835cfd01e0bdd7a8a58bd549fd5fec2f151ab1c",
+      "finishedAt": "2026-11-17T13:37:17+00:00",
+      "wallSeconds": 45.9,
+      "peakMemoryBytes": 197746688,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 600.0,
+        "notes": "the earlier job's four tasks took 8, 5, 13 and 13 s at under 0.2 GiB; the rest is the release build of lib/ (about 3.5 min, 1.9 GiB) and the fetch of the pinned JARs"
+      },
+      "host": "vm-1",
+      "result": "20261117-133148-example-290-the-four-answers-beside-the/result.json"
+    },
+    {
+      "id": "20261117-122546-examples-286-and-288-the-simplematch-lem",
+      "title": "Examples 286 and 288: the simpleMatch lemma is still proved, and fixed-security with it, after the checker's lemma checks were tightened",
+      "status": "passed",
+      "summary": "passed: 2 passed step(s) in 35m42s, peak 1.4 GiB (estimated 50m00s, 4.0 GiB); 2 output file(s) changed; signals: jvmcontract:holds×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "286",
+          "288"
+        ],
+        "paths": [
+          "lib/src/bmc/mod.rs",
+          "lib/src/summary.rs",
+          "lib/tests/claims.rs"
+        ]
+      },
+      "sourceCommit": "150c4a2557ebd284bbb73f1084e5ac7d6e1d7523",
+      "finishedAt": "2026-11-17T13:33:57+00:00",
+      "wallSeconds": 2142.1,
+      "peakMemoryBytes": 1500282880,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 3000.0,
+        "notes": "the earlier jobs' frozen steps: 286 about 15 min of a 23 min job with a trial step, 288 22 min; peak 1.4 GiB each. Plus the release build of lib/. Asked 4G, the local runner's limit per job"
+      },
+      "host": "vm-1",
+      "result": "20261117-122546-examples-286-and-288-the-simplematch-lem/result.json"
+    },
+    {
+      "id": "20261117-130335-example-286-protected-state-tasks-at-the",
+      "title": "Example 286 protected-state tasks at the frozen bound with the ArrayList model: where DataBinder.bind stops now",
+      "status": "passed",
+      "summary": "passed: 2 passed step(s) in 3m30s, peak 218.5 MiB (estimated 20m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:fails×1",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "286"
+        ],
+        "paths": [
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
+          "lib/models/java/util/lists/ArrayList.java"
+        ]
+      },
+      "sourceCommit": "1656d683bbd8b6a4913e05b7a3a27c5fd7126238",
+      "finishedAt": "2026-11-17T13:20:16+00:00",
+      "wallSeconds": 210.7,
+      "peakMemoryBytes": 229154816,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 1200.0,
+        "notes": "the probe at bound 2 stopped after 7 paths in seconds (the lemma's proof first); at 8 the lemma's proof took 92 s on 2026-11-15, and the binding path should stop at the same gaps soon after; the timeout is a ceiling for a path that goes further"
+      },
+      "host": "vm-1",
+      "result": "20261117-130335-example-286-protected-state-tasks-at-the/result.json"
+    },
+    {
+      "id": "20261117-130445-example-287-preservation-through-the-ada",
+      "title": "Example 287 preservation through the adapter entry: where the frozen claim stops on today's checker",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 15.8s, peak 817.1 MiB (estimated 5m00s, 4.0 GiB); 4 output file(s) changed; signals: jvmcontract:fails×2",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "B9",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "287"
+        ],
+        "paths": [
+          "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
+          "lib/src/pairing.rs",
+          "lib/src/bmc/runtime.rs"
+        ]
+      },
+      "sourceCommit": "170269edebfe68cd390443247ff6d89775686c04",
+      "finishedAt": "2026-11-17T13:17:01+00:00",
+      "wallSeconds": 15.8,
+      "peakMemoryBytes": 856838144,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 300.0,
+        "notes": "one capped probe of this step took 13 s and stopped before any loop; plus the release build of lib/ and the fetch of the four pinned JARs"
+      },
+      "host": "vm-1",
+      "result": "20261117-130445-example-287-preservation-through-the-ada/result.json"
+    },
+    {
+      "id": "20261117-122454-example-289-the-four-proof-tasks-again-w",
+      "title": "Example 289: the four proof tasks again, with the driver's record of identities (evidence.json)",
+      "status": "passed",
+      "summary": "passed: 4 passed step(s) in 1m33s, peak 551.4 MiB (estimated 20m00s, 4.0 GiB); 15 output file(s) changed; signals: jvmcontract:fails×1; jvmcontract:holds×1; jvmcontract:holds×2",
+      "attention": [],
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "B9",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "289"
+        ],
+        "paths": [
+          "examples/tools/accept.py",
+          "examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py"
+        ]
+      },
+      "sourceCommit": "150c4a2557ebd284bbb73f1084e5ac7d6e1d7523",
+      "finishedAt": "2026-11-17T12:59:48+00:00",
+      "wallSeconds": 93.4,
+      "peakMemoryBytes": 578224128,
+      "estimate": {
+        "cpus": 2.0,
+        "memoryBytes": 4294967296,
+        "durationSeconds": 1200.0,
+        "notes": "the four earlier jobs took 5 s, 3m46s, 4m13s (with the release build) and about 10 s; peak 1.8 GiB (preservation). Plus the release build of lib/ and the fetch of the pinned JARs"
+      },
+      "host": "vm-1",
+      "result": "20261117-122454-example-289-the-four-proof-tasks-again-w/result.json"
+    },
+    {
       "id": "20261117-022611-default-test-run-at-omnttzkzonux",
       "title": "Default test run at omnttzkzonux",
       "status": "passed",

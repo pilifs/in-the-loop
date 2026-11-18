@@ -78,6 +78,7 @@ pub mod reuse;
 pub mod sarif;
 pub mod shared;
 pub mod shrink;
+pub mod stand_in;
 pub mod spec;
 pub mod statemachine;
 pub mod statement;

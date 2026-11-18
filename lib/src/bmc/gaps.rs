@@ -394,6 +394,8 @@ pub struct GapSetting {
     pub observed: std::sync::Arc<crate::observed::Observations>,
     /// The models on request the engine runs ([`crate::models::ON_REQUEST`]), by internal name, in any mode.
     pub models: std::sync::Arc<BTreeSet<String>>,
+    /// The library methods a stand-in sampled on a JVM replaces ([`super::StandIn`]), in any mode.
+    pub stand_ins: std::sync::Arc<Vec<super::StandIn>>,
     /// The previous version of a pair the check holds beside the new one ([`crate::relocate::Previous`]).
     pub previous: Option<std::sync::Arc<crate::relocate::Previous>>,
 }
@@ -490,19 +492,22 @@ pub fn jdk_release() -> Option<String> {
 }
 
 /// Whether the engine reproduces a call into the JDK exactly: the constructors of `Object` and `Record`, which do
-/// nothing, and those of the JDK's exceptions that take nothing, a message, or a message and a cause, which set
-/// what no proof observes (the engine compares exceptions by class) and throw nothing.
+/// nothing, and those of the JDK's exceptions that take nothing, a message, or a message and a cause, and only pass
+/// them up to `Throwable`'s ([`super::throwables::plain_constructor`]), which sets the message and the cause (the
+/// own checker keeps them, [`super::throwables`]) and throws nothing. A JDK exception's constructor that does more
+/// (`UnknownFormatConversionException(String)` throws `NullPointerException` for null) is a gap like any other.
 pub fn exact_jdk_call(cp: &ClassPath, owner: &str, name: &str, descriptor: &str) -> bool {
     if name != "<init>" {
         return false;
     }
     // `AbstractCollection()` is the JDK's empty protected constructor, which the immutable lists' model
     // (`ImmutableCollections.AbstractImmutableList`, run by the own checker) calls as the JDK's lists do; and so
-    // is `AbstractList()`, which the model of `Arrays.asList`'s list calls.
-    if (owner == "java/lang/Object" || owner == "java/lang/Record" || owner == "java/util/AbstractCollection" || owner == "java/util/AbstractList") && descriptor == "()V" {
+    // is `AbstractList()`, which the model of `Arrays.asList`'s list calls, and `AbstractSet()` (which calls
+    // `AbstractCollection()` alone), which the `HashSet` model calls.
+    if (owner == "java/lang/Object" || owner == "java/lang/Record" || owner == "java/util/AbstractCollection" || owner == "java/util/AbstractList" || owner == "java/util/AbstractSet") && descriptor == "()V" {
         return true;
     }
-    matches!(descriptor, "()V" | "(Ljava/lang/String;)V" | "(Ljava/lang/String;Ljava/lang/Throwable;)V") && crate::classpath::is_jdk_name(owner) && cp.is_subtype(owner, "java/lang/Throwable")
+    crate::classpath::is_jdk_name(owner) && super::throwables::plain_constructor(cp, owner, descriptor)
 }
 
 /// The JDK interfaces the immutable-list models and the `HashMap` model implement that no other object the engine
@@ -1235,9 +1240,9 @@ impl<'a> Walker<'a> {
         if matches!((owner, name), ("java/lang/Integer" | "java/lang/Long", "MAX_VALUE" | "MIN_VALUE")) {
             return true;
         }
-        // The JDK's objects the engine has one of for a run: the UTF-8 charset, `Locale`'s constants and the
-        // logging levels below `INFO`.
-        if (owner, name) == (super::bytes::STANDARD_CHARSETS, "UTF_8") || super::locale::constant(owner, name) || super::runtime::level_constant(owner, name).is_some() {
+        // The JDK's objects the engine has one of for a run: the UTF-8 charset, `Locale`'s constants, the
+        // logging levels below `INFO`, and `Boolean.TRUE` and `Boolean.FALSE`.
+        if (owner, name) == (super::bytes::STANDARD_CHARSETS, "UTF_8") || super::locale::constant(owner, name) || super::runtime::level_constant(owner, name).is_some() || super::runtime::truth_constant(owner, name).is_some() {
             return true;
         }
         let Ok(Some(cf)) = self.cp.bytecode(owner) else { return false };

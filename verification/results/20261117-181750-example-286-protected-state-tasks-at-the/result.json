@@ -1,0 +1,305 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261117-181750-example-286-protected-state-tasks-at-the",
+  "title": "Example 286 protected-state tasks at the frozen bound through the bean wrapper's stand-in: the refutation on 5.3.18, and where the fixed task stops",
+  "status": "failed",
+  "summary": "failed: 1 failed, 1 passed step(s) in 10.6s, peak 114.2 MiB (estimated 15m00s, 4.0 GiB); 6 output file(s) changed",
+  "attention": [
+    "step 1 (vulnerable-protected-state-mutation at the frozen bound 8 (5.3.18): the refutation) exited 1, expected 0",
+    "step 1 (vulnerable-protected-state-mutation at the frozen bound 8 (5.3.18): the refutation) was held back 5.8s by its 1-CPU quota in 5.4s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (fixed-protected-state-mutation at the frozen bound 8 (5.3.19): where it stops) was held back 5.2s by its 1-CPU quota in 5.2s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261117-181750-example-286-protected-state-tasks-at-the.json",
+    "sha256": "450e81dae9a2af8550e9749dd25987b81f233d61200451abbd4809c12f11400c",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261117-181750-example-286-protected-state-tasks-at-the",
+      "title": "Example 286 protected-state tasks at the frozen bound through the bean wrapper's stand-in: the refutation on 5.3.18, and where the fixed task stops",
+      "description": "The state stream of the domain-advances brief, steps 2 and 3. The frozen claim examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/claims/protected-age-not-mutated.json, unchanged (DataBinder.bind of one property value named field with the value \"32\" onto a fresh ProtectedBean, age protected by one disallowed pattern, leaves age 0, for every simple name of at most 8 units), run by examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py at its own bound 8 (unwind 16, strict gaps, the ArrayList, ArrayDeque and HashSet models, PropertyEditorRegistrySupport's initializer observed). New since job 20261117-130335: the run takes a stand-in for the bean wrapper's write of a property value (prove --stand-in, lib/src/stand_in.rs; examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/stand-ins/org/springframework/beans/ProtectedBeanStandIn.java), sampled against the release's own AbstractNestablePropertyAccessor.setPropertyValue(PropertyValue) on a JVM before the run (463,616 samples, all the same), so the introspection caches are off the path; the ArrayList model keeps remove(Object) (checkAllowedFields drops a disallowed value with it); and Boolean.TRUE and Boolean.FALSE are one object each. A capped inline probe at bound 8 refuted vulnerable-protected-state-mutation in 63 s at ageAfterBinding(upperCasePattern=false, field=\"Age\"), which returns 32 on a JVM (the witness is run on a JVM, where the method runs as written, so the refutation rests on no stand-in or model): this job's outcome and evidence.json are what examples/tools/accept.py reads to accept it. The fixed task is expected to stop with no verdict at String.toLowerCase() on a non-ASCII field (DataBinder.isAllowed:828: the frozen claim does not restrict field to ASCII and the checker lowers ASCII only), which this job records as the current blocker.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "286"
+        ],
+        "paths": [
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/stand-ins/org/springframework/beans/ProtectedBeanStandIn.java",
+          "lib/src/stand_in.rs",
+          "lib/models/java/util/lists/ArrayList.java"
+        ]
+      },
+      "expected": "the vulnerable step exits 0 with 'verdict: violation (expected violation)' at the claim's bound 8 with a witness run on a JVM (field=\"Age\" or another case variant that binds age); the fixed step exits 1 with 'verdict: unverifiable' naming the gap java.lang.String.toLowerCase() at DataBinder.isAllowed:828, and any other gap is a finding to record",
+      "submitted": {
+        "at": "2026-11-17T18:17:50+00:00",
+        "session": "9896d870-fb47-4f3c-ba4d-5b1d3e64719c"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "4G",
+        "duration": "15m",
+        "timeout": "1h30m",
+        "notes": "the inline probe of the vulnerable step at bound 8 took 63 s in under 4 GB, the lemma's proof included; the fixed step stops at its gap within minutes; each stand-in sampler runs about 2 s"
+      },
+      "steps": [
+        {
+          "name": "vulnerable-protected-state-mutation at the frozen bound 8 (5.3.18): the refutation",
+          "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py vulnerable-protected-state-mutation --timeout 1700 --work verification/.work-286/state-stand-in",
+          "cwd": "."
+        },
+        {
+          "name": "fixed-protected-state-mutation at the frozen bound 8 (5.3.19): where it stops",
+          "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py fixed-protected-state-mutation --timeout 1700 --work verification/.work-286/state-stand-in || test $? -eq 1",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/.work-286/state-stand-in/vulnerable-protected-state-mutation/outcome.json",
+        "verification/.work-286/state-stand-in/vulnerable-protected-state-mutation/evidence.json",
+        "verification/.work-286/state-stand-in/vulnerable-protected-state-mutation/stderr.txt",
+        "verification/.work-286/state-stand-in/fixed-protected-state-mutation/outcome.json",
+        "verification/.work-286/state-stand-in/fixed-protected-state-mutation/evidence.json",
+        "verification/.work-286/state-stand-in/fixed-protected-state-mutation/stderr.txt"
+      ]
+    }
+  },
+  "sourceCommit": "1585d7e03c274112dc00d564e847b58de2257c0b",
+  "startedAt": "2026-11-17T18:18:55+00:00",
+  "finishedAt": "2026-11-17T18:21:54+00:00",
+  "wallSeconds": 179.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 404688,
+    "workers": 10,
+    "cpus": 20.0,
+    "memoryBudgetBytes": 47244640256,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 5400.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 900.0,
+    "notes": "the inline probe of the vulnerable step at bound 8 took 63 s in under 4 GB, the lemma's proof included; the fixed step stops at its gap within minutes; each stand-in sampler runs about 2 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 119721984,
+    "wallSeconds": 10.6,
+    "cpuSeconds": 9.8,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 167.029,
+      "cpuSeconds": 166.755,
+      "cpuThrottledSeconds": 0.556,
+      "peakMemoryBytes": 2680725504,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "50f025775e502f370eb8a2a9df5b66cd677aab5294507337f95dd28226e6fd36",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261117-181750-example-286-protected-state-tasks-at-the/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 46s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "vulnerable-protected-state-mutation at the frozen bound 8 (5.3.18): the refutation",
+      "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py vulnerable-protected-state-mutation --timeout 1700 --work verification/.work-286/state-stand-in",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5400.0,
+      "cancelled": false,
+      "wallSeconds": 5.412,
+      "cpuSeconds": 4.95,
+      "cpuThrottledSeconds": 5.775,
+      "peakMemoryBytes": 116424704,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-vulnerable-protected-state-mut.log",
+        "lines": 1,
+        "bytes": 524,
+        "sha256": "0ae4eaff2fd2f04d5a144ad59a788f66d8e5c82fccea6a655146f45d46d870cd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "jvmcontract gave no outcome (exit 2): jvmcontract: --observed-initializer org.springframework.beans.PropertyEditorRegistrySupport: the JVM gave no observation: Invalid -Xlog option '-Xlog:class+init=info:file=verification/.work-286/state-stand-in/vulnerable-protected-state-mutation/work/lemma-0/obse"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "fixed-protected-state-mutation at the frozen bound 8 (5.3.19): where it stops",
+      "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py fixed-protected-state-mutation --timeout 1700 --work verification/.work-286/state-stand-in || test $? -eq 1",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5400.0,
+      "cancelled": false,
+      "wallSeconds": 5.214,
+      "cpuSeconds": 4.867,
+      "cpuThrottledSeconds": 5.169,
+      "peakMemoryBytes": 119721984,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-fixed-protected-state-mutation.log",
+        "lines": 1,
+        "bytes": 519,
+        "sha256": "05cbed6d7e1e7d6d69a0fc45647144aec57b34497f4750967e8204e92986d09b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "jvmcontract gave no outcome (exit 2): jvmcontract: --observed-initializer org.springframework.beans.PropertyEditorRegistrySupport: the JVM gave no observation: Invalid -Xlog option '-Xlog:class+init=info:file=verification/.work-286/state-stand-in/fixed-protected-state-mutation/work/lemma-0/observed/"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-286/state-stand-in/vulnerable-protected-state-mutation/outcome.json",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-286/state-stand-in/vulnerable-protected-state-mutation/evidence.json",
+      "change": "added",
+      "bytes": 2791,
+      "sha256": "863971ba969adc0de9f819c117861bfcaa35920059d500a800f0ecd85defd6a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-286/state-stand-in/vulnerable-protected-state-mutation/stderr.txt",
+      "change": "added",
+      "bytes": 486,
+      "sha256": "e30a9904316480f71302f4b52b9534131ff754808b0ac84fb20e4afc214c01b5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-286/state-stand-in/fixed-protected-state-mutation/outcome.json",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-286/state-stand-in/fixed-protected-state-mutation/evidence.json",
+      "change": "added",
+      "bytes": 2756,
+      "sha256": "52177ef026382d83057b17349f59731802ceef77df57bdfe5f2141fa69d4bdaf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-286/state-stand-in/fixed-protected-state-mutation/stderr.txt",
+      "change": "added",
+      "bytes": 481,
+      "sha256": "9d8af6eeef0c6e423514cc9d371e7926507569a4ca77fac0b525d5112dad4f38",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-17T18:22:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/.work-286/state-stand-in/vulnerable-protected-state-mutation/outcome.json",
+      "verification/.work-286/state-stand-in/vulnerable-protected-state-mutation/evidence.json",
+      "verification/.work-286/state-stand-in/vulnerable-protected-state-mutation/stderr.txt",
+      "verification/.work-286/state-stand-in/fixed-protected-state-mutation/outcome.json",
+      "verification/.work-286/state-stand-in/fixed-protected-state-mutation/evidence.json",
+      "verification/.work-286/state-stand-in/fixed-protected-state-mutation/stderr.txt"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "406bfe9eeb21127fc1f5f521bf5d1b6a6201c9dd",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/406bfe9eeb21127fc1f5f521bf5d1b6a6201c9dd/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261117-181750-example-286-protected-state-tasks-at-the"
+}

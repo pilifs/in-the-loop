@@ -1,0 +1,544 @@
+--- /dev/null
++++ b/verification/.work-287/preservation-one-function/preservation/outcome.json
+@@ -0,0 +1,419 @@
++{
++  "verdict": "verified",
++  "target": "example287.adapter.PasswordMatchAdapter#matches",
++  "domain": "candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null",
++  "counterexample": null,
++  "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null in 108.0 s; loops unwound 16 times with unwinding assertions; 52 calls of methods both versions share taken as one function of both, 48 of them related to an earlier call by their inputs",
++  "problem": null,
++  "statement": "verification/.work-287/preservation-one-function/preservation/work/pair/RegressionPair.java",
++  "findings": [],
++  "output": "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-287/preservation-one-function/preservation/work/pair/RegressionPair.java) calls the previous version's example287.adapter.PasswordMatchAdapter#matches, relocated under `before`, and then the new one's on the same inputs, each on its own dependency closure, outside the inputs the change is meant to affect (`candidate != null && candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72`, read on the new version), each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n✓ example287.adapter.PasswordMatchAdapter#matches: the two versions agree on every input outside `candidate != null && candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72` (the pair's property, below)\n✓ RegressionPair#agree satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null in 108.0 s; loops unwound 16 times with unwinding assertions; 52 calls of methods both versions share taken as one function of both, 48 of them related to an earlier call by their inputs)\n  outside the allowed change: agree(candidate=null, storedHash=null) lies outside `candidate != null && candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72`, so both versions are called on it\n",
++  "work": "verification/.work-287/preservation-one-function/preservation/work",
++  "search": {
++    "engine": "native",
++    "checker": "jvmcontract's own checker (CaDiCaL)",
++    "seconds": 108.027031977,
++    "properties": 1,
++    "unwind": 16,
++    "max_array_length": 80,
++    "stage": null,
++    "native": {
++      "paths": 53,
++      "merges": 0,
++      "solver_calls": 329,
++      "solving_seconds": 59.751223278,
++      "gates_evaluated": 140598,
++      "evaluating_seconds": 0.004913234,
++      "divisions": 0,
++      "divisions_built": 0,
++      "multiplications": 0,
++      "multiplications_built": 0,
++      "variables": 3668524,
++      "clauses": 12668999,
++      "seconds": 106.944198485,
++      "loading_seconds": 0.00448223,
++      "decoding_seconds": 0.002438867,
++      "encoding_seconds": 38.757694992,
++      "witness_seconds": 0.0,
++      "assumed": [
++        "a record given to a logger goes to the handler the JDK's default logging configuration gives the root logger and nowhere else: no logger has a filter, a handler of its own or a resource bundle, and the root's one handler is a ConsoleHandler, which writes the record to System.err (no check observes it) and reports to its ErrorManager, without throwing, an exception its formatting throws",
++        "each call of org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw taken as one function of both versions (lib/src/bmc/ties.rs) ends: two versions that make it on equal inputs are taken to agree, so what is proved holds of the runs in which it ends",
++        "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
++        "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++      ],
++      "tied": 1176,
++      "calls_as_one_function": 52,
++      "calls_related": 48
++    },
++    "gap_mode": "strict",
++    "deadline_seconds": 3600.0,
++    "runs": [
++      {
++        "checker": "native",
++        "purpose": "proof",
++        "stage": null,
++        "budget_seconds": 3600.0,
++        "seconds": 106.944,
++        "ended": "verified",
++        "ending": "verified",
++        "phases": {
++          "loading": 0.004,
++          "lowering": 0.002,
++          "symbolic": 8.428,
++          "encoding": 38.758,
++          "solving": 59.751,
++          "trace": 0.0,
++          "other": 0.0
++        },
++        "formula": {
++          "variables": 3668524,
++          "clauses": 12668999
++        }
++      },
++      {
++        "checker": "native",
++        "purpose": "outside-change proof",
++        "stage": null,
++        "budget_seconds": 3600.0,
++        "seconds": 0.007,
++        "ended": "violation",
++        "ending": "counterexample",
++        "phases": {
++          "loading": 0.0,
++          "lowering": 0.0,
++          "symbolic": 0.004,
++          "encoding": 0.002,
++          "solving": 0.001,
++          "trace": 0.0,
++          "other": 0.0
++        },
++        "formula": {
++          "variables": 8036,
++          "clauses": 18690
++        }
++      }
++    ]
++  },
++  "stated": {
++    "kind": "property",
++    "domain": {
++      "parameters": [
++        {
++          "name": "candidate",
++          "type": "java.lang.String",
++          "kind": "value",
++          "null": true,
++          "max_length": 80
++        },
++        {
++          "name": "storedHash",
++          "type": "java.lang.String",
++          "kind": "value",
++          "null": true,
++          "max_length": 80
++        }
++      ],
++      "shared_arrays": false,
++      "text": "candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null"
++    },
++    "assumptions": [
++      {
++        "kind": "initialization",
++        "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++        "basis": "engine"
++      },
++      {
++        "kind": "library",
++        "text": "a record given to a logger goes to the handler the JDK's default logging configuration gives the root logger and nowhere else: no logger has a filter, a handler of its own or a resource bundle, and the root's one handler is a ConsoleHandler, which writes the record to System.err (no check observes it) and reports to its ErrorManager, without throwing, an exception its formatting throws",
++        "basis": "engine"
++      },
++      {
++        "kind": "library",
++        "text": "each call of org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw taken as one function of both versions (lib/src/bmc/ties.rs) ends: two versions that make it on equal inputs are taken to agree, so what is proved holds of the runs in which it ends",
++        "basis": "engine"
++      },
++      {
++        "kind": "library",
++        "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
++        "basis": "engine"
++      },
++      {
++        "kind": "library",
++        "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++        "basis": "engine"
++      }
++    ],
++    "observations": {
++      "result": "the result and the parameters, against result",
++      "exceptions": "none may be thrown"
++    },
++    "bounds": {
++      "unwind": 16,
++      "max_array_length": null,
++      "complete": true,
++      "max_value_length": 80
++    },
++    "models": {
++      "used": true,
++      "digest": "sha256:d3cb60427833314ef7f913b8bc6ef4ca4c79b923fd15a09a6224d63099b17d02",
++      "classes": 31,
++      "jdk": "25.0.5",
++      "values": [
++        {
++          "source": "jvmcontract String model 7: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++          "jdk": "25.0.5",
++          "level": "tested",
++          "leaves_out": [
++            "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++            "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++            "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++            "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
++          ]
++        }
++      ]
++    },
++    "checker": {
++      "engine": "native",
++      "name": "jvmcontract's own checker (CaDiCaL)",
++      "solver": "CaDiCaL 1.9.5 (bundled)",
++      "fallback": null,
++      "sat": {
++        "solver": "CaDiCaL",
++        "version": "1.9.5",
++        "source": "bundled by the Rust crate cadical 0.1.16",
++        "configuration": [
++          "CaDiCaL's default options",
++          "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++          "the run's deadline through CaDiCaL's terminate callback",
++          "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++        ]
++      }
++    },
++    "gap_mode": "strict",
++    "confirmation": null,
++    "vacuity": {
++      "status": "non-vacuous",
++      "basis": "probe",
++      "text": "Some input in the domain reaches the calls: the tool's own checker found agree(candidate=null, storedHash=null). It lies outside the allowed change `candidate != null && candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72`, so both versions are called on it.",
++      "witness": "agree(candidate=null, storedHash=null)",
++      "outside": "candidate != null && candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72"
++    }
++  },
++  "pair": {
++    "verdict": "verified",
++    "target": "RegressionPair#agree",
++    "domain": "candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null in 108.0 s; loops unwound 16 times with unwinding assertions; 52 calls of methods both versions share taken as one function of both, 48 of them related to an earlier call by their inputs",
++    "problem": null,
++    "statement": "verification/.work-287/preservation-one-function/preservation/work/pair-work/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ RegressionPair#agree satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null in 108.0 s; loops unwound 16 times with unwinding assertions; 52 calls of methods both versions share taken as one function of both, 48 of them related to an earlier call by their inputs)\n  outside the allowed change: agree(candidate=null, storedHash=null) lies outside `candidate != null && candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72`, so both versions are called on it\n",
++    "work": "verification/.work-287/preservation-one-function/preservation/work/pair-work",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 108.027031977,
++      "properties": 1,
++      "unwind": 16,
++      "max_array_length": 80,
++      "stage": null,
++      "native": {
++        "paths": 53,
++        "merges": 0,
++        "solver_calls": 329,
++        "solving_seconds": 59.751223278,
++        "gates_evaluated": 140598,
++        "evaluating_seconds": 0.004913234,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 3668524,
++        "clauses": 12668999,
++        "seconds": 106.944198485,
++        "loading_seconds": 0.00448223,
++        "decoding_seconds": 0.002438867,
++        "encoding_seconds": 38.757694992,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "a record given to a logger goes to the handler the JDK's default logging configuration gives the root logger and nowhere else: no logger has a filter, a handler of its own or a resource bundle, and the root's one handler is a ConsoleHandler, which writes the record to System.err (no check observes it) and reports to its ErrorManager, without throwing, an exception its formatting throws",
++          "each call of org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw taken as one function of both versions (lib/src/bmc/ties.rs) ends: two versions that make it on equal inputs are taken to agree, so what is proved holds of the runs in which it ends",
++          "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ],
++        "tied": 1176,
++        "calls_as_one_function": 52,
++        "calls_related": 48
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 3600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 3600.0,
++          "seconds": 106.944,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.004,
++            "lowering": 0.002,
++            "symbolic": 8.428,
++            "encoding": 38.758,
++            "solving": 59.751,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 3668524,
++            "clauses": 12668999
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "outside-change proof",
++          "stage": null,
++          "budget_seconds": 3600.0,
++          "seconds": 0.007,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.004,
++            "encoding": 0.002,
++            "solving": 0.001,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 8036,
++            "clauses": 18690
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 108.037,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 106.944,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 1.092
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "candidate",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": true,
++            "max_length": 80
++          },
++          {
++            "name": "storedHash",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": true,
++            "max_length": 80
++          }
++        ],
++        "shared_arrays": false,
++        "text": "candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null"
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "a record given to a logger goes to the handler the JDK's default logging configuration gives the root logger and nowhere else: no logger has a filter, a handler of its own or a resource bundle, and the root's one handler is a ConsoleHandler, which writes the record to System.err (no check observes it) and reports to its ErrorManager, without throwing, an exception its formatting throws",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "each call of org.springframework.security.crypto.bcrypt.BCrypt.crypt_raw taken as one function of both versions (lib/src/bmc/ties.rs) ends: two versions that make it on equal inputs are taken to agree, so what is proved holds of the runs in which it ends",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 16,
++        "max_array_length": null,
++        "complete": true,
++        "max_value_length": 80
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d3cb60427833314ef7f913b8bc6ef4ca4c79b923fd15a09a6224d63099b17d02",
++        "classes": 31,
++        "jdk": "25.0.5",
++        "values": [
++          {
++            "source": "jvmcontract String model 7: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++            "jdk": "25.0.5",
++            "level": "tested",
++            "leaves_out": [
++              "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++              "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++              "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++              "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
++            ]
++          }
++        ]
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found agree(candidate=null, storedHash=null). It lies outside the allowed change `candidate != null && candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72`, so both versions are called on it.",
++        "witness": "agree(candidate=null, storedHash=null)",
++        "outside": "candidate != null && candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72"
++      }
++    }
++  }
++}
+--- /dev/null
++++ b/verification/.work-287/preservation-one-function/preservation/evidence.json
+@@ -0,0 +1,59 @@
++{
++ "schema": "beside-route-evidence/v1",
++ "example": "287",
++ "task": "preservation",
++ "claim": {
++  "file": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/claims/in-range-matching-preserved.json",
++  "sha256": "0d5994f6284bc7f179b63d914eacf704bcae468242a4116ffa39a598f7491934"
++ },
++ "bound": {
++  "maxArrayLength": 80,
++  "unwind": null,
++  "trial": false
++ },
++ "artifacts": [
++  {
++   "revision": "vulnerable-release",
++   "name": "spring-security-crypto-6.3.7.jar",
++   "sha256": "fa517a6ebb30ec92a0d1cd5d9ab87bbcb119a1619caa63cf991373d3ac4a3226"
++  },
++  {
++   "revision": "vulnerable-release",
++   "name": "spring-jcl-6.1.17.jar",
++   "sha256": "a25f70775fe84885ebe69d7083b69ba6738d4a9842f5a48330e2d50e3db0bd3f"
++  },
++  {
++   "revision": "fixed-release",
++   "name": "spring-security-crypto-6.3.8.jar",
++   "sha256": "a38448c5aac161dee28887fbd59b617ed3577b8b26c710096c96e07799f01156"
++  },
++  {
++   "revision": "fixed-release",
++   "name": "spring-jcl-6.1.18.jar",
++   "sha256": "6c2617dc157ecaaac744fb7d14efa9389b6364e3eb2fd3e083b558c51ddf5247"
++  }
++ ],
++ "adapter": {
++  "sources": {
++   "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/replay/adapter/example287/adapter/PasswordMatchAdapter.java": "e662bf6e324a3c80fa565cf6a9e8b786e918ae015898ec67746ff1ddf482cf99"
++  },
++  "classes": [
++   {
++    "folder": "adapter-vulnerable-release",
++    "sha256": "0cf7efd6b37766b1afc38394a496ff735a17cb667fd83258598c6ff42ee568f9"
++   },
++   {
++    "folder": "adapter-fixed-release",
++    "sha256": "0cf7efd6b37766b1afc38394a496ff735a17cb667fd83258598c6ff42ee568f9"
++   }
++  ]
++ },
++ "jvmcontract": {
++  "path": "jvmcontract",
++  "sha256": "e6459ebf5381a891a71cdf0721ddfd43bb4419192b63120162c431d91b2d977e"
++ },
++ "driver": {
++  "path": "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
++  "sha256": "1c0517ceacdd0459115e279c9882f984c2f4b5165323954107dbee67dd4b6ce0"
++ }
++}
+--- /dev/null
++++ b/verification/.work-287/preservation-one-function/preservation/work/pair/RegressionPair.java
+@@ -0,0 +1,57 @@
++/** Generated by jvmcontract: both versions of a method called on the same inputs, as one method that says whether they agree (lib/src/pairing.rs). */
++public final class RegressionPair {
++    private RegressionPair() {}
++
++    /** The inputs the change is meant to affect, read on the new version; an input on which the expression throws is not among them. */
++    static boolean meantToChange(java.lang.String candidate, java.lang.String storedHash) {
++        try {
++            return candidate != null && candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72;
++        } catch (Throwable t) {
++            return false;
++        }
++    }
++
++    /** The default locale the first version started under. */
++    private static java.util.Locale start;
++
++    /** Where each version starts: the checker and the interpreter give it a fresh state here, as if it ran alone; on a JVM the default locale is set back to the one the first started under. */
++    static void fresh() {
++        if (start == null) {
++            start = java.util.Locale.getDefault();
++        } else {
++            java.util.Locale.setDefault(start);
++        }
++    }
++
++    /** A class's own name: a copy of the previous version's class is that class. */
++    static String named(Class<?> c, boolean previous) {
++        String name = c.getName();
++        return previous && name.indexOf("before.") == 0 ? name.substring(7) : name;
++    }
++
++    /** Whether the class of this name implements other interfaces in one version than in the other, as the generator found them. */
++    static boolean apart(String name) {
++        return false;
++    }
++
++    /** Whether the previous version's class and the new one's have one name and implement the same interfaces, and so do the classes above them, up to Object. */
++    static boolean same(Class<?> a, Class<?> b) {
++        if (a == null || b == null) {
++            return a == b;
++        }
++        String name = named(b, false);
++        return named(a, true).equals(name) && !apart(name) && same(a.getSuperclass(), b.getSuperclass());
++    }
++
++    public static boolean agree(java.lang.String candidate, java.lang.String storedHash) {
++        fresh();
++        if (meantToChange(candidate, storedHash)) { return true; }
++        fresh();
++        boolean a = false; Class<?> ea = null;
++        try { a = before.example287.adapter.PasswordMatchAdapter.matches(candidate, storedHash); } catch (Throwable t) { ea = t.getClass(); }
++        fresh();
++        boolean b = false; Class<?> eb = null;
++        try { b = example287.adapter.PasswordMatchAdapter.matches(candidate, storedHash); } catch (Throwable t) { eb = t.getClass(); }
++        return ea == null ? eb == null && a == b : eb != null && same(ea, eb);
++    }
++}

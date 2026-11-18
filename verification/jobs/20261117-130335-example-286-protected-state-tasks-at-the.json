@@ -1,0 +1,62 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-130335-example-286-protected-state-tasks-at-the",
+  "title": "Example 286 protected-state tasks at the frozen bound with the ArrayList model: where DataBinder.bind stops now",
+  "description": "The state stream of the domain-advances brief, step 1: find today's first blocker on the real binding path. The frozen claim examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/claims/protected-age-not-mutated.json, unchanged, run by examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py (now with the protected-state tasks: entry example286.adapter.BindingAdapter#ageAfterBinding(boolean, String), the checker's model of java.util.ArrayList by --model, the simpleMatch lemma, strict gaps, maxArrayLength 8, unwind 16; and 289's three properties: evidence.json by accept.record, a mutant that is not the replay's ends the run, a run at another bound is marked a trial). On 2026-11-15 the fixed task stopped at java.util.ArrayList.<init>(int) in MutablePropertyValues.<init>:61. A probe at bound 2 (2026-11-17) passes the ArrayList calls and stops under strict gaps at two others: jdk-constructor java.util.ArrayDeque.<init>() at org.springframework.validation.AbstractErrors.<init>:44 (the binding result's nested-path stack, made on every path) and java.lang.String.toLowerCase() at DataBinder.isAllowed:828 on a field with a code unit outside ASCII (the protected-state claim, unlike the decision claim, does not restrict field to ASCII, and the checker models toLowerCase on ASCII only). This job records what the frozen bound shows, on both releases. Not an answer: both steps are expected to end with no verdict (exit 1), and the outcome is the record of the blocker.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "286"
+    ],
+    "paths": [
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
+      "lib/models/java/util/lists/ArrayList.java"
+    ]
+  },
+  "expected": "each step exits 1 with 'verdict: unverifiable' and names the gaps it refused; expected the two the probe at bound 2 met (ArrayDeque.<init>() at AbstractErrors.<init>:44 and String.toLowerCase() at DataBinder.isAllowed:828), any other is a finding to record",
+  "submitted": {
+    "at": "2026-11-17T13:03:35+00:00",
+    "session": "9896d870-fb47-4f3c-ba4d-5b1d3e64719c"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "4G",
+    "duration": "20m",
+    "timeout": "1h30m",
+    "notes": "the probe at bound 2 stopped after 7 paths in seconds (the lemma's proof first); at 8 the lemma's proof took 92 s on 2026-11-15, and the binding path should stop at the same gaps soon after; the timeout is a ceiling for a path that goes further"
+  },
+  "steps": [
+    {
+      "name": "fixed-protected-state-mutation at the frozen bound 8 (5.3.19)",
+      "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py fixed-protected-state-mutation --timeout 1700 --work verification/.work-286/state",
+      "cwd": ".",
+      "expectExit": 1
+    },
+    {
+      "name": "vulnerable-protected-state-mutation at the frozen bound 8 (5.3.18)",
+      "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py vulnerable-protected-state-mutation --timeout 1700 --work verification/.work-286/state",
+      "cwd": ".",
+      "expectExit": 1
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/.work-286/state/fixed-protected-state-mutation/outcome.json",
+    "verification/.work-286/state/fixed-protected-state-mutation/evidence.json",
+    "verification/.work-286/state/fixed-protected-state-mutation/stderr.txt",
+    "verification/.work-286/state/vulnerable-protected-state-mutation/outcome.json",
+    "verification/.work-286/state/vulnerable-protected-state-mutation/evidence.json",
+    "verification/.work-286/state/vulnerable-protected-state-mutation/stderr.txt"
+  ]
+}

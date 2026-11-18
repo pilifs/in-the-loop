@@ -1,0 +1,248 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261117-210114-example-307-mutant-preservation-after-ag",
+  "title": "example 307 mutant-preservation (after against the us-ascii mutant) at the frozen bound, by the same rule",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m17s, peak 955.8 MiB (estimated 10m00s, 6.0 GiB); 5 output file(s) changed; signals: jvmcontract:fails×2",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261117-210114-example-307-mutant-preservation-after-ag.json",
+    "sha256": "bea9eb9bc0269c4e679c39b518bd31db5c54f297d7539bee75f98e1af330f4d4",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261117-210114-example-307-mutant-preservation-after-ag",
+      "title": "example 307 mutant-preservation (after against the us-ascii mutant) at the frozen bound, by the same rule",
+      "description": "Example 307 is Spring Security fe9e4549: BCrypt.hashpw(String, String) converts the password with getBytes(StandardCharsets.UTF_8) in place of getBytes(\"UTF-8\") inside a try. Its frozen claim (claims/hashpw-preservation.json) says both revisions return the same String or throw the same exception class for a null password or one of at most 80 UTF-16 units and seven fixed salts, at unwind 513. This runs the example's new driver, proofs/prove.py mutant-preservation: each revision is prepared by the route's own source-slice recipe (runtime.prepare: the commit's BCrypt.java from github.com, compiled alone by JDK 8, before's class checked against Spring Security 5.2.0.M4's), each slice JAR checked against the replay receipt that ran it, then jvmcontract equivalence on the slices with the claim's assumption, nullable password and salt, native engine, strict gaps, unwind 513 and max-array-length 80, and evidence.json written for accept.py. Two checker changes make it decidable: String.getBytes(String) for UTF-8's names and getBytes(US_ASCII) are modelled, and in a pair of versions a call of a static method both versions share (here hashpw(byte[], String), the cipher) is taken as one function of both, its outcome a function of its inputs related by congruence across the two runs (lib/src/bmc/ties.rs), so the cipher is never unrolled. Capped probes on this commit: preservation verified in about 100 s; mutant-preservation refuted at a non-ASCII password with a valid salt, reproduced on a JVM, in about 50 s. A fresh --work, the claim's bound, no trial flags.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "307"
+        ],
+        "paths": [
+          "lib/src/bmc/ties.rs",
+          "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/proofs/prove.py"
+        ]
+      },
+      "expected": "violation reproduced on a JVM at a non-ASCII password and a valid salt (prove.py exits 0, the task expecting refuted)",
+      "submitted": {
+        "at": "2026-11-17T21:01:14+00:00",
+        "session": "f28025bc-e46b-4a87-a943-bfb79dea5465"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "6G",
+        "duration": "10m",
+        "timeout": "1h",
+        "notes": "capped probes: about 100 s (preservation) and 50 s (mutant), under 4 GB; plus the slice compile with JDK 8, the github.com fetch of the commit, the 5.2.0.M4 reference JAR and the release build"
+      },
+      "steps": [
+        {
+          "name": "python3 examples/307-spring-security-fe9e4549-bcrypt-standar",
+          "run": "python3 examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/proofs/prove.py mutant-preservation --timeout 1800 --work verification/.work-307/mutant-preservation-one-function",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/.work-307/mutant-preservation-one-function/mutant-preservation/outcome.json",
+        "verification/.work-307/mutant-preservation-one-function/mutant-preservation/evidence.json",
+        "verification/.work-307/mutant-preservation-one-function/mutant-preservation/stderr.txt",
+        "verification/.work-307/mutant-preservation-one-function/mutant-preservation/work/pair/RegressionPair.java",
+        "verification/.work-307/mutant-preservation-one-function/mutant-preservation/work/pair-work/harness/PropertyHarness.java"
+      ]
+    }
+  },
+  "sourceCommit": "4735553c76c7bd550e526dbd7e3f876aa790436f",
+  "startedAt": "2026-11-17T21:09:40+00:00",
+  "finishedAt": "2026-11-17T21:13:42+00:00",
+  "wallSeconds": 242.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2663288,
+    "workers": 10,
+    "cpus": 20.0,
+    "memoryBudgetBytes": 47244640256,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 600.0,
+    "notes": "capped probes: about 100 s (preservation) and 50 s (mutant), under 4 GB; plus the slice compile with JDK 8, the github.com fetch of the commit, the 5.2.0.M4 reference JAR and the release build"
+  },
+  "usage": {
+    "peakMemoryBytes": 1002201088,
+    "wallSeconds": 77.4,
+    "cpuSeconds": 78.2,
+    "memoryOfEstimate": 0.16,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 examples/307-spring-security-fe9e4549-bcrypt-standar",
+      "run": "python3 examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/proofs/prove.py mutant-preservation --timeout 1800 --work verification/.work-307/mutant-preservation-one-function",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 77.392,
+      "cpuSeconds": 78.164,
+      "cpuThrottledSeconds": 0.222,
+      "peakMemoryBytes": 1002201088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-examples-307-spring-se.log",
+        "lines": 14,
+        "bytes": 2986,
+        "sha256": "079c30ddec32d3d992859d024db714af0380b0c62652fe1eacfa24b02dffe006",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 2
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 5,
+          "text": "✗ org.springframework.security.crypto.bcrypt.BCrypt#hashpw(java.lang.String, java.lang.String): the two versions differ on hashpw(password=\"\\uffc0\\ub000\", salt=\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") (the pair's property, below, returns false on it)",
+          "groups": [
+            "org.springframework.security.crypto.bcrypt.BCrypt#hashpw(java.lang.String, java.lang.String): the two versions differ on hashpw(password=\"\\uffc0\\ub000\", salt=\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") (the pair's property, below, returns false on it)"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 7,
+          "text": "✗ Property of RegressionPair#agree violated: `result` where salt == null || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu0YHzrHM6tf.iqN8.yx.jNN1ILEf7h0i\") || salt.equals(\"$2$05$......................\") || salt.equals(\"\") || salt.equals(\"$2a$03$...........",
+          "groups": [
+            "Property of RegressionPair#agree violated: `result` where salt == null || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu0YHzrHM6tf.iqN8.yx.jNN1ILEf7h0i\") || salt.equals(\"$2$05$......................\") || salt.equals(\"\") || salt.equals(\"$2a$03$......................\") || salt.equals(\"$2a$10$123456789012345678901\"):"
+          ]
+        }
+      ],
+      "tail": [
+        "after: slice/after.jar, sha256 f6aec1cedaa7c15ff8be5d3db154771e234738559abd662045c043f6196ef09c: the JAR the replay ran",
+        "mutant: slice/mutant.jar, sha256 54a1f226d5c9b63644bd62f4b77a70ae71f797611f58f2f49b6faff2b24ab23d: the JAR the mutant-replay ran",
+        "mutant: mutant.jar built from controls/us-ascii.patch, sha256 54a1f226d5c9b63644bd62f4b77a70ae71f797611f58f2f49b6faff2b24ab23d",
+        "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-307/mutant-preservation-one-function/mutant-preservation/work/pair/RegressionPair.java) calls the previous version's org.springframework.security.crypto.bcrypt.BCrypt#hashpw(java.lang.String, java.lang.Stri",
+        "✗ org.springframework.security.crypto.bcrypt.BCrypt#hashpw(java.lang.String, java.lang.String): the two versions differ on hashpw(password=\"\\uffc0\\ub000\", salt=\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") (the pair's property, below, returns false on it)",
+        "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter salt has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as i",
+        "✗ Property of RegressionPair#agree violated: `result` where salt == null || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu\") || salt.equals(\"$2a$06$If6bvum7DFjUnE9p2uDeDu0YHzrHM6tf.iqN8.yx.jNN1ILEf7h0i\") || salt.equals(\"$2$05$......................\") || salt.equals(\"\") || salt.equals(\"$2a$03$...........",
+        "  agree(password=\"\\uffc0\\ub000\", salt=\"$2a$06$If6bvum7DFjUnE9p2uDeDu\")",
+        "    outcome: false",
+        "  (found by jvmcontract's own checker (CaDiCaL) in 69.0 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain password: String of ≤ 80 code units, or null × salt: String of ≤ 80 code units, or null)",
+        "",
+        "The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.",
+        "",
+        "verdict: violation (expected violation); paths 69, solver calls 253, variables 1397949, calls taken as one function 7, related 6; outcome in verification/.work-307/mutant-preservation-one-function/mutant-preservation/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-307/mutant-preservation-one-function/mutant-preservation/outcome.json",
+      "change": "added",
+      "bytes": 22238,
+      "sha256": "a5d67d8c3af38f11c079edff73b11ac007764fdd22a0a2547ca1f4ba5280a9c9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-307/mutant-preservation-one-function/mutant-preservation/evidence.json",
+      "change": "added",
+      "bytes": 1302,
+      "sha256": "4344949e3e33f503249cf221edc8094f6258892ea0d3e05b4296952ff5cd3744",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-307/mutant-preservation-one-function/mutant-preservation/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-307/mutant-preservation-one-function/mutant-preservation/work/pair/RegressionPair.java",
+      "change": "added",
+      "bytes": 2262,
+      "sha256": "e3bb08db2f3d3701a7452d92e33d4bf09419087233f56966c2a23b12298865be",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-307/mutant-preservation-one-function/mutant-preservation/work/pair-work/harness/PropertyHarness.java",
+      "change": "added",
+      "bytes": 1669,
+      "sha256": "301a4368ae9826511670d5893d04f467370a621078a70b7ecfcd30e6915b236a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-17T21:13:57+00:00",
+    "applied": [
+      "verification/.work-307/mutant-preservation-one-function/mutant-preservation/outcome.json",
+      "verification/.work-307/mutant-preservation-one-function/mutant-preservation/evidence.json",
+      "verification/.work-307/mutant-preservation-one-function/mutant-preservation/stderr.txt",
+      "verification/.work-307/mutant-preservation-one-function/mutant-preservation/work/pair/RegressionPair.java",
+      "verification/.work-307/mutant-preservation-one-function/mutant-preservation/work/pair-work/harness/PropertyHarness.java"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "4beb1e7566f015035e89a858d447a289b45eb0f5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/4beb1e7566f015035e89a858d447a289b45eb0f5/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

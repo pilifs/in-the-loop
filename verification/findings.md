@@ -18,6 +18,122 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-040: 286's protected-state claim binds one value and accepts a binder that drops only the first suppressed one
+
+- **Status**: open (the user's decision on 2026-11-18, run-streams-domain-advances-D034: after the domain-advances run,
+  add the proposed claim beside the frozen one, as part of the coming claim enhancements; nothing changes in this run).
+- **Raised**: 2026-11-17 by the challenge stream of the domain-advances run (its `controls/first-suppressed-only.patch`),
+  taken up by the state stream as its item I009.
+- **Found**: `examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/claims/protected-age-not-mutated.json`
+  binds one property value, so a 5.3.19 whose `checkAllowedFields` returns after the first suppressed value is
+  accepted by all three of 286's claims, while on a JVM `age=5, Age=32` binds 32 (only the replay probes
+  `bind-list-upstream` and `bind-map-upstream` catch it). The state stream proposed
+  `claims/proposed/protected-age-kept-two-values.json` (on its line, not frozen, used by no task): two values bound in
+  order (`first="5"`, then `second="32"`), `age` left 0, both names ASCII. The ASCII restriction comes from the checker,
+  which lowers ASCII only, not from the CVE, so the proposal covers fewer names than the frozen claim: it is to sit
+  beside the frozen claim, not replace it, which also keeps 5.3.18's accepted refutation bound to the frozen claim.
+- **Needs**: the proposed claim frozen as a further claim file of 286, its tasks added (a refutation on 5.3.18, the
+  proof on 5.3.19, and the mutant refuted), and a probe of its cost at bound 8 with two values. Closing the
+  non-ASCII lowering gap in `bmc/strings.rs` would let a later claim drop the ASCII restriction.
+- **Tracked in**: run-streams-domain-advances-D034; the state stream's Progress and item I009.
+- **Closes when**: the added claim is frozen and refutes the mutant, or the user decides the limit stands.
+
+### VF-039: 287's claims accept a wrong fix that keeps the 72-byte guard for checking only
+
+- **Status**: open (the user's decision on 2026-11-17, run-streams-domain-advances-D032: defer to after the
+  domain-advances run; no new claim in it).
+- **Raised**: 2026-11-17 15:35 UTC by the challenge stream of the domain-advances run, as the preservation stream's
+  inbox item I007.
+- **Found**: the mutant `examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/controls/check-only-guard.patch`
+  keeps 6.3.8's guard only when checking (`if (for_check && passwordb.length > 72)`), so `matches` and `checkpw` are the
+  fix's: all three of 287's claims are predicted to accept it, and its driver lines equal 6.3.8's on all 33 probes. But
+  `encode` of a 73-byte password returns a hash again, and the 72-byte prefix matches it: the advisory's defect,
+  reached through the encoder. 287's notes ("Could a wrong implementation satisfy the claims?") record the case.
+- **Needs**: a claim that `encode` / `hashpw(String, String)` throws `IllegalArgumentException` exactly beyond 72 UTF-8
+  bytes would tell the mutant from the fix. A new claim is the user's to freeze. Until then, 287's results are read as
+  not telling a check-only guard from the fix.
+- **Tracked in**: run-streams-domain-advances-D032; the preservation stream's item I007.
+- **Closes when**: the user freezes such a claim and it refutes the mutant, or decides the limit stands.
+
+### VF-038: 307's frozen claim justifies its encoding assumption by a specification that says no such thing for `getBytes(String)`
+
+- **Status**: open, minor (the user's decision on 2026-11-17, run-streams-domain-advances-D029: keep the frozen claim and
+  its hash, record this, and fold a restated wording into the decision on a companion claim for I008 after the run).
+- **Raised**: 2026-11-17 by Codex, in an outside review the user asked for of example 307 during the domain-advances run.
+- **Found**: `examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/claims/hashpw-preservation.json`'s
+  assumption reads: "Both revisions run on the same JDK, whose String.getBytes(String) and String.getBytes(Charset) for
+  UTF-8 encode alike, malformed input and all: both are specified to 'always replace malformed-input and
+  unmappable-character sequences with this charset's default replacement byte array'". Only `getBytes(Charset)`
+  specifies that; `getBytes(String)` leaves the behaviour on unencodable input unspecified (the JDK 25 `String`
+  documentation). The premise, that the two encode alike, holds on the pinned OpenJDK 21 and 25 by implementation (both
+  reach `String.encode`; the named form looks the charset up first) and the replay checks it on both; the error is in its
+  justification, not in what a proof assumes or claims.
+- **Needs**: a result of 307 is read as holding on the JDK builds the replay pins (21 and 25), where the two methods
+  encode alike by implementation, not on every conforming JDK; 307's notes say so with the result. A restated claim
+  whose assumption cites the implementation of the pinned builds is prepared after the run, together with the companion
+  claim under a non-UTF-8 default if the user chooses one (I008, deferred: D028), so that one freeze covers both.
+- **Tracked in**: run-streams-domain-advances-D028 and D029; the preservation stream's item I008.
+- **Closes when**: the user freezes a restated claim, or decides to keep the wording with this finding as its record.
+
+### VF-037: a stream's `test_costs.py run --changed` filled its loop's 12G cap, and the OOM killer killed the session instead of the tests
+
+- **Status**: open, minor (raised by the watcher of the domain-advances run; how loops and test runs share the cap is
+  for the user to decide).
+- **Raised**: 2026-11-17 17:11 UTC on `vm-1`, by the watcher of the domain-advances run, when the challenge stream's
+  loop ended in its cycle 17 with `claude exited with status 137` and no commit.
+- **Found**: each stream runs in a systemd scope capped at 12G with no swap (`feature-loop-NAME.scope`). The challenge
+  session ran `python3 lib/tools/test_costs.py run --changed` on a change touching `lib/tests/costs.json` and a new
+  Rust test file. `--changed` takes `cargo test` whenever anything under `lib/` changed, a `costs.json` row included,
+  four binaries at a time by default (`--rust-jobs`). That ran several Rust test binaries side by side
+  (`application_core`, `values`, `summaries`, `application_core_joint`) and a dozen `javac`s, and the scope reached its 12G peak. The kernel's OOM killer chose the
+  `claude` process, the largest single one, so the tests went on as orphans holding 10G in the scope. run-streams.sh then
+  ran the loop again at once, which refused to start beside them ("the scope is active"); two stops in a row counted the
+  stream as blocked and put it to the watcher to merge, with its uncommitted work (new countermodels,
+  `lib/tests/setting_countermodels.rs`) left in its workspace. The watcher stopped the scope by hand (17:14).
+  run-streams.sh's supervision of the stream had ended, so nothing in the run would restart it: at the user's word
+  (run-streams-domain-advances-D031) the watcher restarted its feature-loop.sh by hand, in a tmux window of
+  its own, its output tagged into the run's `streams.log`. Both steps, stopping the scope and restarting the loop,
+  are what a loop that ends this way should do for itself.
+
+  What it cost, and what the run lacks (from a read-only review of the run at 20:15, beside the watcher):
+
+  - **One failure counted twice.** The second of the two stops that counted the stream blocked was the refusal
+    beside the first one's orphans. It says nothing about the stream, but it spent the loop's second try.
+  - **No way to start one stream again inside a run.** `brief_run.py` has `stop` and `start` for the whole run
+    only. `start` refuses while a run is under way ("a run of streams is already under way"). `stop` ends every
+    loop after its cycle under way: preservation's was over an hour at the time, and the other streams wait idle
+    until the slowest ends. So the watcher's first answer (17:14) was to continue the stream with `start` after the
+    run, and the stream sat idle for over three hours. For the challenge stream that is most of its value: its item
+    5 attacks the other streams' rules as they land, and in that time preservation wrote its I010 reach fix and
+    its call-level rule (an unchanged callee as one function), the riskiest soundness changes of the run.
+  - **A loop restarted by hand is outside run-streams.sh's bookkeeping.** Nothing puts it to the watcher to merge
+    when it finishes. Its phase file in `llm-dlc/loop-summaries/run-streams-NAME/` is written by hand. A
+    `brief_run.py start` while it runs is refused by its active scope and counts it blocked again. `wait` can
+    return `ended` while it still works. A blocked stop is not put to the watcher to run again. The watcher has to
+    do each of these by hand, and keep D021's merge order (challenge before state) the same way.
+- **Needs**:
+  - For the session: one of these, so the OOM killer meets the tests, not the session:
+    - the test run inside a loop takes fewer binaries at a time;
+    - it gets a cap of its own below the loop's (`systemd-run --scope -p MemoryMax=` around it);
+    - `claude` gets a lower `OOMScoreAdjust` than its children.
+
+    And a loop that ends this way stops its scope before it is run again, so the rerun is not refused. Meanwhile
+    (inbox item domain-advances-challenge-I003), a stream runs its changed tests under a cap of their own:
+    `systemd-run --user --scope -q -p MemoryMax=8G -p MemorySwapMax=0 python3 lib/tools/test_costs.py run --changed
+    --rust-jobs 1`.
+  - For the run (run-streams.sh and brief_run.py, with the env-leak fix in the same files):
+    - a refusal because of an active scope that holds only the killed session's orphans does not count as one of
+      the stream's stops: the loop stops the scope and runs again;
+    - `brief_run.py` can start one finished or blocked stream again inside a running run (say `rerun BRIEF
+      STREAM`), and run-streams.sh supervises it as before: its phase, the merge question, its reruns. Then a
+      watcher never launches a loop by hand.
+  - For the run-brief skill: a challenge stream left unmerged in the middle of a run is started again, not held
+    until the run ends, since its input is the other streams' commits as they land.
+- **Tracked in**: nowhere else. The run-streams.sh change belongs with the strategic fix of the
+  `RUN_STREAMS_WATCHER` leak, deferred to after the domain-advances run.
+- **Closes when**: a changed-test run that needs more than the cap fails on its own and the loop's session goes on,
+  and a stream that ended this way in the middle of a run is started again inside it without a hand launch.
+
 ### VF-036: equivalence checks and the Terminal-Value tests leave their temp folders in `/tmp`, which ran out of inodes
 
 - **Status**: open, minor, to revisit if it recurs (the user's decision on 2026-11-17: they raised `/tmp`'s inode
@@ -91,6 +207,36 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   - An audit of the observed initializers: the state each verdict reads, and that the default locale, resources, class
     path order and JVM properties cannot change it; a regression test of an initializer that writes another class's
     static; or refuse what the import cannot carry.
+- **Audit, done** (2026-11-17, the evidence stream of domain-advances, step 5): recorded in 290's notes. No `<clinit>` of
+  the five observed classes writes another class's static, and what they read of the locale goes into fields the
+  observation does not hold (the challenge stream's reading, `lib/tests/fixtures/observed-countermodels/README.md`).
+  The checker now binds an observation to what it was observed on and ends the run where it is not
+  (`lib/src/observed.rs`, `On`): the class file, the class path order, each class the initialization also initialized
+  (left as it is alone, else refused: the countermodel `A.<clinit> { B.x = 1; k = 7; }`), a default locale the check's
+  lowering agrees with, and the properties read, stated with their values; `lib/tests/observed_countermodels.rs`
+  holds it. A capped probe verified 290's fixed-security and preservation again under it. Widened the same day after
+  the challenge stream's `ob` countermodels (`lib/tests/fixtures/rule-countermodels`): the supertypes the
+  initialization initialized are compared too, a property read by key through `System.getProperties()` is stated, a
+  read of the properties as a whole and code that reads the environment are refused, and the default time zone is
+  stated; 290's two tasks verified again under it in capped probes, with the same path counts. Widened again after
+  the challenge stream's binding countermodels (`lib/tests/fixtures/binding-countermodels`): a value a class the
+  initialization initialized holds and the observation does not is compared by the observer's full description of
+  it (an object's fields, a lambda's method and captured values, a JDK collection's elements), and one it does not
+  describe is refused, so a write into an object another class holds (`bc.Boxed`) or a lambda put in place of
+  another of its class (`bc.Rehooked`) is refused; and an initialization that changed the default locale, time zone
+  or a system property (`bc.Relocaled`) is refused. 290's nine classes initialized besides are all described (two
+  `IdentityHashMap`s, a `HashSet`, a `ConcurrentReferenceHashMap`, enum constants, a resource bundle, a float) and
+  the same alone, no setting changed; its two tasks verified again in capped probes, with the same path counts.
+- **Prepared** (2026-11-17, the evidence stream): the restated claim (B),
+  `claims/lone-dispatcher-matchers-preserved.json` (sha256 `4185eea3f4ef…`), with its entry
+  `MatcherDescriptionAdapter#describe` (each matcher's exact class and the library's rendering of its pattern, servlet
+  path and HTTP method, for both overloads). On a JVM both releases describe the same matchers on every probe with the
+  DispatcherServlet alone; the claim states that a null pattern and `"null"` render alike in an `MvcRequestMatcher`.
+  `proofs/prove.py` runs it once the task names it, and `accept.py` keeps the security answers accepted then.
+- **Left**: (1) the freeze, the user's: the claim's hash in a claims ledger, the preservation task's `claim` pointed at
+  it, the adapter source added to `preparation.adapters` (290's notes say how). (2) The checker: capped probes stop at
+  `StringBuilder.append(Object)` in `MvcRequestMatcher.toString` (an enum constant appended), and at the frozen bound
+  reach the 4 GiB cap after 133 s, so after that gap is closed the proof is one job.
 - **Tracked in**: `examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/example.json`
   (notes); decision `prove-change-D005` (`llm-dlc/decisions/prove-change.md`).
 - **Closes when**: a restated preservation claim is decided at the frozen bound, and the initializer audit is recorded
@@ -139,7 +285,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ### VF-030: the proof-tier job after example 286's engine changes stopped at `heap.rs`, so the tests after it and every Python proof test never ran
 
-- **Status**: open
+- **Status**: closed by job `20261117-152112-the-rust-proof-tier-after-the-domain-adv` (at `9ec6e448674f`, passed 2026-11-17 on `vm-1`, 42m14s, peak 4.2 GiB): every ignored Rust test passed, none hidden by a failure; the Python half has no tests (Update 2026-11-17)
 - **Raised**: 2026-11-16 on `vm-1`, job `20261115-234440-the-proof-tier-after-example-286-s-engin` at `8594e6b7adb1`
   (`lib/tools/test_costs.py run --tier proof`, 1h34m, peak 3.3 GiB).
 - **Found**: `cargo test` stops at the first failing test binary. `heap.rs` failed (VF-018's three JBMC
@@ -159,6 +305,26 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   ignored Rust test passed (`conformance` 2, `heap` 6, `preparation` 1; no binary after `heap` has an ignored test left), none
   hidden by a failure, with example 287's engine changes. The Python proof-tier tests are still not covered: that job
   ran `cargo test` only. The entry stays open for them; the submitter should queue them as a job of their own.
+- **Update 2026-11-17** (the domain-advances evidence stream, step 6): **the Python half was empty, and is settled.** No
+  Python test is tagged `@cost("proof")`, now or at this entry's job (`8594e6b7adb1`: 787 unit and 70 tool rows in
+  `lib/tests/costs.json`, none proof; today 1019 unit, 176 tool). The tag appears only in `test_costs.py`, `cost_tier.py`
+  and the lint's own fixtures. That is why the estimate counts 0 Python proof tests, and
+  `test_costs.py run --tier proof --only python` prints "python: no proof-tier tests" and runs nothing, so it was not
+  queued. Every Python test, those that reach the verifier included, is in the default run. That run passed inline at
+  the evidence line's head after the foundation's checker changes (tree `bc1caa8a8827`, 54 of 54). Python files tagged
+  unit that start processes the inventory does not see are VF-035's. **The Rust half** is queued again for the checker
+  changes since the last proof-tier jobs: the foundation's (`qkqpsmqk`: `bmc/mod.rs`, `bmc/strings.rs`, `property.rs`,
+  `summary.rs`) and the evidence line's (`pairing.rs`, `statement.rs`, `observed.rs`, `classpath.rs`, `equivalence.rs`).
+  Job `20261117-152112-the-rust-proof-tier-after-the-domain-adv` runs the whole tier with `--no-fail-fast`. It includes
+  VF-018's three, since VF-018 is closed and they run the own checker under `auto --confirm`, and the seven tests
+  `wvvtwkos` moved. **Closes when** that job passes. A failure there is a new finding about these changes, not this entry.
+- **Closed** 2026-11-17 on `vm-1`: job `20261117-152112-the-rust-proof-tier-after-the-domain-adv` (at `9ec6e448674f`,
+  the evidence line after the foundation's checker changes and its own pair and observation checks) passed in 42m14s, peak
+  4.2 GiB (estimated 55 min, 8 GiB). `cargo test --release --no-fail-fast -- --ignored` ran 19 tests and all passed: the
+  19 Rust rows `lib/tests/costs.json` marks ignored, none left out, VF-018's three heap tests and the seven `wvvtwkos`
+  moved among them (`conformance` 2 in 1228 s, `heap` 9 in 370 s, `application_core` 2, `application_core_joint` 1, the
+  TLC, compare and own-checker tests). So no proof-tier check got slower than its limit or changed its verdict with these
+  changes, and with the Python half empty nothing is left.
 
 ### VF-023: under `--engine auto --confirm`, the own checker proves `listSizes` and `listChange` and JBMC refutes them with a witness the interpreter says holds
 

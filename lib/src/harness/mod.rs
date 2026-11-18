@@ -463,6 +463,11 @@ pub enum FieldKind {
     /// A `java.lang.String`: null in both, or the same content (`String.equals`, the values stream's String model),
     /// never its identity, which no claim over a String observes (J1's O2: the quote request's code).
     String,
+    /// A reference of a type the check makes no object of (`java.util.Map`), of a receiver or object parameter made
+    /// by its constructor: compared by identity alone, never read into. Only a write set's check lays a field out so
+    /// (`equivalence::made_of_framed`), where the frame needs `this.someMap == \old(this.someMap)` and nothing
+    /// else of it; every other check refuses such a field by name, as before.
+    Reference(Type),
 }
 
 impl Fields {
@@ -473,6 +478,7 @@ impl Fields {
             match kind {
                 FieldKind::Value(t) | FieldKind::Array(t) => out.push((name.clone(), t.clone())),
                 FieldKind::String => out.push((name.clone(), Type::Object("java/lang/String".into()))),
+                FieldKind::Reference(t) => out.push((name.clone(), t.clone())),
                 FieldKind::Object(inner) => out.extend(inner.paths().into_iter().map(|(p, t)| (format!("{name}.{p}"), t))),
             }
         }
@@ -508,6 +514,7 @@ impl Fields {
                     && match (a, b) {
                         (FieldKind::Value(x), FieldKind::Value(y)) | (FieldKind::Array(x), FieldKind::Array(y)) => x == y,
                         (FieldKind::String, FieldKind::String) => true,
+                        (FieldKind::Reference(x), FieldKind::Reference(y)) => x == y,
                         (FieldKind::Object(x), FieldKind::Object(y)) => x.same_shape(y),
                         _ => false,
                     }
@@ -824,8 +831,13 @@ fn field_refs(out: &mut Vec<RefPath>, path: &str, at: usize, root: Root, fields:
             FieldKind::Value(_) | FieldKind::String => continue,
             FieldKind::Array(t) => t.descriptor(),
             FieldKind::Object(inner) => inner.class.clone(),
+            FieldKind::Reference(t) => t.class_name().map(str::to_string).unwrap_or_else(|| t.descriptor()),
         };
-        let descriptor = if matches!(kind, FieldKind::Object(_)) { format!("L{ty};") } else { ty.clone() };
+        let descriptor = match kind {
+            FieldKind::Object(_) => format!("L{ty};"),
+            FieldKind::Reference(t) => t.descriptor(),
+            _ => ty.clone(),
+        };
         let here = out.len();
         out.push(RefPath { path: format!("{path}.{name}"), ty, root, field: Some((at, fields.class.clone(), name.clone(), descriptor)) });
         if let FieldKind::Object(inner) = kind {
@@ -2985,6 +2997,7 @@ fn compare_fields(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::P
         let descriptor = |k: &FieldKind, prefix: &str| match k {
             FieldKind::Value(t) | FieldKind::Array(t) => t.descriptor(),
             FieldKind::String => "Ljava/lang/String;".to_string(),
+            FieldKind::Reference(t) => t.descriptor(),
             FieldKind::Object(f) => format!("L{prefix}{};", f.class),
         };
         // An interface's accessor (`getKey()`, [`expr::accessor_name`]) is called where a field is read.
@@ -3082,7 +3095,7 @@ fn compare_fields(code: &mut CodeBuilder, pool: &mut crate::classfile::writer::P
                 code.bind(done);
                 used = used.max(scratch + 2);
             }
-            (FieldKind::Object(_) | FieldKind::String, _) => code.goto(fail),
+            (FieldKind::Object(_) | FieldKind::String | FieldKind::Reference(_), _) => code.goto(fail),
         }
     }
     used
@@ -3687,7 +3700,7 @@ fn fields_source(old: &str, new: &str, old_fields: &Fields, fields: &Fields) -> 
                 (FieldKind::Array(_), _) => format!("java.util.Arrays.equals({x}, {y})"),
                 (FieldKind::Object(inner), FieldKind::Object(old_inner)) => format!("({x} == null ? {y} == null : {y} != null && {})", fields_source(&x, &y, old_inner, inner)),
                 (FieldKind::String, FieldKind::String) => format!("({x} == null ? {y} == null : {x}.equals({y}))"),
-                (FieldKind::Object(_) | FieldKind::String, _) => "false".to_string(),
+                (FieldKind::Object(_) | FieldKind::String | FieldKind::Reference(_), _) => "false".to_string(),
             }
         })
         .collect();
@@ -3806,20 +3819,26 @@ pub fn generate_property(class_internal: &str, method: &str, params: &[Param], r
 /// are `layout.result_fields.0`; an input on which the assumption throws (a path through null) is outside it too.
 #[allow(clippy::too_many_arguments)] // the parts of a property, as the command line takes them
 pub fn generate_property_over(class_internal: &str, method: &str, layout: &Layout, ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], max_array_length: u32) -> Result<PropertyHarness, Error> {
-    crate::phases::timed(crate::phases::Step::Harness, || generate_property_untimed(class_internal, method, layout, ret, assume, assertion, signals, max_array_length))
+    generate_property_framed(class_internal, method, layout, ret, assume, assertion, signals, None, max_array_length)
+}
+
+/// [`generate_property_over`] where `exit_frame`, a write set's frame ([`crate::property::Options::writes`]), holds
+/// on a declared exceptional exit as well as in the assertion: where a throws clause applies, the method throws its
+/// exception and leaves every field the write set does not name as it was.
+#[allow(clippy::too_many_arguments)] // the parts of a property, as the command line takes them
+pub fn generate_property_framed(class_internal: &str, method: &str, layout: &Layout, ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], exit_frame: Option<&str>, max_array_length: u32) -> Result<PropertyHarness, Error> {
+    let exit_frame = exit_frame.filter(|_| !signals.is_empty());
+    crate::phases::timed(crate::phases::Step::Harness, || {
+        let mut harness = generate_property_in(class_internal, method, layout, ret, assume, assertion, signals, exit_frame, max_array_length, false)?;
+        if assume.is_some() {
+            harness.probe = generate_property_in(class_internal, method, layout, ret, assume, assertion, signals, exit_frame, max_array_length, true)?.bytes;
+        }
+        Ok(harness)
+    })
 }
 
 #[allow(clippy::too_many_arguments)]
-fn generate_property_untimed(class_internal: &str, method: &str, layout: &Layout, ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], max_array_length: u32) -> Result<PropertyHarness, Error> {
-    let mut harness = generate_property_in(class_internal, method, layout, ret, assume, assertion, signals, max_array_length, false)?;
-    if assume.is_some() {
-        harness.probe = generate_property_in(class_internal, method, layout, ret, assume, assertion, signals, max_array_length, true)?.bytes;
-    }
-    Ok(harness)
-}
-
-#[allow(clippy::too_many_arguments)]
-fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], max_array_length: u32, probe: bool) -> Result<PropertyHarness, Error> {
+fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret: &Type, assume: Option<&str>, assertion: Option<&str>, signals: &[Signal], exit_frame: Option<&str>, max_array_length: u32, probe: bool) -> Result<PropertyHarness, Error> {
     let params = &layout.params;
     let target_types = layout.target_types();
     let descriptor = format!("({}){}", target_types.iter().map(Type::descriptor).collect::<String>(), ret.descriptor());
@@ -3888,10 +3907,15 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
         Some(src) => Some(expr::parse_over_objects(src, &visible, callee.as_ref(), first_free, None, &objects).and_then(|e| if e.ty() == expr::Ty::Boolean { Ok(e) } else { Err(Error::new("the expression must be boolean")) }).map_err(|e| Error::new(format!("in the assumption: {e}")))?),
         None => None,
     };
-    let assertion_expr = expr::parse_over_objects(&assertion_text, &names, callee.as_ref(), first_free, Some(&copies), &objects).map_err(|e| Error::new(format!("in the assertion: {e}")))?;
+    let (assertion_expr, after_assertion) = expr::parse_over_objects_from(&assertion_text, &names, callee.as_ref(), first_free, Some(&copies), &objects).map_err(|e| Error::new(format!("in the assertion: {e}")))?;
     if assertion_expr.ty() != expr::Ty::Boolean {
         return Err(Error::new("in the assertion: the expression must be boolean"));
     }
+    // The frame on a declared exceptional exit: its own locals for what it reads under \old, after the assertion's.
+    let exit_frame_expr = match exit_frame {
+        Some(f) => Some(expr::parse_over_objects(f, &visible, callee.as_ref(), after_assertion, Some(&copies), &objects).and_then(|e| if e.ty() == expr::Ty::Boolean { Ok(e) } else { Err(Error::new("the expression must be boolean")) }).map_err(|e| Error::new(format!("in the frame: {e}")))?),
+        None => None,
+    };
     let old: Vec<(u16, u16)> = copies.iter().copied().filter(|(_, copy)| assertion_expr.mentions(*copy)).collect();
     let mut signal_exprs = Vec::new();
     for signal in signals {
@@ -4085,12 +4109,17 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
     }
     // The field paths the assertion reads under \old (step H2), each read before the call into its local, with
     // whether it could be: a path through null leaves 0 there, and reading it in the assertion throws.
-    for (path, value) in assertion_expr.old_fields() {
-        let kind = if path.ty == Type::Long { Kind::Long } else { Kind::Int };
-        if kind == Kind::Long {
-            code.op(0x09); // lconst_0
-        } else {
-            code.iconst(0);
+    for (path, value) in assertion_expr.old_fields().into_iter().chain(exit_frame_expr.iter().flat_map(Expr::old_fields)) {
+        // A path that ends at a reference is kept for a comparison by identity (`this.name == \old(this.name)`).
+        let kind = match path.ty {
+            Type::Long => Kind::Long,
+            Type::Object(_) | Type::Array(_) => Kind::Ref,
+            _ => Kind::Int,
+        };
+        match kind {
+            Kind::Long => code.op(0x09), // lconst_0
+            Kind::Ref => code.op(0x01),  // aconst_null
+            _ => code.iconst(0),
         }
         code.store(kind, value);
         code.iconst(0);
@@ -4165,7 +4194,25 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
         code.load(Kind::Int, e);
         code.load(Kind::Int, expected);
         code.op(0x60); // iadd
-        code.if_zero(Cond::Eq, ok);
+        match &exit_frame_expr {
+            None => code.if_zero(Cond::Eq, ok),
+            // The declared exception, and the frame after it: an exception while reading it fails it.
+            Some(frame) => {
+                code.if_zero(Cond::Ne, fail);
+                let (start, end, threw) = (code.label(), code.label(), code.label());
+                code.bind(start);
+                expr::emit(frame, &mut code, &mut writer.pool);
+                code.bind(end);
+                code.if_zero(Cond::Ne, ok);
+                code.goto(fail);
+                code.bind(threw);
+                code.op(0x57); // pop the exception
+                for exception in EXCEPTIONS {
+                    let catch_type = writer.pool.class(exception);
+                    code.handler(start, end, threw, Some(catch_type));
+                }
+            }
+        }
         code.goto(fail);
         code.bind(normal);
     }
@@ -4197,7 +4244,10 @@ fn generate_property_in(class_internal: &str, method: &str, layout: &Layout, ret
     code.max_locals = code.max_locals.max(first_free + 1);
 
     writer.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: METHOD.into(), descriptor: check_descriptor, code: Some(code) });
-    let source = if records.is_empty() { property_source(class_internal, method, params, ret, assume, &assertion_text, signals) } else { property_source_over(class_internal, method, layout, ret, assume, &assertion_text, signals) };
+    let mut source = if records.is_empty() { property_source(class_internal, method, params, ret, assume, &assertion_text, signals) } else { property_source_over(class_internal, method, layout, ret, assume, &assertion_text, signals) };
+    if let Some(frame) = exit_frame {
+        source = source.replacen("? e == -expected :", &format!("? e == -expected && ({frame}) :"), 1).replacen("the declared exception where its condition holds;", "the declared exception where its condition holds, and the write set's frame after it;", 1);
+    }
     Ok(PropertyHarness { bytes: writer.to_bytes(), probe: Vec::new(), source, assume: assume_expr, assertion: assertion_expr, assertion_text, signals: signal_exprs, params: arg_names, old })
 }
 

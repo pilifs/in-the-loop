@@ -1,0 +1,357 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261117-134306-examples-289-and-290-preservation-again",
+  "title": "Examples 289 and 290: preservation again with exceptions compared by class and each version from a fresh state",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 1m32s, peak 551.7 MiB (estimated 10m00s, 4.0 GiB); 6 output file(s) changed; signals: jvmcontract:holds×2",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261117-134306-examples-289-and-290-preservation-again.json",
+    "sha256": "982300cdef20646b58f13729d3d2056f3fd6a463a9bb4045afc53cc065a726b3",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261117-134306-examples-289-and-290-preservation-again",
+      "title": "Examples 289 and 290: preservation again with exceptions compared by class and each version from a fresh state",
+      "description": "The pair of versions (lib/src/pairing.rs) compared exceptions by the category of harness::EXCEPTIONS and ran both versions in one state, the previous version first; the challenge stream's five countermodels (lib/tests/fixtures/pairing-countermodels) were each proved to agree though the versions differ when each runs alone. The pair now compares exceptions by class (a copy of the previous version's class being its own) and the checker gives the scope and each version a fresh state (statics, class initialization, the default locale). 289's and 290's accepted preservation results were decided under the old statement while their claims say 'the same exception'; this reruns both at their frozen bounds on new --work folders, so that accept.py can settle them under the exact statement. Capped probes of both verified on 2026-11-17 (289 in 62 s, 290 in about 1 s).",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "289",
+          "290"
+        ],
+        "paths": [
+          "lib/src/pairing.rs",
+          "lib/src/bmc/mod.rs"
+        ]
+      },
+      "expected": "exits 0: both drivers print verdict: verified (expected verified) at the frozen bound, not a trial; each outcome.json, evidence.json and work/pair/RegressionPair.java come back, the pair's source with thrown(t, ...) and fresh()",
+      "submitted": {
+        "at": "2026-11-17T13:43:06+00:00",
+        "session": "f28025bc-e46b-4a87-a943-bfb79dea5465"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "patch",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "10m",
+        "timeout": "1h",
+        "notes": "capped probes: 289 62 s, 290 about 1 s, under 4 GiB; plus the release build and the fetch of the pinned JARs"
+      },
+      "steps": [
+        {
+          "name": "289 preservation at the frozen bound, exceptions by class",
+          "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py preservation --timeout 1800 --work verification/.work-289/exact-classes",
+          "cwd": "."
+        },
+        {
+          "name": "290 preservation at the frozen bound, exceptions by class",
+          "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py preservation --timeout 1800 --work verification/.work-290/exact-classes",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/.work-289/exact-classes/preservation/outcome.json",
+        "verification/.work-289/exact-classes/preservation/evidence.json",
+        "verification/.work-289/exact-classes/preservation/work/pair/RegressionPair.java",
+        "verification/.work-290/exact-classes/preservation/outcome.json",
+        "verification/.work-290/exact-classes/preservation/evidence.json",
+        "verification/.work-290/exact-classes/preservation/work/pair/RegressionPair.java"
+      ]
+    }
+  },
+  "sourceCommit": "319627d611be638e4a575d9bc5d715415cdfc9e4",
+  "startedAt": "2026-11-17T13:46:17+00:00",
+  "finishedAt": "2026-11-17T13:51:16+00:00",
+  "wallSeconds": 299.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1451051,
+    "workers": 10,
+    "cpus": 20.0,
+    "memoryBudgetBytes": 47244640256,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 600.0,
+    "notes": "capped probes: 289 62 s, 290 about 1 s, under 4 GiB; plus the release build and the fetch of the pinned JARs"
+  },
+  "usage": {
+    "peakMemoryBytes": 578494464,
+    "wallSeconds": 92.6,
+    "cpuSeconds": 97.7,
+    "memoryOfEstimate": 0.13,
+    "durationOfEstimate": 0.15
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 205.473,
+      "cpuSeconds": 205.679,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1943752704,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "f2f07f74209cbb2ec8ea9e9c7094a01b6aa13e023a0a415e7449d9101759e666",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261117-134306-examples-289-and-290-preservation-again/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 25s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "289 preservation at the frozen bound, exceptions by class",
+      "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py preservation --timeout 1800 --work verification/.work-289/exact-classes",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 84.588,
+      "cpuSeconds": 86.48,
+      "cpuThrottledSeconds": 0.627,
+      "peakMemoryBytes": 578494464,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-289-preservation-at-the-frozen.log",
+        "lines": 7,
+        "bytes": 3736,
+        "sha256": "61031ee2dc9be7f12a471bbe58b47b35c842495774c242d045fe8536cff0ba16",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 2
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 2,
+          "text": "✓ example289.adapter.RegexMatchAdapter#matches: the two versions agree on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-'",
+          "groups": [
+            "example289.adapter.RegexMatchAdapter#matches: the two versions agree on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null, outside `((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).length() >= pattern.length() - 2 && java.util.stream.IntStream.range(0, pattern.length() - 2).allMatch(i -> (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) == pattern.charAt(i) || (caseInsensitive && Character.isLetter(pattern.charAt(i)) && ((servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).charAt(i) ^ 32) == pattern.charAt(i)))) && (servletPath + (pathInfo == null ? \"\" : pathInfo) + (query == null ? \"\" : \"?\" + query)).chars().anyMatch(c -> c == '\\n' || c == '\\r' || c == 0x85 || c == 0x2028 || c == 0x2029)` (the pair's property, below)"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 4,
+          "text": "✓ RegressionPair#agree satisfies `result` on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath ",
+          "groups": [
+            "RegressionPair#agree satisfies `result` on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath != null (jvmcontract's own checker (CaDiCaL): 1 properties proved over pattern: String of ≤ 8 code units, not null × caseInsensitive: boolean × servletPath: String of ≤ 8 code units, not null × pathInfo: String of ≤ 8 code units, or null × query: String of ≤ 8 code units, or null in 81.1 s; loops unwound 26 times with unwinding assertions)"
+          ]
+        }
+      ],
+      "tail": [
+        "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-289/exact-classes/preservation/work/pair/RegressionPair.java) calls the previous version's example289.adapter.RegexMatchAdapter#matches, relocated under `before`, and then the new one's on the same inputs, ",
+        "✓ example289.adapter.RegexMatchAdapter#matches: the two versions agree on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-'",
+        "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unexpected character '\\'' in expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target",
+        "✓ RegressionPair#agree satisfies `result` on every input where pattern != null && pattern.endsWith(\".*\") && pattern.substring(0, pattern.length() - 2).chars().allMatch(c -> (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') || c == '/' || c == '-' || c == '_') && servletPath ",
+        "  not vacuous: agree(pattern=\".*\", caseInsensitive=true, servletPath=\"\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\\ufea0\", pathInfo=null, query=null) reaches the calls",
+        "",
+        "verdict: verified (expected verified); paths 1373, solver calls 2194, variables 415833; outcome in verification/.work-289/exact-classes/preservation/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "290 preservation at the frozen bound, exceptions by class",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py preservation --timeout 1800 --work verification/.work-290/exact-classes",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 8.019,
+      "cpuSeconds": 11.186,
+      "cpuThrottledSeconds": 1.193,
+      "peakMemoryBytes": 169078784,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-290-preservation-at-the-frozen.log",
+        "lines": 11,
+        "bytes": 2785,
+        "sha256": "0d9cc15d1a2895d7e1fa8dbdfa82c07f16250a98441f296f2f0eb0389b9be6d3",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 2
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 6,
+          "text": "✓ example290.adapter.MatcherSelectionAdapter#select: the two versions agree on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8, outside `!(servlets.length == 1 && servlets[0] == 0)` (the pair's property, below)",
+          "groups": [
+            "example290.adapter.MatcherSelectionAdapter#select: the two versions agree on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8, outside `!(servlets.length == 1 && servlets[0] == 0)` (the pair's property, below)"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 8,
+          "text": "✓ RegressionPair#agree satisfies `result` on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8 (jvmcontract's own checker (CaDiCaL): 1 properties proved over servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of ",
+          "groups": [
+            "RegressionPair#agree satisfies `result` on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8 (jvmcontract's own checker (CaDiCaL): 1 properties proved over servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array in 3.1 s; loops unwound 64 times with unwinding assertions)"
+          ]
+        }
+      ],
+      "tail": [
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261117-134306-examples-289-and-290-preservation-again/examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/replay/adapter/example290/adapter/SelectionRegistry.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261117-134306-examples-289-and-290-preservation-again/examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/replay/adapter/example290/adapter/SelectionRegistry.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-290/exact-classes/preservation/work/pair/RegressionPair.java) calls the previous version's example290.adapter.MatcherSelectionAdapter#select, relocated under `before`, and then the new one's on the same inp",
+        "✓ example290.adapter.MatcherSelectionAdapter#select: the two versions agree on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8, outside `!(servlets.length == 1 && servlets[0] == 0)` (the pair's property, below)",
+        "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"java\"; the names are servlets, method, patterns); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target",
+        "✓ RegressionPair#agree satisfies `result` on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8 (jvmcontract's own checker (CaDiCaL): 1 properties proved over servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of ",
+        "  not vacuous: agree(servlets=[], method=4, patterns={null, null, null, null, null, null, null, null}) reaches the calls",
+        "",
+        "verdict: verified (expected verified); paths 573, solver calls 1087, variables 7907; outcome in verification/.work-290/exact-classes/preservation/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-289/exact-classes/preservation/outcome.json",
+      "change": "added",
+      "bytes": 23800,
+      "sha256": "103b15036759a447626ab78094a8f4b6700c5aefa26b4e86f987469c16db80c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-289/exact-classes/preservation/evidence.json",
+      "change": "added",
+      "bytes": 3079,
+      "sha256": "ceec5655bf82018155f4e7260568e4f26e47ff9abf24ede5774bb4ead20c16ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-289/exact-classes/preservation/work/pair/RegressionPair.java",
+      "change": "added",
+      "bytes": 2948,
+      "sha256": "b88843204132fcf420cd2baab6cbb629e9e3c5953083a04a2ed80b52c6ef88b1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/exact-classes/preservation/outcome.json",
+      "change": "added",
+      "bytes": 35970,
+      "sha256": "d536566cee8a70ccb3dd9b59cc5d91752ffa58668b3d17a4f24379a53338d8d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/exact-classes/preservation/evidence.json",
+      "change": "added",
+      "bytes": 6070,
+      "sha256": "24b41ac5162a3c32de5c906de20013e904fa9fc8a33d0d555af631c1cf97b4d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/exact-classes/preservation/work/pair/RegressionPair.java",
+      "change": "added",
+      "bytes": 2199,
+      "sha256": "736aecc6852a75eeac13869931c3d341294014e29030cb944ae4f92e858399e1",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-17T13:51:26+00:00",
+    "applied": [
+      "verification/.work-289/exact-classes/preservation/outcome.json",
+      "verification/.work-289/exact-classes/preservation/evidence.json",
+      "verification/.work-289/exact-classes/preservation/work/pair/RegressionPair.java",
+      "verification/.work-290/exact-classes/preservation/outcome.json",
+      "verification/.work-290/exact-classes/preservation/evidence.json",
+      "verification/.work-290/exact-classes/preservation/work/pair/RegressionPair.java"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "c1ebf0e110057c7eb921cd9cb9c6a1463e2aea27",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/c1ebf0e110057c7eb921cd9cb9c6a1463e2aea27/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

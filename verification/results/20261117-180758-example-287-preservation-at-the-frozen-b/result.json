@@ -1,0 +1,269 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261117-180758-example-287-preservation-at-the-frozen-b",
+  "title": "Example 287 preservation at the frozen bound 80, the two releases' bcrypt loops tied and their summaries taken over",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 7m06s, peak 2.3 GiB (estimated 2h00m, 12.0 GiB); 4 output file(s) changed; signals: jvmcontract:fails×2",
+  "attention": [
+    "step 1 (287 preservation at the frozen bound, 80) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261117-180758-example-287-preservation-at-the-frozen-b.json",
+    "sha256": "42e21bb59cfab4a00ea60b97c9f7203766c758197ff286f1e05fcfe886002643",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261117-180758-example-287-preservation-at-the-frozen-b",
+      "title": "Example 287 preservation at the frozen bound 80, the two releases' bcrypt loops tied and their summaries taken over",
+      "description": "Step 5 of the preservation stream (llm-dlc/loops/domain-advances-preservation.md): decide example 287's frozen claim claims/in-range-matching-preserved.json (BCryptPasswordEncoder.matches on 6.3.8 ends as on 6.3.7 for every candidate and stored hash of at most 80 units or null, outside a candidate of more than 72 UTF-8 bytes) by proofs/prove.py preservation at the claim's bound, with no trial flags. The pair of versions runs 6.3.7 relocated under before and then 6.3.8; bcrypt's key schedule runs 2^cost times and is covered by loop invariants (lib/src/bmc/loops.rs). Since the first-failure job 20261117-130445 the checker: models the WARNING log line (bmc/runtime.rs); ties a loop's state past the bound to the state it was summarized from, so both releases' crypt_raw, ekskey and key loops go on from the same bits (bmc/ties.rs); and, new with this job, takes over the previous release's summary where the new release reaches the same loop from a state of the same key, keeps unreachable arrays out of a loop's written set, and summarizes a loop at its entry by the path's own history, so both releases summarize at the same points. Capped probes at bound 80 (240 s) reached 621 paths with the new release adding no variables on the paths seen (208 summaries taken over) but did not finish: the previous release's runs over further stored-hash shapes take about 100 s each. Expected: verified. An out-of-time or unverifiable ending is recorded as step 5's second approach with where it stopped (outcome.json search.native, stderr.txt).,",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "B9",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "287"
+        ],
+        "paths": [
+          "examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py",
+          "lib/src/bmc/loops.rs",
+          "lib/src/bmc/ties.rs",
+          "lib/src/pairing.rs"
+        ]
+      },
+      "expected": "prove.py ends 'verdict: verified (expected verified)' and exits 0; outcome.json has verdict verified and stated.vacuity.outside, and evidence.json is written",
+      "submitted": {
+        "at": "2026-11-17T18:07:58+00:00",
+        "session": "f28025bc-e46b-4a87-a943-bfb79dea5465"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "12G",
+        "duration": "2h",
+        "timeout": "4h",
+        "notes": "capped probes: 240 s reached 621 paths and 14 million variables under 4 GiB, unfinished; growth is mostly the previous release's runs over each stored-hash shape; plus the release build and the fetch of the four pinned JARs"
+      },
+      "steps": [
+        {
+          "name": "287 preservation at the frozen bound, 80",
+          "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py preservation --timeout 12600 --work verification/.work-287/preservation-tied-summaries",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/.work-287/preservation-tied-summaries/preservation/outcome.json",
+        "verification/.work-287/preservation-tied-summaries/preservation/evidence.json",
+        "verification/.work-287/preservation-tied-summaries/preservation/stderr.txt",
+        "verification/.work-287/preservation-tied-summaries/preservation/work/pair/RegressionPair.java"
+      ]
+    }
+  },
+  "sourceCommit": "0a713d684de092962c907a18dc154fdbd578ee3d",
+  "startedAt": "2026-11-17T18:09:55+00:00",
+  "finishedAt": "2026-11-17T18:19:57+00:00",
+  "wallSeconds": 602.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 404688,
+    "workers": 10,
+    "cpus": 20.0,
+    "memoryBudgetBytes": 47244640256,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 19327352832,
+    "timeoutSeconds": 14400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 12884901888,
+    "durationSeconds": 7200.0,
+    "notes": "capped probes: 240 s reached 621 paths and 14 million variables under 4 GiB, unfinished; growth is mostly the previous release's runs over each stored-hash shape; plus the release build and the fetch of the four pinned JARs"
+  },
+  "usage": {
+    "peakMemoryBytes": 2453872640,
+    "wallSeconds": 427.0,
+    "cpuSeconds": 427.4,
+    "memoryOfEstimate": 0.19,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 173.606,
+      "cpuSeconds": 173.77,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1965780992,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "c270e77e045528700bffd46baf1373e6abf0428f8eec80b9003d9f9e7180d8b9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261117-180758-example-287-preservation-at-the-frozen-b/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 53s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "287 preservation at the frozen bound, 80",
+      "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py preservation --timeout 12600 --work verification/.work-287/preservation-tied-summaries",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 426.994,
+      "cpuSeconds": 427.445,
+      "cpuThrottledSeconds": 0.166,
+      "peakMemoryBytes": 2453872640,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-287-preservation-at-the-frozen.log",
+        "lines": 5,
+        "bytes": 1616,
+        "sha256": "c4e76301ae86406a5c34fd498ec9267d263010ef42132bd1685029cded4edf19",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:fails": 2
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 2,
+          "text": "✗ example287.adapter.PasswordMatchAdapter#matches cannot be verified as a property of the pair of versions (below)",
+          "groups": [
+            "example287.adapter.PasswordMatchAdapter#matches cannot be verified as a property of the pair of versions (below)"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "fails",
+          "line": 3,
+          "text": "✗ RegressionPair#agree cannot be verified: a loop was not fully unwound with --unwind 16 (before.org.springframework.security.crypto.bcrypt.BCrypt.key at pc 39; no invariant was found that covers its further iterations: an iteration changes local 1, which holds a reference)",
+          "groups": [
+            "RegressionPair#agree cannot be verified: a loop was not fully unwound with --unwind 16 (before.org.springframework.security.crypto.bcrypt.BCrypt.key at pc 39; no invariant was found that covers its further iterations: an iteration changes local 1, which holds a reference)"
+          ]
+        }
+      ],
+      "tail": [
+        "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-287/preservation-tied-summaries/preservation/work/pair/RegressionPair.java) calls the previous version's example287.adapter.PasswordMatchAdapter#matches, relocated under `before`, and then the new one's on ",
+        "✗ example287.adapter.PasswordMatchAdapter#matches cannot be verified as a property of the pair of versions (below)",
+        "✗ RegressionPair#agree cannot be verified: a loop was not fully unwound with --unwind 16 (before.org.springframework.security.crypto.bcrypt.BCrypt.key at pc 39; no invariant was found that covers its further iterations: an iteration changes local 1, which holds a reference)",
+        "",
+        "verdict: unverifiable (expected verified); paths 1187, solver calls 4663, variables 19711639, loops covered by invariants 12; outcome in verification/.work-287/preservation-tied-summaries/preservation/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-287/preservation-tied-summaries/preservation/outcome.json",
+      "change": "added",
+      "bytes": 23368,
+      "sha256": "ec3c960e61c1597d0fa81ebd3b923edfb28630ec89dd983513f3060cd3d8e345",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/preservation-tied-summaries/preservation/evidence.json",
+      "change": "added",
+      "bytes": 1914,
+      "sha256": "8e6f56b95c0d65af38e5802fb13b2a3fab5d887580d6ac090cb012f7bce11706",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/preservation-tied-summaries/preservation/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/preservation-tied-summaries/preservation/work/pair/RegressionPair.java",
+      "change": "added",
+      "bytes": 2716,
+      "sha256": "4bfaf6c430949b00e81c30d6470f6bb56af3812d3cae44ca0281bb7fdfe6a089",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-17T18:20:29+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/.work-287/preservation-tied-summaries/preservation/outcome.json",
+      "verification/.work-287/preservation-tied-summaries/preservation/evidence.json",
+      "verification/.work-287/preservation-tied-summaries/preservation/stderr.txt",
+      "verification/.work-287/preservation-tied-summaries/preservation/work/pair/RegressionPair.java"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "b22ed8cc59b14851a44375fd53b121bf9319808a",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b22ed8cc59b14851a44375fd53b121bf9319808a/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261117-180758-example-287-preservation-at-the-frozen-b"
+}

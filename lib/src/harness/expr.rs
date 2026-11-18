@@ -106,6 +106,11 @@ pub enum Expr {
     /// `value`, with `value + 2` holding 0 where the path went through null; reading that one throws
     /// `NullPointerException` then, as reading the path before the call would have.
     OldField(Box<FieldPath>, u16),
+    /// `this.name == \old(this.name)`: whether a field path that ends at a reference (an object or a String) names
+    /// after the call the very object it named before (`true`), or not (`false`): a frame condition over a
+    /// reference, by identity. The harness reads the path before the call into the local `value`, with `value + 2`
+    /// holding 0 where it went through null, as for [`Expr::OldField`].
+    Kept(Box<FieldPath>, u16, bool),
     /// `l == null`, `result == l`, `result.price != l.price`: whether two references (an object parameter, `result`, or
     /// a reference field path of one; `None` for `null`) are one object (`true`) or not (`false`).
     Refs(Option<Box<FieldPath>>, Option<Box<FieldPath>>, bool),
@@ -327,7 +332,7 @@ impl Expr {
             Expr::Var(_, t, _) => *t,
             Expr::Call(callee, _) => callee.ret,
             Expr::Length(..) => Ty::Int,
-            Expr::Same(..) | Expr::Refs(..) | Expr::StringEquals(..) | Expr::Compiled(_) => Ty::Boolean,
+            Expr::Same(..) | Expr::Refs(..) | Expr::Kept(..) | Expr::StringEquals(..) | Expr::Compiled(_) => Ty::Boolean,
             Expr::Field(f) | Expr::OldField(f, _) => ty_of(&f.ty).unwrap_or(Ty::Int),
             Expr::Index(_, _, t, _) => ty_of(t).unwrap_or(Ty::Int),
             Expr::Quantifier(q) => q.ty(),
@@ -369,7 +374,7 @@ impl Expr {
             Expr::Same(l, r, _) => l.iter().chain(r).map(|(_, s)| s + 1).max().unwrap_or(0),
             Expr::Field(f) | Expr::StringEquals(f, _) => f.slot + 1,
             Expr::Compiled(c) => c.args.iter().map(|(_, s, t)| s + t.slots()).max().unwrap_or(0),
-            Expr::OldField(f, value) => (f.slot + 1).max(value + 3),
+            Expr::OldField(f, value) | Expr::Kept(f, value, _) => (f.slot + 1).max(value + 3),
             Expr::Refs(l, r, _) => l.iter().chain(r).map(|f| f.slot + 1).max().unwrap_or(0),
             Expr::Index(_, slot, _, index) => (slot + 1).max(index.slots_used()),
             Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.slots_used(),
@@ -394,7 +399,7 @@ impl Expr {
     /// Whether the expression calls the method under proof, which only the harness can evaluate.
     pub fn has_call(&self) -> bool {
         match self {
-            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) | Expr::Same(..) | Expr::Field(_) | Expr::OldField(..) | Expr::Refs(..) | Expr::StringEquals(..) | Expr::Compiled(_) => false,
+            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) | Expr::Same(..) | Expr::Field(_) | Expr::OldField(..) | Expr::Kept(..) | Expr::Refs(..) | Expr::StringEquals(..) | Expr::Compiled(_) => false,
             Expr::Call(..) => true,
             Expr::Index(_, _, _, index) => index.has_call(),
             Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.has_call(),
@@ -407,7 +412,7 @@ impl Expr {
     /// Whether the expression passes the array in `slot` to a call, which sees its whole length.
     pub fn passes(&self, slot: u16) -> bool {
         match self {
-            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) | Expr::Same(..) | Expr::Field(_) | Expr::OldField(..) | Expr::Refs(..) | Expr::StringEquals(..) => false,
+            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) | Expr::Same(..) | Expr::Field(_) | Expr::OldField(..) | Expr::Kept(..) | Expr::Refs(..) | Expr::StringEquals(..) => false,
             Expr::Compiled(c) => c.args.iter().any(|(_, s, t)| *s == slot && matches!(t, Type::Array(_))),
             Expr::Index(_, _, _, index) => index.passes(slot),
             Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.passes(slot),
@@ -426,7 +431,7 @@ impl Expr {
             Expr::Same(l, r, _) => l.iter().chain(r).any(|(_, s)| *s == slot),
             Expr::Field(f) | Expr::StringEquals(f, _) => f.slot == slot,
             Expr::Compiled(c) => c.args.iter().any(|(_, s, _)| *s == slot),
-            Expr::OldField(f, value) => f.slot == slot || (*value..value + 3).contains(&slot),
+            Expr::OldField(f, value) | Expr::Kept(f, value, _) => f.slot == slot || (*value..value + 3).contains(&slot),
             Expr::Refs(l, r, _) => l.iter().chain(r).any(|f| f.slot == slot),
             Expr::Index(_, s, _, index) => *s == slot || index.mentions(slot),
             Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.mentions(slot),
@@ -444,7 +449,7 @@ impl Expr {
     pub fn old_fields(&self) -> Vec<(FieldPath, u16)> {
         let mut out = Vec::new();
         self.visit(&mut |e| {
-            if let Expr::OldField(f, value) = e {
+            if let Expr::OldField(f, value) | Expr::Kept(f, value, _) = e {
                 out.push(((**f).clone(), *value));
             }
         });
@@ -455,7 +460,7 @@ impl Expr {
     /// evaluate.
     pub fn reads_objects(&self) -> bool {
         let mut reads = false;
-        self.visit(&mut |e| reads |= matches!(e, Expr::Field(_) | Expr::OldField(..) | Expr::Refs(..) | Expr::StringEquals(..) | Expr::Compiled(_)));
+        self.visit(&mut |e| reads |= matches!(e, Expr::Field(_) | Expr::OldField(..) | Expr::Kept(..) | Expr::Refs(..) | Expr::StringEquals(..) | Expr::Compiled(_)));
         reads
     }
 
@@ -463,7 +468,7 @@ impl Expr {
     fn visit(&self, f: &mut dyn FnMut(&Expr)) {
         f(self);
         match self {
-            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) | Expr::Same(..) | Expr::Field(_) | Expr::OldField(..) | Expr::Refs(..) | Expr::StringEquals(..) | Expr::Compiled(_) => {}
+            Expr::Int(_) | Expr::Long(_) | Expr::Bool(_) | Expr::Var(..) | Expr::Length(..) | Expr::Same(..) | Expr::Field(_) | Expr::OldField(..) | Expr::Kept(..) | Expr::Refs(..) | Expr::StringEquals(..) | Expr::Compiled(_) => {}
             Expr::Index(_, _, _, index) => index.visit(f),
             Expr::Neg(e) | Expr::Not(e) | Expr::BitNot(e) | Expr::Cast(_, e) => e.visit(f),
             Expr::Binary(_, l, r) => {
@@ -1047,6 +1052,12 @@ impl Parser<'_> {
                     steps.push(step(ty.descriptor()));
                     at = None;
                 }
+                // Compared by identity alone, with null or with itself before the call: no field of it is read.
+                super::FieldKind::Reference(t) => {
+                    steps.push(step(t.descriptor()));
+                    ty = t.clone();
+                    at = None;
+                }
             }
         }
         Ok(FieldPath { shown, slot, steps, ty })
@@ -1057,7 +1068,7 @@ impl Parser<'_> {
     fn object_operand(&mut self, path: FieldPath) -> Result<Expr, Error> {
         // A String: its content against a literal's, or the reference against null.
         if crate::values::is_string(&path.ty) {
-            require(!self.in_old, &format!("\\old({}) is a String; \\old applies to a primitive field of an object", path.shown))?;
+            require(!self.in_old, &format!("\\old({}) is a String; \\old applies to a primitive field of an object, and a String is compared with itself before the call as {} == \\old({})", path.shown, path.shown, path.shown))?;
             if self.eat(".") {
                 self.next(); // `equals`, as `path` left it
                 self.expect("(")?;
@@ -1074,13 +1085,23 @@ impl Parser<'_> {
             } else {
                 return Err(Error::new(format!("{} is a String; compare its content with a literal, {}.equals(\"...\"), or the reference with null by == or !=", path.shown, path.shown)));
             };
+            if self.peek() == &Token::Old {
+                return self.kept(path, equal);
+            }
             return match self.next() {
                 Token::Ident(n) if n == "null" => Ok(Expr::Refs(Some(Box::new(path)), None, equal)),
-                other => Err(Error::new(format!("a String is compared by == or != with null alone (its content by equals), found {other:?}"))),
+                // A String field against a String parameter, by identity: what a setter that stores its argument
+                // leaves (`this.name == name`), which an effect contract gives the field at a call.
+                Token::Ident(n) if !path.steps.is_empty() && self.params.iter().any(|p| p.name == n && crate::values::is_string(&p.ty)) => {
+                    let slot = self.params.iter().find(|p| p.name == n).map(|p| p.slot).expect("found");
+                    let other = FieldPath { shown: n.clone(), slot, steps: Vec::new(), ty: path.ty.clone() };
+                    Ok(Expr::Refs(Some(Box::new(path)), Some(Box::new(other)), equal))
+                }
+                other => Err(Error::new(format!("a String is compared by == or != with null alone (its content by equals), or a String field by identity with a String parameter, found {other:?}"))),
             };
         }
         if let Type::Object(class) = &path.ty {
-            require(!self.in_old, &format!("\\old({}) is an object; \\old applies to a primitive field of one, as \\old({}.f)", path.shown, path.shown))?;
+            require(!self.in_old, &format!("\\old({}) is an object; \\old applies to a primitive field of one, as \\old({}.f), and the reference is compared with itself before the call as {} == \\old({})", path.shown, path.shown, path.shown, path.shown))?;
             let equal = if self.eat("==") {
                 true
             } else if self.eat("!=") {
@@ -1088,6 +1109,9 @@ impl Parser<'_> {
             } else {
                 return Err(Error::new(format!("{} is an object; read a primitive field of it ({}.f), or compare it with == or != to another object or to null", path.shown, path.shown)));
             };
+            if self.peek() == &Token::Old {
+                return self.kept(path, equal);
+            }
             let right = match self.next() {
                 Token::Ident(n) if n == "null" => None,
                 Token::Ident(n) => {
@@ -1114,6 +1138,29 @@ impl Parser<'_> {
             return Ok(Expr::OldField(Box::new(path), value));
         }
         Ok(Expr::Field(Box::new(path)))
+    }
+
+    /// The rest of `p == \old(p)` (or `!=`), after the operator: the same field path, which ends at a reference,
+    /// as it was before the call ([`Expr::Kept`]).
+    fn kept(&mut self, path: FieldPath, equal: bool) -> Result<Expr, Error> {
+        self.next(); // `\old`
+        require(self.old.is_some(), "\\old is only meaningful in the assertion, which is checked after the call")?;
+        self.expect("(")?;
+        let before = match self.next() {
+            Token::Ident(n) => match self.objects.iter().find(|(o, _)| *o == n).map(|(_, f)| f.clone()) {
+                Some(fields) => {
+                    let slot = self.params.iter().find(|p| p.name == n).map(|p| p.slot).ok_or_else(|| Error::new(format!("unknown name {n:?}")))?;
+                    self.path(n, slot, &fields)?
+                }
+                None => return Err(Error::new(format!("{n} is not an object parameter; a reference before the call is a field path of one"))),
+            },
+            other => return Err(Error::new(format!("expected a field path inside \\old, found {other:?}"))),
+        };
+        self.expect(")")?;
+        require(before.shown == path.shown && before.steps == path.steps && !before.steps.is_empty(), &format!("a reference is compared with itself before the call, as {} == \\old({}), and {} is not that", path.shown, path.shown, before.shown))?;
+        let value = self.next_slot;
+        self.next_slot += 3;
+        Ok(Expr::Kept(Box::new(path), value, equal))
     }
 
     /// `int i; range; body`, after `\forall`, `\exists`, `\sum`, `\num_of`, `\max` or `\min`.
@@ -1264,13 +1311,19 @@ pub fn parse_after(src: &str, params: &[Param], callee: Option<&Callee>, first_f
 /// H2): `l.price.cents` reads a field path, `\old(l.quantity)` one before the call (only with `old`), and `l ==
 /// null`, `result == l` and `result.price != l.price` compare references.
 pub fn parse_over_objects(src: &str, params: &[Param], callee: Option<&Callee>, first_free_slot: u16, old: Option<&[(u16, u16)]>, objects: &[(String, super::Fields)]) -> Result<Expr, Error> {
+    parse_over_objects_from(src, params, callee, first_free_slot, old, objects).map(|(expr, _)| expr)
+}
+
+/// As [`parse_over_objects`], with the first local slot the expression leaves free (after its quantifiers' and the
+/// fields it reads under `\old`), from which another expression of the same method takes its own.
+pub fn parse_over_objects_from(src: &str, params: &[Param], callee: Option<&Callee>, first_free_slot: u16, old: Option<&[(u16, u16)]>, objects: &[(String, super::Fields)]) -> Result<(Expr, u16), Error> {
     let tokens = lex(src)?;
     let mut parser = Parser { tokens, pos: 0, params, callee, scope: Vec::new(), next_slot: first_free_slot, old, in_old: false, objects };
     let expr = parser.ternary()?;
     if parser.peek() != &Token::End {
         return Err(Error::new(format!("unexpected {:?} after the expression", parser.peek())));
     }
-    Ok(expr)
+    Ok((expr, parser.next_slot))
 }
 
 // Evaluation, for checking a replayed counterexample
@@ -1379,7 +1432,7 @@ fn eval_in(expr: &Expr, locals: &mut Vec<Value>, arrays: &[(u16, Vec<Value>)], f
         Expr::Call(callee, _) => return Err(Error::new(format!("a call of {} can only be evaluated in the harness", callee.name))),
         Expr::Field(f) => return fields(f).ok_or_else(|| Error::new(format!("{} reads an object, which only the harness can, or goes through null", f.shown))),
         Expr::OldField(f, _) => return Err(Error::new(format!("{} reads an object, which only the harness can", f.shown))),
-        Expr::Refs(..) => return Err(Error::new("a comparison of objects can only be evaluated in the harness")),
+        Expr::Refs(..) | Expr::Kept(..) => return Err(Error::new("a comparison of objects can only be evaluated in the harness")),
         Expr::StringEquals(f, _) => return Err(Error::new(format!("{} reads an object, which only the harness can", f.shown))),
         Expr::Compiled(c) => return Err(Error::new(format!("{CLAIM_CLASS}.{} is compiled by javac, and only the harness evaluates it", c.method))),
         Expr::BitNot(e) => match eval_in(e, locals, arrays, fields)? {
@@ -1518,6 +1571,24 @@ pub fn emit(expr: &Expr, code: &mut CodeBuilder, pool: &mut PoolBuilder) {
             code.ldc(literal);
             let equals = pool.method_ref("java/lang/String", "equals", "(Ljava/lang/Object;)Z");
             code.op_u16(0xb6, equals); // invokevirtual
+        }
+        Expr::Kept(f, value, equal) => {
+            // Through null before the call: reading it then would have thrown, and so does this.
+            let read = code.label();
+            code.load(Kind::Int, value + 2);
+            code.if_zero(Cond::Ne, read);
+            code.op(0x01); // aconst_null
+            code.op(0xbf); // athrow: a NullPointerException
+            code.bind(read);
+            f.emit(code, pool);
+            code.load(Kind::Ref, *value);
+            let (differ, end) = (code.label(), code.label());
+            code.if_acmpne(differ);
+            code.iconst(i32::from(*equal));
+            code.goto(end);
+            code.bind(differ);
+            code.iconst(i32::from(!*equal));
+            code.bind(end);
         }
         Expr::OldField(f, value) => {
             // Through null before the call: reading it then would have thrown, and so does this.
@@ -1824,6 +1895,57 @@ mod tests {
 
     fn locals(price: i64, seats: i32, vip: bool) -> Vec<Value> {
         vec![Value::Long(price), Value::Int(0), Value::Int(seats), Value::Int(vip as i32)]
+    }
+
+    /// A frame over a reference (a write set's, `prove --writes`): `p == \old(p)` says the field path names after
+    /// the call the very object, or String, it named before; the harness reads it first into three locals, as
+    /// `\old` of a primitive field. Only the same path is compared with itself before the call.
+    #[test]
+    fn a_reference_is_compared_with_itself_before_the_call_by_identity() {
+        use super::super::{FieldKind, Fields};
+        let money = Fields { class: "shop/Money".into(), fields: vec![("cents".into(), FieldKind::Value(Type::Long))] };
+        let bean = Fields { class: "shop/Bean".into(), fields: vec![("name".into(), FieldKind::String), ("price".into(), FieldKind::Object(Box::new(money))), ("admin".into(), FieldKind::Value(Type::Boolean))] };
+        let params = vec![Param { name: "this".into(), ty: Type::Object("shop/Bean".into()), slot: 0 }];
+        let objects = vec![("this".to_string(), bean)];
+        let old: &[(u16, u16)] = &[];
+        let parse = |src: &str| parse_over_objects(src, &params, None, 1, Some(old), &objects);
+
+        let Expr::Kept(path, value, true) = parse("this.name == \\old(this.name)").unwrap() else { panic!("a String kept") };
+        assert_eq!((path.shown.as_str(), value, &path.ty), ("this.name", 1, &Type::Object("java/lang/String".into())));
+        let e = parse("this.price != \\old(this.price) && this.admin == \\old(this.admin)").unwrap();
+        let olds = e.old_fields();
+        assert_eq!(olds.iter().map(|(p, v)| (p.shown.as_str(), *v)).collect::<Vec<_>>(), [("this.price", 1), ("this.admin", 4)]);
+        assert!(matches!(&e, Expr::Binary(BinOp::LogAnd, l, _) if matches!(**l, Expr::Kept(_, 1, false))), "{e:?}");
+        assert_eq!(e.slots_used(), 7);
+        assert!(e.reads_objects() && e.mentions(3) && !e.mentions(7));
+
+        for (src, problem) in [
+            ("this.name == \\old(this.price)", "a reference is compared with itself before the call, as this.name == \\old(this.name), and this.price is not that"),
+            ("\\old(this.name) == this.name", "\\old(this.name) is a String; \\old applies to a primitive field of an object, and a String is compared with itself before the call as this.name == \\old(this.name)"),
+            ("\\old(this.price) == this.price", "and the reference is compared with itself before the call as this.price == \\old(this.price)"),
+        ] {
+            let e = parse(src).unwrap_err().to_string();
+            assert!(e.contains(problem), "{src}: {e}");
+        }
+        // Outside the assertion there is no state before the call.
+        let e = parse_over_objects("this.name == \\old(this.name)", &params, None, 1, None, &objects).unwrap_err().to_string();
+        assert!(e.contains("\\old is only meaningful in the assertion"), "{e}");
+    }
+
+    /// A String field against a String parameter by identity: what a setter leaves that stores its argument, which
+    /// an effect contract gives the field at a call (`this.name == name`). A String parameter alone is not a path.
+    #[test]
+    fn a_string_field_is_compared_with_a_string_parameter_by_identity() {
+        use super::super::{FieldKind, Fields};
+        let bean = Fields { class: "shop/Bean".into(), fields: vec![("name".into(), FieldKind::String)] };
+        let string = Type::Object("java/lang/String".into());
+        let params = vec![Param { name: "this".into(), ty: Type::Object("shop/Bean".into()), slot: 0 }, Param { name: "name".into(), ty: string.clone(), slot: 1 }, Param { name: "count".into(), ty: Type::Int, slot: 2 }];
+        let objects = vec![("this".to_string(), bean)];
+        let parse = |src: &str| parse_over_objects(src, &params, None, 3, None, &objects);
+        let Expr::Refs(Some(l), Some(r), false) = parse("this.name != name").unwrap() else { panic!("an identity") };
+        assert_eq!((l.shown.as_str(), r.shown.as_str(), r.slot, r.steps.len(), &r.ty), ("this.name", "name", 1, 0, &string));
+        let e = parse("this.name == count").unwrap_err().to_string();
+        assert!(e.contains("or a String field by identity with a String parameter, found Ident(\"count\")"), "{e}");
     }
 
     /// An interface's object is read through its accessors, written as the calls they are, and a String by its

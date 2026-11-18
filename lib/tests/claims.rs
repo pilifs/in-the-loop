@@ -69,7 +69,7 @@ fn proved(classes: &Path, target: &str, bound: u32) {
 fn the_string_and_builder_methods_are_the_definitions_written_out_over_char_at() {
     jvmcontract::tool_tier!();
     let Some(classes) = classes() else { return };
-    for method in ["indexOfString", "indexOfChar", "substring", "endsWith", "lower", "builder", "deleteClamps"] {
+    for method in ["indexOfString", "indexOfChar", "lastIndexOfPoint", "substring", "endsWith", "lower", "builder", "deleteClamps"] {
         proved(classes, &format!("claims.T#{method}"), 3);
     }
     proved(classes, "claims.S#ends", 3);
@@ -182,6 +182,31 @@ fn lower_casing_under_a_locale_that_is_an_input_is_the_definition_written_out() 
     assert!(o.output.contains("java.lang.String.toLowerCase()") && o.output.contains("java.util.Locale.<init>"), "{}", o.output);
 }
 
+/// The one gap example 286's fixed protected-state task meets on its real path under the frozen claim (job
+/// 20261117-222610; the example's `records/refusals/fixed-protected-state-mutation-beside-route.json`):
+/// `field.toLowerCase()` in `DataBinder.isAllowed` of a String with a unit outside ASCII, which the checker leaves
+/// the JDK's call (`lib/src/bmc/strings.rs`). `claims.C#loweredToAge` is the decision that call serves, true for
+/// every String on a JVM: no code point outside ASCII lowers to `a`, `g` or `e` under any locale of the table (the
+/// fixture's `main` sweeps them all). Over ASCII Strings it is proved, under the locale assumption. The gap is closed
+/// when the first check below is proved, with no assumption beyond the locale's: then rerun 286's task at bound 8.
+#[test]
+fn lowering_outside_ascii_is_the_one_gap_286s_fixed_protected_state_task_stops_at() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let swept = Command::new("java").args(["-XX:-UsePerfData", "-cp"]).arg(classes).arg("claims.C").output().expect("java runs");
+    assert!(swept.status.success(), "{}", String::from_utf8_lossy(&swept.stderr));
+    assert_eq!(String::from_utf8_lossy(&swept.stdout).trim(), "no code point outside ASCII lowers to a, g or e");
+    let o = run(&options(classes, "claims.C#loweredToAge", 3, "C-loweredToAge"));
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.output.contains("jdk-reference-method:java.lang.String.toLowerCase()Ljava/lang/String;"), "{}", o.output);
+    let mut ascii = options(classes, "claims.C#loweredToAge", 3, "C-loweredToAge-ascii");
+    ascii.assume = Some("s.chars().allMatch(c -> c < 128)".into());
+    let o = run(&ascii);
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let stated = o.stated.map(|s| s.assumptions).unwrap_or_default();
+    assert!(stated.iter().any(|a| a.text == jvmcontract::bmc::strings::LOCALE_ASSUMPTION), "{stated:?}");
+}
+
 /// A protective pattern that is an input (`Engine::literal_then_any` in `lib/src/bmc/regex.rs`): characters that
 /// stand for themselves followed by `.*`, under each combination of `CASE_INSENSITIVE` and `DOTALL`, either chosen by
 /// an input, on any String, line terminators and surrogates included. Each model is its definition written out, on
@@ -266,7 +291,8 @@ fn registrations_in_order_and_classes_by_name_are_the_definitions_written_out() 
 
 /// An initializer the checker does not run (`claims.Tables`: an `IdentityHashMap` and a load factor) is a gap,
 /// and with `--observed-initializer` the state a JVM left: what the observation holds is read as the JVM has it,
-/// the result says what it rests on, and a field it holds no value of is refused by name.
+/// the result says what it rests on, and a field it holds no value of is refused by name. A class it initialized
+/// that holds a lambda (`claims.Hooked`) is bound as it is alone, whatever address the JVM put in the lambda's name.
 #[test]
 fn an_observed_initializer_gives_the_state_a_jvm_left_and_the_result_says_so() {
     jvmcontract::tool_tier!();
@@ -303,9 +329,34 @@ fn an_observed_initializer_gives_the_state_a_jvm_left_and_the_result_says_so() {
     assert!(threw.contains("--observed-initializer claims.Fails: on the JVM the class's initialization threw java.lang.IllegalStateException"), "{threw}");
     let absent = property::run(&observing("claims.M#thrown", "absent", "claims.Absent")).unwrap_err().to_string();
     assert!(absent.contains("--observed-initializer claims.Absent") && absent.contains("java.lang.ClassNotFoundException"), "{absent}");
+    // An initializer that initializes a class holding a lambda: the lambda's hidden class is named alike in the
+    // observation and in the run of that class alone, though the JVM's address in its name is not.
+    let hooked = run(&observing("claims.Hooking#hooked", "hooked", "claims.Hooked"));
+    assert_eq!(hooked.verdict, Verdict::Verified, "{}", hooked.output);
     let mut cached = observing("claims.M#observed", "cached", "claims.Tables");
     cached.cache = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("claims").join("no-cache"));
     assert!(property::run(&cached).unwrap_err().to_string().contains("--observed-initializer with --cache"));
+}
+
+/// An observation made with a relative `--work`, from a directory other than the class path's: the observer's JVM
+/// runs in the work folder, so the log of its class initializations, and the path the observer is given to read it,
+/// must not be taken relative to that folder (job `20261117-181750`: "Invalid -Xlog option", no observation).
+#[test]
+fn an_observed_initializer_is_observed_with_a_relative_work_folder() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let here = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("claims").join("relative-work");
+    let _ = std::fs::remove_dir_all(&here);
+    std::fs::create_dir_all(&here).unwrap();
+    let out = Command::new(env!("CARGO_BIN_EXE_jvmcontract"))
+        .current_dir(&here)
+        .args(["prove", "claims.M#observed", "--observed-initializer", "claims.Tables", "--engine", "native", "--jbmc", NO_JBMC, "--max-array-length", "3", "--details", "--work", "work/observed", "--classes"])
+        .arg(classes)
+        .output()
+        .unwrap();
+    let said = String::from_utf8_lossy(&out.stdout).to_string() + &String::from_utf8_lossy(&out.stderr);
+    assert!(said.starts_with("✓") && said.contains("the class initializer of claims.Tables was not run by the checker"), "{said}");
+    assert!(here.join("work/observed/observed/claims.Tables.init.log").is_file(), "the log is in the work folder: {said}");
 }
 
 /// The lists a registry collects its matchers in (`claims.M`, example 290). `java.util.ArrayList` is the JDK's,
@@ -327,7 +378,7 @@ fn an_array_list_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_defin
         o.requested_models = vec![model.to_string()];
         o
     };
-    for method in ["collected", "filled", "appended", "swept"] {
+    for method in ["collected", "filled", "appended", "swept", "removed"] {
         let o = run(&asking(&format!("claims.M#{method}"), &format!("M-{method}"), "java.util.ArrayList"));
         assert_eq!(o.verdict, Verdict::Verified, "{method}: {}", o.output);
         let stated = o.stated.as_ref().expect("a statement");
@@ -340,15 +391,264 @@ fn an_array_list_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_defin
     assert_eq!(unused.verdict, Verdict::Verified, "{}", unused.output);
     assert!(!unused.stated.as_ref().expect("a statement").assumptions.iter().any(|a| a.text.contains("the tool's model of the class")), "{}", unused.output);
 
+    // `Boolean.TRUE` and `Boolean.FALSE`, which a list's owner may store (Spring's `PropertyValue`): one object each;
+    // what one says is the JDK's call.
+    proved(classes, "claims.M#truths", 3);
+    let told = run(&options(classes, "claims.M#truthTold", 3, "M-truthTold"));
+    assert_eq!(told.verdict, Verdict::Unverifiable, "{}", told.output);
+    assert!(told.output.contains("java.lang.Boolean.booleanValue()Z"), "{}", told.output);
+
+    // A String's class, as Spring's `ClassUtils.getDescriptiveType` names a value (example 286): the literal of
+    // `String`, its type name its name, and no proxy class; `Proxy.isProxyClass(null)` throws.
+    proved(classes, "claims.M#typed", 3);
+    proved(classes, "claims.M#unproxied", 1);
+
     let left_out = run(&asking("claims.M#contained", "M-contained", "java.util.ArrayList"));
     assert_eq!(left_out.verdict, Verdict::Unverifiable, "{}", left_out.output);
     assert!(left_out.output.contains("java.util.ArrayList.contains(Ljava/lang/Object;)Z"), "{}", left_out.output);
 
     let none = property::run(&asking("claims.M#swept", "M-none", "java.util.Vector")).unwrap_err().to_string();
-    assert!(none.contains("--model java.util.Vector: no model on request of that class; there is one of java.util.ArrayList"), "{none}");
+    assert!(none.contains("--model java.util.Vector: no model on request of that class; there is one of java.util.ArrayList, java.util.ArrayDeque, java.util.HashSet, java.util.LinkedHashSet, java.util.StringJoiner, java.beans.PropertyChangeEvent"), "{none}");
     let mut cached = asking("claims.M#swept", "M-cached", "java.util.ArrayList");
     cached.cache = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("claims").join("no-cache"));
     assert!(property::run(&cached).unwrap_err().to_string().contains("--model with --cache"));
+}
+
+/// A stack of `java.util.ArrayDeque`, as Spring's `AbstractErrors` keeps its nested paths (`claims.Deques`, example
+/// 286): the JDK's, its constructor a gap, until a check asks for the model (`--model java.util.ArrayDeque`); then
+/// the model is the definition written out on every input of the bound, and a method it does not keep (`offer`) is
+/// still the JDK call it names. The same methods hold on a JVM, over sampled inputs, on the JDK's deque.
+#[test]
+fn an_array_deque_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_definition_written_out() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let sampled = Command::new("java").arg("-cp").arg(classes).args(["claims.Deques", "5000"]).output().expect("java runs");
+    assert_eq!(String::from_utf8_lossy(&sampled.stdout).trim(), "ok", "{}", String::from_utf8_lossy(&sampled.stderr));
+
+    let unasked = run(&options(classes, "claims.Deques#stacked", 3, "Deques-unasked"));
+    assert_eq!(unasked.verdict, Verdict::Unverifiable, "{}", unasked.output);
+    assert!(unasked.output.contains("java.util.ArrayDeque.<init>()V"), "{}", unasked.output);
+
+    let asking = |method: &str| {
+        let mut o = options(classes, &format!("claims.Deques#{method}"), 3, &format!("Deques-{method}"));
+        o.requested_models = vec!["java.util.ArrayDeque".to_string()];
+        o
+    };
+    for method in ["stacked", "refused", "cleared"] {
+        let o = run(&asking(method));
+        assert_eq!(o.verdict, Verdict::Verified, "{method}: {}", o.output);
+        let stated = o.stated.as_ref().expect("a statement");
+        assert!(stated.assumptions.iter().any(|a| a.text.starts_with("java.util.ArrayDeque is the tool's model of the class wherever the check runs it (--model)")), "{method}: {:?}", stated.assumptions);
+    }
+    let left_out = run(&asking("offered"));
+    assert_eq!(left_out.verdict, Verdict::Unverifiable, "{}", left_out.output);
+    assert!(left_out.output.contains("java.util.Deque.offer(Ljava/lang/Object;)Z") || left_out.output.contains("java.util.ArrayDeque.offer(Ljava/lang/Object;)Z"), "{}", left_out.output);
+}
+
+/// A `java.beans.PropertyChangeEvent`, as Spring's bean wrapper makes one for a value it cannot convert
+/// (`claims.Events`, example 286): the JDK's, its constructor a gap, until a check asks for the model (`--model
+/// java.beans.PropertyChangeEvent`, which runs the model of `java.util.EventObject` with it); then the model is the
+/// definition written out on every input of the bound, and `toString`, which it does not keep, is still the JDK call
+/// it names. The same methods hold on a JVM, over sampled inputs, on the JDK's event.
+#[test]
+fn a_property_change_event_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_definition_written_out() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let sampled = Command::new("java").arg("-cp").arg(classes).args(["claims.Events", "5000"]).output().expect("java runs");
+    assert_eq!(String::from_utf8_lossy(&sampled.stdout).trim(), "ok", "{}", String::from_utf8_lossy(&sampled.stderr));
+
+    let unasked = run(&options(classes, "claims.Events#made", 3, "Events-unasked"));
+    assert_eq!(unasked.verdict, Verdict::Unverifiable, "{}", unasked.output);
+    assert!(unasked.output.contains("java.beans.PropertyChangeEvent.<init>(Ljava/lang/Object;Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V"), "{}", unasked.output);
+
+    let asking = |method: &str| {
+        let mut o = options(classes, &format!("claims.Events#{method}"), 3, &format!("Events-{method}"));
+        o.requested_models = vec!["java.beans.PropertyChangeEvent".to_string()];
+        o
+    };
+    let o = run(&asking("made"));
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let stated = o.stated.as_ref().expect("a statement");
+    assert!(stated.assumptions.iter().any(|a| a.text.starts_with("java.beans.PropertyChangeEvent is the tool's model of the class wherever the check runs it (--model)")), "{:?}", stated.assumptions);
+    let left_out = run(&asking("described"));
+    assert_eq!(left_out.verdict, Verdict::Unverifiable, "{}", left_out.output);
+    assert!(left_out.output.contains("java.beans.PropertyChangeEvent.toString()"), "{}", left_out.output);
+
+}
+
+/// A `java.util.HashSet` of names, as Spring's `AbstractBindingResult` records suppressed fields (`claims.Sets`,
+/// example 286): the JDK's until a check asks for the model (`--model java.util.HashSet`), then the keys of the
+/// `HashMap` model, which is the definition written out over `equals` on every input of the bound; `remove`, which
+/// it does not keep, is still the JDK call it names. The same methods hold on a JVM over sampled names.
+#[test]
+fn a_hash_set_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_definition_written_out() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let sampled = Command::new("java").arg("-cp").arg(classes).args(["claims.Sets", "5000"]).output().expect("java runs");
+    assert_eq!(String::from_utf8_lossy(&sampled.stdout).trim(), "ok", "{}", String::from_utf8_lossy(&sampled.stderr));
+
+    let unasked = run(&options(classes, "claims.Sets#added", 2, "Sets-unasked"));
+    assert_eq!(unasked.verdict, Verdict::Unverifiable, "{}", unasked.output);
+    assert!(unasked.output.contains("java.util.HashSet.<init>()V"), "{}", unasked.output);
+
+    let asking = |method: &str| {
+        let mut o = options(classes, &format!("claims.Sets#{method}"), 2, &format!("Sets-{method}"));
+        o.requested_models = vec!["java.util.HashSet".to_string()];
+        o
+    };
+    let o = run(&asking("added"));
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let stated = o.stated.as_ref().expect("a statement");
+    assert!(stated.assumptions.iter().any(|a| a.text.starts_with("java.util.HashSet is the tool's model of the class wherever the check runs it (--model)")), "{:?}", stated.assumptions);
+    let left_out = run(&asking("removed"));
+    assert_eq!(left_out.verdict, Verdict::Unverifiable, "{}", left_out.output);
+    assert!(left_out.output.contains("remove(Ljava/lang/Object;)Z"), "{}", left_out.output);
+}
+
+/// A `java.util.LinkedHashSet` of names, as Spring's `DefaultMessageCodesResolver` collects a binding error's message
+/// codes (`claims.LinkedSets`, example 286): the JDK's until a check asks for the model (`--model
+/// java.util.LinkedHashSet`, which runs the `HashSet` model above it too), then the definition written out over
+/// `equals` on every input of the bound, the elements in the order first added; `iterator`, which it does not keep,
+/// is still the JDK call it names. The same methods hold on a JVM over sampled names.
+#[test]
+fn a_linked_hash_set_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_definition_written_out() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let sampled = Command::new("java").arg("-XX:-UsePerfData").arg("-cp").arg(classes).args(["claims.LinkedSets", "5000"]).output().expect("java runs");
+    assert_eq!(String::from_utf8_lossy(&sampled.stdout).trim(), "ok", "{}", String::from_utf8_lossy(&sampled.stderr));
+
+    let unasked = run(&options(classes, "claims.LinkedSets#ordered", 2, "LinkedSets-unasked"));
+    assert_eq!(unasked.verdict, Verdict::Unverifiable, "{}", unasked.output);
+    assert!(unasked.output.contains("java.util.LinkedHashSet.<init>()V"), "{}", unasked.output);
+
+    let asking = |method: &str| {
+        let mut o = options(classes, &format!("claims.LinkedSets#{method}"), 3, &format!("LinkedSets-{method}"));
+        o.requested_models = vec!["java.util.LinkedHashSet".to_string()];
+        o
+    };
+    let o = run(&asking("ordered"));
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let stated = o.stated.as_ref().expect("a statement");
+    for model in ["java.util.LinkedHashSet", "java.util.HashSet"] {
+        assert!(stated.assumptions.iter().any(|a| a.text.starts_with(&format!("{model} is the tool's model of the class wherever the check runs it (--model)"))), "{model}: {:?}", stated.assumptions);
+    }
+    let left_out = run(&asking("iterated"));
+    assert_eq!(left_out.verdict, Verdict::Unverifiable, "{}", left_out.output);
+    assert!(left_out.output.contains("iterator()Ljava/util/Iterator;"), "{}", left_out.output);
+}
+
+/// A `java.util.StringJoiner`, as Spring's `DefaultMessageCodesResolver.Format.toDelimitedString` joins a message
+/// code (`claims.Joiners`, example 286): the JDK's until a check asks for the model (`--model
+/// java.util.StringJoiner`), then the definition written out over `charAt` on every input of the bound; an empty
+/// join, which the model leaves to the JDK's `new String()`, is still that JDK call. The same methods hold on a JVM
+/// over sampled Strings.
+#[test]
+fn a_string_joiner_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_definition_written_out() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let sampled = Command::new("java").arg("-XX:-UsePerfData").arg("-cp").arg(classes).args(["claims.Joiners", "5000"]).output().expect("java runs");
+    assert_eq!(String::from_utf8_lossy(&sampled.stdout).trim(), "ok", "{}", String::from_utf8_lossy(&sampled.stderr));
+
+    let unasked = run(&options(classes, "claims.Joiners#addedNull", 2, "Joiners-unasked"));
+    assert_eq!(unasked.verdict, Verdict::Unverifiable, "{}", unasked.output);
+    assert!(unasked.output.contains("java.util.StringJoiner.<init>(Ljava/lang/CharSequence;)V"), "{}", unasked.output);
+
+    let asking = |method: &str| {
+        let mut o = options(classes, &format!("claims.Joiners#{method}"), 2, &format!("Joiners-{method}"));
+        o.requested_models = vec!["java.util.StringJoiner".to_string()];
+        o
+    };
+    for method in ["joined", "addedNull"] {
+        let o = run(&asking(method));
+        assert_eq!(o.verdict, Verdict::Verified, "{method}: {}", o.output);
+        let stated = o.stated.as_ref().expect("a statement");
+        assert!(stated.assumptions.iter().any(|a| a.text.starts_with("java.util.StringJoiner is the tool's model of the class wherever the check runs it (--model)")), "{method}: {:?}", stated.assumptions);
+    }
+    let left_out = run(&asking("empty"));
+    assert_eq!(left_out.verdict, Verdict::Unverifiable, "{}", left_out.output);
+    assert!(left_out.output.contains("java.lang.String.<init>()V"), "{}", left_out.output);
+}
+
+/// `Class.isArray()` of a class literal, as Spring's `ObjectUtils.isArray` asks it of a rejected value's class
+/// (`claims.Arrayed`, example 286): whether the literal names an array class. On a class the engine holds no literal
+/// of, it and `isAssignableFrom` stay the JDK calls they are, and under `--gaps assume` too, since no assumption makes
+/// up a primitive result: the run is refused by name, where a JVM answers true.
+#[test]
+fn a_class_literal_says_whether_it_is_an_array_class_and_another_class_is_the_jdks_to_say() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let jvm = Command::new("java").arg("-XX:-UsePerfData").arg("-cp").arg(classes).arg("claims.Arrayed").output().expect("java runs");
+    assert_eq!(String::from_utf8_lossy(&jvm.stdout).trim(), "true true true", "{}", String::from_utf8_lossy(&jvm.stderr));
+    proved(classes, "claims.Arrayed#arrayed", 2);
+    for (method, call) in [("ofAnArray", "java.lang.Class.isArray()"), ("assignableOfAnArray", "java.lang.Class.isAssignableFrom(java.lang.Class)")] {
+        // Under strict the run stops at the array's `getClass()`; under assume that gives a Class the engine holds
+        // no literal of, and the run stops at the call on it.
+        for (mode, stop) in [(jvmcontract::bmc::gaps::GapMode::Strict, "java.lang.Object.getClass()"), (jvmcontract::bmc::gaps::GapMode::Assume, call)] {
+            let mut o = options(classes, &format!("claims.Arrayed#{method}"), 1, &format!("Arrayed-{method}-{mode:?}"));
+            o.gaps = mode;
+            let o = run(&o);
+            assert_eq!(o.verdict, Verdict::Unverifiable, "{method} {mode:?}: {}", o.output);
+            assert!(o.output.contains(stop), "{method} {mode:?}: {}", o.output);
+        }
+    }
+}
+
+/// An exception's message and cause, kept from the JDK's constructor that set them (`lib/src/bmc/throwables.rs`,
+/// `claims.Thrown`, example 286's binding error): `getMessage`, `getCause`, `getLocalizedMessage` (an application's
+/// `getMessage` runs in its place), `toString`, `getClass()`, and a builder's `StringBuilder(int)` and
+/// `append(Object)`, each proved as `Throwable`'s Javadoc gives it and true on a JVM. What the engine does not know
+/// stays the JDK's, each where a JVM breaks the statement: an application's `fillInStackTrace()`, which the JVM runs
+/// inside the constructor, is refused by name; a JDK constructor that does more than pass its arguments up
+/// (`UnknownFormatConversionException(null)` throws) is the gap it is, as are `toString()` where the class overrides
+/// it or the message, and `append` of such an exception.
+#[test]
+fn an_exceptions_message_and_cause_are_kept_from_the_jdks_constructor() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let jvm = Command::new("java").arg("-XX:-UsePerfData").arg("-cp").arg(classes).arg("claims.Thrown").output().expect("java runs");
+    assert_eq!(
+        String::from_utf8_lossy(&jvm.stdout).trim(),
+        "kept=true true shown=true true nested=true appended=true countsNothing=false nullConversion=false shownAppended=false nestedShown=false",
+        "{}",
+        String::from_utf8_lossy(&jvm.stderr)
+    );
+    for method in ["kept", "shown", "nested", "appended"] {
+        proved(classes, &format!("claims.Thrown#{method}"), 3);
+    }
+    for (method, why) in [
+        ("countsNothing", "whose claims.Thrown$Counting.fillInStackTrace() the JVM runs inside the constructor"),
+        ("nullConversion", "java.util.UnknownFormatConversionException.<init>"),
+        ("shownAppended", "java.lang.StringBuilder.append(Ljava/lang/Object;)"),
+        ("nestedShown", "jdk-reference-method:claims.Thrown$Nested.toString()"),
+    ] {
+        let o = run(&options(classes, &format!("claims.Thrown#{method}"), 1, &format!("Thrown-{method}")));
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{method}: {}", o.output);
+        assert!(o.output.contains(why), "{method}: {}", o.output);
+    }
+}
+
+/// Under `--gaps assume` a JDK call that returns an object returns one of its declared class or of any below it
+/// (`claims.Cloned`: `Object.clone()` of a `Cloned` is one). The engine does not know which, so a virtual call on it
+/// (the class's override runs on a JVM) and a type test the declared class does not settle are refused by name, and
+/// what the declared class settles is proved. `tests/rule_countermodels.rs` has the challenge stream's cases.
+#[test]
+fn an_object_a_jdk_call_returns_under_assume_is_of_a_class_the_engine_does_not_know() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let jvm = Command::new("java").arg("-cp").arg(classes).arg("claims.Cloned").output().expect("java runs");
+    assert_eq!(String::from_utf8_lossy(&jvm.stdout).trim(), "printsNothing=false notCloneable=false anObject=true", "{}", String::from_utf8_lossy(&jvm.stderr));
+    let assumed = |method: &str| {
+        let mut o = options(classes, &format!("claims.Cloned#{method}"), 2, &format!("Cloned-{method}"));
+        o.gaps = jvmcontract::bmc::gaps::GapMode::Assume;
+        run(&o)
+    };
+    for (method, why) in [("printsNothing", "a call of java.lang.Object.toString()"), ("notCloneable", "an instanceof java.lang.Cloneable")] {
+        let o = assumed(method);
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{method}: {}", o.output);
+        assert!(o.output.contains(why) && o.output.contains("may be of any class below that one"), "{method}: {}", o.output);
+    }
+    let o = assumed("anObject");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
 }
 
 /// `toString()`, the class of an object the run made, and an initializer that keeps a method reference for the
@@ -582,6 +882,175 @@ fn a_summary_is_not_of_a_method_that_reads_what_a_caller_can_change() {
     assert!(o.output.contains("lemma: ✓ claims.Effects#limit"), "{}", o.output);
 }
 
+/// A write set (`prove --writes`) on the beans of `claims.Frames`, the state stream's first effect contract: "the
+/// setter writes `displayName` and nothing else". The frame is part of the assertion, so the adversarial setter's
+/// write of `admin` is refuted with a witness the JVM replays; its honest twin, and a setter that puts the field
+/// back, meet it. Without the write set the same check says nothing of `admin`.
+#[test]
+fn a_write_set_tells_the_setter_that_writes_a_protected_field_from_its_honest_twin() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let framed = |bean: &str, writes: &[&str], tag: &str| {
+        let mut o = options(classes, &format!("claims.Frames${bean}#setDisplayName"), 8, &format!("frames-{tag}"));
+        o.writes = Some(writes.iter().map(|w| w.to_string()).collect());
+        run(&o)
+    };
+    let adversarial = framed("Adversarial", &["this.displayName"], "adversarial");
+    assert_eq!(adversarial.verdict, Verdict::Violation, "{}", adversarial.output);
+    // What was checked is the frame, conjoined to the assertion (none here).
+    assert_eq!(adversarial.assert.as_deref(), Some("this.admin == \\old(this.admin)"), "{}", adversarial.output);
+    assert!(adversarial.output.contains("frame: setDisplayName writes this.displayName; after the call, this.admin == \\old(this.admin)"), "{}", adversarial.output);
+    assert!(adversarial.output.contains("violated: `this.admin == \\old(this.admin)`"), "{}", adversarial.output);
+    assert_eq!(adversarial.replay.as_ref().map(|r| (r.by.as_str(), r.reproduced)), Some(("jvm", true)), "{}", adversarial.output);
+    for bean in ["Honest", "Restoring"] {
+        let o = framed(bean, &["this.displayName"], bean);
+        assert_eq!(o.verdict, Verdict::Verified, "{bean}: {}", o.output);
+    }
+    // Named, the protected field is the setter's to write.
+    let both = framed("Adversarial", &["this.displayName", "this.admin"], "adversarial-both");
+    assert_eq!(both.verdict, Verdict::Verified, "{}", both.output);
+    // With no write set the check states nothing about what the setter leaves.
+    let mut plain = options(classes, "claims.Frames$Adversarial#setDisplayName", 8, "frames-plain");
+    plain.assert = Some("true".into());
+    assert_eq!(run(&plain).verdict, Verdict::Verified);
+    // A reference is kept by identity: a String of the same content is another object, and a write.
+    let copying = framed("Copying", &["this.displayName"], "copying");
+    assert_eq!(copying.verdict, Verdict::Violation, "{}", copying.output);
+    assert!(copying.output.contains("violated: `this.title == \\old(this.title)`"), "{}", copying.output);
+    assert_eq!(copying.replay.as_ref().map(|r| (r.by.as_str(), r.reproduced)), Some(("jvm", true)), "{}", copying.output);
+}
+
+/// The side conditions of a write set: the harness reads the inputs' fields after the call and nothing else, so the
+/// own checker refuses inside the call a write to anything else that was there before it, each by name, and a
+/// write set that names no field is refused. Each setter here
+/// writes what `Frames.main` shows on a JVM, so a `Verified` would be a false proof.
+#[test]
+fn a_write_set_refuses_every_write_its_frame_does_not_read() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let framed = |bean: &str, writes: &[&str], tag: &str| {
+        let mut o = options(classes, &format!("claims.Frames${bean}#setDisplayName"), 3, &format!("frames-{tag}"));
+        o.writes = Some(writes.iter().map(|w| w.to_string()).collect());
+        run(&o)
+    };
+    for (bean, writes, why) in [
+        ("Remembering", &["this.displayName"][..], "writes a static field, outside its write set"),
+        ("Auditing", &["this.displayName"][..], "initializes the class claims.Frames, outside its write set"),
+        ("Counting", &["this.displayName"][..], "writes a field of an object made before it was called and none of its inputs, outside its write set"),
+        // The field is named, the object behind it is not.
+        ("Counting", &["this.displayName", "this.audit"][..], "writes a field of an object made before it was called and none of its inputs"),
+        ("Filling", &["this.displayName"][..], "stores into an array made before it was called and none of its inputs"),
+    ] {
+        let o = framed(bean, writes, &format!("{bean}-{}", writes.len()));
+        assert_ne!(o.verdict, Verdict::Verified, "{bean}: {}", o.output);
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{bean}: {}", o.output);
+        assert!(o.problem.as_deref().unwrap_or_default().contains(why), "{bean}: {}", o.output);
+    }
+    // The frame is of locations, over inputs that may be one object: `link` writes `other.admin`, which it names, and
+    // its own name where `other` is itself, which a check of two distinct accounts would not see.
+    let mut linking = options(classes, "claims.Frames$Linking#link", 3, "frames-linking");
+    linking.writes = Some(vec!["other.admin".into()]);
+    let linking = run(&linking);
+    assert_eq!(linking.verdict, Verdict::Violation, "{}", linking.output);
+    assert!(linking.output.contains("violated: `this.displayName == \\old(this.displayName) && (this == other || this.admin == \\old(this.admin)) && other.displayName == \\old(other.displayName)`"), "{}", linking.output);
+    assert!(linking.output.contains("this and other may be the same object"), "{}", linking.output);
+    assert_eq!(linking.replay.as_ref().map(|r| (r.by.as_str(), r.reproduced)), Some(("jvm", true)), "{}", linking.output);
+    let unknown = framed("Honest", &["this.name"], "unknown");
+    assert!(unknown.problem.as_deref().unwrap_or_default().contains("this.name is no field of the receiver or an object parameter; a write set names some of this.displayName, this.admin"), "{}", unknown.output);
+}
+
+/// What the write-set tests call writes are writes on a JVM.
+#[test]
+fn the_frame_countermodels_are_what_a_jvm_says_they_are() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let out = Command::new("java").arg("-cp").arg(classes).arg("claims.Frames").output().expect("java runs");
+    assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+    assert_eq!(
+        String::from_utf8_lossy(&out.stdout).trim(),
+        "adversarial.admin=true honest.admin=false restoring.admin=false copying.title.same=false copying.title.equal=true lastName=x audit.writes=1 counting.audit.same=true held.writes=1 seen[0]=1 rename.admin=true honest.rename=true lengthy.admin=true promoted.admin=true matched.admin=true sneaky.admin=true trusted.admin=true linked.name=self remapping.extras.same=false stashing.extras.size=1 mapped.rename=true peeked.rename=false"
+    );
+}
+
+/// An effect contract of `bean`'s setter: it writes `displayName` and leaves it the name it is given, plus `more`.
+fn effect_contract(bean: &str, more: &str) -> PathBuf {
+    lemmas(&format!("effect-{bean}.contract"), &format!("claims.Frames${bean}#setDisplayName\n  writes: this.displayName\n  assert: this.displayName == name\n{more}"))
+}
+
+/// The application-level statement through an allowed field name (`claims.Frames`, the state stream's step 5): a
+/// rename makes no account an admin. The honest setter's effect contract is proved and stands in for its call; the
+/// adversarial setter's is refuted, so the check that would rest on it is refused, and without it the statement is
+/// refuted by a rename to `admin:`, which replays.
+#[test]
+fn an_effect_contract_stands_in_for_the_honest_setter_and_the_adversarial_one_is_refuted() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let app = |entry: &str, assertion: &str, contract: Option<PathBuf>, tag: &str| {
+        let mut o = options(classes, &format!("claims.Frames#{entry}"), 8, &format!("effects-{tag}"));
+        o.assert = Some(assertion.into());
+        o.lemmas = contract;
+        run(&o)
+    };
+    let honest = app("honestRename", "result", Some(effect_contract("Honest", "")), "honest");
+    assert_eq!(honest.verdict, Verdict::Verified, "{}", honest.output);
+    assert!(honest.output.contains("effect: ✓ claims.Frames$Honest#setDisplayName satisfies `(this.displayName == name) && this.admin == \\old(this.admin)`, and writes this.displayName and nothing else that was there before the call"), "{}", honest.output);
+    let stated = honest.stated.as_ref().expect("a statement");
+    assert!(stated.assumptions.iter().any(|a| a.text == "the effect contract of claims.Frames$Honest.setDisplayName(Ljava/lang/String;)V, proved beside this check"), "the contract stood in for the call: {:?}", stated.assumptions);
+    let refuted = app("adminAfterRename", "!result", Some(effect_contract("Adversarial", "")), "adversarial");
+    assert_eq!(refuted.verdict, Verdict::Unverifiable, "{}", refuted.output);
+    assert!(refuted.problem.as_deref().unwrap_or_default().contains("the effect contract of claims.Frames$Adversarial#setDisplayName") && refuted.output.contains("effect: ✗ Property of claims.Frames$Adversarial#setDisplayName violated"), "{}", refuted.output);
+    let app_level = app("adminAfterRename", "!result", None, "adversarial-app");
+    assert_eq!(app_level.verdict, Verdict::Violation, "{}", app_level.output);
+    assert_eq!(app_level.replay.as_ref().map(|r| r.reproduced), Some(true), "{}", app_level.output);
+    assert!(app_level.output.contains("adminAfterRename(name=\"admin:\")"), "{}", app_level.output);
+    // A contract over an object parameter of a nested class (`Frames$Honest mentee`), which the stub names as javac
+    // takes it, stands in for a call with an argument of exactly that class.
+    let mentor = lemmas("effect-mentor.contract", "claims.Frames$Mentor#adopt\n  writes: mentee.displayName\n  assert: mentee.displayName == name\n");
+    let adopted = app("adoptedRename", "result", Some(mentor), "mentor");
+    assert_eq!(adopted.verdict, Verdict::Verified, "{}", adopted.output);
+    let stated = adopted.stated.as_ref().expect("a statement");
+    assert!(stated.assumptions.iter().any(|a| a.text.starts_with("the effect contract of claims.Frames$Mentor.adopt(")), "the contract stood in for the call: {:?}", stated.assumptions);
+    // A written String field the assertion gives no parameter: the stub has no object to give it.
+    let copying = lemmas("effect-copying.contract", "claims.Frames$Copying#setDisplayName\n  writes: this.displayName, this.title\n  assert: this.displayName == name\n");
+    let o = app("honestRename", "result", Some(copying), "copying");
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.problem.as_deref().unwrap_or_default().contains("this.title is written and the assertion gives it no parameter's value"), "{}", o.output);
+}
+
+/// The side conditions of an effect contract's use: each setter here grants admin on a JVM (`Frames.main`), through
+/// what the contract's proof did not cover: a name longer than its bound, a field of the receiver a caller set, a
+/// static field, the identity of a literal, a subclass's hook. A `Verified` would be a false proof; each was one with
+/// its rule switched off.
+#[test]
+fn an_effect_contract_is_not_used_where_the_call_is_outside_what_it_was_proved_of() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let app = |entry: &str, bean: &str, more: &str| {
+        let mut o = options(classes, &format!("claims.Frames#{entry}"), 8, &format!("effects-{bean}"));
+        o.assert = Some("!result".into());
+        o.lemmas = Some(effect_contract(bean, more));
+        run(&o)
+    };
+    // Proved within three units, it is used there, and a longer name runs the setter as written.
+    let lengthy = app("lengthyAdminAfterRename", "Lengthy", "  arrays: 3\n");
+    assert_eq!(lengthy.verdict, Verdict::Violation, "{}", lengthy.output);
+    assert_eq!(lengthy.replay.as_ref().map(|r| (r.by.as_str(), r.reproduced)), Some(("jvm", true)), "{}", lengthy.output);
+    // The base's setter, run on a subclass's object, calls the subclass's hook.
+    let sneaky = app("sneakyAfterRename", "Base", "");
+    assert_eq!(sneaky.verdict, Verdict::Violation, "{}", sneaky.output);
+    assert_eq!(sneaky.replay.as_ref().map(|r| (r.by.as_str(), r.reproduced)), Some(("jvm", true)), "{}", sneaky.output);
+    for (entry, bean, why) in [
+        ("promotedAfterRename", "Promoting", "reads the field role of an object that was there before the call"),
+        ("trustedAfterRename", "Trusting", "reads the static field claims.Frames$Switch.trusting"),
+        ("matchedAfterRename", "Matching", "compares an object that was there before the call by identity"),
+    ] {
+        let o = app(entry, bean, "");
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{bean}: {}", o.output);
+        let problem = o.problem.as_deref().unwrap_or_default();
+        assert!(problem.contains("is not proved") && problem.contains(why) && problem.contains("it is not a method an effect contract can stand in for"), "{bean}: {}", o.output);
+    }
+}
+
 /// What the two tests above call false is false on a JVM: the fixture says what each method returns there.
 #[test]
 fn the_countermodels_are_what_a_jvm_says_they_are() {
@@ -593,4 +1062,53 @@ fn the_countermodels_are_what_a_jvm_says_they_are() {
         String::from_utf8_lossy(&out.stdout).trim(),
         "counting(1)=2 throwing(1)=IllegalStateException checked(2)=2 depth(3)=3 setThenLevel(7)=7 setThenLevelIndirectly(8)=8 setThenFirst(9)=9 setThenFixedFirst(10)=10 twiceLimit()=14 lowersToI(I)=true turkishThenLowers()=false"
     );
+}
+
+/// A field of a type the check makes no object of (`java.util.Map extras` in `claims.Frames`, as example 286's
+/// `ProtectedBean.someMap`): under a write set it is framed by identity, where any other check refuses it as before.
+/// So a setter of such a bean has a write set and an effect contract: the honest one is proved and stands in for its
+/// call, one that puts another map in the field is refuted with a witness a JVM replays, one that puts into the map
+/// is refused for that write, and the contract of one that reads the map is refused for that read. Each refuted or
+/// refused bean does on a JVM what `Frames.main` shows.
+#[test]
+fn a_write_set_frames_a_field_of_a_type_the_check_makes_no_object_of_by_identity() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let framed = |bean: &str, tag: &str| {
+        let mut o = options(classes, &format!("claims.Frames${bean}#setDisplayName"), 3, &format!("frames-map-{tag}"));
+        o.writes = Some(vec!["this.displayName".into()]);
+        run(&o)
+    };
+    let mapped = framed("Mapped", "mapped");
+    assert_eq!(mapped.verdict, Verdict::Verified, "{}", mapped.output);
+    assert_eq!(mapped.assert.as_deref(), Some("this.admin == \\old(this.admin) && this.extras == \\old(this.extras)"), "{}", mapped.output);
+    let remapping = framed("Remapping", "remapping");
+    assert_eq!(remapping.verdict, Verdict::Violation, "{}", remapping.output);
+    assert!(remapping.output.contains("violated: `this.extras == \\old(this.extras)`"), "{}", remapping.output);
+    assert_eq!(remapping.replay.as_ref().map(|r| (r.by.as_str(), r.reproduced)), Some(("jvm", true)), "{}", remapping.output);
+    let stashing = framed("Stashing", "stashing");
+    assert_eq!(stashing.verdict, Verdict::Unverifiable, "{}", stashing.output);
+    assert!(stashing.problem.as_deref().unwrap_or_default().contains("writes a field of an object made before it was called and none of its inputs"), "{}", stashing.output);
+    // Without a write set the field is refused by name, as before.
+    let mut plain = options(classes, "claims.Frames$Mapped#setDisplayName", 3, "frames-map-plain");
+    plain.assert = Some("this.displayName == name".into());
+    let plain = run(&plain);
+    assert_eq!(plain.verdict, Verdict::Unverifiable, "{}", plain.output);
+    assert!(plain.problem.as_deref().unwrap_or_default().contains("the field extras of claims.Frames$Mapped has type java.util.Map"), "{}", plain.output);
+    // The effect contract at a call: proved, and named among what the result rests on.
+    let app = |entry: &str, bean: &str| {
+        let mut o = options(classes, &format!("claims.Frames#{entry}"), 3, &format!("effects-map-{bean}"));
+        o.assert = Some("result".into());
+        o.lemmas = Some(effect_contract(bean, ""));
+        run(&o)
+    };
+    let renamed = app("mappedRename", "Mapped");
+    assert_eq!(renamed.verdict, Verdict::Verified, "{}", renamed.output);
+    let stated = renamed.stated.as_ref().expect("a statement");
+    assert!(stated.assumptions.iter().any(|a| a.text == "the effect contract of claims.Frames$Mapped.setDisplayName(Ljava/lang/String;)V, proved beside this check"), "the contract stood in for the call: {:?}", stated.assumptions);
+    // The map is a field of the receiver, which the contract's proof does not read: a caller filled it.
+    let peeked = app("peekedRename", "Peeking");
+    assert_eq!(peeked.verdict, Verdict::Unverifiable, "{}", peeked.output);
+    assert!(peeked.problem.as_deref().unwrap_or_default().contains("the effect contract of claims.Frames$Peeking#setDisplayName"), "{}", peeked.output);
+    assert!(peeked.output.contains("extras"), "the refusal names the read: {}", peeked.output);
 }

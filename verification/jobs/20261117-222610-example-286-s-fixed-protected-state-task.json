@@ -1,0 +1,61 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-222610-example-286-s-fixed-protected-state-task",
+  "title": "Example 286's fixed protected-state task at the frozen bound 8 now that the binding error's message is modelled: where it stops, and a trial over ASCII names",
+  "description": "The state stream of the domain-advances brief, step 3. Binding \"32\" to someMap records a binding error whose default message is the exception's getLocalizedMessage(), which Spring's NestedRuntimeException.getMessage builds from Throwable's message and the cause's toString(). The own checker now keeps a JDK exception's message and cause from the constructor that set them (lib/src/bmc/throwables.rs: getMessage, getCause, getLocalizedMessage, toString, getClass(), StringBuilder(int) and append(Object)), counts a JDK exception's constructor as exact only where its bytecode just passes its arguments up to Throwable's (two false proofs closed, tested in lib/tests/claims.rs an_exceptions_message_and_cause_are_kept_from_the_jdks_constructor), and its concatenation cap is 256 code units instead of 64. Step 1 runs the frozen claim examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/claims/protected-age-not-mutated.json, unchanged, on 5.3.19 through proofs/prove.py at its own bound 8 (job 20261117-192205 stopped it at two gaps, LinkedHashSet.<init>() since modelled and non-ASCII toLowerCase()); a capped probe of the whole domain at bound 8 did not finish in 5 minutes. Step 2 is a trial, not the claim: the same run with --assume-also restricting field to ASCII (the corrected formalization the stream will propose), which a capped probe proved at bound 7 in 108 s, resting on the stand-ins (sampled), the models, ClassUtils and PropertyEditorRegistrySupport observed, the locale assumption and the simpleMatch lemma. Each step writes to a work folder of its own, apart from verification/.work-286/state-stand-in, whose files the accepted refutation reads.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "286"
+    ],
+    "paths": [
+      "lib/src/bmc/throwables.rs",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py"
+    ]
+  },
+  "expected": "step 1 exits 1 with 'verdict: unverifiable' naming the one gap java.lang.String.toLowerCase() at DataBinder.isAllowed:828 (any other gap is a finding to record); step 2 exits 0 with 'verdict: verified (expected verified)' at bound 8 and the trial line",
+  "submitted": {
+    "at": "2026-11-17T22:26:10+00:00",
+    "session": "9896d870-fb47-4f3c-ba4d-5b1d3e64719c"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "6G",
+    "duration": "40m",
+    "memoryLimit": "10G",
+    "timeout": "3h",
+    "notes": "a capped probe of the whole frozen domain at bound 8 did not finish in 5 minutes under 4 GB; the ASCII trial at bound 7 took 146 s in under 4 GB; bound 8 is longer, each step's verifier timeout 5000 s"
+  },
+  "steps": [
+    {
+      "name": "fixed-protected-state-mutation at the frozen bound 8 (5.3.19): where it stops",
+      "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py fixed-protected-state-mutation --timeout 5000 --work verification/.work-286/state-messages || test $? -eq 1",
+      "cwd": "."
+    },
+    {
+      "name": "fixed-protected-state-mutation at bound 8 over ASCII names: a trial, not the claim",
+      "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py fixed-protected-state-mutation --assume-also 'field.chars().allMatch(c -> c < 128)' --timeout 5000 --work verification/.work-286/state-messages-ascii",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/.work-286/state-messages/fixed-protected-state-mutation/outcome.json",
+    "verification/.work-286/state-messages/fixed-protected-state-mutation/evidence.json",
+    "verification/.work-286/state-messages/fixed-protected-state-mutation/stderr.txt",
+    "verification/.work-286/state-messages-ascii/fixed-protected-state-mutation/outcome.json",
+    "verification/.work-286/state-messages-ascii/fixed-protected-state-mutation/evidence.json",
+    "verification/.work-286/state-messages-ascii/fixed-protected-state-mutation/stderr.txt"
+  ]
+}

@@ -1,0 +1,265 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261117-230459-example-287-preservation-at-the-frozen-b",
+  "title": "Example 287 preservation at the frozen bound 80, with bcrypt's crypt_raw taken as one function of both releases",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m50s, peak 2.2 GiB (estimated 10m00s, 6.0 GiB); 4 output file(s) changed; signals: jvmcontract:holds×2",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261117-230459-example-287-preservation-at-the-frozen-b.json",
+    "sha256": "5d7c368b87c2d9a88e7f33abdb8ab50431b0209d99a0a0c6b1b1fef91ac6a5cc",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261117-230459-example-287-preservation-at-the-frozen-b",
+      "title": "Example 287 preservation at the frozen bound 80, with bcrypt's crypt_raw taken as one function of both releases",
+      "description": "The preservation stream's third approach to 287 (llm-dlc/loops/domain-advances-preservation.md, inbox items I015 and I018). Jobs 20261117-180758 and 20261117-185613 related the two releases at bcrypt's loop summaries and stopped undecided at the previous release's BCrypt.key loop (pc 39). The relation now sits one level up, at the call: the checker's rule for a call both versions share (lib/src/bmc/ties.rs, lib/src/shared.rs one_function) takes an instance method whose receiver nothing reads after the call, as hashpw's 'new BCrypt().crypt_raw(...)' is, and an array result the callee makes with a length its code gives as a constant (crypt_raw's new byte[cdata.length * 4]). crypt_raw's nine methods are the same bytecode in 6.3.7 and 6.3.8, so the two releases' calls on the same password bytes, salt bytes and cost take one outcome, and the cipher is never run. The outcome states the assumption that each such call ends. Countermodels: KEYED in lib/tests/pairing.rs, each a pair a JVM tells apart, none proved, each proved with its own side condition switched off. A capped probe at bound 80 (--timeout 240) verified in 112 s, 53 paths, 52 calls taken, 48 related; 289, 290 and 307 still give their expected verdicts. Expected: verified, with search.native.calls_as_one_function > 0 and the assumption about BCrypt.crypt_raw stated.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "B9",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "287"
+        ],
+        "paths": [
+          "lib/src/bmc/ties.rs",
+          "lib/src/shared.rs"
+        ]
+      },
+      "expected": "prove.py ends 'verdict: verified (expected verified)' and exits 0; outcome.json has verdict verified, stated.vacuity.outside, and an assumption that each call of BCrypt.crypt_raw taken as one function ends; evidence.json is written",
+      "submitted": {
+        "at": "2026-11-17T23:04:59+00:00",
+        "session": "f28025bc-e46b-4a87-a943-bfb79dea5465"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "6G",
+        "duration": "10m",
+        "timeout": "2h",
+        "notes": "a capped probe verified in 112 s under 4 GB; plus the release build and the fetch of the four pinned JARs"
+      },
+      "steps": [
+        {
+          "name": "287 preservation at the frozen bound, 80, crypt_raw as one function",
+          "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py preservation --timeout 3600 --work verification/.work-287/preservation-one-function",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/.work-287/preservation-one-function/preservation/outcome.json",
+        "verification/.work-287/preservation-one-function/preservation/evidence.json",
+        "verification/.work-287/preservation-one-function/preservation/stderr.txt",
+        "verification/.work-287/preservation-one-function/preservation/work/pair/RegressionPair.java"
+      ]
+    }
+  },
+  "sourceCommit": "4feea5477a44187eded6bcc029cd654561fbb8bb",
+  "startedAt": "2026-11-17T23:14:06+00:00",
+  "finishedAt": "2026-11-17T23:18:45+00:00",
+  "wallSeconds": 279.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3848668,
+    "workers": 10,
+    "cpus": 20.0,
+    "memoryBudgetBytes": 47244640256,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 600.0,
+    "notes": "a capped probe verified in 112 s under 4 GB; plus the release build and the fetch of the four pinned JARs"
+  },
+  "usage": {
+    "peakMemoryBytes": 2374422528,
+    "wallSeconds": 110.1,
+    "cpuSeconds": 111.0,
+    "memoryOfEstimate": 0.37,
+    "durationOfEstimate": 0.18
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 167.609,
+      "cpuSeconds": 167.964,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1979764736,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "0082d5229626dd1b5dca4e6683eaaae4687cd1e1181e6f3a61bde7321567e5ba",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261117-230459-example-287-preservation-at-the-frozen-b/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 47s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "287 preservation at the frozen bound, 80, crypt_raw as one function",
+      "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py preservation --timeout 3600 --work verification/.work-287/preservation-one-function",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 110.08,
+      "cpuSeconds": 111.02,
+      "cpuThrottledSeconds": 0.125,
+      "peakMemoryBytes": 2374422528,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-287-preservation-at-the-frozen.log",
+        "lines": 6,
+        "bytes": 2054,
+        "sha256": "441092c0c3737dda0682c1a16791239abb3967949d78cf8f4947b3da2172845f",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 2
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 2,
+          "text": "✓ example287.adapter.PasswordMatchAdapter#matches: the two versions agree on every input outside `candidate != null && candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72` (the pair's property, below)",
+          "groups": [
+            "example287.adapter.PasswordMatchAdapter#matches: the two versions agree on every input outside `candidate != null && candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72` (the pair's property, below)"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 3,
+          "text": "✓ RegressionPair#agree satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null in 108.0 s; loops unwound 16 times with unwinding assertions; 52 calls of methods bot",
+          "groups": [
+            "RegressionPair#agree satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null in 108.0 s; loops unwound 16 times with unwinding assertions; 52 calls of methods both versions share taken as one function of both, 48 of them related to an earlier call by their inputs)"
+          ]
+        }
+      ],
+      "tail": [
+        "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-287/preservation-one-function/preservation/work/pair/RegressionPair.java) calls the previous version's example287.adapter.PasswordMatchAdapter#matches, relocated under `before`, and then the new one's on th",
+        "✓ example287.adapter.PasswordMatchAdapter#matches: the two versions agree on every input outside `candidate != null && candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72` (the pair's property, below)",
+        "✓ RegressionPair#agree satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null in 108.0 s; loops unwound 16 times with unwinding assertions; 52 calls of methods bot",
+        "  outside the allowed change: agree(candidate=null, storedHash=null) lies outside `candidate != null && candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72`, so both versions are called on it",
+        "",
+        "verdict: verified (expected verified); paths 53, solver calls 329, variables 3668524, loops covered by invariants 0; outcome in verification/.work-287/preservation-one-function/preservation/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-287/preservation-one-function/preservation/outcome.json",
+      "change": "added",
+      "bytes": 22807,
+      "sha256": "dd180fd230efcc204465d1a40f5f0ee191a9a6211beee5b76311aa613d9c89d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/preservation-one-function/preservation/evidence.json",
+      "change": "added",
+      "bytes": 1914,
+      "sha256": "dc2a68eb041ecfa710fd21fdafaed47fd5bf56a45231cd66ee506ede47dddf3f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/preservation-one-function/preservation/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/preservation-one-function/preservation/work/pair/RegressionPair.java",
+      "change": "added",
+      "bytes": 2716,
+      "sha256": "4bfaf6c430949b00e81c30d6470f6bb56af3812d3cae44ca0281bb7fdfe6a089",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-17T23:19:01+00:00",
+    "applied": [
+      "verification/.work-287/preservation-one-function/preservation/outcome.json",
+      "verification/.work-287/preservation-one-function/preservation/evidence.json",
+      "verification/.work-287/preservation-one-function/preservation/stderr.txt",
+      "verification/.work-287/preservation-one-function/preservation/work/pair/RegressionPair.java"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1235605187dae284bb7c8208b8c2789f8aa3069e",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1235605187dae284bb7c8208b8c2789f8aa3069e/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

@@ -89,6 +89,10 @@ public final class Operations {
         return of(n, a, b, c).indexOf(ch);
     }
 
+    static int lastIndexOfChar(int n, int a, int b, int c, int ch) {
+        return of(n, a, b, c).lastIndexOf(ch);
+    }
+
     static int indexOfCharFrom(int n, int a, int b, int c, int ch, int from) {
         return of(n, a, b, c).indexOf(ch, from);
     }

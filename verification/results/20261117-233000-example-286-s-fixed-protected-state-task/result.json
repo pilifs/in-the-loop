@@ -1,0 +1,264 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261117-233000-example-286-s-fixed-protected-state-task",
+  "title": "Example 286's fixed protected-state task through ProtectedBean's setter contracts: binding writes only what the permitted setters' proved effect contracts write (ASCII trial, bound 8)",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4m28s, peak 2.6 GiB (estimated 15m00s, 4.0 GiB); 3 output file(s) changed; signals: jvmcontract:holds×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261117-233000-example-286-s-fixed-protected-state-task.json",
+    "sha256": "f4a9d0595952072cecfd8c15b5f946ceb688db8973570846285a94f900d497f6",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261117-233000-example-286-s-fixed-protected-state-task",
+      "title": "Example 286's fixed protected-state task through ProtectedBean's setter contracts: binding writes only what the permitted setters' proved effect contracts write (ASCII trial, bound 8)",
+      "description": "The state stream of the domain-advances brief, step 6 (the effect contract on 286's real path). proofs/beans/protected-setters.contract gives ProtectedBean's permitted setters (setName, setFavouriteColour, setTouchy) effect contracts: each writes its own field and nothing else that was there before the call, reads nothing that was, and leaves the String it is given. proofs/prove.py --contracts puts them beside the simpleMatch lemma; the check proves each contract first and uses it where the bean wrapper's stand-in (ProtectedBeanStandIn, sampled on 5.3.19) calls the setter, so the result rests on the setters' contracts, not their bodies. ProtectedBean has a java.util.Map field (someMap), which no property check made an object of: a write set's check now frames such a field by identity (harness::FieldKind::Reference; lib/tests/claims.rs a_write_set_frames_a_field_of_a_type_the_check_makes_no_object_of_by_identity), which is what the second use of the contract showed the first (AccountBean, String and boolean fields only) had hidden. The run is the trial of job 20261117-222610 (field also ASCII, the corrected formalization the stream proposes; the frozen claim's non-ASCII toLowerCase() is the unchanged blocker), at the claim's bound 8. A capped probe at bound 7 proved it in 93 s, naming the contracts of setName and setTouchy (favouriteColour, 15 units, is beyond the bound). Its work folder is its own; verification/.work-286/state-stand-in, which the accepted refutation reads, is untouched.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "B11"
+      ],
+      "links": {
+        "examples": [
+          "286"
+        ],
+        "paths": [
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/beans/protected-setters.contract",
+          "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
+          "lib/src/equivalence.rs"
+        ]
+      },
+      "expected": "exit 0 with 'verdict: verified (expected verified)' at bound 8, the trial line, three 'effect: ✓' lines, and the effect contracts of setName and setTouchy among the stated assumptions",
+      "submitted": {
+        "at": "2026-11-17T23:30:00+00:00",
+        "session": "9896d870-fb47-4f3c-ba4d-5b1d3e64719c"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "4G",
+        "duration": "15m",
+        "memoryLimit": "8G",
+        "timeout": "2h",
+        "notes": "the same trial without contracts took 285 s at bound 8 in job 222610 (peak 2.1 GiB); the bound-7 probe with contracts took 93 s"
+      },
+      "steps": [
+        {
+          "name": "fixed-protected-state-mutation at bound 8 over ASCII names through the setters' effect contracts: a trial, not the claim",
+          "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py fixed-protected-state-mutation --assume-also 'field.chars().allMatch(c -> c < 128)' --contracts examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/beans/protected-setters.contract --timeout 5000 --work verification/.work-286/state-contracts",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/.work-286/state-contracts/fixed-protected-state-mutation/outcome.json",
+        "verification/.work-286/state-contracts/fixed-protected-state-mutation/evidence.json",
+        "verification/.work-286/state-contracts/fixed-protected-state-mutation/stderr.txt"
+      ]
+    }
+  },
+  "sourceCommit": "be4ac525570efafc1daf4ebdcdde19b2d3737090",
+  "startedAt": "2026-11-17T23:37:24+00:00",
+  "finishedAt": "2026-11-17T23:45:13+00:00",
+  "wallSeconds": 469.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 129203,
+    "workers": 10,
+    "cpus": 20.0,
+    "memoryBudgetBytes": 47244640256,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 8589934592,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 900.0,
+    "notes": "the same trial without contracts took 285 s at bound 8 in job 222610 (peak 2.1 GiB); the bound-7 probe with contracts took 93 s"
+  },
+  "usage": {
+    "peakMemoryBytes": 2814767104,
+    "wallSeconds": 268.9,
+    "cpuSeconds": 268.4,
+    "memoryOfEstimate": 0.66,
+    "durationOfEstimate": 0.3
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 199.218,
+      "cpuSeconds": 198.943,
+      "cpuThrottledSeconds": 0.372,
+      "peakMemoryBytes": 2685837312,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "93d846de8ed5bf321b99735250f57ac4edd79079ba30b540f5182a91ab4c8e22",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261117-233000-example-286-s-fixed-protected-state-task/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 19s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "fixed-protected-state-mutation at bound 8 over ASCII names through the setters' effect contracts: a trial, not the claim",
+      "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py fixed-protected-state-mutation --assume-also 'field.chars().allMatch(c -> c < 128)' --contracts examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/beans/protected-setters.contract --timeout 5000 --work verification/.work-286/state-contracts",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 268.925,
+      "cpuSeconds": 268.396,
+      "cpuThrottledSeconds": 16.633,
+      "peakMemoryBytes": 2814767104,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-fixed-protected-state-mutation.log",
+        "lines": 22,
+        "bytes": 7894,
+        "sha256": "3a26333f7c8968b6793f7c379d5a0355a07b55f287022a361758938c5aea65dd",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 1
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 18,
+          "text": "✓ example286.adapter.BindingAdapter#ageAfterBinding satisfies `result == 0` on every input where (field != null && field.indexOf('.') < 0 && field.indexOf('[') < 0 && field.indexOf(']') < 0) && (field.chars().allMatch(c -> c < 128)) (jvmcontract's own checker (CaDiCaL): 1 properties proved over uppe",
+          "groups": [
+            "example286.adapter.BindingAdapter#ageAfterBinding satisfies `result == 0` on every input where (field != null && field.indexOf('.') < 0 && field.indexOf('[') < 0 && field.indexOf(']') < 0) && (field.chars().allMatch(c -> c < 128)) (jvmcontract's own checker (CaDiCaL): 1 properties proved over upperCasePattern: boolean × field: String of ≤ 8 code units, not null in 175.7 s; loops unwound 16 times with unwinding assertions)"
+          ]
+        }
+      ],
+      "tail": [
+        "a trial: the claim's assumption and also field.chars().allMatch(c -> c < 128), not the claim's domain: it is no answer to the claim",
+        "with the effect contracts of proofs/beans/protected-setters.contract, proved first and used at their calls",
+        "lemma: note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "lemma: note: by induction on `pattern.length()`: a call simpleMatch makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with n",
+        "lemma: ✓ org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pat",
+        "lemma:   not vacuous: simpleMatch(pattern=\"\", str=\"\") reaches the calls",
+        "effect: frame: setName writes this.name; after the call, this.age == \\old(this.age) && this.favouriteColour == \\old(this.favouriteColour) && this.touchy == \\old(this.touchy) && this.someMap == \\old(this.someMap)",
+        "effect: ✓ example286.adapter.ProtectedBean#setName satisfies `(this.name == name) && this.age == \\old(this.age) && this.favouriteColour == \\old(this.favouriteColour) && this.touchy == \\old(this.touchy) && this.someMap == \\old(this.someMap)`, and writes this.name and nothing else that was there befor",
+        "effect: frame: setFavouriteColour writes this.favouriteColour; after the call, this.name == \\old(this.name) && this.age == \\old(this.age) && this.touchy == \\old(this.touchy) && this.someMap == \\old(this.someMap)",
+        "effect: ✓ example286.adapter.ProtectedBean#setFavouriteColour satisfies `(this.favouriteColour == favouriteColour) && this.name == \\old(this.name) && this.age == \\old(this.age) && this.touchy == \\old(this.touchy) && this.someMap == \\old(this.someMap)`, and writes this.favouriteColour and nothing els",
+        "effect: frame: setTouchy writes this.touchy; after the call, this.name == \\old(this.name) && this.age == \\old(this.age) && this.favouriteColour == \\old(this.favouriteColour) && this.someMap == \\old(this.someMap)",
+        "effect: ✓ example286.adapter.ProtectedBean#setTouchy satisfies `(this.touchy == touchy) && this.name == \\old(this.name) && this.age == \\old(this.age) && this.favouriteColour == \\old(this.favouriteColour) && this.someMap == \\old(this.someMap)`, and writes this.touchy and nothing else that was there b",
+        "note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target",
+        "note: lemma, proved above by induction on `pattern.length()` in 71.0 s: org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.reg",
+        "note: effect contract, proved above in 6.0 s: example286.adapter.ProtectedBean#setName writes this.name and nothing else that was there before the call, satisfies `this.name == name`, and reads nothing that was there before it (no final field of its receiver or arguments either, and a static field o",
+        "note: effect contract, proved above in 6.0 s: example286.adapter.ProtectedBean#setFavouriteColour writes this.favouriteColour and nothing else that was there before the call, satisfies `this.favouriteColour == favouriteColour`, and reads nothing that was there before it (no final field of its receiv",
+        "note: effect contract, proved above in 6.3 s: example286.adapter.ProtectedBean#setTouchy writes this.touchy and nothing else that was there before the call, satisfies `this.touchy == touchy`, and reads nothing that was there before it (no final field of its receiver or arguments either, and a static",
+        "✓ example286.adapter.BindingAdapter#ageAfterBinding satisfies `result == 0` on every input where (field != null && field.indexOf('.') < 0 && field.indexOf('[') < 0 && field.indexOf(']') < 0) && (field.chars().allMatch(c -> c < 128)) (jvmcontract's own checker (CaDiCaL): 1 properties proved over uppe",
+        "  not vacuous: ageAfterBinding(upperCasePattern=true, field=\"\") reaches the calls",
+        "",
+        "verdict: verified (expected verified); paths 193, solver calls 908, variables 2744679; outcome in verification/.work-286/state-contracts/fixed-protected-state-mutation/outcome.json",
+        "a trial at bound 8 and unwinding 16, not the claim's (8): it is no answer to the claim, and evidence.json says so"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-286/state-contracts/fixed-protected-state-mutation/outcome.json",
+      "change": "added",
+      "bytes": 32459,
+      "sha256": "1c810e7f21172ddbad77954179026e6ddd01cb635efcf2a37f4db1437e8f4a62",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-286/state-contracts/fixed-protected-state-mutation/evidence.json",
+      "change": "added",
+      "bytes": 3286,
+      "sha256": "dff8e6e452c18f90cdb022541491f5d17749f24f8c7cdebb9c1e31ac343c7e5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-286/state-contracts/fixed-protected-state-mutation/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-17T23:45:44+00:00",
+    "applied": [
+      "verification/.work-286/state-contracts/fixed-protected-state-mutation/outcome.json",
+      "verification/.work-286/state-contracts/fixed-protected-state-mutation/evidence.json",
+      "verification/.work-286/state-contracts/fixed-protected-state-mutation/stderr.txt"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "cfd89a23621293907f61b80a909667cc3d96dd20",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/cfd89a23621293907f61b80a909667cc3d96dd20/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

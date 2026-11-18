@@ -1,0 +1,688 @@
+--- /dev/null
++++ b/verification/.work-286/state-stand-in/vulnerable-protected-state-mutation/outcome.json
+@@ -0,0 +1,281 @@
++[
++  {
++    "verdict": "violation",
++    "target": "example286.adapter.BindingAdapter#ageAfterBinding",
++    "domain": "upperCasePattern: boolean × field: String of ≤ 8 code units, not null",
++    "assume": "field != null && field.indexOf('.') < 0 && field.indexOf('[') < 0 && field.indexOf(']') < 0",
++    "assert": "result == 0",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "ageAfterBinding(upperCasePattern=false, field=\"Age\")",
++      "outcome": "32",
++      "values": [
++        "false",
++        "\"Age\""
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "upperCasePattern",
++          "type": "boolean",
++          "value": false
++        },
++        {
++          "name": "field",
++          "type": "java.lang.String",
++          "value": {
++            "kind": "string",
++            "units": [
++              65,
++              103,
++              101
++            ]
++          }
++        }
++      ],
++      "call": {
++        "class": "example286.adapter.BindingAdapter",
++        "class_file": "example286/adapter/BindingAdapter.class",
++        "classes": "after",
++        "method": "ageAfterBinding",
++        "descriptor": "(ZLjava/lang/String;)I",
++        "static": true,
++        "arguments": [
++          {
++            "name": "upperCasePattern",
++            "type": "boolean",
++            "value": false,
++            "from": "upperCasePattern"
++          },
++          {
++            "name": "field",
++            "type": "java.lang.String",
++            "value": {
++              "kind": "string",
++              "units": [
++                65,
++                103,
++                101
++              ]
++            },
++            "from": "field"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 5.0 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain upperCasePattern: boolean × field: String of ≤ 8 code units, not null",
++    "problem": null,
++    "statement": "verification/.work-286/state-stand-in/vulnerable-protected-state-mutation/work/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of example286.adapter.BindingAdapter#ageAfterBinding violated: `result == 0` where field != null && field.indexOf('.') < 0 && field.indexOf('[') < 0 && field.indexOf(']') < 0:\n  ageAfterBinding(upperCasePattern=false, field=\"Age\")\n    outcome: 32",
++        "uri": null,
++        "line": 38
++      }
++    ],
++    "output": "lemma: note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target\nlemma: note: by induction on `pattern.length()`: a call simpleMatch makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with no verdict\nlemma: ✓ org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` on every input where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128) && str.chars().allMatch(c -> c < 128) (jvmcontract's own checker (CaDiCaL): 1 properties proved over pattern: String of ≤ 8 code units, not null × str: String of ≤ 8 code units, not null in 64.9 s; loops unwound 16 times with unwinding assertions)\nlemma:   not vacuous: simpleMatch(pattern=\"\", str=\"\") reaches the calls\nnote: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target\nnote: lemma, proved above by induction on `pattern.length()` in 65.5 s: org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128) && str.chars().allMatch(c -> c < 128), on Strings of at most 8 code units; its calls within that are taken to return what it states, and any other runs the method as written\n✗ Property of example286.adapter.BindingAdapter#ageAfterBinding violated: `result == 0` where field != null && field.indexOf('.') < 0 && field.indexOf('[') < 0 && field.indexOf(']') < 0:\n  ageAfterBinding(upperCasePattern=false, field=\"Age\")\n    outcome: 32\n  (found by jvmcontract's own checker (CaDiCaL) in 5.0 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain upperCasePattern: boolean × field: String of ≤ 8 code units, not null)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "verification/.work-286/state-stand-in/vulnerable-protected-state-mutation/work",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 4.96096646,
++      "properties": 1,
++      "unwind": 16,
++      "max_array_length": 8,
++      "stage": "[-100000:100000]",
++      "native": {
++        "paths": 118,
++        "merges": 0,
++        "solver_calls": 432,
++        "solving_seconds": 0.031393794,
++        "gates_evaluated": 21075,
++        "evaluating_seconds": 0.000444214,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 6636,
++        "clauses": 21646,
++        "seconds": 0.088195931,
++        "loading_seconds": 0.003783063,
++        "decoding_seconds": 0.000623582,
++        "encoding_seconds": 0.018062122,
++        "witness_seconds": 0.000050412,
++        "assumed": [
++          "java.util.ArrayDeque is the tool's model of the class wherever the check runs it (--model), not the JDK's code: an ArrayDeque used as a stack, its elements in an array: ArrayDeque(), push (NullPointerException for null), pop (NoSuchElementException when empty), peek, size, isEmpty and clear (lib/models/java/util/lists/ArrayDeque.java); a constructor or method the model does not keep is the JDK call it names",
++          "java.util.ArrayList is the tool's model of the class wherever the check runs it (--model), not the JDK's code: an ArrayList as an array of its elements and their number: ArrayList() and ArrayList(int), size, isEmpty, get, add, addAll, remove(Object), toArray() and toArray(T[]), and iterator() with its fail-fast iterator (lib/models/java/util/lists/ArrayList.java); a constructor or method the model does not keep is the JDK call it names",
++          "java.util.HashSet is the tool's model of the class wherever the check runs it (--model), not the JDK's code: a HashSet as the keys of the HashMap model, as the JDK's: HashSet(), add, contains, size and isEmpty, an element found by hashCode and equals (lib/models/java/util/lists/HashSet.java); a constructor or method the model does not keep is the JDK call it names",
++          "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL)",
++          "org.springframework.beans.ProtectedBeanStandIn.setPropertyValue stands in for org.springframework.beans.AbstractNestablePropertyAccessor.setPropertyValue(Lorg/springframework/beans/PropertyValue;)V on a receiver of exactly org.springframework.beans.BeanWrapperImpl (--stand-in): its main sampled it against the method on a JVM on this class path, 463616 samples, the two the same on each in what the sampler compares (sha256 87239f48a587c122 of what it printed), and not proved",
++          "the class initializer of org.springframework.beans.PropertyEditorRegistrySupport was not run by the checker: its static state is the one a JVM (JDK 25.0.5, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 92575d045c66), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties spring.xml.ignore, not set, and the result holds where each is as it was; it initialized org.springframework.core.SpringProperties besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 1700.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 1695.131,
++          "seconds": 0.088,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.004,
++            "lowering": 0.001,
++            "symbolic": 0.034,
++            "encoding": 0.018,
++            "solving": 0.031,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 6636,
++            "clauses": 21646
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 71.322,
++        "setup": 0.004,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.088,
++        "replay": 0.004,
++        "jvm": 0.188,
++        "other": 71.036
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "upperCasePattern",
++            "type": "boolean",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "field",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": false,
++            "max_length": 8
++          }
++        ],
++        "shared_arrays": false,
++        "text": "upperCasePattern: boolean × field: String of ≤ 8 code units, not null"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "field != null && field.indexOf('.') < 0 && field.indexOf('[') < 0 && field.indexOf(']') < 0",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "java.util.ArrayDeque is the tool's model of the class wherever the check runs it (--model), not the JDK's code: an ArrayDeque used as a stack, its elements in an array: ArrayDeque(), push (NullPointerException for null), pop (NoSuchElementException when empty), peek, size, isEmpty and clear (lib/models/java/util/lists/ArrayDeque.java); a constructor or method the model does not keep is the JDK call it names",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "java.util.ArrayList is the tool's model of the class wherever the check runs it (--model), not the JDK's code: an ArrayList as an array of its elements and their number: ArrayList() and ArrayList(int), size, isEmpty, get, add, addAll, remove(Object), toArray() and toArray(T[]), and iterator() with its fail-fast iterator (lib/models/java/util/lists/ArrayList.java); a constructor or method the model does not keep is the JDK call it names",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "java.util.HashSet is the tool's model of the class wherever the check runs it (--model), not the JDK's code: a HashSet as the keys of the HashMap model, as the JDK's: HashSet(), add, contains, size and isEmpty, an element found by hashCode and equals (lib/models/java/util/lists/HashSet.java); a constructor or method the model does not keep is the JDK call it names",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL)",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "org.springframework.beans.ProtectedBeanStandIn.setPropertyValue stands in for org.springframework.beans.AbstractNestablePropertyAccessor.setPropertyValue(Lorg/springframework/beans/PropertyValue;)V on a receiver of exactly org.springframework.beans.BeanWrapperImpl (--stand-in): its main sampled it against the method on a JVM on this class path, 463616 samples, the two the same on each in what the sampler compares (sha256 87239f48a587c122 of what it printed), and not proved",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the class initializer of org.springframework.beans.PropertyEditorRegistrySupport was not run by the checker: its static state is the one a JVM (JDK 25.0.5, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 92575d045c66), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties spring.xml.ignore, not set, and the result holds where each is as it was; it initialized org.springframework.core.SpringProperties besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        },
++        {
++          "kind": "summary",
++          "text": "org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128) && str.chars().allMatch(c -> c < 128), on Strings of at most 8 code units, by induction on `pattern.length()`: proved beside this check, at its bounds, and applied at the method's calls within that; any other call runs the method as written",
++          "basis": "proved"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 0",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 16,
++        "max_array_length": null,
++        "complete": false,
++        "max_value_length": 8
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:a84c408532ac54761e9ae4f943bad8f7389befb6ed6090d8b724830bd81b8e54",
++        "classes": 35,
++        "jdk": "25.0.5",
++        "values": [
++          {
++            "source": "jvmcontract String model 6: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++            "jdk": "25.0.5",
++            "level": "tested",
++            "leaves_out": [
++              "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++              "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++              "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++              "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
++            ]
++          }
++        ]
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/.work-286/state-stand-in/vulnerable-protected-state-mutation/evidence.json
+@@ -0,0 +1,64 @@
++{
++ "schema": "beside-route-evidence/v1",
++ "example": "286",
++ "task": "vulnerable-protected-state-mutation",
++ "claim": {
++  "file": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/claims/protected-age-not-mutated.json",
++  "sha256": "034f00f65990e3e8e33c873be6bdb64d88e20cbe0357fb4fa86d38374fa87354"
++ },
++ "bound": {
++  "maxArrayLength": 8,
++  "unwind": 16,
++  "trial": false
++ },
++ "artifacts": [
++  {
++   "revision": "vulnerable-release",
++   "name": "spring-context-5.3.18.jar",
++   "sha256": "6f307ea6e140d7f6f7fcffc7bb8c1540dd244c1039d8f7e7b8f3ddec6c73f59c"
++  },
++  {
++   "revision": "vulnerable-release",
++   "name": "spring-beans-5.3.18.jar",
++   "sha256": "e962d99bf7b3753cded86ce8ce6b4be5bed27d0b59feeb2a85948e29bba2807d"
++  },
++  {
++   "revision": "vulnerable-release",
++   "name": "spring-core-5.3.18.jar",
++   "sha256": "ca6fbdcf571fe1ee036d8e0b990175169baf629d38a8714f59e0e0fdc8f7a361"
++  },
++  {
++   "revision": "vulnerable-release",
++   "name": "spring-jcl-5.3.18.jar",
++   "sha256": "5769aae0e6addd8f5f59cbacd1b0635d819851e66baec4fce7d6c1fad1fadf8e"
++  }
++ ],
++ "adapter": {
++  "sources": {
++   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/replay/adapter/example286/adapter/ProtectedBean.java": "cd7f42dec19cc30e12dc287f9282cabc2997762fc8ee010d3cb486cf2d6550c9",
++   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/replay/adapter/example286/adapter/ExposedDataBinder.java": "7078b9eeab977262bbddf456a5a98a31051e5f320c6c6b21fdb98ccaceab2621",
++   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/replay/adapter/example286/adapter/BinderDecisionAdapter.java": "3c751a2c1a30171944022746cd321990f98c0b3b2be16d4960f2f83433a98975",
++   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/replay/adapter/example286/adapter/BindingAdapter.java": "708dd4126be7b4051ddde0ac44bdecd5b65f5513179a55573de60a580b40aaf5",
++   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/stand-ins/org/springframework/beans/ProtectedBeanStandIn.java": "352ee64769bb8e24f2dc48e15cf2994ceadbb1607f70f81513648c1363a0d1d7",
++   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/stand-ins/org/springframework/beans/ProtectedBeanTypeStandIn.java": "04e731b84d4288b693d18f580eeb43f49acadff4a257faa5e468255899f0a780"
++  },
++  "classes": [
++   {
++    "folder": "adapter-vulnerable-release",
++    "sha256": "7454b6c4ddc3deedb301bb115874ad02df2b22aa1b3b7c064c5e2295e9d38246"
++   },
++   {
++    "folder": "stand-ins-vulnerable-release",
++    "sha256": "a61ccf5d7ba5b53a4b8e263f1cf9463e1503bbe7a139425f187fc4715a613a4a"
++   }
++  ]
++ },
++ "jvmcontract": {
++  "path": "jvmcontract",
++  "sha256": "651ac82516f149e2729cb610add6d9fca174673aae1fd55b3d3369d421476adf"
++ },
++ "driver": {
++  "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
++  "sha256": "4a1c2739fcf0fdf0caa769dac9c80d10fbd9519ededd41bb619f25dc5250ec8e"
++ }
++}
+--- /dev/null
++++ b/verification/.work-286/state-stand-in/fixed-protected-state-mutation/outcome.json
+@@ -0,0 +1,267 @@
++[
++  {
++    "verdict": "unverifiable",
++    "target": "example286.adapter.BindingAdapter#ageAfterBinding",
++    "domain": "upperCasePattern: boolean × field: String of ≤ 8 code units, not null",
++    "assume": "field != null && field.indexOf('.') < 0 && field.indexOf('[') < 0 && field.indexOf(']') < 0",
++    "assert": "result == 0",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.util.LinkedHashSet.<init>()V@jdk-25.0.5 (java.util.LinkedHashSet.<init>() at org.springframework.validation.DefaultMessageCodesResolver.resolveMessageCodes:152); jdk-reference-method:java.lang.String.toLowerCase()Ljava/lang/String;@jdk-25.0.5 (java.lang.String.toLowerCase() at org.springframework.validation.DataBinder.isAllowed:828). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption",
++    "statement": "verification/.work-286/state-stand-in/fixed-protected-state-mutation/work/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "example286.adapter.BindingAdapter#ageAfterBinding cannot be verified: the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.util.LinkedHashSet.<init>()V@jdk-25.0.5 (java.util.LinkedHashSet.<init>() at org.springframework.validation.DefaultMessageCodesResolver.resolveMessageCodes:152); jdk-reference-method:java.lang.String.toLowerCase()Ljava/lang/String;@jdk-25.0.5 (java.lang.String.toLowerCase() at org.springframework.validation.DataBinder.isAllowed:828). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption",
++        "uri": null,
++        "line": 38
++      }
++    ],
++    "output": "lemma: note: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target\nlemma: note: by induction on `pattern.length()`: a call simpleMatch makes of itself is taken to satisfy the property where its arguments are within the assumption and the bounds and the measure on them is at least zero and below that of the call under proof; any other such call ends the check with no verdict\nlemma: ✓ org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` on every input where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128) && str.chars().allMatch(c -> c < 128) (jvmcontract's own checker (CaDiCaL): 1 properties proved over pattern: String of ≤ 8 code units, not null × str: String of ≤ 8 code units, not null in 67.2 s; loops unwound 16 times with unwinding assertions)\nlemma:   not vacuous: simpleMatch(pattern=\"\", str=\"\") reaches the calls\nnote: javac 25.0.5 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target\nnote: lemma, proved above by induction on `pattern.length()` in 67.8 s: org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128) && str.chars().allMatch(c -> c < 128), on Strings of at most 8 code units; its calls within that are taken to return what it states, and any other runs the method as written\n✗ example286.adapter.BindingAdapter#ageAfterBinding cannot be verified: the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-constructor:java.util.LinkedHashSet.<init>()V@jdk-25.0.5 (java.util.LinkedHashSet.<init>() at org.springframework.validation.DefaultMessageCodesResolver.resolveMessageCodes:152); jdk-reference-method:java.lang.String.toLowerCase()Ljava/lang/String;@jdk-25.0.5 (java.lang.String.toLowerCase() at org.springframework.validation.DataBinder.isAllowed:828). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption\n",
++    "work": "verification/.work-286/state-stand-in/fixed-protected-state-mutation/work",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 5.022231392,
++      "properties": 1,
++      "unwind": 16,
++      "max_array_length": 8,
++      "stage": null,
++      "native": {
++        "paths": 187,
++        "merges": 0,
++        "solver_calls": 672,
++        "solving_seconds": 0.073577052,
++        "gates_evaluated": 32106,
++        "evaluating_seconds": 0.000744989,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 9236,
++        "clauses": 30265,
++        "seconds": 0.196127149,
++        "loading_seconds": 0.00475981,
++        "decoding_seconds": 0.000703488,
++        "encoding_seconds": 0.046680107,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "java.beans.PropertyChangeEvent is the tool's model of the class wherever the check runs it (--model), not the JDK's code: a PropertyChangeEvent as its fields: the constructor, getPropertyName, getNewValue, getOldValue and the propagation id, the source kept by the model of EventObject (lib/models/java/beans/PropertyChangeEvent.java); a constructor or method the model does not keep is the JDK call it names",
++          "java.util.ArrayDeque is the tool's model of the class wherever the check runs it (--model), not the JDK's code: an ArrayDeque used as a stack, its elements in an array: ArrayDeque(), push (NullPointerException for null), pop (NoSuchElementException when empty), peek, size, isEmpty and clear (lib/models/java/util/lists/ArrayDeque.java); a constructor or method the model does not keep is the JDK call it names",
++          "java.util.ArrayList is the tool's model of the class wherever the check runs it (--model), not the JDK's code: an ArrayList as an array of its elements and their number: ArrayList() and ArrayList(int), size, isEmpty, get, add, addAll, remove(Object), toArray() and toArray(T[]), and iterator() with its fail-fast iterator (lib/models/java/util/lists/ArrayList.java); a constructor or method the model does not keep is the JDK call it names",
++          "java.util.HashSet is the tool's model of the class wherever the check runs it (--model), not the JDK's code: a HashSet as the keys of the HashMap model, as the JDK's: HashSet(), add, contains, size and isEmpty, an element found by hashCode and equals (lib/models/java/util/lists/HashSet.java); a constructor or method the model does not keep is the JDK call it names",
++          "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL)",
++          "org.springframework.beans.ProtectedBeanStandIn.setPropertyValue stands in for org.springframework.beans.AbstractNestablePropertyAccessor.setPropertyValue(Lorg/springframework/beans/PropertyValue;)V on a receiver of exactly org.springframework.beans.BeanWrapperImpl (--stand-in): its main sampled it against the method on a JVM on this class path, 463616 samples, the two the same on each in what the sampler compares (sha256 87239f48a587c122 of what it printed), and not proved",
++          "org.springframework.beans.ProtectedBeanTypeStandIn.getPropertyType stands in for org.springframework.beans.AbstractNestablePropertyAccessor.getPropertyType(Ljava/lang/String;)Ljava/lang/Class; on a receiver of exactly org.springframework.beans.BeanWrapperImpl (--stand-in): its main sampled it against the method on a JVM on this class path, 397649 samples, the two the same on each in what the sampler compares (sha256 0a011a20b8180911 of what it printed), and not proved",
++          "the class initializer of org.springframework.beans.PropertyEditorRegistrySupport was not run by the checker: its static state is the one a JVM (JDK 25.0.5, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 92575d045c66), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties spring.xml.ignore, not set, and the result holds where each is as it was; it initialized org.springframework.core.SpringProperties besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
++          "the class initializer of org.springframework.util.ClassUtils was not run by the checker: its static state is the one a JVM (JDK 25.0.5, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 83e7cc11afce), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read no system property; it initialized org.springframework.util.ConcurrentReferenceHashMap, org.springframework.util.ConcurrentReferenceHashMap$ReferenceType, org.springframework.util.Assert, org.springframework.util.ConcurrentReferenceHashMap$Segment, org.springframework.util.ConcurrentReferenceHashMap$ReferenceManager besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "the default locale's language is not Turkish, Azeri or Lithuanian (tr, az, lt): String.toLowerCase() reads Locale.getDefault(), and only those three change how an ASCII letter is lowered"
++        ]
++      },
++      "gap_mode": "strict",
++      "gaps": [
++        {
++          "id": "jdk-constructor:java.util.LinkedHashSet.<init>()V@jdk-25.0.5",
++          "kind": "jdk-constructor",
++          "call": "java.util.LinkedHashSet.<init>()",
++          "sites": [
++            "org.springframework.validation.DefaultMessageCodesResolver.resolveMessageCodes:152"
++          ],
++          "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
++          "treatment": "refused"
++        },
++        {
++          "id": "jdk-reference-method:java.lang.String.toLowerCase()Ljava/lang/String;@jdk-25.0.5",
++          "kind": "jdk-reference-method",
++          "call": "java.lang.String.toLowerCase()",
++          "sites": [
++            "org.springframework.validation.DataBinder.isAllowed:828"
++          ],
++          "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused"
++        }
++      ],
++      "deadline_seconds": 1700.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 1695.178,
++          "seconds": 0.196,
++          "ended": "no-verdict",
++          "ending": "no-verdict",
++          "phases": {
++            "loading": 0.005,
++            "lowering": 0.001,
++            "symbolic": 0.07,
++            "encoding": 0.047,
++            "solving": 0.074,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 9236,
++            "clauses": 30265
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 73.515,
++        "setup": 0.002,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.196,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 73.317
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "upperCasePattern",
++            "type": "boolean",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "field",
++            "type": "java.lang.String",
++            "kind": "value",
++            "null": false,
++            "max_length": 8
++          }
++        ],
++        "shared_arrays": false,
++        "text": "upperCasePattern: boolean × field: String of ≤ 8 code units, not null"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "field != null && field.indexOf('.') < 0 && field.indexOf('[') < 0 && field.indexOf(']') < 0",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "java.beans.PropertyChangeEvent is the tool's model of the class wherever the check runs it (--model), not the JDK's code: a PropertyChangeEvent as its fields: the constructor, getPropertyName, getNewValue, getOldValue and the propagation id, the source kept by the model of EventObject (lib/models/java/beans/PropertyChangeEvent.java); a constructor or method the model does not keep is the JDK call it names",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "java.util.ArrayDeque is the tool's model of the class wherever the check runs it (--model), not the JDK's code: an ArrayDeque used as a stack, its elements in an array: ArrayDeque(), push (NullPointerException for null), pop (NoSuchElementException when empty), peek, size, isEmpty and clear (lib/models/java/util/lists/ArrayDeque.java); a constructor or method the model does not keep is the JDK call it names",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "java.util.ArrayList is the tool's model of the class wherever the check runs it (--model), not the JDK's code: an ArrayList as an array of its elements and their number: ArrayList() and ArrayList(int), size, isEmpty, get, add, addAll, remove(Object), toArray() and toArray(T[]), and iterator() with its fail-fast iterator (lib/models/java/util/lists/ArrayList.java); a constructor or method the model does not keep is the JDK call it names",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "java.util.HashSet is the tool's model of the class wherever the check runs it (--model), not the JDK's code: a HashSet as the keys of the HashMap model, as the JDK's: HashSet(), add, contains, size and isEmpty, an element found by hashCode and equals (lib/models/java/util/lists/HashSet.java); a constructor or method the model does not keep is the JDK call it names",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL)",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "org.springframework.beans.ProtectedBeanStandIn.setPropertyValue stands in for org.springframework.beans.AbstractNestablePropertyAccessor.setPropertyValue(Lorg/springframework/beans/PropertyValue;)V on a receiver of exactly org.springframework.beans.BeanWrapperImpl (--stand-in): its main sampled it against the method on a JVM on this class path, 463616 samples, the two the same on each in what the sampler compares (sha256 87239f48a587c122 of what it printed), and not proved",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "org.springframework.beans.ProtectedBeanTypeStandIn.getPropertyType stands in for org.springframework.beans.AbstractNestablePropertyAccessor.getPropertyType(Ljava/lang/String;)Ljava/lang/Class; on a receiver of exactly org.springframework.beans.BeanWrapperImpl (--stand-in): its main sampled it against the method on a JVM on this class path, 397649 samples, the two the same on each in what the sampler compares (sha256 0a011a20b8180911 of what it printed), and not proved",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the class initializer of org.springframework.beans.PropertyEditorRegistrySupport was not run by the checker: its static state is the one a JVM (JDK 25.0.5, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 92575d045c66), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties spring.xml.ignore, not set, and the result holds where each is as it was; it initialized org.springframework.core.SpringProperties besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the class initializer of org.springframework.util.ClassUtils was not run by the checker: its static state is the one a JVM (JDK 25.0.5, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 83e7cc11afce), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read no system property; it initialized org.springframework.util.ConcurrentReferenceHashMap, org.springframework.util.ConcurrentReferenceHashMap$ReferenceType, org.springframework.util.Assert, org.springframework.util.ConcurrentReferenceHashMap$Segment, org.springframework.util.ConcurrentReferenceHashMap$ReferenceManager besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the default locale's language is not Turkish, Azeri or Lithuanian (tr, az, lt): String.toLowerCase() reads Locale.getDefault(), and only those three change how an ASCII letter is lowered",
++          "basis": "engine"
++        },
++        {
++          "kind": "summary",
++          "text": "org.springframework.util.PatternMatchUtils#simpleMatch(java.lang.String,java.lang.String) satisfies `result == java.util.regex.Pattern.compile(String.join(\".*\", java.util.Arrays.stream(pattern.split(\"\\\\*\", -1)).map(java.util.regex.Pattern::quote).toArray(String[]::new)), java.util.regex.Pattern.DOTALL).matcher(str).matches()` where pattern != null && str != null && pattern.chars().allMatch(c -> c < 128) && str.chars().allMatch(c -> c < 128), on Strings of at most 8 code units, by induction on `pattern.length()`: proved beside this check, at its bounds, and applied at the method's calls within that; any other call runs the method as written",
++          "basis": "proved"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 0",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 16,
++        "max_array_length": null,
++        "complete": false,
++        "max_value_length": 8
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:a84c408532ac54761e9ae4f943bad8f7389befb6ed6090d8b724830bd81b8e54",
++        "classes": 35,
++        "jdk": "25.0.5",
++        "values": [
++          {
++            "source": "jvmcontract String model 6: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++            "jdk": "25.0.5",
++            "level": "tested",
++            "leaves_out": [
++              "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++              "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++              "the content of a concatenation that could pass 64 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++              "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
++            ]
++          }
++        ]
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/.work-286/state-stand-in/fixed-protected-state-mutation/evidence.json
+@@ -0,0 +1,64 @@
++{
++ "schema": "beside-route-evidence/v1",
++ "example": "286",
++ "task": "fixed-protected-state-mutation",
++ "claim": {
++  "file": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/claims/protected-age-not-mutated.json",
++  "sha256": "034f00f65990e3e8e33c873be6bdb64d88e20cbe0357fb4fa86d38374fa87354"
++ },
++ "bound": {
++  "maxArrayLength": 8,
++  "unwind": 16,
++  "trial": false
++ },
++ "artifacts": [
++  {
++   "revision": "fixed-release",
++   "name": "spring-context-5.3.19.jar",
++   "sha256": "74e575519bd7b5ccb5eea7309b3fb17d2032ed8cf99f0bf33781bbd54c501410"
++  },
++  {
++   "revision": "fixed-release",
++   "name": "spring-beans-5.3.19.jar",
++   "sha256": "fe80777b5d5aea9fd92bdb697616058d551c751a98f19bf9b5e725a43274a8fe"
++  },
++  {
++   "revision": "fixed-release",
++   "name": "spring-core-5.3.19.jar",
++   "sha256": "1af06bd4123873c3cbc9dda4cd5df014b13be253ed313ba81ad3c48e3d0a7992"
++  },
++  {
++   "revision": "fixed-release",
++   "name": "spring-jcl-5.3.19.jar",
++   "sha256": "68b37cd1a37ced08724804c3e343569518faf69f992a4d6a12f85d5ecc070ac8"
++  }
++ ],
++ "adapter": {
++  "sources": {
++   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/replay/adapter/example286/adapter/ProtectedBean.java": "cd7f42dec19cc30e12dc287f9282cabc2997762fc8ee010d3cb486cf2d6550c9",
++   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/replay/adapter/example286/adapter/ExposedDataBinder.java": "7078b9eeab977262bbddf456a5a98a31051e5f320c6c6b21fdb98ccaceab2621",
++   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/replay/adapter/example286/adapter/BinderDecisionAdapter.java": "3c751a2c1a30171944022746cd321990f98c0b3b2be16d4960f2f83433a98975",
++   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/replay/adapter/example286/adapter/BindingAdapter.java": "708dd4126be7b4051ddde0ac44bdecd5b65f5513179a55573de60a580b40aaf5",
++   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/stand-ins/org/springframework/beans/ProtectedBeanStandIn.java": "352ee64769bb8e24f2dc48e15cf2994ceadbb1607f70f81513648c1363a0d1d7",
++   "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/stand-ins/org/springframework/beans/ProtectedBeanTypeStandIn.java": "04e731b84d4288b693d18f580eeb43f49acadff4a257faa5e468255899f0a780"
++  },
++  "classes": [
++   {
++    "folder": "adapter-fixed-release",
++    "sha256": "7454b6c4ddc3deedb301bb115874ad02df2b22aa1b3b7c064c5e2295e9d38246"
++   },
++   {
++    "folder": "stand-ins-fixed-release",
++    "sha256": "a61ccf5d7ba5b53a4b8e263f1cf9463e1503bbe7a139425f187fc4715a613a4a"
++   }
++  ]
++ },
++ "jvmcontract": {
++  "path": "jvmcontract",
++  "sha256": "651ac82516f149e2729cb610add6d9fca174673aae1fd55b3d3369d421476adf"
++ },
++ "driver": {
++  "path": "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
++  "sha256": "4a1c2739fcf0fdf0caa769dac9c80d10fbd9519ededd41bb619f25dc5250ec8e"
++ }
++}

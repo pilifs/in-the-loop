@@ -986,6 +986,34 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   `--rust-jobs 1`.
 - Next: item 6's entry for 290's security claim; `srxyxsns`'s adversarial fixture; then `nzsypymy`; and
   preservation's next commits (its last is still `qmsonuow`).
+- 289's item 6 went to preservation as `domain-advances-preservation-I026`, citing `rqtklpxv`.
+- 2026-11-18, `domain-advances-challenge-I006`, the default line merged onto this one: **done**, in this commit.
+  - The merge is of `rqtklpxv` and the default line's `qplqrrss`, which holds `xpmzppvn` (this line to `twvzrvvw` and
+    state's, merged by the watcher).
+  - The conflicts and how each was settled:
+    - the generated trace files, by `sync.py regenerate`;
+    - 288's notes: the default line's 15, then this line's item 6 note last (`yqwmukvo`), which was the only note
+      this line added;
+    - the router `examples/index.json`: the default line's, rebuilt with `build.py --index-only`.
+  - Nothing else conflicted. `Engine::call` is the watcher's resolution, unchanged: both rules, the lemma's first.
+  - I002's combination, now on one line: the default run on the merged tree includes every countermodel test file
+    and its checker-side test, the stub file among them (`an_effect_contracts_writes_meet_the_induction_and_the_write_set`).
+    The result is under Tests below.
+  - D035, the user's plan that I006 carries, is taken as given:
+    - preservation finishes its 288 cycle and at most one more;
+    - this stream then gets one last cycle to review what preservation committed, and ends.
+    It narrows the brief's "for as long as another stream is still working" and comes first, as the user's.
+- Tests:
+  - the default run on the merged tree passed, 54 of 54. It ran under `MemoryMax=8G` with `--rust-jobs 1` and
+    `RUN_STREAMS_WATCHER` unset. It was not recorded, because Progress was edited while it ran.
+  - `validate_example.py 288` and `289` passed.
+- New on preservation's line, not yet challenged: `mwvyxxyr`. Its call-level records now follow a heap merge's
+  renumbering in `collect`, and a record whose result the state no longer reaches is dropped.
+- Next:
+  - item 5: preservation's `mwvyxxyr` (a call's record and the objects a merge numbers again);
+  - item 6's entry for 290's security claim;
+  - `srxyxsns`'s adversarial fixture, then `nzsypymy`;
+  - per D035, a last cycle on what preservation commits after `mwvyxxyr`, then `done`.
 - Status: working
 
 ## Loop settings
