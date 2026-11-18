@@ -166,6 +166,11 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
     `brief_run.py start` while it runs is refused by its active scope and counts it blocked again. `wait` can
     return `ended` while it still works. A blocked stop is not put to the watcher to run again. The watcher has to
     do each of these by hand, and keep D021's merge order (challenge before state) the same way.
+  - **Relaunched blocked, by hand, once (rerun 1 of 2).** The hand-run loop ended at 01:41 UTC on 2026-11-18,
+    `blocked: waiting for the other streams' next commits (preservation's I023 fix, for I007's last check)`.
+    No question came, because the loop is outside run-streams.sh. Preservation committed the I023 fix
+    (`puuwrruu`) at 01:50, and the watcher relaunched the loop with the same command at 01:50, its scope
+    inactive and its working copy clean.
 - **Needs**:
   - For the session: one of these, so the OOM killer meets the tests, not the session:
     - the test run inside a loop takes fewer binaries at a time;
