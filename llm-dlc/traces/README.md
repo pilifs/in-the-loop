@@ -19,7 +19,7 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | Subagents | 21 |
 | Tokens written | 33,995,240 |
 | Tokens read | 5,737,621,364 (98.1% from cache) |
-| Commits with a trace | 1,074 |
+| Commits with a trace | 1,075 |
 | Log snapshots | 1,393 (3286.0 MB gzipped, 1,162 uploaded) |
 
 ## Sessions
@@ -139,7 +139,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-15 12:23 UTC | [72d38e75-aae0-402e-9b8a-881beec53824](72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | ended | 3 h 33 min | `claude-opus-5-5` | 61 | 471 | 470 | 9 | 10 | 190,640 | 21 |
 | 2026-11-15 14:52 UTC | [Moonshot loop stats backfill](0c1ceb11-1913-4783-af0d-e3fa5724273b/summary.md) | ended | 1 h 21 min | `claude-fable-5-2` | 11 | 116 | 117 | 2 | 0 | 415,695 | 12 |
 | 2026-11-15 16:13 UTC | [a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) | ended | 1 d 8 h | `claude-fable-5-2` | 41 | 1,941 | 1,999 | 18 | 14 | 566,568 | 89 |
-| 2026-11-15 17:27 UTC | [Moonshot loop status](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | open | 2 d 9 h | `claude-opus-5-5` | 256 | 1,634 | 1,484 | 27 | 7 | 564,231 | 332 |
+| 2026-11-15 17:27 UTC | [Moonshot loop status](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | open | 2 d 9 h | `claude-opus-5-5` | 256 | 1,634 | 1,484 | 27 | 7 | 564,231 | 333 |
 | 2026-11-15 17:34 UTC | [48807e20-0bdb-4031-8ced-d21d16fc3816](48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) | ended | 1 h 25 min | `claude-sonnet-5-5` | 1 | 36 | 36 | 2 | 0 | 70,286 | 6 |
 | 2026-11-15 19:24 UTC | [Prove-java-change skill and in-the-loop runtime](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | ended | 2 d 7 h | `claude-fable-5-2` | 45 | 1,065 | 1,148 | 45 | 9 | 466,382 | 313 |
 | 2026-11-15 23:45 UTC | [5399f71b-f38b-4670-8fbe-9aa44d5cd46d](5399f71b-f38b-4670-8fbe-9aa44d5cd46d/summary.md) | ended | 1 h 35 min | `claude-sonnet-5-5` | 3 | 29 | 27 | 2 | 0 | 66,255 | 3 |
@@ -1419,6 +1419,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 1072 | change `srrlvkpw` | Merge the default line into the preservation line: 307's two answers are accepted, by the user's D036 | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/e1864145f1dc8677443d177f6faee417a7ff2d862c73da42977cfa69754c42a3.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/8463d1891e35e10700e2a5572bcc49cb3b82cc4fbc038a701754c9b55c401d36.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/9090e861ccddf9e655c71c2377a905c5373576a92bb47804927954df873d7873.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/7ebf2c29fcceed1cbbce8e9ec5d6c6d686f807ff996a2009d81e9158ee1f0271.jsonl.gz)) |
 | 1073 | change `nwylyxlo` | Merge the challenge stream's record and allocation countermodels and close I028 and I029 in the one-function rule | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/e1864145f1dc8677443d177f6faee417a7ff2d862c73da42977cfa69754c42a3.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/8463d1891e35e10700e2a5572bcc49cb3b82cc4fbc038a701754c9b55c401d36.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/9090e861ccddf9e655c71c2377a905c5373576a92bb47804927954df873d7873.jsonl.gz)), [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/48bdfe2f2e27f2231a6bd7232fa183b6eef68c82fa245ca023fc1922a666d3fa.jsonl.gz)) |
 | 1074 | change `zovyqupz` | Merge the preservation stream's line, stopped at a boundary: I028 and I029 closed in the one-function rule, 287's and 307's answers rechecked on the fixed checker | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/e1864145f1dc8677443d177f6faee417a7ff2d862c73da42977cfa69754c42a3.jsonl.gz)) |
+| 1075 | change `qtsxxpmp` | Record the merge of stream preservation in the domain-advances brief's Progress | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/e1864145f1dc8677443d177f6faee417a7ff2d862c73da42977cfa69754c42a3.jsonl.gz)) |
 
 ## Logs
 

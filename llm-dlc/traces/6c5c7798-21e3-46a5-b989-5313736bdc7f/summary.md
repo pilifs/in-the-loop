@@ -2575,6 +2575,12 @@ change `zovyqupznzml` · [log `e1864145f1dc`](https://terminalvalue.net/raw-trac
 
 At the user's word, preservation was stopped after its last cycle. That cycle merged the challenge stream's record and allocation countermodels and closed both items. A call's record now keeps an array result's cells as returned, a merge chooses a String result by its guard, and outcome bits are named by the call's inputs (I028). The one-function rule now refuses arrays of references, application objects and grown Strings (I029). Its checker-side tests are lib/tests/record_countermodels.rs and allocation_countermodels.rs. Capped probes at the frozen bounds give the same verdicts as before: 287 and 307 preservation verified, 307's mutant refuted, 289 and 290 verified. lib/tests/costs.json conflicted, with two merge bases. It was merged by rows against both, with no clashes, and test_costs.py lint agrees. The generated trace files were regenerated.
 
+### Record the merge of stream preservation in the domain-advances brief's Progress
+
+change `qtsxxpmpwyyv` · [log `e1864145f1dc`](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/e1864145f1dc8677443d177f6faee417a7ff2d862c73da42977cfa69754c42a3.jsonl.gz)
+
+The run's watcher merged stream preservation (nwylyxloopst) into the default line; the brief's status is now blocked: stream preservation: working.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/e1864145f1dc8677443d177f6faee417a7ff2d862c73da42977cfa69754c42a3.jsonl.gz) has every step in between: reasoning, tool calls and their results.

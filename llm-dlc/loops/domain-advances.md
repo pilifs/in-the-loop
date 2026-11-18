@@ -227,7 +227,8 @@ temporary folders a check leaves) is taken up.
 - 2026-11-17, the watcher: merged stream evidence (vqquvmnmmoqx), which says done.
 - 2026-11-18, the watcher: merged stream challenge (yulpuuronznk), which says done.
 - 2026-11-18, the watcher: merged stream state (kmytvuopwxtu), which says done.
-- Status: working
+- 2026-11-18, the watcher: merged stream preservation (nwylyxloopst), which says working.
+- Status: blocked: stream preservation: working
 
 ## Loop settings
 
