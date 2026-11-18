@@ -17,9 +17,9 @@ loop or not.
 | Category | Loops | Runs | Cycles | With a commit | Commits | Jobs | Active | Tokens written | Cost | Per committed cycle |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | moonshot | 6 | 7 | 56 | 53 | 96 | 64 (57 passed, 7 failed) | 2.3 d | 7,291,647 | $855.37 | $16.14 |
-| brief | 30 | 58 | 330 | 325 | 398 | 205 (160 passed, 45 failed) | 3.7 d | 14,304,728 | $1,194.40 | $3.68 |
+| brief | 30 | 58 | 331 | 326 | 399 | 205 (160 passed, 45 failed) | 3.7 d | 14,325,152 | $1,196.18 | $3.67 |
 | verification | 1 | 62 | 0 | 0 | 242 | 0 | 18 h 17 min | 263,932 | $16.18 | n/a |
-| **all** | 37 | 127 | 386 | 378 | 736 | 269 (217 passed, 52 failed) | 6.8 d | 21,860,307 | $2,065.95 | $5.47 |
+| **all** | 37 | 127 | 387 | 379 | 737 | 269 (217 passed, 52 failed) | 6.8 d | 21,880,731 | $2,067.74 | $5.46 |
 
 The moonshot row includes `examples-by-hand` (3 cycles, $55.22), which a person ran by hand before the script existed. See the note under [Moonshots](#moonshots).
 
@@ -173,7 +173,7 @@ streams for a brief that ran them. The *with its streams* row adds the streams t
 | **`stream-conductor`** | 1 | 3 | 3 | 4 | 0 | `claude-opus-5-5` | 2026-11-14 | 37 min | 32 min | 12 min | 165,911 | $9.54 | $3.30 | $2.39 |
 | **`test-cost`** | 2 | 11 | 11 | 12 | 0 | `claude-opus-5-5` | 2026-11-15 | 2 h 30 min | 1 h 55 min | 9.4 min | 378,927 | $25.69 | $2.34 | $2.14 |
 | **`rehearsal`** | 2 | 2 | 2 | 2 | 0 | `claude-sonnet-5-5` | 2026-11-17 | 3.2 min | 2.3 min | 1.1 min | 8,137 | $0.51 | $0.19 | $0.26 |
-| **`domain-advances-challenge`** | 2 | 25 | 23 | 24 | 0 | `claude-opus-5-5` | 2026-11-17 to 11-18 | 11 h 39 min | 9 h 35 min | 13 min | 1,058,339 | $80.34 | $2.75 | $3.35 |
+| **`domain-advances-challenge`** | 2 | 26 | 24 | 25 | 0 | `claude-opus-5-5` | 2026-11-17 to 11-18 | 11 h 48 min | 9 h 43 min | 13 min | 1,078,763 | $82.12 | $2.88 | $3.28 |
 
 ## Verification loop
 
@@ -250,7 +250,7 @@ run before 2026-11-06) is read from its session's prompts and marked *transcript
 | 2026-11-17 02:54 | [`2026-11-17-025420-rehearsal`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/runs/2026-11-17-025420-rehearsal.md) | brief | `claude-sonnet-5-5` | 1 | 1 | 1.6 min | 1.3 min | $0.22 | blocked | record |
 | 2026-11-17 02:56 | [`2026-11-17-025646-rehearsal`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/runs/2026-11-17-025646-rehearsal.md) | brief | `claude-sonnet-5-5` | 1 | 1 | 1.5 min | 1.1 min | $0.29 | work done | record |
 | 2026-11-17 12:56 | `2026-11-17-125651-domain-advances-challenge` | brief | `claude-opus-5-5` | 18 | 17 | 7 h 24 min | 7 h 01 min | $55.44 | no end recorded | transcript |
-| 2026-11-17 20:20 | `2026-11-17-202035-domain-advances-challenge` | brief | `claude-opus-5-5` | 7 | 7 | 4 h 15 min | 2 h 34 min | $24.90 | no end recorded | transcript |
+| 2026-11-17 20:20 | `2026-11-17-202035-domain-advances-challenge` | brief | `claude-opus-5-5` | 8 | 8 | 4 h 24 min | 2 h 42 min | $26.68 | no end recorded | transcript |
 
 ## Reading these numbers
 

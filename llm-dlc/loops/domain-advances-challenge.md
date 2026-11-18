@@ -894,6 +894,32 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
 - Next: item 6's entries for 286's proposed claim (`claims/proposed/protected-age-kept-two-values.json`), 288's
   `fixed-security` and binding (`ownxunnx`), and 289's other answers; `srxyxsns`'s adversarial fixture; then
   `nzsypymy`.
+- 2026-11-18, item 6, 286's proposed claim (state's `kmytvuop`: two values whose names are inputs, ASCII, `result ==
+  0`): **two wrong implementations satisfy it**. Each is a patch of 5.3.19's `DataBinder.checkAllowedFields` under
+  286's `controls/`, used by no task, with the reasoning in 286's notes.
+  - `second-suppressed-last.patch` returns once it has suppressed two values.
+    - Predicted: the proposed and frozen claims are established on it; the decision lemma and `permitted-fields-preserved`
+      are as on 5.3.19 (its `isAllowed` is the fix's).
+    - On a JVM (JDK 25.0.5, the pinned JARs with the patched class first), with `AGE` disallowed: `aGe=1, AGE=2,
+      Age=32` binds 32, and 5.3.19 gives 0. Two values give 0, as the claim says.
+    - **The replay misses it too**: the driver's 46 probes and the oracle give "holds" and "pass", as on 5.3.19.
+    - The claim's two values move I009's limit from one value to two. Names as an array input up to the bound, or a
+      probe binding three denied names, would catch it.
+  - `all-dropped-once-suppressed.patch` drops every value once one is denied.
+    - Predicted: established under both protected-state claims, which read age alone, and as on 5.3.19 under the
+      claims about `isAllowed`.
+    - On a JVM, `name=bob` beside `Age=32` leaves name null, and 5.3.19 binds it. The replay catches it: 11 legitimate
+      failures across 9 bind probes.
+    - No claim says that a permitted value beside a denied one is still bound.
+  - The claim is state's and the user's, so neither goes in as a claim here. They go as an inbox item to
+    `domain-advances-state`, citing this commit; the id goes in the next entry.
+  - *Audit*: no accepted result rests on the proposed claim, which no task uses. The frozen claim's accepted
+    refutation on 5.3.18 is a witness replayed on a JVM. Nothing for the watcher.
+- Inbox: no open items.
+- Tests: `validate_example.py 286` passed, and `test_costs.py run --changed` passed under `MemoryMax=8G` with
+  `--rust-jobs 1` (22 of 22).
+- Next: item 6's entries for 288's `fixed-security` and binding (`ownxunnx`) and for 289's other answers;
+  `srxyxsns`'s adversarial fixture; then `nzsypymy`.
 - Status: working
 
 ## Loop settings

@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:50.898Z",
-  "ended": "2026-11-18T00:35:42.358Z",
-  "duration_seconds": 41931,
+  "ended": "2026-11-18T00:44:28.279Z",
+  "duration_seconds": 42457,
   "stats": {
-    "turns": 127,
-    "api_calls": 1257,
-    "tool_calls": 1273,
-    "tool_errors": 28,
-    "compactions": 22,
+    "turns": 132,
+    "api_calls": 1286,
+    "tool_calls": 1302,
+    "tool_errors": 30,
+    "compactions": 23,
     "peak_context_tokens": 294636,
     "usage": {
-      "input_tokens": 2560,
-      "output_tokens": 1058339,
-      "cache_read_input_tokens": 152785630,
-      "cache_creation_input_tokens": 3575372
+      "input_tokens": 2618,
+      "output_tokens": 1078763,
+      "cache_read_input_tokens": 155498323,
+      "cache_creation_input_tokens": 3679261
     }
   },
   "tools": {
-    "Bash": 1141,
-    "Edit": 54,
+    "Bash": 1166,
+    "Edit": 55,
+    "Read": 33,
     "Write": 33,
-    "Read": 30,
     "ToolSearch": 9,
     "Monitor": 5,
     "TaskStop": 1
@@ -387,24 +387,38 @@
     {
       "index": 22,
       "started": "2026-11-18T00:29:05.877Z",
-      "ended": "2026-11-18T00:35:42.358Z",
-      "turns": 4,
-      "api_calls": 39,
+      "ended": "2026-11-18T00:36:14.893Z",
+      "turns": 5,
+      "api_calls": 42,
       "usage": {
-        "input_tokens": 78,
-        "output_tokens": 33268,
-        "cache_read_input_tokens": 4431820,
-        "cache_creation_input_tokens": 147169
+        "input_tokens": 84,
+        "output_tokens": 34306,
+        "cache_read_input_tokens": 4917110,
+        "cache_creation_input_tokens": 150701
       },
-      "peak_context_tokens": 160600
+      "peak_context_tokens": 164132
+    },
+    {
+      "index": 23,
+      "started": "2026-11-18T00:36:51.841Z",
+      "ended": "2026-11-18T00:44:28.279Z",
+      "turns": 4,
+      "api_calls": 26,
+      "usage": {
+        "input_tokens": 52,
+        "output_tokens": 19386,
+        "cache_read_input_tokens": 2227403,
+        "cache_creation_input_tokens": 100357
+      },
+      "peak_context_tokens": 113788
     }
   ],
   "log": {
-    "sha256": "6bce594fdc26af1a6a37abeb4ea408463e38cab2396c6ee23e7ddba7c026cf69",
-    "bytes": 32961542,
-    "lines": 10981,
-    "gzip_bytes": 6001596,
-    "path": "llm-dlc/traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/logs/6bce594fdc26af1a6a37abeb4ea408463e38cab2396c6ee23e7ddba7c026cf69.jsonl.gz"
+    "sha256": "4c282ea7bf9f0208252372bfdb9f7942a37a07200643fc6c501f0d624fae5ea7",
+    "bytes": 34020514,
+    "lines": 11265,
+    "gzip_bytes": 6237018,
+    "path": "llm-dlc/traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/logs/4c282ea7bf9f0208252372bfdb9f7942a37a07200643fc6c501f0d624fae5ea7.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -599,6 +613,14 @@
       "summary": "State's last rules hold: a framed field of a type the check makes no object of, the LinkedHashSet and StringJoiner models, the PropertyChangeEvent model and the iterator, each probed with a property a JVM breaks and refused or refuted",
       "body": "The challenge stream of domain-advances, item 5. Each probe ran inline and capped, on the state stream's final commit kmytvuop, built apart. szmkotwz frames a receiver's field of a type the check makes no object of (a java.util.Map) by identity under --writes. A setter that writes into what such a field holds was refused every time: an int[] behind an Object field, a StringBuilder's append, an application object's field, an ArrayList with its model. Each write gate asks Engine::keeps, and the referent is no input. Throwable.initCause is a gap. In an effect contract's proof, any read of the receiver's field is refused first.\n\nxokwnwqo: on JDK 17, 21 and 25 alike, StringJoiner.toString() returns a new String, as the model does. LinkedHashSet's order is refuted where it should be, and its toArray(T[]) into the wrong array type is refused at the aastore. lastIndexOf(int) of a surrogate pair is refuted where it should be. lwxvoqsy/krxzxzow: the PropertyChangeEvent model's toString() is a gap, and a subclass's override runs. ArrayList.remove(Object) and the iterator follow the JDK's order and its hasNext. One conservative miss is noted: the interpreter gives toArray(new String[0]) a non-String[] class, so a true counterexample is called spurious. No accepted result is affected, since no hole was found. Item 6's entries are next. The brief is current.",
       "log_sha256": "6bce594fdc26af1a6a37abeb4ea408463e38cab2396c6ee23e7ddba7c026cf69"
+    },
+    {
+      "change_id": "twvzrvvwwszuyrxlvqqmpkmvwpoozkym",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Two wrong binders satisfy 286's proposed two-value protected-state claim: one that stops after the second suppressed value, and one that drops every value once one is denied",
+      "body": "Item 6 of the challenge stream, on the state stream's proposed claim claims/proposed/protected-age-kept-two-values.json (at kmytvuop). It binds two values whose names are inputs, to refute controls/first-suppressed-only.patch (inbox item domain-advances-state-I009). Two new patches of 5.3.19's DataBinder.checkAllowedFields go under 286's controls/, and no task uses them. Each is predicted to establish the proposed claim and the frozen one, and to leave the claims about isAllowed as on 5.3.19.\n\nsecond-suppressed-last.patch returns once it has suppressed two values. On a JVM (JDK 25.0.5, the pinned 5.3.19 JARs, the patched class first) with AGE disallowed, aGe=1, AGE=2, Age=32 binds 32, and two values leave 0. The example's replay misses it as well: its 46 probes give 'holds' and 'pass' under the oracle, as on 5.3.19. all-dropped-once-suppressed.patch refuses the whole request once a field is denied, so name=bob beside Age=32 is not bound. The replay catches that one (11 legitimate failures), but no claim says a permitted value beside a denied one is still bound. The reasoning is in 286's notes, and the claim stays the owner's and the user's.",
+      "log_sha256": "4c282ea7bf9f0208252372bfdb9f7942a37a07200643fc6c501f0d624fae5ea7"
     }
   ],
   "logs": {
@@ -624,6 +646,12 @@
       "bytes": 6141230,
       "lines": 2327,
       "gzip_bytes": 1028034,
+      "url": null
+    },
+    "4c282ea7bf9f0208252372bfdb9f7942a37a07200643fc6c501f0d624fae5ea7": {
+      "bytes": 34020514,
+      "lines": 11265,
+      "gzip_bytes": 6237018,
       "url": null
     },
     "5943b8b85e67e9cff9f5678f0c53b6594722a01d712963d5c4b501d583f990e0": {
