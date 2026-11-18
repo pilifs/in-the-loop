@@ -210,7 +210,7 @@ public final class Checks {
         }
     }
 
-    /** Nine copies of a String of up to eight units: beyond the checker's content cap, a named limit. */
+    /** Nine copies of a String: of up to 29 units, beyond the checker's content cap of 256, a named limit. */
     public static void longJoin(String s) {
         String t = s + s + s + s + s + s + s + s + s;
         if (t.length() < 0) {

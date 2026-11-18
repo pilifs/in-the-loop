@@ -131,13 +131,55 @@ Otherwise the class is the JDK's: `new ArrayList(int)` is the gap the contract l
 ([`contracts`](contracts/)), the conformance corpus and the examples' recorded refusals are written about, and a
 model run unasked would change each of them. The model is a list as an array of its elements and their number. It
 keeps `ArrayList()`, `ArrayList(int)` with its `IllegalArgumentException`, `size`, `isEmpty`, `get` with its
-`IndexOutOfBoundsException`, `add`, `addAll`, `toArray()`, `toArray(T[])` and `iterator()`, whose iterator fails
+`IndexOutOfBoundsException`, `add`, `addAll`, `remove(Object)` (by the argument's `equals`, as the JDK's),
+`toArray()`, `toArray(T[])` and `iterator()`, whose iterator fails
 fast on `AbstractList`'s `modCount`. It keeps no capacity: the array is as long as the list (grown with
 `Arrays.copyOf`, which the checker models for arrays of references), so a capacity a JVM could not allocate is no
 `OutOfMemoryError` here. Every other method is `AbstractList`'s or `AbstractCollection`'s, the JDK call it names,
 and so is the iterator's `remove`. A `toArray(T[])` into an array that cannot hold an element is an
 `ArrayStoreException` on a JVM, which the checker's array stores do not model. Its conformance is
-`claims.M#collected`, `filled`, `appended` and `swept`.
+`claims.M#collected`, `filled`, `appended`, `swept` and `removed`.
+
+`java.util.ArrayDeque` and `java.util.HashSet` ([`java/util/lists`](java/util/lists/) too) are models on request
+for the same reason (`--model java.util.ArrayDeque`, `--model java.util.HashSet`): their constructors are JDK gaps
+the contract library and the conformance corpus name, and Spring's binding result makes one of each on every path
+of `DataBinder.bind` (`AbstractErrors`' stack of nested paths, `AbstractBindingResult`'s suppressed fields; example
+286). Both are abstract, as the `HashMap` model is, so that they declare no method they do not keep. The deque is a
+stack over an array: `ArrayDeque()`, `push` with its `NullPointerException` for `null`, `pop` with its
+`NoSuchElementException` when empty, `peek`, `size`, `isEmpty` and `clear`; no capacity. The set is the keys of the
+`HashMap` model, as the JDK's set is of the JDK's map: `HashSet()`, `add`, `contains`, `size` and `isEmpty`, an
+element found by `hashCode` and `equals`; its constructor calls `AbstractSet()`, the JDK's empty constructor, which
+the checker reproduces exactly as it does `AbstractCollection()`'s. Every other method of either is the JDK call it
+names. Their conformance is `claims.Deques` and `claims.Sets` (`tests/claims.rs`): each method the JDK's answer
+against its definition on every input of a bound with the model, the same methods sampled on a JVM, and a method
+left out still the JDK's call.
+
+`java.util.LinkedHashSet` ([`java/util/lists`](java/util/lists/)) is one too (`--model java.util.LinkedHashSet`), and a
+check that asks for it also runs the `HashSet` model it extends, as if that had been asked for (`models::BRINGS`; the
+result names both): Spring's `DefaultMessageCodesResolver` collects each binding error's message codes in one and
+hands them on as an array (example 286). It is the `HashSet` model with its elements kept in the order first added:
+`LinkedHashSet()`, `add`, and `toArray()` and `toArray(T[])` in that order (into the given array when they fit,
+with a null after them when it is longer, else a new array of its class), besides the `HashSet` model's `contains`,
+`size` and `isEmpty`. No kept method takes an element out, so the order is exactly the map's keys; `iterator`,
+`remove` and every other method are the JDK calls they name. Its conformance is `claims.LinkedSets`.
+
+`java.util.StringJoiner` ([`java/util/lists`](java/util/lists/) too, for the same compiling against the JDK's classes) is one too (`--model
+java.util.StringJoiner`), for the same resolver's `toDelimitedString`. It is the delimiter and the elements added:
+`StringJoiner(CharSequence)` with the JDK's `NullPointerException` message, `add` (an element's `String.valueOf`,
+the joiner returned) and `toString()`, the elements with the delimiter between each two, built by the checker's
+`StringBuilder`. The JDK's join makes a new String even when it is empty, where the builder's `toString()` is the
+literal `""`, so an empty result is `new String()`, the JDK's constructor and a gap. The constructor with a prefix
+and a suffix, `setEmptyValue`, `merge` and `length` are the JDK calls they name. Its conformance is
+`claims.Joiners`.
+
+`java.beans.PropertyChangeEvent` ([`java/beans`](java/beans/)) is one too (`--model java.beans.PropertyChangeEvent`),
+and the check that asks for it also runs the model of the class above it, `java.util.EventObject` (beside it in
+`java/beans`, `models::COMPANIONS`): Spring's bean wrapper makes one for each value it cannot convert, the event a
+`TypeMismatchException` carries (example 286). The event is its fields: the constructor with `EventObject`'s
+`IllegalArgumentException("null source")`, `getSource`, `getPropertyName`, `getOldValue`, `getNewValue` and the
+propagation id. `toString` of either is the JDK call it names, and so is the constructor of a JDK class below them
+(`IndexedPropertyChangeEvent`, the AWT's events), whose objects then meet every method as the JDK's. Its
+conformance is `claims.Events`.
 
 A model of a class outside the JDK (a widely used library's, say) would work the same way, except that it must come
 *after* the library on the class path and not replace a class the library ships; that is the next step, not taken

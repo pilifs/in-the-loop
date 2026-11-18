@@ -207,7 +207,8 @@ pub fn observe(classes: &[String], classpath: &[PathBuf], work: &Path) -> Result
         return Ok(out);
     }
     let home = crate::jimage::JImage::find_java_home().ok_or_else(|| Error::new("--observed-initializer: no JDK to observe a class initializer on (set JAVA_HOME)"))?;
-    let dir = work.join("observed");
+    // Absolute: the JVM runs in this folder, and is given the log's path in it (an option and an argument).
+    let dir = std::path::absolute(work.join("observed"))?;
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir)?;
     let source = dir.join(format!("{CLASS}.java"));

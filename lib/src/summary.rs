@@ -23,7 +23,23 @@
 //! summarized method is a public static method of a public class (the claim's class calls it where the summary
 //! does not apply), over primitives and Strings, with a primitive result.
 //!
-//! Both are Java the tool writes into the claim's class ([`crate::harness::expr::CLAIM_CLASS`]) and javac compiles
+//! **An effect contract** (a declaration with `writes:` in the same file). For an instance method: the fields of its
+//! receiver and object parameters it writes (`prove --writes`, [`crate::property::Options::writes`]), proved with
+//! its frame (every other field of those inputs is what it was, and nothing else that was there before the call is
+//! written) and also shown to read nothing that was there before the call: no field of its receiver or its object
+//! arguments (a final one neither: the proof made them with their constructors in the harness's state, and a
+//! caller's final field holds what its constructor made of the caller's), no static field but a compile-time constant (a final one an initializer computed holds what the state
+//! it ran in gave it), no array, and to compare no such object by identity
+//! ([`crate::bmc::Options::closed_frame`]). What it writes is then a function of its arguments alone, so in the check
+//! a call of it, by anything but the harness and the claim, on a receiver and object arguments each null or of
+//! exactly its declared class (as the proof's were: a subclass's may override what the method calls on it), and on
+//! arguments within the bounds it was proved at (a String not null and no longer than the bound, an object not null), makes the
+//! writes the contract states and nothing else: a field its assertion gives a parameter's value as `this.f == p`
+//! takes it, and any other written field any value of its primitive type ([`crate::bmc::Effect`]). Elsewhere the
+//! method runs as written. A written field of a reference type the assertion gives no parameter's value is refused:
+//! the stub cannot make any object. It returns, with any value of its integral or boolean result, or none.
+//!
+//! All are Java the tool writes into the claim's class ([`crate::harness::expr::CLAIM_CLASS`]) and javac compiles
 //! with the claim's expressions; the checker runs them as it runs the target. What bytecode cannot say is a call
 //! of the checker's intrinsics ([`crate::gap_contracts::INTRINSICS`]): any value, a path no run takes, a proof that
 //! does not go through.
@@ -34,7 +50,7 @@ use crate::harness::Param;
 
 /// The intrinsics the generated members call, as a class javac compiles them against. The checker answers the
 /// calls itself, and the class is not kept.
-pub const INTRINSICS_SOURCE: &str = "package jvmcontract;\n\npublic final class GapIntrinsics {\n    private GapIntrinsics() {\n    }\n\n    public static native int anyInt();\n\n    public static native long anyLong();\n\n    public static native boolean anyBoolean();\n\n    public static native void infeasible();\n\n    public static native void unproved();\n}\n";
+pub const INTRINSICS_SOURCE: &str = "package jvmcontract;\n\npublic final class GapIntrinsics {\n    private GapIntrinsics() {\n    }\n\n    public static native int anyInt();\n\n    public static native long anyLong();\n\n    public static native boolean anyBoolean();\n\n    public static native void effect(int index);\n\n    public static native void infeasible();\n\n    public static native void unproved();\n}\n";
 
 /// The method a declaration is about: its class, name and descriptor, its parameters by name, and its result.
 #[derive(Debug, Clone)]
@@ -74,6 +90,166 @@ impl Signature {
     fn arguments_and(&self, last: &str) -> String {
         self.params.iter().map(|p| p.name.as_str()).chain([last]).collect::<Vec<_>>().join(", ")
     }
+}
+
+/// The instance method an effect contract is about: its class, name and descriptor, its parameters by name (their
+/// slots as the method's own, the receiver's not counted), and its result.
+#[derive(Debug, Clone)]
+pub struct EffectSignature {
+    pub class: String,
+    pub name: String,
+    pub descriptor: String,
+    pub params: Vec<Param>,
+    pub ret: Type,
+}
+
+impl EffectSignature {
+    /// The signature of `target`, a public instance method of a public class that the claim's class can call and an
+    /// effect contract can stand in for: or why it is not one.
+    pub fn of(cp: &ClassPath, target: &str) -> Result<EffectSignature, String> {
+        let (class_internal, _) = crate::verifier::parse_target(target).ok_or("a target is <class>#<method>")?;
+        let class = cp.application(&class_internal).map_err(|e| e.to_string())?.ok_or_else(|| format!("class not found: {}", class_internal.replace('/', ".")))?;
+        let method = crate::verifier::select_method(&class, target)?;
+        let descriptor = method.parsed_descriptor().map_err(|e| e.to_string())?;
+        let signature = EffectSignature { class: class_internal, name: method.name.clone(), descriptor: method.descriptor.clone(), params: crate::harness::params(&method.parameter_names(&class.pool), &descriptor.params), ret: descriptor.ret };
+        if method.is_static() || method.name == "<init>" || !method.is_public() || class.access & crate::classfile::flags::PUBLIC == 0 {
+            return Err(format!("{target} is not a public instance method of a public class"));
+        }
+        if let Some(p) = signature.params.iter().find(|p| matches!(p.ty, Type::Array(_))) {
+            return Err(format!("parameter {} has type {}, and an effect contract is over primitives, Strings and objects", p.name, p.ty.java_name()));
+        }
+        if signature.ret != Type::Void {
+            any(&signature.ret)?;
+        }
+        Ok(signature)
+    }
+
+    /// The stub's local that holds the parameter `name`: the receiver is its first, `this`.
+    fn local(&self, name: &str) -> Option<(usize, Type)> {
+        if name == "this" {
+            return Some((0, Type::Object(self.class.clone())));
+        }
+        self.params.iter().find(|p| p.name == name).map(|p| (1 + p.slot as usize, p.ty.clone()))
+    }
+
+    /// The stub's descriptor: the receiver first, then the method's own parameters.
+    pub fn stub_descriptor(&self) -> String {
+        format!("(L{};{}", self.class, &self.descriptor[1..])
+    }
+}
+
+/// The writes of an effect contract at a call: each name of `writes` (`this.f` or `p.f`, a field the class of the
+/// receiver or of the object parameter `p` declares), with the parameter the assertion's top-level conjunct
+/// `this.f == q` gives it, of the field's own type; with none, a field of a primitive type takes any value, and one
+/// of a reference type is refused.
+pub fn effect_writes(cp: &ClassPath, signature: &EffectSignature, writes: &[String], assertion: Option<&str>) -> Result<Vec<crate::bmc::EffectWrite>, String> {
+    let pins: Vec<(String, String)> = assertion.map(conjuncts).unwrap_or_default().into_iter().filter_map(|c| c.split_once("==").map(|(l, r)| (l.trim().to_string(), r.trim().to_string()))).collect();
+    let mut out = Vec::new();
+    for name in writes {
+        let (object, field) = name.split_once('.').filter(|(_, f)| !f.contains('.')).ok_or_else(|| format!("{name} is no field of the receiver or an object parameter"))?;
+        let (local, ty) = signature.local(object).ok_or_else(|| format!("{name}: {object} is no parameter of {}", signature.name))?;
+        let Type::Object(owner) = ty.clone() else { return Err(format!("{name}: {object} is no object")) };
+        let class = cp.application(&owner).map_err(|e| e.to_string())?.ok_or_else(|| format!("{name}: class not found: {}", owner.replace('/', ".")))?;
+        let descriptor = class.field(field).map(|f| f.descriptor.clone()).ok_or_else(|| format!("{name}: {} declares no field {field}", owner.replace('/', ".")))?;
+        let value = pins.iter().filter(|(l, _)| l == name).find_map(|(_, r)| signature.local(r).filter(|(_, t)| t.descriptor() == descriptor).map(|(slot, _)| slot));
+        if value.is_none() && (descriptor.starts_with('L') || descriptor.starts_with('[') || matches!(descriptor.as_str(), "F" | "D")) {
+            return Err(format!("{name} is written and the assertion gives it no parameter's value (a top-level `{name} == p`, p of its type): at a call the contract leaves a field it writes any value of its type, and of {} there is no such value to give", crate::classfile::Type::parse(&descriptor).map(|t| t.java_name()).unwrap_or(descriptor.clone())));
+        }
+        out.push(crate::bmc::EffectWrite { object: local, owner, field: field.to_string(), descriptor, value });
+    }
+    Ok(out)
+}
+
+/// The top-level conjuncts of a Java boolean expression, each without the parentheses around it.
+fn conjuncts(expression: &str) -> Vec<String> {
+    let (mut out, mut depth, mut quoted, mut start) = (Vec::new(), 0i32, None::<char>, 0);
+    let chars: Vec<(usize, char)> = expression.char_indices().collect();
+    let mut i = 0;
+    while i < chars.len() {
+        let (at, c) = chars[i];
+        match (quoted, c) {
+            (Some(q), '\\') if q == '"' || q == '\'' => i += 1,
+            (Some(q), c) if c == q => quoted = None,
+            (Some(_), _) => {}
+            (None, '"' | '\'') => quoted = Some(c),
+            (None, '(') => depth += 1,
+            (None, ')') => depth -= 1,
+            (None, '&') if depth == 0 && chars.get(i + 1).is_some_and(|&(_, d)| d == '&') => {
+                out.push(expression[start..at].to_string());
+                start = at + 2;
+                i += 1;
+            }
+            _ => {}
+        }
+        i += 1;
+    }
+    out.push(expression[start..].to_string());
+    out.into_iter().map(|c| strip_parentheses(c.trim()).to_string()).collect()
+}
+
+/// The expression without the parentheses that enclose all of it.
+fn strip_parentheses(e: &str) -> &str {
+    let mut e = e;
+    while e.starts_with('(') && e.ends_with(')') {
+        let mut depth = 0;
+        let encloses = e.char_indices().all(|(i, c)| {
+            match c {
+                '(' => depth += 1,
+                ')' => depth -= 1,
+                _ => {}
+            }
+            depth > 0 || i == e.len() - 1
+        });
+        if !encloses {
+            break;
+        }
+        e = e[1..e.len() - 1].trim();
+    }
+    e
+}
+
+/// The name of the stub that stands in for the calls of the `i`th effect contract's method.
+pub fn effect_stub(i: usize) -> String {
+    format!("effect{i}")
+}
+
+/// The member of the claim's class for the `i`th effect contract, proved at `bound`: the stub that runs in place of
+/// the method's calls, the receiver its first parameter.
+pub fn effect(i: usize, signature: &EffectSignature, bound: u32) -> Result<String, String> {
+    let stub = effect_stub(i);
+    let class = signature.class.replace(['/', '$'], ".");
+    // A nested class's source name has a `.` where its binary name has the `$` (`ec.Uses.Pair`, not `ec.Uses$Pair`).
+    let list = std::iter::once(format!("{class} self")).chain(signature.params.iter().map(|p| format!("{} {}", p.ty.java_name().replace('$', "."), p.name))).collect::<Vec<_>>().join(", ");
+    let arguments = signature.params.iter().map(|p| p.name.clone()).collect::<Vec<_>>().join(", ");
+    let mut within = Vec::new();
+    for p in &signature.params {
+        if crate::values::is_string(&p.ty) {
+            within.push(format!("{0} != null && {0}.length() <= {bound}", p.name));
+        } else if !p.ty.is_primitive() {
+            within.push(format!("{} != null", p.name));
+        }
+    }
+    let within = if within.is_empty() { "true".to_string() } else { within.join(" && ") };
+    let (ret, as_written, returns) = if signature.ret == Type::Void {
+        ("void".to_string(), format!("self.{}({arguments});\n            return;", signature.name), String::new())
+    } else {
+        (signature.ret.java_name(), format!("return self.{}({arguments});", signature.name), format!("\n        return {};", any(&signature.ret)?))
+    };
+    Ok(format!(
+        r#"
+    /**
+     * The effect contract of {class}.{name}, proved beside this check: on arguments within the bounds it was proved
+     * at, the writes it states and nothing else; on any other, the method as written.
+     */
+    public static {ret} {stub}({list}) {{
+        if (!({within})) {{
+            {as_written}
+        }}
+        jvmcontract.GapIntrinsics.effect({i});{returns}
+    }}
+"#,
+        name = signature.name
+    ))
 }
 
 /// What makes arguments ones a proof at `bound` was about: every String not null and of at most `bound` units.
@@ -240,6 +416,31 @@ mod tests {
         assert!(members.contains("public static boolean lemma0_assume() {"), "{members}");
         assert!(members.contains("public static boolean lemma0_holds(int result) {\n        return result == 7;"), "{members}");
         assert!(members.contains("if (!lemma0_holds($result)) {"), "{members}");
+    }
+
+    #[test]
+    fn an_effect_contract_is_used_within_its_bounds_and_runs_the_method_as_written_elsewhere() {
+        let string = Type::Object("java/lang/String".into());
+        let names = vec!["name".to_string(), "count".to_string(), "owner".to_string()];
+        let types = vec![string, Type::Long, Type::Object("a/b/Outer$Owner".into())];
+        let s = EffectSignature { class: "a/b/Outer$Bean".into(), name: "rename".into(), descriptor: "(Ljava/lang/String;JLa/b/Outer$Owner;)V".into(), params: crate::harness::params(&names, &types), ret: Type::Void };
+        let stub = effect(1, &s, 3).unwrap();
+        assert!(stub.contains("public static void effect1(a.b.Outer.Bean self, java.lang.String name, long count, a.b.Outer.Owner owner) {\n        if (!(name != null && name.length() <= 3 && owner != null)) {\n            self.rename(name, count, owner);\n            return;\n        }\n        jvmcontract.GapIntrinsics.effect(1);\n    }"), "{stub}");
+        // A nested class is named in source with a `.` (javac takes no `$` there), in the descriptor with its `$`.
+        assert_eq!(s.stub_descriptor(), "(La/b/Outer$Bean;Ljava/lang/String;JLa/b/Outer$Owner;)V");
+        // The receiver is the stub's first local; a long takes two.
+        assert_eq!(s.local("this").map(|(slot, _)| slot), Some(0));
+        assert_eq!(s.local("owner").map(|(slot, _)| slot), Some(4));
+        let int = EffectSignature { ret: Type::Int, ..s };
+        assert!(effect(0, &int, 3).unwrap().contains("return self.rename(name, count, owner);\n        }\n        jvmcontract.GapIntrinsics.effect(0);\n        return jvmcontract.GapIntrinsics.anyInt();"));
+    }
+
+    #[test]
+    fn the_conjuncts_of_an_assertion_are_split_at_the_top_level_alone() {
+        assert_eq!(conjuncts("(this.a == a) && this.b == \\old(this.b)"), ["this.a == a", "this.b == \\old(this.b)"]);
+        assert_eq!(conjuncts("(x && y) || z && w.equals(\"&&\")"), ["(x && y) || z", "w.equals(\"&&\")"]);
+        assert_eq!(conjuncts("((p))"), ["p"]);
+        assert_eq!(conjuncts("(a) == (b)"), ["(a) == (b)"]);
     }
 
     #[test]

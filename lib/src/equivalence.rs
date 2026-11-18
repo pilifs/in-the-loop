@@ -861,6 +861,16 @@ fn object_of(cp: &ClassPath, t: &Type) -> Result<Result<Option<harness::RecordTy
 /// The construction of an object of the application class `name`, as [`object_of`] says; `within` are the classes
 /// whose construction this one is part of, which it may not need again (a cycle).
 pub(crate) fn made_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> Result<Result<harness::RecordType, String>, Error> {
+    made_in(cp, name, within, false)
+}
+
+/// [`made_of`] for a write set's check, whose frame compares a field of a type it makes no object of by identity
+/// ([`fields_in`]).
+pub(crate) fn made_of_framed(cp: &ClassPath, name: &str) -> Result<Result<harness::RecordType, String>, Error> {
+    made_in(cp, name, &mut Vec::new(), true)
+}
+
+fn made_in(cp: &ClassPath, name: &str, within: &mut Vec<String>, framed: bool) -> Result<Result<harness::RecordType, String>, Error> {
     let java = name.replace('/', ".");
     let Some(cf) = cp.application(name)? else { return Ok(Err(format!("{java} is not among the application's classes"))) };
     if within.iter().any(|w| w == name) {
@@ -895,7 +905,7 @@ pub(crate) fn made_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> R
             // A dependency: an application interface, passed null. The check holds only where the target never
             // reaches it (`construction::dependency_reached`), refused by name otherwise.
             Type::Object(class) if cp.application(class)?.is_some_and(|c| c.is_interface()) => dependencies.push(i),
-            Type::Object(class) if cp.application(class)?.is_some() => match made_of(cp, class, within)? {
+            Type::Object(class) if cp.application(class)?.is_some() => match made_in(cp, class, within, framed)? {
                 Ok(r) => inner.push(r),
                 Err(gap) => {
                     within.pop();
@@ -909,7 +919,7 @@ pub(crate) fn made_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> R
         }
         params.push((n.clone(), pt.clone()));
     }
-    let fields = fields_of(cp, name, &mut vec![]);
+    let fields = fields_in(cp, name, &mut vec![], framed);
     within.pop();
     match fields? {
         Ok(fields) => Ok(Ok(harness::RecordType::made_with_dependencies(name, params, inner, dependencies, fields))),
@@ -920,6 +930,17 @@ pub(crate) fn made_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> R
 /// The instance fields of the application class `name`, followed into the application classes they refer to
 /// ([`harness::Fields`]); `within` as for [`made_of`]. A field of another type is a named gap.
 pub(crate) fn fields_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) -> Result<Result<harness::Fields, String>, Error> {
+    fields_in(cp, name, within, false)
+}
+
+/// [`fields_of`], and with `framed` for a write set's check (`prove --writes`, and so an effect contract's proof,
+/// through [`made_of_framed`]): a field of a reference type it makes no object of (`java.util.Map someMap`) is laid
+/// out as a reference compared by identity ([`harness::FieldKind::Reference`]) instead of refused. The object is
+/// made by its constructor, so the field holds what the constructor put there; the frame then says the call leaves
+/// that reference (`this.someMap == \old(this.someMap)`), and the engine refuses a write into the object it refers
+/// to (`Options::frame`), as into any other object that was there before the call. Nothing reads into it: an
+/// expression compares it with null or with itself before the call only.
+fn fields_in(cp: &ClassPath, name: &str, within: &mut Vec<String>, framed: bool) -> Result<Result<harness::Fields, String>, Error> {
     let java = name.replace('/', ".");
     let Some(cf) = cp.application(name)? else { return Ok(Err(format!("{java} is not among the application's classes"))) };
     if within.iter().any(|w| w == name) {
@@ -942,13 +963,14 @@ pub(crate) fn fields_of(cp: &ClassPath, name: &str, within: &mut Vec<String>) ->
             Type::Array(element) if element.is_primitive() => harness::FieldKind::Array(ft.clone()),
             // Compared by content (J1's O2: the quote request's code).
             t if crate::values::is_string(t) => harness::FieldKind::String,
-            Type::Object(class) if cp.application(class)?.is_some() => match fields_of(cp, class, within)? {
+            Type::Object(class) if cp.application(class)?.is_some() => match fields_in(cp, class, within, framed)? {
                 Ok(inner) => harness::FieldKind::Object(Box::new(inner)),
                 Err(gap) => {
                     within.pop();
                     return Ok(Err(format!("the field {} of {java}: {gap}", f.name)));
                 }
             },
+            Type::Object(_) if framed => harness::FieldKind::Reference(ft.clone()),
             other => {
                 within.pop();
                 return Ok(Err(format!("the field {} of {java} has type {}; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes", f.name, other.java_name())));

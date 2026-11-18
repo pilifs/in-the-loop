@@ -13,6 +13,7 @@
 //! - `indexOf(int)`, `indexOf(int, int)`: the first index at or after the start (below zero is zero) whose unit is
 //!   the character, or whose two units are the surrogate pair of a supplementary one; `-1` for none, and for a
 //!   value that is no code point.
+//! - `lastIndexOf(int)`: the same test at every index, the last one that meets it.
 //! - `indexOf(String)`, `indexOf(String, int)`: `NullPointerException` for null; the first index at or after the
 //!   start (held to the length) where the other's units all are; the start itself for the empty String.
 //! - `endsWith(String)`: `NullPointerException` for null; the other's units at the end.
@@ -29,8 +30,11 @@
 //! other unit it is the JDK's table's to say, and the call is the gap it was.
 //!
 //! A `StringBuilder` is an object with a content of its own, which its methods change: `StringBuilder()`,
-//! `StringBuilder(String)` (`NullPointerException` for null), `length()`, `charAt(int)`
+//! `StringBuilder(int)` of a constant capacity from 0 to [`MOST_BUILDER_CONTENT`] (empty; another capacity is the
+//! JDK call), `StringBuilder(String)` (`NullPointerException` for null), `length()`, `charAt(int)`
 //! (`StringIndexOutOfBoundsException` outside the length), `append(String)` (the four units `null` for null),
+//! `append(Object)` (`null` for null, a String's units, an exception's `toString()` where the engine has it,
+//! [`super::throwables`], and the JDK call for any other object),
 //! `append(char)`, `append(int)` (the int's decimal digits, [`super::bytes`]; each the builder itself returned, its
 //! content at most [`MOST_BUILDER_CONTENT`] units, past which the run ends with no verdict), `indexOf(String)`,
 //! `indexOf(String, int)`, `substring(int, int)` (the literal `""` for an empty range, else a new String), `delete(int, int)` (the
@@ -59,7 +63,7 @@ pub const LOCALE_ASSUMPTION: &str = "the default locale's language is not Turkis
 pub fn models(name: &str, descriptor: &str) -> bool {
     matches!(
         (name, descriptor),
-        ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
+        ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("lastIndexOf", "(I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
     )
 }
 
@@ -73,7 +77,7 @@ pub fn models_builder(owner: &str, name: &str, descriptor: &str) -> bool {
     owner == BUILDER
         && matches!(
             (name, descriptor),
-            ("<init>", "()V" | "(Ljava/lang/String;)V") | ("length", "()I") | ("charAt", "(I)C") | ("append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;" | "(C)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuilder;") | ("indexOf", "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("substring", "(II)Ljava/lang/String;") | ("delete", "(II)Ljava/lang/StringBuilder;") | ("toString", "()Ljava/lang/String;")
+            ("<init>", "()V" | "(I)V" | "(Ljava/lang/String;)V") | ("length", "()I") | ("charAt", "(I)C") | ("append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;" | "(Ljava/lang/Object;)Ljava/lang/StringBuilder;" | "(C)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuilder;") | ("indexOf", "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("substring", "(II)Ljava/lang/String;") | ("delete", "(II)Ljava/lang/StringBuilder;") | ("toString", "()Ljava/lang/String;")
         )
 }
 
@@ -90,9 +94,28 @@ impl Engine<'_> {
     }
 
     /// A new String of `length` units, `cells`, which is the object `o` under each guard of `same`.
-    fn new_string(&mut self, path: &mut Path, length: Bits, cells: Vec<Bits>, same: Vec<(Lit, usize)>) -> usize {
+    pub(super) fn new_string(&mut self, path: &mut Path, length: Bits, cells: Vec<Bits>, same: Vec<(Lit, usize)>) -> usize {
         path.objects.push(Obj { array: Some(Array { element: Type::Char, length, cells, refs: Vec::new() }), same: same.into_iter().filter(|(g, _)| *g != FALSE).collect(), ..Obj::new(STRING) });
         path.objects.len() - 1
+    }
+
+    /// The units of `s` followed by those of `t`: the unit at `i` is `s`'s own below its length, and `t`'s at
+    /// `i - length` from there.
+    pub(super) fn joined(&mut self, s: &Array, t: &Array) -> Array {
+        let length = self.b.add(&s.length, &t.length);
+        let cells = (0..s.cells.len() + t.cells.len())
+            .map(|i| {
+                let here = self.b.constant(i as i64, 32);
+                let own = self.b.slt(&here, &s.length);
+                let at = self.b.sub(&here, &s.length);
+                let other = self.unit_at(t, &at);
+                match s.cells.get(i) {
+                    Some(cell) => self.b.ite_bits(own, cell, &other),
+                    None => other,
+                }
+            })
+            .collect();
+        Array { element: Type::Char, length, cells, refs: Vec::new() }
     }
 
     /// The literal `""`, which the JDK returns for an empty range.
@@ -155,6 +178,13 @@ impl Engine<'_> {
     /// The first index of `s` at or after `from` where the code point `ch` is: its unit, or the surrogate pair of
     /// a supplementary one; `-1` where there is none (`String.indexOf(int, int)`).
     fn index_of_unit(&mut self, s: &Array, ch: &Bits, from: &Bits) -> Bits {
+        self.unit_hit(s, ch, from, false)
+    }
+
+    /// The first (or, with `last`, the last) index at or after `from` where `s` holds the code point `ch`: its one
+    /// unit, or for a supplementary one its surrogate pair, both inside the String; -1 where there is none, as
+    /// `String.indexOf(int, int)` and `String.lastIndexOf(int)` give it (the latter from 0, every index).
+    fn unit_hit(&mut self, s: &Array, ch: &Bits, from: &Bits, last: bool) -> Bits {
         let bmp_limit = self.b.constant(0x1_0000, 32);
         let limit = self.b.constant(0x11_0000, 32);
         let is_bmp = self.b.ult(ch, &bmp_limit);
@@ -173,7 +203,9 @@ impl Engine<'_> {
         let low = self.b.add(&bottom, &low_base);
         let low = self.b.trunc(&low, 16);
         let mut result = self.b.constant(-1, 32);
-        for i in (0..s.cells.len()).rev() {
+        // Each hit overrides the ones met before it, so the order of the indices is which hit wins.
+        let order: Vec<usize> = if last { (0..s.cells.len()).collect() } else { (0..s.cells.len()).rev().collect() };
+        for i in order {
             let here = self.b.constant(i as i64, 32);
             let inside = self.b.slt(&here, &s.length);
             let after = self.b.sle(from, &here);
@@ -263,7 +295,7 @@ impl Engine<'_> {
 
     /// The content of the String argument `r`, a `NullPointerException` thrown where it is null: `Err` carries the
     /// step that ends the call (the exception, or a String with no content, whose call stays the JDK's).
-    fn string_argument(&mut self, path: &mut Path, r: Option<usize>, gap: (&str, &str, &str)) -> Result<Array, Step> {
+    pub(super) fn string_argument(&mut self, path: &mut Path, r: Option<usize>, gap: (&str, &str, &str)) -> Result<Array, Step> {
         let Some(p) = r else { return Err(self.raise(path, "java/lang/NullPointerException")) };
         match path.objects[p].content().cloned() {
             Some(t) => Ok(t),
@@ -291,6 +323,13 @@ impl Engine<'_> {
             ("indexOf", "(I)I", [Val::I(ch)]) => {
                 let zero = self.b.constant(0, 32);
                 let at = self.index_of_unit(s, ch, &zero);
+                self.push(path, Val::I(at));
+                self.advance(path);
+                Ok(None)
+            }
+            ("lastIndexOf", "(I)I", [Val::I(ch)]) => {
+                let zero = self.b.constant(0, 32);
+                let at = self.unit_hit(s, ch, &zero, true);
                 self.push(path, Val::I(at));
                 self.advance(path);
                 Ok(None)
@@ -422,6 +461,12 @@ impl Engine<'_> {
         if name == "<init>" {
             let content = match args {
                 [] => empty(self),
+                // A capacity is no content: of a constant from 0 to [`MOST_BUILDER_CONTENT`] the builder is empty. A
+                // negative one throws and a huge one may run out of memory, which the engine leaves to the JDK.
+                [Val::I(capacity)] => match self.b.constant_value(capacity) {
+                    Some(c) if (0..=MOST_BUILDER_CONTENT as i64).contains(&(c as i32 as i64)) => empty(self),
+                    _ => return None,
+                },
                 [Val::R(from)] => match self.string_argument(path, *from, (BUILDER, name, descriptor)) {
                     Ok(t) => t,
                     Err(step) => return Some(step),
@@ -459,6 +504,13 @@ impl Engine<'_> {
                 // What is appended: a String's units (`null` for null), a char, or an int's decimal digits.
                 let t = match appended {
                     Val::R(None) => Array { element: Type::Char, length: self.b.constant(4, 32), cells: "null".encode_utf16().map(|u| self.b.constant(i64::from(u), 16)).collect(), refs: Vec::new() },
+                    // `append(Object)` appends `String.valueOf(obj)`: a String's own units, an exception's
+                    // `toString()` where the engine has it ([`super::throwables`]), and the JDK call otherwise.
+                    Val::R(Some(other)) if descriptor.starts_with("(Ljava/lang/Object;)") && path.objects[*other].class != STRING => match self.throwable_text(path, *other)? {
+                        Ok(super::throwables::Text::Name(units)) => Array { element: Type::Char, length: self.b.constant(units.len() as i64, 32), cells: units.iter().map(|u| self.b.constant(i64::from(*u), 16)).collect(), refs: Vec::new() },
+                        Ok(super::throwables::Text::Joined(t)) => t,
+                        Err(step) => return Some(step),
+                    },
                     Val::R(other) => match self.string_argument(path, *other, (BUILDER, name, descriptor)) {
                         Ok(t) => t,
                         Err(step) => return Some(step),
@@ -473,21 +525,7 @@ impl Engine<'_> {
                 if s.cells.len() + t.cells.len() > MOST_BUILDER_CONTENT {
                     return Some(unsupported(format!("a StringBuilder of more than {MOST_BUILDER_CONTENT} code units")));
                 }
-                // The unit at `i`: the builder's own below its length, the appended one at `i - length` from there.
-                let length = self.b.add(&s.length, &t.length);
-                let cells = (0..s.cells.len() + t.cells.len())
-                    .map(|i| {
-                        let here = self.b.constant(i as i64, 32);
-                        let own = self.b.slt(&here, &s.length);
-                        let at = self.b.sub(&here, &s.length);
-                        let other = self.unit_at(&t, &at);
-                        match s.cells.get(i) {
-                            Some(cell) => self.b.ite_bits(own, cell, &other),
-                            None => other,
-                        }
-                    })
-                    .collect();
-                path.objects[o].array = Some(Array { element: Type::Char, length, cells, refs: Vec::new() });
+                path.objects[o].array = Some(self.joined(&s, &t));
                 self.push(path, Val::R(Some(o)));
                 self.advance(path);
                 Ok(None)

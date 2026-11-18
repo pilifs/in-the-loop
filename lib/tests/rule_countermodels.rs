@@ -87,3 +87,29 @@ fn each_fixture_is_what_a_jvm_says_it_is() {
     // The handler writes the record to System.err; what is returned is on System.out.
     assert_eq!(jvm("lg.M", &[]), "seen=1 escaped=0");
 }
+
+/// The checker's side, for the state stream (`qysmsruu`): under `--gaps assume`, no proof that a JDK call's object
+/// is of no class but the one its descriptor declares. A JVM says each copy is its receiver's class (the test above).
+#[test]
+fn an_assumed_objects_class_is_not_taken_to_be_its_declared_one() {
+    jvmcontract::tool_tier!();
+    use jvmcontract::bmc::gaps::GapMode;
+    use jvmcontract::{property, Engine, Verdict};
+    let Some(classes) = classes() else { return };
+    let mut wrong = Vec::new();
+    for (method, assertion, model) in [("setCloned", "result == 0", Some("java.util.HashSet")), ("setClonedSize", "result == -1", Some("java.util.HashSet")), ("dateCloned", "result == 0", None)] {
+        let mut o = property::Options::new(&[classes.to_path_buf()], &format!("wd.Widened#{method}"));
+        o.engine = Engine::Native;
+        o.jbmc = "/nonexistent/jbmc".into();
+        o.gaps = GapMode::Assume;
+        o.assert = Some(assertion.into());
+        o.requested_models = model.into_iter().map(String::from).collect();
+        o.work = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("rule-countermodels").join(method));
+        let out = property::run(&o).unwrap();
+        eprintln!("--- {method}: {:?}\n{}", out.verdict, out.output);
+        if out.verdict == Verdict::Verified {
+            wrong.push(method);
+        }
+    }
+    assert!(wrong.is_empty(), "proved that a JDK copy is not of its receiver's class, which a JVM says it is: {wrong:?}");
+}
