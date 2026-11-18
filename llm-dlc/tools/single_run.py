@@ -6,9 +6,10 @@ One agent works toward one outcome, and one watcher session stands outside it, a
 a brief's run does, with far less to keep: no examples, no streams, no foundation, no merge loop. The agent is
 given a first text. When its turn ends (a cycle: the loop compacts the session after each, so a cycle is one
 context window) the watcher is asked whether there is another, and every later cycle is given the run's continue
-message, as it stands when that cycle starts. The user may have the watcher change that message between two
-cycles, which is how a run is steered while it is under way. The loop is feature-loop.sh's `single-agent`, with
-this run's directory as its conductor. NAME names the run.
+message, as it stands when that cycle starts. That message is a person's: written for a long run, and changed
+between two cycles only by a person, from their own terminal, which is how a run is steered while it is under way.
+The watcher never changes it: a run that the message no longer serves is ended, and the person decides. The loop
+is feature-loop.sh's `single-agent`, with this run's directory as its conductor. NAME names the run.
 
     single_run.py start NAME [--prompt TEXT | --prompt-file FILE] [--continue TEXT | --continue-file FILE]
                         [--brief FILE] [--workspace WS] [--session ID | --fork ID] [--model ID] [--effort LEVEL]
@@ -21,18 +22,20 @@ this run's directory as its conductor. NAME names the run.
         in by `land`. Its session is new (Fable 5.2 at high effort, under the memory cap the doctor's budget
         gives a loop), or with --session one of that folder's that it continues, or with --fork a copy of any
         session of this machine, which carries on untouched. Run again on a run that has stopped, it continues the
-        same session, and that leg's first cycle takes the continue message, or --prompt when one is given.
+        same session, and that leg's first cycle takes the continue message, or --prompt when one is given;
+        --continue is refused there, since the message of a run that exists is changed by `message` alone.
     single_run.py wait NAME [--interval SECONDS] [--timeout SECONDS]
         block until something needs the watcher, and print it: a `question` (a cycle has ended: another, or stop;
         or the session compacted with no commit), `results` and `verification` (the queue, kept as the watcher
         of a brief's run keeps it), a summary (every 30 minutes, or `interval`), or `ended`. Exit 3 with nothing
         after the timeout: wait again.
-    single_run.py answer NAME continue|stop --reason TEXT [--message TEXT | --message-file FILE] [--confidence medium]
-        answer the question that is open. --message also sets the continue message, before the answer, so the
-        next cycle takes it. The answer is recorded as a decision (llm-dlc/decisions/single-NAME.jsonl).
+    single_run.py answer NAME continue|stop --reason TEXT [--confidence medium]
+        answer the question that is open. The answer is recorded as a decision
+        (llm-dlc/decisions/single-NAME.jsonl).
     single_run.py message NAME [TEXT | --file FILE]
-        the continue message: print it, or set it. A cycle under way is not interrupted: the message is read
-        when a cycle starts.
+        the continue message: print it, with every one before it, or set it. Setting it is for a person at
+        their own terminal, as sync.py's approvals are: from a Claude Code session, the watcher's included, it
+        is refused. A cycle under way is not interrupted: the message is read when a cycle starts.
     single_run.py status NAME           where the run stands, as data
     single_run.py summary NAME          a summary now
     single_run.py interval NAME SECONDS how often `wait` gives a summary from now on
@@ -138,6 +141,11 @@ def write(path: Path, text: str) -> None:
     os.replace(tmp, path)
 
 
+def person_at_terminal() -> bool:
+    """Whether a person is typing this command (as sync.py's person_at_terminal): a session's shell is not one."""
+    return sys.stdin.isatty() and sys.stdout.isatty() and not os.environ.get("CLAUDECODE")
+
+
 def set_message(run: Run, text: str, why: str) -> bool:
     """Make TEXT the continue message, and keep when it was set. False when it is the message already."""
     if run.message.exists() and run.message.read_text() == text:
@@ -226,6 +234,9 @@ def cmd_start(run: Run, a: argparse.Namespace) -> int:
     given = text_of(getattr(a, "continue"), a.continue_file, "--continue")
     if new and prompt is None:
         raise Problem("a new run needs its first text: --prompt TEXT or --prompt-file FILE")
+    if not new and given is not None:
+        raise Problem(f"the run {run.name} has its continue message, which a person changes from their own terminal "
+                      f"(`single_run.py message {run.name} --file FILE`): `start` continues the run with the message as it stands")
     if not new and (a.session or a.fork):
         raise Problem(f"the run {run.name} has its session ({data['session']}), which `start` continues: a run of "
                       f"another name starts another session")
@@ -404,7 +415,8 @@ def assessment(run: Run, event: dict) -> dict:
                                                 f"transcript: {watch.transcript(folder, data['session'])}]"
                                                 if len(report) > REPORT_LIMIT else ""),
             "jobs": queue_counts(run.root), "nextCycleTakes": run.message.read_text().strip() if run.message.exists() else None,
-            "hint": hint.strip()}
+            "hint": hint.strip() + " The next cycle takes the continue message as it stands, which is a person's to "
+                                   "change and never yours: if the run should not go on as it reads, the answer is `stop`."}
 
 
 def state(run: Run) -> dict:
@@ -503,7 +515,6 @@ def next_thing(run: Run, interval: float) -> dict | None:
                          f"--reason TEXT [--confidence medium]"}
         if event.get("type") == "run":
             out["cycle"] = assessment(run, event)
-            out["answer"] += " [--message TEXT: a new continue message, at the user's word only]"
         return out
     loop = data.get("loop") or {}
     if not loop.get("started"):
@@ -547,15 +558,12 @@ def cmd_wait(run: Run, interval: float | None, timeout: float) -> int:
 
 # -- what the watcher does
 
-def cmd_answer(run: Run, verdict: str, reason: str, message: str | None, confidence: str) -> int:
+def cmd_answer(run: Run, verdict: str, reason: str, confidence: str) -> int:
     event = conductor.pending(run.dir)
     if event is None or not event.get("needsVerdict"):
         raise Problem(f"no question of the run {run.name} is open (one that was is past its deadline: the loop went on without an answer)")
     if verdict not in conductor.answers(event):
         raise Problem(f"the open question ({event.get('type')}) takes {' or '.join(conductor.answers(event))}, not {verdict}")
-    if message is not None and set_message(run, message, f"with the answer to cycle {event.get('cycle')}"):
-        print("the continue message is set: the next cycle takes it" if verdict == "continue"
-              else "the continue message is set, for when the run is started again")
     return conductor.cmd_decide(run.dir, event["n"], verdict, reason, confidence)
 
 
@@ -566,7 +574,11 @@ def cmd_message(run: Run, text: str | None) -> int:
         print(json.dumps({"continueMessage": run.message.read_text().strip() if run.message.exists() else None,
                           "history": messages(run)}, indent=1))
         return 0
-    changed = set_message(run, text, "by the watcher")
+    if not person_at_terminal():
+        raise Problem("refused: the continue message is a person's to change, from their own terminal. A watcher never "
+                      "sets it: if the run should not go on as the message stands, end it (`answer NAME stop`, or "
+                      "`stop NAME`) and say why")
+    changed = set_message(run, text, "by a person, from their terminal")
     cycle = current_cycle(run) if run.running() else None
     when = (f"cycle {cycle['cycle']} is under way and is not interrupted: the message is read when cycle {cycle['cycle'] + 1} starts"
             if cycle and isinstance(cycle.get("cycle"), int) and state(run)["cycle"]["state"] == "running"
@@ -711,10 +723,8 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
     a = named("answer", "answer the open question")
     a.add_argument("verdict", choices=("continue", "stop"))
     a.add_argument("--reason", required=True)
-    a.add_argument("--message")
-    a.add_argument("--message-file")
     a.add_argument("--confidence", choices=("high", "medium"), default="high")
-    m = named("message", "print the continue message, or set it")
+    m = named("message", "print the continue message, or, for a person at their own terminal, set it")
     m.add_argument("text", nargs="?")
     m.add_argument("--file")
     named("status", "where the run stands, as data")
@@ -746,7 +756,7 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
         if args.command == "wait":
             return cmd_wait(run, args.interval, args.timeout)
         if args.command == "answer":
-            return cmd_answer(run, args.verdict, args.reason, text_of(args.message, args.message_file, "--message"), args.confidence)
+            return cmd_answer(run, args.verdict, args.reason, args.confidence)
         if args.command == "message":
             return cmd_message(run, text_of(args.text, args.file, "the message"))
         if args.command == "status":

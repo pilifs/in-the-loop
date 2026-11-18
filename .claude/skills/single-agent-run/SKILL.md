@@ -1,6 +1,6 @@
 ---
 name: single-agent-run
-description: Run one agent toward one outcome, as its watcher. The agent is given a starting prompt, and after each of its context windows the watcher judges whether it gets another, which takes the run's continue message; the user can have the watcher change that message between two cycles to steer the run. For a goal well within one agent's reach, where a brief with streams would be more than it needs. Start it only when the user asks for this skill or for such a run, never as a step of other work: a run takes hours and spends their tokens.
+description: Run one agent toward one outcome, as its watcher. The agent is given a starting prompt, and after each of its context windows the watcher judges whether it gets another, which takes the run's continue message. That message is the user's alone: a person can change it between two cycles, from their own terminal, to steer the run, and the watcher never does. For a goal well within one agent's reach, where a brief with streams would be more than it needs. Start it only when the user asks for this skill or for such a run, never as a step of other work: a run takes hours and spends their tokens.
 argument-hint: "[--name NAME] [--brief FILE] [--continue \"TEXT\"] [--workspace NAME] [--cycles N] [--fork SESSION | --session SESSION] [--model ID] [--effort LEVEL] [--memory SIZE] [--verdict-wait SECONDS] [--unattended] [--summary-interval SECONDS] <the starting prompt>"
 model: claude-opus-5-5
 effort: high
@@ -20,19 +20,23 @@ Everything you run is `python3 llm-dlc/tools/single_run.py`, whose own first lin
   included. Nothing of the run lives in your context: it is all in files
   (`llm-dlc/loop-summaries/single-NAME/`), so a session that was compacted, or a new one that takes a run over,
   reads where the run stands and goes on (see "A run under way").
-- **The agent's texts are the user's.** The starting prompt and the continue message reach the agent word for
-  word. You don't rewrite, extend or "improve" them, and you change the continue message only when the user asks
-  you to. When you think a different message would serve the outcome better, say so to the user, with the message
-  you would set.
+- **The agent's texts are the user's, and you never change them.** The starting prompt and the continue message
+  reach the agent word for word, as the user gave them when the run started. The continue message was written
+  for a long run, by someone who reviewed it as an expert: changing it is a person's way to steer the session,
+  from their own terminal, and never yours, whoever asks and however sure you are. The tool refuses it from a
+  session. You don't set it, edit its file, draft a replacement unasked, or get a new text to the agent another
+  way (a restart with a prompt of your own, a file left for it to find). When a run should not go on as the
+  message reads, **end it**: answer `stop`, say why, and the user decides what comes next. Ending the loop is
+  almost always better than a run that goes on under a message that no longer fits.
 - **Never write into the agent's session**, and leave the files of the folder it works in alone while it runs.
-  The agent is steered through the continue message only.
 - **Nothing is pushed** unless the user asks.
 
 The request: $ARGUMENTS
 
 What is not an option is the **starting prompt**: the user's words for the outcome, passed on as they are.
-`--continue "TEXT"` is what every later cycle is told; without it the tool has a default that asks the agent to
-take the next piece, commit it, and say plainly when the outcome is reached or the rest needs the user.
+`--continue "TEXT"` is what every later cycle is told, passed on as it is; without it the tool has a default that
+asks the agent to take the next piece, commit it, and say plainly when the outcome is reached or the rest needs
+the user. It is set once, when the run starts, from the request alone.
 `--brief FILE` is a document the agent is pointed at in every cycle (one sentence after the text, the only thing
 ever added to it). `--name NAME` names the run; without it choose a short one from the prompt, in lower-case
 letters, digits and dashes, and tell the user. `--workspace`, `--cycles`, `--fork`, `--session`, `--model`,
@@ -50,8 +54,10 @@ First, always: `python3 llm-dlc/tools/single_run.py list`, and for a run of the 
 
 - `running: true`: the run is under way and you are taking it over, or coming back to it. Start nothing. Say
   where it stands in a few lines, and go to the `wait` of stage 2.
-- A run of that name that has ended: `start NAME` continues its session, with the continue message as its first
-  text, or with a new `--prompt`. If the user means a new piece of work, it takes another name.
+- A run of that name that has ended: `start NAME` continues its session, with the continue message as it stands
+  as its first text. Continue one only when the user asks, or after a stop that only waited on jobs (stage 2).
+  A `--prompt` on a restart is the user's own words from their request, never yours, and `--continue` is refused
+  there. If the user means a new piece of work, it takes another name.
 - No such run: go on with stage 1.
 
 ## 1. Start it
@@ -88,10 +94,13 @@ again, until it returns `ended`.
   uncommitted, the queue, and the continue message the next cycle would take. Judge it against the outcome
   the run was given (the starting prompt and the brief), not against what the agent says of itself, and answer
   with the command the question prints:
-  - `continue` while the report shows work toward the outcome that the agent can still do alone.
+  - `continue` while the report shows work toward the outcome that the agent can still do alone, and the
+    continue message, as it reads, is the right thing to tell it next.
   - `stop` when the outcome is reached; when what is left needs the user (a decision, credentials, a review);
-    or when the cycle shows the agent going round the same failure. Polish and follow-ups the report itself
-    calls optional are not a reason to continue.
+    when the cycle shows the agent going round the same failure; or when the next cycle would need to be told
+    something the continue message does not say (a different direction, a correction, a narrower target). That
+    last one is never a reason to touch the message: it is a reason to end the loop and tell the user what you
+    saw. Polish and follow-ups the report itself calls optional are not a reason to continue.
   - A cycle with no commit is yours to read: the outcome may be reached, the agent may have ended on a question,
     or it may be stuck. `continue` only when the report says why there is no commit and another cycle would end
     with one.
@@ -114,18 +123,21 @@ again, until it returns `ended`.
   it, and not from a checkout that is not the default workspace.
 - **`ended`**: go to stage 3.
 
-**The continue message.** The user may ask at any time to change what the agent is told next: a new direction, a
-narrower target, something to leave alone. Set it with
+**The continue message is the user's to change, in their own terminal.** They may steer the run between two
+cycles with
 
 ```bash
 python3 llm-dlc/tools/single_run.py message NAME --file FILE
 ```
 
-(or `--message-file FILE` on the answer to an open question), and tell them when it applies: a cycle under way
-is not interrupted, and the message is read when the next one starts. `single_run.py message NAME` prints the
-message and every one before it. If the change can't wait for the cycle to end, `single_run.py stop NAME --now`
-interrupts the agent mid-turn (what it had not committed stays in its working copy) and `start NAME` continues
-the session with the new message: do that at the user's word only.
+which they run themselves, outside this session: run from a session, yours included, it is refused, as
+`sync.py allow approve` is. If they ask you to change it, give them that command and say when it applies (a cycle
+under way is not interrupted, and the message is read when the next one starts); don't run it, and don't write
+the file for them unless they dictate its text. `single_run.py message NAME` prints the message and every one
+before it, with when each was set, and `wait`'s summaries say when it last changed. If their change can't wait
+for the cycle to end, `single_run.py stop NAME --now` interrupts the agent mid-turn (what it had not committed
+stays in its working copy), and once they have set the message `start NAME` continues the session with it: both
+at the user's word only.
 
 The user may also ask about the run at any time: answer from `single_run.py status NAME`, the loop's output (its
 `output`) and the queue (`python3 verification/pipeline.py status`). `single_run.py cycles NAME +N|-N|=N|inf`

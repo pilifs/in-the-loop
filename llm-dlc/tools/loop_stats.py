@@ -63,7 +63,7 @@ RECORD_ITEMS_JUDGED = re.compile(
 # "waiting" leaves an item open as "continues" does: the loop comes back to it when its verification jobs are in.
 RECORD_VERDICT = re.compile(r"^  - item (?P<item>\S+) (?P<verdict>continues|waiting|finished|left after)\b")
 # A single-agent run (feature-loop.sh's `single-agent`): the first cycle takes one text and every later one the
-# run's continue message, which a watcher may change between two cycles, so no opening words tell its instructions.
+# run's continue message, which a person may change between two cycles, so no opening words tell its instructions.
 RECORD_SINGLE = re.compile(r"^Every later cycle takes the run's continue message as it stands when the cycle starts", re.M)
 RECORD_BRIEF = re.compile(r"^Brief `(?P<brief>[^`]+)` at sha256 ", re.M)
 RECORD_FORK = re.compile(rf"^Session {UUID} was forked from session (?P<parent>{UUID})\.", re.M)

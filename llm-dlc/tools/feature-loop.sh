@@ -43,7 +43,7 @@
 #   single-agent    the loop of /single-agent-run, started by llm-dlc/tools/single_run.py, which names the run
 #                   (FEATURE_LOOP_RECORD_AS) and keeps its two texts in files: the first cycle of a run takes
 #                   FEATURE_LOOP_FIRST's, and every later one FEATURE_LOOP_CONTINUE's as it stands when the cycle
-#                   starts, so a watcher can change it between two cycles. FEATURE_LOOP_BRIEF names a brief
+#                   starts, so a person can change it between two cycles (never the watcher). FEATURE_LOOP_BRIEF names a brief
 #                   the session is pointed at each cycle, and FEATURE_LOOP_FORK a session to start as a fork of.
 # Briefs, by name or file:
 #   engines   work through llm-dlc/loops/engine-priorities.md (stock JBMC, native coverage, Bitwuzla)

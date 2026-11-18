@@ -339,8 +339,8 @@ For an outcome well within one agent's reach, a brief with streams is more than 
 `/single-agent-run [OPTION ...] <the starting prompt>`
 ([`.claude/skills/single-agent-run`](../.claude/skills/single-agent-run/SKILL.md)) runs one agent toward it with
 one watcher outside, as the first loops here ran one instruction over and over, with two differences: a watcher
-judges after each cycle whether there is another, and what the later cycles are told can change while the run is
-under way. The watcher is a Claude Code session on Opus 5.5 in the checkout, or one already open there that is
+judges after each cycle whether there is another, and a person can change what the later cycles are told while
+the run is under way. The watcher is a Claude Code session on Opus 5.5 in the checkout, or one already open there that is
 asked in words; it does none of the work and runs [`tools/single_run.py`](tools/single_run.py), whose state is all
 in files (`llm-dlc/loop-summaries/single-NAME/`), so another session can take a run over.
 
@@ -361,10 +361,13 @@ in files (`llm-dlc/loop-summaries/single-NAME/`), so another session can take a 
   the verdict (`--verdict-wait`). Without one a cycle that committed is followed by another, a cycle that did
   not ends the run before its compact, and three cycles in a row without one end it: nothing else measures such
   a run. Each verdict is a decision in `llm-dlc/decisions/single-NAME.jsonl`.
-- **The user steers through the watcher.** Asked to, the watcher sets a new continue message
-  (`single_run.py message NAME --file FILE`, or with an answer); a cycle under way is not interrupted, and the
-  next one takes it. The run's record notes each change, and `messages.jsonl` keeps every message with its time.
-  The watcher does not change the message by itself: it says what it would set, and why.
+- **A person steers, and the watcher never does.** The continue message is written for a long run and reviewed
+  by whoever gives it. A person changes it between two cycles from their own terminal
+  (`single_run.py message NAME --file FILE`, refused from a Claude Code session as `sync.py allow approve` is); a
+  cycle under way is not interrupted, and the next one takes it. The run's record notes each change, and
+  `messages.jsonl` keeps every message with its time. The watcher has no way to set it, with an answer or on a
+  restart, and is told not to draft one unasked: when a run should not go on as the message reads, it answers
+  `stop` and says why. The loop ending is preferred to a watcher steering.
 - **Where the agent works.** In the checkout, or with `--workspace NAME` in a jj workspace of its own, made from
   the line's last commit, when the checkout is busy; `single_run.py land NAME` then brings its commits in as
   `brief_run.py land` does. The watcher keeps the verification queue as a brief's watcher does (it collects and
@@ -372,8 +375,8 @@ in files (`llm-dlc/loop-summaries/single-NAME/`), so another session can take a 
   workspace. A run whose agent only waits on jobs is stopped, `single_run.py jobs NAME` waits for the queue, and
   `start NAME` continues the same session.
 - **Stopping and continuing.** `stop NAME` ends the run after the cycle under way, `stop NAME --now` interrupts it,
-  and `start NAME` on a run that has ended continues its session, the first cycle taking the continue message (or
-  a new `--prompt`). `cycles NAME +N` changes the count, as typed in a loop's terminal.
+  and `start NAME` on a run that has ended continues its session, the first cycle taking the continue message as
+  it stands (or a new `--prompt` of the user's). `cycles NAME +N` changes the count, as typed in a loop's terminal.
 
 The loop statistics count such a run as a moonshot named `single-NAME`, each text it sent a cycle.
 

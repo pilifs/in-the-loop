@@ -204,26 +204,41 @@ class SingleRunTest(unittest.TestCase):
         self.assertEqual(json.loads(self.tool("wait", "thing", "--timeout", 1)[1])["kind"], "not-running")
 
     @cost("tool")
-    def test_a_message_set_while_a_cycle_runs_or_with_an_answer_is_what_the_next_cycle_takes(self):
+    def test_a_message_a_person_sets_while_a_cycle_runs_is_what_the_next_cycle_takes_and_a_watcher_sets_none(self):
         self.start("--prompt", PROMPT, modes="wait,commit")
         self.assertEqual(json.loads(self.tool("message", "thing")[1])["continueMessage"], single_run.DEFAULT_CONTINUE)
         self.under_way()
-        said = self.tool("message", "thing", "Look at the other half first.")[1]
+        # from a session's shell, the watcher's included: refused, and the message stays as it is
+        status, _, err = self.tool("message", "thing", "Do something else.", ok=False)
+        self.assertEqual(status, 1)
+        self.assertIn("a person's to change, from their own terminal", err)
+        self.assertIn("end it", err)
+        with mock.patch.dict(os.environ, {"CLAUDECODE": "1"}), mock.patch.object(sys.stdin, "isatty", lambda: True, create=True):
+            self.assertFalse(single_run.person_at_terminal())
+        with mock.patch.object(single_run, "person_at_terminal", lambda: True):
+            said = self.tool("message", "thing", "Now the tests.")[1]
         self.assertIn("is not interrupted", said)
         self.go.write_text("go\n")
         first = self.wait()
-        self.assertEqual(first["cycle"]["nextCycleTakes"], "Look at the other half first.")
-        self.tool("answer", "thing", "continue", "--reason", "Half is left.", "--message", "Now the tests.")
-        self.wait()
+        self.assertEqual(first["cycle"]["nextCycleTakes"], "Now the tests.")
+        self.assertIn("never yours", first["cycle"]["hint"])
+        self.assertNotIn("--message", first["answer"])
+        with self.assertRaises(SystemExit), contextlib.redirect_stderr(io.StringIO()):  # an answer carries no message
+            single_run.main(["answer", "thing", "continue", "--reason", "Half is left.", "--message", "Mine."], root=self.root)
         self.tool("answer", "thing", "continue", "--reason", "The tests are left.")
         self.wait()
         self.tool("answer", "thing", "stop", "--reason", "Done.")
         self.wait(kind="ended")
         work = [p for p in self.prompts() if p != "/compact" and not p.startswith("The feature loop is ending")]
-        self.assertEqual(work, [PROMPT, "Now the tests.", "Now the tests."])
+        self.assertEqual(work, [PROMPT, "Now the tests."])
         self.assertIn("from cycle 2 the continue message is: Now the tests.", self.record())
         history = json.loads(self.tool("message", "thing")[1])["history"]
-        self.assertEqual([h["text"] for h in history], [single_run.DEFAULT_CONTINUE, "Look at the other half first.", "Now the tests."])
+        self.assertEqual([(h["text"], h["set"]) for h in history],
+                         [(single_run.DEFAULT_CONTINUE, "at the start"), ("Now the tests.", "by a person, from their terminal")])
+        # nor does a restart change it: the run goes on with the message as it stands
+        status, _, err = self.tool("start", "thing", "--continue", "Mine.", "--memory", "none", ok=False)
+        self.assertEqual(status, 1)
+        self.assertIn("a person changes from their own terminal", err)
 
     @cost("tool")
     def test_a_brief_is_named_after_the_text_of_every_cycle_and_nothing_else_is_added(self):
@@ -367,7 +382,7 @@ class SingleRunTest(unittest.TestCase):
                           (("start", "thing", "--prompt", PROMPT, "--brief", "nowhere.md"), "no brief at"),
                           (("start", "thing", "--prompt", PROMPT, "--cycles", "0"), "1 or more"),
                           (("status", "thing"), "no run thing here"),
-                          (("message", "thing", "Text"), "no run thing here")):
+                          (("message", "thing"), "no run thing here")):
             status, _, err = self.tool(*args, "--memory", "none", ok=False) if args[0] == "start" else self.tool(*args, ok=False)
             self.assertEqual(status, 1, args)
             self.assertIn(why, err, args)
