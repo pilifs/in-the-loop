@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 140, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-18 01:49 UTC |
-| Prompts | 3,409 |
-| Model calls | 34,227 |
-| Tool calls | 35,155 (614 failed) |
-| Compactions | 502 |
+| Period | 2026-10-24 14:07 UTC to 2026-11-18 02:02 UTC |
+| Prompts | 3,415 |
+| Model calls | 34,263 |
+| Tool calls | 35,193 (614 failed) |
+| Compactions | 503 |
 | Subagents | 21 |
-| Tokens written | 33,354,191 |
-| Tokens read | 5,597,917,257 (98.1% from cache) |
-| Commits with a trace | 1,052 |
-| Log snapshots | 1,359 (3140.1 MB gzipped, 1,162 uploaded) |
+| Tokens written | 33,370,102 |
+| Tokens read | 5,600,964,056 (98.1% from cache) |
+| Commits with a trace | 1,053 |
+| Log snapshots | 1,360 (3145.8 MB gzipped, 1,162 uploaded) |
 
 ## Sessions
 
@@ -166,7 +166,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | open | 4 h 3 min | `claude-opus-5-5` | 84 | 681 | 678 | 13 | 15 | 186,120 | 22 |
 | 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | open | 11 h 47 min | `claude-opus-5-5` | 132 | 1,286 | 1,302 | 30 | 23 | 294,636 | 25 |
 | 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | open | 11 h 14 min | `claude-opus-5-5` | 151 | 1,400 | 1,362 | 14 | 23 | 273,336 | 28 |
-| 2026-11-17 12:56 UTC | [f28025bc-e46b-4a87-a943-bfb79dea5465](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | open | 12 h 53 min | `claude-opus-5-5` | 87 | 1,249 | 1,240 | 15 | 15 | 463,604 | 161 |
+| 2026-11-17 12:56 UTC | [f28025bc-e46b-4a87-a943-bfb79dea5465](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | open | 13 h 5 min | `claude-opus-5-5` | 93 | 1,285 | 1,278 | 15 | 16 | 463,604 | 162 |
 | 2026-11-17 18:37 UTC | [Agent brief preservation work 287 308](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | ended | 2 h 45 min | `claude-fable-5-2` | 7 | 171 | 189 | 3 | 2 | 466,832 | 31 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
@@ -315,16 +315,16 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 469,172 | 1,388 | 1,808,399 | 65,588,806 | 97.3% | 144 |
 | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 1,078,763 | 2,618 | 3,679,261 | 155,498,323 | 97.7% | 148 |
 | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 1,054,331 | 2,888 | 3,460,090 | 172,015,121 | 98.0% | 166 |
-| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 1,067,382 | 2,540 | 3,077,040 | 189,700,490 | 98.4% | 181 |
+| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 1,083,293 | 2,614 | 3,162,377 | 192,661,878 | 98.4% | 181 |
 | [`88045564`](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | 267,328 | 348 | 615,072 | 43,806,783 | 98.6% | 166 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 31,434 | 89.4% | 140 |
-| `Read` | 1,369 | 3.9% | 61 |
-| `Edit` | 1,068 | 3.0% | 59 |
+| `Bash` | 31,469 | 89.4% | 140 |
+| `Read` | 1,370 | 3.9% | 61 |
+| `Edit` | 1,070 | 3.0% | 59 |
 | `Write` | 705 | 2.0% | 58 |
 | `ToolSearch` | 196 | 0.6% | 47 |
 | `Monitor` | 143 | 0.4% | 52 |
@@ -1397,6 +1397,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 1050 | change `lxosnzun` | Merge the default line into the preservation line: 307's preservation accepted; its mutant control waits on accept.py reading a pair's harness | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/792571e40cdc1d5d1a421e771a5bd118729067bc068fc2f1448d6a3532f83cde.jsonl.gz)) |
 | 1051 | change `vyzppnku` | 287's accepted preservation is agreement on terminating runs, and the preservation stream takes the user's order for the rest of the run | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/b127c1dba28834c6ca7bc979debd7ae68c2c07d98775b16f3ff4ac8802706ed4.jsonl.gz)) |
 | 1052 | change `puuwrruu` | The call taken as one function of both versions refuses what its outcome leaves out, and --no-shared-callees turns it off (I023) | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/ffc589ec9d5f7305257bee7f6c7461ec3007254a471bc610405c9cd6baa519a7.jsonl.gz)) |
+| 1053 | change `wwoltyln` | 289's and 290's preservation answers rest on job 20261117-213024 and are accepted, by the user's D036 | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) ([log](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/e454a608af916f854a1fe179dae5bc9420c20bc23c5358970c3041515f7fea66.jsonl.gz)) |
 
 ## Logs
 
@@ -1542,7 +1543,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 20 | 0 | 36.3 MB | `b38cb00ee8e3`, not uploaded |
 | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 25 | 0 | 76.2 MB | `4c282ea7bf9f`, not uploaded |
 | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 27 | 0 | 82.8 MB | `2a57c9145b73`, not uploaded |
-| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 23 | 0 | 60.0 MB | `ffc589ec9d5f`, not uploaded |
+| [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 24 | 0 | 65.7 MB | `e454a608af91`, not uploaded |
 | [`88045564`](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | 14 | 0 | 8.2 MB | `bf1751029245`, not uploaded |
 
 ## Session notes

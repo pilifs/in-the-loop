@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.021Z",
-  "ended": "2026-11-18T01:49:51.200Z",
-  "duration_seconds": 46380,
+  "ended": "2026-11-18T02:02:49.869Z",
+  "duration_seconds": 47159,
   "stats": {
-    "turns": 87,
-    "api_calls": 1249,
-    "tool_calls": 1240,
+    "turns": 93,
+    "api_calls": 1285,
+    "tool_calls": 1278,
     "tool_errors": 15,
-    "compactions": 15,
+    "compactions": 16,
     "peak_context_tokens": 463604,
     "usage": {
-      "input_tokens": 2540,
-      "output_tokens": 1067382,
-      "cache_read_input_tokens": 189700490,
-      "cache_creation_input_tokens": 3077040
+      "input_tokens": 2614,
+      "output_tokens": 1083293,
+      "cache_read_input_tokens": 192661878,
+      "cache_creation_input_tokens": 3162377
     }
   },
   "tools": {
-    "Bash": 1194,
-    "Edit": 18,
-    "Read": 14,
+    "Bash": 1229,
+    "Edit": 20,
+    "Read": 15,
     "Monitor": 5,
     "ToolSearch": 5,
     "Write": 4
@@ -261,24 +261,38 @@
     {
       "index": 15,
       "started": "2026-11-18T01:29:16.220Z",
-      "ended": "2026-11-18T01:49:51.200Z",
-      "turns": 15,
-      "api_calls": 76,
+      "ended": "2026-11-18T01:50:36.752Z",
+      "turns": 17,
+      "api_calls": 79,
       "usage": {
-        "input_tokens": 176,
-        "output_tokens": 54261,
-        "cache_read_input_tokens": 10828006,
-        "cache_creation_input_tokens": 182273
+        "input_tokens": 184,
+        "output_tokens": 55773,
+        "cache_read_input_tokens": 11420841,
+        "cache_creation_input_tokens": 189160
       },
-      "peak_context_tokens": 195704
+      "peak_context_tokens": 202593
+    },
+    {
+      "index": 16,
+      "started": "2026-11-18T01:51:32.461Z",
+      "ended": "2026-11-18T02:02:49.869Z",
+      "turns": 4,
+      "api_calls": 33,
+      "usage": {
+        "input_tokens": 66,
+        "output_tokens": 14399,
+        "cache_read_input_tokens": 2368553,
+        "cache_creation_input_tokens": 78450
+      },
+      "peak_context_tokens": 91881
     }
   ],
   "log": {
-    "sha256": "ffc589ec9d5f7305257bee7f6c7461ec3007254a471bc610405c9cd6baa519a7",
-    "bytes": 31791981,
-    "lines": 10685,
-    "gzip_bytes": 5463174,
-    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/ffc589ec9d5f7305257bee7f6c7461ec3007254a471bc610405c9cd6baa519a7.jsonl.gz"
+    "sha256": "e454a608af916f854a1fe179dae5bc9420c20bc23c5358970c3041515f7fea66",
+    "bytes": 32954967,
+    "lines": 11056,
+    "gzip_bytes": 5678083,
+    "path": "llm-dlc/traces/f28025bc-e46b-4a87-a943-bfb79dea5465/logs/e454a608af916f854a1fe179dae5bc9420c20bc23c5358970c3041515f7fea66.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1569,6 +1583,14 @@
       "summary": "The call taken as one function of both versions refuses what its outcome leaves out, and --no-shared-callees turns it off (I023)",
       "body": "The challenge stream's seven false proofs of the one-function rule (lib/tests/fixtures/function-countermodels), and an eighth found while reading it, are now refused or refuted. Each was Verified before: filled and copied (a callee that writes an argument only through Arrays.fill or System.arraycopy), interned (s == \"key\" in the callee), same and tagged (two related calls returning one String, a returned literal), overflowed and exhausted (a StackOverflowError or OutOfMemoryError the outcome left out), and nulled in lib/tests/pairing.rs (a String result taken as never null).\n\nshared::one_function now refuses if_acmp in the callee, a call that can come back to itself, an array whose length is not read from constants and static fields, and a JDK call given a length (StringBuilder(int), setLength, Arrays.copyOf*). A JDK call given an array or an Object counts as an array store. At the call (bmc/ties.rs), each allocation's length must be known and within 65536. A String result is null or a new String under a bit a related call takes over, and an == on it ends the path with no verdict (same_lit in bmc/mod.rs), so the check runs again as written. With each side condition switched off alone (a temporary switch, removed), its countermodel is proved again.\n\n--no-shared-callees now reaches the rule, through relocate::Previous::calls_as_one_function set from equivalence::Options::shared_callees. A new test counts zero calls taken under it.\n\nVerified: the challenge's checker-side test, added to lib/tests/function_countermodels.rs, passes. So do the new pairing tests (NAMED, no_shared_callees_takes_no_call_as_one_function) and test_costs.py run --changed: 55 binaries and the default tier's 8 of 8. Capped probes at the frozen bounds keep every verdict: 287 preservation is verified (53 paths, 52 calls taken), 307 preservation is verified and its mutant refuted, and 289 and 290 preservation are verified. 307 now takes only crypt_raw (48 calls, against 72): hashpw(byte[], String) calls Arrays.copyOf(passwordb, passwordb.length + 1), a JDK call given a length. That is a loss of precision, not of the proof. The accepted answers are unaffected. Costs were re-estimated and the lint agrees. lib/README.md and ties.rs's module docs state the new conditions.",
       "log_sha256": "ffc589ec9d5f7305257bee7f6c7461ec3007254a471bc610405c9cd6baa519a7"
+    },
+    {
+      "change_id": "wwoltylnpxtmpllvrxnnmzvrtlpouxzz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "289's and 290's preservation answers rest on job 20261117-213024 and are accepted, by the user's D036",
+      "body": "The preservation task records of examples 289 and 290 now name job 20261117-213024-examples-289-and-290-preservation-again, which reran each at the frozen bound 8. It ran on a checker whose pair of versions compares an exception's class name, interfaces and superclass names, and gives each version its own copies of the array arguments. Each witness lies outside the allowed change (vacuity.outside). accept.py 289 and accept.py 290 accept all eight answers. Each preservation answer passes 13 checks with no recorded limit: 1373 paths for 289 and 573 for 290. The older jobs were refused because their outcomes have no vacuity.outside, and 290's old witness lay inside the change. Both examples' notes and READMEs say so, and validate_example.py passes for each.\n\ntest_accept.py's check of 289's answers pinned every answer to the older job's lib tree. It now takes the tree by job. That test is the evidence stream's, and accept.py is unchanged. test_costs.py run --changed: 26 of 26. Inbox I028, a soundness defect in the one-function rule's record of an array result, is acknowledged and comes next after the merge of accept.py's pair-harness path (D036's third point).",
+      "log_sha256": "e454a608af916f854a1fe179dae5bc9420c20bc23c5358970c3041515f7fea66"
     }
   ],
   "logs": {
@@ -1684,6 +1706,12 @@
       "bytes": 1425374,
       "lines": 392,
       "gzip_bytes": 255829,
+      "url": null
+    },
+    "e454a608af916f854a1fe179dae5bc9420c20bc23c5358970c3041515f7fea66": {
+      "bytes": 32954967,
+      "lines": 11056,
+      "gzip_bytes": 5678083,
       "url": null
     },
     "ead8e28575e05eb0ba6cebc7020a937be38829f3070e13b2cc34d2460895314f": {

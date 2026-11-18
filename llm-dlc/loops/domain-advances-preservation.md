@@ -622,10 +622,37 @@ relational result needs a new check (the rule's applications recorded in the out
     - The accepted 287 and 307 answers are not affected, as the challenge's audit found.
   - **The docs.** `lib/README.md` and the module docs of `bmc/ties.rs` state the new side conditions.
   - **Inbox.** I023 is done. The fixture's README is the challenge stream's and is unchanged. No new item.
-- Next (D036's order):
-  1. Point 289's and 290's preservation task records at job `20261117-213024-…`, then run `accept.py 289` and
-     `accept.py 290` on this line. The default line is merged.
-  2. When accept.py's pair-harness fix is on the default line, merge it and run `accept.py 307` again.
+- 2026-11-18, D036's second point (289's and 290's preservation accepted again; *working formalization* and
+  *accepted claim* unchanged).
+  - **The records.** The `preservation` task of 289 and of 290 now names job
+    `20261117-213024-examples-289-and-290-preservation-again`, and its text says what that rerun is. The job ran at
+    the frozen bound 8, into `verification/.work-28N/closed-fields`, on the checker of source commit `6d515865`. Its
+    pair compares an exception's class name, interfaces and superclass names, and gives each version its own copies
+    of the array arguments. Each witness lies outside the allowed change (`vacuity.outside`).
+  - **The acceptance.** `accept.py 289` and `accept.py 290` accept all eight answers. Each preservation answer passes
+    13 checks with no recorded limit: 1373 paths for 289 and 573 for 290. The older jobs failed only because their
+    outcomes have no `vacuity.outside`; 290's old witness, `servlets=[]`, lay inside the change.
+  - **The notes.** Both examples' notes have the entry, and their READMEs a dated line. An exception's message,
+    cause and own fields are still not compared, as the challenge's item 5 note says. No call was taken as one
+    function here, so I023's side conditions do not bear on these results; the capped probes after them verified
+    both again.
+  - `validate_example.py 289` and `290` pass.
+  - **One test followed the record.** `test_accept.py`'s
+    `test_example_289s_four_answers_are_accepted_from_their_saved_results` pinned every 289 answer to the older
+    job's lib tree, though its docstring expected a rerun to answer preservation. It now takes the lib tree by job.
+    The test is the evidence stream's; that is the only edit, and `accept.py` is unchanged. `test_costs.py run
+    --changed`: 26 of 26.
+  - **Inbox.**
+    - **I028** (an array result's cells read when the later related call is made, and `absorb` keeping one path's
+      record) is acknowledged. It is a soundness defect in this stream's rule, so it comes before 288's close-out.
+      The challenge's audit says neither 287's nor 307's accepted answer reads such cells.
+    - accept.py's pair-harness path (`mxslxvzk`) is now on the default line, so D036's third point can go ahead.
+- Next (D036's order, with I028):
+  1. Merge the default line (accept.py's pair-harness path), run `sync.py regenerate` and the default run, then
+     `accept.py 307 preservation mutant-preservation`.
+  2. I028: a related call takes the earlier array result's cells as they were when it returned, or drops the
+     record once anything stores into it. `absorb` keeps a record's result only where both paths name the same
+     object. Then add the README's test to `lib/tests/record_countermodels.rs`.
   3. 288 ends at its wall: the profile is VF-031's next data point. Another cycle comes only from a measured
      reduction at the frozen bound's comparison. Then `done`.
   4. I026 (289's probes), if the run still has time for it.
