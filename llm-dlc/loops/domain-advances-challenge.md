@@ -950,6 +950,42 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   `--rust-jobs 1` (22 of 22).
 - Next: item 6's entry for 289's other answers; `srxyxsns`'s adversarial fixture; then `nzsypymy`; and preservation's
   next commits (its last is still `qmsonuow`).
+- 288's item 6 went to preservation as `domain-advances-preservation-I024` and to state as `domain-advances-state-I020`,
+  both citing `yqwmukvo`.
+- **To the watcher**: `sync.py check` here reports 25 `has no manifest` errors, up from 23. Session 88045564 is stamped on
+  `mnwtrnrp` and `tqmpowvx`, and its manifest is on the default line and preservation's. The cause is the one recorded
+  above (`link_commits`). I have not touched the trace lines.
+- 2026-11-18, item 6, 289's other answers (`fixed-security`, and the two refutations): **two wrong 5.6.4 matchers
+  satisfy both established claims**. Each is a patch of 5.6.4's `RegexRequestMatcher.java` (blob `a334afc7`, checked)
+  under 289's `controls/`, used by no task, with the reasoning in 289's notes.
+  - The claims leave no room inside their domain. On the family (a literal `P` and `.*`) at bound 8, `fixed-security`
+    says true wherever the URL begins with `P`, and preservation says 5.6.3's answer everywhere else. Together they fix
+    5.6.4's answer on every input, so a wrong matcher can differ only outside the domain.
+  - `dotall-for-trailing-wildcard-only.patch` sets DOTALL only where the pattern ends with `.*`.
+    - Predicted: both claims established, since every pattern of the family ends so.
+    - On a JVM (JDK 25.0.5, the pinned 5.6.4 JARs with the patched class first), `/admin/.*/edit` misses `/admin/`, a
+      line feed, `/edit`. 5.6.4 matches it. This is the advisory's bypass, for a `.` with more pattern after it.
+  - `query-dropped.patch` matches against the servlet path and path info, leaving the query out.
+    - Predicted: both claims established. `P` cannot hold `?`, so the query never decides whether the URL begins with
+      `P`.
+    - On a JVM, `/files/.*\?download=.*` misses `/files/a` with query `download=1`. Both releases match it.
+  - **The replay misses both**. Each gives "holds" and "pass" on the 44 probes, and `oracle.py compare` against 5.6.3 says
+    preserved. The first differs from 5.6.4 only at the out-of-domain probe `dot-inside-pattern`, which decides nothing,
+    and no probe's pattern reads the query.
+  - The refutations are about a given implementation, and their witnesses were run on a JVM, so no wrong implementation
+    can stand in for them.
+  - The packet states the family's narrowness but not what it leaves out. Making `dot-inside-pattern` a decided probe,
+    or adding a probe whose pattern reads the query, would catch each mutant. This goes as an inbox item to
+    `domain-advances-preservation`, which reran 289's preservation, citing this commit. The id goes in the next entry.
+  - *Audit*: both accepted answers say what they are about, on their stated domain, and stand. Nothing for the watcher.
+- Done when, third point: one decided claim is left without an entry, 290's security claim, whose answers the evidence
+  line accepts. 286, 287, 288 and 307 have theirs from earlier entries. 289's preservation has note 15 and its security
+  answers have this entry. 290's preservation has VF-033's note and the exception note.
+- Inbox: no open items.
+- Tests: `validate_example.py 289` passed, and `test_costs.py run --changed` passed (22 of 22) under `MemoryMax=8G` with
+  `--rust-jobs 1`.
+- Next: item 6's entry for 290's security claim; `srxyxsns`'s adversarial fixture; then `nzsypymy`; and
+  preservation's next commits (its last is still `qmsonuow`).
 - Status: working
 
 ## Loop settings
