@@ -539,6 +539,12 @@ change `nwsyrxqkypxs` · [log `b0ef12008f89`](https://terminalvalue.net/raw-trac
 
 Event 24 answered leave (D033): D021 merges challenge before state, and challenge is still running.
 
+### The challenge stream is told the state stream's line is final
+
+change `uutpktsqpxyr` · [log `b0ef12008f89`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/b0ef12008f89c3a580f61ba79aaec00c30364093653b86e6ff301e48bef9e435.jsonl.gz)
+
+So it can challenge state's last rules before its own done; state is held unmerged until challenge is merged (D021, D033).
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/b0ef12008f89c3a580f61ba79aaec00c30364093653b86e6ff301e48bef9e435.jsonl.gz) has every step in between: reasoning, tool calls and their results.
