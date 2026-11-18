@@ -225,6 +225,7 @@ temporary folders a check leaves) is taken up.
   two jobs queued: `20261117-122454-example-289-the-four-proof-tasks-again-w` and
   `20261117-122546-examples-286-and-288-the-simplematch-lem`. This brief and its four stream briefs.
 - 2026-11-17, the watcher: merged stream evidence (vqquvmnmmoqx), which says done.
+- 2026-11-18, the watcher: merged stream challenge (yulpuuronznk), which says done.
 - Status: working
 
 ## Loop settings

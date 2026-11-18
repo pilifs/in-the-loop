@@ -2270,12 +2270,6 @@ change `olmzwolrqnsn` · [log `13ea35b32aeb`](https://terminalvalue.net/raw-trac
 
 From a session the user asked for it (D036): 286's vulnerable-protected-state-mutation besideRoute now names job 20261118-011232 (one plain driver step, its harness collected), which the merged accept.py accepts with no limit; job 20261117-192205 is no longer read (its companion step and missing harness). accept.py 286 accepts all four of the example's answers on the default line; validate_example.py 286 passes.
 
-### VF-037: the hand-run challenge loop ended blocked on preservation's I023 fix and was relaunched once that fix landed
-
-change `zwqmxxnpzxry` · [log `55dd792b844f`](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/55dd792b844f2d5e122bbdc8e208baf47e5ac49eae662d31f7c2c095f5cffd70.jsonl.gz)
-
-Challenge's hand-run loop ended at 01:41 UTC, blocked on preservation's I023 fix (I007's last check). Preservation committed it as puuwrruu at 01:50, and the watcher relaunched challenge with the same command. That is rerun 1 of the 2 the restart plan allows. The scope was inactive and the working copy clean.
-
 ### Two wrong 6.1.14 binders satisfy 288's decided answer and the state stream's binding check: one that skips the allowed list once a disallowed list is set, and 286's first-suppressed-only on this release
 
 change `yqwmukvopzwl` · [log `e19940212105`](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/e1994021210567a7d7551a09018df1b4065a84649287788ac5e2e8ce041217f9.jsonl.gz)
@@ -2320,11 +2314,23 @@ change `yulpuuronznk` · [log `e19940212105`](https://terminalvalue.net/raw-trac
 
 The allocation failure of orxlmwsv (a loop that keeps arrays of a constant length, proved to agree at preservation's puuwrruu) went to the preservation stream as domain-advances-preservation-I029. Progress records the id before its last line, which stays 'Status: done'. Only Progress changed, so no test was run.
 
+### VF-037: the hand-run challenge loop ended blocked on preservation's I023 fix and was relaunched once that fix landed
+
+change `zwqmxxnpzxry` · [log `55dd792b844f`](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/55dd792b844f2d5e122bbdc8e208baf47e5ac49eae662d31f7c2c095f5cffd70.jsonl.gz)
+
+Challenge's hand-run loop ended at 01:41 UTC, blocked on preservation's I023 fix (I007's last check). Preservation committed it as puuwrruu at 01:50, and the watcher relaunched challenge with the same command. That is rerun 1 of the 2 the restart plan allows. The scope was inactive and the working copy clean.
+
 ### Merge the challenge stream's finished line: preservation's I023 fix holds for the seven, and its last item to preservation (I029)
 
 change `qostpvuwmxql` · [log `e19940212105`](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/e1994021210567a7d7551a09018df1b4065a84649287788ac5e2e8ce041217f9.jsonl.gz)
 
 The challenge stream ended done after its rerun (rerun 1 of 2). This merge brings in its last commits: preservation's I023 fix holds for the seven pairs; --no-shared-callees takes no call; a loop that keeps constant-length arrays is an OutOfMemoryError the call's outcome leaves out, and the pair is proved to agree; and the inbox item it sent preservation (I029). The one conflict, in lib/tests/costs.json, was resolved by a three-way merge of its rows. test_costs.py lint agrees, and the generated trace files were regenerated.
+
+### Record the merge of stream challenge in the domain-advances brief's Progress
+
+change `rwptzvnlzlny` · [log `e19940212105`](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/e1994021210567a7d7551a09018df1b4065a84649287788ac5e2e8ce041217f9.jsonl.gz)
+
+The run's watcher merged stream challenge (yulpuuronznk) into the default line; the brief's status is now working.
 
 ## Conversation
 
