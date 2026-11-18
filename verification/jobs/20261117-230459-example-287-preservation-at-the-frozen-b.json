@@ -1,0 +1,53 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-230459-example-287-preservation-at-the-frozen-b",
+  "title": "Example 287 preservation at the frozen bound 80, with bcrypt's crypt_raw taken as one function of both releases",
+  "description": "The preservation stream's third approach to 287 (llm-dlc/loops/domain-advances-preservation.md, inbox items I015 and I018). Jobs 20261117-180758 and 20261117-185613 related the two releases at bcrypt's loop summaries and stopped undecided at the previous release's BCrypt.key loop (pc 39). The relation now sits one level up, at the call: the checker's rule for a call both versions share (lib/src/bmc/ties.rs, lib/src/shared.rs one_function) takes an instance method whose receiver nothing reads after the call, as hashpw's 'new BCrypt().crypt_raw(...)' is, and an array result the callee makes with a length its code gives as a constant (crypt_raw's new byte[cdata.length * 4]). crypt_raw's nine methods are the same bytecode in 6.3.7 and 6.3.8, so the two releases' calls on the same password bytes, salt bytes and cost take one outcome, and the cipher is never run. The outcome states the assumption that each such call ends. Countermodels: KEYED in lib/tests/pairing.rs, each a pair a JVM tells apart, none proved, each proved with its own side condition switched off. A capped probe at bound 80 (--timeout 240) verified in 112 s, 53 paths, 52 calls taken, 48 related; 289, 290 and 307 still give their expected verdicts. Expected: verified, with search.native.calls_as_one_function > 0 and the assumption about BCrypt.crypt_raw stated.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "B9",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "287"
+    ],
+    "paths": [
+      "lib/src/bmc/ties.rs",
+      "lib/src/shared.rs"
+    ]
+  },
+  "expected": "prove.py ends 'verdict: verified (expected verified)' and exits 0; outcome.json has verdict verified, stated.vacuity.outside, and an assumption that each call of BCrypt.crypt_raw taken as one function ends; evidence.json is written",
+  "submitted": {
+    "at": "2026-11-17T23:04:59+00:00",
+    "session": "f28025bc-e46b-4a87-a943-bfb79dea5465"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "6G",
+    "duration": "10m",
+    "timeout": "2h",
+    "notes": "a capped probe verified in 112 s under 4 GB; plus the release build and the fetch of the four pinned JARs"
+  },
+  "steps": [
+    {
+      "name": "287 preservation at the frozen bound, 80, crypt_raw as one function",
+      "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py preservation --timeout 3600 --work verification/.work-287/preservation-one-function",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-287/preservation-one-function/preservation/outcome.json",
+    "verification/.work-287/preservation-one-function/preservation/evidence.json",
+    "verification/.work-287/preservation-one-function/preservation/stderr.txt",
+    "verification/.work-287/preservation-one-function/preservation/work/pair/RegressionPair.java"
+  ]
+}

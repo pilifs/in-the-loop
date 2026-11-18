@@ -52,3 +52,30 @@ fn each_version_alone_differs_by_a_supertype_on_a_jvm() {
     assert_eq!(alone(old), "rebased=2 marked=2 cast=2 mixed=2 looped=2");
     assert_eq!(alone(new), "rebased=1 marked=1 cast=-1 mixed=1 looped=1");
 }
+
+/// The checker's side (I022): each version alone tells every method apart (the test above), so a proof that they
+/// agree is false, and so is "identical in both versions; nothing to prove". The reach now compares the header of
+/// every application class the code names, with its supertypes, in both versions and in the ties' fingerprint.
+#[test]
+fn the_pair_does_not_take_as_the_same_code_what_a_supertype_changes() {
+    jvmcontract::tool_tier!();
+    use jvmcontract::{equivalence, Engine, Verdict};
+    let Some((old, new)) = classes() else { return };
+    let mut wrong = Vec::new();
+    for target in ["app.Entry#rebased", "app.Entry#marked", "app.Entry#cast", "app.Entry#mixed", "app.Entry#looped"] {
+        let mut o = equivalence::Options::new(old, new, target);
+        o.jbmc = "/nonexistent/jbmc".into();
+        if target.ends_with("looped") {
+            o.engine = Engine::Native;
+            o.assume = Some("k >= 0 && k < 2000".into());
+            o.unwind = 2;
+        }
+        o.work = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("supertype-countermodels").join(target.replace(['.', '#'], "-")));
+        let out = equivalence::run(&o).unwrap();
+        eprintln!("--- {target}: {:?}\n{}", out.verdict, out.output);
+        if out.verdict == Verdict::Verified {
+            wrong.push(target);
+        }
+    }
+    assert!(wrong.is_empty(), "proved to agree, though each version alone tells them apart: {wrong:?}");
+}

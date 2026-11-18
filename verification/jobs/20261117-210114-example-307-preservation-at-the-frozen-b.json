@@ -1,0 +1,54 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-210114-example-307-preservation-at-the-frozen-b",
+  "title": "example 307 preservation at the frozen bound, the unchanged hashpw(byte[], String) taken as one function of both versions",
+  "description": "Example 307 is Spring Security fe9e4549: BCrypt.hashpw(String, String) converts the password with getBytes(StandardCharsets.UTF_8) in place of getBytes(\"UTF-8\") inside a try. Its frozen claim (claims/hashpw-preservation.json) says both revisions return the same String or throw the same exception class for a null password or one of at most 80 UTF-16 units and seven fixed salts, at unwind 513. This runs the example's new driver, proofs/prove.py preservation: each revision is prepared by the route's own source-slice recipe (runtime.prepare: the commit's BCrypt.java from github.com, compiled alone by JDK 8, before's class checked against Spring Security 5.2.0.M4's), each slice JAR checked against the replay receipt that ran it, then jvmcontract equivalence on the slices with the claim's assumption, nullable password and salt, native engine, strict gaps, unwind 513 and max-array-length 80, and evidence.json written for accept.py. Two checker changes make it decidable: String.getBytes(String) for UTF-8's names and getBytes(US_ASCII) are modelled, and in a pair of versions a call of a static method both versions share (here hashpw(byte[], String), the cipher) is taken as one function of both, its outcome a function of its inputs related by congruence across the two runs (lib/src/bmc/ties.rs), so the cipher is never unrolled. Capped probes on this commit: preservation verified in about 100 s; mutant-preservation refuted at a non-ASCII password with a valid salt, reproduced on a JVM, in about 50 s. A fresh --work, the claim's bound, no trial flags.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "307"
+    ],
+    "paths": [
+      "lib/src/bmc/ties.rs",
+      "examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/proofs/prove.py"
+    ]
+  },
+  "expected": "verified: the two revisions agree on the claim's whole domain (prove.py exits 0)",
+  "submitted": {
+    "at": "2026-11-17T21:01:14+00:00",
+    "session": "f28025bc-e46b-4a87-a943-bfb79dea5465"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "6G",
+    "duration": "10m",
+    "timeout": "1h",
+    "notes": "capped probes: about 100 s (preservation) and 50 s (mutant), under 4 GB; plus the slice compile with JDK 8, the github.com fetch of the commit, the 5.2.0.M4 reference JAR and the release build"
+  },
+  "steps": [
+    {
+      "name": "python3 examples/307-spring-security-fe9e4549-bcrypt-standar",
+      "run": "python3 examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/proofs/prove.py preservation --timeout 1800 --work verification/.work-307/preservation-one-function",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-307/preservation-one-function/preservation/outcome.json",
+    "verification/.work-307/preservation-one-function/preservation/evidence.json",
+    "verification/.work-307/preservation-one-function/preservation/stderr.txt",
+    "verification/.work-307/preservation-one-function/preservation/work/pair/RegressionPair.java",
+    "verification/.work-307/preservation-one-function/preservation/work/pair-work/harness/PropertyHarness.java"
+  ]
+}

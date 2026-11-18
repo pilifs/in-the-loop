@@ -88,6 +88,30 @@ fn each_fixture_is_what_a_jvm_says_it_is() {
     assert_eq!(jvm("lg.M", &[]), "seen=1 escaped=0");
 }
 
+/// The checker's side, for the preservation stream (`unswkkxp`): no proof that logging a record left it as it was, or
+/// returned, where the default handler's formatting called a getter that wrote the record or threw a `Throwable`.
+/// A JVM gives seen() 1 and escaped() 0 (the test above).
+#[test]
+fn logging_a_record_is_not_taken_to_skip_what_its_formatting_runs() {
+    jvmcontract::tool_tier!();
+    use jvmcontract::{property, Engine, Verdict};
+    let Some(classes) = classes() else { return };
+    let mut wrong = Vec::new();
+    for (method, assertion) in [("seen", "result == 0"), ("escaped", "result == 1")] {
+        let mut o = property::Options::new(&[classes.to_path_buf()], &format!("lg.M#{method}"));
+        o.engine = Engine::Native;
+        o.jbmc = "/nonexistent/jbmc".into();
+        o.assert = Some(assertion.into());
+        o.work = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("rule-countermodels").join(method));
+        let out = property::run(&o).unwrap();
+        eprintln!("--- {method}: {:?}\n{}", out.verdict, out.output);
+        if out.verdict == Verdict::Verified {
+            wrong.push(method);
+        }
+    }
+    assert!(wrong.is_empty(), "proved that the default handler ran none of a record's getters, which a JVM runs: {wrong:?}");
+}
+
 /// The checker's side, for the state stream (`qysmsruu`): under `--gaps assume`, no proof that a JDK call's object
 /// is of no class but the one its descriptor declares. A JVM says each copy is its receiver's class (the test above).
 #[test]

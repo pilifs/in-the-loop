@@ -1,0 +1,62 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-213024-examples-289-and-290-preservation-again",
+  "title": "Examples 289 and 290: preservation again with the observer's absolute log path and the reach resolving fields and initializers (inbox I014, I019)",
+  "description": "Job 20261117-185623 passed 289 and failed 290 before its check ran: the initializer observer (lib/src/observed.rs) gave the JVM a -Xlog file relative to the repository while running it in its observed/ folder, so the JVM refused the option. The observer now makes the folder absolute (the state stream's fix of zlvqxmst, taken identically). The same commit makes shared::reach resolve each field to its declaring class, take in the initializers of the root's class and of superinterfaces with a default method, and the identical-code shortcut walk both versions (I019); 289 and 290 pass --before-classpath and so never take the shortcut, but the ties' fingerprints change, so both are rerun on the one checker. A capped probe of 290 with this relative --work verified in 573 paths.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "289",
+      "290"
+    ],
+    "paths": [
+      "lib/src/observed.rs",
+      "lib/src/shared.rs"
+    ]
+  },
+  "expected": "exits 0: both drivers print verdict: verified (expected verified) at the frozen bound, not a trial, each with its 'outside the allowed change' line; outcome.json, evidence.json and work/pair/RegressionPair.java come back for each",
+  "submitted": {
+    "at": "2026-11-17T21:30:24+00:00",
+    "session": "f28025bc-e46b-4a87-a943-bfb79dea5465"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "patch",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "10m",
+    "timeout": "1h",
+    "notes": "capped probes: 289 about 60 s, 290 seconds, under 4 GiB; plus the release build and the pinned JARs"
+  },
+  "steps": [
+    {
+      "name": "289 preservation at the frozen bound",
+      "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py preservation --timeout 1800 --work verification/.work-289/closed-fields",
+      "cwd": "."
+    },
+    {
+      "name": "290 preservation at the frozen bound, with a relative --work",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py preservation --timeout 1800 --work verification/.work-290/closed-fields",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/.work-289/closed-fields/preservation/outcome.json",
+    "verification/.work-289/closed-fields/preservation/evidence.json",
+    "verification/.work-289/closed-fields/preservation/work/pair/RegressionPair.java",
+    "verification/.work-290/closed-fields/preservation/outcome.json",
+    "verification/.work-290/closed-fields/preservation/evidence.json",
+    "verification/.work-290/closed-fields/preservation/work/pair/RegressionPair.java"
+  ]
+}

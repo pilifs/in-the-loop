@@ -6,11 +6,11 @@
 //! class path and the JDK, which the engine has: each is modelled where the answer is one, under an assumption the
 //! run states ([`CLASS_PATH_ASSUMPTION`]), and stays the JDK call it was elsewhere.
 //!
-//! - `Object.getClass()` of an object of an application class that the run made with `new`, and of a String (a
-//!   final class), and of an exception of a JDK class below `Throwable` that no JDK call returned (its class is the
-//!   one `new` or the engine's own throw named, [`super::throwables`]): that class's literal, the one object a class
-//!   literal of it is (JLS §15.8.2). Of any other object (an array, a lambda's, another JDK class's) it is the JDK
-//!   call it was.
+//! - `Object.getClass()` of an object of an application class that the run made with `new`, of a String (a final
+//!   class), and of a `Throwable` the run made and no JDK call returned (with `new`, or the engine for the JVM or a
+//!   model of a JDK method, as `athrow`'s handlers already take it; its class is the one `new` or the engine's own
+//!   throw named, [`super::throwables`]): that class's literal, the one object a class literal of it is (JLS
+//!   §15.8.2). Of any other object (an array, a lambda's, another JDK class's) it is the JDK call it was.
 //! - `Class.getName()` of a class literal: the class's binary name, the interned String (the JVM interns it).
 //!   `Class.getTypeName()` of the literal of a class that is no array: the same String, as the JDK's returns
 //!   `getName()` for such a class (an array's is its element type's name and `[]`, the JDK call it was).
@@ -20,6 +20,10 @@
 //!   class it finds on the class path or in the JDK, by a constant name, and a proxy class is one the JVM generates
 //!   while it runs, which neither has. `NullPointerException` for null. Spring's `ClassUtils.getDescriptiveType`
 //!   asks it of every value it names in a message.
+//! - `Class.getSuperclass()` of a class literal of a class the class path or the JDK has and can load: its direct
+//!   superclass's literal, as its class file names it; null of `Object` and of an interface; `Object`'s of an
+//!   array's. Of a copy in a pair of versions it is the copy's superclass, a copy itself where the previous
+//!   version declared it. Of any other class it is the JDK call it was.
 //! - `Class.getClassLoader()` of the literal of a class of the check's class path: the one loader object of the
 //!   run; of a JDK class, the JDK call it was.
 //! - `Class.forName(String, boolean, ClassLoader)` with that loader, a name that is a constant and `false`
@@ -53,10 +57,24 @@
 //! - `java.util.logging.Logger.getLogger(String)` of a constant name: a Logger, the same object for the same name,
 //!   never null (its Javadoc: find or create); `NullPointerException` for null. The object has no content: every
 //!   method of it is the JDK call it was. The logging configuration it reads is JDK state no check observes.
-//! - `getstatic` of a level of `java.util.logging.Level` below `INFO` (`CONFIG`, `FINE`, `FINER`, `FINEST`, `ALL`):
-//!   the one object the constant is. `Logger.isLoggable(Level)` of such a Logger and such a level: false, under
-//!   the assumption the run states ([`LOGGING_ASSUMPTION`]), so a library's debug line is not written and what it
-//!   would have formatted is not run. At any other level, or on any other Logger, it is the JDK call it was.
+//! - `getstatic` of a level of `java.util.logging.Level` other than `OFF` (`SEVERE`, `WARNING`, `INFO`, `CONFIG`,
+//!   `FINE`, `FINER`, `FINEST`, `ALL`): the one object the constant is. `Logger.isLoggable(Level)` of such a Logger
+//!   and such a level, under the assumption the run states ([`LOGGING_ASSUMPTION`]): false below `INFO`, so a
+//!   library's debug line is not written and what it would have formatted is not run, and true at `INFO` and
+//!   above. On any other Logger, or of a null level, it is the JDK call it was.
+//! - What a library does to log a line at a level that is logged (Spring's `LogAdapter.JavaUtilLog`): `new
+//!   LogRecord(Level, String)`, or a constructor of a subclass that calls it, `NullPointerException` for a null
+//!   level and otherwise nothing a check observes (the record's own fields, a global sequence number, the time);
+//!   the record's setters `setLoggerName`, `setResourceBundleName`, `setResourceBundle`, `setSourceClassName`,
+//!   `setSourceMethodName` and `setThrown`, where the JDK's method is the one called: nothing (the record's own
+//!   fields, which a later getter is the JDK call for, a gap); the Logger's `getResourceBundleName()` and
+//!   `getResourceBundle()`: null, since nothing gave it a bundle ([`PUBLISHING_ASSUMPTION`]); and `Logger.log(record)`:
+//!   `NullPointerException` for null, and for a record whose class is confined to itself ([`Engine::confined_record`])
+//!   a normal return, under [`PUBLISHING_ASSUMPTION`]: the default handler writes it to `System.err` and swallows what
+//!   its formatting throws, and each number field the record's own classes declare, on any object of them, holds any
+//!   value afterwards ([`Engine::formatted`]), since a getter may have written it. Formatting calls the record's getters, a subclass's overrides included, so a record of a
+//!   class that could write elsewhere from one of them stays the JDK call. A level, a handler, a filter or a bundle
+//!   set on a Logger is a call of it no model takes, so a check that sets one stops there.
 //! - `getstatic` of `Boolean.TRUE` or `Boolean.FALSE`: the one object each constant is, distinct from the other and
 //!   from every object the run makes, as on a JVM. The object has no content: every method of it is the JDK call it
 //!   was, as is `Boolean.valueOf`. A library stores one where it records a decision (Spring's
@@ -68,6 +86,7 @@
 //!   caches in a constructor, and a path that never asks one anything goes on.
 
 use super::*;
+use std::collections::BTreeSet;
 
 /// What a run that asked for a class by name, or for a class's loader, took for granted.
 pub const CLASS_PATH_ASSUMPTION: &str = "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)";
@@ -75,8 +94,11 @@ pub const CLASS_PATH_ASSUMPTION: &str = "the classes of the check's class path a
 /// What a run that asked the current thread for its context class loader took for granted.
 pub const CONTEXT_LOADER_ASSUMPTION: &str = "the check runs on one thread, whose context class loader is the class loader of the check's class path: nothing has set another (Thread.setContextClassLoader), as on a JVM started with that class path";
 
-/// What a run that asked a logger whether a level below `INFO` is logged took for granted.
-pub const LOGGING_ASSUMPTION: &str = "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL)";
+/// What a run that asked a logger whether a level is logged took for granted.
+pub const LOGGING_ASSUMPTION: &str = "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)";
+
+/// What a run that gave a logger a record to log took for granted.
+pub const PUBLISHING_ASSUMPTION: &str = "a record given to a logger goes to the handler the JDK's default logging configuration gives the root logger and nowhere else: no logger has a filter, a handler of its own or a resource bundle, and the root's one handler is a ConsoleHandler, which writes the record to System.err (no check observes it) and reports to its ErrorManager, without throwing, an exception its formatting throws";
 
 pub(super) const BOOLEAN: &str = "java/lang/Boolean";
 
@@ -93,16 +115,41 @@ pub fn truth_constant(owner: &str, name: &str) -> Option<bool> {
 
 /// The levels of `java.util.logging.Level` below `INFO`, by their fields' names.
 const BELOW_INFO: [&str; 5] = ["CONFIG", "FINE", "FINER", "FINEST", "ALL"];
+/// The levels at `INFO` and above that a logger of the default configuration logs (`OFF` is not one: its value is
+/// above every level, and `isLoggable(OFF)` is true too, which no library asks).
+const LOGGED: [&str; 3] = ["INFO", "WARNING", "SEVERE"];
 pub(super) const LEVEL: &str = "java/util/logging/Level";
+const LOG_RECORD: &str = "java/util/logging/LogRecord";
+/// The longest array a confined record's getter may make ([`Engine::confined_record`]).
+const SMALL_ARRAY: i32 = 1024;
 
-/// Whether the static field is a level below `INFO`, which the engine has one object of for a run.
+/// Whether the static field is a level the engine has one object of for a run.
 pub fn level_constant(owner: &str, name: &str) -> Option<&'static str> {
-    BELOW_INFO.into_iter().find(|level| owner == LEVEL && *level == name)
+    BELOW_INFO.into_iter().chain(LOGGED).find(|level| owner == LEVEL && *level == name)
 }
 
-/// Whether the engine models the instance call here, on a Logger it made: `isLoggable(Level)`.
-pub fn models_logger(owner: &str, name: &str, descriptor: &str) -> bool {
-    (owner, name, descriptor) == (LOGGER, "isLoggable", "(Ljava/util/logging/Level;)Z")
+/// The setters of a `LogRecord` that only set the record's own fields.
+const RECORD_SETTERS: [(&str, &str); 6] = [
+    ("setLoggerName", "(Ljava/lang/String;)V"),
+    ("setResourceBundleName", "(Ljava/lang/String;)V"),
+    ("setResourceBundle", "(Ljava/util/ResourceBundle;)V"),
+    ("setSourceClassName", "(Ljava/lang/String;)V"),
+    ("setSourceMethodName", "(Ljava/lang/String;)V"),
+    ("setThrown", "(Ljava/lang/Throwable;)V"),
+];
+
+/// Whether the engine models the instance call here, where its receiver and arguments let it: a Logger's
+/// `isLoggable(Level)`, `getResourceBundleName()`, `getResourceBundle()` and `log(LogRecord)`, and a `LogRecord`'s
+/// constructor of a level and a message and its setters.
+pub fn models_logging(owner: &str, name: &str, descriptor: &str) -> bool {
+    matches!(
+        (owner, name, descriptor),
+        (LOGGER, "isLoggable", "(Ljava/util/logging/Level;)Z")
+            | (LOGGER, "getResourceBundleName", "()Ljava/lang/String;")
+            | (LOGGER, "getResourceBundle", "()Ljava/util/ResourceBundle;")
+            | (LOGGER, "log", "(Ljava/util/logging/LogRecord;)V")
+            | (LOG_RECORD, "<init>", "(Ljava/util/logging/Level;Ljava/lang/String;)V")
+    ) || (owner == LOG_RECORD && RECORD_SETTERS.contains(&(name, descriptor)))
 }
 
 const CLASS: &str = "java/lang/Class";
@@ -128,6 +175,7 @@ pub fn models_instance(owner: &str, name: &str, descriptor: &str) -> bool {
         (owner, name, descriptor),
         (CLASS, "getName" | "getTypeName", "()Ljava/lang/String;")
             | (CLASS, "isArray", "()Z")
+            | (CLASS, "getSuperclass", "()Ljava/lang/Class;")
             | (CLASS, "getClassLoader", "()Ljava/lang/ClassLoader;")
             | (CLASS, "isAssignableFrom", "(Ljava/lang/Class;)Z")
             | ("java/lang/Object", "getClass", "()Ljava/lang/Class;")
@@ -165,15 +213,18 @@ impl Engine<'_> {
         s.cells.get(..length)?.iter().map(|c| self.b.constant_value(c).map(|u| u as u16)).collect()
     }
 
-    /// `Class.getName()`, `Class.isArray()` and `Class.getClassLoader()` on the object `o`, and `getClass()` on it: see the module's
+    /// `Class.getName()`, `Class.getTypeName()`, `Class.isArray()`, `Class.getSuperclass()` and `Class.getClassLoader()`
+    /// on the object `o`, and `getClass()` on it: see the module's
     /// notes. `None` where the call stays the JDK's.
     pub(super) fn class_method(&mut self, path: &mut Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Option<Step> {
         if (name, descriptor) == ("getClass", "()Ljava/lang/Class;") {
             let class = path.objects[o].class.clone();
-            // An exception of a JDK class that no JDK call returned is of the class `new` or the engine's own throw
-            // named ([`super::throwables`]).
-            let exception = super::throwables::jdk_throwable(self.cp, &class) && !path.objects[o].assumed;
-            if class.starts_with('[') || path.objects[o].lambda.is_some() || !(self.cp.is_application(&class) || class == STRING || exception) {
+            // An exception the run made (with `new`, or the engine for the JVM or a model of a JDK method), and no JDK
+            // call returned, is of the class it was made as: a handler already takes it for that class
+            // ([`super::throwables`]).
+            let o_ = &path.objects[o];
+            let exception = !o_.given && !o_.assumed && (super::throwables::jdk_throwable(self.cp, &class) || (self.cp.loads(&class) && self.cp.is_subtype(&class, "java/lang/Throwable")));
+            if class.starts_with('[') || o_.lambda.is_some() || !(self.cp.is_application(&class) || class == STRING || exception) {
                 return None;
             }
             let literal = self.literal(path, Literal::Class(class), CLASS);
@@ -212,6 +263,21 @@ impl Engine<'_> {
                 let units: Vec<u16> = own.replace('/', ".").encode_utf16().collect();
                 self.literal(path, Literal::Str(units), STRING)
             }
+            "getSuperclass" => {
+                let above = if class.starts_with('[') {
+                    Some("java/lang/Object".to_string())
+                } else {
+                    if !self.cp.loads(&class) {
+                        return None;
+                    }
+                    let interface = matches!(self.cp.load(&class), Ok(Some(l)) if l.class.is_interface());
+                    if interface { None } else { self.cp.superclass(&class) }
+                };
+                let value = above.map(|c| self.literal(path, Literal::Class(c), CLASS));
+                self.push(path, Val::R(value));
+                self.advance(path);
+                return Some(Ok(None));
+            }
             _ => {
                 if !self.cp.is_application(&class) {
                     return None;
@@ -248,19 +314,163 @@ impl Engine<'_> {
         Some(Ok(None))
     }
 
-    /// `Logger.isLoggable(level)` on the object `o`, where it is a Logger of a name and the level one below `INFO`:
-    /// false, under [`LOGGING_ASSUMPTION`]. `None` where the call stays the JDK's.
-    pub(super) fn logger_method(&mut self, path: &mut Path, o: usize, owner: &str, name: &str, descriptor: &str, args: &[Val]) -> Option<Step> {
-        let [Val::R(Some(level))] = args else { return None };
-        let is = |at: usize, wanted: fn(&Literal) -> bool| path.literals.iter().any(|(l, &held)| held == at && wanted(l));
-        if !models_logger(owner, name, descriptor) || !is(o, |l| matches!(l, Literal::Logger(_))) || !is(*level, |l| matches!(l, Literal::Level(_))) {
+    /// A call of `java.util.logging` on the object `o` ([`models_logging`]; `owner` is the class the call names,
+    /// `special` whether it is an `invokespecial`): see the module's notes. `None` where the call stays the JDK's.
+    pub(super) fn logging_method(&mut self, path: &mut Path, o: usize, special: bool, owner: &str, name: &str, descriptor: &str, args: &[Val]) -> Option<Step> {
+        let is = |path: &Path, at: usize, wanted: fn(&Literal) -> bool| path.literals.iter().any(|(l, &held)| held == at && wanted(l));
+        // A record's constructor and setters, where the JDK's method is the one that runs.
+        if self.cp.is_subtype(owner, LOG_RECORD) {
+            let dispatched = if special { owner.to_string() } else { path.objects[o].class.clone() };
+            let constructor = special && (owner, name, descriptor) == (LOG_RECORD, "<init>", "(Ljava/util/logging/Level;Ljava/lang/String;)V");
+            if !(constructor || RECORD_SETTERS.contains(&(name, descriptor))) || self.cp.checker_method(&dispatched, name, descriptor).is_some() {
+                return None;
+            }
+            if constructor && matches!(args.first(), Some(Val::R(None))) {
+                return Some(self.raise(path, "java/lang/NullPointerException"));
+            }
+            self.advance(path);
+            return Some(Ok(None));
+        }
+        if owner != LOGGER || !models_logging(owner, name, descriptor) || !is(path, o, |l| matches!(l, Literal::Logger(_))) {
             return None;
         }
-        self.assumed.insert(LOGGING_ASSUMPTION.to_string());
-        let no = self.b.constant(0, 32);
-        self.push(path, Val::I(no));
+        match (name, args) {
+            ("isLoggable", [Val::R(Some(level))]) => {
+                let logged = path.literals.iter().find_map(|(l, &held)| match l {
+                    Literal::Level(name) if held == *level => Some(LOGGED.contains(name)),
+                    _ => None,
+                })?;
+                self.assumed.insert(LOGGING_ASSUMPTION.to_string());
+                let value = self.b.constant(i64::from(logged), 32);
+                self.push(path, Val::I(value));
+            }
+            ("getResourceBundleName" | "getResourceBundle", []) => {
+                self.assumed.insert(PUBLISHING_ASSUMPTION.to_string());
+                self.push(path, Val::R(None));
+            }
+            ("log", [Val::R(None)]) => return Some(self.raise(path, "java/lang/NullPointerException")),
+            ("log", [Val::R(Some(record))]) => {
+                let class = path.objects[*record].class.clone();
+                if !self.confined_record(&class) {
+                    return None;
+                }
+                self.assumed.insert(LOGGING_ASSUMPTION.to_string());
+                self.assumed.insert(PUBLISHING_ASSUMPTION.to_string());
+                // The formatting ran the getters, which may have written the number fields of the record's own
+                // classes, on this record or another the caller holds: each such field now holds any value.
+                if let Err(stop) = self.formatted(path, &class) {
+                    return Some(Err(stop));
+                }
+            }
+            _ => return None,
+        }
         self.advance(path);
         Some(Ok(None))
+    }
+
+    /// What logging a record of `class` (a [`Engine::confined_record`]) leaves: every object of the classes from
+    /// `class` down to `LogRecord` (the record, or another the getters reach) holds any value in each number field
+    /// those classes declare, since a getter the formatting called may have written it. Nothing else changes: those
+    /// classes write no other field, no static and no array element.
+    fn formatted(&mut self, path: &mut Path, class: &str) -> Result<(), Stop> {
+        let chain: Vec<String> = std::iter::once(class.to_string()).chain(self.cp.superclasses(class)).take_while(|c| c != LOG_RECORD).collect();
+        let mut fields = Vec::new();
+        for c in &chain {
+            let Ok(Some(cf)) = self.cp.bytecode(c) else { return unsupported(&format!("no class {c}")) };
+            fields.extend(cf.fields.iter().filter(|f| !f.is_static()).map(|f| (c.clone(), f.name.clone(), f.descriptor.clone())));
+        }
+        for o in 0..path.objects.len() {
+            let held = path.objects[o].class.clone();
+            for (owner, name, descriptor) in &fields {
+                if !self.cp.is_subtype(&held, owner) {
+                    continue;
+                }
+                let key = self.field_key(path, o, owner, name, descriptor)?;
+                let value = if descriptor == "J" { Val::J(self.b.fresh(64)) } else { Val::I(self.b.fresh(32)) };
+                path.objects[o].fields.insert(key, value);
+            }
+        }
+        Ok(())
+    }
+
+    /// Whether what the default handler calls on a record of `class` when it formats it (its getters, which a
+    /// subclass may override) can do nothing a check observes beyond what [`Engine::formatted`] makes of it: the
+    /// class is `LogRecord`, or an application class below it each of whose classes down from `LogRecord` has, in
+    /// its methods other than its constructors and initializer (which the engine runs itself), no write of a static
+    /// field or an array element, no `athrow`, no `invokedynamic` and no native method, reads only final static
+    /// fields, writes only number fields (`int`, `boolean`, `byte`, `char`, `short`, `long`) of those classes, and
+    /// calls only methods of those classes, of `LogRecord`, `Object`, `String` and `StackTraceElement`, and a
+    /// `Throwable`'s constructors and getters. Spring's `LocationResolvingLogRecord` is such a class: it finds the
+    /// caller in a new `Throwable`'s stack trace and keeps it in its own fields.
+    ///
+    /// The handler catches `Exception` around the formatting, and what else can leave a getter is a `Throwable` an
+    /// `athrow` throws, which is why there is none, or an `Error` the JVM raises with no `athrow`. Of those, the
+    /// scan refuses what the code itself decides: an array of a length other than a constant up to
+    /// [`SMALL_ARRAY`] (an `OutOfMemoryError` for `new long[Integer.MAX_VALUE]`), and a call that can come back to
+    /// itself through methods of those classes (a `StackOverflowError` for a recursion without end; every method of
+    /// the name and descriptor called in those classes is taken as a callee, so an override counts). What is left is
+    /// the JVM's own limits, a heap or a stack already all but full, which no check models anywhere. A field the
+    /// getters write is one the caller may read after `log` (a record it holds), which is why each is any value
+    /// afterwards and only number fields are taken: a reference written there would be any object.
+    pub(super) fn confined_record(&self, class: &str) -> bool {
+        use crate::classfile::Insn;
+        let chain: Vec<String> = std::iter::once(class.to_string()).chain(self.cp.superclasses(class)).take_while(|c| c != LOG_RECORD).collect();
+        if !self.cp.is_subtype(class, LOG_RECORD) || chain.iter().any(|c| !self.cp.is_application(c)) {
+            return false;
+        }
+        let allowed = |owner: &str, name: &str| {
+            chain.iter().any(|c| c == owner)
+                || matches!(owner, LOG_RECORD | "java/lang/Object" | STRING | "java/lang/StackTraceElement")
+                || owner == "java/lang/Throwable" && (name == "<init>" || name.starts_with("get"))
+        };
+        // The calls among the chain's own methods, by name and descriptor, for the recursion check below.
+        let mut calls: BTreeMap<(String, String), BTreeSet<(String, String)>> = BTreeMap::new();
+        let confined = chain.iter().all(|c| {
+            let Ok(Some(cf)) = self.cp.bytecode(c) else { return false };
+            cf.methods.iter().filter(|m| m.name != "<init>" && m.name != "<clinit>").all(|m| {
+                if m.is_native() {
+                    return false;
+                }
+                let Some(code) = &m.code else { return true };
+                let Ok(insns) = code.instructions() else { return false };
+                let mut targets: BTreeSet<u32> = insns.iter().flat_map(|(_, insn)| insn.targets()).collect();
+                targets.extend(code.exception_table.iter().map(|h| u32::from(h.handler_pc)));
+                let callees = calls.entry((m.name.clone(), m.descriptor.clone())).or_default();
+                insns.iter().enumerate().all(|(at, (pc, insn))| match insn {
+                    Insn::PutStatic(_) | Insn::ArrayStore(_) | Insn::InvokeDynamic(_) | Insn::AThrow | Insn::MultiANewArray(..) => false,
+                    // The length, a constant pushed just before and not reached by a jump.
+                    Insn::NewArray(_) | Insn::ANewArray(_) => {
+                        !targets.contains(pc) && matches!(at.checked_sub(1).map(|i| &insns[i].1), Some(Insn::IConst(n)) if (0..=SMALL_ARRAY).contains(n))
+                    }
+                    Insn::GetStatic(i) => cf.pool.member(*i).is_ok_and(|f| {
+                        self.cp.bytecode(&f.owner).ok().flatten().and_then(|owner| owner.field(&f.name).map(|d| d.is_static() && d.is_final())).unwrap_or(false)
+                    }),
+                    Insn::PutField(i) => cf.pool.member(*i).is_ok_and(|f| chain.iter().any(|c| *c == f.owner) && matches!(f.descriptor.as_str(), "I" | "Z" | "B" | "C" | "S" | "J")),
+                    Insn::InvokeVirtual(i) | Insn::InvokeSpecial(i) | Insn::InvokeStatic(i) | Insn::InvokeInterface(i) => cf.pool.member(*i).is_ok_and(|m| {
+                        if chain.iter().any(|c| *c == m.owner) {
+                            callees.insert((m.name.clone(), m.descriptor.clone()));
+                        }
+                        allowed(&m.owner, &m.name)
+                    }),
+                    _ => true,
+                })
+            })
+        });
+        // No call among them can come back to itself.
+        confined
+            && calls.keys().all(|start| {
+                let mut seen = BTreeSet::new();
+                let mut work: Vec<&(String, String)> = calls.get(start).into_iter().flatten().collect();
+                while let Some(m) = work.pop() {
+                    if m == start {
+                        return false;
+                    }
+                    if seen.insert(m.clone()) {
+                        work.extend(calls.get(m).into_iter().flatten());
+                    }
+                }
+                true
+            })
     }
 
     /// `Class.forName(name, false, loader)` and `Logger.getLogger(name)`: see the module's notes. `None` where

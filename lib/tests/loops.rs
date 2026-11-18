@@ -137,7 +137,7 @@ fn a_loop_that_is_not_covered_says_why_and_one_not_shown_to_end_is_stated() {
     let Some(classes) = classes() else { return };
     let o = run(&options(classes, "renewed", "result == 1", "renewed"));
     assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
-    assert!(o.output.contains("a loop was not fully unwound with --unwind 3 (loops.Rounds.renewed at pc 6; no invariant was found that covers its further iterations: an iteration changes local 1, which holds a reference)"), "{}", o.output);
+    assert!(o.output.contains("a loop was not fully unwound with --unwind 3 (loops.Rounds.renewed at pc 6; no invariant was found that covers its further iterations: an iteration changes local 1, which holds a reference (at the head "), "{}", o.output);
 
     let o = run(&options(classes, "stuck", "true", "stuck"));
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);

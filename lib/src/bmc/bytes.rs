@@ -8,14 +8,21 @@
 //! definition written out in Java, on every input of a bound, which is itself sampled against the JDK's method on
 //! a JVM (`tests/fixtures/claims/claims/B.java` and `Samples.java`, run by `tests/claims.rs`).
 //!
-//! - `StandardCharsets.UTF_8` (a static field of the JDK): one object for the run, as it is one on a JVM. The
-//!   other five are not read here.
+//! - `StandardCharsets.UTF_8` and `StandardCharsets.US_ASCII` (static fields of the JDK): each one object for the
+//!   run, as it is one on a JVM. The other four are not read here.
 //! - `String.getBytes(Charset)` with that object, on a String whose content the engine holds: the String's UTF-8
 //!   encoding, as `String.encodeUTF8` writes it. A unit below `0x80` is one byte, one below `0x800` two, a high
 //!   surrogate followed by a low one four for the pair, a surrogate that is in no such pair the one byte `?`
 //!   (the encoder replaces, it does not throw), and any other unit three. The array is new, as long as the
 //!   encoding, and has a cell for three times the String's cells. `NullPointerException` for a null charset; any
 //!   other charset is the JDK call it was.
+//! - `String.getBytes(Charset)` with `US_ASCII`: a unit below `0x80` is that byte, a high surrogate followed by a
+//!   low one is the one byte `?` for the pair, and any other unit `?` (`String.encodeASCII`: the encoder replaces an
+//!   unmappable character, a code point, by one `?`). The array is new, as long as the encoding.
+//! - `String.getBytes(String)` with a constant name the JDK takes for UTF-8 (`UTF-8`, `UTF8` or `unicode-1-1-utf-8`,
+//!   in any case of ASCII letters, as `Charset.forName` looks names up): the same encoding. `NullPointerException`
+//!   for a null name; any other name is the JDK call it was, since a name the JDK has no charset for throws
+//!   `UnsupportedEncodingException` and another charset encodes otherwise.
 //! - `MessageDigest.isEqual(byte[], byte[])`: true for one array (two nulls included), false for one null, and
 //!   otherwise whether the lengths are the same and every byte is. The JDK reads every byte whatever it finds, to
 //!   take the same time; what it returns is this.
@@ -39,6 +46,15 @@ const ARRAYS: &str = "java/util/Arrays";
 pub const CHARSET: &str = "java/nio/charset/Charset";
 pub const STANDARD_CHARSETS: &str = "java/nio/charset/StandardCharsets";
 
+/// The charset `StandardCharsets.name` is, where the engine holds it as one object ([`Literal::Charset`]).
+pub fn charset_constant(owner: &str, name: &str) -> Option<&'static str> {
+    match (owner, name) {
+        (STANDARD_CHARSETS, "UTF_8") => Some("UTF_8"),
+        (STANDARD_CHARSETS, "US_ASCII") => Some("US_ASCII"),
+        _ => None,
+    }
+}
+
 /// Whether the engine models the static call here.
 pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!(
@@ -49,24 +65,97 @@ pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
 
 /// Whether the engine models `String.name(descriptor)` here.
 pub fn models_string(name: &str, descriptor: &str) -> bool {
-    (name, descriptor) == ("getBytes", "(Ljava/nio/charset/Charset;)[B")
+    matches!((name, descriptor), ("getBytes", "(Ljava/nio/charset/Charset;)[B" | "(Ljava/lang/String;)[B"))
+}
+
+/// The names `Charset.forName` takes for UTF-8 (`sun.nio.cs.UTF_8`'s and its aliases), compared as it compares
+/// them, ignoring the case of ASCII letters.
+const UTF8_NAMES: [&str; 3] = ["UTF-8", "UTF8", "unicode-1-1-utf-8"];
+
+fn names_utf8(units: &[u16]) -> bool {
+    let lower: Vec<u16> = units.iter().map(|&u| if (0x41..=0x5A).contains(&u) { u + 0x20 } else { u }).collect();
+    UTF8_NAMES.iter().any(|name| name.to_ascii_lowercase().encode_utf16().eq(lower.iter().copied()))
 }
 
 impl Engine<'_> {
-    /// `String.getBytes(Charset)` on a String of content `s`: see the module's notes. `None` where the call
-    /// stays the JDK's.
-    pub(super) fn string_bytes(&mut self, path: &mut Path, s: &Array, args: &[Val]) -> Option<Step> {
+    /// `String.getBytes(Charset)` and `String.getBytes(String)` on a String of content `s`: see the module's notes.
+    /// `None` where the call stays the JDK's.
+    pub(super) fn string_bytes(&mut self, path: &mut Path, s: &Array, descriptor: &str, args: &[Val]) -> Option<Step> {
         let [Val::R(charset)] = args else { return None };
         let Some(charset) = *charset else { return Some(self.raise(path, "java/lang/NullPointerException")) };
-        if path.literals.get(&Literal::Charset("UTF_8")) != Some(&charset) {
+        let utf8 = if descriptor == "(Ljava/lang/String;)[B" {
+            self.constant_units(path, charset).is_some_and(|units| names_utf8(&units))
+        } else {
+            path.literals.get(&Literal::Charset("UTF_8")) == Some(&charset)
+        };
+        let ascii = descriptor != "(Ljava/lang/String;)[B" && path.literals.get(&Literal::Charset("US_ASCII")) == Some(&charset);
+        if !utf8 && !ascii {
             return None;
         }
-        let (length, cells) = self.utf8(s);
+        let (length, cells) = if ascii { self.ascii(s) } else { self.utf8(s) };
         path.objects.push(Obj { array: Some(Array { element: Type::Byte, length, cells, refs: Vec::new() }), ..Obj::new("[B") });
         let o = path.objects.len() - 1;
         self.push(path, Val::R(Some(o)));
         self.advance(path);
         Some(Ok(None))
+    }
+
+    /// The US-ASCII encoding of the String content `s`, as the JDK writes it: its length and its bytes, a cell for
+    /// every byte it may have (one per unit).
+    fn ascii(&mut self, s: &Array) -> (Bits, Vec<Bits>) {
+        let n = s.cells.len();
+        let constant16 = |engine: &mut Self, v: i64| engine.b.constant(v, 16);
+        let x80 = constant16(self, 0x80);
+        let (mask, high, low) = (constant16(self, 0xFC00), constant16(self, 0xD800), constant16(self, 0xDC00));
+        let question = self.b.constant(i64::from(b'?'), 8);
+        let inside: Vec<Lit> = (0..n)
+            .map(|i| {
+                let here = self.b.constant(i as i64, 32);
+                self.b.slt(&here, &s.length)
+            })
+            .collect();
+        let kind = |engine: &mut Self, cell: &Bits, of: &Bits| {
+            let top = engine.b.and_bits(cell, &mask);
+            engine.b.eq(&top, of)
+        };
+        let highs: Vec<Lit> = s.cells.iter().map(|c| kind(self, c, &high)).collect();
+        let lows: Vec<Lit> = s.cells.iter().map(|c| kind(self, c, &low)).collect();
+        // `second[i]`: the unit is the low surrogate of a pair, which the `?` of the unit before it stands for.
+        let second: Vec<Lit> = (0..n).map(|i| if i == 0 { FALSE } else { self.b.all(&[lows[i], highs[i - 1], inside[i]]) }).collect();
+        let mut position = self.b.constant(0, 32);
+        let mut written: Vec<Vec<(Lit, Bits)>> = vec![Vec::new(); n];
+        let one = self.b.constant(1, 32);
+        for i in 0..n {
+            let cell = &s.cells[i];
+            let below = self.b.ult(cell, &x80);
+            let byte = self.b.ite_bits(below, &cell[..8].to_vec(), &question);
+            let writes = self.b.and(inside[i], -second[i]);
+            if writes == FALSE {
+                continue;
+            }
+            for start in 0..=i {
+                let here = self.b.constant(start as i64, 32);
+                let starts = self.b.eq(&position, &here);
+                let at = self.b.and(writes, starts);
+                if at != FALSE {
+                    written[start].push((at, byte.clone()));
+                }
+            }
+            let zero = self.b.constant(0, 32);
+            let count = self.b.ite_bits(writes, &one, &zero);
+            position = self.b.add(&position, &count);
+        }
+        let cells = written
+            .into_iter()
+            .map(|writers| {
+                let mut value = self.b.constant(0, 8);
+                for (at, byte) in writers {
+                    value = self.b.ite_bits(at, &byte, &value);
+                }
+                value
+            })
+            .collect();
+        (position, cells)
     }
 
     /// The UTF-8 encoding of the String content `s`, as the JDK writes it: its length and its bytes, a cell for

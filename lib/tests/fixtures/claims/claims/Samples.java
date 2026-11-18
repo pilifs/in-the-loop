@@ -65,6 +65,7 @@ public final class Samples {
         for (int i = 0; i < samples; i++) {
             String s = text(r, 6);
             check(B.utf8(s), "utf8 " + s.chars().boxed().toList());
+            check(B.named(s), "named " + s.chars().boxed().toList());
             check(B.excluded(s), "excluded " + s);
             String x = r.nextBoolean() ? "kxx".substring(0, r.nextInt(4)) + "xxxx".substring(0, r.nextInt(5)) : s;
             check(B.excluded(x), "excluded " + x);

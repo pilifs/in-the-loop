@@ -4,9 +4,11 @@
 //! `RegressionPair.agree` still finds agreeing: the scope reads the caller's own arrays before the pair copies them,
 //! and two classes of one name are one answer whatever they extend. The fixtures are
 //! `tests/fixtures/fresh-pair-countermodels` (`old/` and `new/`); each version's `main` runs one method alone, and
-//! this test holds the fixtures to what a JVM says. The checker's side, the proofs it should not make, is in the
-//! fixtures' README for the stream that changes the pairing (domain-advances-preservation).
+//! this test holds the fixtures to what a JVM says. The checker's side, the proofs it should not make, is the second
+//! test, added with the fix (domain-advances-preservation, 2026-11-17): the scope reads copies of its own, and an
+//! exception is compared by its class's name and those of the classes above it.
 
+use jvmcontract::{equivalence, Engine, Verdict};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::OnceLock;
@@ -57,4 +59,28 @@ fn each_version_alone_is_what_a_jvm_says_it_is() {
     };
     assert_eq!(alone(old), "first=5 failing=handled");
     assert_eq!(alone(new), "first=0 failing=escaped app.Failure");
+}
+
+/// The checker's side: each pair of versions is told apart by a caller when each runs alone (the test above), so a
+/// proof that they agree is false.
+#[test]
+fn the_fresh_pair_does_not_prove_two_versions_agree_that_a_caller_tells_apart() {
+    jvmcontract::tool_tier!();
+    let Some((old, new)) = classes() else { return };
+    let mut wrong = Vec::new();
+    for (name, assume, scope) in [("first", "cells != null", Some("app.Entry.zeroed(cells)")), ("failing", "k >= 0 && k < 4", None)] {
+        let mut o = equivalence::Options::new(old, new, &format!("app.Entry#{name}"));
+        o.engine = Engine::Native;
+        o.jbmc = "/nonexistent/jbmc".into();
+        o.max_array_length = 2;
+        o.assume = Some(assume.into());
+        o.unchanged_unless = scope.map(Into::into);
+        o.work = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("fresh-pair-countermodels").join(name));
+        let out = equivalence::run(&o).unwrap();
+        eprintln!("--- {name}: {:?}\n{}", out.verdict, out.output);
+        if out.verdict == Verdict::Verified {
+            wrong.push(name);
+        }
+    }
+    assert!(wrong.is_empty(), "proved to agree, though a caller tells the versions apart when each runs alone: {wrong:?}");
 }

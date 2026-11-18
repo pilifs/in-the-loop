@@ -866,8 +866,8 @@ class ThisCheckout(unittest.TestCase):
         c2), run again by the job that recorded what it ran (evidence.json): the claim files and the allowed change
         unchanged, the outputs at their recorded hashes, bound 8, strict gaps, both refutations reproduced on a JVM,
         the mutant's JAR the replay's, and every JAR, the adapter and the verifier recorded, so no limit is left.
-        Preservation is refused: its outcome is from before the checker said whether its witness lies outside the
-        allowed change, and a run that says so answers it."""
+        Preservation's first rerun is refused: its outcome is from before the checker said whether its witness lies
+        outside the allowed change. The run that says so (job 20261117-213024, on another checker) answers it."""
         source = accept.Source(REPO)
         git = source.git_dir()
         if not git or subprocess.run([*git, "cat-file", "-e", "150c4a2557ebd284bbb73f1084e5ac7d6e1d7523^{commit}"], capture_output=True).returncode:
@@ -884,7 +884,8 @@ class ThisCheckout(unittest.TestCase):
             self.assertEqual(r["limits"], [], task)
             self.assertIn(("artifacts", "ok"), [(c["check"], c["status"]) for c in r["checks"]], task)
             self.assertEqual(r["bound"]["ran"], 8)
-            self.assertEqual(r["identity"]["libTree"], "09d2f5bfc7dd3385b28ab233aa4ae671db5d7bea")
+            trees = {"20261117-213024-examples-289-and-290-preservation-again": "937c791fb373e9b206b0ac0cdec704cab66d3e70"}
+            self.assertEqual(r["identity"]["libTree"], trees.get(r["job"], "09d2f5bfc7dd3385b28ab233aa4ae671db5d7bea"))
 
 
 if __name__ == "__main__":

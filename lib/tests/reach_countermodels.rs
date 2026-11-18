@@ -7,11 +7,14 @@
 //! a class that implements one with a default method (only superclasses are taken in), and the target's own class's
 //! initializer. The fixtures are `tests/fixtures/reach-countermodels` (`old/` and `new/`); each version's `main` runs
 //! every method alone, and this test holds the fixtures to what a JVM says. The checker's side, the proofs it should
-//! not make, is in the fixtures' README for the stream that changes the pairing (domain-advances-preservation).
+//! not make, is the second test: `shared::reach` resolves each field to its declaring class, takes in the initializers
+//! of the root's own class and of superinterfaces with a default method, and the shortcut walks both versions.
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::OnceLock;
+
+use jvmcontract::{equivalence, Engine, Verdict};
 
 fn has(tool: &str) -> bool {
     Command::new(tool).arg("-version").output().is_ok()
@@ -51,4 +54,29 @@ fn each_version_alone_differs_where_the_reach_does_not_look_on_a_jvm() {
     };
     assert_eq!(alone(old), "removed=2 constant=2 defaulted=2 hidden=0 own=2 looped=2");
     assert_eq!(alone(new), "removed=1 constant=1 defaulted=1 hidden=1 own=1 looped=1");
+}
+
+/// The checker's side: each version alone tells every method apart (the test above), so a proof that they agree is
+/// false, and so is "identical in both versions; nothing to prove".
+#[test]
+fn the_pair_does_not_take_as_the_same_code_what_the_reach_leaves_out() {
+    jvmcontract::tool_tier!();
+    let Some((old, new)) = classes() else { return };
+    let mut wrong = Vec::new();
+    for target in ["app.Entry#removed", "app.Entry#constant", "app.Entry#defaulted", "app.Entry#hidden", "app.Own#f", "app.Entry#looped"] {
+        let mut o = equivalence::Options::new(old, new, target);
+        o.jbmc = "/nonexistent/jbmc".into();
+        if target.ends_with("looped") {
+            o.engine = Engine::Native;
+            o.assume = Some("k >= 0 && k < 2000".into());
+            o.unwind = 2;
+        }
+        o.work = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("reach-countermodels").join(target.replace(['.', '#'], "-")));
+        let out = equivalence::run(&o).unwrap();
+        eprintln!("--- {target}: {:?}\n{}", out.verdict, out.output);
+        if out.verdict == Verdict::Verified {
+            wrong.push(target);
+        }
+    }
+    assert!(wrong.is_empty(), "proved to agree, though each version alone tells them apart: {wrong:?}");
 }

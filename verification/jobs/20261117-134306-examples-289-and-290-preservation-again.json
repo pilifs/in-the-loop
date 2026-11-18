@@ -1,0 +1,61 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-134306-examples-289-and-290-preservation-again",
+  "title": "Examples 289 and 290: preservation again with exceptions compared by class and each version from a fresh state",
+  "description": "The pair of versions (lib/src/pairing.rs) compared exceptions by the category of harness::EXCEPTIONS and ran both versions in one state, the previous version first; the challenge stream's five countermodels (lib/tests/fixtures/pairing-countermodels) were each proved to agree though the versions differ when each runs alone. The pair now compares exceptions by class (a copy of the previous version's class being its own) and the checker gives the scope and each version a fresh state (statics, class initialization, the default locale). 289's and 290's accepted preservation results were decided under the old statement while their claims say 'the same exception'; this reruns both at their frozen bounds on new --work folders, so that accept.py can settle them under the exact statement. Capped probes of both verified on 2026-11-17 (289 in 62 s, 290 in about 1 s).",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "289",
+      "290"
+    ],
+    "paths": [
+      "lib/src/pairing.rs",
+      "lib/src/bmc/mod.rs"
+    ]
+  },
+  "expected": "exits 0: both drivers print verdict: verified (expected verified) at the frozen bound, not a trial; each outcome.json, evidence.json and work/pair/RegressionPair.java come back, the pair's source with thrown(t, ...) and fresh()",
+  "submitted": {
+    "at": "2026-11-17T13:43:06+00:00",
+    "session": "f28025bc-e46b-4a87-a943-bfb79dea5465"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "patch",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "10m",
+    "timeout": "1h",
+    "notes": "capped probes: 289 62 s, 290 about 1 s, under 4 GiB; plus the release build and the fetch of the pinned JARs"
+  },
+  "steps": [
+    {
+      "name": "289 preservation at the frozen bound, exceptions by class",
+      "run": "python3 examples/289-spring-security-cve-2022-22978-regex-request-matcher-bypass/proofs/prove.py preservation --timeout 1800 --work verification/.work-289/exact-classes",
+      "cwd": "."
+    },
+    {
+      "name": "290 preservation at the frozen bound, exceptions by class",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py preservation --timeout 1800 --work verification/.work-290/exact-classes",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-289/exact-classes/preservation/outcome.json",
+    "verification/.work-289/exact-classes/preservation/evidence.json",
+    "verification/.work-289/exact-classes/preservation/work/pair/RegressionPair.java",
+    "verification/.work-290/exact-classes/preservation/outcome.json",
+    "verification/.work-290/exact-classes/preservation/evidence.json",
+    "verification/.work-290/exact-classes/preservation/work/pair/RegressionPair.java"
+  ]
+}

@@ -12,6 +12,8 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::OnceLock;
 
+use jvmcontract::{equivalence, Engine, Verdict};
+
 fn has(tool: &str) -> bool {
     Command::new(tool).arg("-version").output().is_ok()
 }
@@ -55,4 +57,27 @@ fn each_version_alone_answers_the_shared_codes_error_on_a_jvm() {
     };
     assert_eq!(alone(old), "kept=-1 around=-1");
     assert_eq!(alone(new), "kept=-2 around=-2");
+}
+
+/// The checker's side: each version alone answers the Error differently (the test above), so a proof that they
+/// agree is false. `shared::one_function` refuses code that can keep what a loop makes (here an array of
+/// references), so `kept` runs as written.
+#[test]
+fn a_calls_outcome_holds_the_memory_its_code_keeps() {
+    jvmcontract::tool_tier!();
+    let Some((old, new)) = classes() else { return };
+    let mut wrong = Vec::new();
+    for name in ["kept", "around"] {
+        let mut o = equivalence::Options::new(old, new, &format!("app.Entry#{name}"));
+        o.engine = Engine::Native;
+        o.jbmc = "/nonexistent/jbmc".into();
+        o.assume = Some("k >= 0".into());
+        o.work = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("allocation-countermodels").join(name));
+        let out = equivalence::run(&o).unwrap();
+        eprintln!("--- {name}: {:?}\n{}", out.verdict, out.output);
+        if out.verdict == Verdict::Verified {
+            wrong.push(name);
+        }
+    }
+    assert!(wrong.is_empty(), "proved to agree, though each version alone tells them apart: {wrong:?}");
 }

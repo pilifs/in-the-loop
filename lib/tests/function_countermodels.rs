@@ -6,12 +6,14 @@
 //! identity, both as an input (`s == "key"`) and as a result (a new String, or a literal); and an `Error` the JVM
 //! raises (`StackOverflowError`, `OutOfMemoryError`). The fixtures are `tests/fixtures/function-countermodels`
 //! (`old/` and `new/`, whose `Shared` is the same bytes in both); each version's `main` runs every method alone, and
-//! this test holds the fixtures to what a JVM says. The checker's side, the proofs it should not make, is in the
-//! fixtures' README for the stream that owns the rule (domain-advances-preservation).
+//! this test holds the fixtures to what a JVM says. The checker's side, the proofs it should not make, is the last
+//! test, from the fixtures' README.
 
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::OnceLock;
+
+use jvmcontract::{equivalence, Engine, Verdict};
 
 fn has(tool: &str) -> bool {
     Command::new(tool).arg("-version").output().is_ok()
@@ -55,4 +57,26 @@ fn each_version_alone_differs_past_the_shared_call_on_a_jvm() {
     };
     assert_eq!(alone(old), "filled=5 copied=5 hashed=0 interned=1 same=0 tagged=1 encoded=-1 overflowed=-1 exhausted=-1 messaged=1");
     assert_eq!(alone(new), "filled=0 copied=0 hashed=1 interned=0 same=1 tagged=0 encoded=-2 overflowed=-2 exhausted=-2 messaged=0");
+}
+
+/// The checker's side: each version alone tells every method apart (the test above), so a proof that they agree is
+/// false.
+#[test]
+fn a_call_taken_as_one_function_does_not_prove_what_its_outcome_leaves_out() {
+    jvmcontract::tool_tier!();
+    let Some((old, new)) = classes() else { return };
+    let mut wrong = Vec::new();
+    for name in ["filled", "copied", "hashed", "interned", "same", "tagged", "encoded", "overflowed", "exhausted", "messaged"] {
+        let mut o = equivalence::Options::new(old, new, &format!("app.Entry#{name}"));
+        o.engine = Engine::Native;
+        o.jbmc = "/nonexistent/jbmc".into();
+        o.assume = Some("k >= 0".into());
+        o.work = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("function-countermodels").join(name));
+        let out = equivalence::run(&o).unwrap();
+        eprintln!("--- {name}: {:?}\n{}", out.verdict, out.output);
+        if out.verdict == Verdict::Verified {
+            wrong.push(name);
+        }
+    }
+    assert!(wrong.is_empty(), "proved to agree, though each version alone tells them apart: {wrong:?}");
 }

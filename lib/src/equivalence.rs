@@ -1123,6 +1123,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             classes: before_cp.application_class_names()?.into_iter().collect(),
             shared: options.before_classpath.is_none(),
             classpath: std::iter::once(options.before.clone()).chain(options.before_entries().iter().cloned()).collect(),
+            calls_as_one_function: options.shared_callees,
         };
         // An initializer to observe is observed in each version that has the class.
         let mut observed = (Vec::new(), Vec::new());

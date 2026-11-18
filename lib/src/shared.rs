@@ -17,7 +17,10 @@
 //! than the rerun a counterexample through its stub usually brings ([`trivial`]).
 //!
 //! The same comparison of the two versions' bytecode settles a prior question: when the target and everything it
-//! reaches is identical in both versions, there is nothing to prove ([`Plan::identical`]).
+//! reaches is identical in both versions, there is nothing to prove ([`Plan::identical`]). What it reaches is the
+//! code a call may run: the application's methods, the initializers of the application classes it uses, and the
+//! JDK's code where no call into it may come back into the application ([`inert_jdk_call`]); where one may, the reach
+//! is open and nothing is identical. The tool's own checker's ties ([`fingerprint`]) rest on the same reach.
 //!
 //! **A changed helper proved equivalent** (`llm-dlc/loops/foundations-summaries.md`, S4) is shared the same way,
 //! narrowly. A callee both versions call whose code differs is a candidate when, in each version, it is a pure
@@ -164,7 +167,7 @@ fn plan_untimed(before: &ClassPath, after: &ClassPath, before_target: &MemberRef
     let after_reach = reach(after, target);
     let before_reach = reach(before, before_target);
     let mut plan = Plan::default();
-    if plain && before_target == target && after_reach.closed && before_reach.closed && same_everywhere(before, &after_reach) {
+    if plain && before_target == target && after_reach.closed && before_reach.closed && same_everywhere(before, after, &before_reach, &after_reach) {
         plan.identical = Some(after_reach.methods.len());
         return plan;
     }
@@ -222,7 +225,8 @@ fn plan_untimed(before: &ClassPath, after: &ClassPath, before_target: &MemberRef
 pub fn identical_closure(before: &ClassPath, after: &ClassPath, roots: &[MemberRef]) -> bool {
     roots.iter().all(|root| {
         let reached = reach(after, root);
-        reached.closed && same_everywhere(before, &reached)
+        let previous = reach(before, root);
+        reached.closed && previous.closed && same_everywhere(before, after, &previous, &reached)
     })
 }
 
@@ -280,16 +284,27 @@ struct Reach {
     /// constructor), as the class path resolves them, with the methods that make the call (in `callers`): the
     /// read-only helpers a summary may stand for (R2).
     instance_calls: BTreeSet<MemberRef>,
-    /// Application classes whose static fields the methods read or write.
+    /// Application classes whose static fields the methods read or write, each the class that declares the field.
     statics: BTreeSet<String>,
-    /// Whether every call could be followed: false when a virtual call may reach an implementation not listed.
+    /// Each application field the methods name, with the class that declares the field it resolves to (JVMS
+    /// §5.4.3.2): the same instruction reads another field where a version declares one that hides an inherited one.
+    fields: BTreeSet<String>,
+    /// Every application class the code names (a method's owner as an instruction names it and as it resolves, a
+    /// field's owner, a class made, one `instanceof`, `checkcast`, `anewarray`, `multianewarray`, an `ldc` or a
+    /// handler's catch type names), with each of its supertypes: what a call resolves to and what a type test
+    /// answers depend on their headers ([`header`]), which no method's code shows.
+    named: BTreeSet<String>,
+    /// Whether every call could be followed: false when a virtual call may reach an implementation not listed, or a
+    /// call into the JDK may come back into application code ([`inert_jdk_call`]).
     closed: bool,
 }
 
 fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
-    let mut out = Reach { methods: Vec::new(), classes: BTreeMap::new(), static_calls: BTreeSet::new(), callers: BTreeMap::new(), instance_calls: BTreeSet::new(), statics: BTreeSet::new(), closed: true };
+    let mut out = Reach { methods: Vec::new(), classes: BTreeMap::new(), static_calls: BTreeSet::new(), callers: BTreeMap::new(), instance_calls: BTreeSet::new(), statics: BTreeSet::new(), fields: BTreeSet::new(), named: BTreeSet::new(), closed: true };
     let mut seen: HashSet<MemberRef> = HashSet::new();
     let mut work: VecDeque<MemberRef> = VecDeque::from([root.clone()]);
+    // The root's own class is initialized by the call itself, before its first instruction.
+    out.initialized(cp, &root.owner, &mut work);
     while let Some(reference) = work.pop_front() {
         if !seen.insert(reference.clone()) {
             continue;
@@ -302,6 +317,8 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
         if cp.is_application(&class.name) {
             out.classes.insert(class.name.clone(), class.clone());
         }
+        out.name(cp, &reference.owner);
+        out.name(cp, &class.name);
         let Some(code) = &method.code else {
             if !method.is_abstract() {
                 out.closed = false; // native
@@ -314,21 +331,76 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
             out.closed = false;
             continue;
         };
+        for handler in &code.exception_table {
+            if let Some(caught) = &handler.catch_type {
+                out.name(cp, caught);
+            }
+        }
         for (_, insn) in insns {
             match insn {
-                Insn::GetStatic(i) | Insn::PutStatic(i) => {
-                    if let Ok(field) = class.pool.member(i) {
-                        if cp.is_application(&field.owner) {
-                            if let Ok(Some(owner)) = cp.application(&field.owner) {
-                                out.classes.insert(field.owner.clone(), owner);
+                Insn::CheckCast(i) | Insn::InstanceOf(i) | Insn::ANewArray(i) | Insn::MultiANewArray(i, _) | Insn::Ldc(i) => {
+                    if let Ok(named) = class.pool.class_name(i) {
+                        out.name(cp, named);
+                    }
+                }
+                Insn::GetStatic(i) | Insn::PutStatic(i) | Insn::GetField(i) | Insn::PutField(i) => {
+                    let Ok(field) = class.pool.member(i) else { continue };
+                    out.name(cp, &field.owner);
+                    if !cp.is_application(&field.owner) {
+                        continue;
+                    }
+                    // The field the reference resolves to: an interface's for a constant read through a class that
+                    // implements it, a subclass's own where it hides an inherited one.
+                    let Some(declaring) = cp.resolve_field(&field.owner, &field.name, &field.descriptor) else {
+                        out.closed = false;
+                        continue;
+                    };
+                    out.fields.insert(format!("{}.{}:{} {declaring}", field.owner, field.name, field.descriptor));
+                    if matches!(insn, Insn::GetStatic(_) | Insn::PutStatic(_)) {
+                        // The JVM initializes the class that declares the field (JVMS §5.5).
+                        out.initialized(cp, &declaring, &mut work);
+                        if cp.is_application(&declaring) {
+                            if let Ok(Some(owner)) = cp.application(&declaring) {
+                                out.classes.insert(declaring.clone(), owner);
                             }
-                            out.statics.insert(field.owner);
+                            out.statics.insert(declaring);
                         }
+                    }
+                }
+                Insn::New(i) => {
+                    if let Ok(made) = class.pool.class_name(i) {
+                        out.name(cp, made);
+                        out.initialized(cp, &made, &mut work);
                     }
                 }
                 Insn::InvokeStatic(i) | Insn::InvokeSpecial(i) => {
                     let Ok(callee) = class.pool.member(i) else { continue };
+                    out.name(cp, &callee.owner);
+                    if matches!(insn, Insn::InvokeStatic(_)) {
+                        out.initialized(cp, &callee.owner, &mut work);
+                    }
+                    // A JDK class whose code is followed ([`followed`]: numbers, which hold no reference of the
+                    // application's) calls the JDK with what it was given: what the application gave it was checked
+                    // where it entered, below, so its own calls run no application code.
+                    if !cp.is_application(&class.name) && !cp.is_application(&callee.owner) {
+                        if followed(cp, &callee.owner) {
+                            work.push_back(callee);
+                        }
+                        continue;
+                    }
+                    let call = if matches!(insn, Insn::InvokeStatic(_)) { JdkCall::Static } else { JdkCall::Special };
+                    if followed(cp, &callee.owner) && !cp.is_application(&callee.owner) && !inert_jdk_call(cp, &callee, call, true) {
+                        out.closed = false;
+                    }
                     if !followed(cp, &callee.owner) {
+                        // The JDK is the same in both versions, but a call into it may come back into the
+                        // application: through an argument, or, from a constructor of the application's own class,
+                        // through the object it makes.
+                        let on_self = callee.name == "<init>" && reference.name == "<init>" && class.super_class.as_deref() == Some(callee.owner.as_str()) && cp.is_application(&class.name);
+                        let inert = JDK_INERT.contains(&(callee.owner.as_str(), callee.name.as_str(), callee.descriptor.as_str()));
+                        if (on_self && !inert) || !inert_jdk_call(cp, &callee, call, cp.is_application(&class.name)) {
+                            out.closed = false;
+                        }
                         continue;
                     }
                     if matches!(insn, Insn::InvokeStatic(_)) {
@@ -341,8 +413,18 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
                 }
                 Insn::InvokeVirtual(i) | Insn::InvokeInterface(i) => {
                     let Ok(callee) = class.pool.member(i) else { continue };
+                    out.name(cp, &callee.owner);
+                    if !cp.is_application(&class.name) && !cp.is_application(&callee.owner) {
+                        continue; // a followed JDK class's own call, as above
+                    }
                     if !cp.is_application(&callee.owner) {
-                        continue; // the JDK is the same in both versions
+                        // The JDK is the same in both versions, but an interface or an overridable method may be
+                        // the application's, and so may an argument's methods the JDK calls.
+                        let call = if matches!(insn, Insn::InvokeInterface(_)) { JdkCall::Interface } else { JdkCall::Virtual };
+                        if !inert_jdk_call(cp, &callee, call, cp.is_application(&class.name)) {
+                            out.closed = false;
+                        }
+                        continue;
                     }
                     if matches!(insn, Insn::InvokeVirtual(_)) {
                         out.instance_call(cp, &callee, &declared);
@@ -359,12 +441,20 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
                     let Ok((bootstrap_index, _, _)) = class.pool.invoke_dynamic(i) else { continue };
                     let bootstraps = class.bootstrap_methods().unwrap_or_default();
                     let Some(bootstrap) = bootstraps.get(bootstrap_index as usize) else { continue };
-                    if bootstrap.method.member.owner == "java/lang/invoke/LambdaMetafactory" {
-                        match bootstrap.args.get(1) {
+                    match bootstrap.method.member.owner.as_str() {
+                        "java/lang/invoke/LambdaMetafactory" => match bootstrap.args.get(1) {
                             Some(BootstrapArg::MethodHandle(handle)) if cp.is_application(&handle.member.owner) => work.push_back(handle.member.clone()),
                             Some(BootstrapArg::MethodHandle(_)) => {}
                             _ => out.closed = false,
+                        },
+                        // A string concatenation calls `toString` of an object it is given.
+                        "java/lang/invoke/StringConcatFactory" => {
+                            let given = class.pool.invoke_dynamic(i).ok().and_then(|(_, _, d)| crate::classfile::MethodDescriptor::parse(d).ok());
+                            if !given.is_some_and(|d| d.params.iter().all(sealed_type)) {
+                                out.closed = false;
+                            }
                         }
+                        _ => out.closed = false,
                     }
                 }
                 _ => {}
@@ -375,6 +465,52 @@ fn reach(cp: &ClassPath, root: &MemberRef) -> Reach {
 }
 
 impl Reach {
+    /// Adds an application class the code names (an array type by its element), with its supertypes, to
+    /// [`Reach::named`].
+    fn name(&mut self, cp: &ClassPath, class: &str) {
+        let element = class.trim_start_matches('[');
+        let class = element.strip_prefix('L').and_then(|e| e.strip_suffix(';')).unwrap_or(element);
+        if !cp.is_application(class) || self.named.contains(class) {
+            return;
+        }
+        self.named.insert(class.to_string());
+        for above in cp.superclasses(class).into_iter().chain(cp.all_interfaces(class)) {
+            if cp.is_application(&above) {
+                self.named.insert(above);
+            }
+        }
+    }
+
+    /// Adds the initializers a use of `class` may run (an instance made, a static method called, a static field
+    /// read or written), where they are the application's: they run as part of the code. Those are its own, and for
+    /// a class its superclasses' and those of every superinterface that declares a method neither abstract nor
+    /// static (JVMS §5.5); an interface's own initialization runs no other.
+    fn initialized(&mut self, cp: &ClassPath, class: &str, work: &mut VecDeque<MemberRef>) {
+        if !cp.is_application(class) {
+            return;
+        }
+        let interface = cp.application(class).ok().flatten().is_some_and(|c| c.is_interface());
+        let mut run = vec![class.to_string()];
+        if !interface {
+            run.extend(cp.superclasses(class));
+            for i in cp.all_interfaces(class) {
+                if cp.application(&i).ok().flatten().is_some_and(|c| c.methods.iter().any(|m| !m.is_abstract() && !m.is_static())) {
+                    run.push(i);
+                }
+            }
+        }
+        for c in run {
+            if !cp.is_application(&c) {
+                continue;
+            }
+            if let Ok(Some(declared)) = cp.application(&c) {
+                if declared.method("<clinit>", "()V").is_some() {
+                    work.push_back(MemberRef::new(&c, "<clinit>", "()V"));
+                }
+            }
+        }
+    }
+
     /// Records a call of the instance method `callee` (as the instruction names it) from `caller`, as the class
     /// path resolves it.
     fn instance_call(&mut self, cp: &ClassPath, callee: &MemberRef, caller: &MemberRef) {
@@ -388,34 +524,563 @@ impl Reach {
     }
 }
 
+/// JDK classes whose objects hold no reference an application class could be behind, and which no application
+/// class extends: a call on one runs no application code but through its arguments.
+const JDK_SEALED: &[&str] = &[
+    "java/lang/String",
+    "java/lang/StringBuilder",
+    "java/lang/StringBuffer",
+    "java/lang/Integer",
+    "java/lang/Long",
+    "java/lang/Short",
+    "java/lang/Byte",
+    "java/lang/Character",
+    "java/lang/Boolean",
+    "java/lang/Float",
+    "java/lang/Double",
+    "java/lang/Math",
+    "java/lang/StrictMath",
+];
+
+/// JDK methods given an object of any class that call none of its methods.
+const JDK_INERT: &[(&str, &str, &str)] = &[
+    ("java/lang/Object", "<init>", "()V"),
+    ("java/lang/Record", "<init>", "()V"),
+    ("java/lang/Enum", "<init>", "(Ljava/lang/String;I)V"),
+    ("java/lang/Object", "getClass", "()Ljava/lang/Class;"),
+    ("java/lang/System", "arraycopy", "(Ljava/lang/Object;ILjava/lang/Object;II)V"),
+    ("java/lang/System", "identityHashCode", "(Ljava/lang/Object;)I"),
+    ("java/lang/System", "nanoTime", "()J"),
+    ("java/lang/System", "currentTimeMillis", "()J"),
+    ("java/util/Objects", "requireNonNull", "(Ljava/lang/Object;)Ljava/lang/Object;"),
+    ("java/util/Objects", "requireNonNull", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/Object;"),
+];
+
+/// How a call into the JDK is made.
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum JdkCall {
+    Static,
+    /// `invokespecial`: a constructor of an object the code makes, or a superclass's method on the object itself.
+    Special,
+    Virtual,
+    Interface,
+}
+
+/// A value of this type is one no application class is behind: a primitive, one of [`JDK_SEALED`], or an array of
+/// those.
+fn sealed_type(t: &Type) -> bool {
+    match t {
+        Type::Object(c) => JDK_SEALED.contains(&c.as_str()),
+        Type::Array(e) => sealed_type(e),
+        _ => true,
+    }
+}
+
+/// Whether a call into JDK code the reach does not follow runs no application code, so that what the code reached
+/// does is the application code listed and the JDK's. The JDK is the same in both versions, but a call into it comes
+/// back into the application through an interface or an overridable method an application class may implement,
+/// through an argument whose methods the JDK calls (`toString`, `compareTo`, `applyAsInt`), and through a name the
+/// JDK looks a class up by (`Class.forName`, a charset's name, a service). So: a method of [`JDK_INERT`]; or every
+/// argument of a [`sealed_type`] and either a virtual call on a [`JDK_SEALED`] class or an array, or a static method
+/// or a constructor of one, or a constructor of a `java.lang` or `java.util` exception. From the JDK's own code (a
+/// class the proof analyses, [`JDK_SHAREABLE`]), every static method and constructor given such arguments too. A
+/// sealed class's `equals(Object)` compares by its own class first, and is inert too.
+fn inert_jdk_call(cp: &ClassPath, callee: &MemberRef, call: JdkCall, from_application: bool) -> bool {
+    let owner = callee.owner.as_str();
+    if JDK_INERT.contains(&(owner, callee.name.as_str(), callee.descriptor.as_str())) {
+        return true;
+    }
+    let sealed = JDK_SEALED.contains(&owner);
+    if call == JdkCall::Virtual && (sealed || owner.starts_with('[')) && callee.name == "equals" && callee.descriptor == "(Ljava/lang/Object;)Z" {
+        return true;
+    }
+    if owner == "java/lang/String" && callee.descriptor.contains("Ljava/lang/String;") && (callee.name == "getBytes" || (callee.name == "<init>" && callee.descriptor.starts_with("([B"))) {
+        return false; // a charset by name, which may be the application's
+    }
+    let Ok(descriptor) = crate::classfile::MethodDescriptor::parse(&callee.descriptor) else { return false };
+    if !descriptor.params.iter().all(sealed_type) {
+        return false;
+    }
+    match call {
+        JdkCall::Interface => false,
+        JdkCall::Virtual => sealed || owner.starts_with('['),
+        JdkCall::Special if callee.name != "<init>" => false,
+        JdkCall::Special => !from_application || sealed || ((owner.starts_with("java/lang/") || owner.starts_with("java/util/")) && cp.is_subtype(owner, "java/lang/Throwable")),
+        JdkCall::Static => !from_application || sealed || owner == "java/util/Arrays",
+    }
+}
+
 /// Whether a callee's bytecode is part of the proof: an application class, or a JDK class the proof analyses.
 fn followed(cp: &ClassPath, owner: &str) -> bool {
     cp.is_application(owner) || JDK_SHAREABLE.contains(&owner)
 }
 
-/// Whether every application method the after version reaches, and the static state it reads, is the same in
-/// the before version.
-fn same_everywhere(before: &ClassPath, after_reach: &Reach) -> bool {
-    if after_reach.methods.is_empty() {
+/// Whether every application method each version reaches, and the static state it reads, is the same in the
+/// other, and each field the code names resolves to the same declaring class in both. Both reaches are walked: a
+/// method the previous version declares and the new one inherits (an override removed, a static hidden) is in the
+/// previous version's reach alone.
+fn same_everywhere(before: &ClassPath, after: &ClassPath, before_reach: &Reach, after_reach: &Reach) -> bool {
+    if after_reach.methods.is_empty() || before_reach.fields != after_reach.fields || before_reach.statics != after_reach.statics {
         return false;
     }
-    for (m, after_shape) in &after_reach.methods {
-        if JDK_SHAREABLE.contains(&m.owner.as_str()) {
-            continue;
-        }
-        let Some(after_shape) = after_shape else { return false };
-        let Some((before_class, before_method)) = before.find_method(&m.owner, &m.name, &m.descriptor) else { return false };
-        if before_class.name != m.owner || shape(&before_class, &before_method).as_ref() != Some(after_shape) {
-            return false;
-        }
+    // Each class either version's code names has the same header in both: the same calls resolve to the same
+    // methods, and the same type tests give the same answers.
+    if before_reach.named.iter().chain(&after_reach.named).any(|c| header(before, c) != header(after, c)) {
+        return false;
+    }
+    let found_in = |other: &ClassPath, reach: &Reach| {
+        reach.methods.iter().all(|(m, shaped)| {
+            if JDK_SHAREABLE.contains(&m.owner.as_str()) {
+                return true;
+            }
+            let Some(shaped) = shaped else { return false };
+            let Some((class, method)) = other.find_method(&m.owner, &m.name, &m.descriptor) else { return false };
+            class.name == m.owner && shape(&class, &method).as_ref() == Some(shaped)
+        })
+    };
+    if !found_in(before, after_reach) || !found_in(after, before_reach) {
+        return false;
     }
     for owner in &after_reach.statics {
-        let (Ok(Some(b)), Some(a)) = (before.application(owner), after_reach.classes.get(owner)) else { return false };
-        if initializer_shape(&b) != initializer_shape(a) || constant_values(&b) != constant_values(a) {
+        let (Some(b), Some(a)) = (before_reach.classes.get(owner), after_reach.classes.get(owner)) else { return false };
+        if initializer_shape(b) != initializer_shape(a) || constant_values(b) != constant_values(a) {
             return false;
         }
     }
     true
+}
+
+/// What a class's header decides, as text: its superclass, its interfaces in order, and whether it is an interface
+/// (or that the class path has no such class). Which method a call resolves to and what `instanceof` and `checkcast`
+/// answer depend on these alone besides the code ([`Reach::named`]).
+fn header(cp: &ClassPath, class: &str) -> String {
+    match cp.application(class) {
+        Ok(Some(c)) => format!("class {class} extends {:?} implements {:?} interface {}", c.super_class, c.interfaces, c.is_interface()),
+        _ => format!("class {class} absent"),
+    }
+}
+
+/// The code `root` runs, with everything it reaches, as text two methods compare by: each method's shape, and each
+/// application class whose static fields it uses by its initializer and its constant values, each with `name`
+/// applied to it (the tool's own checker takes a previous version's copy back to its own names with it,
+/// [`crate::bmc`]'s ties). Two roots of one text run the same code on the same state: the same instructions, the
+/// same callees, the same constants. `None` where a call may reach an implementation not listed (a virtual call that
+/// is not fixed, a native method) or code does not decode. With it, the application classes the code belongs to or
+/// uses static fields of, by their names in `cp`: no other application class's static state is one it reads.
+pub(crate) fn fingerprint(cp: &ClassPath, root: &MemberRef, name: &dyn Fn(&str) -> String) -> Option<(String, BTreeSet<String>)> {
+    let reached = reach(cp, root);
+    if !reached.closed {
+        return None;
+    }
+    let mut parts = Vec::with_capacity(reached.methods.len() + reached.statics.len());
+    for (m, shape) in &reached.methods {
+        parts.push(name(&format!("{m:?}\n{}", shape.as_ref()?.join("\n"))));
+    }
+    for owner in &reached.statics {
+        let class = reached.classes.get(owner)?;
+        parts.push(name(&format!("{owner}\n{:?}\n{:?}", initializer_shape(class), constant_values(class))));
+    }
+    for field in &reached.fields {
+        parts.push(name(&format!("field {field}")));
+    }
+    for class in &reached.named {
+        parts.push(name(&header(cp, class)));
+    }
+    parts.sort();
+    Some((parts.join("\n\n"), reached.classes.keys().cloned().collect()))
+}
+
+/// What a call of a static method taken as one function of both versions rests on, from its code ([`one_function`];
+/// the tool's own checker's ties take the call, [`crate::bmc`]).
+#[derive(Debug, Clone)]
+pub(crate) struct OneFunction {
+    /// The exception classes a call may end with, by internal name: the JDK's that its code makes, and those the JVM
+    /// and the JDK methods it may call throw ([`ONE_FUNCTION_THROWN`]).
+    pub throws: Vec<String>,
+    /// Whether its code stores into an array, itself or through a JDK method it gives an array (`Arrays.fill`,
+    /// `System.arraycopy`, `String.getBytes(int, int, byte[], int)`): then every array a call reaches through its
+    /// arguments, its receiver and the static fields it takes holds what the call left, which is part of its outcome.
+    pub writes_arrays: bool,
+    /// The static fields, by declaring class and name, whose value its code may take other than to `clone` it at
+    /// once: the only ones of which an array it reads may be the very object it stores into. A static it never
+    /// reads, or reads only to copy (bcrypt's `P_orig`, `S_orig` and `bf_crypt_ciphertext`), holds an array the
+    /// call cannot reach, unless another input is the same object, which the caller sees by numbering them.
+    pub taken_statics: BTreeSet<(String, String)>,
+    /// Whether the root returns an array of numbers it made itself: every `areturn` returns a local that only a
+    /// `newarray` just before it ever sets, so the result is no input and no object a caller held.
+    pub returns_made: bool,
+    /// Of such an array, its length as the code computes it, where that is constants and the lengths of the arrays
+    /// static fields hold: bcrypt's `crypt_raw` returns `new byte[cdata.length * 4]`, `cdata` a copy of a table.
+    pub result_length: Option<Length>,
+    /// The length of each array its code makes, as [`Straight`] reads it: the caller takes the call only where each
+    /// is a number it knows, and none is past what the engine makes as written. An array of a length the inputs
+    /// give is refused here, since what a JVM does with one (an `OutOfMemoryError` for `new long[k]` at a large
+    /// `k`) is not among the outcomes.
+    pub allocations: Vec<Length>,
+}
+
+/// A length a method computes from constants and the lengths of the arrays static fields hold (by declaring class
+/// and name), in `int` arithmetic. Each holds whenever the method runs: a static field is written by no method a
+/// call taken as one function runs but an initializer, and an array's length never changes.
+#[derive(Debug, Clone, PartialEq)]
+pub(crate) enum Length {
+    Constant(i32),
+    Static(String, String),
+    Op(ArithOp, Box<Length>, Box<Length>),
+}
+
+/// What the JVM and the JDK methods [`one_function`] lets a callee call may throw: a superset of what the code can
+/// decide, which is sound. An `Error` the code decides is refused instead: a `StackOverflowError` of a recursion, an
+/// `OutOfMemoryError` of an array of a length the inputs give, or of a JDK method given a length
+/// ([`ONE_FUNCTION_SIZED`]), or of what a loop keeps. Since the code makes no array of references, no object of the
+/// application's own class and no longer String ([`ONE_FUNCTION_GROWING`]), and the reach refuses an exception given
+/// a cause (a `Throwable` is no sealed type), what a call holds at once is the arrays and Strings its locals, its
+/// receiver's fields and its exceptions' messages hold, each of a length checked at the call. What is left is the
+/// JVM's own limits, a heap or a stack already all but full, which no check models anywhere.
+const ONE_FUNCTION_THROWN: &[&str] = &[
+    "java/lang/NullPointerException",
+    "java/lang/ArrayIndexOutOfBoundsException",
+    "java/lang/StringIndexOutOfBoundsException",
+    "java/lang/IndexOutOfBoundsException",
+    "java/lang/ArithmeticException",
+    "java/lang/NegativeArraySizeException",
+    "java/lang/ClassCastException",
+    "java/lang/ArrayStoreException",
+    "java/lang/NumberFormatException",
+    "java/lang/IllegalArgumentException",
+];
+
+/// The JDK methods, by class and name, that give the same outcome on the same arguments and read no state of the
+/// JDK a run can change (the default locale, a system property, the clock, an identity): a callee taken as one
+/// function calls no other. `String.toLowerCase()` and `format` read the default locale; `Integer.getInteger` a
+/// property; neither is here.
+const ONE_FUNCTION_JDK: &[(&str, &[&str])] = &[
+    ("java/lang/Object", &["<init>"]),
+    ("java/lang/String", &["<init>", "length", "isEmpty", "charAt", "equals", "hashCode", "substring", "indexOf", "lastIndexOf", "startsWith", "endsWith", "getBytes", "toString", "toCharArray", "contains", "valueOf", "compareTo"]),
+    ("java/lang/StringBuilder", &["<init>", "toString", "charAt", "length", "setLength", "setCharAt", "reverse", "deleteCharAt", "delete"]),
+    ("java/lang/StringBuffer", &["<init>", "toString", "charAt", "length", "setLength", "setCharAt", "reverse", "deleteCharAt", "delete"]),
+    ("java/lang/Integer", &["parseInt", "valueOf", "toString", "intValue", "compare", "max", "min", "sum", "signum", "numberOfLeadingZeros", "numberOfTrailingZeros", "bitCount", "rotateLeft", "rotateRight", "toUnsignedLong", "highestOneBit", "lowestOneBit", "reverse", "reverseBytes", "toHexString", "toBinaryString"]),
+    ("java/lang/Long", &["parseLong", "valueOf", "toString", "longValue", "compare", "max", "min", "sum", "signum", "numberOfLeadingZeros", "numberOfTrailingZeros", "bitCount", "rotateLeft", "rotateRight", "highestOneBit", "lowestOneBit", "reverse", "reverseBytes"]),
+    ("java/lang/Character", &["isDigit", "digit", "forDigit", "isLetter", "isLetterOrDigit", "isWhitespace", "isHighSurrogate", "isLowSurrogate", "isSurrogate", "toCodePoint", "valueOf", "charValue"]),
+    ("java/lang/Math", &["abs", "max", "min", "addExact", "subtractExact", "multiplyExact", "negateExact", "incrementExact", "decrementExact", "toIntExact", "floorDiv", "floorMod", "absExact"]),
+    ("java/lang/StrictMath", &["abs", "max", "min", "addExact", "subtractExact", "multiplyExact", "negateExact", "incrementExact", "decrementExact", "toIntExact", "floorDiv", "floorMod", "absExact"]),
+    ("java/util/Arrays", &["copyOf", "copyOfRange", "fill", "equals"]),
+    ("java/lang/System", &["arraycopy"]),
+    ("java/util/Objects", &["requireNonNull"]),
+    ("java/security/MessageDigest", &["isEqual"]),
+];
+
+/// The JDK methods of [`ONE_FUNCTION_JDK`] that make an array or a builder's room of a length they are given as a
+/// number, by class, name and descriptor: refused in a callee taken as one function, since a large length is an
+/// `OutOfMemoryError` the outcome does not hold.
+const ONE_FUNCTION_SIZED: &[(&str, &str, &str)] = &[
+    ("java/lang/StringBuilder", "<init>", "(I)V"),
+    ("java/lang/StringBuffer", "<init>", "(I)V"),
+    ("java/lang/StringBuilder", "setLength", "(I)V"),
+    ("java/lang/StringBuffer", "setLength", "(I)V"),
+];
+
+/// The JDK methods that make a String or a builder's text longer than any it was given, by class and name: refused
+/// in a callee taken as one function, and so not in [`ONE_FUNCTION_JDK`], since a loop of them can grow one past
+/// any heap, an `OutOfMemoryError` the outcome does not hold. A joining of Strings (`a + b`, `StringConcatFactory`)
+/// is refused for the same reason.
+const ONE_FUNCTION_GROWING: &[(&str, &str)] = &[
+    ("java/lang/StringBuilder", "append"),
+    ("java/lang/StringBuilder", "insert"),
+    ("java/lang/StringBuffer", "append"),
+    ("java/lang/StringBuffer", "insert"),
+    ("java/lang/String", "concat"),
+];
+
+/// Whether a call of `root` (a static method, or an instance method whose receiver the caller shows no one reads
+/// after the call) may be taken as one function of both versions, by its code: what it may throw, whether it
+/// writes arrays and which static fields it takes, or why not. The code must be closed ([`reach`]), contain a loop (a callee
+/// without one costs the checker less as written than a counterexample through a function would), write no static
+/// field but in an initializer, read none of the JDK's, make no lambda and no exception of the application's own,
+/// and call nothing of the JDK's but [`ONE_FUNCTION_JDK`], an array's `clone` and an exception's constructor. So
+/// what a call does depends on its arguments, the static fields of the application classes its code uses, and
+/// the objects it makes, and on nothing a run could make otherwise: the same code on the same values gives the same
+/// outcome. The caller checks the rest at the call: the arguments' and the static fields' kinds, and that those
+/// classes are initialized.
+///
+/// What a run of the code can show that its inputs' values do not decide is refused, each shown by a pair of
+/// `tests/fixtures/function-countermodels`: a comparison of references (`if_acmp`), since the inputs name a String
+/// by its content and not by which object it is, and two calls may return one String or two; a call that can come
+/// back to itself (a `StackOverflowError`); an array of a length [`Straight`] does not read from constants and
+/// static fields, or a JDK method given a length ([`ONE_FUNCTION_SIZED`]) or a copy's length (`Arrays.copyOf`,
+/// `copyOfRange`) as a number (an `OutOfMemoryError`). So is what lets a loop keep what each round makes, past any
+/// heap (an `OutOfMemoryError` too; `tests/fixtures/allocation-countermodels`, and `KEPT` in `tests/pairing.rs`): an
+/// array of references, an object of the application's own class, and a String made longer ([`ONE_FUNCTION_GROWING`]).
+/// A JDK method given an array may write it, so it counts as a store into an array.
+pub(crate) fn one_function(cp: &ClassPath, root: &MemberRef) -> Result<OneFunction, String> {
+    let reached = reach(cp, root);
+    if !reached.closed {
+        return Err("its code may reach code not listed (an overridable method, a call back from the JDK, a native method)".into());
+    }
+    let mut throws: BTreeSet<String> = ONE_FUNCTION_THROWN.iter().map(|s| s.to_string()).collect();
+    let (mut writes_arrays, mut looped) = (false, false);
+    let mut taken_statics = BTreeSet::new();
+    let mut allocations = Vec::new();
+    // The calls among the application's methods, by the class that declares each, for the recursion check below.
+    let mut calls: BTreeMap<MemberRef, BTreeSet<MemberRef>> = BTreeMap::new();
+    let declared = |m: &MemberRef| match cp.find_method(&m.owner, &m.name, &m.descriptor) {
+        Some((class, _)) => MemberRef::new(&class.name, &m.name, &m.descriptor),
+        None => m.clone(),
+    };
+    for (m, _) in &reached.methods {
+        if !cp.is_application(&m.owner) {
+            continue;
+        }
+        let Some((class, method)) = cp.find_method(&m.owner, &m.name, &m.descriptor) else { return Err(format!("{m:?} does not load")) };
+        let Some(code) = &method.code else { continue };
+        let insns = code.instructions().map_err(|e| e.to_string())?;
+        let mut targets: HashSet<u32> = insns.iter().flat_map(|(_, insn)| insn.targets()).collect();
+        targets.extend(code.exception_table.iter().map(|h| u32::from(h.handler_pc)));
+        let descriptor = method.parsed_descriptor().map_err(|e| e.to_string())?;
+        let parameters = descriptor.params.iter().map(|t| if matches!(t, Type::Long | Type::Double) { 2 } else { 1 }).sum::<usize>() + usize::from(!method.is_static());
+        let straight = Straight { cp, class: &class, insns: &insns, targets: &targets, parameters };
+        let caller = declared(m);
+        for (at, (pc, insn)) in insns.iter().enumerate() {
+            let (pc, insn) = (*pc, insn.clone());
+            let back = |target: &u32| *target <= pc;
+            match &insn {
+                Insn::IfACmp(..) => return Err(format!("{}.{} compares references by identity (==), which the inputs, Strings by their content, do not decide", m.owner, m.name)),
+                Insn::If(_, t) | Insn::IfICmp(_, t) | Insn::IfNull(t) | Insn::IfNonNull(t) | Insn::Goto(t) if back(t) => looped = true,
+                Insn::TableSwitch { default, targets, .. } if back(default) || targets.iter().any(back) => looped = true,
+                Insn::LookupSwitch { default, pairs } if back(default) || pairs.iter().any(|(_, t)| back(t)) => looped = true,
+                Insn::ArrayStore(_) => writes_arrays = true,
+                Insn::ANewArray(_) => return Err(format!("{}.{} makes an array of references, whose cells can keep what a loop makes", m.owner, m.name)),
+                Insn::NewArray(_) => match at.checked_sub(1).and_then(|i| straight.int(i, 0)) {
+                    Some((length, _)) => allocations.push(length),
+                    None => return Err(format!("{}.{} makes an array of a length its inputs may give", m.owner, m.name)),
+                },
+                Insn::MultiANewArray(..) => return Err(format!("{}.{} makes an array of arrays", m.owner, m.name)),
+                Insn::PutStatic(_) if m.name != "<clinit>" => return Err(format!("{}.{} writes a static field", m.owner, m.name)),
+                Insn::GetStatic(i) => {
+                    let field = class.pool.member(*i).map_err(|e| e.to_string())?;
+                    if !cp.is_application(&field.owner) {
+                        return Err(format!("{}.{} reads the JDK's static field {}.{}", m.owner, m.name, field.owner, field.name));
+                    }
+                    // Copied at once (`T.clone()`): the copy is a new array, and the field's own is not taken.
+                    let copied = match insns.get(at + 1) {
+                        Some((_, Insn::InvokeVirtual(j))) => class.pool.member(*j).is_ok_and(|c| c.owner.starts_with('[') && c.name == "clone"),
+                        _ => false,
+                    };
+                    if !copied || m.name == "<clinit>" {
+                        let declaring = cp.resolve_field(&field.owner, &field.name, &field.descriptor).unwrap_or_else(|| field.owner.clone());
+                        taken_statics.insert((declaring, field.name.clone()));
+                    }
+                }
+                Insn::New(i) => {
+                    let made = class.pool.class_name(*i).map_err(|e| e.to_string())?.to_string();
+                    if cp.is_subtype(&made, "java/lang/Throwable") {
+                        if cp.is_application(&made) {
+                            return Err(format!("{}.{} makes an exception of its own class, {made}", m.owner, m.name));
+                        }
+                        throws.insert(made);
+                    } else if cp.is_application(&made) {
+                        return Err(format!("{}.{} makes an object of the application's own class, {made}, whose fields can keep what a loop makes", m.owner, m.name));
+                    }
+                }
+                Insn::InvokeDynamic(i) => {
+                    let (bootstrap_index, _, _) = class.pool.invoke_dynamic(*i).map_err(|e| e.to_string())?;
+                    let bootstraps = class.bootstrap_methods().unwrap_or_default();
+                    if bootstraps.get(bootstrap_index as usize).is_none_or(|b| b.method.member.owner != "java/lang/invoke/StringConcatFactory") {
+                        return Err(format!("{}.{} makes a lambda or another dynamic call", m.owner, m.name));
+                    }
+                    return Err(format!("{}.{} joins Strings (`a + b`), which a loop can grow past any heap", m.owner, m.name));
+                }
+                Insn::InvokeStatic(i) | Insn::InvokeSpecial(i) | Insn::InvokeVirtual(i) | Insn::InvokeInterface(i) => {
+                    let callee = class.pool.member(*i).map_err(|e| e.to_string())?;
+                    if cp.is_application(&callee.owner) {
+                        calls.entry(caller.clone()).or_default().insert(declared(&callee));
+                        continue;
+                    }
+                    let sized = ONE_FUNCTION_SIZED.iter().any(|(owner, name, descriptor)| *owner == callee.owner && *name == callee.name && *descriptor == callee.descriptor)
+                        || callee.owner == "java/util/Arrays" && callee.name.starts_with("copyOf");
+                    if sized {
+                        return Err(format!("{}.{} calls {}.{} with a length its inputs may give", m.owner, m.name, callee.owner, callee.name));
+                    }
+                    // A JDK method given an array may write it, as one given an Object may (`System.arraycopy`).
+                    if callee.descriptor.split(')').next().is_some_and(|params| params.contains('[') || params.contains("Ljava/lang/Object;")) && !callee.owner.starts_with('[') {
+                        writes_arrays = true;
+                    }
+                    if ONE_FUNCTION_GROWING.iter().any(|(owner, name)| *owner == callee.owner && *name == callee.name) {
+                        return Err(format!("{}.{} calls {}.{}, which makes a String longer than it was, so that a loop can grow one past any heap", m.owner, m.name, callee.owner, callee.name));
+                    }
+                    let exception = callee.name == "<init>" && cp.is_subtype(&callee.owner, "java/lang/Throwable");
+                    let listed = ONE_FUNCTION_JDK.iter().any(|(owner, names)| *owner == callee.owner && names.contains(&callee.name.as_str()));
+                    let clone = callee.owner.starts_with('[') && callee.name == "clone";
+                    if !(listed || clone || exception) {
+                        return Err(format!("{}.{} calls {}.{}, which may read state of the JDK's a run can change", m.owner, m.name, callee.owner, callee.name));
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+    if !looped {
+        return Err("its code has no loop".into());
+    }
+    if let Some(m) = recursive(&calls) {
+        return Err(format!("{}.{} can call itself", m.owner, m.name));
+    }
+    let (returns_made, result_length) = returns_made(cp, root).unwrap_or((false, None));
+    Ok(OneFunction { throws: throws.into_iter().collect(), writes_arrays, taken_statics, returns_made, result_length, allocations })
+}
+
+/// A method on a cycle of `calls` (each method to the ones it calls), if there is one.
+fn recursive(calls: &BTreeMap<MemberRef, BTreeSet<MemberRef>>) -> Option<MemberRef> {
+    // Depth first, each method white (absent), grey (on the stack: false) or black (done: true).
+    fn visit<'a>(m: &'a MemberRef, calls: &'a BTreeMap<MemberRef, BTreeSet<MemberRef>>, state: &mut BTreeMap<&'a MemberRef, bool>) -> Option<MemberRef> {
+        match state.get(m) {
+            Some(false) => return Some(m.clone()),
+            Some(true) => return None,
+            None => {}
+        }
+        state.insert(m, false);
+        for callee in calls.get(m).into_iter().flatten() {
+            if let Some(found) = visit(callee, calls, state) {
+                return Some(found);
+            }
+        }
+        state.insert(m, true);
+        None
+    }
+    let mut state = BTreeMap::new();
+    calls.keys().find_map(|m| visit(m, calls, &mut state))
+}
+
+/// Whether `root` returns an array of numbers it made: every `areturn` follows an `aload` of a local that is no
+/// parameter and that only `astore`s right after a `newarray` set, neither instruction reached by a jump or a
+/// handler; and, where every such `newarray` is given one length [`Straight`] reads, that length. `None` where the
+/// code cannot be read.
+fn returns_made(cp: &ClassPath, root: &MemberRef) -> Option<(bool, Option<Length>)> {
+    let (class, method) = cp.find_method(&root.owner, &root.name, &root.descriptor)?;
+    let descriptor = method.parsed_descriptor().ok()?;
+    if !matches!(&descriptor.ret, Type::Array(e) if e.is_primitive()) {
+        return Some((false, None));
+    }
+    let code = method.code.as_ref()?;
+    let insns = code.instructions().ok()?;
+    let mut targets: HashSet<u32> = insns.iter().flat_map(|(_, insn)| insn.targets()).collect();
+    targets.extend(code.exception_table.iter().map(|h| u32::from(h.handler_pc)));
+    let parameters = descriptor.params.iter().map(|t| if matches!(t, Type::Long | Type::Double) { 2 } else { 1 }).sum::<usize>() + usize::from(!method.is_static());
+    let mut returned = BTreeSet::new();
+    for (at, (pc, insn)) in insns.iter().enumerate() {
+        if *insn != Insn::Return(Some(Kind::Ref)) {
+            continue;
+        }
+        match at.checked_sub(1).map(|i| &insns[i].1) {
+            Some(Insn::Load(Kind::Ref, k)) if usize::from(*k) >= parameters && !targets.contains(pc) => {
+                returned.insert(*k);
+            }
+            _ => return Some((false, None)),
+        }
+    }
+    let straight = Straight { cp, class: &class, insns: &insns, targets: &targets, parameters };
+    let mut lengths = Vec::new();
+    for (at, (pc, insn)) in insns.iter().enumerate() {
+        if let Insn::Store(Kind::Ref, k) = insn {
+            if returned.contains(k) && (targets.contains(pc) || !matches!(at.checked_sub(1).map(|i| &insns[i].1), Some(Insn::NewArray(_)))) {
+                return Some((false, None));
+            }
+            if returned.contains(k) {
+                lengths.push(straight.array(at - 1, 0).map(|(l, _)| l));
+            }
+        }
+    }
+    let length = match lengths.first() {
+        Some(Some(first)) if lengths.iter().all(|l| l.as_ref() == Some(first)) => Some(first.clone()),
+        _ => None,
+    };
+    Some((!returned.is_empty(), length))
+}
+
+/// Reads a value a method's code computes in a straight line of instructions that no jump or handler enters, from
+/// constants, the lengths of static fields' arrays and of copies of them, and locals that one store sets, with `+`,
+/// `-` and `*`: the value is then the same whenever the instruction runs.
+struct Straight<'a> {
+    cp: &'a ClassPath,
+    class: &'a ClassFile,
+    insns: &'a [(u32, Insn)],
+    targets: &'a HashSet<u32>,
+    parameters: usize,
+}
+
+impl Straight<'_> {
+    /// The `int` the instruction at `at` leaves on the stack, and where the instructions computing it begin.
+    fn int(&self, at: usize, depth: u32) -> Option<(Length, usize)> {
+        if depth > 32 {
+            return None;
+        }
+        let found = match &self.insns.get(at)?.1 {
+            Insn::IConst(v) => (Length::Constant(*v), at),
+            Insn::Ldc(i) => match self.class.pool.loadable(*i).ok()? {
+                BootstrapArg::Int(v) => (Length::Constant(v), at),
+                _ => return None,
+            },
+            Insn::Load(Kind::Int, k) => (self.local(*k, Kind::Int, depth)?, at),
+            Insn::ArrayLength => self.array(at.checked_sub(1)?, depth + 1)?,
+            Insn::Arith(op @ (ArithOp::Add | ArithOp::Sub | ArithOp::Mul), Kind::Int) => {
+                let (right, starts) = self.int(at.checked_sub(1)?, depth + 1)?;
+                let (left, starts) = self.int(starts.checked_sub(1)?, depth + 1)?;
+                (Length::Op(*op, Box::new(left), Box::new(right)), starts)
+            }
+            _ => return None,
+        };
+        self.linear(found.1, at).then_some(found)
+    }
+
+    /// The length of the array the instruction at `at` leaves on the stack, and where the instructions computing
+    /// it begin.
+    fn array(&self, at: usize, depth: u32) -> Option<(Length, usize)> {
+        if depth > 32 {
+            return None;
+        }
+        let found = match &self.insns.get(at)?.1 {
+            Insn::CheckCast(_) => self.array(at.checked_sub(1)?, depth + 1)?,
+            Insn::InvokeVirtual(j) => {
+                let callee = self.class.pool.member(*j).ok()?;
+                if !(callee.owner.starts_with('[') && callee.name == "clone") {
+                    return None;
+                }
+                self.array(at.checked_sub(1)?, depth + 1)?
+            }
+            Insn::GetStatic(i) => {
+                let field = self.class.pool.member(*i).ok()?;
+                if !field.descriptor.starts_with('[') {
+                    return None;
+                }
+                let declaring = self.cp.resolve_field(&field.owner, &field.name, &field.descriptor)?;
+                (Length::Static(declaring, field.name.clone()), at)
+            }
+            Insn::NewArray(_) => self.int(at.checked_sub(1)?, depth + 1)?,
+            Insn::Load(Kind::Ref, k) => (self.local(*k, Kind::Ref, depth)?, at),
+            _ => return None,
+        };
+        self.linear(found.1, at).then_some(found)
+    }
+
+    /// What the local `k` holds, of the kind `kind`: what its one store of that kind is given, where it is no
+    /// parameter and no `iinc` changes it.
+    fn local(&self, k: u16, kind: Kind, depth: u32) -> Option<Length> {
+        if usize::from(k) < self.parameters || self.insns.iter().any(|(_, i)| matches!(i, Insn::IInc(j, _) if *j == k)) {
+            return None;
+        }
+        let stores: Vec<usize> = self.insns.iter().enumerate().filter(|(_, (_, i))| *i == Insn::Store(kind, k)).map(|(at, _)| at).collect();
+        let [store] = stores.as_slice() else { return None };
+        let (value, starts) = match kind {
+            Kind::Int => self.int(store.checked_sub(1)?, depth + 1)?,
+            _ => self.array(store.checked_sub(1)?, depth + 1)?,
+        };
+        self.linear(starts, *store).then_some(value)
+    }
+
+    /// Whether no jump or handler enters the instructions after `start` up to `end`.
+    fn linear(&self, start: usize, end: usize) -> bool {
+        self.insns.get(start + 1..=end).is_some_and(|run| run.iter().all(|(pc, _)| !self.targets.contains(pc)))
+    }
 }
 
 /// Whether a method is declared by the same class with the same code in both versions.

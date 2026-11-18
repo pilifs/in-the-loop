@@ -1017,7 +1017,13 @@ impl<'a> Machine<'a> {
                 let member = pool.member(*index).map_err(|e| Fault::Unsupported(e.to_string()))?;
                 let descriptor = crate::classfile::MethodDescriptor::parse(&member.descriptor).map_err(|e| Fault::Unsupported(e.to_string()))?;
                 let args = pop_args(stack, descriptor.params.len())?;
-                let result = if self.cp.is_application(&member.owner) {
+                // Where a version of a pair begins ([`crate::pairing`]): it starts as if it ran alone, every class
+                // but the pair's own uninitialized again, as the checker has it.
+                let result = if class.name == crate::pairing::CLASS && member.owner == crate::pairing::CLASS && (member.name.as_str(), member.descriptor.as_str()) == (crate::pairing::FRESH, "()V") {
+                    self.statics.retain(|c, _| c == crate::pairing::CLASS);
+                    self.init.retain(|c, _| c == crate::pairing::CLASS);
+                    None
+                } else if self.cp.is_application(&member.owner) {
                     self.call_static(&member.owner, &member.name, &member.descriptor, args)?
                 } else {
                     self.call_static_jdk(&member.owner, &member.name, &member.descriptor, args)?

@@ -8,6 +8,7 @@
 //! should not make, is in the fixtures' README for the stream that changes the pairing
 //! (domain-advances-preservation).
 
+use jvmcontract::{equivalence, Engine, Verdict};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::OnceLock;
@@ -51,4 +52,31 @@ fn each_version_alone_differs_past_a_thousand_on_a_jvm() {
     };
     assert_eq!(alone(old), "supplied=2 summed=2 configured=2");
     assert_eq!(alone(new), "supplied=1 summed=1 configured=1");
+}
+
+/// The checker's side: each version alone tells `supplied`, `summed` and `configured` apart (the test above), so a
+/// proof that they agree is false. The code compared is the code a call may reach: a call into the JDK that may come
+/// back into the application (an interface or overridable method, or an argument whose methods the JDK may call)
+/// leaves it open, so neither the identical-bytecode shortcut nor a loop's ties take the two versions as one.
+#[test]
+fn the_pair_does_not_prove_two_versions_agree_whose_code_a_jdk_interface_reaches() {
+    jvmcontract::tool_tier!();
+    let Some((old, new)) = classes() else { return };
+    let mut wrong = Vec::new();
+    for name in ["supplied", "summed", "configured"] {
+        let mut o = equivalence::Options::new(old, new, &format!("app.Entry#{name}"));
+        o.jbmc = "/nonexistent/jbmc".into();
+        if name != "supplied" {
+            o.engine = Engine::Native;
+            o.assume = Some("k >= 0 && k < 2000".into());
+            o.unwind = 2;
+        }
+        o.work = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("tie-countermodels").join(name));
+        let out = equivalence::run(&o).unwrap();
+        eprintln!("--- {name}: {:?}\n{}", out.verdict, out.output);
+        if out.verdict == Verdict::Verified {
+            wrong.push(name);
+        }
+    }
+    assert!(wrong.is_empty(), "proved to agree, though each version alone tells them apart: {wrong:?}");
 }

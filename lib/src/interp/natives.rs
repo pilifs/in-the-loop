@@ -832,6 +832,21 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
                 Ok(Some(m.new_string(simple)))
             }
             "getCanonicalName" => Ok(Some(m.new_string(t.class_get_name().replace('$', ".")))),
+            // Null of `Object`, of an interface and of a primitive type, `Object` of an array, as the JVM has it.
+            "getSuperclass" => {
+                let above = match &t {
+                    Type::Array(_) => Some("java/lang/Object".to_string()),
+                    Type::Object(n) => {
+                        let interface = matches!(m.cp.load(n), Ok(Some(l)) if l.class.is_interface());
+                        if interface { None } else { m.cp.superclass(n) }
+                    }
+                    _ => None,
+                };
+                Ok(Some(match above {
+                    Some(c) => m.class_object(&Type::Object(c)),
+                    None => Value::Null,
+                }))
+            }
             "isInstance" => Ok(Some(Value::bool(match (args[0], &t) {
                 (Value::Ref(o), Type::Object(n)) => m.is_instance(o, n),
                 (Value::Ref(o), Type::Array(_)) => m.is_instance(o, &t.descriptor()),

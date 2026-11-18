@@ -234,6 +234,32 @@ change `zxwonqzrsxvz` · [log `75a9c12a10b4`](https://terminalvalue.net/raw-trac
 
 The user, from an outside review they asked for (Codex): 288's profile and stop are already in preservation's Progress, so its VF-031 closeout folds into the current I028/I029 cycle. There is no further 288 cycle and no long solver job. VF-043 now records the future experiment: for each release, a lemma on 288's frozen ASCII domain and locale table, that a simpleMatch of the locale-lowercased canonical pattern and field implies a match of the originals ignoring ASCII case. Its effect on the bound-8 final comparison is to be benchmarked before the full proof is reopened, and 288's parent claim stays open. VF-043 is cross-linked with VF-031 and VF-038. Preservation was told through its inbox item I030.
 
+### 307 has a driver on the route's slices, and the checker takes a call both versions share as one function of both: preservation verified and the mutant refuted in capped probes at the frozen bound (verification pending)
+
+change `uxyusvsvswus` · [log `75a9c12a10b4`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/75a9c12a10b4d8479b8b8c76ac481f00672cf19f5b3cd00efc5aa00f2a9eef13.jsonl.gz)
+
+Example 307 (Spring Security fe9e4549, BCrypt.hashpw with StandardCharsets.UTF_8) gets proofs/prove.py. It runs preservation and mutant-preservation on the route's own source slices (runtime.prepare), each slice JAR checked against the replay receipt that ran it, at the claim's bound (unwind 513, length 80), with its assumption and nullable password and salt. It keeps beside_route's record, mutant check and trial marking. Its first stop was String.getBytes(String), now modelled for the names the JDK takes for UTF-8, as getBytes(US_ASCII) is for the mutant (String model 7, sampled on the JVM, the interpreter and the checker).
+
+At unwind 513 every bcrypt loop runs to its end, so the loop ties of 287 never apply (4 GB in 39 s). The checker now takes a call of a static method both versions share as one function of both (lib/src/bmc/ties.rs, shared::one_function). Its outcome is new bits: the result, whether it throws and which class, and the cells it writes. Those are related by congruence to earlier calls of the same code wherever the inputs (arguments, and the statics of the classes it uses) are equal. Side conditions: the same code, numbers, Strings and arrays of numbers only, initialized classes, a loop, no static written, no JDK state read, no lambda or own exception. Eight countermodels (ONCES in lib/tests/pairing.rs) each differ on a JVM, are not proved, and were each proved with their condition taken out. The reach now leaves a followed JDK class's own calls closed and checks the application's call into it, which closes a hole: parseInt(CharSequence) given an application object was 'nothing to prove' (new countermodel). Capped probes: preservation verified in about 100 s, the mutant refuted at a non-ASCII password and reproduced on a JVM, 289 and 290 unchanged. lib/README.md has the rule and its limits (no instance methods, so not 287's crypt_raw; a counterexample through unrelated calls that does not reproduce leaves the check undecided).
+
+### Merge the default line and the challenge stream's reach countermodels
+
+change `mqpxrmvuwmpm` · [log `75a9c12a10b4`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/75a9c12a10b4d8479b8b8c76ac481f00672cf19f5b3cd00efc5aa00f2a9eef13.jsonl.gz)
+
+Brings the 307 specialist's two packets (records/step-6-packet.md, step-6-call-level.md) and the callee-countermodels fixture, the results of jobs 20261117-185613 (287 at bound 80, unverifiable again at BCrypt.key pc 39) and 20261117-185623 (289 passed; 290 failed on the observer's relative -Xlog path), and the challenge stream's tqmpowvx (reach-countermodels and its JVM-side test). Only generated files conflicted: the trace pages were regenerated and lib/tests/costs.json re-estimated, tagged and linted. The default run passed on the merged tree (54 of 54).
+
+### The code two versions are taken to share resolves each field to the class that declares it and takes in the initializers the JVM runs; the observer's log path is absolute; 289 and 290 rerun (verification pending)
+
+change `qopxypnnswvw` · [log `75a9c12a10b4`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/75a9c12a10b4d8479b8b8c76ac481f00672cf19f5b3cd00efc5aa00f2a9eef13.jsonl.gz)
+
+I019, the challenge stream's reach countermodels (lib/tests/fixtures/reach-countermodels). shared::reach now records each application field the code names with the class that declares the field it resolves to (JVMS 5.4.3.2), and compares those in the identical-code shortcut and the ties' fingerprint, so a field a version declares to hide an inherited one is a difference (hidden). A static field's initializer is its declaring class's or interface's (constant, and looped under the ties). A class's use runs the initializers of every superinterface that declares a default method (defaulted, JVMS 5.5), and the root's own class's initializer is part of its code (Own#f). The shortcut walks both versions' reaches, so an override the previous version declared and the new one inherits is a difference (removed). The README's checker-side test is in lib/tests/reach_countermodels.rs and passes; with each change undone in turn exactly its own rows were proved again. looped is no verdict now (a spurious candidate past the loop that does not replay), as on a checker without ties. A capped probe of 307's preservation at the frozen bound still verifies with the same 72 calls taken as one function, 66 related.
+
+I014: the initializer observer gave the JVM a -Xlog file relative to the repository while running it in its observed/ folder (job 20261117-185623's 290 step). The state stream's fix (zlvqxmst) is taken byte for byte, with its test, so the lines merge cleanly. A capped probe of 290 with the job's relative --work verifies in 573 paths.
+
+Job 20261117-213024-examples-289-and-290-preservation-again reruns 290's preservation step, and 289's beside it on this checker, at the frozen bounds.
+
+test_costs.py run --changed passes (every Rust test binary), and lint agrees.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/75a9c12a10b4d8479b8b8c76ac481f00672cf19f5b3cd00efc5aa00f2a9eef13.jsonl.gz) has every step in between: reasoning, tool calls and their results.

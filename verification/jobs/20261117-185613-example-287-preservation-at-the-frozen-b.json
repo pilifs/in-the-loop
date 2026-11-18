@@ -1,0 +1,54 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-185613-example-287-preservation-at-the-frozen-b",
+  "title": "Example 287 preservation at the frozen bound 80 again, on a checker whose ties take only code that cannot call back through the JDK",
+  "description": "The preservation stream's step 5 (llm-dlc/loops/domain-advances-preservation.md), after job 20261117-180758-example-287-preservation-at-the-frozen-b. That job ran 424 s and 1187 paths, then stopped: no invariant for the previous release's BCrypt.key loop at pc 39, 'an iteration changes local 1, which holds a reference' (local 1 is the key array). Capped probes reach about 540 paths in 280 s, so they cannot get there. Since that job: (1) inbox item I010: shared.rs's reach, which both the identical-bytecode shortcut and the checker's ties rest on, now leaves the code open where a call into the JDK may come back into the application (an interface or overridable JDK method, an argument whose methods the JDK may call, a charset by name), and takes in the initializers of the application classes the code uses. bcrypt's loop methods call only array clone and IllegalArgumentException(String), so their ties stand: a capped probe takes over 208 summaries as before. (2) That refusal now says what the reference held at the loop's head and back at it, so a stop at the same place names the objects. Expected: verified. Otherwise the stop, with the objects named, is step 5's next finding (outcome.json search.native, the driver's last lines).",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "B9",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "287"
+    ],
+    "paths": [
+      "lib/src/shared.rs",
+      "lib/src/bmc/loops.rs",
+      "lib/src/bmc/ties.rs"
+    ]
+  },
+  "expected": "prove.py ends 'verdict: verified (expected verified)' and exits 0; outcome.json has verdict verified and stated.vacuity.outside, and evidence.json is written",
+  "submitted": {
+    "at": "2026-11-17T18:56:13+00:00",
+    "session": "f28025bc-e46b-4a87-a943-bfb79dea5465"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "8G",
+    "duration": "30m",
+    "timeout": "4h",
+    "notes": "job 20261117-180758 ran 7 min (424 s of proof, peak 2.3 GiB) to its stop at 1187 paths; a run past it may take hours; plus the release build and the fetch of the four pinned JARs"
+  },
+  "steps": [
+    {
+      "name": "287 preservation at the frozen bound, 80, on the closed reach",
+      "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py preservation --timeout 12600 --work verification/.work-287/preservation-closed-reach",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-287/preservation-closed-reach/preservation/outcome.json",
+    "verification/.work-287/preservation-closed-reach/preservation/evidence.json",
+    "verification/.work-287/preservation-closed-reach/preservation/stderr.txt",
+    "verification/.work-287/preservation-closed-reach/preservation/work/pair/RegressionPair.java"
+  ]
+}

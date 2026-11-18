@@ -61,6 +61,7 @@
 //! | the `<clinit>` of a class named by `--observed-initializer` ([`Options::observed`], [`crate::observed`]) | not run and no gap: the path takes the static state the initializer left on a JVM, as far as the observation holds it (a field it holds no value of is refused where it is read), and the run states what that rests on ([`Outcome::assumed`]) |
 //! | `invokestatic` of `Math`/`StrictMath`/`Integer`/`Long`/`Boolean` operations ([`models_jdk_static`]) | modelled in [`Engine::call_jdk_static`], each as its Javadoc specifies, exceptions included |
 //! | `invokestatic` of `Objects.requireNonNull(Object)` and `(Object, String)`, and of `Pattern.compile(String)` ([`models_jdk_reference_static`]) | modelled in [`Engine::call_jdk_static`]: `requireNonNull` returns its argument or throws `NullPointerException`; `compile` throws it for null, returns a new `Pattern` with no content (its methods the JDK calls they name) for a constant regular expression of the plain form ([`crate::jdk_facts::plain_regex`]), which the JDK compiles whatever it is, and is the gap `jdk-static-method` for any other |
+//! | `invokestatic` of `String.valueOf(Object)` | the argument itself for a String, the interned `"null"` for null; for any other object the gap `jdk-static-method` (the object's `toString()`), which the scan names wherever the call is |
 //! | `invokestatic` of any other JDK method over integers, booleans, arrays and objects ([`gaps::jdk_static_call`]) | gap: `jdk-static-method`, with no assume form |
 //! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
 //! | `invokespecial`/`invokevirtual` of `java.lang.Enum`'s constructor, `name()`, `ordinal()`, `toString()` and `equals` ([`ClassPath::checker_runs`]) | modelled: the model's bytecode (`lib/models/java/lang/Enum.java`, which JBMC runs too) sets and reads the enum's `name` and `ordinal` fields; the interpreter's natives do the same. `Enum`'s other methods (`compareTo`, `hashCode`, `valueOf` …) stay JDK gaps |
@@ -78,7 +79,7 @@
 //! | `invokestatic` of `Arrays.stream(Object[])`, `Arrays.stream(int[])` and `IntStream.range(int, int)`, and `invokevirtual` of `String.chars()` | enter the stream models only the checker runs ([`crate::models::entry`]) |
 //! | `invokestatic` of `Arrays.asList(T...)`, and the list's `size()`, `get(int)` and `toArray()` | modelled, for the checker alone: the model's bytecode (`lib/models/java/util/lists/ArrayAsList.java`), a view of the array. Any other method is the JDK's `AbstractList`'s, the JDK call it names |
 //! | `new LinkedHashMap()`, and `values()` on the map with the collection's `size()` and `iterator()` and the iterator's `hasNext()` and `next()` | modelled, for the checker alone: the model's bytecode (`lib/models/java/util/LinkedHashMap.java`) over the `HashMap` model's chain of entries, which is in insertion order; the iterator fails fast as the JDK's. Any other method is the JDK call it names |
-//! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Character.isLetter(char)` of an ASCII unit ([`strings`]); `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers or of references and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `getstatic` of `Locale`'s constants, `Locale.forLanguageTag(String)` and `Locale.setDefault(Locale)` as far as [`locale`] says; `Class.getName()`, `Class.getTypeName()`, `Class.getClassLoader()`, `Object.getClass()` of a String, `Proxy.isProxyClass(Class)`, `Class.forName(String, boolean, ClassLoader)`, `Class.forName(String)` with its initialization, `Class.isAssignableFrom(Class)`, `Thread.currentThread()` and its `getContextClassLoader()`, `Collections.emptyMap()`, `Logger.getLogger(String)`, `getstatic` of a `java.util.logging.Level` below `INFO`, `getstatic` of `Boolean.TRUE` and `Boolean.FALSE`, `Logger.isLoggable(Level)`, `new ArrayList()`, `new ConcurrentHashMap()` and `new ConcurrentHashMap(int)` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
+//! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Character.isLetter(char)` of an ASCII unit ([`strings`]); `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers or of references and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `getstatic` of `Locale`'s constants, `Locale.forLanguageTag(String)` and `Locale.setDefault(Locale)` as far as [`locale`] says; `Class.getName()`, `Class.getTypeName()`, `Class.getClassLoader()`, `Object.getClass()` of a String, `Proxy.isProxyClass(Class)`, `Class.forName(String, boolean, ClassLoader)`, `Class.forName(String)` with its initialization, `Class.isAssignableFrom(Class)`, `Thread.currentThread()` and its `getContextClassLoader()`, `Collections.emptyMap()`, `Logger.getLogger(String)`, `getstatic` of a `java.util.logging.Level` other than `OFF`, `getstatic` of `Boolean.TRUE` and `Boolean.FALSE`, `Logger.isLoggable(Level)`, `Logger.log(LogRecord)` and what a library calls to make the record, `new ArrayList()`, `new ConcurrentHashMap()` and `new ConcurrentHashMap(int)` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
 //! | `ldc` of a string or a class | implemented: one object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class, a String with its content, its code units as the class file holds them, an isolated surrogate included (`BootstrapArg::Units`) |
 //! | floating point (`fconst`, `dconst`, `fadd` …, `fcmpl` …, `f2i` …), `jsr`/`ret`, `putstatic` of a JDK field, any other `getstatic` of one, a static field of a class taken to be initialized other than a constant, `multianewarray`, any other `invokedynamic`, a JDK method with a floating-point parameter or result or an array result, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
 //! | under JBMC, not this engine ([`crate::jbmc_gaps`]): a method with no bytecode on JBMC's class path, or an `invokedynamic` JBMC does not link, or a monitor instruction, which JBMC drops | JBMC's gaps: its stub of a JDK method is one of the JDK kinds above, any other is `missing-body`, an unlinked call site is `invokedynamic`, and a method that synchronizes is `monitor`; this engine refuses the first two and implements monitors |
@@ -111,6 +112,7 @@ mod loops;
 mod observed;
 mod regex;
 pub mod runtime;
+mod ties;
 pub mod sat;
 pub mod strings;
 mod throwables;
@@ -206,6 +208,9 @@ pub struct Options {
     /// The previous version of a pair of versions the check holds in one program ([`crate::pairing`]): what its
     /// code asks by a name it computes is answered as on its own class path ([`runtime`]).
     pub previous: Option<std::sync::Arc<crate::relocate::Previous>>,
+    /// In a pair of versions, whether a call of a static method both versions share may be taken as one function
+    /// of both ([`ties`]). A check it leaves undecided runs again without ([`check`]).
+    pub calls_as_one_function: bool,
 }
 
 /// A static method whose calls run a method of the claim's class ([`crate::harness::expr::CLAIM_CLASS`]) of the same
@@ -269,7 +274,7 @@ pub struct EffectWrite {
 
 impl Default for Options {
     fn default() -> Self {
-        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, merge_heaps_after: 1024, invariants: true, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured, parameters: Parameters::default(), summaries: Default::default(), pure: None, own_induction: false, frame: None, closed_frame: false, effects: Default::default(), stand_ins: Default::default(), observed: Default::default(), models: Default::default(), previous: None }
+        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, merge_heaps_after: 1024, invariants: true, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured, parameters: Parameters::default(), summaries: Default::default(), pure: None, own_induction: false, frame: None, closed_frame: false, effects: Default::default(), stand_ins: Default::default(), observed: Default::default(), models: Default::default(), previous: None, calls_as_one_function: true }
     }
 }
 
@@ -363,6 +368,17 @@ pub struct Outcome {
     /// The loops that go round more often than the bound and that an invariant covers ([`loops`]), each as
     /// `p.C.m at pc N`: a proof holds of all their iterations, and a witness past one is run before it is believed.
     pub loops: Vec<String>,
+    /// In a pair of versions, how many places and reads past a summarized loop took the bits the other side's
+    /// were given, and how many summaries were one made before from a state of the same key ([`ties`]).
+    pub tied: u64,
+    pub summaries_reused: u64,
+    /// In a pair of versions, the calls taken as one function of both, and how many of them were related to an
+    /// earlier call by their inputs ([`ties`]).
+    pub calls_as_one_function: u64,
+    pub calls_related: u64,
+    /// Whether the check ran again with every call as written, after one with calls taken as one function was
+    /// undecided ([`check`]).
+    pub calls_as_written: bool,
     /// Where the run's solver calls were written, when they were ([`Options::transcript`]).
     pub transcript: Option<std::path::PathBuf>,
 }
@@ -424,6 +440,11 @@ impl Outcome {
             witness_seconds: self.witness,
             assumed: self.assumed.clone(),
             loops: self.loops.clone(),
+            tied: self.tied,
+            summaries_reused: self.summaries_reused,
+            calls_as_one_function: self.calls_as_one_function,
+            calls_related: self.calls_related,
+            calls_as_written: self.calls_as_written,
         }
     }
 
@@ -483,17 +504,40 @@ pub struct Stats {
     /// The loops beyond the bound that an invariant covers ([`Outcome::loops`]); absent when there is none.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub loops: Vec<String>,
+    /// In a pair of versions, the places and reads that took bits the other side's were given, and the loops'
+    /// summaries that were one made before ([`Outcome::tied`]); absent when none.
+    #[serde(skip_serializing_if = "is_zero")]
+    pub tied: u64,
+    #[serde(skip_serializing_if = "is_zero")]
+    pub summaries_reused: u64,
+    /// In a pair of versions, the calls taken as one function of both and the ones related to an earlier call
+    /// ([`Outcome::calls_as_one_function`]); absent when none.
+    #[serde(skip_serializing_if = "is_zero")]
+    pub calls_as_one_function: u64,
+    #[serde(skip_serializing_if = "is_zero")]
+    pub calls_related: u64,
+    /// Whether the check ran again with every call as written ([`Outcome::calls_as_written`]).
+    #[serde(skip_serializing_if = "std::ops::Not::not")]
+    pub calls_as_written: bool,
 }
 
 impl Stats {
     /// The words of a verdict for the loops an invariant covers: `; 2 loops beyond the bound covered by invariants
-    /// the checker found and proved (p.C.m at pc 4, p.C.n at pc 9)`, or nothing.
+    /// the checker found and proved (p.C.m at pc 4, p.C.n at pc 9)`, or nothing; then, in a pair of versions, for the
+    /// calls taken as one function of both ([`ties`]), or for a check run again with every call as written.
     pub fn covered_loops(&self) -> String {
-        match self.loops.len() {
+        let mut out = match self.loops.len() {
             0 => String::new(),
             1 => format!("; 1 loop beyond the bound covered by an invariant the checker found and proved ({})", self.loops[0]),
             n => format!("; {n} loops beyond the bound covered by invariants the checker found and proved ({})", self.loops.join(", ")),
+        };
+        if self.calls_as_one_function > 0 {
+            out.push_str(&format!("; {} calls of methods both versions share taken as one function of both, {} of them related to an earlier call by their inputs", self.calls_as_one_function, self.calls_related));
         }
+        if self.calls_as_written {
+            out.push_str("; run again with every call as written, after calls taken as one function left it undecided");
+        }
+        out
     }
 }
 
@@ -665,6 +709,10 @@ struct Obj {
     /// what would read the cells in bulk does not take it for an array ([`Obj::as_array`]) and is refused. A table
     /// of a thousand words a loop writes at an index it computes is this and no fresh word for each cell.
     unknown: bool,
+    /// Of such an array, in a pair of versions: the name of what its cells hold, the summary that made them any
+    /// values and each write since ([`ties`]), so that two reads of one content at one index are one value. `None`
+    /// where it is not kept: a read is then a value of its own.
+    content: Option<u64>,
     /// Made by a JDK call under `--gaps assume` that declares a class that is not final ([`Engine::assumed`]): the
     /// JDK's object is of that class or of any below it (`HashSet.clone()`, declared `Object`, returns a `HashSet`),
     /// and `class` is only the declared one. What the object's class would decide beyond what the declared class
@@ -697,7 +745,7 @@ static MADE: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0)
 
 impl Obj {
     fn new(class: &str) -> Obj {
-        Obj { class: class.to_string(), fields: BTreeMap::new(), array: None, limit: None, same: Vec::new(), lambda: None, regex: None, made: MADE.fetch_add(1, std::sync::atomic::Ordering::Relaxed), given: false, before: false, unknown: false, assumed: false }
+        Obj { class: class.to_string(), fields: BTreeMap::new(), array: None, limit: None, same: Vec::new(), lambda: None, regex: None, made: MADE.fetch_add(1, std::sync::atomic::Ordering::Relaxed), given: false, before: false, unknown: false, content: None, assumed: false }
     }
 
     /// The array the object is, where its cells are known: not a String's content.
@@ -774,6 +822,8 @@ struct Decoded {
     live: Vec<Vec<bool>>,
     /// The loops: each head a branch goes back to (its pc), with the pc of the last instruction that does.
     loops: Vec<(u32, u32)>,
+    /// The method's descriptor.
+    descriptor: String,
 }
 
 #[derive(Clone)]
@@ -861,6 +911,15 @@ struct Path {
     /// Whether the path is past a loop an invariant covers: its state then stands for more than the states a run
     /// reaches, and a computed index into a large array is not followed ([`loops`]).
     loose: bool,
+    /// In a pair of versions, the loops (by class, a previous version's copy by its own name, method and head) an
+    /// invariant covered on this path since the version it runs began ([`loops`]): one entered again is given its
+    /// invariant at once ([`Engine::summarize_at_entry`]). A run's own history, and not the check's, so that two
+    /// versions running the same code summarize the same loops at the same points and their states tie ([`ties`]).
+    summarized: Rc<std::collections::BTreeSet<(String, String, u32)>>,
+    /// In a pair of versions, the calls taken as one function on this path ([`ties`]), on either side: a later
+    /// call of the same code takes their outcomes where its inputs are theirs. Facts about the code, so a version's
+    /// fresh start keeps them; two paths that join keep the ones both made.
+    calls: Rc<Vec<ties::Call>>,
 }
 
 /// Where a class is in its initialization (JVMS §5.5).
@@ -891,7 +950,7 @@ enum Literal {
     Charset(&'static str),
     /// A constant of `java.util.Locale`, by its field's name ([`locale`]).
     Locale(String),
-    /// A level of `java.util.logging.Level` below `INFO`, by its field's name ([`runtime`]).
+    /// A level of `java.util.logging.Level` the engine has, by its field's name ([`runtime`]).
     Level(&'static str),
     /// The one thread of the run ([`runtime`]).
     Thread,
@@ -1128,6 +1187,15 @@ fn renumber(path: &mut Path, number: &dyn Fn(usize) -> usize) {
     for o in path.literals.values_mut() {
         *o = number(*o);
     }
+    // The results of the calls the path recorded ([`ties::Call`]): a later call related to one takes its result
+    // by the object's number.
+    if path.calls.iter().any(|c| matches!(c.result, Some(Val::R(Some(_)) | Val::C(_)))) {
+        for call in Rc::make_mut(&mut path.calls) {
+            if let Some(v) = &mut call.result {
+                value(v);
+            }
+        }
+    }
 }
 
 /// Whether an object of `class` holds text in its array: a String's content or a StringBuilder's, whose cells at
@@ -1177,6 +1245,19 @@ fn collect(path: &mut Path) {
     }
     if order.len() == path.objects.len() && order.iter().enumerate().all(|(i, o)| i == *o) {
         return;
+    }
+    // A call's result the state no longer reaches goes with it: that record relates no later call by its result.
+    let gone = |v: &Val| match v {
+        Val::R(Some(o)) => number[*o].is_none(),
+        Val::C(c) => c.0.iter().any(|(_, t)| t.is_some_and(|t| number[t].is_none())),
+        _ => false,
+    };
+    if path.calls.iter().any(|c| c.result.as_ref().is_some_and(gone)) {
+        for call in Rc::make_mut(&mut path.calls) {
+            if call.result.as_ref().is_some_and(gone) {
+                call.result = None;
+            }
+        }
     }
     path.objects = order.iter().map(|&o| path.objects[o].clone()).collect();
     renumber(path, &|o| number[o].expect("a reached object"));
@@ -1294,6 +1375,8 @@ struct Engine<'a> {
     indexed: Option<Vec<(u64, Bits)>>,
     /// The same loops by class, method and head, for [`Engine::summarize_at_entry`].
     known_loops: HashMap<(String, String, u32), loops::Known>,
+    /// The values a pair of versions' two runs share where they run the same code from the same state ([`ties`]).
+    ties: ties::Ties,
     /// Each `String[]` parameter's own array, by slot: its length, and for each cell whether it is null, and the
     /// length and code units of the String it holds otherwise.
     string_arrays: Vec<(u32, Bits, Vec<(Lit, Bits, Vec<Bits>)>)>,
@@ -1321,6 +1404,8 @@ struct Engine<'a> {
     /// no value of, each with what it was ([`Engine::unheld_static`]).
     observed: std::sync::Arc<crate::observed::Observations>,
     previous: Option<std::sync::Arc<crate::relocate::Previous>>,
+    /// [`Options::calls_as_one_function`].
+    calls_as_one_function: bool,
     unheld: HashMap<(String, String), String>,
     /// The time spent decoding methods, and reading witnesses out of models (their solving and encoding apart).
     decoding: Duration,
@@ -1351,7 +1436,30 @@ fn check_kind(kind: ArrayKind, element: &Type) -> Result<(), Stop> {
 
 /// Checks `class.method` of the harness: every path either returns or is infeasible (verified), or one throws the
 /// `AssertionError` on an input the solver names (violation).
+///
+/// In a pair of versions a call both versions share may be taken as one function of both ([`ties`]): a proof with
+/// such calls is a proof, and a counterexample is run on a JVM before it is believed. A check they leave undecided
+/// (an opaque result a String method asks the content of, a limit, the time) runs again in the time left with every
+/// call as written, and that run's outcome is the check's ([`Outcome::calls_as_written`]); with less than a second
+/// left, the first run's is.
 pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Result<Outcome, Error> {
+    let started = Instant::now();
+    let first = check_once(cp, class, method, options)?;
+    if first.verdict != Verdict::Unverifiable || first.calls_as_one_function == 0 {
+        return Ok(first);
+    }
+    let left = options.timeout.saturating_sub(started.elapsed());
+    // With no time left the second run would end at once, and its account would hide the first's.
+    if left < Duration::from_secs(1) {
+        return Ok(first);
+    }
+    let as_written = Options { calls_as_one_function: false, timeout: left, ..options.clone() };
+    let mut second = check_once(cp, class, method, &as_written)?;
+    second.calls_as_written = true;
+    Ok(second)
+}
+
+fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Result<Outcome, Error> {
     let started = Instant::now();
     let Some(harness) = cp.bytecode(class)? else {
         return Err(Error::new(format!("harness class {class} not found")));
@@ -1397,6 +1505,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         assumed: Default::default(),
         loops: Default::default(),
         known_loops: Default::default(),
+        ties: Default::default(),
         indexed: None,
         choices: Vec::new(),
         max_array_length: options.max_array_length,
@@ -1417,6 +1526,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         runs: HashMap::new(),
         observed: options.observed.clone(),
         previous: options.previous.clone(),
+        calls_as_one_function: options.calls_as_one_function,
         unheld: HashMap::new(),
         decoding: Duration::ZERO,
         witness: Duration::ZERO,
@@ -1464,6 +1574,11 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         gap_mode: engine.gap_mode,
         assumed: engine.assumed.iter().map(|a| a.to_string()).collect(),
         loops: engine.loops.iter().cloned().collect(),
+        tied: engine.ties.shared,
+        summaries_reused: engine.ties.reused,
+        calls_as_one_function: engine.ties.calls,
+        calls_related: engine.ties.calls_related,
+        calls_as_written: false,
         transcript: engine.b.transcript_path().map(std::path::Path::to_path_buf),
     };
 
@@ -1587,7 +1702,7 @@ pub fn check(cp: &ClassPath, class: &str, method: &str, options: &Options) -> Re
         }
         let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
         locals.resize(code.max_locals.max(locals.len()), None);
-        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, loose: false };
+        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, loose: false, summarized: Default::default(), calls: Default::default() };
         engine.pending.push(first);
 
         // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
@@ -1864,7 +1979,7 @@ impl<'a> Engine<'a> {
             }
         }
         let lines = pcs.iter().map(|&pc| code.line_at(pc)).collect();
-        Ok(Rc::new(Decoded { insns, pcs, index, handlers: code.exception_table.clone(), max_locals: code.max_locals as usize, lines, joins, exits, live, loops }))
+        Ok(Rc::new(Decoded { insns, pcs, index, handlers: code.exception_table.clone(), max_locals: code.max_locals as usize, lines, joins, exits, live, loops, descriptor: descriptor.to_string() }))
     }
 
     /// Whether the paths are many enough to be merged eagerly ([`Options::merge_heaps_after`]): heaps of two shapes
@@ -2401,6 +2516,9 @@ impl<'a> Engine<'a> {
 
     fn absorb(&mut self, into: &mut Path, other: &Path) {
         into.loose |= other.loose;
+        if into.summarized != other.summarized {
+            into.summarized = Rc::new(into.summarized.intersection(&other.summarized).cloned().collect());
+        }
         let prefix = into.cond.iter().zip(&other.cond).take_while(|(x, y)| x == y).count();
         let common: Vec<Lit> = into.cond[prefix..].iter().copied().filter(|l| other.cond[prefix..].contains(l)).collect();
         let rest_into: Vec<Lit> = into.cond[prefix..].iter().copied().filter(|l| !common.contains(l)).collect();
@@ -2412,6 +2530,23 @@ impl<'a> Engine<'a> {
         into.cond.extend(common);
         if either != TRUE {
             into.cond.push(either);
+        }
+        // The calls both paths made ([`ties::Call`]), made before they parted, so alike but for a String result's
+        // number: each path numbers its objects as its state reaches them, and where the two name different
+        // objects the merged record takes this path's where it is taken and the other's elsewhere.
+        if !Rc::ptr_eq(&into.calls, &other.calls) {
+            let theirs: BTreeMap<u64, &ties::Call> = other.calls.iter().map(|c| (c.id, c)).collect();
+            let mut calls = Vec::with_capacity(into.calls.len());
+            for c in into.calls.iter() {
+                let Some(d) = theirs.get(&c.id) else { continue };
+                let mut c = c.clone();
+                c.result = match (&c.result, &d.result) {
+                    (Some(x), Some(y)) => choose(&mut self.b, takes_into, x, y),
+                    _ => None,
+                };
+                calls.push(c);
+            }
+            into.calls = Rc::new(calls);
         }
         let choose = |b: &mut Blaster, x: &mut Val, y: &Val| {
             if let Some(v) = choose(b, takes_into, x, y) {
@@ -2451,6 +2586,10 @@ impl<'a> Engine<'a> {
                     }
                 }
                 o.same = same;
+            }
+            // One content kept where both paths keep the same; else none ([`ties`]).
+            if o.unknown != q.unknown || o.content != q.content {
+                o.content = None;
             }
             o.unknown |= q.unknown;
             let unknown = o.unknown;
@@ -2746,7 +2885,7 @@ impl<'a> Engine<'a> {
                 self.index_used(path, o, &index);
                 // Past a summarized loop a computed index into a large array is not followed ([`loops`]).
                 let loose = path.objects[o].unknown || (path.loose && array.cells.len() > loops::LOOSE_CELLS && self.b.constant_value(&index).is_none());
-                let mut value = if loose { self.b.fresh(width) } else { array.cells.last().cloned().unwrap_or_else(|| self.b.constant(0, width)) };
+                let mut value = if loose { self.loose_read(path, o, &index, width) } else { array.cells.last().cloned().unwrap_or_else(|| self.b.constant(0, width)) };
                 for (i, cell) in array.cells.iter().enumerate().rev().skip(1) {
                     if loose {
                         break;
@@ -2790,10 +2929,12 @@ impl<'a> Engine<'a> {
                     // Past a summarized loop a write at a computed index into a large array may be any cell's:
                     // the cells hold any values from here on ([`loops`]).
                     let cells = path.objects[o].array.as_ref().expect("an array").cells.len();
-                    if path.loose && cells > loops::LOOSE_CELLS && engine.b.constant_value(&index).is_none() {
+                    let loose = path.loose && cells > loops::LOOSE_CELLS && engine.b.constant_value(&index).is_none();
+                    if loose || path.objects[o].unknown {
+                        // What the cells hold is named by what it was and this write ([`ties`]).
+                        let before = engine.content(path, o);
+                        path.objects[o].content = engine.written(before, &index, &stored);
                         path.objects[o].unknown = true;
-                    }
-                    if path.objects[o].unknown {
                         engine.advance(path);
                         return;
                     }
@@ -3064,6 +3205,16 @@ impl<'a> Engine<'a> {
         let mut pairs = Vec::new();
         for (g, t) in &xs {
             for (h, u) in &ys {
+                if let (Some(t), Some(u)) = (t, u) {
+                    // Which object a String a call taken as one function returned is, is not computed ([`ties`]):
+                    // two calls on equal inputs may return one object or two, and a literal is one object. A
+                    // later call on equal inputs holds the earlier one's very value, so not even one reference
+                    // compared with itself is known to be one object.
+                    let opaque = |o: usize| path.objects[o].limit.as_deref() == Some(ties::ONE_FUNCTION_RESULT);
+                    if (opaque(*t) || opaque(*u)) && self.b.and(*g, *h) != FALSE {
+                        return unsupported("a comparison by reference (==) of a String a call taken as one function of both versions returned (lib/src/bmc/ties.rs): which object it is, is not computed");
+                    }
+                }
                 if t == u {
                     pairs.push(self.b.and(*g, *h));
                 } else if let (Some(t), Some(u)) = (t, u) {
@@ -3591,9 +3742,9 @@ impl<'a> Engine<'a> {
             Insn::GetStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
-                // The JDK's UTF-8 charset is one object ([`bytes`]).
-                if (declaring.as_str(), member.name.as_str()) == (bytes::STANDARD_CHARSETS, "UTF_8") {
-                    let charset = self.literal(path, Literal::Charset("UTF_8"), bytes::CHARSET);
+                // The JDK's UTF-8 and US-ASCII charsets are each one object ([`bytes`]).
+                if let Some(name) = bytes::charset_constant(&declaring, &member.name) {
+                    let charset = self.literal(path, Literal::Charset(name), bytes::CHARSET);
                     self.push(path, Val::R(Some(charset)));
                     self.advance(path);
                     return Ok(None);
@@ -3605,7 +3756,7 @@ impl<'a> Engine<'a> {
                     self.advance(path);
                     return Ok(None);
                 }
-                // Each level of `java.util.logging` below `INFO` is one object ([`runtime`]).
+                // Each level of `java.util.logging` but `OFF` is one object ([`runtime`]).
                 if let Some(level) = runtime::level_constant(&declaring, &member.name) {
                     let constant = self.literal(path, Literal::Level(level), runtime::LEVEL);
                     self.push(path, Val::R(Some(constant)));
@@ -3827,6 +3978,20 @@ impl<'a> Engine<'a> {
             self.advance(path);
             return Some(Ok(None));
         }
+        // `equals` of a String a call taken as one function returned ([`ties`]), whose content is not computed: true
+        // of the very object (the JDK's first test), and any value of another such String, which is the result of
+        // a call whose inputs were not equal to this one's (where they were, the call returned this very object).
+        let opaque = |obj: &Obj| obj.limit.as_deref() == Some(ties::ONE_FUNCTION_RESULT);
+        if name == "equals" && opaque(&path.objects[o]) {
+            if let [Val::R(Some(a))] = args {
+                if *a == o || opaque(&path.objects[*a]) {
+                    let truth = if *a == o { self.b.constant(1, 32) } else { let any = self.b.fresh(1); [any, vec![FALSE; 31]].concat() };
+                    self.push(path, Val::I(truth));
+                    self.advance(path);
+                    return Some(Ok(None));
+                }
+            }
+        }
         let limited = |obj: &Obj| obj.limit.clone().map(|why| unsupported(why));
         let Some(s) = path.objects[o].content().cloned() else { return limited(&path.objects[o]) };
         if strings::models(name, descriptor) || locale::models_string(name, descriptor) {
@@ -3836,7 +4001,7 @@ impl<'a> Engine<'a> {
             return self.string_matches(path, &s, args);
         }
         if bytes::models_string(name, descriptor) {
-            return self.string_bytes(path, &s, args);
+            return self.string_bytes(path, &s, descriptor, args);
         }
         if regex::models_string(name, descriptor) {
             return Some(self.string_split(path, o, &s, args));
@@ -4384,6 +4549,20 @@ impl<'a> Engine<'a> {
     /// lambda's call of the method it stands for comes here too ([`Engine::lambda_call`]).
     fn invoke_static(&mut self, path: &mut Path, caller: &str, member: &crate::classfile::MemberRef) -> Step {
         let descriptor = MethodDescriptor::parse(&member.descriptor).map_err(|e| Stop::Unsupported(e.to_string()))?;
+        // Where a version of a pair begins ([`crate::pairing`]): it starts as if it ran alone. What a run can leave
+        // for a later one is the static fields, the classes' initialization and the default locale, which the
+        // engine holds in the path's statics; every other object is reached through them or through the call's
+        // own arguments, which are each version's own. The pair's own class stays initialized.
+        if self.previous.is_some() && caller == crate::pairing::CLASS && member.owner == crate::pairing::CLASS && (member.name.as_str(), member.descriptor.as_str()) == (crate::pairing::FRESH, "()V") {
+            path.statics.clear();
+            path.classes.retain(|c, _| c == crate::pairing::CLASS);
+            // Nor is it past the other's summarized loops: a computed index into a large array is followed again
+            // until it passes one of its own, so that its run is the other's where both run the same ([`ties`]).
+            path.loose = false;
+            path.summarized = Default::default();
+            self.advance(path);
+            return Ok(None);
+        }
         // A model only for JBMC's class path that the checker runs all the same ([`ClassPath::checker_runs`]:
         // `List.of`, `List.copyOf` and the immutable lists' helpers) is called as an application method, unless
         // no evidence record samples the call (`List.of(E...)`), which is then the JDK call it names
@@ -4410,6 +4589,10 @@ impl<'a> Engine<'a> {
                 let args = self.pop_args(path, descriptor.params.len())?;
                 return self.call(path, crate::harness::expr::CLAIM_CLASS, &stub, &member.descriptor, args);
             }
+            // In a pair of versions, a call of a static method both share, as one function of both ([`ties`]).
+            if let Some(step) = self.call_as_one_function(path, caller, member, &descriptor, None) {
+                return step;
+            }
             let args = self.pop_args(path, descriptor.params.len())?;
             return self.call(path, &member.owner, &member.name, &member.descriptor, args);
         }
@@ -4434,6 +4617,23 @@ impl<'a> Engine<'a> {
         // engine and the interpreter that replays its witnesses agree on it.
         if self.cp.model(&member.owner).is_some() && self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).is_some_and(|(_, m)| m.code.is_some()) {
             return self.call(path, &member.owner, &member.name, &member.descriptor, args);
+        }
+        // `String.valueOf(Object)` of a String is the String itself (its `toString()` is itself), and of null the
+        // interned "null". Of any other object it calls that object's `toString()`: the gap it is to the scan,
+        // which cannot tell the argument's class, and to the engine.
+        if (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str()) == (STRING, "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;") {
+            if let [Val::R(object)] = args.as_slice() {
+                let value = match *object {
+                    Some(o) if path.objects[o].class == STRING => Some(o),
+                    None => Some(self.literal(path, Literal::Str("null".encode_utf16().collect()), STRING)),
+                    Some(_) => None,
+                };
+                if let Some(value) = value {
+                    self.push(path, Val::R(Some(value)));
+                    self.advance(path);
+                    return Ok(None);
+                }
+            }
         }
         match gaps::jdk_static_call(&member.owner, &member.name, &member.descriptor) {
             JdkCall::Exact => return self.call_jdk_static(path, &member.owner, &member.name, &member.descriptor, &descriptor, args),
@@ -4559,6 +4759,16 @@ impl<'a> Engine<'a> {
                 }
             }
         }
+        // In a pair of versions, a call of an application method both share on a receiver no one reads after it, as
+        // one function of both ([`ties`]).
+        if let Val::R(Some(o)) = path.frames.last().expect("a frame").stack[receiver_at] {
+            let owner = if special { member.owner.clone() } else { path.objects[o].class.clone() };
+            if self.cp.is_application(&owner) {
+                if let Some(step) = self.call_as_one_function(path, caller, member, &descriptor, Some((o, &owner))) {
+                    return step;
+                }
+            }
+        }
         let args = self.pop_args(path, descriptor.params.len())?;
         let receiver = self.pop_ref(path)?;
         let o = match self.null_check(path, receiver) {
@@ -4576,7 +4786,7 @@ impl<'a> Engine<'a> {
             if path.objects[o].given {
                 self.reads(path, || "reads an array that was there before the call (clone)".into())?;
             }
-            let copy = Obj { array: path.objects[o].array.clone(), unknown: path.objects[o].unknown, ..Obj::new(&path.objects[o].class) };
+            let copy = Obj { array: path.objects[o].array.clone(), unknown: path.objects[o].unknown, content: path.objects[o].content, ..Obj::new(&path.objects[o].class) };
             path.objects.push(copy);
             let r = path.objects.len() - 1;
             self.push(path, Val::R(Some(r)));
@@ -4607,8 +4817,8 @@ impl<'a> Engine<'a> {
             if let Some(step) = self.class_relation(path, o, &member.name, &member.descriptor, &args) {
                 return step;
             }
-            // Whether a Logger logs a level below `INFO` ([`runtime`]).
-            if let Some(step) = self.logger_method(path, o, &member.owner, &member.name, &member.descriptor, &args) {
+            // Whether a Logger logs a level, and what logging a line at one does ([`runtime`]).
+            if let Some(step) = self.logging_method(path, o, special, &member.owner, &member.name, &member.descriptor, &args) {
                 return step;
             }
             // A constructor that takes a capacity alone ([`runtime::capacity_constructor`]).
@@ -4687,13 +4897,15 @@ impl<'a> Engine<'a> {
         // no approximation, and is refused there too.
         // A builder's call that its model did not take (the builder's content is not the engine's) is the call
         // it is to a checker with no such model.
+        // So is a logging call its model did not take (a Logger the engine did not make, a record that could write
+        // elsewhere when it is formatted).
         // An exception's message and cause, kept from the JDK's constructor that set them ([`throwables`]).
         if !contracted {
             if let Some(step) = self.throwable_method(path, o, special, member, &args) {
                 return step;
             }
         }
-        match if contracted || strings::models_builder(&member.owner, &member.name, &member.descriptor) { unmodelled } else { gaps::jdk_instance_call(self.cp, &member.owner, &member.name, &member.descriptor) } {
+        match if contracted || strings::models_builder(&member.owner, &member.name, &member.descriptor) || runtime::models_logging(&member.owner, &member.name, &member.descriptor) { unmodelled } else { gaps::jdk_instance_call(self.cp, &member.owner, &member.name, &member.descriptor) } {
             JdkCall::Exact => {}
             JdkCall::Gap(kind) => {
                 // What the call does to a builder is the contract's or the assumption's to say: the engine holds
@@ -5364,6 +5576,23 @@ mod tests {
     use super::*;
     use crate::classfile::flags;
     use crate::classfile::writer::{ClassWriter, CodeBuilder, MethodWriter};
+
+    /// A call's record names its result by the object's number ([`ties::Call`]), and a later call of the same code
+    /// on equal inputs takes that object's cells or the object itself. When a merge drops the objects the state
+    /// no longer reaches and numbers the rest again ([`collect`]), the record follows: a result still reached is
+    /// named by its new number, and one let go of is no longer the record's, since its number may be another
+    /// object's now. Before, the records kept the old numbers: the first named the array that moved into its place.
+    #[test]
+    fn a_calls_record_names_its_result_by_the_number_a_merge_gives_it() {
+        let mut path = Path { frames: Vec::new(), cond: Vec::new(), models: Vec::new(), undecided: false, resumed: false, objects: vec![Obj::new("[B"), Obj::new("[I"), Obj::new("[B")], literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, loose: false, summarized: Default::default(), calls: Default::default() };
+        // The state reaches the third object alone; the first was a call's result and nothing holds it now.
+        path.statics.insert(("app/A".into(), "kept".into()), Val::R(Some(2)));
+        path.calls = Rc::new(vec![ties::Call::returning(1, Val::R(Some(0))), ties::Call::returning(2, Val::R(Some(2)))]);
+        collect(&mut path);
+        assert_eq!(path.objects.len(), 1);
+        assert!(path.calls[0].result.is_none(), "a result let go of: {:?}", path.calls[0].result);
+        assert!(matches!(path.calls[1].result, Some(Val::R(Some(0)))), "a result reached, by its new number: {:?}", path.calls[1].result);
+    }
 
     /// The module's table says what the engine does with every instruction the decoder gives (each opcode decoded
     /// on its own, its operands zero), and the gap table of [`gaps`] has a row for every kind of gap: a new

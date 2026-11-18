@@ -126,7 +126,7 @@ fn a_glob_stated_with_the_regex_library_matches_as_the_matcher_written_out() {
 fn text_as_bytes_and_digits_and_a_hashs_shape_are_the_definitions_written_out() {
     jvmcontract::tool_tier!();
     let Some(classes) = classes() else { return };
-    for method in ["utf8", "equal", "copied", "parsed", "appended", "digits", "excluded"] {
+    for method in ["utf8", "named", "equal", "copied", "parsed", "appended", "digits", "excluded"] {
         proved(classes, &format!("claims.B#{method}"), 3);
     }
     for method in ["shaped", "anchored"] {
@@ -136,7 +136,7 @@ fn text_as_bytes_and_digits_and_a_hashs_shape_are_the_definitions_written_out() 
     assert!(sampled.status.success(), "{}", String::from_utf8_lossy(&sampled.stderr));
     assert_eq!(String::from_utf8_lossy(&sampled.stdout).trim(), "all hold on 20000 samples");
     // What the models do not say stays the JDK's call: another charset's object, a digit outside ASCII.
-    for (method, why) in [("latin", "reads static field java.nio.charset.StandardCharsets.ISO_8859_1"), ("unicodeDigits", "jdk-static-method:java.lang.Integer.parseInt(Ljava/lang/String;)I")] {
+    for (method, why) in [("latin", "reads static field java.nio.charset.StandardCharsets.ISO_8859_1"), ("latinNamed", "java.lang.String.getBytes"), ("unicodeDigits", "jdk-static-method:java.lang.Integer.parseInt(Ljava/lang/String;)I")] {
         let o = run(&options(classes, &format!("claims.B#{method}"), 3, method));
         assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
         assert!(o.output.contains(why), "{}", o.output);
@@ -245,9 +245,40 @@ fn a_literal_followed_by_any_that_is_an_input_matches_as_the_definition_written_
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
     let stated = o.stated.as_ref().expect("a statement");
     assert!(stated.assumptions.iter().any(|a| a.text.contains("nothing below INFO is logged")), "{:?}", stated.assumptions);
-    let o = run(&options(classes, "claims.P#loud", 3, "P-loud"));
-    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
-    assert!(o.output.contains("java.util.logging.Level.INFO"), "{}", o.output);
+}
+
+/// A line logged at WARNING as Spring's logging adapter logs one (example 287's encoder, for a stored hash that is
+/// empty or not bcrypt's) returns normally under the default logging configuration, which the result states. What
+/// would make logging observable stops the proof where it is set up: a level, a filter or a handler set on a
+/// logger, and a record that writes elsewhere when the handler formats it. On a JVM each of those four returns false
+/// or throws, where a model that took logging for granted would prove it true.
+#[test]
+fn a_line_logged_at_warning_returns_normally_and_what_would_make_logging_observable_stops_the_proof() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    for method in ["loud", "warned", "nulls"] {
+        let o = run(&options(classes, &format!("claims.Logged#{method}"), 3, &format!("Logged-{method}")));
+        assert_eq!(o.verdict, Verdict::Verified, "{method}: {}", o.output);
+        let stated = o.stated.as_ref().expect("a statement");
+        if method != "nulls" {
+            assert!(stated.assumptions.iter().any(|a| a.text.contains("true for INFO, WARNING and SEVERE")), "{method}: {:?}", stated.assumptions);
+        }
+        if method == "warned" {
+            assert!(stated.assumptions.iter().any(|a| a.text.contains("no logger has a filter, a handler of its own or a resource bundle")), "{:?}", stated.assumptions);
+        }
+    }
+    for (method, stop) in [
+        ("off", "java.util.logging.Level.OFF"),
+        ("described", "java.lang.String.valueOf(Ljava/lang/Object;)Ljava/lang/String;"),
+        ("counted", "java.util.logging.Logger.log(Ljava/util/logging/LogRecord;)V"),
+        ("levelled", "java.util.logging.Logger.setLevel"),
+        ("filtered", "java.util.logging.Logger.setFilter"),
+        ("handled", "java.util.logging.Handler.<init>"),
+    ] {
+        let o = run(&options(classes, &format!("claims.Logged#{method}"), 3, &format!("Logged-{method}")));
+        assert_eq!(o.verdict, Verdict::Unverifiable, "{method}: {}", o.output);
+        assert!(o.output.contains(stop), "{method}: {}", o.output);
+    }
 }
 
 /// A throws clause's condition is Java as the assumption and the assertion are: one over a String's bytes is

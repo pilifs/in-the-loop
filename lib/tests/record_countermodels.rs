@@ -13,6 +13,8 @@ use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::OnceLock;
 
+use jvmcontract::{equivalence, Engine, Verdict};
+
 fn has(tool: &str) -> bool {
     Command::new(tool).arg("-version").output().is_ok()
 }
@@ -54,4 +56,27 @@ fn each_version_alone_differs_past_the_second_call_on_a_jvm() {
     };
     assert_eq!(alone(old), "stale=0 swapped=3");
     assert_eq!(alone(new), "stale=99 swapped=2");
+}
+
+/// The checker's side: each version alone tells both methods apart (the test above), so a proof that they agree is
+/// false. A later related call takes an array result's cells as the earlier call returned them (`ties::Call`), and a
+/// merge chooses a String result by its guard where the two paths name different objects (`absorb`).
+#[test]
+fn a_calls_record_does_not_prove_what_its_result_held_before() {
+    jvmcontract::tool_tier!();
+    let Some((old, new)) = classes() else { return };
+    let mut wrong = Vec::new();
+    for name in ["stale", "swapped"] {
+        let mut o = equivalence::Options::new(old, new, &format!("app.Entry#{name}"));
+        o.engine = Engine::Native;
+        o.jbmc = "/nonexistent/jbmc".into();
+        o.assume = Some("k >= 0".into());
+        o.work = Some(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("record-countermodels").join(name));
+        let out = equivalence::run(&o).unwrap();
+        eprintln!("--- {name}: {:?}\n{}", out.verdict, out.output);
+        if out.verdict == Verdict::Verified {
+            wrong.push(name);
+        }
+    }
+    assert!(wrong.is_empty(), "proved to agree, though each version alone tells them apart: {wrong:?}");
 }

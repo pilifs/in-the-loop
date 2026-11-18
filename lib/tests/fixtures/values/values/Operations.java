@@ -194,6 +194,31 @@ public final class Operations {
         return of(n, a, b, c).getBytes((Charset) null).length;
     }
 
+    /** The US-ASCII encoding: how many bytes for a negative i, else the ith. */
+    static int getBytesAscii(int n, int a, int b, int c, int i) {
+        byte[] bytes = of(n, a, b, c).getBytes(StandardCharsets.US_ASCII);
+        return i < 0 ? bytes.length : bytes[i];
+    }
+
+    /** The UTF-8 encoding by one of the names the JDK takes for it (by `name`: 0 to 3), as getBytes above; -1000
+     * where the JDK has no such charset, which it has. */
+    static int getBytesNamed(int n, int a, int b, int c, int name, int i) {
+        try {
+            byte[] bytes = of(n, a, b, c).getBytes(name == 0 ? "UTF-8" : name == 1 ? "utf8" : name == 2 ? "Unicode-1-1-UTF-8" : "uTf-8");
+            return i < 0 ? bytes.length : bytes[i];
+        } catch (java.io.UnsupportedEncodingException e) {
+            return -1000;
+        }
+    }
+
+    static int getBytesNamedNull(int n, int a, int b, int c) {
+        try {
+            return of(n, a, b, c).getBytes((String) null).length;
+        } catch (java.io.UnsupportedEncodingException e) {
+            return -1000;
+        }
+    }
+
     /** A constant regular expression of classes, a group of alternatives and counts, against the whole String. */
     static boolean matches(int n, int a, int b, int c) {
         return of(n, a, b, c).matches("[a-c]x{1,2}|(\\d|\\$)[^0-9]?");

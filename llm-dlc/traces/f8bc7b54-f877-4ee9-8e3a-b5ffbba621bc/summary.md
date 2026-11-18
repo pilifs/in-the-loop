@@ -20,6 +20,9 @@
 The runs of `llm-dlc/tools/feature-loop.sh` this session worked in, each with its record, redacted: the instruction, a line per commit, and how the run ended.
 
 - [2026-11-17-125650-domain-advances-challenge](runs/2026-11-17-125650-domain-advances-challenge.md): 2026-11-17 12:56:50 UTC to 2026-11-17 17:11:21, 16 cycles with a commit. Stopped: cycle 17 made no commit; session f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc needs attention.
+- [2026-11-17-202014-domain-advances-challenge](runs/2026-11-17-202014-domain-advances-challenge.md): from 2026-11-17 20:20:14 UTC, 0 cycles with a commit. No end recorded: still running when last published, or stopped without a line.
+- [2026-11-17-202034-domain-advances-challenge](runs/2026-11-17-202034-domain-advances-challenge.md): 2026-11-17 20:20:35 UTC to 2026-11-18 01:41:02, 12 cycles with a commit. Ended after 12 cycle(s): the session decided to stop; the brief says blocked: waiting for the other streams' next commits (preservation's I023 fix, for I007's last check).
+- [2026-11-18-015035-domain-advances-challenge](runs/2026-11-18-015035-domain-advances-challenge.md): 2026-11-18 01:50:35 UTC to 2026-11-18 02:06:05, 1 cycle with a commit. Ended after 1 cycle(s): the session decided to stop; the brief says done.
 <!-- runs:end -->
 
 ## Changes
