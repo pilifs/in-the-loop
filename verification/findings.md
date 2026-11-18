@@ -18,6 +18,61 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-043: one-value binding checks accept wrong binders in 286 and 288; claims should bind sequences of permitted and denied updates
+
+- **Status**: open (the user's decision on 2026-11-18, run-streams-domain-advances-D036: for later, with the coming
+  claim enhancements; see VF-040 for 286's proposed claim).
+- **Raised**: 2026-11-17/18 by the challenge stream of the domain-advances run (its items to the state stream I019 and
+  I020, and to preservation I024), and an outside review the user asked for.
+- **Found**: every binding check and claim of 286 and 288 binds one value, or two in one order. Wrong binders survive:
+  286's `first-suppressed-only.patch` (stops after the first suppressed value), carried to 288 on 6.1.14; a 6.1.14
+  binder that skips the allowed list once a disallowed list is set (accepted by 288's decided `fixed-security`
+  answer); and two wrong binders that satisfy even 286's proposed two-value claim (one stops after the second
+  suppressed value, one drops every value once one is denied). 288's binding check (`ProtectedBinding#protectedKept`,
+  job 20261117-235132) and 288's replay accept the first. The state stream ended before taking I019 and I020.
+- **Needs**: claims and checks over bounded sequences that mix permitted and denied updates, which observe both that
+  each denied write did not happen and that each permitted write did (names as an array input up to the bound), for
+  286 and 288 alike; until then each result notes the one-value limit.
+- **Tracked in**: run-streams-domain-advances-D036; VF-040; the state stream's items I019, I020; preservation's I024.
+- **Closes when**: such a claim refutes the four wrong binders above and is decided on both examples.
+
+### VF-042: work the finished streams of the domain-advances run left open
+
+- **Status**: open (the user's decision on 2026-11-18, run-streams-domain-advances-D036: name it for later).
+- **Raised**: 2026-11-18 by the watcher of the domain-advances run, from the open inbox items of the state and evidence
+  streams, which ended `done` before taking them, and an outside review the user asked for.
+- **Found**:
+  - State's I018: an exception a model of the JDK throws keeps the model's message, not the JDK's: four countermodels
+    in `lib/tests/fixtures/throwable-countermodels` are proved where a JVM says otherwise; the checker-side test in
+    that README belongs in `lib/tests/throwable_countermodels.rs` with the fix.
+  - Evidence's I014: six observed initializers read a setting the observation binding does not see, and each is
+    verified (at `vqquvmnm`) with the class observed under that setting while the result says "it read no system
+    property" and nothing of the setting: refuse each or state the setting; the checker-side test is in
+    `lib/tests/fixtures/setting-countermodels/README.md`.
+  - Evidence's I015 (accept.py: a later step's `--work` compared as resolved folders; the domain check reading the
+    outcome's own bound): given to a session the user brought in during the run; struck from here if it lands.
+  - Evidence's I016 (286's gap packet observed beside the route is read by nothing): no action unless wanted.
+- **Needs**: an owner for each, in the next brief that touches the observer and the JDK models.
+- **Tracked in**: run-streams-domain-advances-D036; the inbox items named.
+- **Closes when**: each is fixed with its checker-side test, or decided not to be.
+
+### VF-041: 287's preservation is proved for terminating runs only, and changes.py drops the checker's assumptions from what it reports
+
+- **Status**: open (the user's decision on 2026-11-18, run-streams-domain-advances-D036: report 287 so, fix the
+  projection later).
+- **Raised**: 2026-11-18 by an outside review the user asked for, of the domain-advances run's acceptance state.
+- **Found**: 287's preservation reached the frozen bound 80 in about 110 s through the call-level rule, and its saved
+  outcome assumes each shared `crypt_raw` call ends. The frozen claim
+  (`examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/claims/in-range-matching-preserved.json`)
+  admits a case its own notes say diverges on both releases (cost 31): matching divergence is consistent with
+  preservation, but this proof does not establish it. So 287 is agreement on terminating runs. `accept.py` reports
+  what an outcome rests on (`restsOn`), but `llm-dlc/tools/changes.py`'s projection (around line 69) keeps the evidence
+  limits and drops the checker's assumptions, so the milestone report would not say it.
+- **Needs**: `changes.py` and the milestone report carry `restsOn` whole; 287's notes say "agreement on terminating
+  runs"; a later proof of equal divergence, or a claim restricted to costs that terminate, if wanted.
+- **Tracked in**: run-streams-domain-advances-D036; preservation's item I027.
+- **Closes when**: the report shows each accepted answer's assumptions, and 287's statement says what was proved.
+
 ### VF-040: 286's protected-state claim binds one value and accepts a binder that drops only the first suppressed one
 
 - **Status**: open (the user's decision on 2026-11-18, run-streams-domain-advances-D034: after the domain-advances run,
@@ -111,6 +166,11 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
     `brief_run.py start` while it runs is refused by its active scope and counts it blocked again. `wait` can
     return `ended` while it still works. A blocked stop is not put to the watcher to run again. The watcher has to
     do each of these by hand, and keep D021's merge order (challenge before state) the same way.
+  - **Relaunched blocked, by hand, once (rerun 1 of 2).** The hand-run loop ended at 01:41 UTC on 2026-11-18,
+    `blocked: waiting for the other streams' next commits (preservation's I023 fix, for I007's last check)`.
+    No question came, because the loop is outside run-streams.sh. Preservation committed the I023 fix
+    (`puuwrruu`) at 01:50, and the watcher relaunched the loop with the same command at 01:50, its scope
+    inactive and its working copy clean.
 - **Needs**:
   - For the session: one of these, so the OOM killer meets the tests, not the session:
     - the test run inside a loop takes fewer binaries at a time;

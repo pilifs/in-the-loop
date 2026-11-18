@@ -647,15 +647,31 @@ relational result needs a new check (the rule's applications recorded in the out
       record) is acknowledged. It is a soundness defect in this stream's rule, so it comes before 288's close-out.
       The challenge's audit says neither 287's nor 307's accepted answer reads such cells.
     - accept.py's pair-harness path (`mxslxvzk`) is now on the default line, so D036's third point can go ahead.
-- Next (D036's order, with I028):
-  1. Merge the default line (accept.py's pair-harness path), run `sync.py regenerate` and the default run, then
-     `accept.py 307 preservation mutant-preservation`.
-  2. I028: a related call takes the earlier array result's cells as they were when it returned, or drops the
-     record once anything stores into it. `absorb` keeps a record's result only where both paths name the same
-     object. Then add the README's test to `lib/tests/record_countermodels.rs`.
-  3. 288 ends at its wall: the profile is VF-031's next data point. Another cycle comes only from a measured
+- 2026-11-18, D036's third point (307's two answers accepted; *working formalization* and *accepted claim*
+  unchanged).
+  - **The merge.** The default line to `zwqmxxnp`: accept.py's pair-harness path (`mxslxvzk`), 286's job and
+    results, and VF-041 to VF-043. Only generated files conflicted: `costs.json` was re-estimated, the traces
+    regenerated. No file of either parent was dropped. The default run passed on the merged tree, 54 of 54.
+  - **307.** `accept.py 307 preservation mutant-preservation` accepts both: `preservation` established and
+    `mutant-preservation` refuted, from jobs `20261117-210114-…`, 13 checks each. 307's notes and README say so,
+    with the limit of D028 and D029 and what the pair does not compare. The jobs ran before I023's side conditions,
+    under which only `crypt_raw` is taken; the capped probes after I023 gave the same verdicts.
+  - **Done when.** 287's and 307's tasks are decided at the frozen bound and accepted, with exception classes
+    compared exactly. The pairing countermodels pass, with their limits stated.
+  - **Inbox.** I029 came in: past I023, an `OutOfMemoryError` that a loop decides by keeping arrays of constant
+    length (`allocation-countermodels`, `kept`) is left out of a call taken as one function, and the pair is proved.
+    It is a soundness defect in this stream's rule, like I028, so the two are taken together next. The fixtures are
+    the challenge stream's `orxlmwsv`, to be merged.
+- Next (D036's order, with I028 and I029):
+  1. Merge `orxlmwsv` (the `record-` and `allocation-countermodels`). I028: a related call takes the earlier array
+     result's cells as they were when it returned; `absorb` merges a String result by the merge's guard where the
+     two paths name different objects. I029: refuse what lets a call keep memory a loop decides (an array of
+     references, an object of the application's own class, a String that grows, an exception given a cause), each
+     with a countermodel first. Then the READMEs' tests in `record_countermodels.rs` and
+     `allocation_countermodels.rs`, and capped probes of 287, 307, 289 and 290.
+  2. 288 ends at its wall: the profile is VF-031's next data point. Another cycle comes only from a measured
      reduction at the frozen bound's comparison. Then `done`.
-  4. I026 (289's probes), if the run still has time for it.
+  3. I026 (289's probes), if the run still has time for it.
 - Status: working
 
 ## Loop settings

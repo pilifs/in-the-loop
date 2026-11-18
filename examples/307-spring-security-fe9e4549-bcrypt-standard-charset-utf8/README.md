@@ -19,6 +19,10 @@ not the cipher. The jobs `20261117-210114-…` decided both: `preservation` veri
 refuted at a non-ASCII password, reproduced on a JVM. `accept.py` does not accept them yet, on its `entry` check
 alone: the outcome names the overloaded `hashpw` with its parameter types. `example.json`'s notes say more.
 
+**Since 2026-11-18: both answers accepted.** With `accept.py`'s check of an overloaded target and its reading of a
+pair's harness under `work/pair-work/`, `python3 examples/tools/accept.py 307 preservation mutant-preservation`
+accepts `preservation` as established and `mutant-preservation` as refuted, from the same two jobs, 13 checks each.
+
 ## The change
 
 [fe9e4549](https://github.com/spring-projects/spring-security/commit/fe9e4549780e940c9cef7f2991e75e0b686fc5d1)

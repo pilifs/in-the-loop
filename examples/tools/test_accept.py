@@ -64,13 +64,15 @@ def outcome_of(task: dict, claim: dict, answer: str, bound: int | None) -> dict 
 
 
 def beside(root: Path, folder: Path, task_id: str, answer: str, job: str, status: str | None = "passed", names=None,
-           trial: int | None = None, outcome: str | None = None, mutant: str | None = None, harness: str | None = None) -> dict:
+           trial: int | None = None, outcome: str | None = None, mutant: str | None = None, harness: str | None = None,
+           harness_under: str | None = None) -> dict:
     """An answer given beside the route, as a sidecar records it, with what the pipeline and a driver leave: the job
     (naming the examples in NAMES, by default this one), its result (none when STATUS is None), the step's log and the
     collected outcome, of the answer or of OUTCOME where the two are to differ, run at the claim's bound or at TRIAL;
     and the claim file frozen in a ledger. MUTANT is the hash the step's log says the mutant's JAR had. HARNESS is the
     assumption the collected harness source returns first without (`work/harness/PropertyHarness.java`, as the checker
-    writes it), where there is to be one. Returns the paths, relative to ROOT."""
+    writes it, or `work/pair-work/harness/` for a pair task, unless HARNESS_UNDER names the folder), where there is to
+    be one. Returns the paths, relative to ROOT."""
     number, rel = folder.name[:3], folder.relative_to(root).as_posix()
     target = json.loads((folder / "target.json").read_text())
     task = next(t for t in target["tasks"] if t["id"] == task_id)
@@ -98,7 +100,8 @@ def beside(root: Path, folder: Path, task_id: str, answer: str, job: str, status
     (root / paths["outcome"]).write_text(json.dumps(outcome_of(task, claim, outcome or answer, bound)))
     outputs = [{"path": paths["outcome"], "change": "added", "sha256": sha(root / paths["outcome"])}]
     if harness is not None:
-        paths["harness"] = f"{work}/{task_id}/work/harness/PropertyHarness.java"
+        under = harness_under if harness_under is not None else "pair-work/harness" if task["kind"] == "equivalence" else "harness"
+        paths["harness"] = f"{work}/{task_id}/work/{under}/PropertyHarness.java"
         (root / paths["harness"]).parent.mkdir(parents=True, exist_ok=True)
         (root / paths["harness"]).write_text("public final class PropertyHarness {\n    public static void check(java.lang.String field) {\n"
                                              f"        if (!({harness})) {{ return; }} // the inputs the property is about\n"
@@ -649,6 +652,31 @@ class Countermodels(Checkout):
         self.assertTrue(r["accepted"], r.get("why"))
         self.assertIn("returns before the call where the assumption does not hold", next(c["detail"] for c in r["checks"] if c["check"] == "replay"))
 
+    def test_a_pair_tasks_harness_is_the_one_under_pair_work(self):
+        """A pair task's job collects the harness the JVM ran under `work/pair-work/harness/` (example 307's
+        mutant-preservation), not `work/harness/`: the check reads it there, with the same hash and predicate checks,
+        and a pair's outcome with a harness only where a prove run's would be has no record of the assumption."""
+        self.edit("claims/gate-preservation.json", lambda c: c.update(assume="field.length() == 2"))
+        self.edit("target.json", lambda t: task_of(t, "preservation").update(expected="refuted"))
+        self.beside("preservation", "refuted")
+        self.refused("preservation", "replay", "collected no harness source (verification/.work-900/preservation/work/pair-work/harness/")
+        self.beside("preservation", "refuted", harness="field.length() == 2", harness_under="harness")
+        self.refused("preservation", "replay", "collected no harness source")
+        self.beside("preservation", "refuted", harness="field != null")
+        self.refused("preservation", "replay", "does not return first where `field.length() == 2` does not hold")
+        paths = self.beside("preservation", "refuted", harness="field.length() == 2")
+        r = self.check("preservation")
+        self.assertTrue(r["accepted"], r.get("why"))
+        self.assertIn("pair-work/harness/PropertyHarness.java", next(c["detail"] for c in r["checks"] if c["check"] == "replay"))
+        (self.root / paths["harness"]).write_text("changed after the job\n")
+        self.refused("preservation", "replay", "collected no harness source")
+        # A prove task still reads its own: work/harness/, not a pair's folder.
+        self.edit("claims/regex-probe.json", lambda c: c.update(assume="field.length() == 2"))
+        self.beside("regex-probe", "refuted", harness="field.length() == 2", harness_under="pair-work/harness")
+        self.refused("regex-probe", "replay", "collected no harness source (verification/.work-900/regex-probe/work/harness/")
+        self.beside("regex-probe", "refuted", harness="field.length() == 2")
+        self.assertTrue(self.check("regex-probe")["accepted"])
+
     def test_a_pair_run_with_an_allowed_change_the_task_does_not_allow_is_refused(self):
         """The expressions check asked nothing of the pair when the task allows no change, so a pair that ran with
         `code == 97` established `preservation` everywhere, where the versions differ at 97. The generated pair, where
@@ -756,6 +784,24 @@ class StepsPastTheFix(Checkout):
                       f"python3 examples/901-another-change/proofs/prove.py fixed-security --timeout 60 --work {self.WORK}/"):
             with self.subTest(later=later):
                 self.refused_for([self.driver, later], "writes the same outcome folder")
+
+    def test_a_later_run_into_the_same_folder_under_another_spelling_is_refused(self):
+        """The evidence stream's I015 (lib/tests/fixtures/accept-countermodels/README.md, 'Past the step check's fix'):
+        the pipeline runs every step in <state>/work/<job id>, known when the job is written, so an absolute --work, or
+        one that leaves that folder by `..`, can name the chosen step's outcome folder under another spelling; and a
+        task word with a `/` can reach it from the folder above."""
+        for later, words in ((f"python3 {self.DRIVER} fixed-security --timeout 60 --work /state/work/{self.paths['job'].rsplit('/', 1)[1][:-5]}/{self.WORK}",
+                              "is not a folder inside the step's own"),
+                             (f"python3 {self.DRIVER} fixed-security --timeout 60 --work ../{self.paths['job'].rsplit('/', 1)[1][:-5]}/{self.WORK}",
+                              "is not a folder inside the step's own"),
+                             (f"python3 {self.DRIVER} fixed-security --max-array-length 2 --timeout 60 --work {self.WORK}/x/..", "writes the same outcome folder"),
+                             (f"python3 {self.DRIVER} .work-900/fixed-security --timeout 60 --work verification", "writes the same outcome folder")):
+            with self.subTest(later=later):
+                self.refused_for([self.driver, later], words)
+        # The chosen step itself is held to the same: its outcome is collected under the job's folder.
+        self.refused_for([f"python3 {self.DRIVER} fixed-security --timeout 60 --work /tmp/{self.WORK}"], "is not a folder inside the step's own")
+        # A folder of its own inside the step's, before or after, is still a trial's or another task's.
+        self.accepted([f"python3 {self.DRIVER} fixed-security --max-array-length 2 --timeout 60 --work {self.WORK}/trial/../trial2", self.driver])
 
     def test_the_outcome_read_is_the_one_the_driver_wrote_where_work_is_given_twice(self):
         """The step check took the first `--work`; the driver's argparse keeps the last (and `--work=DIR` was not
