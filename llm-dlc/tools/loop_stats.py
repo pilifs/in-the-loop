@@ -51,6 +51,7 @@ RECORD_STARTED = re.compile(
     rf"^Started (?P<started>{STAMP})(?: (?P<zone>[^,\s]+))?, (?P<cap>[^,\n]*?) cycles?, session (?P<sid>{UUID}), "
     r"(?P<model>\S+) at (?P<effort>\S+) effort", re.M)
 RECORD_CYCLE = re.compile(rf"^- cycle (?P<n>\d+), (?:item (?P<item>[^,]*), )?(?P<when>{STAMP}), `(?P<change>[a-z]+)`: (?P<summary>.*)$")
+RECORD_NO_COMMIT = re.compile(rf"^- cycle \d+, {STAMP}: no commit$")  # a single-agent run's: what follows is not the last commit's
 RECORD_DECIDED = re.compile(r"^  - decided to (?P<decision>continue|stop|unclear)\b")
 RECORD_END = re.compile(rf"^(?P<how>Ended|Stopped|Interrupted) (?P<when>{STAMP})(?P<rest>.*)$", re.M)
 RECORD_ITEMS = re.compile(r"^Each cycle puts the next item in place of \{\}: (?P<run>.*?) \(the list: (?P<all>.*)\)\.$", re.M)
@@ -61,9 +62,13 @@ RECORD_ITEMS_JUDGED = re.compile(
     r"^Each item stays in place of \{\} until a judge outside the session finds it finished: (?P<run>.*?) \(the list: (?P<all>.*)\)\.$", re.M)
 # "waiting" leaves an item open as "continues" does: the loop comes back to it when its verification jobs are in.
 RECORD_VERDICT = re.compile(r"^  - item (?P<item>\S+) (?P<verdict>continues|waiting|finished|left after)\b")
+# A single-agent run (feature-loop.sh's `single-agent`): the first cycle takes one text and every later one the
+# run's continue message, which a watcher may change between two cycles, so no opening words tell its instructions.
+RECORD_SINGLE = re.compile(r"^Every later cycle takes the run's continue message as it stands when the cycle starts", re.M)
 RECORD_BRIEF = re.compile(r"^Brief `(?P<brief>[^`]+)` at sha256 ", re.M)
 RECORD_FORK = re.compile(rf"^Session {UUID} was forked from session (?P<parent>{UUID})\.", re.M)
 REASONS = (  # how feature-loop.sh words each ending, first match wins
+    ("the run was ended there (the watcher", "watcher ended it"), ("the run was ended there (no verdict", "no watcher"),
     ("but the brief's status still says", "status left working"), ("the brief says done", "work done"),
     ("decided the work was done", "work done"), ("the brief says waiting on jobs", "waiting on jobs"),
     ("the brief says blocked", "blocked"), ("the session decided to stop", "decided to stop"),
@@ -78,6 +83,7 @@ DECIDE = re.compile(r"^Cycle (\d+) of the feature loop is committed\.")
 SUMMARY = re.compile(r"^The feature loop is ending after (\d+) cycle")
 STATUS = "You decided that the loop stops after this cycle"
 FORK = "This conversation goes on as one of the parallel streams it planned"
+FORK_SINGLE = "This conversation goes on, from here, as an unattended run of one agent"
 BRIEF = re.compile(r"^Work on the brief in `([^`]+)`")
 EVENTS = ("<cross-session-message", "<agent-message", "<task-notification", "[Request interrupted by user")
 VERIFY = "/run-verification"
@@ -174,6 +180,8 @@ def parse_record(name: str, text: str) -> dict | None:
         if m := RECORD_CYCLE.match(line):
             last = cycles[int(m["n"])] = {"item": m["item"], "at": _record_ms(m["when"], zone), "change": m["change"],
                                           "summary": m["summary"].strip(), "decision": None, "verdict": None}
+        elif RECORD_NO_COMMIT.match(line):
+            last = None
         elif last is not None and (m := RECORD_DECIDED.match(line)):
             last["decision"] = m["decision"]
         elif last is not None and (m := RECORD_VERDICT.match(line)):
@@ -192,7 +200,7 @@ def parse_record(name: str, text: str) -> dict | None:
         "instruction": instruction, "prefix": instruction.split("{}")[0][:80],
         "run_items": items["run"].split() if items else None,
         "all_items": items["all"].split() if items else judged["all"].split() if judged else None,
-        "brief": m["brief"] if (m := RECORD_BRIEF.search(header)) else None,
+        "brief": m["brief"] if (m := RECORD_BRIEF.search(header)) else None, "single": bool(RECORD_SINGLE.search(header)),
         "forked_from": m["parent"] if (m := RECORD_FORK.search(text)) else None,
         "cycles": cycles, "end": end,
     }
@@ -224,7 +232,7 @@ def _role(prompt: dict) -> tuple[str, int | None]:
         return "summary", int(m[1])
     if text.startswith(STATUS):
         return "status", None
-    if text.startswith(FORK):
+    if text.startswith((FORK, FORK_SINGLE)):
         return "fork", None
     if text.startswith(EVENTS):
         return "event", None
@@ -318,7 +326,8 @@ def _record_runs(session: _Session, records: list[dict]) -> list[_Run]:
                 continue
             role, detail = session.roles[index]
             text = prompt.get("text") or ""
-            if role == "human" and ((len(record["prefix"]) >= MIN_PREFIX and text.startswith(record["prefix"]))
+            if role == "human" and (record["single"]  # nobody types into a run's session: each is a cycle's text
+                                    or (len(record["prefix"]) >= MIN_PREFIX and text.startswith(record["prefix"]))
                                     or _loop_of(text, {}) == record["loop"]):
                 role = "instruction"
             if role in ("human", "command") and not record["end"]:

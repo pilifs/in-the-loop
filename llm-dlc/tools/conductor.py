@@ -36,6 +36,13 @@ comes before its deadline, so a conductor that has gone away never stops the wor
     example     the loop is between two items: `continue` (the default), or `stop` here. It waits longer while
                 DIR/merge-queue names a workspace the conductor is to merge first.
 
+A single-agent run (feature-loop.sh's `single-agent`, llm-dlc/tools/single_run.py) asks one of its own in place of
+`cycle` and `example`:
+
+    run         a cycle has ended, with a commit or without: `continue` with another cycle, which takes the run's
+                continue message as it stands then, or `stop` the run here. Without a verdict a cycle that committed
+                is followed by another and one that did not ends the run, and three in a row without one end it.
+
 run-streams.sh asks two more of the watcher of a brief's run (RUN_STREAMS_WATCHER, llm-dlc/tools/brief_run.py):
 
     blocked     a stream's loop, or the brief's own, ended with a `blocked:` status: `rerun` it, once what blocked
@@ -194,6 +201,11 @@ QUESTIONS = {
     "example": ("The loop is between two examples{after}: does it take the next one?", {
         "continue": ("take the next example", "the run goes on", "stop the loop after the example under way"),
         "stop": ("end the loop here", "the examples left are not started", "start the loop again on the examples left")}),
+    "run": ("A cycle of a single-agent run has ended: does the agent get another?", {
+        "continue": ("another cycle, with the run's continue message", "a further cycle's time and tokens",
+                     "answer stop after the next cycle, or stop the run (single_run.py stop)"),
+        "stop": ("end the run here", "the session keeps what it did and nothing further is started",
+                 "start the run again (single_run.py start NAME): it continues the same session")}),
     "blocked": ("A loop of a brief's run ended blocked: is it run again?", {
         "rerun": ("run the loop again", "what blocked it was settled and its inbox says so: it goes on, at a further cycle's cost",
                   "answer leave when it next ends blocked"),

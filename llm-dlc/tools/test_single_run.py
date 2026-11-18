@@ -1,0 +1,448 @@
+#!/usr/bin/env python3
+"""Tests for a single agent's run: single_run.py, the watcher's tools, and feature-loop.sh's `single-agent` loop,
+run for real in a made-up jj repository with a stand-in `claude` on PATH that records how it was called and plays
+a session: it commits, does nothing, forks, or waits to be told to go on.
+Run: python3 llm-dlc/tools/test_single_run.py
+No model is called and nothing touches this repository or ~/.claude: the loop's scripts are copied into a
+temporary directory, and CLAUDE_CONFIG_DIR points beside it."""
+from __future__ import annotations
+
+import contextlib
+import io
+import json
+import os
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+import unittest
+from pathlib import Path
+from unittest import mock
+
+import conductor
+import decisions
+import loop_stats
+import single_run
+
+TOOLS = Path(__file__).resolve().parent
+sys.path.append(str(TOOLS.parents[1] / "lib/tools"))
+from cost_tier import cost  # noqa: E402
+sys.path.append(str(Path(__file__).resolve().parents[2] / "lib/tools"))
+from cost_tier import cost  # noqa: E402
+
+PARENT = "0f0f0f0f-1111-4222-8333-444455556666"
+PROMPT = "Make the made-up thing work, and say when it does."
+CONTINUE = "Go on with the made-up thing."
+
+# The stand-in: one invocation is one turn. It appends its arguments to $STANDIN_LOG and prints stream-json.
+STANDIN = r'''#!/usr/bin/env python3
+import json, os, re, subprocess, sys, time
+from pathlib import Path
+
+args = sys.argv[1:]
+value = lambda flag: args[args.index(flag) + 1] if flag in args else None
+prompt = value("-p")
+projects = Path(os.environ["CLAUDE_CONFIG_DIR"]) / "projects" / re.sub(r"[^A-Za-z0-9]", "-", os.getcwd())
+emit = lambda event: print(json.dumps(event), flush=True)
+call = {"args": args, "cwd": os.getcwd()}
+log = Path(os.environ["STANDIN_LOG"])
+work = prompt != "/compact" and not prompt.startswith(("The feature loop is ending", "This conversation goes on"))
+turns = sum(1 for line in log.read_text().splitlines() if json.loads(line).get("work")) if log.exists() else 0
+modes = os.environ.get("STANDIN_MODES", "commit").split(",")
+mode = modes[min(turns, len(modes) - 1)]
+session = value("--session-id") or value("--resume")
+if "--fork-session" in args:
+    call["parentVisible"] = (projects / (value("--resume") + ".jsonl")).is_file()
+if work:
+    call["work"] = True
+    if mode == "wait":
+        until = time.time() + 30
+        while time.time() < until and not Path(os.environ["STANDIN_GO"]).exists():
+            time.sleep(0.1)
+    if mode in ("commit", "wait"):
+        Path("work.txt").write_text("turn %d at %s\n" % (turns + 1, time.time()))
+        subprocess.run(["jj", "--quiet", "describe", "-m", "Made-up work, turn %d" % (turns + 1)], check=True)
+        subprocess.run(["jj", "--quiet", "new"], check=True)
+    elif mode == "leave":
+        Path("left.txt").write_text("not committed\n")
+projects.mkdir(parents=True, exist_ok=True)
+with open(projects / (session + ".jsonl"), "a") as f:
+    f.write("{}\n")
+with open(log, "a") as f:
+    f.write(json.dumps(call) + "\n")
+emit({"type": "result", "subtype": "success", "result": "the stand-in's report of turn %d (%s)" % (turns + 1, mode),
+      "num_turns": 1, "duration_ms": 1, "total_cost_usd": 0.5 * (turns + 1), "session_id": session})
+'''
+
+
+@cost("tool")
+class SingleRunTest(unittest.TestCase):
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.tmp = Path(tmp.name).resolve()
+        self.root = self.tmp / "checkout"
+        tools = self.root / "llm-dlc/tools"
+        tools.mkdir(parents=True)
+        for name in ("feature-loop.sh", "loop-common.sh", "conductor.py"):
+            shutil.copy(TOOLS / name, tools / name)
+        (self.root / ".gitignore").write_text("llm-dlc/loop-summaries/\n")
+        (self.root / "notes").mkdir()
+        (self.root / "notes/brief.md").write_text("# The made-up thing\n\nIt should work.\n")
+        bin = self.tmp / "bin"
+        bin.mkdir()
+        (bin / "claude").write_text(STANDIN)
+        (bin / "claude").chmod(0o755)
+        self.config = self.tmp / "claude-config"
+        (self.config / "projects/-somewhere-else").mkdir(parents=True)
+        (self.config / "projects/-somewhere-else" / f"{PARENT}.jsonl").write_text("{}\n")
+        self.log, self.go = self.tmp / "standin.jsonl", self.tmp / "go"
+        env = {"PATH": f"{bin}:{os.environ['PATH']}", "CLAUDE_CONFIG_DIR": str(self.config), "STANDIN_LOG": str(self.log),
+               "STANDIN_GO": str(self.go), "XDG_STATE_HOME": str(self.tmp / "state"), "XDG_RUNTIME_DIR": str(self.tmp),
+               "JJ_USER": "Made Up", "JJ_EMAIL": "made@up.invalid", "JJ_CONFIG": os.devnull}
+        patched = mock.patch.dict(os.environ, env)
+        patched.start()
+        self.addCleanup(patched.stop)
+        # Run inside a loop, the tests would otherwise inherit its run.
+        for key in [k for k in os.environ if k.startswith(("RUN_STREAMS_", "FEATURE_LOOP_", "STANDIN_MODES"))] + ["LOOP_CONDUCTOR", "TMUX", "TMUX_PANE", "IN_THE_LOOP_MODE"]:
+            os.environ.pop(key, None)
+        self.jj("git", "init", str(self.root), cwd=self.tmp)
+        self.jj("describe", "-m", "The made-up checkout")
+        self.jj("new")
+        self.addCleanup(self.end)
+
+    def jj(self, *args, cwd=None):
+        return subprocess.run(["jj", "--quiet", *args], cwd=cwd or self.root, check=True, capture_output=True, text=True).stdout
+
+    def end(self):
+        """No loop outlives its test."""
+        for path in (self.root / "llm-dlc/loop-summaries").glob("single-*/watch.json"):
+            pid = (json.loads(path.read_text()).get("loop") or {}).get("pid")
+            if pid and single_run.watch.alive(pid):
+                with contextlib.suppress(OSError):
+                    os.killpg(int(pid), 9)
+
+    def tool(self, *args, ok=True):
+        """A command of single_run.py on the made-up checkout: (exit status, what it printed, what it said was wrong)."""
+        out, err = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            status = single_run.main([str(a) for a in args], root=self.root)
+        if ok:
+            self.assertEqual(status, 0, err.getvalue() + out.getvalue())
+        return status, out.getvalue(), err.getvalue()
+
+    def start(self, *args, name="thing", modes="commit", wait=30, **env):
+        with mock.patch.dict(os.environ, {"STANDIN_MODES": modes, **env}):
+            return json.loads(self.tool("start", name, "--memory", "none", "--no-verification", "--verdict-wait", wait, *args)[1])
+
+    def wait(self, name="thing", kind=None):
+        """What `wait` gives next, as data. With `kind`, the next thing of that kind."""
+        until = time.time() + 90
+        while time.time() < until:
+            thing = json.loads(self.tool("wait", name, "--timeout", 60, ok=False)[1])
+            if kind is None or thing.get("kind") == kind:
+                return thing
+            self.assertNotIn(thing.get("kind"), ("ended", "not-running"), thing)
+        self.fail(f"no {kind} came")
+
+    def under_way(self, name="thing", cycle=1):
+        """Wait until the loop has started this cycle: its turn is then the stand-in's, which may be waiting."""
+        until = time.time() + 60
+        while time.time() < until:
+            if any(e.get("type") == "cycle-start" and e.get("cycle") == cycle for e in conductor.read_events(self.run_dir(name))):
+                return
+            time.sleep(0.1)
+        self.fail(f"cycle {cycle} did not start")
+
+    def calls(self):
+        return [json.loads(line) for line in self.log.read_text().splitlines()] if self.log.exists() else []
+
+    def prompts(self):
+        return [c["args"][c["args"].index("-p") + 1] for c in self.calls()]
+
+    def record(self, name="thing", folder=None):
+        return sorted(((folder or self.root) / "llm-dlc/loop-summaries").glob(f"*-single-{name}.md"))[-1].read_text()
+
+    def run_dir(self, name="thing"):
+        return self.root / "llm-dlc/loop-summaries" / f"single-{name}"
+
+    @cost("tool")
+    def test_the_first_cycle_takes_the_prompt_every_later_one_the_continue_message_and_the_watcher_ends_the_run(self):
+        started = self.start("--prompt", PROMPT, "--continue", CONTINUE)
+        self.assertEqual((started["firstCycleTakes"], started["continueMessage"], started["newSession"]), ("the prompt", CONTINUE, True))
+        first = self.wait()
+        self.assertEqual((first["kind"], first["event"]["type"], first["cycle"]["cycle"]), ("question", "run", 1))
+        self.assertIn("the stand-in's report of turn 1", first["cycle"]["report"])
+        self.assertEqual(len(first["cycle"]["commits"]), 1)
+        self.assertIn("Made-up work, turn 1", first["cycle"]["commits"][0])
+        self.assertEqual((first["cycle"]["nextCycleTakes"], first["cycle"]["cost"]), (CONTINUE, 0.5))
+        self.assertIn("single_run.py answer thing continue|stop", first["answer"])
+        self.tool("answer", "thing", "continue", "--reason", "The thing does not work yet.")
+        second = self.wait()
+        self.assertEqual((second["event"]["type"], second["cycle"]["cycle"]), ("run", 2))
+        self.assertEqual(second["cycle"]["cost"], 0.5, "the session's running total, less what it was at the question before")
+        self.tool("answer", "thing", "stop", "--reason", "The thing works.")
+        ended = self.wait(kind="ended")
+        self.assertEqual((ended["event"]["status"], ended["state"]["running"]), (0, False))
+        self.assertEqual(len(ended["state"]["commits"]), 2)
+        self.assertEqual(self.prompts()[:4], [PROMPT, "/compact", CONTINUE, "/compact"])
+        self.assertTrue(self.prompts()[4].startswith("The feature loop is ending after 2 cycle(s)"))
+        session = started["session"]
+        self.assertIn("--session-id", self.calls()[0]["args"])
+        self.assertEqual([c["args"][c["args"].index("--resume") + 1] for c in self.calls()[1:]], [session] * 4)
+        text = self.record()
+        self.assertIn(f"> {PROMPT}", text)
+        self.assertIn(f"> {CONTINUE}", text)
+        self.assertIn("decided to continue: the watcher: The thing does not work yet.", text)
+        self.assertRegex(text, r"Ended \S+ \S+ after 2 cycle\(s\): the run was ended there \(the watcher: The thing works\.\)")
+        # each answer is a decision the user can review
+        made = decisions.fold(decisions.read("single-thing", self.root / "llm-dlc/decisions")).values()
+        self.assertEqual(sorted((d["decision"]["option"], d["decision"]["rationale"]) for d in made),
+                         [("continue", "The thing does not work yet."), ("stop", "The thing works.")])
+        self.assertTrue(all("single-agent run" in d["asked"]["question"] for d in made))
+        self.assertEqual(json.loads(self.tool("wait", "thing", "--timeout", 1)[1])["kind"], "not-running")
+
+    @cost("tool")
+    def test_a_message_set_while_a_cycle_runs_or_with_an_answer_is_what_the_next_cycle_takes(self):
+        self.start("--prompt", PROMPT, modes="wait,commit")
+        self.assertEqual(json.loads(self.tool("message", "thing")[1])["continueMessage"], single_run.DEFAULT_CONTINUE)
+        self.under_way()
+        said = self.tool("message", "thing", "Look at the other half first.")[1]
+        self.assertIn("is not interrupted", said)
+        self.go.write_text("go\n")
+        first = self.wait()
+        self.assertEqual(first["cycle"]["nextCycleTakes"], "Look at the other half first.")
+        self.tool("answer", "thing", "continue", "--reason", "Half is left.", "--message", "Now the tests.")
+        self.wait()
+        self.tool("answer", "thing", "continue", "--reason", "The tests are left.")
+        self.wait()
+        self.tool("answer", "thing", "stop", "--reason", "Done.")
+        self.wait(kind="ended")
+        work = [p for p in self.prompts() if p != "/compact" and not p.startswith("The feature loop is ending")]
+        self.assertEqual(work, [PROMPT, "Now the tests.", "Now the tests."])
+        self.assertIn("from cycle 2 the continue message is: Now the tests.", self.record())
+        history = json.loads(self.tool("message", "thing")[1])["history"]
+        self.assertEqual([h["text"] for h in history], [single_run.DEFAULT_CONTINUE, "Look at the other half first.", "Now the tests."])
+
+    @cost("tool")
+    def test_a_brief_is_named_after_the_text_of_every_cycle_and_nothing_else_is_added(self):
+        self.jj("describe", "-m", "The brief")
+        self.jj("new")
+        started = self.start("--prompt", PROMPT, "--continue", CONTINUE, "--brief", self.root / "notes/brief.md", "--cycles", 2)
+        self.assertEqual((started["brief"], started["cycles"]), ("notes/brief.md", 2))
+        self.wait()
+        self.tool("answer", "thing", "continue", "--reason", "More to do.")
+        ended = self.wait(kind="ended")  # the second cycle is the count's last: nothing is asked after it
+        self.assertEqual(ended["event"]["status"], 0)
+        named = "\n\nThe brief for this work is `notes/brief.md`. Read it in full first, even if you have read it before: what you remember of it may be a summary."
+        work = [p for p in self.prompts() if p != "/compact" and not p.startswith("The feature loop is ending")]
+        self.assertEqual(work, [PROMPT + named, CONTINUE + named])
+        self.assertRegex(self.record(), r"Ended \S+ \S+ after 2 cycle\(s\)\.")
+
+    @cost("tool")
+    def test_a_cycle_with_no_commit_is_the_watchers_to_judge_and_may_go_on(self):
+        self.start("--prompt", PROMPT, "--continue", CONTINUE, modes="leave,commit")
+        first = self.wait()
+        self.assertEqual((first["cycle"]["commits"], first["cycle"]["uncommitted"]), ([], ["left.txt"]))
+        self.assertIn("made no commit", first["cycle"]["hint"])
+        self.assertIn("left files uncommitted", first["cycle"]["hint"])
+        self.tool("answer", "thing", "continue", "--reason", "It says it will commit next.", "--confidence", "medium")
+        second = self.wait()
+        self.assertEqual((second["cycle"]["cycle"], len(second["cycle"]["commits"])), (2, 1))
+        self.assertNotIn("made no commit", second["cycle"]["hint"])
+        self.tool("answer", "thing", "stop", "--reason", "Committed.")
+        self.assertEqual(self.wait(kind="ended")["event"]["status"], 0)
+        text = self.record()
+        self.assertRegex(text, r"- cycle 1, \S+ \S+: no commit\n  - decided to continue: the watcher: It says it will commit next\.")
+        made = decisions.fold(decisions.read("single-thing", self.root / "llm-dlc/decisions")).values()
+        self.assertEqual(sorted(d["decision"]["confidence"]["level"] for d in made), ["high", "medium"])
+
+    @cost("tool")
+    def test_a_cycle_with_no_commit_and_no_verdict_ends_the_run_before_its_compact(self):
+        self.start("--prompt", PROMPT, "--continue", CONTINUE, modes="idle", wait=2)
+        # nobody answers: the loop's wait runs out, and a cycle with no commit and no verdict is a session to look at
+        until = time.time() + 60
+        while time.time() < until and single_run.Run(self.root, "thing").running():
+            time.sleep(0.2)
+        ended = self.wait(kind="ended")
+        self.assertEqual(ended["event"]["status"], 1)
+        self.assertRegex(self.record(), r"Stopped \S+ \S+: cycle 1 made no commit, and no verdict came from the watcher")
+        self.assertEqual(self.prompts(), [PROMPT], "stopped before the compact: the session keeps its context")
+        status, _, err = self.tool("answer", "thing", "stop", "--reason", "Too late.", ok=False)
+        self.assertEqual(status, 1)
+        self.assertIn("no question", err)
+
+    @cost("tool")
+    def test_with_no_watcher_a_run_that_commits_goes_on_and_ends_after_as_many_cycles_unanswered_as_it_is_given(self):
+        self.start("--prompt", PROMPT, "--continue", CONTINUE, wait=1, FEATURE_LOOP_UNWATCHED="2")
+        until = time.time() + 90
+        while time.time() < until and single_run.Run(self.root, "thing").running():
+            time.sleep(0.3)
+        state = json.loads(self.tool("status", "thing")[1])
+        self.assertEqual((state["running"], state["status"], len(state["commits"])), (False, 0, 2))
+        text = self.record()
+        self.assertIn("decided to continue: no verdict came from the watcher in 1s, and the cycle committed", text)
+        self.assertIn("the run was ended there (no verdict came from the watcher after 2 cycle(s) in a row", text)
+        self.assertEqual(self.wait(kind="ended")["event"]["status"], 0)
+
+    @cost("tool")
+    def test_a_run_that_has_stopped_is_continued_in_its_session_and_a_stop_ends_it_after_the_cycle_under_way(self):
+        started = self.start("--prompt", PROMPT, "--continue", CONTINUE, modes="wait")
+        self.under_way()
+        self.assertEqual(self.tool("start", "thing")[1].split(":")[0], "the run thing is already under way (pid %d)" % started["pid"])
+        self.assertIn("ends after its cycle under way", self.tool("stop", "thing")[1])
+        self.go.write_text("go\n")
+        ended = self.wait(kind="ended")  # with no question: the stop was applied before one was asked
+        self.assertEqual((ended["event"]["status"], len(ended["state"]["commits"])), (0, 1))
+        self.assertEqual([e["type"] for e in conductor.read_events(self.run_dir())], ["cycle-start", "ended"])
+        status, _, err = self.tool("start", "thing", "--fork", PARENT, ok=False)
+        self.assertEqual(status, 1)
+        self.assertIn("has its session", err)
+        again = self.start(modes="commit")
+        self.assertEqual((again["session"], again["firstCycleTakes"], again["newSession"]), (started["session"], "the continue message", False))
+        self.wait()
+        self.tool("answer", "thing", "stop", "--reason", "Enough.")
+        ended = self.wait(kind="ended")
+        self.assertEqual((ended["state"]["legs"], len(ended["state"]["commits"])), (2, 2))
+        work = [c for c in self.calls() if c.get("work")]
+        self.assertEqual([c["args"][c["args"].index("-p") + 1] for c in work], [PROMPT, CONTINUE])
+        self.assertIn("--resume", work[1]["args"])
+
+    @cost("tool")
+    def test_a_run_in_a_workspace_of_its_own_is_made_from_the_lines_last_commit_and_landed_afterwards(self):
+        (self.root / "notes/later.md").write_text("not committed\n")
+        status, _, err = self.tool("start", "thing", "--prompt", PROMPT, "--workspace", "apart", "--brief", self.root / "notes/later.md",
+                                   "--memory", "none", ok=False)
+        self.assertEqual(status, 1)
+        self.assertIn("is not committed as it stands", err)
+        (self.root / "notes/later.md").unlink()
+        self.jj("describe", "-m", "The brief")
+        self.jj("new")
+        started = self.start("--prompt", PROMPT, "--workspace", "apart", "--brief", "notes/brief.md")
+        folder = self.tmp / "checkout-apart"
+        self.assertEqual((started["folder"], started["workspace"], started["brief"]), (str(folder), "apart", "notes/brief.md"))
+        self.assertIn("workspaceMade", started)
+        first = self.wait()
+        self.assertEqual(len(first["cycle"]["commits"]), 1)
+        self.assertEqual(self.tool("land", "thing", ok=False)[0], 1, "not while the run is under way")
+        self.tool("answer", "thing", "stop", "--reason", "Done.")
+        self.wait(kind="ended")
+        self.assertTrue(all(c["cwd"] == str(folder) for c in self.calls()))
+        self.assertFalse((self.root / "work.txt").exists())
+        self.assertIn("Made-up work, turn 1", self.record(folder=folder))
+        landed = json.loads(self.tool("land", "thing")[1])
+        self.assertIn("moved forward", landed["landed"])
+        self.assertTrue((self.root / "work.txt").exists())
+        self.assertIn("Made-up work, turn 1", self.jj("log", "--no-graph", "-r", "@-", "-T", "description"))
+
+    @cost("tool")
+    def test_a_fork_starts_the_run_from_a_copy_of_another_session_which_is_left_as_it_was(self):
+        started = self.start("--prompt", PROMPT, "--fork", PARENT)
+        self.assertEqual(started["forkOf"], PARENT)
+        self.wait()
+        self.tool("answer", "thing", "stop", "--reason", "Done.")
+        self.wait(kind="ended")
+        fork, first = self.calls()[:2]
+        self.assertTrue(fork["parentVisible"])
+        self.assertEqual(fork["args"][fork["args"].index("--resume") + 1], PARENT)
+        self.assertEqual(fork["args"][fork["args"].index("--session-id") + 1], started["session"])
+        self.assertEqual(fork["args"][fork["args"].index("--tools") + 1], "")
+        self.assertTrue(fork["args"][fork["args"].index("-p") + 1].startswith(loop_stats.FORK_SINGLE))
+        self.assertEqual((first["args"][first["args"].index("-p") + 1], first["args"][first["args"].index("--resume") + 1]),
+                         (PROMPT, started["session"]))
+        project = self.config / "projects" / str(self.root).replace("/", "-").replace(".", "-")
+        self.assertFalse((project / f"{PARENT}.jsonl").exists(), "the parent's copy is removed after the one turn")
+        self.assertIn(f"was forked from session {PARENT}", self.record())
+
+    @cost("tool")
+    def test_what_cannot_start_says_why_and_starts_nothing(self):
+        for args, why in ((("start", "thing"), "needs its first text"),
+                          (("start", "Thing", "--prompt", PROMPT), "lower-case letters"),
+                          (("start", "thing", "--prompt", PROMPT, "--prompt-file", "x"), "not both"),
+                          (("start", "thing", "--prompt", " "), "the text is empty"),
+                          (("start", "thing", "--prompt", PROMPT, "--session", PARENT, "--fork", PARENT), "give one of them"),
+                          (("start", "thing", "--prompt", PROMPT, "--session", PARENT), "no session"),
+                          (("start", "thing", "--prompt", PROMPT, "--fork", PARENT.replace("0", "1")), "no transcript"),
+                          (("start", "thing", "--prompt", PROMPT, "--brief", "nowhere.md"), "no brief at"),
+                          (("start", "thing", "--prompt", PROMPT, "--cycles", "0"), "1 or more"),
+                          (("status", "thing"), "no run thing here"),
+                          (("message", "thing", "Text"), "no run thing here")):
+            status, _, err = self.tool(*args, "--memory", "none", ok=False) if args[0] == "start" else self.tool(*args, ok=False)
+            self.assertEqual(status, 1, args)
+            self.assertIn(why, err, args)
+        self.assertFalse(self.run_dir().exists())
+        self.assertEqual(self.calls(), [])
+        self.assertEqual(json.loads(self.tool("list")[1]), [])
+
+
+class TheRecordAndTheSummary(unittest.TestCase):
+    RECORD = """# Feature loop: single-thing
+
+Started 2026-11-18 10:00:00 UTC, no limit on cycles, session 0f0f0f0f-1111-4222-8333-444455556666, claude-fable-5-2 at high effort, after change abc.
+
+> Make the made-up thing work.
+
+Every later cycle takes the run's continue message as it stands when the cycle starts, and after each cycle a watcher outside the session decides whether there is another. The message at the start:
+
+> Go on.
+
+## Commits
+
+- cycle 1, 2026-11-18 10:10:00, `abcdefgh`: Made-up work
+  - decided to continue: the watcher: more to do
+- cycle 2, 2026-11-18 10:20:00: no commit
+  - decided to stop: the watcher: it decided the work was done
+
+Ended 2026-11-18 10:21:00 after 2 cycle(s): the run was ended there (the watcher: it decided the work was done).
+"""
+
+    def test_the_loop_statistics_read_a_runs_record_and_count_every_text_it_sent_as_a_cycle(self):
+        record = loop_stats.parse_record("2026-11-18-100000-single-thing", self.RECORD)
+        self.assertTrue(record["single"])
+        self.assertEqual((record["loop"], record["instruction"]), ("single-thing", "Make the made-up thing work."))
+        self.assertEqual((record["cycles"][1]["decision"], sorted(record["cycles"])), ("continue", [1]))
+        self.assertEqual(record["end"]["reason"], "watcher ended it", "not what the watcher's own words happen to say")
+        other = self.RECORD.replace("Every later cycle takes the run's continue message", "Each cycle takes")
+        self.assertFalse(loop_stats.parse_record("x", other)["single"])
+        self.assertEqual(loop_stats._role({"kind": "prompt", "text": loop_stats.FORK_SINGLE + ": you are now"}), ("fork", None))
+
+    def test_a_summary_says_where_the_cycle_the_commits_the_spend_and_the_queue_stand(self):
+        s = {"name": "thing", "running": True, "elapsed": "1 h 05 min",
+             "cycle": {"cycle": 3, "began": conductor.now(), "state": "running", "toolCalls": 41, "lastOutput": "2 min ago"},
+             "question": None, "commits": ["abcd1234 One", "efgh5678 Two"], "spent": 12.5, "cycleCosts": {"1.1": 5.0, "1.2": 7.5},
+             "jobs": {"pending": 1, "running": 0, "finished": 0}, "messagesSet": 2, "messageSet": "2026-11-18T10:22:00Z",
+             "continueMessage": "Now the\ntests."}
+        text = single_run.summary(s)
+        self.assertIn("single-agent run thing · 1 h 05 min", text)
+        self.assertIn("- cycle 3 running, 0 min in: 41 tool calls, last output 2 min ago", text)
+        self.assertIn("- commits this run: 2, the last: efgh5678 Two", text)
+        self.assertIn("- spend: $12.50 over 2 cycle(s) that have ended", text)
+        self.assertIn("- verification queue: 1 pending, 0 running, 0 back and not collected", text)
+        self.assertIn("- the continue message was last set 2026-11-18T10:22:00Z: Now the tests.", text)
+        quiet = single_run.summary({**s, "running": False, "cycle": None, "commits": [], "cycleCosts": {}, "messagesSet": 1,
+                                    "jobs": {"pending": 0, "running": 0, "finished": 0}, "question": {"type": "run", "n": 4}})
+        self.assertIn("· not running", quiet)
+        self.assertIn("a question is open (run, event 4)", quiet)
+        self.assertNotIn("spend", quiet)
+
+    def test_a_text_comes_from_the_command_line_or_a_file_and_a_run_has_a_plain_name(self):
+        self.assertEqual(single_run.text_of("  Go on. \n", None, "--continue"), "Go on.\n")
+        self.assertIsNone(single_run.text_of(None, None, "--continue"))
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / "text.md").write_text("Two\nlines.\n\n")
+            self.assertEqual(single_run.text_of(None, str(Path(tmp) / "text.md"), "--prompt-file"), "Two\nlines.\n")
+            with self.assertRaisesRegex(single_run.Problem, "can't be read"):
+                single_run.text_of(None, str(Path(tmp) / "none.md"), "--prompt-file")
+            run = single_run.Run(Path(tmp), "a-run-2")
+            self.assertEqual((run.loop, run.dir), ("single-a-run-2", Path(tmp) / "llm-dlc/loop-summaries/single-a-run-2"))
+            self.assertTrue(single_run.set_message(run, "One.\n", "at the start"))
+            self.assertFalse(single_run.set_message(run, "One.\n", "again"))
+            self.assertEqual([m["text"] for m in single_run.messages(run)], ["One."])
+        for bad in ("", "Has Capitals", "has space", "-leading", "x" * 49, "a/b"):
+            with self.assertRaises(single_run.Problem):
+                single_run.Run(Path("/nowhere"), bad)
+
+
+if __name__ == "__main__":
+    unittest.main()
