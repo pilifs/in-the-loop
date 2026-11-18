@@ -33,7 +33,20 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Needs**: claims and checks over bounded sequences that mix permitted and denied updates, which observe both that
   each denied write did not happen and that each permitted write did (names as an array input up to the bound), for
   286 and 288 alike; until then each result notes the one-value limit.
-- **Tracked in**: run-streams-domain-advances-D036; VF-040; the state stream's items I019, I020; preservation's I024.
+- **Proposed proof component, a future experiment for 288** (the user's ask on 2026-11-18,
+  run-streams-domain-advances-D037, from an outside review): for each release, prove a component lemma on 288's
+  frozen ASCII domain and locale table. A successful `simpleMatch` on the locale-lowercased canonical pattern and
+  field implies a match of the originals ignoring ASCII case. It addresses the case the one-function rule cannot
+  relate: unequal normalized inputs outside the allowed change, where a disallowed pattern with a capital I under
+  tr-TR lower-cases differently in the two releases.
+  - Benchmark its effect on the bound-8 final comparison (`RegressionPair.agree`) before reopening the full proof.
+  - Preservation's profile at the frozen bound (its Progress, step 7, 2026-11-18): about 72 of 136 solver seconds
+    configure the binder (`canonicalPropertyName`), the matcher takes under 3 s, and relating the two releases'
+    154 `simpleMatch` lemma applications at bound 4 took 46 s against 42 s without.
+  - Record the lemma with its own evidence, as a proposed proof component. 288's parent preservation claim stays
+    open (VF-031).
+- **Tracked in**: run-streams-domain-advances-D036, D037; VF-040; VF-031 (288's preservation at its wall); VF-038
+  (the brief's 3.5 companion-claims work); the state stream's items I019, I020; preservation's I024.
 - **Closes when**: such a claim refutes the four wrong binders above and is decided on both examples.
 
 ### VF-042: work the finished streams of the domain-advances run left open

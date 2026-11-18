@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-18T02:09:40.128Z",
-  "duration_seconds": 48717,
+  "ended": "2026-11-18T02:55:05.388Z",
+  "duration_seconds": 51442,
   "stats": {
-    "turns": 28,
-    "api_calls": 285,
-    "tool_calls": 282,
+    "turns": 29,
+    "api_calls": 286,
+    "tool_calls": 284,
     "tool_errors": 4,
     "compactions": 1,
-    "peak_context_tokens": 356779,
+    "peak_context_tokens": 359604,
     "usage": {
-      "input_tokens": 630,
-      "output_tokens": 198720,
-      "cache_read_input_tokens": 55721275,
-      "cache_creation_input_tokens": 873952
+      "input_tokens": 634,
+      "output_tokens": 199346,
+      "cache_read_input_tokens": 56078052,
+      "cache_creation_input_tokens": 876775
     }
   },
   "tools": {
-    "Bash": 257,
+    "Bash": 259,
     "Edit": 9,
     "Read": 9,
     "SendMessage": 3,
@@ -63,24 +63,24 @@
     {
       "index": 1,
       "started": "2026-11-17T19:59:47.700Z",
-      "ended": "2026-11-18T02:09:40.128Z",
-      "turns": 14,
-      "api_calls": 188,
+      "ended": "2026-11-18T02:55:05.388Z",
+      "turns": 15,
+      "api_calls": 189,
       "usage": {
-        "input_tokens": 412,
-        "output_tokens": 124140,
-        "cache_read_input_tokens": 39880254,
-        "cache_creation_input_tokens": 461484
+        "input_tokens": 416,
+        "output_tokens": 124766,
+        "cache_read_input_tokens": 40237031,
+        "cache_creation_input_tokens": 464307
       },
-      "peak_context_tokens": 356779
+      "peak_context_tokens": 359604
     }
   ],
   "log": {
-    "sha256": "a6a009f33f53e86e55e4b0daefebf76e1b20f82e9856c20bbd9dcf789fa0245d",
-    "bytes": 5954277,
-    "lines": 2058,
-    "gzip_bytes": 1035104,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/a6a009f33f53e86e55e4b0daefebf76e1b20f82e9856c20bbd9dcf789fa0245d.jsonl.gz"
+    "sha256": "fbb070cfc1abb7601b883a5f35c3586fd64cf6855618183164e8cb3ce952bbe9",
+    "bytes": 5984501,
+    "lines": 2071,
+    "gzip_bytes": 1039966,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/fbb070cfc1abb7601b883a5f35c3586fd64cf6855618183164e8cb3ce952bbe9.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1197,62 +1197,6 @@
       "log_sha256": "10ba682dc90de0289f6cf0a0e1180148a7857f272a02f78332422038158caba6"
     },
     {
-      "change_id": "mxslxvzkmmnlytslwyxprmpvvykqzxpk",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "accept.py reads a pair task's harness under pair-work/, and refuses a --work outside the step's folder (I015, first half)",
-      "body": "Two fixes to examples/tools/accept.py, asked by the watcher of the domain-advances run under the user's decision D036. (1) The replay check looked for the property harness the JVM ran under work/harness/ for every task; a pair task's job collects it under work/pair-work/harness/ (example 307's mutant-preservation, whose collected harness gates on the frozen assumption). The path now follows the task's kind, with the same hash and predicate checks; a pair outcome whose harness is only under the prove path, or a prove outcome whose harness is only under pair-work/, has no record of the assumption and stays unbound. (2) The evidence stream's open item I015, first half: the pipeline runs every step in <state>/work/<job id>, known when the job is written, so an absolute --work, or one that leaves the step's folder by '..', could name the chosen step's outcome folder under another spelling and write it unseen. driver_run now refuses either, and 'no later step writes the same outcome folder' compares the normalized join of --work and task, so a task word with a '/' cannot reach the folder from the one above. No job in verification/jobs uses an absolute or '..' --work. Left of I015: the domain check, for a claim that states no bound, still says OK from the chosen step's flags without reading the outcome's own bound; holding it to a bound needs a choice of which one (the driver's default, workflow.DEFAULT_BOUNDS's 8, or the task's), and no claim of 286-290 or 307 is affected, since each states maxArrayLength. Verified: test_accept.py (50 tests, 2 new: Countermodels.test_a_pair_tasks_harness_is_the_one_under_pair_work and StepsPastTheFix.test_a_later_run_into_the_same_folder_under_another_spelling_is_refused), each failing against the accept.py before this change (1 and 4 failures); test_costs.py run --changed --only python under a 6G cap (6 of 6 files); test_costs.py lint. costs.json takes the two new rows only.",
-      "log_sha256": "a2981950e37d589e411dec7a66bece6261f355ce4fe349c1160d56264232a4d5"
-    },
-    {
-      "change_id": "vlywpmzrnpuuplvzwtmspnqvkspvrkzm",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Example 286's vulnerable protected-state task alone at the frozen bound, as one plain driver step (verification pending)",
-      "body": "Job 20261118-011232-example-286-s-vulnerable-protected-state. The merged accept.py refuses job 20261117-192205 for 286's vulnerable-protected-state-mutation: its other step ends in '|| test $? -eq 1', which is not a plain driver run, and it collected no property harness for the replay check. This job runs only examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py vulnerable-protected-state-mutation at the frozen claim's own bound (no trial flags), as one step of plain words with --timeout and one --work, in a fresh folder (verification/.work-286/vulnerable-alone), collecting the outcome, evidence.json, stderr and work/harness/PropertyHarness.java. accept.py's driver_run reads the step as a plain driver run. 192205's vulnerable step refuted the claim in 73 s; the estimate is 2 CPUs, 4 GB, 15 min. Asked by the watcher of the domain-advances run under D036; when it passes, 286's besideRoute for the task is pointed at it.",
-      "log_sha256": "a2981950e37d589e411dec7a66bece6261f355ce4fe349c1160d56264232a4d5"
-    },
-    {
-      "change_id": "nuxulswkzklrtxnlturwlpyzsolmnozr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "VF-041 to VF-043 from an outside review of the run's acceptance state; the low-hanging fixes go to their owners",
-      "body": "At the user's word (D036). In this run: preservation is told to do I023 before more 288, point 289/290 at job 20261117-213024, accept 307's answers and end 288 at its wall (I027); challenge's last pass checks I023's seven cases and --no-shared-callees (I007); accept.py's pair-harness path, evidence's I015 and a clean rerun job for 286's vulnerable task go to a session the user brought in. For later: VF-041 (287 proved for terminating runs; changes.py drops restsOn), VF-042 (what the finished state and evidence streams left open), VF-043 (one-value binding checks accept wrong binders in 286 and 288).",
-      "log_sha256": "143756e2ea1f4f78e4948178f2d67096414daec8edb5528f61f6c41d8512af60"
-    },
-    {
-      "change_id": "lvorrywxzxkunsvszyuoqvqrslmyuopq",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Merge accept.py's pair-harness path, its check of a later step's --work, and a clean job for 286's vulnerable task (verification pending)",
-      "body": "From a session the user asked for it (D036): accept.py reads a pair task's property harness under work/pair-work/harness/ (307's mutant-preservation job collected it there), with the same hash and predicate checks, and refuses an absolute --work or one that leaves the step's folder (the evidence stream's I015, first half; its second half, which bound a claim with none is held to, is left: no claim of 286-290 or 307 is affected). Job 20261118-011232-example-286-s-vulnerable-protected-state runs 286's vulnerable protected-state task alone at the frozen bound as one plain driver step, collecting its harness, since job 20261117-192205's companion step and missing harness make the merged accept.py refuse it. test_accept.py: 50 tests pass; lint agrees.",
-      "log_sha256": "a2981950e37d589e411dec7a66bece6261f355ce4fe349c1160d56264232a4d5"
-    },
-    {
-      "change_id": "xuxpvmuuomvlkynwwqtttsttlwkqrsys",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261118-011232-example-286-s-vulnerable-protected-state: passed: 1 passed step(s) in 1m15s, peak 899.3 MiB (estimated 15m00s, 4.0 GiB); 4 output file(s) changed; signals: jvmcontract:fails×1 Applied 4 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
-      "log_sha256": "e7f707ac6df7603fae633cfc6c35eea60a8b47c6f9c4120780dc53e4c7e1c203"
-    },
-    {
-      "change_id": "zwnwruqsoqpvtklkoolwyrnwqzxunyox",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Example 286's protected-state refutation rests on job 20261118-011232, the task run alone",
-      "body": "vulnerable-protected-state-mutation's besideRoute now names job 20261118-011232-example-286-s-vulnerable-protected-state instead of 20261117-192205, which the merged examples/tools/accept.py no longer reads: its other step ended in '|| test $? -eq 1', not a plain driver run, and it collected no property harness. The new job ran proofs/prove.py vulnerable-protected-state-mutation alone, as one plain step at the frozen claim's bound 8, and refuted it in 1m15s with the same witness, ageAfterBinding(false, \"Age\"), reproduced on a JVM by the harness it collected. Asked by the watcher of the domain-advances run under the user's decision D036. The example's notes get a dated entry and its hand-written page names the new job; the earlier notes naming 192205 stay as written. Verified: accept.py 286 vulnerable-protected-state-mutation accepts it (12 checks, no limit), and accept.py 286 accepts all four of the example's answers; validate_example.py 286 passes; test_costs.py run --changed --only python under a 6G cap (26 of 26 files).",
-      "log_sha256": "7de38a978c87c565f8b9adcedec9841c5dc3cde11603e6a7a1996bce79e67b81"
-    },
-    {
-      "change_id": "olmzwolrqnsnnykoxymyosvsrlxxvpwz",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Merge 286's protected-state refutation, accepted from the clean rerun",
-      "body": "From a session the user asked for it (D036): 286's vulnerable-protected-state-mutation besideRoute now names job 20261118-011232 (one plain driver step, its harness collected), which the merged accept.py accepts with no limit; job 20261117-192205 is no longer read (its companion step and missing harness). accept.py 286 accepts all four of the example's answers on the default line; validate_example.py 286 passes.",
-      "log_sha256": "7de38a978c87c565f8b9adcedec9841c5dc3cde11603e6a7a1996bce79e67b81"
-    },
-    {
       "change_id": "yqwmukvopzwlvunpnkumrrnwkltxxwur",
       "commit_id": null,
       "immutable": false,
@@ -1301,6 +1245,62 @@
       "log_sha256": "f2b5aea72bbcce0cc0c05acd081295bc91f27d67a41cf31aba30734aa84be3a6"
     },
     {
+      "change_id": "nuxulswkzklrtxnlturwlpyzsolmnozr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-041 to VF-043 from an outside review of the run's acceptance state; the low-hanging fixes go to their owners",
+      "body": "At the user's word (D036). In this run: preservation is told to do I023 before more 288, point 289/290 at job 20261117-213024, accept 307's answers and end 288 at its wall (I027); challenge's last pass checks I023's seven cases and --no-shared-callees (I007); accept.py's pair-harness path, evidence's I015 and a clean rerun job for 286's vulnerable task go to a session the user brought in. For later: VF-041 (287 proved for terminating runs; changes.py drops restsOn), VF-042 (what the finished state and evidence streams left open), VF-043 (one-value binding checks accept wrong binders in 286 and 288).",
+      "log_sha256": "143756e2ea1f4f78e4948178f2d67096414daec8edb5528f61f6c41d8512af60"
+    },
+    {
+      "change_id": "mxslxvzkmmnlytslwyxprmpvvykqzxpk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "accept.py reads a pair task's harness under pair-work/, and refuses a --work outside the step's folder (I015, first half)",
+      "body": "Two fixes to examples/tools/accept.py, asked by the watcher of the domain-advances run under the user's decision D036. (1) The replay check looked for the property harness the JVM ran under work/harness/ for every task; a pair task's job collects it under work/pair-work/harness/ (example 307's mutant-preservation, whose collected harness gates on the frozen assumption). The path now follows the task's kind, with the same hash and predicate checks; a pair outcome whose harness is only under the prove path, or a prove outcome whose harness is only under pair-work/, has no record of the assumption and stays unbound. (2) The evidence stream's open item I015, first half: the pipeline runs every step in <state>/work/<job id>, known when the job is written, so an absolute --work, or one that leaves the step's folder by '..', could name the chosen step's outcome folder under another spelling and write it unseen. driver_run now refuses either, and 'no later step writes the same outcome folder' compares the normalized join of --work and task, so a task word with a '/' cannot reach the folder from the one above. No job in verification/jobs uses an absolute or '..' --work. Left of I015: the domain check, for a claim that states no bound, still says OK from the chosen step's flags without reading the outcome's own bound; holding it to a bound needs a choice of which one (the driver's default, workflow.DEFAULT_BOUNDS's 8, or the task's), and no claim of 286-290 or 307 is affected, since each states maxArrayLength. Verified: test_accept.py (50 tests, 2 new: Countermodels.test_a_pair_tasks_harness_is_the_one_under_pair_work and StepsPastTheFix.test_a_later_run_into_the_same_folder_under_another_spelling_is_refused), each failing against the accept.py before this change (1 and 4 failures); test_costs.py run --changed --only python under a 6G cap (6 of 6 files); test_costs.py lint. costs.json takes the two new rows only.",
+      "log_sha256": "a2981950e37d589e411dec7a66bece6261f355ce4fe349c1160d56264232a4d5"
+    },
+    {
+      "change_id": "vlywpmzrnpuuplvzwtmspnqvkspvrkzm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 286's vulnerable protected-state task alone at the frozen bound, as one plain driver step (verification pending)",
+      "body": "Job 20261118-011232-example-286-s-vulnerable-protected-state. The merged accept.py refuses job 20261117-192205 for 286's vulnerable-protected-state-mutation: its other step ends in '|| test $? -eq 1', which is not a plain driver run, and it collected no property harness for the replay check. This job runs only examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py vulnerable-protected-state-mutation at the frozen claim's own bound (no trial flags), as one step of plain words with --timeout and one --work, in a fresh folder (verification/.work-286/vulnerable-alone), collecting the outcome, evidence.json, stderr and work/harness/PropertyHarness.java. accept.py's driver_run reads the step as a plain driver run. 192205's vulnerable step refuted the claim in 73 s; the estimate is 2 CPUs, 4 GB, 15 min. Asked by the watcher of the domain-advances run under D036; when it passes, 286's besideRoute for the task is pointed at it.",
+      "log_sha256": "a2981950e37d589e411dec7a66bece6261f355ce4fe349c1160d56264232a4d5"
+    },
+    {
+      "change_id": "lvorrywxzxkunsvszyuoqvqrslmyuopq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge accept.py's pair-harness path, its check of a later step's --work, and a clean job for 286's vulnerable task (verification pending)",
+      "body": "From a session the user asked for it (D036): accept.py reads a pair task's property harness under work/pair-work/harness/ (307's mutant-preservation job collected it there), with the same hash and predicate checks, and refuses an absolute --work or one that leaves the step's folder (the evidence stream's I015, first half; its second half, which bound a claim with none is held to, is left: no claim of 286-290 or 307 is affected). Job 20261118-011232-example-286-s-vulnerable-protected-state runs 286's vulnerable protected-state task alone at the frozen bound as one plain driver step, collecting its harness, since job 20261117-192205's companion step and missing harness make the merged accept.py refuse it. test_accept.py: 50 tests pass; lint agrees.",
+      "log_sha256": "a2981950e37d589e411dec7a66bece6261f355ce4fe349c1160d56264232a4d5"
+    },
+    {
+      "change_id": "xuxpvmuuomvlkynwwqtttsttlwkqrsys",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261118-011232-example-286-s-vulnerable-protected-state: passed: 1 passed step(s) in 1m15s, peak 899.3 MiB (estimated 15m00s, 4.0 GiB); 4 output file(s) changed; signals: jvmcontract:fails×1 Applied 4 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.",
+      "log_sha256": "e7f707ac6df7603fae633cfc6c35eea60a8b47c6f9c4120780dc53e4c7e1c203"
+    },
+    {
+      "change_id": "zwnwruqsoqpvtklkoolwyrnwqzxunyox",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 286's protected-state refutation rests on job 20261118-011232, the task run alone",
+      "body": "vulnerable-protected-state-mutation's besideRoute now names job 20261118-011232-example-286-s-vulnerable-protected-state instead of 20261117-192205, which the merged examples/tools/accept.py no longer reads: its other step ended in '|| test $? -eq 1', not a plain driver run, and it collected no property harness. The new job ran proofs/prove.py vulnerable-protected-state-mutation alone, as one plain step at the frozen claim's bound 8, and refuted it in 1m15s with the same witness, ageAfterBinding(false, \"Age\"), reproduced on a JVM by the harness it collected. Asked by the watcher of the domain-advances run under the user's decision D036. The example's notes get a dated entry and its hand-written page names the new job; the earlier notes naming 192205 stay as written. Verified: accept.py 286 vulnerable-protected-state-mutation accepts it (12 checks, no limit), and accept.py 286 accepts all four of the example's answers; validate_example.py 286 passes; test_costs.py run --changed --only python under a 6G cap (26 of 26 files).",
+      "log_sha256": "7de38a978c87c565f8b9adcedec9841c5dc3cde11603e6a7a1996bce79e67b81"
+    },
+    {
+      "change_id": "olmzwolrqnsnnykoxymyosvsrlxxvpwz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge 286's protected-state refutation, accepted from the clean rerun",
+      "body": "From a session the user asked for it (D036): 286's vulnerable-protected-state-mutation besideRoute now names job 20261118-011232 (one plain driver step, its harness collected), which the merged accept.py accepts with no limit; job 20261117-192205 is no longer read (its companion step and missing harness). accept.py 286 accepts all four of the example's answers on the default line; validate_example.py 286 passes.",
+      "log_sha256": "7de38a978c87c565f8b9adcedec9841c5dc3cde11603e6a7a1996bce79e67b81"
+    },
+    {
       "change_id": "zwqmxxnpzxrymoklvxqqykwkylqrnpwy",
       "commit_id": null,
       "immutable": false,
@@ -1323,6 +1323,14 @@
       "summary": "Record the merge of stream challenge in the domain-advances brief's Progress",
       "body": "The run's watcher merged stream challenge (yulpuuronznk) into the default line; the brief's status is now working.",
       "log_sha256": "a6a009f33f53e86e55e4b0daefebf76e1b20f82e9856c20bbd9dcf789fa0245d"
+    },
+    {
+      "change_id": "zxwonqzrsxvzttosrwoyzrzlmrxnqyxx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "D037: 288 ends with preservation's current I028/I029 cycle, and VF-043 holds the per-release locale lemma as a proposed proof component",
+      "body": "The user, from an outside review they asked for (Codex): 288's profile and stop are already in preservation's Progress, so its VF-031 closeout folds into the current I028/I029 cycle. There is no further 288 cycle and no long solver job. VF-043 now records the future experiment: for each release, a lemma on 288's frozen ASCII domain and locale table, that a simpleMatch of the locale-lowercased canonical pattern and field implies a match of the originals ignoring ASCII case. Its effect on the bound-8 final comparison is to be benchmarked before the full proof is reopened, and 288's parent claim stays open. VF-043 is cross-linked with VF-031 and VF-038. Preservation was told through its inbox item I030.",
+      "log_sha256": "fbb070cfc1abb7601b883a5f35c3586fd64cf6855618183164e8cb3ce952bbe9"
     }
   ],
   "logs": {
@@ -1474,6 +1482,12 @@
       "bytes": 4910154,
       "lines": 1567,
       "gzip_bytes": 898970,
+      "url": null
+    },
+    "fbb070cfc1abb7601b883a5f35c3586fd64cf6855618183164e8cb3ce952bbe9": {
+      "bytes": 5984501,
+      "lines": 2071,
+      "gzip_bytes": 1039966,
       "url": null
     },
     "fea6be660e698b73a7fbbbfd5aeced83bf23f8ee6790f3bc10e4d61a181312c4": {
