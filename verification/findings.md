@@ -18,6 +18,26 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-040: 286's protected-state claim binds one value and accepts a binder that drops only the first suppressed one
+
+- **Status**: open (the user's decision on 2026-11-18, run-streams-domain-advances-D034: after the domain-advances run,
+  add the proposed claim beside the frozen one, as part of the coming claim enhancements; nothing changes in this run).
+- **Raised**: 2026-11-17 by the challenge stream of the domain-advances run (its `controls/first-suppressed-only.patch`),
+  taken up by the state stream as its item I009.
+- **Found**: `examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/claims/protected-age-not-mutated.json`
+  binds one property value, so a 5.3.19 whose `checkAllowedFields` returns after the first suppressed value is
+  accepted by all three of 286's claims, while on a JVM `age=5, Age=32` binds 32 (only the replay probes
+  `bind-list-upstream` and `bind-map-upstream` catch it). The state stream proposed
+  `claims/proposed/protected-age-kept-two-values.json` (on its line, not frozen, used by no task): two values bound in
+  order (`first="5"`, then `second="32"`), `age` left 0, both names ASCII. The ASCII restriction comes from the checker,
+  which lowers ASCII only, not from the CVE, so the proposal covers fewer names than the frozen claim: it is to sit
+  beside the frozen claim, not replace it, which also keeps 5.3.18's accepted refutation bound to the frozen claim.
+- **Needs**: the proposed claim frozen as a further claim file of 286, its tasks added (a refutation on 5.3.18, the
+  proof on 5.3.19, and the mutant refuted), and a probe of its cost at bound 8 with two values. Closing the
+  non-ASCII lowering gap in `bmc/strings.rs` would let a later claim drop the ASCII restriction.
+- **Tracked in**: run-streams-domain-advances-D034; the state stream's Progress and item I009.
+- **Closes when**: the added claim is frozen and refutes the mutant, or the user decides the limit stands.
+
 ### VF-039: 287's claims accept a wrong fix that keeps the 72-byte guard for checking only
 
 - **Status**: open (the user's decision on 2026-11-17, run-streams-domain-advances-D032: defer to after the

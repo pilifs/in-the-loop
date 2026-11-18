@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `88045564-cdd1-4d6d-b8b6-9400a81a0b70` (ended) |
+| Session | `88045564-cdd1-4d6d-b8b6-9400a81a0b70` (open) |
 | When | 2026-11-17 18:37 UTC to 2026-11-17 21:23 UTC (165 min) |
 | Models | `claude-fable-5-2` |
 | Client | claude-code 2.1.326 |
@@ -165,6 +165,12 @@ Outputs applied for 1 of the 1 job(s). 20261117-222610-example-286-s-fixed-prote
 change `kpsszpoxouzm` · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261117-233000-example-286-s-fixed-protected-state-task: passed: 1 passed step(s) in 4m28s, peak 2.6 GiB (estimated 15m00s, 4.0 GiB); 3 output file(s) changed; signals: jvmcontract:holds×1 Applied 3 output(s). Collected by the watcher of the domain-advances run, which keeps the queue while the run is under way.
+
+### VF-040: 286's protected-state claim binds one value; the user adds the two-value claim beside it after the run
+
+change `zwklnxnrkqqu` · [log `bf1751029245`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0.jsonl.gz)
+
+The user's answer to D034: the state stream's proposed claim (two values bound in order, ASCII names) is to become a further claim file of 286 beside the frozen one, not a replacement, as part of the coming claim enhancements. The frozen claim keeps every name and 5.3.18's accepted refutation; nothing changes in this run.
 
 ## Conversation
 
