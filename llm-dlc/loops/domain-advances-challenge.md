@@ -1113,6 +1113,7 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   - whatever preservation commits after `puuwrruu`, the fixes for I028 and for `kept` among them;
   - from earlier entries: whether 289's and 290's reruns take a call, and whether a heap merge falls between two related
     calls in 287's or 307's harness.
+- The allocation failure went to preservation as `domain-advances-preservation-I029`, citing `orxlmwsv`.
 - Status: done
 
 ## Loop settings

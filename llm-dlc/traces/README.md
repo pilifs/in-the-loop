@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 139, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-18 02:03 UTC |
+| Period | 2026-10-24 14:07 UTC to 2026-11-18 02:04 UTC |
 | Prompts | 3,353 |
-| Model calls | 33,202 |
-| Tool calls | 34,141 (600 failed) |
+| Model calls | 33,205 |
+| Tool calls | 34,144 (600 failed) |
 | Compactions | 492 |
 | Subagents | 21 |
-| Tokens written | 32,436,933 |
-| Tokens read | 5,430,911,269 (98.1% from cache) |
-| Commits with a trace | 1,034 |
-| Log snapshots | 1,341 (3115.3 MB gzipped, 1,162 uploaded) |
+| Tokens written | 32,438,540 |
+| Tokens read | 5,431,408,612 (98.1% from cache) |
+| Commits with a trace | 1,035 |
+| Log snapshots | 1,342 (3122.9 MB gzipped, 1,162 uploaded) |
 
 ## Sessions
 
@@ -164,7 +164,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 12 | 21 | 17 | 2 | 2 | 56,861 | 1 |
 | 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | open | 12 h 22 min | `claude-opus-5-5` | 24 | 211 | 210 | 4 | 1 | 288,290 | 139 |
 | 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | open | 4 h 3 min | `claude-opus-5-5` | 84 | 681 | 678 | 13 | 15 | 186,120 | 22 |
-| 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | open | 13 h 6 min | `claude-opus-5-5` | 163 | 1,510 | 1,528 | 31 | 28 | 294,636 | 143 |
+| 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | open | 13 h 7 min | `claude-opus-5-5` | 163 | 1,513 | 1,531 | 31 | 28 | 294,636 | 144 |
 | 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | open | 11 h 14 min | `claude-opus-5-5` | 151 | 1,400 | 1,362 | 14 | 23 | 273,336 | 28 |
 | 2026-11-17 18:37 UTC | [Agent brief preservation work 287 308](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | ended | 2 h 45 min | `claude-fable-5-2` | 7 | 171 | 189 | 3 | 2 | 466,832 | 31 |
 
@@ -312,7 +312,7 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 8,137 | 42 | 87,022 | 814,514 | 90.3% | 111 |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 149,144 | 466 | 762,618 | 33,669,508 | 97.8% | 231 |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 469,172 | 1,388 | 1,808,399 | 65,588,806 | 97.3% | 144 |
-| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 1,228,887 | 3,084 | 4,346,921 | 180,604,279 | 97.6% | 151 |
+| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 1,230,494 | 3,090 | 4,350,899 | 181,097,638 | 97.7% | 151 |
 | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 1,054,331 | 2,888 | 3,460,090 | 172,015,121 | 98.0% | 166 |
 | [`88045564`](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | 267,328 | 348 | 615,072 | 43,806,783 | 98.6% | 166 |
 
@@ -320,7 +320,7 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 30,431 | 89.1% | 139 |
+| `Bash` | 30,434 | 89.1% | 139 |
 | `Read` | 1,373 | 4.0% | 60 |
 | `Edit` | 1,058 | 3.1% | 58 |
 | `Write` | 705 | 2.1% | 57 |
@@ -1377,6 +1377,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 1032 | change `uswnqlux` | Merge the default line into the challenge stream's line, as the conductor's I006 asks | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/e461fc6768339d631679cf98e291738c3b8059215d201c1c2646b2aab42d83a7.jsonl.gz)) |
 | 1033 | change `utvyrttk` | A call's record names an object, not the cells it returned: preservation's call-level rule proves a pair a JVM tells apart once the caller writes into the first call's array | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/d71b73d181163f9333d1db29e18f9137b41d7d61f6f96f5aed349806a10e1d74.jsonl.gz)) |
 | 1034 | change `orxlmwsv` | Preservation's I023 fix holds for the seven, and --no-shared-callees takes no call; past it, a loop that keeps arrays of a constant length is an OutOfMemoryError the call's outcome leaves out, and the pair is proved to agree | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/b08ea89759d5649b7818b2275e6b734ae4ae7c55ac67d66fee6484ae9fb7230d.jsonl.gz)) |
+| 1035 | change `yulpuuro` | Record the challenge stream's last inbox item, domain-advances-preservation-I029 | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) ([log](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/48d54253e8843aecedd54821ca07cb9abf899068117a636ea6bbe0bb7d6b2391.jsonl.gz)) |
 
 ## Logs
 
@@ -1520,7 +1521,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 1 | 1 | 0.3 MB | [`965570933c02`](https://terminalvalue.net/raw-traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/965570933c0206c64a18c5652f4f74be1de3807449c6f9f9a26e20a3211055fc.jsonl.gz) |
 | [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 20 | 0 | 11.4 MB | `10ba682dc90d`, not uploaded |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 20 | 0 | 36.3 MB | `b38cb00ee8e3`, not uploaded |
-| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 30 | 0 | 111.4 MB | `b08ea89759d5`, not uploaded |
+| [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 31 | 0 | 119.0 MB | `48d54253e884`, not uploaded |
 | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 27 | 0 | 82.8 MB | `2a57c9145b73`, not uploaded |
 | [`88045564`](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | 14 | 0 | 8.2 MB | `bf1751029245`, not uploaded |
 
