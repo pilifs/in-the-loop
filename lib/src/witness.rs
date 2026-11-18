@@ -1014,6 +1014,11 @@ pub fn object_fields(m: &Machine, v: Value, fields: &crate::harness::Fields) -> 
                     _ => "null".into(),
                 },
                 crate::harness::FieldKind::Object(inner) => object_fields(m, value, inner),
+                // By identity alone, as the frame compares it.
+                crate::harness::FieldKind::Reference(t) => match value {
+                    Value::Null => "null".into(),
+                    _ => format!("<a {}>", t.java_name()),
+                },
                 // By content, as the harness compares it.
                 crate::harness::FieldKind::String => match m.units_of(value) {
                     Some(s) => string_literal(s.units()),
@@ -1044,7 +1049,7 @@ fn primitive_paths(m: &Machine, v: Value, fields: &crate::harness::Fields) -> BT
                 out.insert(name.clone(), value);
             }
             crate::harness::FieldKind::Object(inner) => out.extend(primitive_paths(m, value, inner).into_iter().map(|(p, v)| (format!("{name}.{p}"), v))),
-            crate::harness::FieldKind::Array(_) | crate::harness::FieldKind::String => {}
+            crate::harness::FieldKind::Array(_) | crate::harness::FieldKind::String | crate::harness::FieldKind::Reference(_) => {}
         }
     }
     out

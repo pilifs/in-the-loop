@@ -6,11 +6,20 @@
 //! class path and the JDK, which the engine has: each is modelled where the answer is one, under an assumption the
 //! run states ([`CLASS_PATH_ASSUMPTION`]), and stays the JDK call it was elsewhere.
 //!
-//! - `Object.getClass()` of an object of an application class that the run made with `new`, or of a `Throwable`
-//!   the run made (with `new`, or the engine for the JVM or a model of a JDK method, as `athrow`'s handlers already
-//!   take it): that class's literal, the one object a class literal of it is (JLS §15.8.2). Of any other object (an
-//!   array, a lambda's, a JDK class's) it is the JDK call it was.
+//! - `Object.getClass()` of an object of an application class that the run made with `new`, of a String (a final
+//!   class), and of a `Throwable` the run made and no JDK call returned (with `new`, or the engine for the JVM or a
+//!   model of a JDK method, as `athrow`'s handlers already take it; its class is the one `new` or the engine's own
+//!   throw named, [`super::throwables`]): that class's literal, the one object a class literal of it is (JLS
+//!   §15.8.2). Of any other object (an array, a lambda's, another JDK class's) it is the JDK call it was.
 //! - `Class.getName()` of a class literal: the class's binary name, the interned String (the JVM interns it).
+//!   `Class.getTypeName()` of the literal of a class that is no array: the same String, as the JDK's returns
+//!   `getName()` for such a class (an array's is its element type's name and `[]`, the JDK call it was).
+//!   `Class.isArray()` of a class literal: whether it names an array class (a name that starts with `[`). Spring's
+//!   `ObjectUtils.isArray` asks it of the class of every value a binding error records.
+//! - `java.lang.reflect.Proxy.isProxyClass(Class)` of a class literal: false. The engine makes the literal of a
+//!   class it finds on the class path or in the JDK, by a constant name, and a proxy class is one the JVM generates
+//!   while it runs, which neither has. `NullPointerException` for null. Spring's `ClassUtils.getDescriptiveType`
+//!   asks it of every value it names in a message.
 //! - `Class.getSuperclass()` of a class literal of a class the class path or the JDK has and can load: its direct
 //!   superclass's literal, as its class file names it; null of `Object` and of an interface; `Object`'s of an
 //!   array's. Of a copy in a pair of versions it is the copy's superclass, a copy itself where the previous
@@ -66,6 +75,10 @@
 //!   value afterwards ([`Engine::formatted`]), since a getter may have written it. Formatting calls the record's getters, a subclass's overrides included, so a record of a
 //!   class that could write elsewhere from one of them stays the JDK call. A level, a handler, a filter or a bundle
 //!   set on a Logger is a call of it no model takes, so a check that sets one stops there.
+//! - `getstatic` of `Boolean.TRUE` or `Boolean.FALSE`: the one object each constant is, distinct from the other and
+//!   from every object the run makes, as on a JVM. The object has no content: every method of it is the JDK call it
+//!   was, as is `Boolean.valueOf`. A library stores one where it records a decision (Spring's
+//!   `PropertyValue.conversionNecessary`).
 //! - `new ArrayList()`: the JDK's no-argument constructor only sets the list's own fields, so the object is made
 //!   as any object with no content is, its methods the JDK calls they were.
 //! - `new ConcurrentHashMap()` and `new ConcurrentHashMap(int)`: likewise (the JDK allocates the table at the first
@@ -86,6 +99,19 @@ pub const LOGGING_ASSUMPTION: &str = "java.util.logging is configured as the JDK
 
 /// What a run that gave a logger a record to log took for granted.
 pub const PUBLISHING_ASSUMPTION: &str = "a record given to a logger goes to the handler the JDK's default logging configuration gives the root logger and nowhere else: no logger has a filter, a handler of its own or a resource bundle, and the root's one handler is a ConsoleHandler, which writes the record to System.err (no check observes it) and reports to its ErrorManager, without throwing, an exception its formatting throws";
+
+pub(super) const BOOLEAN: &str = "java/lang/Boolean";
+
+/// Whether the static field is `Boolean.TRUE` or `Boolean.FALSE`, and which: one object each for a run, as each is
+/// one on a JVM, distinct from each other and from any other object. Nothing of it is read here: a call on it
+/// (`booleanValue`, `equals`, ...) is the JDK call it names, and `Boolean.valueOf`, which returns one of them, is too.
+pub fn truth_constant(owner: &str, name: &str) -> Option<bool> {
+    match (owner, name) {
+        (BOOLEAN, "TRUE") => Some(true),
+        (BOOLEAN, "FALSE") => Some(false),
+        _ => None,
+    }
+}
 
 /// The levels of `java.util.logging.Level` below `INFO`, by their fields' names.
 const BELOW_INFO: [&str; 5] = ["CONFIG", "FINE", "FINER", "FINEST", "ALL"];
@@ -133,12 +159,13 @@ const THREAD: &str = "java/lang/Thread";
 const COLLECTIONS: &str = "java/util/Collections";
 pub(super) const EMPTY_MAP: &str = "java/util/Collections$EmptyMap";
 const FOR_NAME: &str = "(Ljava/lang/String;)Ljava/lang/Class;";
+const PROXY: &str = "java/lang/reflect/Proxy";
 
 /// Whether the engine models the static call here, where its arguments let it.
 pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!(
         (owner, name, descriptor),
-        (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;" | FOR_NAME) | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;") | (THREAD, "currentThread", "()Ljava/lang/Thread;") | (COLLECTIONS, "emptyMap", "()Ljava/util/Map;")
+        (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;" | FOR_NAME) | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;") | (THREAD, "currentThread", "()Ljava/lang/Thread;") | (COLLECTIONS, "emptyMap", "()Ljava/util/Map;") | (PROXY, "isProxyClass", "(Ljava/lang/Class;)Z")
     )
 }
 
@@ -146,7 +173,8 @@ pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
 pub fn models_instance(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!(
         (owner, name, descriptor),
-        (CLASS, "getName", "()Ljava/lang/String;")
+        (CLASS, "getName" | "getTypeName", "()Ljava/lang/String;")
+            | (CLASS, "isArray", "()Z")
             | (CLASS, "getSuperclass", "()Ljava/lang/Class;")
             | (CLASS, "getClassLoader", "()Ljava/lang/ClassLoader;")
             | (CLASS, "isAssignableFrom", "(Ljava/lang/Class;)Z")
@@ -185,15 +213,18 @@ impl Engine<'_> {
         s.cells.get(..length)?.iter().map(|c| self.b.constant_value(c).map(|u| u as u16)).collect()
     }
 
-    /// `Class.getName()`, `Class.getSuperclass()` and `Class.getClassLoader()` on the object `o`, and `getClass()` on it: see the module's
+    /// `Class.getName()`, `Class.getTypeName()`, `Class.isArray()`, `Class.getSuperclass()` and `Class.getClassLoader()`
+    /// on the object `o`, and `getClass()` on it: see the module's
     /// notes. `None` where the call stays the JDK's.
     pub(super) fn class_method(&mut self, path: &mut Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Option<Step> {
         if (name, descriptor) == ("getClass", "()Ljava/lang/Class;") {
             let class = path.objects[o].class.clone();
-            // A Throwable the run made (with `new`, or the engine for the JVM or a model) is of the class it was
-            // made as, whoever made it: a handler already takes it for that class.
-            let made_throwable = !path.objects[o].given && class.contains('/') && self.cp.loads(&class) && self.cp.is_subtype(&class, "java/lang/Throwable");
-            if class.starts_with('[') || path.objects[o].lambda.is_some() || !(self.cp.is_application(&class) || made_throwable) {
+            // An exception the run made (with `new`, or the engine for the JVM or a model of a JDK method), and no JDK
+            // call returned, is of the class it was made as: a handler already takes it for that class
+            // ([`super::throwables`]).
+            let o_ = &path.objects[o];
+            let exception = !o_.given && !o_.assumed && (super::throwables::jdk_throwable(self.cp, &class) || (self.cp.loads(&class) && self.cp.is_subtype(&class, "java/lang/Throwable")));
+            if class.starts_with('[') || o_.lambda.is_some() || !(self.cp.is_application(&class) || class == STRING || exception) {
                 return None;
             }
             let literal = self.literal(path, Literal::Class(class), CLASS);
@@ -216,8 +247,17 @@ impl Engine<'_> {
             return None;
         }
         let class = self.class_named(path, o)?;
+        if name == "isArray" {
+            let value = self.b.constant(i64::from(class.starts_with('[')), 32);
+            self.push(path, Val::I(value));
+            self.advance(path);
+            return Some(Ok(None));
+        }
         let value = match name {
-            "getName" => {
+            "getName" | "getTypeName" => {
+                if name == "getTypeName" && class.starts_with('[') {
+                    return None;
+                }
                 // A copy of a class of the previous version of a pair has that class's own name.
                 let own = self.previous.as_ref().and_then(|p| p.original(&class)).unwrap_or(&class);
                 let units: Vec<u16> = own.replace('/', ".").encode_utf16().collect();
@@ -489,6 +529,14 @@ impl Engine<'_> {
                 }
                 let o = self.literal(path, Literal::Class(internal), CLASS);
                 self.push(path, Val::R(Some(o)));
+                self.advance(path);
+                Some(Ok(None))
+            }
+            (PROXY, "isProxyClass", [Val::R(class)]) => {
+                let Some(class) = *class else { return Some(self.raise(path, "java/lang/NullPointerException")) };
+                self.class_named(path, class)?;
+                let no = self.b.constant(0, 32);
+                self.push(path, Val::I(no));
                 self.advance(path);
                 Some(Ok(None))
             }

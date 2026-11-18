@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-225439-example-286-s-adversarial-fixture-on-5-3",
+  "title": "Example 286's adversarial fixture on 5.3.19: a setter that writes the protected flag is told from its honest twin, by its effect contract and through the binder",
+  "description": "The state stream of the domain-advances brief, step 5. Example 286's frozen protected-state claim binds onto ProtectedBean, whose setters are all honest, so it cannot tell the binder's guarantee (about field names) from the bean's. proofs/beans/ adds an account whose admin flag is protected by the disallowed pattern \"admin\": AccountBean, whose permitted setName also sets admin when the name starts \"admin:\", its honest twin HonestAccountBean, the entry AccountBinding (DataBinder.bind of one value {field, value} onto a fresh account, then its admin flag), and AccountBeanStandIn, the bean wrapper's write on these two beans, sampled against 5.3.19's method before each run (462,336 samples, all equal). proofs/beans.py runs five checks at bound 8 on 5.3.19: the setter's effect contract (--writes this.name, this.name == name) refuted on AccountBean and established on HonestAccountBean; the application-level statement !result refuted on AccountBean through an allowed field name, its witness run on a JVM; established on the twin through the honest setter's effect contract, which stands in for the setter call the stand-in makes; and refused with the adversarial setter's contract, which is refuted. Each was run inline as a capped probe in about a minute and gave its expected answer. None of these files is in target.json's adapter set or under proofs/stand-ins, so the accepted refutation of vulnerable-protected-state-mutation is unaffected.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "286"
+    ],
+    "paths": [
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/beans.py"
+    ]
+  },
+  "expected": "exit 0, five lines each '(expected X)' with the verdict X: setter-adversarial violation, setter-honest verified, bind-adversarial violation, bind-honest verified, bind-adversarial-contract unverifiable",
+  "submitted": {
+    "at": "2026-11-17T22:54:39+00:00",
+    "session": "9896d870-fb47-4f3c-ba4d-5b1d3e64719c"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "4G",
+    "duration": "10m",
+    "memoryLimit": "6G",
+    "timeout": "1h",
+    "notes": "each check took about a minute in a capped probe under 4 GB (the simpleMatch lemma's proof is most of each bind check)"
+  },
+  "steps": [
+    {
+      "name": "the adversarial fixture's five checks at bound 8 (5.3.19)",
+      "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/beans.py --work verification/.work-286/state-beans",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

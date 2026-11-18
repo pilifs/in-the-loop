@@ -1,0 +1,62 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-181750-example-286-protected-state-tasks-at-the",
+  "title": "Example 286 protected-state tasks at the frozen bound through the bean wrapper's stand-in: the refutation on 5.3.18, and where the fixed task stops",
+  "description": "The state stream of the domain-advances brief, steps 2 and 3. The frozen claim examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/claims/protected-age-not-mutated.json, unchanged (DataBinder.bind of one property value named field with the value \"32\" onto a fresh ProtectedBean, age protected by one disallowed pattern, leaves age 0, for every simple name of at most 8 units), run by examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py at its own bound 8 (unwind 16, strict gaps, the ArrayList, ArrayDeque and HashSet models, PropertyEditorRegistrySupport's initializer observed). New since job 20261117-130335: the run takes a stand-in for the bean wrapper's write of a property value (prove --stand-in, lib/src/stand_in.rs; examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/stand-ins/org/springframework/beans/ProtectedBeanStandIn.java), sampled against the release's own AbstractNestablePropertyAccessor.setPropertyValue(PropertyValue) on a JVM before the run (463,616 samples, all the same), so the introspection caches are off the path; the ArrayList model keeps remove(Object) (checkAllowedFields drops a disallowed value with it); and Boolean.TRUE and Boolean.FALSE are one object each. A capped inline probe at bound 8 refuted vulnerable-protected-state-mutation in 63 s at ageAfterBinding(upperCasePattern=false, field=\"Age\"), which returns 32 on a JVM (the witness is run on a JVM, where the method runs as written, so the refutation rests on no stand-in or model): this job's outcome and evidence.json are what examples/tools/accept.py reads to accept it. The fixed task is expected to stop with no verdict at String.toLowerCase() on a non-ASCII field (DataBinder.isAllowed:828: the frozen claim does not restrict field to ASCII and the checker lowers ASCII only), which this job records as the current blocker.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "286"
+    ],
+    "paths": [
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/stand-ins/org/springframework/beans/ProtectedBeanStandIn.java",
+      "lib/src/stand_in.rs",
+      "lib/models/java/util/lists/ArrayList.java"
+    ]
+  },
+  "expected": "the vulnerable step exits 0 with 'verdict: violation (expected violation)' at the claim's bound 8 with a witness run on a JVM (field=\"Age\" or another case variant that binds age); the fixed step exits 1 with 'verdict: unverifiable' naming the gap java.lang.String.toLowerCase() at DataBinder.isAllowed:828, and any other gap is a finding to record",
+  "submitted": {
+    "at": "2026-11-17T18:17:50+00:00",
+    "session": "9896d870-fb47-4f3c-ba4d-5b1d3e64719c"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "4G",
+    "duration": "15m",
+    "timeout": "1h30m",
+    "notes": "the inline probe of the vulnerable step at bound 8 took 63 s in under 4 GB, the lemma's proof included; the fixed step stops at its gap within minutes; each stand-in sampler runs about 2 s"
+  },
+  "steps": [
+    {
+      "name": "vulnerable-protected-state-mutation at the frozen bound 8 (5.3.18): the refutation",
+      "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py vulnerable-protected-state-mutation --timeout 1700 --work verification/.work-286/state-stand-in",
+      "cwd": "."
+    },
+    {
+      "name": "fixed-protected-state-mutation at the frozen bound 8 (5.3.19): where it stops",
+      "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py fixed-protected-state-mutation --timeout 1700 --work verification/.work-286/state-stand-in || test $? -eq 1",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/.work-286/state-stand-in/vulnerable-protected-state-mutation/outcome.json",
+    "verification/.work-286/state-stand-in/vulnerable-protected-state-mutation/evidence.json",
+    "verification/.work-286/state-stand-in/vulnerable-protected-state-mutation/stderr.txt",
+    "verification/.work-286/state-stand-in/fixed-protected-state-mutation/outcome.json",
+    "verification/.work-286/state-stand-in/fixed-protected-state-mutation/evidence.json",
+    "verification/.work-286/state-stand-in/fixed-protected-state-mutation/stderr.txt"
+  ]
+}

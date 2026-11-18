@@ -192,7 +192,7 @@ pub fn string_model() -> ModelEvidence {
         jdk: STRING_MODEL_JDK.into(),
         level: EvidenceLevel::Tested,
         leaves_out: vec![
-            "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap".into(),
+            "every String method that has no record in values::OPERATIONS (the records are length, isEmpty, charAt, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap".into(),
             "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits".into(),
             format!("the content of a concatenation that could pass {} code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String", crate::bmc::MAX_STRING_CONTENT),
             "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object".into(),
@@ -904,6 +904,17 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         calls: &["indexOf(I)I"],
     },
     OperationEvidence {
+        operation: "java.lang.String.lastIndexOf(I)I",
+        family: Family::String,
+        source: STRINGS_SOURCE,
+        admits: "a String with content and any int: the last index of a code unit, or of a supplementary code point's surrogate pair, and -1 for none and for a value that is no code point",
+        throws: &[NPE],
+        leaves_out: &[],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["lastIndexOfChar"],
+        calls: &["lastIndexOf(I)I"],
+    },
+    OperationEvidence {
         operation: "java.lang.String.indexOf(II)I",
         family: Family::String,
         source: STRINGS_SOURCE,
@@ -1272,7 +1283,7 @@ mod tests {
             assert_eq!(json["level"], "tested");
             assert!(json["sampled_by"].as_array().is_some_and(|c| !c.is_empty()), "{}", record.operation);
         }
-        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 23);
+        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 24);
         assert!(OPERATIONS.iter().any(|r| r.family == Family::List && r.throws.contains(&"java.lang.ArrayIndexOutOfBoundsException")));
     }
 

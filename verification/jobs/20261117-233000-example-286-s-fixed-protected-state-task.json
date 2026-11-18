@@ -1,0 +1,53 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-233000-example-286-s-fixed-protected-state-task",
+  "title": "Example 286's fixed protected-state task through ProtectedBean's setter contracts: binding writes only what the permitted setters' proved effect contracts write (ASCII trial, bound 8)",
+  "description": "The state stream of the domain-advances brief, step 6 (the effect contract on 286's real path). proofs/beans/protected-setters.contract gives ProtectedBean's permitted setters (setName, setFavouriteColour, setTouchy) effect contracts: each writes its own field and nothing else that was there before the call, reads nothing that was, and leaves the String it is given. proofs/prove.py --contracts puts them beside the simpleMatch lemma; the check proves each contract first and uses it where the bean wrapper's stand-in (ProtectedBeanStandIn, sampled on 5.3.19) calls the setter, so the result rests on the setters' contracts, not their bodies. ProtectedBean has a java.util.Map field (someMap), which no property check made an object of: a write set's check now frames such a field by identity (harness::FieldKind::Reference; lib/tests/claims.rs a_write_set_frames_a_field_of_a_type_the_check_makes_no_object_of_by_identity), which is what the second use of the contract showed the first (AccountBean, String and boolean fields only) had hidden. The run is the trial of job 20261117-222610 (field also ASCII, the corrected formalization the stream proposes; the frozen claim's non-ASCII toLowerCase() is the unchanged blocker), at the claim's bound 8. A capped probe at bound 7 proved it in 93 s, naming the contracts of setName and setTouchy (favouriteColour, 15 units, is beyond the bound). Its work folder is its own; verification/.work-286/state-stand-in, which the accepted refutation reads, is untouched.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "286"
+    ],
+    "paths": [
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/beans/protected-setters.contract",
+      "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py",
+      "lib/src/equivalence.rs"
+    ]
+  },
+  "expected": "exit 0 with 'verdict: verified (expected verified)' at bound 8, the trial line, three 'effect: ✓' lines, and the effect contracts of setName and setTouchy among the stated assumptions",
+  "submitted": {
+    "at": "2026-11-17T23:30:00+00:00",
+    "session": "9896d870-fb47-4f3c-ba4d-5b1d3e64719c"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "4G",
+    "duration": "15m",
+    "memoryLimit": "8G",
+    "timeout": "2h",
+    "notes": "the same trial without contracts took 285 s at bound 8 in job 222610 (peak 2.1 GiB); the bound-7 probe with contracts took 93 s"
+  },
+  "steps": [
+    {
+      "name": "fixed-protected-state-mutation at bound 8 over ASCII names through the setters' effect contracts: a trial, not the claim",
+      "run": "python3 examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/prove.py fixed-protected-state-mutation --assume-also 'field.chars().allMatch(c -> c < 128)' --contracts examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/beans/protected-setters.contract --timeout 5000 --work verification/.work-286/state-contracts",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-286/state-contracts/fixed-protected-state-mutation/outcome.json",
+    "verification/.work-286/state-contracts/fixed-protected-state-mutation/evidence.json",
+    "verification/.work-286/state-contracts/fixed-protected-state-mutation/stderr.txt"
+  ]
+}

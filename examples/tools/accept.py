@@ -127,6 +127,46 @@ class Source:
 ENTRY = re.compile(r"[\w.$]+#[\w$]+")
 ADAPTER_ENTRY = re.compile(r"\badapter entry ([\w.$]+#[\w$]+)")
 GATE = "{ return; } // the inputs the property is about"
+PRIMITIVES = {"B": "byte", "C": "char", "D": "double", "F": "float", "I": "int", "J": "long", "S": "short", "Z": "boolean"}
+
+
+def descriptor_parameters(descriptor: str) -> list[str] | None:
+    """The parameter types of a method descriptor in Java's spelling, as the checker names an overload's
+    (`(Ljava/lang/String;[I)V` gives `["java.lang.String", "int[]"]`); None if it is not a descriptor."""
+    if not descriptor.startswith("(") or ")" not in descriptor:
+        return None
+    inside, out, i = descriptor[1:descriptor.index(")")], [], 0
+    while i < len(inside):
+        dims = 0
+        while i < len(inside) and inside[i] == "[":
+            dims, i = dims + 1, i + 1
+        if i < len(inside) and inside[i] in PRIMITIVES:
+            name, i = PRIMITIVES[inside[i]], i + 1
+        elif i < len(inside) and inside[i] == "L" and ";" in inside[i:]:
+            end = inside.index(";", i)
+            name, i = inside[i + 1:end].replace("/", "."), end + 1
+        else:
+            return None
+        out.append(name + "[]" * dims)
+    return out
+
+
+def same_target(entry: str, target: str) -> bool:
+    """Whether the outcome's target is the task's: the same class and method, and, where the outcome names one of
+    several overloads by its parameter types (the checker prints `pkg.C#m(java.lang.String, int[])`), exactly the
+    types of the task's descriptor, qualified (a nested class as `A$B` or `A.B`). A simple name is not taken: it
+    does not say which class is meant. Nor is a list of types where the task's target has no descriptor."""
+    method, _, descriptor = target.partition("(")
+    name, paren, rest = entry.partition("(")
+    if not method or name.strip() != method:
+        return False
+    if not paren:
+        return True
+    wanted = descriptor_parameters("(" + descriptor) if descriptor else None
+    if wanted is None or not rest.endswith(")"):
+        return False
+    named = [p.strip() for p in rest[:-1].split(",")] if rest[:-1].strip() else []
+    return len(named) == len(wanted) and all(n in (w, w.replace("$", ".")) for n, w in zip(named, wanted))
 
 
 def read_text(path: Path) -> str:
@@ -467,7 +507,7 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
     entry = outcome.get("target") or ""
     if entry and entry in named:
         said("entry", OK, f"the outcome is about {entry}, the entry the task names")
-    elif entry and entry == (task.get("target") or "").split("(", 1)[0]:
+    elif entry and same_target(entry, task.get("target") or ""):
         said("entry", OK, f"the outcome is about {entry}, the task's own target")
     else:
         said("entry", FAIL if entry else UNBOUND, f"the outcome is about {entry or 'no target'}, which is neither the task's target nor the entry its invocation or the claim's assumptions name")

@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261117-235132-example-288-s-binding-under-its-locales",
+  "title": "Example 288's binding under its locales, through the permitted setters' effect contracts: kept on 6.1.14, refuted on 6.1.13 (the state stream's second consumer)",
+  "description": "The state stream of the domain-advances brief, step 6: the second consumer of the permitted setters' effect contracts (example 286's proofs/beans/protected-setters.contract is the first, on 5.3.19). Example 288's proofs/beans/example288/adapter/ProtectedBinding#protectedKept binds one property value {field, value} onto a fresh ProtectedBean with id and admin disallowed by the patterns \"id\" and \"ADMIN\", the binder configured under LOCALES[configLocale] and binding under LOCALES[bindLocale] (root, en-US, tr-TR, az-AZ, lt-LT), and returns whether id is 0 and admin false. proofs/beans.py runs it on each release's four pinned JARs at bound 8, over ASCII simple names and any value, through the bean wrapper's stand-in (proofs/beans/org/springframework/beans/ProtectedBeanStandIn.java, sampled against the release's AbstractNestablePropertyAccessor.setPropertyValue(PropertyValue) before each run: 741,600 samples under the five locales, all equal on both releases) and the effect contracts of ProtectedBean#setName and #setTitle (proofs/beans/protected-setters.contract), which the run proves first and applies at the stand-in's setter calls, with example 286's models and observed initializers. Capped probes: 6.1.14 proved in 86 s (830 MB peak), resting on both contracts; 6.1.13 refuted at protectedKept(2, 2, \"Id\", \"-9\"), run on a JVM. Nothing of target.json or 288's adapter set changes.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "288"
+    ],
+    "paths": [
+      "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/beans.py"
+    ]
+  },
+  "expected": "exit 0, two lines each '(expected X)' with the verdict X: bind-fixed verified (naming setName's effect contract), bind-vulnerable violation (run on a JVM)",
+  "submitted": {
+    "at": "2026-11-17T23:51:32+00:00",
+    "session": "9896d870-fb47-4f3c-ba4d-5b1d3e64719c"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "10m",
+    "memoryLimit": "4G",
+    "timeout": "1h",
+    "notes": "each check took about 90 s in a capped probe, peak 830 MB (the simpleMatch lemma's proof is most of it); the stand-in's sampler prints about 230 MB, which the tool reads per sub-run"
+  },
+  "steps": [
+    {
+      "name": "example 288's binding at bound 8 on both releases",
+      "run": "python3 examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/beans.py --work verification/.work-288/state-beans",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

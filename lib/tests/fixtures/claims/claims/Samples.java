@@ -110,6 +110,9 @@ public final class Samples {
             check(M.collected(keys, r.nextInt(12) - 3) && M.collected(few, 7) && M.filled(keys, r.nextInt(keys.length + 3) - 1), "collected " + java.util.Arrays.toString(keys));
             check(M.appended(few.length + fewer.length > 3 ? fewer : few, fewer, r.nextBoolean()) && M.swept(r.nextInt(4)) && M.contained(), "appended " + java.util.Arrays.toString(few));
             check(M.cached(r.nextInt(600) - 300), "cached");
+            check(M.removed(few, r.nextInt(6) - 1, r.nextInt(5) - 1), "removed " + java.util.Arrays.toString(few));
+            check(M.truths(r.nextBoolean()) && M.truthTold(r.nextBoolean()), "truths");
+            check(M.typed(Integer.toString(r.nextInt())) && M.unproxied(), "typed");
             check(M.recopied(keys, r.nextInt(keys.length + 4) - 2), "recopied " + java.util.Arrays.toString(keys));
             int n = r.nextInt(4) == 0 ? r.nextInt() : r.nextInt(2400) - 1200;
             check(M.numbered(n, (short) r.nextInt(), (byte) r.nextInt()), "numbered " + n);

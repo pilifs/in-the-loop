@@ -67,18 +67,19 @@
 //! | `invokespecial`/`invokevirtual` of `java.lang.Enum`'s constructor, `name()`, `ordinal()`, `toString()` and `equals` ([`ClassPath::checker_runs`]) | modelled: the model's bytecode (`lib/models/java/lang/Enum.java`, which JBMC runs too) sets and reads the enum's `name` and `ordinal` fields; the interpreter's natives do the same. `Enum`'s other methods (`compareTo`, `hashCode`, `valueOf` …) stay JDK gaps |
 //! | `invokestatic` of `List.of` (its fixed forms, up to ten elements) and `List.copyOf`, and `invokevirtual`/`invokeinterface` of the immutable lists' methods an evidence record of `values::OPERATIONS` samples (`size`, `isEmpty`, `get`, `iterator`, the iterator's `hasNext` and `next`, and the changes `add`, `set`, `remove(int)`, `clear` and the iterator's `remove`) ([`ClassPath::checker_runs`]); a call from outside the models of any other method they implement (`contains`, `indexOf`, `equals`, `hashCode`, `toArray`, `addAll`, `sort` …, and `List.of(E...)`) is the JDK call it names, a gap or a refusal as any JDK call is ([`gaps::outside_the_list_records`]) | modelled: the models' bytecode (`lib/models/java/util/`, which JBMC runs too: `List12` for one or two elements, `ListN` over an array of its own otherwise, one empty list), `ImmutableCollections`' initializer run as an application class's ([`ClassPath::checker_class`]); order, duplicates and aliases between elements are the elements' references, null rejected, every change `UnsupportedOperationException`, `get` out of range an `IndexOutOfBoundsException` from a `List12` and an `ArrayIndexOutOfBoundsException` from a `ListN`. The interpreter's natives do the same. `copyOf` of another implementation meets its methods as JDK calls |
 //! | `new HashMap()` and `new HashMap(int)`, and `invokevirtual`/`invokeinterface` of `put`, `get`, `containsKey`, `size` and `isEmpty` on the map ([`ClassPath::checker_runs`]) | modelled: the model's bytecode (`lib/models/java/util/HashMap.java`, which JBMC runs too), a map's entries one chain of objects, a key found by its `hashCode` and `equals` as the JDK finds one; each call has an evidence record of `values::OPERATIONS`. The model has no other method: any other (`remove`, `keySet`, `Map`'s default methods) is the JDK call it names |
-//! | `invokespecial` of `Object.<init>()`, `Record.<init>()`, and a JDK exception's `()`, `(String)` or `(String, Throwable)` constructor ([`gaps::exact_jdk_call`]) | modelled exactly: they change nothing a proof observes |
+//! | `invokespecial` of `Object.<init>()`, `Record.<init>()`, and a JDK exception's `()`, `(String)` or `(String, Throwable)` constructor that only passes its arguments up to `Throwable`'s ([`gaps::exact_jdk_call`]) | modelled exactly: the first two change nothing a proof observes, and an exception's keeps its message and cause ([`throwables`]), refused on a class whose application override of `fillInStackTrace()` the constructor would run |
+//! | `getMessage()`, `getCause()`, `getLocalizedMessage()` and `toString()` of `Throwable` on an exception whose message and cause the engine kept, `getClass()` of an exception of a JDK class no JDK call returned ([`throwables`]) | modelled as `Throwable`'s, where the method the JVM runs is `Throwable`'s own; `getLocalizedMessage()` calls an application's `getMessage()`; the JDK call (a gap) elsewhere |
 //! | `invokespecial` of any other JDK constructor, `invokevirtual`/`invokeinterface` of a JDK method returning `void` or an object | gap: `jdk-constructor`, `jdk-void-method`, `jdk-reference-method` |
 //! | `invokevirtual`/`invokeinterface` of `String.length()`, `isEmpty()`, `charAt(int)`, `equals(Object)`, `startsWith(String)` and `hashCode()` on a String whose content the engine holds, whatever class the call names (`Object.equals`, `CharSequence.length`: the receiver's class picks the method) ([`Engine::string_method`]) | modelled, as their Javadoc specifies: `StringIndexOutOfBoundsException` from `charAt` out of range, `NullPointerException` from `startsWith(null)`, `equals` true of the same object, false of null and of another class, else the lengths and every code unit compared, `hashCode` the sum `s[0]*31^(n-1) + … + s[n-1]` in `int` arithmetic; on an opaque String they are the JDK calls below; on one past the content cap, a named limit with no verdict |
 //! | `invokevirtual`/`invokeinterface` of a JDK method returning an integer, a `char` or a `boolean` | gap: `jdk-primitive-method`, with no assume form |
 //! | `invokedynamic` string concatenation | implemented over strings and primitives: Strings (`null` as "null"), `char`s, `int`s, `short`s and `byte`s (their decimal digits) and the recipe's constants give a String of their content in order, up to [`MAX_STRING_CONTENT`] code units, past which its content is a named limit; a `long`, a floating-point number or a boolean converted gives an opaque String (their formatting is outside the model); an object argument it would convert is a gap, `string-conversion` |
 //! | `invokevirtual` of the String methods of [`strings`], of `split(String, int)` and `matches(String)` ([`regex`]) and of `getBytes(Charset)` ([`bytes`]) on a String whose content the engine holds, and a `StringBuilder`'s constructors and methods of [`strings`] | modelled as formulas over the content, each exception thrown where the JDK throws it; `toLowerCase()` and `toLowerCase(Locale)` lower an ASCII String under the default locale the path set or the Locale given, Turkish and Azeri among them ([`locale`]); either of a String with a unit outside ASCII or under a Locale the engine knows nothing of, and `split` at anything but one constant character with a negative limit, stay the JDK call (a gap, or refused) |
 //! | `invokedynamic` of `LambdaMetafactory.metafactory` | an object of the interface that holds what the site captured ([`Lambda`]); a call of the interface's method on it runs the lambda's method or the method a method reference names, its arguments cast as the JVM casts them ([`Engine::lambda_call`]); a call that would box or unbox is refused |
-//! | `invokespecial`, `invokevirtual` and `invokeinterface` of `java.util.ArrayList`'s constructors and methods, in a check that asks for the model (`--model java.util.ArrayList`, [`crate::models::ON_REQUEST`]) | enter the model ([`ClassPath::runs_model`]) for what it keeps, and the run states it ([`Outcome::assumed`]); a method it does not keep, and every call in a check that did not ask, is the JDK call it was |
+//! | `invokespecial`, `invokevirtual` and `invokeinterface` of the constructors and methods of `java.util.ArrayList`, `java.util.ArrayDeque`, `java.util.HashSet`, `java.util.LinkedHashSet` (with the `HashSet` model), `java.util.StringJoiner` or `java.beans.PropertyChangeEvent` (with `java.util.EventObject`), in a check that asks for the class's model (`--model java.util.ArrayList`, [`crate::models::ON_REQUEST`]) | enter the model ([`ClassPath::runs_model`]) for what it keeps, and the run states it ([`Outcome::assumed`]); a method it does not keep, and every call in a check that did not ask, is the JDK call it was |
 //! | `invokestatic` of `Arrays.stream(Object[])`, `Arrays.stream(int[])` and `IntStream.range(int, int)`, and `invokevirtual` of `String.chars()` | enter the stream models only the checker runs ([`crate::models::entry`]) |
 //! | `invokestatic` of `Arrays.asList(T...)`, and the list's `size()`, `get(int)` and `toArray()` | modelled, for the checker alone: the model's bytecode (`lib/models/java/util/lists/ArrayAsList.java`), a view of the array. Any other method is the JDK's `AbstractList`'s, the JDK call it names |
 //! | `new LinkedHashMap()`, and `values()` on the map with the collection's `size()` and `iterator()` and the iterator's `hasNext()` and `next()` | modelled, for the checker alone: the model's bytecode (`lib/models/java/util/LinkedHashMap.java`) over the `HashMap` model's chain of entries, which is in insertion order; the iterator fails fast as the JDK's. Any other method is the JDK call it names |
-//! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Character.isLetter(char)` of an ASCII unit ([`strings`]); `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers or of references and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `getstatic` of `Locale`'s constants, `Locale.forLanguageTag(String)` and `Locale.setDefault(Locale)` as far as [`locale`] says; `Class.getName()`, `Class.getClassLoader()`, `Class.forName(String, boolean, ClassLoader)`, `Class.forName(String)` with its initialization, `Class.isAssignableFrom(Class)`, `Thread.currentThread()` and its `getContextClassLoader()`, `Collections.emptyMap()`, `Logger.getLogger(String)`, `getstatic` of a `java.util.logging.Level` other than `OFF`, `Logger.isLoggable(Level)`, `Logger.log(LogRecord)` and what a library calls to make the record, `new ArrayList()`, `new ConcurrentHashMap()` and `new ConcurrentHashMap(int)` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
+//! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Character.isLetter(char)` of an ASCII unit ([`strings`]); `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers or of references and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `getstatic` of `Locale`'s constants, `Locale.forLanguageTag(String)` and `Locale.setDefault(Locale)` as far as [`locale`] says; `Class.getName()`, `Class.getTypeName()`, `Class.getClassLoader()`, `Object.getClass()` of a String, `Proxy.isProxyClass(Class)`, `Class.forName(String, boolean, ClassLoader)`, `Class.forName(String)` with its initialization, `Class.isAssignableFrom(Class)`, `Thread.currentThread()` and its `getContextClassLoader()`, `Collections.emptyMap()`, `Logger.getLogger(String)`, `getstatic` of a `java.util.logging.Level` other than `OFF`, `getstatic` of `Boolean.TRUE` and `Boolean.FALSE`, `Logger.isLoggable(Level)`, `Logger.log(LogRecord)` and what a library calls to make the record, `new ArrayList()`, `new ConcurrentHashMap()` and `new ConcurrentHashMap(int)` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
 //! | `ldc` of a string or a class | implemented: one object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class, a String with its content, its code units as the class file holds them, an isolated surrogate included (`BootstrapArg::Units`) |
 //! | floating point (`fconst`, `dconst`, `fadd` …, `fcmpl` …, `f2i` …), `jsr`/`ret`, `putstatic` of a JDK field, any other `getstatic` of one, a static field of a class taken to be initialized other than a constant, `multianewarray`, any other `invokedynamic`, a JDK method with a floating-point parameter or result or an array result, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
 //! | under JBMC, not this engine ([`crate::jbmc_gaps`]): a method with no bytecode on JBMC's class path, or an `invokedynamic` JBMC does not link, or a monitor instruction, which JBMC drops | JBMC's gaps: its stub of a JDK method is one of the JDK kinds above, any other is `missing-body`, an unlinked call site is `invokedynamic`, and a method that synchronizes is `monitor`; this engine refuses the first two and implements monitors |
@@ -86,7 +87,14 @@
 //! A gap is refused by name under [`gaps::GapMode::Strict`], the default: the path ends there, and a run that met
 //! one has no verdict unless another path is a violation, which stands. Under [`gaps::GapMode::Assume`] the engine
 //! goes on with the approximation [`gaps::GapKind::approximation`] states, and the outcome names every gap it
-//! assumed ([`Outcome::gaps`]); a gap with no assume form ([`gaps::GapKind::assumable`]) is refused there too. Under [`gaps::GapMode::Advised`] it refuses a gap as under strict: the proof
+//! assumed ([`Outcome::gaps`]); a gap with no assume form ([`gaps::GapKind::assumable`]) is refused there too, and so
+//! is one whose object (the one a constructor constructs, or the new one a method is taken to return) is of a class
+//! whose model the check runs ([`ClassPath::checker_runs`]), whose methods would read fields no constructor of it
+//! wrote (`tests/model_countermodels.rs`). The new object a method is taken to return is of the class its descriptor
+//! declares only where that class is final; otherwise its class is one at or below it that the engine does not know
+//! (`HashSet.clone()`, declared `Object`, returns a `HashSet`), and a virtual call on it, a throw of it, and a cast or
+//! `instanceof` the declared class does not settle are refused by name ([`Obj::assumed`];
+//! `tests/rule_countermodels.rs`). Under [`gaps::GapMode::Advised`] it refuses a gap as under strict: the proof
 //! drivers stop before the engine runs when the gap scan finds one with no contract ([`crate::advice`]), so the
 //! engine meets one only where the scan did not see it. A gap a contract closes (`--contracts`,
 //! [`crate::gap_contracts`], [`Options::contracts`]) is no gap: at a JDK call the engine runs the contract's method
@@ -107,6 +115,7 @@ pub mod runtime;
 mod ties;
 pub mod sat;
 pub mod strings;
+mod throwables;
 pub mod transcript;
 
 use std::collections::{BTreeMap, HashMap};
@@ -173,6 +182,22 @@ pub struct Options {
     /// are made in the state of the call under proof, which nothing it runs may write. So what it reads is not
     /// refused, where a summary's method may read nothing a caller can change ([`Engine::reads`]).
     pub own_induction: bool,
+    /// The method whose call by the harness a stated write set frames (its class, name and descriptor;
+    /// `prove --writes`, [`crate::property`]): the harness checks after the call that each field of its receiver
+    /// and object parameters outside the write set is what it was, and inside the call the engine refuses a write
+    /// to anything else that was there before it, a static field or another object, which the harness does not
+    /// read ([`Engine::in_frame`]).
+    pub frame: Option<(String, String, String)>,
+    /// Whether the framed method is proved as an effect contract, which stands in for its calls ([`Effect`]): its
+    /// writes must then be a function of its arguments alone, so it reads nothing that was there before the call (a
+    /// field or a cell of such an object, its receiver's included, a final field too, which its constructor made of
+    /// the state a caller made the object in, or a static field that is not a constant), and
+    /// compares no such object by identity ([`Engine::in_closed_frame`]).
+    pub closed_frame: bool,
+    /// The calls a checked effect contract stands in for ([`Effect`]).
+    pub effects: std::sync::Arc<Vec<Effect>>,
+    /// The library methods a stand-in sampled on a JVM replaces ([`StandIn`], `--stand-in`).
+    pub stand_ins: std::sync::Arc<Vec<StandIn>>,
     /// The classes whose initializer the engine does not run, by internal name, each with the static state the
     /// initializer left on a JVM ([`crate::observed`], `--observed-initializer`): a use that initializes one gives
     /// the path that state, and the run states what that rests on ([`Outcome::assumed`]).
@@ -199,9 +224,57 @@ pub struct Summary {
     pub stub: String,
 }
 
+/// An instance method whose calls, made by anything but the harness and the claim's class on a receiver of exactly
+/// its class, run a method of the claim's class instead: a checked effect contract of it ([`crate::summary`]). The
+/// stub (`stub`, of descriptor `stub_descriptor`: the receiver first, then the method's parameters) calls the method
+/// as written where the arguments are outside the bounds the contract was proved at, and elsewhere the intrinsic
+/// `effect`, which makes the writes the contract states ([`EffectWrite`]) and nothing else.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Effect {
+    pub owner: String,
+    pub name: String,
+    pub descriptor: String,
+    pub stub: String,
+    pub stub_descriptor: String,
+    pub writes: Vec<EffectWrite>,
+}
+
+/// A library method whose calls on a receiver of exactly the class `receiver` run a static method of a stand-in class
+/// instead (`prove --stand-in CLASS`, [`crate::stand_in`]): `method` of `class`, of descriptor `method_descriptor`
+/// (the receiver first, then the method's parameters). The stand-in's own calls run the method as written, so a
+/// stand-in hands a case it does not cover back to it. A stand-in is no proof: it was sampled against the method on
+/// a JVM on the check's class path before the run, and a run that makes such a call states that it rests on that
+/// (`assumption`).
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct StandIn {
+    /// The class that declares the method the call resolves to, its name and descriptor.
+    pub owner: String,
+    pub name: String,
+    pub descriptor: String,
+    /// The exact class of the receivers it stands in for.
+    pub receiver: String,
+    pub class: String,
+    pub method: String,
+    pub method_descriptor: String,
+    /// What a run that uses it states it rests on.
+    pub assumption: String,
+}
+
+/// A field an effect contract writes: of the object in the stub's local `object` (the receiver at 0, or an object
+/// parameter), the field `field` of type `descriptor`, which the call leaves holding the stub's local `value` (a
+/// parameter the contract's assertion says it equals) or, with none, any value of its primitive type.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct EffectWrite {
+    pub object: usize,
+    pub owner: String,
+    pub field: String,
+    pub descriptor: String,
+    pub value: Option<usize>,
+}
+
 impl Default for Options {
     fn default() -> Self {
-        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, merge_heaps_after: 1024, invariants: true, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured, parameters: Parameters::default(), summaries: Default::default(), pure: None, own_induction: false, observed: Default::default(), models: Default::default(), previous: None, calls_as_one_function: true }
+        Options { unwind: 16, timeout: Duration::from_secs(600), max_paths: 200_000, max_array_length: 8, merge_after: 512, merge_heaps_after: 1024, invariants: true, gaps: GapMode::Strict, contracts: Default::default(), transcript: None, solver: sat::configured, parameters: Parameters::default(), summaries: Default::default(), pure: None, own_induction: false, frame: None, closed_frame: false, effects: Default::default(), stand_ins: Default::default(), observed: Default::default(), models: Default::default(), previous: None, calls_as_one_function: true }
     }
 }
 
@@ -488,8 +561,10 @@ fn is_string(t: &Type) -> bool {
 
 /// The most code units the engine computes a String's content to: a concatenation that could make more gives a
 /// String whose content is a named limit ([`Obj::limit`]), never a truncated one. An input's length is its own
-/// bound ([`Parameters::max_string_length`]), and a literal has the units it has.
-pub const MAX_STRING_CONTENT: usize = 64;
+/// bound ([`Parameters::max_string_length`]), and a literal has the units it has. It was 64 until a library's
+/// error message needed more: Spring's `TypeMismatchException` names the value's type, the required type and the
+/// property, some 150 units for a binding of a short name.
+pub const MAX_STRING_CONTENT: usize = 256;
 
 /// A cell of a `String[]` parameter in a witness ([`Outcome::raw_arrays`]): `null`, or `s:` and the String's code
 /// units in decimal, comma-separated (`s:65,71,69`; `s:` for the empty String).
@@ -626,6 +701,9 @@ struct Obj {
     made: u64,
     /// Whether the object was there when the method a summary is proved of was entered ([`Engine::in_summary`]).
     given: bool,
+    /// Whether the object was there when the framed method was entered ([`Options::frame`]): an input or not. In
+    /// the proof of an effect contract ([`Options::closed_frame`]) the method reads none of it.
+    before: bool,
     /// Of an array of numbers past a summarized loop ([`loops`]): its cells hold any values, and `array.cells` is
     /// what they were once, which nothing reads. A read of a cell is then any value, a write changes nothing, and
     /// what would read the cells in bulk does not take it for an array ([`Obj::as_array`]) and is refused. A table
@@ -635,6 +713,13 @@ struct Obj {
     /// values and each write since ([`ties`]), so that two reads of one content at one index are one value. `None`
     /// where it is not kept: a read is then a value of its own.
     content: Option<u64>,
+    /// Made by a JDK call under `--gaps assume` that declares a class that is not final ([`Engine::assumed`]): the
+    /// JDK's object is of that class or of any below it (`HashSet.clone()`, declared `Object`, returns a `HashSet`),
+    /// and `class` is only the declared one. What the object's class would decide beyond what the declared class
+    /// settles is refused by name ([`Engine::of_unknown_class`]): a cast or `instanceof` to a class the declared one is
+    /// not below, a virtual call (an override may run), a throw (which handler takes it), and the exact class an
+    /// effect contract's use or `sameClass` reads.
+    assumed: bool,
 }
 
 /// An object `invokedynamic` made through `LambdaMetafactory.metafactory`: the interface it implements, the name
@@ -660,7 +745,7 @@ static MADE: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0)
 
 impl Obj {
     fn new(class: &str) -> Obj {
-        Obj { class: class.to_string(), fields: BTreeMap::new(), array: None, limit: None, same: Vec::new(), lambda: None, regex: None, made: MADE.fetch_add(1, std::sync::atomic::Ordering::Relaxed), given: false, unknown: false, content: None }
+        Obj { class: class.to_string(), fields: BTreeMap::new(), array: None, limit: None, same: Vec::new(), lambda: None, regex: None, made: MADE.fetch_add(1, std::sync::atomic::Ordering::Relaxed), given: false, before: false, unknown: false, content: None, assumed: false }
     }
 
     /// The array the object is, where its cells are known: not a String's content.
@@ -871,6 +956,8 @@ enum Literal {
     Thread,
     /// The one map `Collections.emptyMap()` returns ([`runtime`]).
     EmptyMap,
+    /// `Boolean.TRUE` or `Boolean.FALSE` ([`runtime::truth_constant`]).
+    Truth(bool),
 }
 
 /// Where a path waits at a join point: for each frame, outermost first, where it is in the method, then the class
@@ -975,6 +1062,7 @@ fn alike(o: &Obj, q: &Obj) -> bool {
         && o.lambda == q.lambda
         && o.regex == q.regex
         && o.given == q.given
+        && o.before == q.before
         && o.fields.len() == q.fields.len()
         && o.fields.iter().zip(&q.fields).all(|((k, x), (l, y))| k == l && mergeable(x, y))
         && match (&o.array, &q.array) {
@@ -1244,6 +1332,12 @@ struct Engine<'a> {
     summaries: std::sync::Arc<Vec<Summary>>,
     pure: Option<(String, String, String)>,
     own_induction: bool,
+    /// The method a stated write set frames ([`Options::frame`]).
+    frame: Option<(String, String, String)>,
+    /// Whether it is proved as an effect contract ([`Options::closed_frame`]).
+    closed_frame: bool,
+    effects: std::sync::Arc<Vec<Effect>>,
+    stand_ins: std::sync::Arc<Vec<StandIn>>,
     b: Blaster,
     codes: HashMap<(String, String, String), Rc<Decoded>>,
     pending: Vec<Path>,
@@ -1422,6 +1516,10 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
         summaries: options.summaries.clone(),
         pure: options.pure.clone(),
         own_induction: options.own_induction,
+        frame: options.frame.clone(),
+        closed_frame: options.closed_frame,
+        effects: options.effects.clone(),
+        stand_ins: options.stand_ins.clone(),
         applied: BTreeMap::new(),
         hides: HashMap::new(),
         supers: HashMap::new(),
@@ -1723,15 +1821,17 @@ pub fn solver_signature() -> String {
 #[allow(clippy::too_many_arguments)] // the settings a proof driver passes on
 #[allow(clippy::too_many_arguments)]
 pub fn run_for_proof(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &GapSetting, parameters: &Parameters, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
-    run_for_proof_with(entries, models, class, method, unwind, max_array_length, timeout, gaps, parameters, &[], None, false, work)
+    run_for_proof_with(entries, models, class, method, unwind, max_array_length, timeout, gaps, parameters, &[], None, false, None, false, &[], work)
 }
 
 /// [`run_for_proof`] with the calls checked summaries stand in for (`summaries`), and the method the check proves a
-/// summary of, or proves by induction (`pure`; `own_induction` says which, [`Options::own_induction`]).
+/// summary of, or proves by induction (`pure`; `own_induction` says which, [`Options::own_induction`]); the method a
+/// write set frames (`frame`), proved as an effect contract where `closed_frame`, and the calls checked effect
+/// contracts stand in for (`effects`).
 #[allow(clippy::too_many_arguments)]
-pub fn run_for_proof_with(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &GapSetting, parameters: &Parameters, summaries: &[Summary], pure: Option<(String, String, String)>, own_induction: bool, work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
+pub fn run_for_proof_with(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &GapSetting, parameters: &Parameters, summaries: &[Summary], pure: Option<(String, String, String)>, own_induction: bool, frame: Option<(String, String, String)>, closed_frame: bool, effects: &[Effect], work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
     let cp = crate::witness::classpath(entries.iter().chain(&gaps.class_dir).map(std::path::PathBuf::as_path))?.with_models(models);
-    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps: gaps.mode, contracts: gaps.contracts.clone(), observed: gaps.observed.clone(), models: gaps.models.clone(), previous: gaps.previous.clone(), parameters: parameters.clone(), summaries: std::sync::Arc::new(summaries.to_vec()), pure, own_induction, ..Options::default() })?;
+    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps: gaps.mode, contracts: gaps.contracts.clone(), observed: gaps.observed.clone(), models: gaps.models.clone(), stand_ins: gaps.stand_ins.clone(), previous: gaps.previous.clone(), parameters: parameters.clone(), summaries: std::sync::Arc::new(summaries.to_vec()), pure, own_induction, frame, closed_frame, effects: std::sync::Arc::new(effects.to_vec()), ..Options::default() })?;
     let log = work.join("bmc.log");
     let _ = std::fs::write(&log, format!("jvmcontract's own checker on {class}.{method}\n{}\n", outcome.summary()));
     Ok(outcome.into_jbmc_result(log))
@@ -2336,6 +2436,7 @@ impl<'a> Engine<'a> {
                         Literal::Level(_) => runtime::LEVEL,
                         Literal::Thread => "java/lang/Thread",
                         Literal::EmptyMap => runtime::EMPTY_MAP,
+                        Literal::Truth(_) => runtime::BOOLEAN,
                     };
                     self.literal(path, literal.clone(), class);
                 }
@@ -2455,6 +2556,7 @@ impl<'a> Engine<'a> {
         for (o, q) in into.objects.iter_mut().zip(&other.objects) {
             // An object that was there before a summarized method was entered, on either path.
             o.given |= q.given;
+            o.before |= q.before;
             for (name, x) in o.fields.iter_mut() {
                 choose(&mut self.b, x, &q.fields[name]);
             }
@@ -2675,7 +2777,7 @@ impl<'a> Engine<'a> {
                     Ok(o) => o,
                     Err(step) => return step,
                 };
-                if path.objects[o].given {
+                if self.there_before(path, o) {
                     self.reads(path, || "reads an array that was there before the call".into())?;
                 }
                 let array = path.objects[o].array.clone().expect("an array");
@@ -2761,7 +2863,7 @@ impl<'a> Engine<'a> {
                     Ok(o) => o,
                     Err(step) => return step,
                 };
-                if path.objects[o].given {
+                if self.there_before(path, o) {
                     self.reads(path, || "reads an array that was there before the call".into())?;
                 }
                 let array = path.objects[o].array.clone().expect("an array");
@@ -3141,9 +3243,19 @@ impl<'a> Engine<'a> {
     }
 
     /// Refuses, inside a summarized method, a `getfield` of a field that is not final on an object that was there
-    /// before the call ([`Engine::reads`]).
+    /// before the call ([`Engine::reads`]). Inside the method proved as an effect contract
+    /// ([`Engine::in_closed_frame`]) a final one is refused too: the proof made the receiver and the object arguments
+    /// with their constructors in the harness's fresh state, and a caller's were made in the caller's, so a final
+    /// field holds what its constructor made of a state the proof never had.
     fn reads_field(&self, path: &Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Result<(), Stop> {
-        if path.objects[o].given && self.in_lemma(path) && !self.final_field(owner, name, descriptor) {
+        if !self.there_before(path, o) {
+            return Ok(());
+        }
+        if self.in_closed_frame(path) && self.final_field(owner, name, descriptor) {
+            let (frame_owner, method, _) = self.frame.as_ref().expect("in a frame");
+            return unsupported(format!("{}.{method} reads the final field {name} of an object that was there before the call, which its constructor set in the state a caller made it in, where the proof made it in the harness's: it is not a method an effect contract can stand in for", frame_owner.replace('/', ".")));
+        }
+        if (self.in_lemma(path) || self.in_closed_frame(path)) && !self.final_field(owner, name, descriptor) {
             self.reads(path, || format!("reads the field {name} of an object that was there before the call"))?;
         }
         Ok(())
@@ -3247,6 +3359,19 @@ impl<'a> Engine<'a> {
     fn alloc(&self, path: &mut Path, class: &str) -> usize {
         path.objects.push(Obj::new(class));
         path.objects.len() - 1
+    }
+
+    /// The new object a JDK call under `--gaps assume` is taken to return: of the class its descriptor declares, or,
+    /// where that class is not final, of one at or below it that the engine does not know ([`Obj::assumed`]).
+    fn assumed(&self, path: &mut Path, declared: &str) -> usize {
+        let r = self.alloc(path, declared);
+        path.objects[r].assumed = !self.cp.is_effectively_final(declared);
+        r
+    }
+
+    /// Refuses by name what `what` would read of object `o`'s class where that class is not known ([`Obj::assumed`]).
+    fn of_unknown_class(&self, path: &Path, o: usize, what: &str) -> Step {
+        unsupported(format!("{what} on an object a JDK call returned under --gaps assume, declared {}: the JDK's object may be of any class below that one, which the engine does not know", path.objects[o].class.replace('/', ".")))
     }
 
     /// The array the reference on the stack is, after the null check.
@@ -3615,6 +3740,13 @@ impl<'a> Engine<'a> {
                     self.advance(path);
                     return Ok(None);
                 }
+                // `Boolean.TRUE` and `Boolean.FALSE` are one object each ([`runtime`]).
+                if let Some(truth) = runtime::truth_constant(&declaring, &member.name) {
+                    let constant = self.literal(path, Literal::Truth(truth), runtime::BOOLEAN);
+                    self.push(path, Val::R(Some(constant)));
+                    self.advance(path);
+                    return Ok(None);
+                }
                 if let Some(step) = self.initialise(path, &declaring) {
                     return step;
                 }
@@ -3624,6 +3756,12 @@ impl<'a> Engine<'a> {
                 // a class being initialized, which no caller can have written before its initializer began.
                 if declaring != crate::harness::expr::CLAIM_CLASS && self.cp.checker_statics(&declaring) && !self.final_field(&declaring, &member.name, &member.descriptor) && path.classes.get(&declaring) != Some(&ClassState::InProgress) {
                     self.reads(path, || format!("reads the static field {}.{}", declaring.replace('/', "."), member.name))?;
+                }
+                // An effect contract reads no final static either but a constant: its initializer ran before the
+                // call, in whatever state a caller left (`static final boolean LOCKED = Config.locked`), and the
+                // proof's was the harness's fresh one ([`Engine::in_closed_frame`]).
+                if self.in_closed_frame(path) && declaring != crate::harness::expr::CLAIM_CLASS && self.cp.checker_statics(&declaring) && !self.constant_field(&declaring, &member.name) {
+                    self.reads(path, || format!("reads the static field {}.{}, which its class's initializer computed in the state it ran in (it is no constant)", declaring.replace('/', "."), member.name))?;
                 }
                 let v = match self.application_static(path, &declaring, &member.name, &member.descriptor) {
                     Some(v) => v?,
@@ -3748,6 +3886,9 @@ impl<'a> Engine<'a> {
                     Ok(o) => o.expect("checked"),
                     Err(step) => return step,
                 };
+                if path.objects[o].assumed {
+                    return self.of_unknown_class(path, o, "a throw (which handler takes it)");
+                }
                 return self.throw(path, o);
             }
             Insn::CheckCast(index) => {
@@ -3758,6 +3899,9 @@ impl<'a> Engine<'a> {
                 let r = self.pop_ref(path)?;
                 if let Some(o) = r {
                     if !self.cp.is_subtype(&path.objects[o].class, &target) {
+                        if path.objects[o].assumed {
+                            return self.of_unknown_class(path, o, &format!("a cast to {}", target.replace('/', ".")));
+                        }
                         return self.raise(path, "java/lang/ClassCastException");
                     }
                 }
@@ -3767,6 +3911,9 @@ impl<'a> Engine<'a> {
                 let target = class.pool.class_name(index).map_err(|e| Stop::Unsupported(e.to_string()))?.to_string();
                 let r = self.pop(path)?;
                 let Some(options) = r.options() else { return unsupported(format!("expected a reference on the stack, found {r:?}")) };
+                if let Some(o) = options.iter().filter_map(|(_, t)| *t).find(|&o| path.objects[o].assumed && !self.cp.is_subtype(&path.objects[o].class, &target)) {
+                    return self.of_unknown_class(path, o, &format!("an instanceof {}", target.replace('/', ".")));
+                }
                 let guards: Vec<Lit> = options.iter().filter(|(_, t)| t.is_some_and(|o| self.cp.is_subtype(&path.objects[o].class, &target))).map(|(g, _)| *g).collect();
                 let is = self.any(&guards);
                 let (one, zero) = (self.b.constant(1, 32), self.b.constant(0, 32));
@@ -4090,6 +4237,44 @@ impl<'a> Engine<'a> {
             }
             // No run of the call takes the path: what it returned does not satisfy the contract's assertion.
             ("infeasible", []) => return Ok(Some(End::Infeasible)),
+            // A checked effect contract's writes, from the stub's frame ([`Effect`]): each field it writes holds the
+            // parameter its assertion says, or any value of its primitive type; nothing else changes. Each write
+            // passes [`Engine::keeps`] as the method's own would.
+            ("effect", [Val::I(index)]) => {
+                let index = self.b.constant_value(index).ok_or_else(|| Stop::Unsupported("an effect contract's number is not a constant".into()))? as usize;
+                let effect = self.effects.get(index).cloned().ok_or_else(|| Stop::Unsupported(format!("no effect contract {index}")))?;
+                let locals = path.frames.last().expect("the stub's frame").locals.clone();
+                self.assumed.insert(format!("the effect contract of {}.{}{}, proved beside this check", effect.owner.replace('/', "."), effect.name, effect.descriptor));
+                for write in &effect.writes {
+                    let Some(Some(Val::R(Some(o)))) = locals.get(write.object).cloned() else {
+                        return unsupported(format!("an effect contract of {}.{} writes a field of an object the engine does not hold as one", effect.owner.replace('/', "."), effect.name));
+                    };
+                    let value = match write.value {
+                        Some(local) => locals.get(local).cloned().flatten().ok_or_else(|| Stop::Unsupported("an effect contract's value is no local of its stub".into()))?,
+                        None => match write.descriptor.as_str() {
+                            "J" => Val::J(self.b.fresh(64)),
+                            "Z" => {
+                                let bit = self.b.fresh(1);
+                                Val::I(self.b.zext(&bit, 32))
+                            }
+                            "I" => Val::I(self.b.fresh(32)),
+                            "B" | "S" => {
+                                let v = self.b.fresh(if write.descriptor == "B" { 8 } else { 16 });
+                                Val::I(self.b.sext(&v, 32))
+                            }
+                            "C" => {
+                                let v = self.b.fresh(16);
+                                Val::I(self.b.zext(&v, 32))
+                            }
+                            other => return unsupported(format!("an effect contract leaves the field {} of type {other} any value", write.field)),
+                        },
+                    };
+                    // The gate the method's own putfield meets: a proof by induction and a write set rest on it.
+                    self.keeps(path, Some(o), "writes a field of an object made before it was called")?;
+                    let key = self.field_key(path, o, &write.owner, &write.field, &write.descriptor)?;
+                    path.objects[o].fields.insert(key, value);
+                }
+            }
             // An induction hypothesis used where it says nothing ([`crate::summary`]): the proof does not go through.
             ("unproved", []) => {
                 return unsupported("the induction does not go through: a recursive call is reached whose arguments the hypothesis does not cover (outside the property's assumption or its bounds, or the measure not below the call's own and at least zero)");
@@ -4097,6 +4282,9 @@ impl<'a> Engine<'a> {
             // Whether two objects are of one class, as `a.getClass() == b.getClass()` is on the JVM: a proof of a
             // contract against the JDK's bytecode ([`crate::contract_proving`]) checks the exception's exact class.
             ("sameClass", [Val::R(Some(a)), Val::R(Some(b))]) => {
+                if let Some(&o) = [a, b].into_iter().find(|&&o| path.objects[o].assumed) {
+                    return self.of_unknown_class(path, o, "sameClass");
+                }
                 let same = path.objects[*a].class == path.objects[*b].class;
                 let v = self.b.constant(i64::from(same), 32);
                 self.push(path, Val::I(v));
@@ -4174,6 +4362,7 @@ impl<'a> Engine<'a> {
             if self.in_summary(path) {
                 return unsupported(format!("the method initializes the class {}, whose initializer is observed, {}", class.replace('/', "."), self.result_only()));
             }
+            self.initializes_in_frame(path, class)?;
             self.take_observed(path, class)?;
             path.classes.insert(class.to_string(), ClassState::Done);
             return Ok(Initialising::Ready);
@@ -4194,6 +4383,7 @@ impl<'a> Engine<'a> {
             let (owner, name, _) = self.pure.as_ref().expect("in a summary");
             return unsupported(format!("{}.{name} initializes the class {}, {}", owner.replace('/', "."), class.replace('/', "."), self.result_only()));
         }
+        self.initializes_in_frame(path, class)?;
         if runs {
             self.call(path, class, "<clinit>", "()V", Vec::new())?;
             path.frames.last_mut().expect("a frame").initializes = Some(class.to_string());
@@ -4253,7 +4443,7 @@ impl<'a> Engine<'a> {
                 let units = units.clone();
                 self.string(path, &units)
             }
-            Literal::Class(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) | Literal::Level(_) | Literal::Thread | Literal::EmptyMap => self.alloc(path, class),
+            Literal::Class(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) | Literal::Level(_) | Literal::Thread | Literal::EmptyMap | Literal::Truth(_) => self.alloc(path, class),
         };
         path.literals.insert(literal, o);
         o
@@ -4486,6 +4676,9 @@ impl<'a> Engine<'a> {
         for (v, t) in stack[receiver_at + 1..].iter().zip(&takes.params[lambda.captured..]) {
             if let (Val::R(Some(a)), Type::Object(_) | Type::Array(_)) = (v, t) {
                 if !self.cp.is_subtype(&path.objects[*a].class, &class_of(t)) {
+                    if path.objects[*a].assumed {
+                        return self.of_unknown_class(path, *a, &format!("a cast to {}", class_of(t).replace('/', ".")));
+                    }
                     let args = called.params.len();
                     self.pop_args(path, args)?;
                     self.pop(path)?;
@@ -4560,6 +4753,10 @@ impl<'a> Engine<'a> {
             Err(step) => return step,
         };
         let special = special;
+        // A virtual call on an object whose class the engine does not know: an override of that class may run.
+        if !special && path.objects[o].assumed {
+            return self.of_unknown_class(path, o, &format!("a call of {}.{}{}", member.owner.replace('/', "."), member.name, member.descriptor));
+        }
         // An array's `clone`: a new array of the same class, length and elements (JLS §10.7).
         if !special && member.name == "clone" && member.descriptor == "()Ljava/lang/Object;" && path.objects[o].is_array() {
             // The copy's cells are the array's: a read of them is one of the array.
@@ -4611,13 +4808,15 @@ impl<'a> Engine<'a> {
         if let Some(step) = self.regex_method(path, o, &member.name, &member.descriptor, &args) {
             return step;
         }
-        // On any other Class object (a JDK class's loader, a class no literal names) it is the JDK call.
+        // On any other Class object (a JDK class's loader, a class no literal names) it is the JDK call: of a
+        // primitive result (`isArray`, `isAssignableFrom`) one no assumption makes up a value for.
         if !contracted && runtime::models_instance(&member.owner, &member.name, &member.descriptor) {
-            if let Some(end) = self.meet(path, GapKind::JdkReferenceMethod, &member.owner, &member.name, &member.descriptor) {
+            let kind = if matches!(descriptor.ret, Type::Object(_) | Type::Array(_)) { GapKind::JdkReferenceMethod } else { GapKind::JdkPrimitiveMethod };
+            if let Some(end) = self.meet(path, kind, &member.owner, &member.name, &member.descriptor) {
                 return Ok(Some(end));
             }
             if let Type::Object(name) = &descriptor.ret {
-                let r = self.alloc(path, name);
+                let r = self.assumed(path, name);
                 self.push(path, Val::R(Some(r)));
             }
             self.advance(path);
@@ -4631,6 +4830,41 @@ impl<'a> Engine<'a> {
             if m.code.is_some() {
                 let mut full = vec![Val::R(Some(o))];
                 full.extend(args);
+                // A checked effect contract of the method, in place of a call that is neither the harness's nor the
+                // claim's, on a receiver and object arguments of exactly the classes it was proved of ([`Effect`]): a
+                // subclass's object may read what the proof's never had, and an override is another method.
+                let initialized = path.classes.get(&cf.name) != Some(&ClassState::InProgress);
+                // Each object argument too, a String aside (a final class), is null or of exactly its parameter's
+                // class, as the proof's were: an argument of a subclass may override what the method calls on it.
+                let exact_arguments = descriptor.params.iter().zip(&full[1..]).all(|(ty, v)| match ty {
+                    Type::Object(class) if class != "java/lang/String" => v.options().is_some_and(|options| options.iter().all(|(_, t)| t.map_or(true, |a| path.objects[a].class == *class && !path.objects[a].assumed))),
+                    _ => true,
+                });
+                let effect = self.effects.iter().find(|e| e.owner == cf.name && e.name == member.name && e.descriptor == member.descriptor && path.objects[o].class == e.owner && !path.objects[o].assumed && exact_arguments).map(|e| (e.stub.clone(), e.stub_descriptor.clone()));
+                // A stand-in of the method for a receiver of exactly its class, from anything but the stand-in's
+                // own class, which calls the method as written ([`StandIn`]).
+                let stand_in = self.stand_ins.iter().find(|s| s.owner == cf.name && s.name == member.name && s.descriptor == member.descriptor && path.objects[o].class == s.receiver && !path.objects[o].assumed && caller != s.class).cloned();
+                if let Some(s) = stand_in {
+                    let depth = path.frames.last().expect("a frame").stack.len();
+                    path.frames.last_mut().expect("a frame").stack.extend(full.iter().cloned());
+                    if let Some(step) = self.initialise(path, &s.class) {
+                        return step;
+                    }
+                    path.frames.last_mut().expect("a frame").stack.truncate(depth);
+                    self.assumed.insert(s.assumption.clone());
+                    return self.call(path, &s.class, &s.method, &s.method_descriptor, full);
+                }
+                if let Some((stub, stub_descriptor)) = effect.filter(|_| initialized && caller != crate::harness::expr::CLAIM_CLASS && path.frames.len() > 1) {
+                    // The instruction runs again once the claim's class is initialized: its operands are on the
+                    // stack while it is.
+                    let depth = path.frames.last().expect("a frame").stack.len();
+                    path.frames.last_mut().expect("a frame").stack.extend(full.iter().cloned());
+                    if let Some(step) = self.initialise(path, crate::harness::expr::CLAIM_CLASS) {
+                        return step;
+                    }
+                    path.frames.last_mut().expect("a frame").stack.truncate(depth);
+                    return self.call(path, crate::harness::expr::CLAIM_CLASS, &stub, &stub_descriptor, full);
+                }
                 return self.call(path, &cf.name, &member.name, &member.descriptor, full);
             }
         }
@@ -4642,6 +4876,12 @@ impl<'a> Engine<'a> {
         // it is to a checker with no such model.
         // So is a logging call its model did not take (a Logger the engine did not make, a record that could write
         // elsewhere when it is formatted).
+        // An exception's message and cause, kept from the JDK's constructor that set them ([`throwables`]).
+        if !contracted {
+            if let Some(step) = self.throwable_method(path, o, special, member, &args) {
+                return step;
+            }
+        }
         match if contracted || strings::models_builder(&member.owner, &member.name, &member.descriptor) || runtime::models_logging(&member.owner, &member.name, &member.descriptor) { unmodelled } else { gaps::jdk_instance_call(self.cp, &member.owner, &member.name, &member.descriptor) } {
             JdkCall::Exact => {}
             JdkCall::Gap(kind) => {
@@ -4651,7 +4891,21 @@ impl<'a> Engine<'a> {
                     path.objects[o].array = None;
                 }
                 let gap = Gap { kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() };
-                if let Some(Closure { how: Closing::Stub { method, descriptor: stub, receiver }, .. }) = self.contracts.get(&gap).cloned() {
+                // The object such a call constructs, or the new one assume takes it to return, is of a class whose
+                // model this check runs: the model's methods would read fields that no constructor of it wrote, a
+                // state the model never makes, so its values could only be made up (a JDK `ArrayDeque.clone()`
+                // would be empty). A constructor's contract writes no field of the model either.
+                let unwritten = match (kind, &descriptor.ret) {
+                    (GapKind::JdkConstructor, _) => Some(member.owner.clone()),
+                    (_, Type::Object(name)) => Some(name.clone()),
+                    _ => None,
+                }
+                .filter(|class| !self.cp.is_application(class) && self.cp.checker_runs(class));
+                let contract = self.contracts.get(&gap).cloned();
+                if let Some(class) = unwritten.as_ref().filter(|_| contract.is_some() && kind == GapKind::JdkConstructor) {
+                    return unsupported(format!("{}.{}{} under a contract, on an object of {}, whose model this check runs: the contract writes none of the model's fields, which its methods read", member.owner.replace('/', "."), member.name, member.descriptor, class.replace('/', ".")));
+                }
+                if let Some(Closure { how: Closing::Stub { method, descriptor: stub, receiver }, .. }) = contract {
                     // A contract closes the gap: its method of the generated class runs in place of the call.
                     self.apply(path, gap);
                     let mut full = Vec::new();
@@ -4664,8 +4918,12 @@ impl<'a> Engine<'a> {
                 if let Some(end) = self.meet(path, kind, &member.owner, &member.name, &member.descriptor) {
                     return Ok(Some(end));
                 }
+                if let Some(class) = unwritten {
+                    let made = if kind == GapKind::JdkConstructor { "constructs" } else { "returns" };
+                    return unsupported(format!("{}.{}{} under --gaps assume: the object it {made} is of {}, whose model this check runs, and the model's methods would read fields no constructor of it wrote, so their values could only be made up", member.owner.replace('/', "."), member.name, member.descriptor, class.replace('/', ".")));
+                }
                 if let Type::Object(name) = &descriptor.ret {
-                    let r = self.alloc(path, name);
+                    let r = self.assumed(path, name);
                     self.push(path, Val::R(Some(r)));
                 }
             }
@@ -4704,6 +4962,17 @@ impl<'a> Engine<'a> {
         if name == "<clinit>" && self.pure.is_some() && !self.own_induction {
             path.objects.iter_mut().for_each(|o| o.given = true);
         }
+        // What is there when the harness calls a framed method was there before the call, and the receiver and the
+        // object arguments are its inputs, whose fields the harness reads after it: every other such object is one
+        // the write set leaves.
+        if path.frames.len() == 1 && self.frame.as_ref().is_some_and(|(o, n, d)| o == owner && n == name && d == descriptor) {
+            // An array argument is no input: the harness reads no array's cells after the call.
+            let inputs: Vec<usize> = locals.iter().flatten().filter_map(Val::options).flat_map(|options| options.into_iter().filter_map(|(_, t)| t)).collect();
+            for (i, o) in path.objects.iter_mut().enumerate() {
+                o.given = o.array.is_some() || !inputs.contains(&i);
+                o.before = true;
+            }
+        }
         // A model run on request is what the result then rests on.
         if let Some(model) = crate::models::on_request(&cf.name).filter(|_| !self.cp.is_application(&cf.name)) {
             self.assumed.insert(crate::models::requested_assumption(model));
@@ -4723,12 +4992,60 @@ impl<'a> Engine<'a> {
         self.pure.as_ref().is_some_and(|(owner, name, _)| path.frames.get(1).is_some_and(|f| f.class.name == *owner && f.method == *name))
     }
 
+    /// Whether the path is inside the method whose call a stated write set frames ([`Options::frame`]), called by
+    /// the harness.
+    fn in_frame(&self, path: &Path) -> bool {
+        self.frame.as_ref().is_some_and(|(owner, name, _)| path.frames.get(1).is_some_and(|f| f.class.name == *owner && f.method == *name))
+    }
+
+    /// Whether the path is inside the method proved as an effect contract ([`Options::closed_frame`]), called by the
+    /// harness: an effect contract stands in for the method's calls, wherever they are made, by the writes it states,
+    /// so what the method writes may depend on nothing a caller can change before it calls. Inside it a read of
+    /// what was there before the call ([`Obj::before`]: the receiver and the object arguments too, whose fields the
+    /// proof took from their constructors run in the harness's state, and a caller may have set since or made in
+    /// another state, a final field included), of a static field that is not final
+    /// or a constant (a final one is what its initializer made of the state it ran in), or of the default locale, and
+    /// a comparison by identity of such an object, each end the run with no verdict
+    /// ([`Engine::reads`], [`Engine::compares`]).
+    fn in_closed_frame(&self, path: &Path) -> bool {
+        self.closed_frame && self.in_frame(path)
+    }
+
+    /// Whether the object `o` was there before the call that the path's lemma or effect contract is about: before the
+    /// summarized method was entered ([`Obj::given`]), or before the framed one ([`Obj::before`]).
+    fn there_before(&self, path: &Path, o: usize) -> bool {
+        if self.in_closed_frame(path) {
+            path.objects[o].before
+        } else {
+            path.objects[o].given
+        }
+    }
+
     /// Refuses, inside a summarized method, a write to the object `o` when it was there before the call (`None`:
     /// to a static field).
+    /// Inside a framed method ([`Engine::in_frame`]), the same write is refused where it is to a static field or to
+    /// an object that was there before the call and is none of its inputs: the write set names fields of the
+    /// receiver and the object parameters only.
     fn keeps(&self, path: &Path, o: Option<usize>, what: &str) -> Result<(), Stop> {
         if self.in_summary(path) && o.map_or(true, |o| path.objects[o].given) {
             let (owner, name, _) = self.pure.as_ref().expect("in a summary");
             return unsupported(format!("{}.{name} {what}, {}", owner.replace('/', "."), self.result_only()));
+        }
+        if self.in_frame(path) && o.map_or(true, |o| path.objects[o].given) {
+            let (owner, name, _) = self.frame.as_ref().expect("in a frame");
+            let what = if o.is_some() { format!("{what} and none of its inputs") } else { what.to_string() };
+            return unsupported(format!("{}.{name} {what}, outside its write set: a write set names fields of the receiver and the object parameters, and the method may write nothing else that was there before the call", owner.replace('/', ".")));
+        }
+        Ok(())
+    }
+
+    /// Refuses, inside a framed method ([`Engine::in_frame`]), the initialization of a class with an initializer:
+    /// the static state it makes would be new to the call, and a write to it allowed, where a caller that had
+    /// initialized the class before would see that write.
+    fn initializes_in_frame(&self, path: &Path, class: &str) -> Result<(), Stop> {
+        if self.in_frame(path) {
+            let (owner, name, _) = self.frame.as_ref().expect("in a frame");
+            return unsupported(format!("{}.{name} initializes the class {}, outside its write set: what the initializer makes would be new to the call, where a caller that initialized the class before has it already, and the method may write nothing that was there before the call but the fields its write set names", owner.replace('/', "."), class.replace('/', ".")));
         }
         Ok(())
     }
@@ -4766,6 +5083,10 @@ impl<'a> Engine<'a> {
     /// call, whatever was written before it, so a result or a statement that depends on such a read is no
     /// function of the arguments.
     fn reads(&self, path: &Path, what: impl FnOnce() -> String) -> Result<(), Stop> {
+        if self.in_closed_frame(path) {
+            let (owner, name, _) = self.frame.as_ref().expect("in a frame");
+            return unsupported(format!("{}.{name} {}, which a caller can change before it calls, and an effect contract states what the method writes as a function of its arguments alone: it is not a method an effect contract can stand in for", owner.replace('/', "."), what()));
+        }
         if self.in_lemma(path) {
             let (owner, name, _) = self.pure.as_ref().expect("in a lemma");
             if !self.in_summary(path) {
@@ -4786,14 +5107,24 @@ impl<'a> Engine<'a> {
         matches!(self.cp.load(&declaring), Ok(Some(loaded)) if loaded.class.field(name).is_some_and(|f| f.is_final()))
     }
 
+    /// Whether the static field `name` of `declaring` is a compile-time constant: final, with a `ConstantValue`
+    /// attribute, so that no initializer computes it.
+    fn constant_field(&self, declaring: &str, name: &str) -> bool {
+        self.cp.checker_class(declaring).and_then(|cf| cf.field(name).filter(|f| f.is_static() && f.is_final()).map(|f| f.attributes.iter().any(|a| a.name == "ConstantValue"))).unwrap_or(false)
+    }
+
     /// Refuses, inside a summarized method, a comparison by identity of a reference that may be an object that was
     /// there before the call, a literal aside (which is the same object whoever calls).
     fn compares(&self, path: &Path, v: &Val) -> Result<(), Stop> {
-        if !self.in_summary(path) {
+        if !self.in_summary(path) && !self.in_closed_frame(path) {
             return Ok(());
         }
-        let given = |o: usize| path.objects[o].given && !path.literals.values().any(|&l| l == o);
+        let given = |o: usize| self.there_before(path, o) && !path.literals.values().any(|&l| l == o);
         let may_be_given = v.options().is_some_and(|options| options.iter().filter_map(|(_, t)| *t).any(|o| given(o) || path.objects[o].same.iter().any(|(_, t)| given(*t))));
+        if may_be_given && self.in_closed_frame(path) {
+            let (owner, name, _) = self.frame.as_ref().expect("in a frame");
+            return unsupported(format!("{}.{name} compares an object that was there before the call by identity (==), so what it writes may depend on which objects a caller passes: it is not a method an effect contract can stand in for", owner.replace('/', ".")));
+        }
         if may_be_given {
             let (owner, name, _) = self.pure.as_ref().expect("in a summary");
             let stands_in = if self.own_induction { "it is not a method proved by induction on a measure (--decreases)" } else { "it is not a method a summary can stand in for" };
@@ -4979,7 +5310,7 @@ impl<'a> Engine<'a> {
                         return Ok(Some(end));
                     }
                     if let Type::Object(class) = &parsed.ret {
-                        let r = self.alloc(path, class);
+                        let r = self.assumed(path, class);
                         self.push(path, Val::R(Some(r)));
                     }
                     self.advance(path);

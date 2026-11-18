@@ -743,6 +743,183 @@ countermodel fixtures and tests anywhere; mutants under an example's `controls/`
   - evidence: `nzsypymy`.
 - Next: preservation's call-level rule as soon as it is committed; until then state's `lwxvoqsy` and `xokwnwqo`
   models, and item 6's entries for 288's `fixed-security` and 289's other answers.
+- The supertype failure went to preservation as `domain-advances-preservation-I022`, citing `zmpzxkqn`.
+- 2026-11-17, item 5 and I004, preservation's call-level rule (`uxyusvsv`, `xuwlklyo`: a call of code both versions
+  share taken as one function of its inputs), at `qmsonuow`: **the I004 floor holds, and seven false proofs past
+  it**, to be handed over.
+  - Built apart at `qmsonuow` (sources touched), JDK 25.0.5. `callee-countermodels/check.py --rule-landed`:
+    - `same`, `copied` and `parsed` are verified (`parsed` is now verified on JDK 25 too);
+    - `twice`, `table` and `aliased` get no verdict, from a spurious witness;
+    - the rest are violations;
+    - no row is a false proof.
+  - The fixture is `lib/tests/fixtures/function-countermodels`. Its README has the table, the commands, what was
+    tried, the options, the checker-side test and the audit. `lib/tests/function_countermodels.rs` holds it to a JVM
+    and checks that `Shared` is the same bytes in both versions.
+  - What the outcome leaves out:
+    - cells a listed JDK method writes, where the callee has no array store of its own;
+    - a String's identity, as an input and as a result;
+    - an `Error` the JVM raises.
+  - Each is **Verified**, non-vacuous, under `--assume 'k >= 0'`, where a JVM tells the versions apart:
+    - `filled` (`Arrays.fill`) and `copied` (`System.arraycopy`): the cell the callee wrote reads 0;
+    - `interned`: the callee tests `s == "key"`, given the literal on one side and a built String on the other;
+    - `same`: two calls' results are one object;
+    - `tagged`: a returned literal is never the literal;
+    - `overflowed` and `exhausted`: the two versions' handlers of a `StackOverflowError` and an `OutOfMemoryError`
+      differ.
+  - Only the rule is wrong. In a scratch copy with the rule off, none of the seven is proved: three are violations,
+    and four stop at a gap or a limit.
+  - **`--no-shared-callees` does not turn the rule off**, though its help says it proves each callee as written. All
+    seven are still Verified with it, since nothing passes it to `bmc::Options::calls_as_one_function`.
+  - Note: the rule runs only in a check made as a pair (`--assume`, `--lemmas`, a `String[]` or a nullable String).
+    Without one, `previous` is `None` and every call runs as written.
+  - **Tried and guarded**, kept in the fixture as controls:
+    - `hashed`: an identity hash through `String.valueOf(Object)` leaves the reach open;
+    - `encoded`: an `UnsupportedEncodingException` from `getBytes(String)` is declined the same way;
+    - `messaged`: an exception's message is a gap under strict.
+  - The rule is preservation's this run, so nothing in `lib/src` changes here. The test goes as a `failure` item to
+    `domain-advances-preservation`, citing this commit; the id goes in the next entry.
+  - *Audit*:
+    - 287's accepted preservation and 307's two tasks, read with `javap` from the hash-checked JARs and slices: no
+      `if_acmp`, `Arrays.fill` or `arraycopy` in `BCrypt`, which stores into arrays itself, and no recursion.
+    - No caller of either catches an `Error`. 307's previous version's only handler is around `getBytes("UTF-8")`,
+      before the shared call.
+    - Not affected. Whether 289's and 290's reruns take a call is noted as open in the README.
+    - Nothing for the watcher.
+- Preservation's `sqprlwkv` (its fixes for I021 and I022) **holds**. At `qmsonuow`, built apart:
+  - `log_countermodels.rs`, `supertype_countermodels.rs` and `reach_countermodels.rs` pass, their checker-side tests
+    included;
+  - the supertype test there is the README's, word for word but for where its `use` line sits.
+- Tests:
+  - `test_costs.py run --changed` under `MemoryMax=8G` with `--rust-jobs 1` passed;
+  - `function_countermodels.rs` and `tiers.rs` were run on their own after `estimate` and `tag`, and pass;
+  - `lint` agrees.
+  - At `qmsonuow` the README's checker-side test fails on exactly the seven, as it should.
+- Inbox: no open items. I004 is answered by this entry.
+- New on the other lines, not yet challenged: state's `plplrxrt` (a check through a lemma states what the lemma's
+  proof rested on: I017), `vwrmzmst`, `srxyxsns` and `szmkotwz` (286's effect contracts and write set).
+- Next: `plplrxrt` against the stand-in fixture's checker-side test, then state's 286 commits, then item 6's entries
+  for 288 and 289.
+- The call-level failure went to preservation as `domain-advances-preservation-I023`, citing `vtwrpxps`.
+- **To the watcher**: `sync.py check` here reports 23 `has no manifest` errors, up from 21. Preservation's merge
+  `sqprlwkv` stamped session f28025bc on `mnwtrnrp` and `zmpzxkqn`. The cause is the one recorded above
+  (`link_commits`). I have not touched the trace lines.
+- 2026-11-18, item 5 and I005, state's last rules at its final commit `kmytvuop`, built apart (sources touched):
+  **`plplrxrt` holds, and four false proofs past `vwrmzmst`**, to be handed over.
+  - `plplrxrt` (its fix for I017): `stand_in_countermodels.rs` passes, and so does state's
+    `a_check_through_a_lemma_states_the_stand_in_the_lemmas_proof_rested_on` in `stand_in.rs`, which is my README's
+    checker-side test with stronger asserts. Read: a lemma's or an effect contract's proof passes on every assumption
+    of the kinds `Library`, `Gap` and `Contract`. Every engine note (a stand-in, a model on request, an observation,
+    a locale, a loop's end) is of the first kind, and a pair check passes the property's statement on whole.
+  - `vwrmzmst` keeps a JDK exception's message and cause from the constructor the engine ran, and models
+    `getMessage()`, `getLocalizedMessage()`, `getCause()` and `toString()` from them. The hole: the engine runs its
+    models of JDK classes as bytecode, and two of them throw the JDK's exception class with another message.
+    `List12.get` past its end throws `new IndexOutOfBoundsException()`, where the JDK says "Index: 2 Size: 1".
+    `HashMap(int)` of a negative capacity throws `new IllegalArgumentException()`, where the JDK says "Illegal
+    initial capacity: -1".
+  - The fixture is `lib/tests/fixtures/throwable-countermodels`. Its README has the table, the models' throws read
+    against the JDK, the commands, the options, the checker-side test, what was tried and the audit.
+    `lib/tests/throwable_countermodels.rs` holds it to a JVM.
+  - Each is **Verified** at `kmytvuop`, non-vacuous, with nothing stated beyond the assumption and JDK
+    initialization, where a JVM gives the JDK's message:
+    - `listed` and `listedText`: `List.of("a").get(k)`'s message proved null, and its `toString()` 35 units long
+      (53 on a JVM);
+    - `sized` and `sizedLocalized`: `new HashMap(k)`'s message and localized message proved null (28 units on a
+      JVM).
+  - Only the rule is wrong: on this line's checker each stops at the gap `jdk-reference-method` of the message
+    method.
+  - The README's checker-side test fails on all four at `kmytvuop`, as it should. The rule is state's, so nothing in
+    `lib/src` changes here. The test goes as a `failure` item to `domain-advances-state`, citing this commit; its id
+    goes in the next entry.
+  - **Tried and guarded**, read: an application override of `fillInStackTrace()` (refused) or `getMessage()` (run);
+    an exception the engine raises itself or a JDK call threw (no message kept, a gap); a `NullPointerException`,
+    whose message methods are its own; a merge's choice of message; a lemma's read (`reads_field`). The other
+    models' throws agree with the JDK's.
+  - *Audit*: no accepted result rests on the rule. 286's fixed task, proved over ASCII names in a probe, is not
+    decided, and 288's proof on 6.1.14 (job 20261117-235132) is no task. Whether their paths meet either throw was
+    not read. Nothing for the watcher.
+- Inbox: `domain-advances-challenge-I005` (state is finished at `kmytvuop`; challenge its last rules there): taken
+  on. `plplrxrt` and `vwrmzmst` are challenged above. `szmkotwz` (a framed field of a type the check makes no object
+  of, compared by identity), the example-level commits `srxyxsns`, `ownxunnx` and `kmytvuop`, and the earlier
+  `xokwnwqo` and `lwxvoqsy`/`krxzxzow` models are next. Per I005, I002 still holds: answered on 2026-11-17.
+- Tests: `test_costs.py run --changed` under `MemoryMax=8G` with `--rust-jobs 1` passed. After `estimate` and `tag`,
+  `throwable_countermodels.rs` and `tiers.rs` pass, and `lint` agrees.
+- Not yet challenged:
+  - state, final at `kmytvuop`: `szmkotwz`, `xokwnwqo`, `lwxvoqsy`/`krxzxzow`, and the example-level `srxyxsns`,
+    `ownxunnx` and `kmytvuop`, which go with item 6;
+  - evidence: `nzsypymy`;
+  - preservation: whatever it commits next, which is still working.
+- Next: state's `szmkotwz`, then its models (`xokwnwqo`, `lwxvoqsy`), then item 6's entries for 286's proposed claim,
+  288 and 289.
+- The throwable failure went to state as `domain-advances-state-I018`, citing `wuotsmsr`. `sync.py check` here still
+  reports the 23 `has no manifest` errors recorded above; none is new.
+- 2026-11-18, item 5, state's remaining rules at `kmytvuop` (the `/tmp/st10` build, sources touched): **`szmkotwz`,
+  `xokwnwqo` and `lwxvoqsy`/`krxzxzow` hold for everything tried**, no false proof. Probes were inline and capped,
+  each with a property a JVM breaks; the sources are scratch and are not kept.
+  - `szmkotwz`: a field of a type the check makes no object of (`FieldKind::Reference`), framed by identity under
+    `--writes`. A setter under `--writes this.name` that writes into the object such a field holds is refused in each
+    form tried:
+    - an `Object` field holding an `int[]`: `aastore`/`iastore`, `Engine::keeps`;
+    - a `StringBuilder`'s `append`: `builder_method`'s `keeps`;
+    - an application object behind an `Object` field: `putfield`;
+    - an `ArrayList` with its model: the model's own `putfield`;
+    - `Throwable.initCause`: a JDK gap under strict.
+    The referent is no input, so `Obj::given`, and every write gate asks `keeps`. In a contract's proof, any read of a
+    receiver's field is refused before the referent is reached (`reads_field`), so a builder there can't be read the
+    way item 3's lemma read one. Under `--gaps assume` the `initCause` gap is taken to change nothing, which is false
+    of the JDK but stated in the verdict.
+  - `xokwnwqo`:
+    - `StringJoiner.toString()` gives a new String on JDK 17, 21 and 25 alike (run on each), for one element and on a
+      repeat, as the model does. The empty join is the JDK's `new String()`, a gap.
+    - The `LinkedHashSet` order with a re-add is refuted where it should be.
+    - `toArray(new Integer[k])` of a String element is refused at the `aastore` (`ArrayStoreException`).
+    - `lastIndexOf(int)` of a surrogate pair and of a lone low surrogate is refuted where it should be.
+    - `getClass()` of an `int[]` is a gap, so `isArray()` is met only on a literal.
+    - A conservative miss, not a false result: `toArray(new String[0])` is a `String[]` on the checker, as on a JVM,
+      but the interpreter's replay gives a non-`String[]`, so the true counterexample is called spurious.
+  - `lwxvoqsy`/`krxzxzow`:
+    - the `PropertyChangeEvent` model's `toString()` is a JDK gap;
+    - an application subclass's override is run, the model's getter beside it, both refuted where they should be;
+    - `ArrayList.remove(Object)` calls `o.equals(element)` in the JDK's order;
+    - the model's iterator's `hasNext()` is `cursor != size`, as the JDK's, so a removal that leaves the cursor past
+      the end throws on `next()` in both.
+    - `Boolean.TRUE`/`FALSE` are only the two constants, and a call on one stays the JDK's.
+    - A sampler's narrowness is stated in the result (see the `qlylowvo` entry).
+  - *Audit*: nothing to audit, since no hole was found.
+- Inbox: no open items.
+- Tests: no test changed this cycle (Progress only).
+- Not yet challenged:
+  - state, final at `kmytvuop`: the example-level `srxyxsns`, `ownxunnx` and `kmytvuop`, which go with item 6;
+  - evidence: `nzsypymy`;
+  - preservation: whatever it commits next, which is still working.
+- Next: item 6's entries for 286's proposed claim (`claims/proposed/protected-age-kept-two-values.json`), 288's
+  `fixed-security` and binding (`ownxunnx`), and 289's other answers; `srxyxsns`'s adversarial fixture; then
+  `nzsypymy`.
+- 2026-11-18, item 6, 286's proposed claim (state's `kmytvuop`: two values whose names are inputs, ASCII, `result ==
+  0`): **two wrong implementations satisfy it**. Each is a patch of 5.3.19's `DataBinder.checkAllowedFields` under
+  286's `controls/`, used by no task, with the reasoning in 286's notes.
+  - `second-suppressed-last.patch` returns once it has suppressed two values.
+    - Predicted: the proposed and frozen claims are established on it; the decision lemma and `permitted-fields-preserved`
+      are as on 5.3.19 (its `isAllowed` is the fix's).
+    - On a JVM (JDK 25.0.5, the pinned JARs with the patched class first), with `AGE` disallowed: `aGe=1, AGE=2,
+      Age=32` binds 32, and 5.3.19 gives 0. Two values give 0, as the claim says.
+    - **The replay misses it too**: the driver's 46 probes and the oracle give "holds" and "pass", as on 5.3.19.
+    - The claim's two values move I009's limit from one value to two. Names as an array input up to the bound, or a
+      probe binding three denied names, would catch it.
+  - `all-dropped-once-suppressed.patch` drops every value once one is denied.
+    - Predicted: established under both protected-state claims, which read age alone, and as on 5.3.19 under the
+      claims about `isAllowed`.
+    - On a JVM, `name=bob` beside `Age=32` leaves name null, and 5.3.19 binds it. The replay catches it: 11 legitimate
+      failures across 9 bind probes.
+    - No claim says that a permitted value beside a denied one is still bound.
+  - The claim is state's and the user's, so neither goes in as a claim here. They go as an inbox item to
+    `domain-advances-state`, citing this commit; the id goes in the next entry.
+  - *Audit*: no accepted result rests on the proposed claim, which no task uses. The frozen claim's accepted
+    refutation on 5.3.18 is a witness replayed on a JVM. Nothing for the watcher.
+- Inbox: no open items.
+- Tests: `validate_example.py 286` passed, and `test_costs.py run --changed` passed under `MemoryMax=8G` with
+  `--rust-jobs 1` (22 of 22).
+- Next: item 6's entries for 288's `fixed-security` and binding (`ownxunnx`) and for 289's other answers;
+  `srxyxsns`'s adversarial fixture; then `nzsypymy`.
 - Status: working
 
 ## Loop settings

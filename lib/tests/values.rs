@@ -443,8 +443,8 @@ fn a_concatenation_has_its_parts_content_up_to_a_named_cap() {
     verified(&cp, "nullConcatenated", Parameters { nullable: vec![0], ..bounded(3) });
     let [Arg::Str(a), Arg::Str(b)] = &refuted(&cp, "concatenationCommutes", bounded(2))[..] else { panic!() };
     assert_ne!(a, b);
-    verified(&cp, "longJoin", bounded(7));
-    no_verdict(&cp, "longJoin", bounded(8), "a concatenation of up to 72 code units, beyond the own checker's content cap of 64");
+    verified(&cp, "longJoin", bounded(8));
+    no_verdict(&cp, "longJoin", bounded(29), "a concatenation of up to 261 code units, beyond the own checker's content cap of 256");
     verified(&cp, "numbered", bounded(3));
     no_verdict(&cp, "truthNamed", bounded(3), "jdk-primitive-method");
 }
@@ -820,6 +820,16 @@ const OPERATION_CASES: &[Case] = &[
     case(OPS, "indexOfChar", &[3, C, C, C, 0x110000]),
     case(OPS, "indexOfChar", &[0, 0, 0, 0, C]),
     case(OPS, "indexOfChar", &[-1, 0, 0, 0, C]),
+    case(OPS, "lastIndexOfChar", &[3, C, 0, C, C]),
+    case(OPS, "lastIndexOfChar", &[3, C, 0, C, 0]),
+    case(OPS, "lastIndexOfChar", &[3, C, HIGH, LOW, LOW]),
+    case(OPS, "lastIndexOfChar", &[3, SMILE.0, SMILE.1, SMILE.0, 0x1F600]),
+    case(OPS, "lastIndexOfChar", &[3, SMILE.0, SMILE.1, C, 0x1F600]),
+    case(OPS, "lastIndexOfChar", &[2, SMILE.1, SMILE.0, 0, 0x1F600]),
+    case(OPS, "lastIndexOfChar", &[3, C, C, C, -1]),
+    case(OPS, "lastIndexOfChar", &[3, C, C, C, 0x110000]),
+    case(OPS, "lastIndexOfChar", &[0, 0, 0, 0, C]),
+    case(OPS, "lastIndexOfChar", &[-1, 0, 0, 0, C]),
     case(OPS, "indexOfCharFrom", &[3, C, 0, C, C, 1]),
     case(OPS, "indexOfCharFrom", &[3, C, 0, C, C, -5]),
     case(OPS, "indexOfCharFrom", &[3, C, 0, C, C, 3]),

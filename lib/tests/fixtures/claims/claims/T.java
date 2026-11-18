@@ -34,6 +34,22 @@ public final class T {
         return s.indexOf(c, from) == want && s.indexOf(c) == first;
     }
 
+    /**
+     * {@code lastIndexOf(int)}, written out: the last index whose unit is the character, or for a supplementary code
+     * point whose unit and the next are its surrogate pair; -1 for none, and for a value that is no code point.
+     */
+    public static boolean lastIndexOfPoint(String s, int ch) {
+        int want = -1;
+        for (int i = 0; i < s.length(); i++) {
+            if (ch >= 0 && ch < 0x10000) {
+                if (s.charAt(i) == ch) want = i;
+            } else if (ch >= 0x10000 && ch < 0x110000 && i + 1 < s.length()) {
+                if (s.charAt(i) == 0xD800 + ((ch - 0x10000) >> 10) && s.charAt(i + 1) == 0xDC00 + ((ch - 0x10000) & 0x3ff)) want = i;
+            }
+        }
+        return s.lastIndexOf(ch) == want;
+    }
+
     public static boolean substring(String s, int b, int e) {
         String r;
         try {

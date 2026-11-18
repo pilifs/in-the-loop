@@ -8,7 +8,9 @@ package java.util;
  * <p>Kept, each as the JDK's does it: {@code ArrayList()}; {@code ArrayList(int)}, with its
  * {@code IllegalArgumentException} for a negative capacity; {@code size()}, {@code isEmpty()}; {@code get(int)},
  * with its {@code IndexOutOfBoundsException}; {@code add(E)}, which returns true; {@code addAll(Collection)}, the
- * elements of the collection's {@code toArray()} appended, true if there were any; {@code toArray()} and
+ * elements of the collection's {@code toArray()} appended, true if there were any; {@code remove(Object)}, the first
+ * element the argument {@code equals} (null: the first null) taken out and those after it moved up, true if there was
+ * one, a change only then; {@code toArray()} and
  * {@code toArray(T[])} (the given array when the elements fit, with a null after them when it is longer, else a
  * new array of its class); and {@code iterator()}, with {@code hasNext()} and {@code next()}, fail-fast
  * ({@code ConcurrentModificationException} after a change the iterator did not make, {@code NoSuchElementException}
@@ -20,7 +22,7 @@ package java.util;
  * thrown here are the JDK's.
  *
  * <p>Left out, each the JDK call it names: every other constructor and method (the model extends the JDK's
- * {@code AbstractList}, whose methods the checker does not run: {@code set}, {@code remove}, {@code contains},
+ * {@code AbstractList}, whose methods the checker does not run: {@code set}, {@code remove(int)}, {@code contains},
  * {@code indexOf}, {@code clear}, {@code equals}, {@code hashCode}, {@code listIterator}, {@code subList},
  * {@code forEach}, {@code stream}, ...), and the iterator's {@code remove()}. A {@code toArray(T[])} whose array
  * cannot hold an element is an {@code ArrayStoreException} on a JVM, which the checker's array stores do not model.
@@ -76,6 +78,37 @@ public class ArrayList<E> extends AbstractList<E> implements List<E>, RandomAcce
             elements[size + i] = a[i];
         }
         size += a.length;
+        return true;
+    }
+
+    public boolean remove(Object o) {
+        int i = 0;
+        found: {
+            if (o == null) {
+                for (; i < size; i++) {
+                    if (elements[i] == null) {
+                        break found;
+                    }
+                }
+            } else {
+                for (; i < size; i++) {
+                    if (o.equals(elements[i])) {
+                        break found;
+                    }
+                }
+            }
+            return false;
+        }
+        modCount++;
+        Object[] rest = new Object[size - 1];
+        for (int j = 0; j < i; j++) {
+            rest[j] = elements[j];
+        }
+        for (int j = i + 1; j < size; j++) {
+            rest[j - 1] = elements[j];
+        }
+        elements = rest;
+        size--;
         return true;
     }
 

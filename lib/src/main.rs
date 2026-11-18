@@ -712,11 +712,27 @@ struct ProveArgs {
     /// integral and boolean parameters and Strings, with the tool's own checker (`--engine native`).
     #[arg(long)]
     decreases: Option<String>,
+    /// The method's write set, a first effect contract: the fields of its receiver and object parameters it may
+    /// write, comma-separated (`this.displayName`), or nothing (`--writes ''`). The check then also proves the
+    /// frame: after a call that returns or throws an exception `--throws` declares, every other field of those
+    /// inputs is what it was (a primitive by value, a String or an object by identity), stated in the assertion so
+    /// that a witness replays. It is a frame of locations: inputs of one class may be one object, and a field one
+    /// of them names is written for both. And the tool's own
+    /// checker refuses inside the call a write to anything else that was there before it (a static field, an
+    /// array, an object none of the inputs is). With the tool's own checker (`--engine native`).
+    #[arg(long)]
+    writes: Option<String>,
     /// Lemmas, as a properties file (a target line, then indented `assume:`, `assert:` and `decreases:` lines):
     /// each is proved first, at this check's bounds, and its method's calls in this check are then its summary:
     /// within its assumption and those bounds a call returns what the lemma states, and any other runs the method
     /// as written. Of public static methods over integral and boolean parameters and Strings that change nothing
     /// a caller could see, which the proof of each also shows; with the tool's own checker (`--engine native`).
+    /// A declaration with a `writes:` line is an effect contract of a public instance method: proved first with its
+    /// write set's frame and as reading nothing that was there before the call (a static field only if it is a
+    /// constant), and then, at a call on a receiver and object arguments of exactly their declared classes with
+    /// arguments within its bounds, the call makes the writes it states (a field the
+    /// assertion gives a parameter as `this.f == p` takes it, any other written field any value of its primitive
+    /// type) and nothing else.
     #[arg(long)]
     lemmas: Option<PathBuf>,
     /// A class whose initializer the tool's own checker is not to run, `pkg.Class`; may be repeated. The class is
@@ -734,6 +750,16 @@ struct ProveArgs {
     /// the model as what it rests on. Not with --cache.
     #[arg(long = "model")]
     model: Vec<String>,
+    /// A class of the check's class path, `pkg.Class`, that stands in for library methods the tool's own checker
+    /// can't run (reflection, introspection); may be repeated. Each public static method of it but main stands in for
+    /// an instance method: its first parameter is the exact class of the receivers it covers, the rest of its
+    /// descriptor the method's. Its main samples it against the method on a JVM, printing one line per sample,
+    /// `sample<TAB>input<TAB>the method's outcome<TAB>the stand-in's outcome`; it runs first, on the check's class
+    /// path, and the stand-in is taken only if the two outcomes are the same on each of at least one sample. The
+    /// stand-in's own calls run the method as written. The result states each stand-in it used as what it rests on:
+    /// sampled, not proved. Not with --cache.
+    #[arg(long = "stand-in")]
+    stand_in: Vec<String>,
     /// A local proof cache directory, never committed: a verified or refuted result is stored under the property
     /// claim's key (the code closure of the target and of what its inputs are made by, a construction plan's makers
     /// and setup calls included, the assertion, the assumptions, the domain, the plan whole, the bounds, the models,
@@ -954,7 +980,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                     }
                     selected
                 }
-                (None, Some(target)) => vec![property::Declaration { target: target.clone(), assume: args.assume.clone(), assert: args.assert_.clone(), throws: args.throws.clone(), max_array_length: None, unwind: None, decreases: args.decreases.clone() }],
+                (None, Some(target)) => vec![property::Declaration { target: target.clone(), assume: args.assume.clone(), assert: args.assert_.clone(), throws: args.throws.clone(), max_array_length: None, unwind: None, decreases: args.decreases.clone(), writes: args.writes.as_deref().map(|w| w.split(',').map(str::trim).filter(|f| !f.is_empty()).map(String::from).collect()) }],
                 (None, None) => return Err(Error::new("give a target `pkg.Class#method`, or --properties FILE")),
             };
             let mut outcomes = Vec::new();
@@ -992,9 +1018,12 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 options.plan = args.plan.as_deref().map(jvmcontract::construction::load).transpose().map_err(|u| Error::new(u.to_string()))?;
                 options.cache = args.cache.clone();
                 options.decreases = declaration.decreases.clone();
+                // A properties file's `writes:` line, or `--writes` for a target given on the command line.
+                options.writes = declaration.writes.clone();
                 options.lemmas = args.lemmas.clone();
                 options.observed_initializers = args.observed_initializer.clone();
                 options.requested_models = args.model.clone();
+                options.stand_ins = args.stand_in.clone();
                 let outcome = property::run(&options)?;
                 exit = exit.max(outcome.verdict.exit_code());
                 if !args.json {

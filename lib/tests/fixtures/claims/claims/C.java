@@ -96,6 +96,31 @@ public final class C {
         return ("\u0130" + s).toLowerCase(Locale.ROOT).length() > s.length();
     }
 
+    /**
+     * Example 286's blocker on its real path (DataBinder.isAllowed:828 on 5.3.19, field.toLowerCase() under the JVM's
+     * default against the disallowed "age"): only an ASCII spelling of age lowers to it. True for every String on a
+     * JVM under every locale, since no code point outside ASCII lowers to a, g or e (main sweeps them); the checker
+     * lowers ASCII only, so outside it the call is the JDK's, a gap.
+     */
+    public static boolean loweredToAge(String s) {
+        boolean spelled = s.length() == 3 && (s.charAt(0) | 0x20) == 'a' && (s.charAt(1) | 0x20) == 'g' && (s.charAt(2) | 0x20) == 'e';
+        return s.toLowerCase().equals("age") == spelled;
+    }
+
+    /** loweredToAge's premise on a JVM: under each locale of the table, every code point outside ASCII lowers to something that is not made of a, g and e alone. */
+    public static void main(String[] args) {
+        for (Locale l : LOCALES) {
+            for (int cp = 128; cp <= Character.MAX_CODE_POINT; cp++) {
+                String r = new String(Character.toChars(cp)).toLowerCase(l);
+                if (r.chars().allMatch(c -> c == 'a' || c == 'g' || c == 'e')) {
+                    System.out.println("U+" + Integer.toHexString(cp) + " lowers to " + r + " under " + l);
+                    return;
+                }
+            }
+        }
+        System.out.println("no code point outside ASCII lowers to a, g or e");
+    }
+
     /** Under a default that is a Locale the engine knows nothing of, toLowerCase() is the JDK's call. */
     public static boolean underAnUnknownDefault(String s) {
         Locale.setDefault(new Locale("tr"));

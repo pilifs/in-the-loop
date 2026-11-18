@@ -553,10 +553,42 @@ relational result needs a new check (the rule's applications recorded in the out
       with 288's result.
     - I025: merge the default line, then rerun `accept.py 307`. Taken next.
     - I026: 289's two wrong matchers. A decision on its probes, taken after I023; any claim goes to the user.
+- 2026-11-18, I025 (the merge; step 6's acceptance; *working formalization* and *accepted claim* unchanged).
+  - **The merge.** The default line to `qplqrrss` (`yknnwozx`: the challenge and state merges, and accept.py's check
+    of an overloaded target). Four code files conflicted, each two additions side by side, all kept:
+    - `bmc/mod.rs`: `Options` (the state line's frame, effects and stand-ins beside `calls_as_one_function`), `Obj`
+      (`content` beside `assumed`), the throwable model beside the logging one at a JDK instance call, and the table;
+    - `bmc/runtime.rs`: `getClass()` of a Throwable. This line takes one the run made, the state line one of a JDK
+      class no JDK call returned. Now it is either, and never one made under `--gaps assume` or given at a summary's
+      entry. `getSuperclass` sits beside `getTypeName` and `isArray`, and the levels but `OFF` beside
+      `Boolean.TRUE` and `FALSE`;
+    - `bmc/gaps.rs`: the constants of both lines;
+    - `lib/tests/rule_countermodels.rs`: both tests.
+    The notes of 289 and 290 held the same entries on both sides in another order, and the default line's were taken.
+    `costs.json` was re-estimated (lint agrees), the router rebuilt and the traces regenerated.
+  - **What the default run found in the merge, fixed.** The run failed four tests at first:
+    - jj's merge had removed 17 files that both parents hold byte for byte: the binding countermodels and their test,
+      and the `ob` rule fixtures. They are restored from the default line. Every other file differs from the parents
+      only where they differ from each other.
+    - Each line added one String record (`lastIndexOf(int)` on the state line, `getBytes(String)` here), so the
+      `values` test now counts 24. The model's leaves-out list names `lastIndexOf` too.
+    The default run then passed, 54 of 54. `the_encoding_estimate_…` failed once and passed on its second run, as
+    before.
+  - **307's acceptance.** `accept.py 307 preservation mutant-preservation` on the merged line:
+    - `preservation`: established and accepted (job `20261117-210114-…`, 13 checks).
+    - `mutant-preservation`: refuted, not accepted, on `replay` alone. The witness reproduced on a JVM, but accept.py
+      reads the harness at `work/harness/PropertyHarness.java`, and a pair's harness is at
+      `work/pair-work/harness/PropertyHarness.java`. The job collected that file (sha256 `301a4368…`, the bytes on
+      disk), and it returns before the call where the claim's assumption does not hold. This is the third point of
+      step 6's request.
+    - For the evidence stream (accept.py is theirs): please let `replay` read a pair's harness at `work/pair-work/`.
+      307's notes record this.
+  - **Inbox.** I025 is done above, but for that one check. I023 and I026 are next. I024 was answered in the last
+    entry. No item came in after I026.
 - Next:
-  1. I025: merge the default line, run `accept.py 307 preservation mutant-preservation`, and record it.
-  2. I023: the `function-countermodels` fixture, `lib/tests/function_countermodels.rs`, and `--no-shared-callees`.
-  3. I026: 289's probes (`dot-inside-pattern`, or a probe whose pattern reads the query).
+  1. I023: the `function-countermodels` fixture, `lib/tests/function_countermodels.rs`, and `--no-shared-callees`.
+  2. I026: 289's probes (`dot-inside-pattern`, or a probe whose pattern reads the query).
+  3. When accept.py reads a pair's harness, `accept.py 307 mutant-preservation` again.
 - Status: working
 
 ## Loop settings
