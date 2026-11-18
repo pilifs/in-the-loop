@@ -1,7 +1,7 @@
 ---
 name: single-agent-run
 description: Run one agent toward one outcome, as its watcher. The agent is given a starting prompt, and after each of its context windows the watcher judges whether it gets another, which takes the run's continue message. That message is the user's alone: a person can change it between two cycles, from their own terminal, to steer the run, and the watcher never does. For a goal well within one agent's reach, where a brief with streams would be more than it needs. Start it only when the user asks for this skill or for such a run, never as a step of other work: a run takes hours and spends their tokens.
-argument-hint: "[--name NAME] [--brief FILE] [--continue \"TEXT\"] [--workspace NAME] [--cycles N] [--fork SESSION | --session SESSION] [--model ID] [--effort LEVEL] [--memory SIZE] [--verdict-wait SECONDS] [--unattended] [--summary-interval SECONDS] <the starting prompt>"
+argument-hint: "[--name NAME] [--brief FILE] [--continue \"TEXT\"] [--workspace NAME] [--cycles N] [--fork SESSION | --session SESSION] [--client claude|codex] [--model ID] [--effort LEVEL] [--memory SIZE] [--verdict-wait SECONDS] [--unattended] [--summary-interval SECONDS] <the starting prompt>"
 model: claude-opus-5-5
 effort: high
 ---
@@ -14,9 +14,12 @@ foundation and no merge loop. You are one session, on Opus 5.5, and you do none 
 agent, you are called back when its turn ends, you judge whether it gets another, and you keep the user informed.
 Everything you run is `python3 llm-dlc/tools/single_run.py`, whose own first lines say what each command does.
 
-- **You run on Opus 5.5.** If you are another model, say so and stop: the user switches with `/model` and runs the
-  skill again.
-- **Any Opus 5.5 session of this checkout can be the watcher**, one that is already open and has done other work
+- **You run on Opus 5.5 in Claude Code, or on Sol 6.2 in Codex**, the two models approved for the watcher's role.
+  If you are another model, say so and stop: the user switches models (`/model`) and runs the skill again.
+- **Where this says "as a background task"**: Claude Code runs such a command in the background and calls you
+  back when it exits. In a client without that, run the `wait` in the foreground with its own `--timeout SECONDS`
+  and run it again when it returns with nothing.
+- **Any Opus 5.5 or Sol 6.2 session of this checkout can be the watcher**, one that is already open and has done other work
   included. Nothing of the run lives in your context: it is all in files
   (`llm-dlc/loop-summaries/single-NAME/`), so a session that was compacted, or a new one that takes a run over,
   reads where the run stands and goes on (see "A run under way").
@@ -32,6 +35,14 @@ Everything you run is `python3 llm-dlc/tools/single_run.py`, whose own first lin
 - **Nothing is pushed** unless the user asks.
 
 The request: $ARGUMENTS
+
+(If the line above ends in a placeholder and not in a request, your client does not fill it in: the request is
+what the user wrote when they named this skill.)
+
+`--client claude|codex` says who carries the agent's turns: Claude Code (the default) or Codex, which runs the
+model the operator's equivalences give for the one named (Astra 6.2 for Fable 5.2, Sol 6.2 for Opus 5.5; `start`
+prints it as `runs`). The prompt and the continue message reach either client word for word, a run keeps the
+client it started with, and a Codex cycle's cost is reported as unknown, with its tokens.
 
 What is not an option is the **starting prompt**: the user's words for the outcome, passed on as they are.
 `--continue "TEXT"` is what every later cycle is told, passed on as it is; without it the tool has a default that

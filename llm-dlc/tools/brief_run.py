@@ -34,6 +34,15 @@ intervals. This is what it runs. BRIEF is a brief's name or file, as run-streams
         `merge` question for it (`merged`), and records the merge in the brief's Progress, whose status it sets
         to `done` once every stream is merged and says done, and commits that. Run again after a merge made by
         hand, it records that merge. A merge that conflicts in real work is taken back and reported.
+    brief_run.py start BRIEF [--agent claude|codex] [--stream-agent STREAM=CLIENT ...]
+        who carries the streams' turns: Claude Code (the default) or Codex, for the run and for single streams
+        (`--agent claude --stream-agent b=codex` is a mixed run, `--agent codex` Codex throughout). The briefs keep
+        their models' names; agent_client.py resolves the Codex model for each by the operator's equivalences,
+        and the effort is passed on. The choice is recorded with the run and a later `start` keeps it; `preflight`
+        and `status` show each stream's client, the model it runs and its effort before a turn is spent, and
+        refuse a model with no equivalent, a Codex stream that would fork a Claude Code conversation, and a Codex
+        that is not given this checkout's CLAUDE.md. `foundation BRIEF --agent codex` runs the foundation with
+        Codex (Astra 6.2 for Fable 5.2). A stream keeps the client its session began with.
     brief_run.py merge BRIEF STREAM --early
         the same merge for a stream that is still at work: its line as committed so far comes in, what its
         session has not committed stays where it is, no question is answered and the brief's status is left
@@ -111,6 +120,7 @@ import time
 import uuid
 from pathlib import Path
 
+import agent_client
 import conductor
 import decisions
 import doctor
@@ -375,6 +385,16 @@ def preflight(run: Run) -> dict:
         if not path.is_file():
             blocking.append(f"the stream {s['label']} has no brief: {s['brief']}")
             continue
+        row["client"] = client_of(run, s["label"], path)
+        row["effort"] = setting(path, "effort") or LOOP_DEFAULTS["effort"]
+        try:
+            row["runs"] = agent_client.plan(row["client"], row["model"] or LOOP_DEFAULTS["model"], row["effort"])["model"]
+        except agent_client.Problem as e:
+            blocking.append(f"the stream {s['label']} ({row['client']}): {e}")
+        if row["client"] == "codex" and row["fork"]:
+            blocking.append(f"the stream {s['label']} is Codex's and its brief says `- fork: {row['fork']}`: Codex cannot continue "
+                            f"a Claude Code conversation. Take the fork out of {s['brief']} (the brief and its inbox are the "
+                            f"handoff both clients read), or give the stream to Claude Code")
         forks.add(row["fork"])
         if not SESSION.fullmatch(row["session"] or ""):
             blocking.append(f"{s['brief']} has no `- session: UUID` in its Loop settings: without one it would share the loops' default session")
@@ -397,6 +417,9 @@ def preflight(run: Run) -> dict:
             row["status"] = streams_status.brief_status((folder if ws in known else root) / s["brief"]) or None
             if not row["status"]:
                 blocking.append(f"{s['brief']} has no `- Status:` line at the end of its Progress")
+    if any(row.get("client") == "codex" for row in out["streams"]):
+        blocking += codex_ready(root)
+    out["agents"] = agents(run) or None
     if len(forks) > 1:
         blocking.append("the streams fork different sessions: all the same one, or none")
     for fork in forks - {None}:
@@ -429,6 +452,44 @@ def preflight(run: Run) -> dict:
     return out
 
 
+LOOP_DEFAULTS = {"model": "claude-fable-5-1", "effort": "high"}  # feature-loop.sh's, for a brief that names none
+
+
+def agents(run: Run) -> dict:
+    """The run's choice of client: {"default": CLIENT, "streams": {LABEL: CLIENT}}, as `start` recorded it."""
+    return dict(run.read().get("agents") or {})
+
+
+def client_of(run: Run, label: str, brief: Path | None = None) -> str:
+    """Who carries a stream's turns: the run's word for the stream, else the run's for all, else the brief's own
+    `- client:` setting, else Claude Code. feature-loop.sh takes them in the same order."""
+    chosen = agents(run)
+    return ((chosen.get("streams") or {}).get(label) or chosen.get("default")
+            or (setting(brief, "client") if brief else "") or "claude")
+
+
+def codex_ready(root: Path) -> list[str]:
+    """What stands in the way of a Codex worker here: no client, or one that is not given this checkout's CLAUDE.md."""
+    import shutil
+    if not shutil.which(os.environ.get("AGENT_CLIENT_CODEX") or "codex"):
+        return ["a stream is Codex's, and there is no `codex` on the PATH"]
+    return [f"Codex would not be given this checkout's instructions: {p}" for p in agent_client.instructions(root)["problems"]]
+
+
+def set_agents(run: Run, agent: str | None, stream_agents: list[str]) -> None:
+    chosen = agents(run)
+    streams = dict(chosen.get("streams") or {})
+    known = [s["label"] for s in run.plan["streams"]] or ["brief"]
+    for pair in stream_agents:
+        label, _, client = pair.partition("=")
+        if label not in known or client not in agent_client.CLIENTS:
+            raise Problem(f"--stream-agent takes STREAM=CLIENT, a stream of {', '.join(known)} and one of "
+                          f"{', '.join(agent_client.CLIENTS)}: {pair!r}")
+        streams[label] = client
+    if agent or stream_agents:
+        run.update(agents={"default": agent or chosen.get("default") or "claude", "streams": streams})
+
+
 def cmd_preflight(run: Run) -> int:
     out = preflight(run)
     print(json.dumps(out, indent=1))
@@ -448,7 +509,8 @@ def foundation_prompt(run: Run, text: str | None) -> str:
             f"stream should know before its first cycle.")
 
 
-def cmd_foundation(run: Run, model: str | None, effort: str | None, memory: str | None, prompt: str | None) -> int:
+def cmd_foundation(run: Run, model: str | None, effort: str | None, memory: str | None, prompt: str | None,
+                   agent: str | None = None) -> int:
     known = workspaces(run.root)
     ws = run.foundation_workspace
     folder = known.get(ws) or run.root.parent / f"{run.root.name}-{ws}"
@@ -463,10 +525,24 @@ def cmd_foundation(run: Run, model: str | None, effort: str | None, memory: str 
         subprocess.run([sys.executable, "llm-dlc/tools/sync.py", "adopt-logs"], cwd=folder, capture_output=True, text=True)
     before = run.read().get("foundation") or {}
     session = before.get("session") or str(uuid.uuid4())
-    command = ["claude", "-p", foundation_prompt(run, prompt), "--model", model or FOUNDATION["model"],
-               "--effort", effort or FOUNDATION["effort"],
-               *(["--resume", session] if watch.transcript(folder, session).exists() else ["--session-id", session]),
-               "--permission-mode", "auto", "--output-format", "stream-json", "--verbose"]
+    # The session keeps the client it began with; a new one takes the stage's word, else the run's.
+    client = before.get("client") or agent or agents(run).get("default") or "claude"
+    if agent and agent != client:
+        raise Problem(f"the foundation session {session} is {client}'s: a session keeps its client")
+    try:
+        resolved = agent_client.plan(client, model or FOUNDATION["model"], effort or FOUNDATION["effort"])
+    except agent_client.Problem as e:
+        raise Problem(str(e))
+    if client == "codex":
+        for problem in codex_ready(folder):
+            raise Problem(problem)
+        command = [sys.executable, str(Path(agent_client.__file__).resolve()), "run", "--client", "codex", "--session", session,
+                   "--model", resolved["model"], "--effort", resolved["effort"], "--cwd", str(folder), foundation_prompt(run, prompt)]
+    else:
+        command = ["claude", "-p", foundation_prompt(run, prompt), "--model", model or FOUNDATION["model"],
+                   "--effort", effort or FOUNDATION["effort"],
+                   *(["--resume", session] if watch.transcript(folder, session).exists() else ["--session-id", session]),
+                   "--permission-mode", "auto", "--output-format", "stream-json", "--verbose"]
     memory = memory or doctor.budget(doctor.machine())["loopMemory"]
     if memory != "none":  # a scope named as a loop's, so whoever shares the machine out counts it as one
         command = ["systemd-run", "--user", "--scope", "--quiet", "--collect", f"--unit=feature-loop-{ws}",
@@ -475,7 +551,8 @@ def cmd_foundation(run: Run, model: str | None, effort: str | None, memory: str 
     log = run.dir / "foundation.jsonl"
     started = conductor.now()
     base = watch.head_change(folder)
-    run.update(foundation={"session": session, "workspace": ws, "folder": str(folder), "started": started, "log": str(log),
+    run.update(foundation={"session": session, "client": client, "runs": resolved["model"], "effort": resolved["effort"],
+                           "workspace": ws, "folder": str(folder), "started": started, "log": str(log),
                            "offset": log.stat().st_size if log.exists() else 0, "attempt": before.get("attempt", 0) + 1})
     result = None
     with open(log, "a") as out:
@@ -1381,11 +1458,12 @@ def tend(run: Run) -> dict | None:
 
 # -- the run
 
-def cmd_start(run: Run) -> int:
+def cmd_start(run: Run, agent: str | None = None, stream_agents: list[str] | tuple = ()) -> int:
     data = run.read()
     if watch.alive((data.get("run") or {}).get("pid")):
         print(f"the run is already under way (pid {data['run']['pid']})")
         return 0
+    set_agents(run, agent, list(stream_agents))
     check = preflight(run)
     if check["blocking"]:
         print(json.dumps({"blocking": check["blocking"]}, indent=1), file=sys.stderr)
@@ -1395,6 +1473,12 @@ def cmd_start(run: Run) -> int:
         (run.dir / name).unlink(missing_ok=True)
     env = {**os.environ, "RUN_STREAMS_WATCHER": str(run.dir), "RUN_STREAMS_NEW_WINDOW": "no"}
     env.pop("LOOP_CONDUCTOR", None)  # another loop's, if this session carries one: each stream is given its own
+    chosen = agents(run)
+    env.pop("RUN_STREAMS_AGENT", None)
+    env.pop("RUN_STREAMS_AGENTS", None)
+    if chosen:  # the run's own word on who carries each loop; without one a brief's `- client:` setting stands
+        env["RUN_STREAMS_AGENT"] = chosen.get("default") or "claude"
+        env["RUN_STREAMS_AGENTS"] = ",".join(f"{k}={v}" for k, v in (chosen.get("streams") or {}).items())
     for key in ("TMUX", "TMUX_PANE"):  # the watcher's pane is not the run's: no status bar is drawn on it
         env.pop(key, None)
     with open(run.dir / "streams.log", "a") as out:
@@ -1402,6 +1486,10 @@ def cmd_start(run: Run) -> int:
                              stdin=subprocess.DEVNULL, stdout=out, stderr=subprocess.STDOUT, start_new_session=True)
     run.update(run={"pid": p.pid, "started": conductor.now(), "log": str(run.dir / "streams.log")}, told=[], lastSummary=None)
     print(f"started the run of {run.brief} (pid {p.pid}); its output: {run.dir / 'streams.log'}")
+    for row in check["streams"]:
+        if row.get("client") and (row["client"] != "claude" or chosen):
+            print(f"  {row['label']}: {row['client']}, {row.get('runs')} at {row.get('effort')} effort"
+                  + (f" (for the brief's {row['model']})" if row.get("model") and row.get("runs") != row["model"] else ""))
     return 0
 
 
@@ -1468,6 +1556,7 @@ def state(run: Run) -> dict:
         rows.append({"loop": label, "time": times(run, label, started or 0, until, streams_end) if started else None, "status": streams_status.brief_status(folder / brief) or None, "phase": phase or "not started",
                      "cycle": streams_status.read(run.dir / f"{label}.cycle") or None,
                      "commits": streams_status.commits(folder, brief), "spent": round(streams_status.spend(run.dir, label), 2),
+                     "unpriced": dict(zip(("turns", "tokensIn", "tokensOut"), streams_status.unknown(run.dir, label))),
                      "head": watch.head_change(folder) if folder.exists() else None,
                      **({"merged": merged_in(run.root, ws)} if (ws := workspace_of(check, label)) else {})})
     result = re.search(r"^- Result: (.+)$", streams_status.read(run.report), re.M)
@@ -1507,7 +1596,7 @@ def open_decisions(run: Run) -> list[str]:
 
 def summary(run: Run, s: dict) -> str:
     last = (run.read().get("lastSummary") or {}).get("loops") or {}
-    lines = [f"### {watch.clock(watch.now())} UTC · {s['elapsed'] or 'not started'} into the run of {s['brief']} · ${s['spent']:.2f}"]
+    lines = [f"### {watch.clock(watch.now())} UTC · {s['elapsed'] or 'not started'} into the run of {s['brief']} · {streams_status.dollars(s['spent'], sum((r.get('unpriced') or {}).get('turns') or 0 for r in s['loops']))}"]
     f = s.get("foundation") or {}
     if f.get("ended"):
         lines.append(f"- **foundation**: {'ended' if f.get('ok') else 'ended with an error'}"
@@ -1520,7 +1609,10 @@ def summary(run: Run, s: dict) -> str:
                      + (f" ({r['phase']})" if r["phase"] not in ("running", "not started") and not r["phase"].startswith("finished") else "")
                      + ("; merged" if r.get("merged") else "")
                      + f"; cycle {r['cycle'] or '-'}, {r['commits']} commits" + (f" (+{moved})" if was and moved else "")
-                     + f", ${r['spent']:.2f}" + (f"; at {r['head']}" if r["head"] and (not was or was.get("head") != r["head"]) else ""))
+                     + f", {streams_status.dollars(r['spent'], (r.get('unpriced') or {}).get('turns'))}"
+                     + (f" ({r['unpriced']['turns']} turn(s) of unknown cost: {r['unpriced']['tokensIn']} tokens in, {r['unpriced']['tokensOut']} out)"
+                        if (r.get("unpriced") or {}).get("turns") else "")
+                     + (f"; at {r['head']}" if r["head"] and (not was or was.get("head") != r["head"]) else ""))
         spans = [f"{watch.span(v)} {k}" for k, v in (r.get("time") or {}).items() if v >= 60]
         if spans:
             lines.append("  - time: " + ", ".join(spans))
@@ -1660,8 +1752,12 @@ def cmd_stop(run: Run, now: bool) -> int:
 def main(argv: list[str] | None = None, root: Path = REPO) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     sub = ap.add_subparsers(dest="command", required=True)
-    for name in ("preflight", "land", "start", "status", "collect"):
+    for name in ("preflight", "land", "status", "collect"):
         sub.add_parser(name).add_argument("brief")
+    st = sub.add_parser("start")
+    st.add_argument("brief")
+    st.add_argument("--agent", choices=agent_client.CLIENTS, help="who carries the streams' turns (default: claude)")
+    st.add_argument("--stream-agent", action="append", default=[], metavar="STREAM=CLIENT", help="one stream's client")
     m = sub.add_parser("merge")
     m.add_argument("brief")
     m.add_argument("stream")
@@ -1706,6 +1802,7 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
     f.add_argument("--effort")
     f.add_argument("--memory", help="the session's memory cap (default: a loop's, by doctor.py; `none` for no scope)")
     f.add_argument("--prompt", help="in place of the stage's own instruction")
+    f.add_argument("--agent", choices=agent_client.CLIENTS, help="who carries the foundation session (default: the run's, else claude)")
     w = sub.add_parser("wait")
     w.add_argument("brief")
     w.add_argument("--interval", type=float)
@@ -1724,11 +1821,11 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
         if args.command == "budget":
             return cmd_budget(run, args.apply, args.restore)
         if args.command == "foundation":
-            return cmd_foundation(run, args.model, args.effort, args.memory, args.prompt)
+            return cmd_foundation(run, args.model, args.effort, args.memory, args.prompt, args.agent)
         if args.command == "land":
             return cmd_land(run)
         if args.command == "start":
-            return cmd_start(run)
+            return cmd_start(run, args.agent, args.stream_agent)
         if args.command == "merge":
             return cmd_merge(run, args.stream, args.early, args.out_of_order)
         if args.command == "trial":

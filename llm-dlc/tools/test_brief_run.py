@@ -97,6 +97,7 @@ FAKE_LOOP = textwrap.dedent('''\
     cd "$(dirname "$0")/../.." || exit 1
     name=$(basename "$1" .md)
     echo "$name $PWD" >>"$STATUSES/runs"
+    echo "$name ${FEATURE_LOOP_CLIENT:-unset}" >>"$STATUSES/clients"
     n=$(grep -c "^$name " "$STATUSES/runs")
     status=$(sed -n "${n}p" "$STATUSES/$name"); [[ -n "$status" ]] || status=$(tail -n 1 "$STATUSES/$name")
     sed -i "s/^- Status: .*/- Status: $status/" "$1"
@@ -1098,6 +1099,81 @@ class AStreamRunAgain(Fixture):
         self.assertNotIn("[b] feature-loop-made-up-b.scope holds", out)
         self.assertIn("--user stop feature-loop-made-up-a.scope", (self.statuses / "systemctl").read_text())
         self.assertEqual(sorted(self.runs()), ["made-up-a", "made-up-b"])
+
+
+class WhoCarriesAStream(Fixture):
+    """A run's choice of client, for all its streams and for single ones: shown before anything starts, refused
+    when a role has no model or the client is not given the checkout's instructions, and handed to each loop."""
+
+    def setUp(self):
+        super().setUp()
+        self.codex = mock.patch.dict(os.environ, {"AGENT_CLIENT_CODEX": str(TOOLS / "codex_standin.py"),
+                                                  "CODEX_STANDIN_STATE": str(Path(self.tmp.name) / "codex")})
+        self.codex.start()
+        self.addCleanup(self.codex.stop)
+        self.write("CLAUDE.md", "".join(f"- A made-up rule of this checkout, number {i}, long enough to be a marker.\n" for i in range(8)))
+        for s in self.STREAMS:
+            self.write(f"llm-dlc/loops/made-up-{s}.md", brief(workspace=f"made-up-{s}", extra=["- model: claude-opus-5-5"]))
+        self.jj(self.root, "commit", "-m", "the checkout's instructions, and each stream's model")
+
+    def streams_of(self) -> dict:
+        return {s["label"]: s for s in json.loads(self.run_tool("preflight", "made-up")[1])["streams"]}
+
+    @cost("tool")
+    def test_without_a_word_every_stream_is_claude_codes_and_a_brief_may_name_its_own_client(self):
+        rows = self.streams_of()
+        self.assertEqual({k: (r["client"], r["runs"], r["effort"]) for k, r in rows.items()},
+                         {"a": ("claude", "claude-opus-5-5", "high"), "b": ("claude", "claude-opus-5-5", "high")})
+        self.write("llm-dlc/loops/made-up-b.md", brief(workspace="made-up-b", extra=["- model: claude-fable-5-2", "- client: codex", "- effort: xhigh"]))
+        self.assertEqual((self.streams_of()["b"]["client"], self.streams_of()["b"]["runs"], self.streams_of()["b"]["effort"]),
+                         ("codex", "gpt-6.2-astra", "xhigh"))
+
+    @cost("tool")
+    def test_the_runs_choice_is_recorded_handed_to_each_loop_and_kept_by_a_later_start(self):
+        for name in ("made-up-a", "made-up-b"):
+            (self.statuses / name).write_text("done\n")
+        self.assertEqual(self.run_tool("start", "made-up", "--stream-agent", "c=codex")[0], 1)
+        self.assertEqual(self.run_tool("start", "made-up", "--stream-agent", "b=gemini")[0], 1)
+        with mock.patch.dict(os.environ, {"RUN_STREAMS_POLL": "1", "RUN_STREAMS_STATUS_EVERY": "1", "RUN_STREAMS_MERGE_WAIT": "1"}):
+            code, out, err = self.run_tool("start", "made-up", "--agent", "claude", "--stream-agent", "b=codex")
+            self.assertEqual(code, 0, err)
+            self.assertIn("b: codex, gpt-6.2-sol at high effort (for the brief's claude-opus-5-5)", out)
+            self.assertIn("a: claude, claude-opus-5-5 at high effort", out)
+            pid = self.run_of().read()["run"]["pid"]
+            until = time.time() + 120
+            while watch.alive(pid) and time.time() < until:
+                try:
+                    os.waitpid(pid, os.WNOHANG)
+                except ChildProcessError:
+                    pass
+                time.sleep(0.2)
+        self.assertEqual(sorted((self.statuses / "clients").read_text().splitlines()), ["made-up-a claude", "made-up-b codex"])
+        self.assertEqual(self.run_of().read()["agents"], {"default": "claude", "streams": {"b": "codex"}})
+        rows = self.streams_of()  # the recorded choice is what a later look, and a later start, goes by
+        self.assertEqual((rows["a"]["client"], rows["b"]["client"], rows["b"]["runs"]), ("claude", "codex", "gpt-6.2-sol"))
+
+    @cost("tool")
+    def test_a_role_with_no_model_a_fork_and_a_client_without_the_instructions_each_block_a_codex_stream(self):
+        run = self.run_of()
+        run.update(agents={"default": "codex", "streams": {}})
+        self.assertEqual(json.loads(self.run_tool("preflight", "made-up")[1])["blocking"], [])
+        self.write("llm-dlc/loops/made-up-a.md", brief(workspace="made-up-a"))  # no model: the loop's default has no equivalent
+        blocking = json.loads(self.run_tool("preflight", "made-up")[1])["blocking"]
+        self.assertEqual(len(blocking), 1)
+        self.assertIn("the stream a (codex): no Codex model stands for claude-fable-5-1", blocking[0])
+        self.write("llm-dlc/loops/made-up-a.md", brief(workspace="made-up-a", extra=["- model: claude-opus-5-5", "- fork: 00000000-0000-4000-8000-000000000001"]))
+        self.write("llm-dlc/loops/made-up-b.md", brief(workspace="made-up-b", extra=["- model: claude-opus-5-5", "- fork: 00000000-0000-4000-8000-000000000001"]))
+        blocking = " ".join(json.loads(self.run_tool("preflight", "made-up")[1])["blocking"])
+        self.assertIn("Codex cannot continue a Claude Code conversation", blocking)
+        for s in self.STREAMS:
+            self.write(f"llm-dlc/loops/made-up-{s}.md", brief(workspace=f"made-up-{s}", extra=["- model: claude-opus-5-5"]))
+        self.write("AGENTS.md", "other instructions\n")
+        blocking = json.loads(self.run_tool("preflight", "made-up")[1])["blocking"]
+        self.assertEqual(len(blocking), 1)
+        self.assertIn("AGENTS.md shadows CLAUDE.md", blocking[0])
+        (self.root / "AGENTS.md").unlink()
+        with mock.patch.dict(os.environ, {"AGENT_CLIENT_CODEX": "no-such-client-here"}):
+            self.assertIn("no `codex` on the PATH", json.loads(self.run_tool("preflight", "made-up")[1])["blocking"][0])
 
 
 class TheWatchersOwnShell(Fixture):

@@ -71,6 +71,7 @@ import time
 import uuid
 from pathlib import Path
 
+import agent_client
 import brief_run
 import conductor
 import doctor
@@ -142,8 +143,9 @@ def write(path: Path, text: str) -> None:
 
 
 def person_at_terminal() -> bool:
-    """Whether a person is typing this command (as sync.py's person_at_terminal): a session's shell is not one."""
-    return sys.stdin.isatty() and sys.stdout.isatty() and not os.environ.get("CLAUDECODE")
+    """Whether a person is typing this command (as sync.py's person_at_terminal): a session's shell is not one,
+    Claude Code's or Codex's, whose commands may have a terminal but carry its mark."""
+    return sys.stdin.isatty() and sys.stdout.isatty() and not (os.environ.get("CLAUDECODE") or os.environ.get("CODEX_THREAD_ID") or os.environ.get("CODEX_SESSION_ID"))
 
 
 def set_message(run: Run, text: str, why: str) -> bool:
@@ -262,8 +264,22 @@ def cmd_start(run: Run, a: argparse.Namespace) -> int:
     if at_work:
         raise Problem(f"another loop is at work in {folder} (pid {at_work[0]}): two loops in one working copy commit over "
                       f"each other. --workspace NAME gives this run a folder of its own")
+    # The client is chosen once, when the run starts, and a run keeps it: a session belongs to the client that began it.
+    client = data.get("client") or a.client or "claude"
+    if a.client and a.client != client:
+        raise Problem(f"the run {run.name} is {client}'s: a run keeps the client it started with. A new piece of work "
+                      f"with the other client takes another name")
+    try:
+        resolved = agent_client.plan(client, a.model or data.get("model") or MODEL, a.effort or data.get("effort") or EFFORT)
+    except agent_client.Problem as e:
+        raise Problem(str(e))
+    if client == "codex" and a.fork:
+        raise Problem("a Codex session cannot start as a fork of a Claude Code conversation: give it the brief and the "
+                      "prompt, which is the handoff both clients read")
     if new:
-        if a.session and not watch.transcript(folder, a.session).exists():
+        if a.session and client == "codex" and not agent_client.binding(a.session, folder):
+            raise Problem(f"no Codex session {a.session} of {folder} to continue (llm-dlc/loop-summaries/agent-sessions there)")
+        if a.session and client == "claude" and not watch.transcript(folder, a.session).exists():
             raise Problem(f"no session {a.session} of {folder} to continue ({watch.transcript(folder, a.session).parent})")
         projects = watch.transcript(folder, "x").parents[1]
         if a.fork and not list(projects.glob(f"*/{a.fork}.jsonl")):
@@ -284,6 +300,7 @@ def cmd_start(run: Run, a: argparse.Namespace) -> int:
                                             "base": base}]
     run.update(name=run.name, session=session, fork=a.fork if new else data.get("fork"), continued=bool(a.session) or data.get("continued", False),
                folder=str(folder), workspace=workspace, brief=brief, model=a.model or data.get("model") or MODEL,
+               client=client, runs=resolved["model"],
                effort=a.effort or data.get("effort") or EFFORT, memory=memory, cycles=cycles,
                verdictWait=a.verdict_wait or data.get("verdictWait") or VERDICT_WAIT, verification=queue,
                base=data.get("base") or base, legs=legs, told=[], lastSummary=None, loop=None,
@@ -296,7 +313,8 @@ def cmd_start(run: Run, a: argparse.Namespace) -> int:
         "started": run.name, "pid": pid, "session": session, "newSession": new and not a.session,
         "forkOf": data["fork"] if new else None, "folder": str(folder),
         "workspace": workspace, **({"workspaceMade": "now, from this line's last commit"} if made else {}),
-        "model": data["model"], "effort": data["effort"], "memory": memory, "cycles": cycles or "no limit",
+        "client": client, "model": data["model"], **({"runs": resolved["model"]} if resolved["model"] != data["model"] else {}),
+        "effort": data["effort"], "memory": memory, "cycles": cycles or "no limit",
         "firstCycleTakes": legs[-1]["first"], "continueMessage": run.message.read_text().strip(), "brief": brief,
         "verificationQueue": queue, "output": str(run.dir / "loop.log"),
         "next": f"run `python3 llm-dlc/tools/single_run.py wait {run.name}` as a background task"}, indent=1))
@@ -321,6 +339,7 @@ def cmd_loop(run: Run) -> int:
     env.update(LOOP_CONDUCTOR=str(run.dir), FEATURE_LOOP_RECORD_AS=run.loop, FEATURE_LOOP_FIRST=str(run.first),
                FEATURE_LOOP_CONTINUE=str(run.message), FEATURE_LOOP_SESSION=data["session"],
                FEATURE_LOOP_MODEL=data["model"], FEATURE_LOOP_EFFORT=data["effort"],
+               FEATURE_LOOP_CLIENT=data.get("client") or "claude",
                FEATURE_LOOP_JUDGE_WAIT=str(data["verdictWait"]))
     if data["memory"] == "none":
         env["FEATURE_LOOP_UNCAPPED"] = "1"
@@ -441,7 +460,9 @@ def state(run: Run) -> dict:
     history = messages(run)
     return {"name": run.name, "running": running, "pid": loop.get("pid") if running else None,
             "session": data.get("session"), "folder": str(folder), "workspace": data.get("workspace"),
-            "model": data.get("model"), "effort": data.get("effort"), "brief": data.get("brief"),
+            "client": data.get("client") or "claude", "model": data.get("model"),
+            **({"runs": data["runs"]} if data.get("runs") and data.get("runs") != data.get("model") else {}),
+            "effort": data.get("effort"), "brief": data.get("brief"),
             "started": loop.get("started"), "ended": loop.get("ended"), "status": loop.get("status"),
             "elapsed": watch.span(watch.now() - first) if first else None, "legs": len(data.get("legs") or []),
             "cycle": under_way,
@@ -710,6 +731,9 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
     s.add_argument("--workspace")
     s.add_argument("--session")
     s.add_argument("--fork")
+    s.add_argument("--client", choices=agent_client.CLIENTS,
+                   help="who carries the agent's turns: claude (the default) or codex, for which the model's name is "
+                        "resolved by the operator's equivalences (agent_client.py)")
     s.add_argument("--model")
     s.add_argument("--effort")
     s.add_argument("--memory", help="the loop's memory cap, as 12G; `none` runs it uncapped")

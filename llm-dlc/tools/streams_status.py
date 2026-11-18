@@ -44,6 +44,9 @@ import time
 from pathlib import Path
 
 TURN_DONE = re.compile(r"turn done: .*\$([0-9]+(?:\.[0-9]+)?)\s*$")
+# A turn of a client that reports tokens and no dollars (Codex, through agent_client.py): its cost is not known,
+# and is shown as unknown beside the dollars that are, never as nought.
+TURN_UNKNOWN = re.compile(r"turn done: .*cost unknown \(\w+: ([0-9]+) tokens in, ([0-9]+) out\)\s*$")
 CYCLE = re.compile(r"\] cycle ([0-9]+)\b")
 FORK = re.compile(r"\] starting session \S+ as a fork of \S+")
 RECORD_CYCLE = re.compile(r"^- cycle [0-9]+,", re.M)
@@ -73,6 +76,10 @@ def tag(label, state):
                 with open(state / f"{label}.cost", "a") as f:
                     f.write(("=" if forking else "") + m.group(1) + "\n")
                 forking = False
+            m = TURN_UNKNOWN.search(line)
+            if m:
+                with open(state / f"{label}.cost", "a") as f:
+                    f.write(f"?{m.group(1)}:{m.group(2)}\n")  # not a figure: spend() passes over it
             m = CYCLE.search(line)
             if m:
                 (state / f"{label}.cycle").write_text(m.group(1) + "\n")
@@ -93,6 +100,22 @@ def read(path, default=""):
         return Path(path).read_text().strip()
     except OSError:
         return default
+
+
+def unknown(state, label):
+    """The turns of a loop whose cost is not known, with their tokens: (turns, tokens in, tokens out). A turn's
+    count is that turn's alone (Codex reports each turn's), so they add up."""
+    turns = tokens_in = tokens_out = 0
+    for line in read(Path(state) / f"{label}.cost").split():
+        m = re.fullmatch(r"\?([0-9]+):([0-9]+)", line)
+        if m:
+            turns, tokens_in, tokens_out = turns + 1, tokens_in + int(m.group(1)), tokens_out + int(m.group(2))
+    return turns, tokens_in, tokens_out
+
+
+def dollars(cost, turns):
+    """A spend for display: the dollars known, and a mark when turns of unknown cost are not in them."""
+    return (f"${cost:.2f}+?" if cost else "$?") if turns else f"${cost:.2f}"
 
 
 def spend(state, label):
@@ -150,10 +173,12 @@ def short(status, width=20):
 
 def render(name, state, start, loops, integration=None, now=None):
     now = time.time() if now is None else now
-    parts, total = [], 0.0
+    parts, total, unpriced = [], 0.0, 0
     for label, workspace, brief in loops:
         cost = spend(state, label)
         total += cost
+        turns = unknown(state, label)[0]
+        unpriced += turns
         phase = read(Path(state) / f"{label}.phase")
         if not phase:
             continue  # not started in this run, and nothing recorded: left out
@@ -169,8 +194,8 @@ def render(name, state, start, loops, integration=None, now=None):
                 idle = " " + age(now - float(last))
             except ValueError:
                 pass
-        parts.append(f"{label} c{cycle or '-'} {commits(workspace, brief)}✓ ${cost:.2f} {short(phase)}{idle}")
-    head = [f"{name} {age(now - start)} ${total:.2f}"]
+        parts.append(f"{label} c{cycle or '-'} {commits(workspace, brief)}✓ {dollars(cost, turns)} {short(phase)}{idle}")
+    head = [f"{name} {age(now - start)} {dollars(total, unpriced)}"]
     if integration:
         text = read(integration)
         m = re.search(r"^- Result: (\S+)", text, re.M)

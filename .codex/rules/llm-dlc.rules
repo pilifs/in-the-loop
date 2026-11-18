@@ -1,0 +1,9 @@
+# Codex's counterpart of the permissions in .claude/settings.json, which stay the original: the commands the
+# llm-dlc procedure runs are allowed, and the decisions only a person may take are forbidden. The tools refuse
+# those from an agent's shell as well (sync.py person_at_terminal), which holds where these rules are not loaded:
+# Codex reads a project's rules only once the project is trusted.
+prefix_rule(pattern = ["python3", "llm-dlc/tools/sync.py", ["commit", "check", "sync"]], decision = "allow")
+prefix_rule(pattern = ["jj", ["status", "diff", "log", "show", "trace-commit"]], decision = "allow")
+prefix_rule(pattern = ["python3", "llm-dlc/tools/sync.py", "review", "accept"], decision = "forbidden")
+prefix_rule(pattern = ["python3", "llm-dlc/tools/sync.py", "allow", ["approve", "add"]], decision = "forbidden")
+prefix_rule(pattern = ["python3", "llm-dlc/tools/single_run.py", "message"], decision = "forbidden")

@@ -182,9 +182,18 @@ def event(e):
     elif e.get("type") == "system" and e.get("subtype") == "task_notification":
         say("background task %s: %s" % (e.get("status", "done"), " ".join(str(e.get("summary", "")).split())[:100]))
     elif e.get("type") == "result":
-        say("turn done: %s, %s steps, %.1f min, $%.2f" % (
-            e.get("subtype"), e.get("num_turns"),
-            e.get("duration_ms", 0) / 60000, e.get("total_cost_usd", 0)))
+        if "total_cost_usd" in e and e["total_cost_usd"] is None:
+            # A client that reports tokens and no dollars (Codex): unknown stays unknown, and no figure is printed
+            # that a reader of this line would add up.
+            u = e.get("usage") or {}
+            read = (u.get("input_tokens") or 0) + (u.get("cache_read_input_tokens") or 0) + (u.get("cache_creation_input_tokens") or 0)
+            say("turn done: %s, %s steps, %.1f min, cost unknown (%s: %s tokens in, %s out)" % (
+                e.get("subtype"), e.get("num_turns"), e.get("duration_ms", 0) / 60000,
+                e.get("client") or "client", read, u.get("output_tokens") or 0))
+        else:
+            say("turn done: %s, %s steps, %.1f min, $%.2f" % (
+                e.get("subtype"), e.get("num_turns"),
+                e.get("duration_ms", 0) / 60000, e.get("total_cost_usd", 0)))
 
 try:
     for line in sys.stdin:

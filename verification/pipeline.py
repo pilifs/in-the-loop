@@ -1904,7 +1904,9 @@ def cmd_submit(args):
     job["submitted"] = {**job.get("submitted", {}), "at": iso(at)}
     # Without --session, the session Claude Code says is running this command: the loop statistics
     # (llm-dlc/tools/loop_stats.py) tie a job to the loop cycle that submitted it by this id.
-    if session := args.session or os.environ.get("CLAUDE_CODE_SESSION_ID"):
+    # The session that submits: Codex marks its commands with its thread, and one started from a Claude Code session
+    # may still carry that session's id beside it, so its own comes first.
+    if session := args.session or os.environ.get("CODEX_THREAD_ID") or os.environ.get("CLAUDE_CODE_SESSION_ID"):
         job["submitted"]["session"] = session
     if args.by:
         job["submitted"]["by"] = args.by

@@ -1,7 +1,7 @@
 ---
 name: run-brief
 description: Run a feature brief of this repository (llm-dlc/loops/NAME.md) from start to end as its watcher. A foundation session on Fable 5.2 reads the brief and builds what every stream would otherwise wait for, then the brief's streams run side by side and the watcher merges each into the default line the moment it is finished (in an order, when their lines conflict), while it answers what the run asks, restarts a stream whose loop died, hands work no stream owns to a helper session the user named, keeps the verification queue moving and reports at intervals. Start it only when the user asks for this skill or for a brief to be run, never as a step of other work: a run takes hours and spends their tokens.
-argument-hint: "[--no-foundation] [--unattended] [--summary-interval SECONDS] [--helper \"tmux 3\"] <a brief's name or file: NAME | llm-dlc/loops/NAME.md>"
+argument-hint: "[--no-foundation] [--unattended] [--summary-interval SECONDS] [--helper \"tmux 3\"] [--agent claude|codex] [--stream-agent STREAM=CLIENT] <a brief's name or file: NAME | llm-dlc/loops/NAME.md>"
 model: claude-opus-5-5
 effort: high
 ---
@@ -15,9 +15,13 @@ the default line the moment it is finished, as the watcher of a proof run merges
 there is no merge loop. Everything you run is
 `python3 llm-dlc/tools/brief_run.py`, from the default workspace; its own first lines say what each command does.
 
-- **You run on Opus 5.5.** If you are another model, say so and stop: the user switches with `/model` and runs the
-  skill again.
-- **Any Opus 5.5 session of the default workspace can be the watcher**, one that is already open and has done
+- **You run on Opus 5.5 in Claude Code, or on Sol 6.2 in Codex**, the two models approved for the watcher's role.
+  If you are another model, say so and stop: the user switches models (`/model`) and runs the skill again.
+- **Where this says "as a background task"**: Claude Code runs such a command in the background and calls you
+  back when it exits. In a client without that, run a `wait` in the foreground with its own `--timeout SECONDS`
+  (it says `nothing` when the time is up: run it again), and start a command that runs for the length of a stage
+  detached, with its output in a file (`nohup COMMAND >FILE 2>&1 &`), following it with `wait`.
+- **Any Opus 5.5 or Sol 6.2 session of the default workspace can be the watcher**, one that is already open and has done
   other work included: the user asks it to run a brief, and from then on it is the watcher. Nothing of the run
   lives in your context. It is all in files (`llm-dlc/loop-summaries/run-streams-NAME/`), so a session that was
   compacted, or a new one that takes a run over, reads where the run stands and goes on (see "A run under
@@ -46,7 +50,15 @@ there is no merge loop. Everything you run is
 
 The request: $ARGUMENTS
 
-It names one brief. `--no-foundation` skips stage 2. `--summary-interval SECONDS` sets how often you print a
+(If the line above ends in a placeholder and not in a request, your client does not fill it in: the request is
+what the user wrote when they named this skill.)
+
+It names one brief. `--agent claude|codex` and `--stream-agent STREAM=CLIENT` say who carries the streams' turns,
+Claude Code (the default) or Codex, for the run and for single streams; they go to `brief_run.py start` as they
+are (and `--agent` to `brief_run.py foundation`), and the preflight then shows each stream's client, the model it
+runs for the model its brief names, and its effort. Tell the user that table before anything starts. A stream's
+turns cost dollars the summaries know only for Claude Code: a Codex stream's are shown as unknown, with its
+tokens, never as nought. `--no-foundation` skips stage 2. `--summary-interval SECONDS` sets how often you print a
 summary (`brief_run.py interval BRIEF SECONDS`, before stage 3); without it, every 30 minutes. `--unattended`
 means the user is away for the whole run: you put nothing to them that you can decide and record, and a question
 that is theirs alone is recorded as open (`decisions.py record`, state `open`) while the rest of the run goes on

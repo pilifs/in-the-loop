@@ -85,6 +85,25 @@ class Tag(unittest.TestCase):
             self.assertAlmostEqual(self.tagged(d, FORKED, OUTPUT), 2.80 + 3.35)
 
 
+class UnknownCost(unittest.TestCase):
+    """A turn of a client that reports tokens and no dollars (Codex) is shown as unknown, never as nought."""
+
+    @cost("tool")
+    def test_a_turn_of_unknown_cost_is_counted_with_its_tokens_and_adds_nothing_to_the_dollars(self):
+        with tempfile.TemporaryDirectory() as d:
+            subprocess.run([sys.executable, str(HERE / "streams_status.py"), "tag", "heap", d], capture_output=True, check=True,
+                           input=b"[t] turn done: success, 4 steps, 1.0 min, $1.50\n"
+                                 b"[t] turn done: success, 3 steps, 0.1 min, cost unknown (codex: 1000 tokens in, 40 out)\n"
+                                 b"[t] turn done: success, 3 steps, 0.1 min, cost unknown (codex: 2000 tokens in, 60 out)\n")
+            self.assertEqual((Path(d) / "heap.cost").read_text(), "1.50\n?1000:40\n?2000:60\n")
+            self.assertAlmostEqual(streams_status.spend(d, "heap"), 1.5)
+            self.assertEqual(streams_status.unknown(d, "heap"), (2, 3000, 100))
+
+    def test_dollars_say_when_turns_of_unknown_cost_are_not_in_them(self):
+        self.assertEqual([streams_status.dollars(1.5, 0), streams_status.dollars(1.5, 2), streams_status.dollars(0, 2)],
+                         ["$1.50", "$1.50+?", "$?"])
+
+
 class Render(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
@@ -112,6 +131,12 @@ class Render(unittest.TestCase):
 
     def test_a_running_loop_shows_cycle_commits_spend_its_status_and_idle_time(self):
         self.assertEqual(self.line("running"), "x 19m $3.35 │ heap c2 3✓ $3.35 working 2m")
+
+    def test_a_loop_whose_turns_have_no_known_cost_shows_that_in_its_spend_and_in_the_runs(self):
+        (self.state / "heap.cost").write_text("?1000:40\n")
+        self.assertEqual(self.line("running"), "x 19m $? │ heap c2 3✓ $? working 2m")
+        (self.state / "heap.cost").write_text("3.25\n?1000:40\n3.35\n")
+        self.assertEqual(self.line("running"), "x 19m $3.35+? │ heap c2 3✓ $3.35+? working 2m")
 
     def test_a_finished_loop_shows_its_phase_and_no_idle_time(self):
         self.assertEqual(self.line("finished: done"), "x 19m $3.35 │ heap c2 3✓ $3.35 done")

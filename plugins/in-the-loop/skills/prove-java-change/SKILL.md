@@ -22,8 +22,9 @@ user informed while they run, and you judge what a script can't.
 
 Beside them runs the verification loop, on Sonnet 5.5, which executes the jobs the sessions queue.
 
-- **You run on Opus 5.5.** If you are another model, say so and stop: the user switches with `/model` and runs the
-  skill again.
+- **You run on Opus 5.5 in Claude Code, or on Sol 6.2 in Codex**, the two models approved for the watcher's role.
+  If you are another model, say so and stop: the user switches models (`/model`) and runs the skill again. The
+  stages below are still Claude Code sessions whichever of the two you are, so a run needs `claude` on the machine.
 - **Decide what you can.** Say what you decided and why in a line, and go on. Ask only for what is the user's: what
   a change is meant to do, their machine's hours and their money, and anything that leaves their machine.
 - **The repository's pages outrank your memory of them.** Once there is a checkout, read "The watcher" in
@@ -32,6 +33,10 @@ Beside them runs the verification loop, on Sonnet 5.5, which executes the jobs t
   the proof loop's session: its instruction is one line and stays one line.
 
 The request: $ARGUMENTS
+
+(If the line above ends in a placeholder and not in a request, your client does not fill it in: the request is
+what the user wrote when they named this skill. The same goes for the folder a command below is given by a
+placeholder in braces: it is the folder this file is in.)
 
 It names one change or a list of them, each with what to prove about it, or examples by their numbers (see
 "Examples named by number" below); not both: ask the user to split a request that mixes them.

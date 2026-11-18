@@ -136,7 +136,17 @@
 # no transcript yet, as a fork of that one, so parallel streams all begin from
 # the conversation that planned them. FEATURE_LOOP_SESSION, FEATURE_LOOP_MODEL,
 # FEATURE_LOOP_EFFORT and FEATURE_LOOP_MEMORY_MAX override both the brief and
-# the defaults. FEATURE_LOOP_SESSION=new starts a fresh
+# the defaults. "- client: codex" (or FEATURE_LOOP_CLIENT=codex, which a run sets
+# for the streams it gives to Codex) has the session's turns carried by Codex
+# instead of Claude Code: the instruction, the cycle, the commit check, the
+# decision and the record are the same, and only the starting, resuming and
+# compacting of a turn go through llm-dlc/tools/agent_client.py, which prints
+# the stream this script already reads. The brief keeps its model's name: the
+# operator's equivalences give the Codex model for it (Fable 5.2: Astra 6.2,
+# Opus 5.5: Sol 6.2), and a model with none is refused before a turn is spent.
+# The effort is passed on as it is. A Codex session cannot start as a fork of a
+# Claude Code conversation. The item judge stays where it was (Claude Code).
+# FEATURE_LOOP_SESSION=new starts a fresh
 # session that the run's cycles share, and a session id with no transcript yet
 # (one opened but never sent a message) is created by the first turn.
 #
@@ -191,6 +201,7 @@ EFFORT=high
 MEMORY_MAX=3.5G
 WORKSPACE=
 FORK_FROM=
+CLIENT=
 TEMPLATE=
 ITEMS=()
 EVERY_ITEM=
@@ -262,6 +273,7 @@ case "$PROMPT" in
     v=$(setting session); [[ -n "$v" ]] && SESSION_ID=$v
     v=$(setting model); [[ -n "$v" ]] && MODEL=$v
     v=$(setting effort); [[ -n "$v" ]] && EFFORT=$v
+    CLIENT=$(setting client)
     v=$(setting memory); [[ -n "$v" ]] && MEMORY_MAX=$v
     WORKSPACE=$(setting workspace)
     FORK_FROM=$(setting fork)
@@ -367,6 +379,19 @@ WATCH_COMPACT=$STOP_ON_COMPACT
 [[ -n "$AUTOCOMPACT" && -n "${LOOP_CONDUCTOR:-}" ]] && WATCH_COMPACT=1
 MODEL=${FEATURE_LOOP_MODEL:-$MODEL}
 EFFORT=${FEATURE_LOOP_EFFORT:-$EFFORT}
+# The client that carries the session's turns (see the header): Claude Code unless the run or the brief says Codex.
+# The model is resolved once, here, and what was asked for is kept for the record.
+CLIENT=${FEATURE_LOOP_CLIENT:-${CLIENT:-claude}}
+MODEL_ASKED=$MODEL
+AGENT_CLIENT=$ROOT/llm-dlc/tools/agent_client.py
+case "$CLIENT" in
+  claude) ;;
+  codex)
+    MODEL=$(python3 "$AGENT_CLIENT" resolve --client codex "$MODEL") || exit 2
+    python3 "$AGENT_CLIENT" plan --client codex --model "$MODEL" --effort "$EFFORT" >/dev/null || exit 2
+    ;;
+  *) echo "feature-loop.sh: '$CLIENT' is not a client (claude, codex)" >&2; exit 2 ;;
+esac
 MEMORY_MAX=${FEATURE_LOOP_MEMORY_MAX:-$MEMORY_MAX}
 # Templated moonshots only: an item takes cycles until the judge finds it finished.
 JUDGE=
@@ -511,9 +536,19 @@ FRESH=
 if [[ "$SESSION_ID" == new ]]; then
   SESSION_ID=$(python3 -c 'import uuid; print(uuid.uuid4())') || exit 1
   FRESH=1
+elif [[ "$CLIENT" == codex ]]; then
+  # Codex names its thread itself: the session is bound to it on the first turn (agent_client.py).
+  if ! python3 "$AGENT_CLIENT" exists --client codex --session "$SESSION_ID" --cwd "$ROOT"; then
+    log "session $SESSION_ID has no Codex thread yet: the first turn starts one"
+    FRESH=1
+  fi
 elif [[ ! -e "$(project_dir "$ROOT")/$SESSION_ID.jsonl" ]]; then
   log "session $SESSION_ID has no transcript yet: the first turn creates it"
   FRESH=1
+fi
+if [[ "$CLIENT" == codex && -n "$FORK_FROM" && -n "$FRESH" ]]; then
+  echo "feature-loop.sh: session $SESSION_ID is to start as a fork of $FORK_FROM, a Claude Code conversation, and Codex cannot continue one: a Codex worker starts from the written handoff (the brief and its inbox). Drop the fork, or run this loop with Claude Code" >&2
+  exit 2
 fi
 
 # The brief without its "## Progress" section, which the session updates as it goes.
@@ -533,6 +568,10 @@ fi
   echo
   echo "Started $(stamp) UTC, ${CYCLES/inf/no limit on} cycles, session $SESSION_ID, $MODEL at $EFFORT effort, after change $START."
   echo
+  if [[ "$CLIENT" != claude ]]; then
+    echo "The session's turns are carried by $CLIENT$([[ "$MODEL" != "$MODEL_ASKED" ]] && echo ", which runs $MODEL for the $MODEL_ASKED this loop asks for")."
+    echo
+  fi
   if [[ -n "$SINGLE" ]]; then
     echo "> $(one_line "$INSTRUCTION")"
     echo
@@ -714,6 +753,16 @@ run_claude() {
     # variables in its shell, a test it ran of these very scripts asked the real watcher its made-up questions
     # (RUN_STREAMS_WATCHER, 2026-11-17).
     unset "${!RUN_STREAMS_@}" "${!FEATURE_LOOP_@}" "${!LOOP_WATCH_@}" "${!PROVE_LOOP_@}" LOOP_CONDUCTOR
+    if [[ "$CLIENT" == codex ]]; then
+      # The same instruction, through the other client: agent_client.py prints the stream this pipe reads.
+      # Compacting is an operation of the client's, not a text the model is sent.
+      if [[ "$1" == /compact ]]; then
+        exec python3 "$AGENT_CLIENT" compact --client codex --session "$SESSION_ID" --cwd "$ROOT"
+      fi
+      exec python3 "$AGENT_CLIENT" run --client codex --session "$SESSION_ID" --model "$MODEL" --effort "$EFFORT" \
+        --cwd "$ROOT" "$1"
+    fi
+    unset CODEX_THREAD_ID CODEX_SESSION_ID  # a Codex session that started this loop is not this session
     exec claude -p "$1" "${session[@]}" --model "$MODEL" --effort "$EFFORT" "${compact[@]}" "${ISOLATION[@]}" \
       --permission-mode auto --output-format stream-json --verbose </dev/null
   ) | tee ${2:+"$2"} | show_progress
@@ -1125,8 +1174,11 @@ while :; do
     export LOOP_WATCH_STOP=$STOP_ON_COMPACT
     export LOOP_WATCH_CYCLE=$cycle LOOP_WATCH_ITEM=$item LOOP_WATCH_SESSION=$SESSION_ID
     export LOOP_WATCH_TRANSCRIPT="$(project_dir "$ROOT")/$SESSION_ID.jsonl"
+    [[ "$CLIENT" == codex ]] && export LOOP_WATCH_TRANSCRIPT="$ROOT/llm-dlc/loop-summaries/agent-sessions/$SESSION_ID.json"
   fi
-  run_claude "$INSTRUCTION" "$STATE.turn" || log "cycle $cycle: claude exited with status $?"
+  # What the cycle is told, by digest: the same task given to another client shows the same one.
+  log "cycle $cycle: the instruction is ${#INSTRUCTION} characters, sha256 $(printf '%s' "$INSTRUCTION" | sha256sum | cut -c1-16), carried by $CLIENT ($MODEL at $EFFORT effort)"
+  run_claude "$INSTRUCTION" "$STATE.turn" || log "cycle $cycle: $CLIENT exited with status $?"
   unset LOOP_WATCH_BASE LOOP_WATCH_PID LOOP_WATCH_MARK LOOP_WATCH_NOTES LOOP_WATCH_STOP LOOP_WATCH_CYCLE LOOP_WATCH_ITEM LOOP_WATCH_SESSION LOOP_WATCH_TRANSCRIPT
   if [[ -s "$STATE.compacted" ]]; then
     compacted=$(<"$STATE.compacted")

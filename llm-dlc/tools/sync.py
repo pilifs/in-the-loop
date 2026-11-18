@@ -2672,8 +2672,14 @@ def remember_findings(found: dict[str, dict]) -> None:
 
 
 def person_at_terminal() -> bool:
-    """A check that an agent's shell fails: it has no terminal, and Claude Code marks its environment."""
-    return sys.stdin.isatty() and sys.stdout.isatty() and not os.environ.get("CLAUDECODE")
+    """A check that an agent's shell fails: it has no terminal, and Claude Code and Codex each mark the environment
+    of the commands they run (Codex may give a command a terminal, so the mark is what tells)."""
+    return sys.stdin.isatty() and sys.stdout.isatty() and not in_agent_session()
+
+
+def in_agent_session() -> bool:
+    """Whether this command was started by an agent's session, Claude Code's or Codex's."""
+    return bool(os.environ.get("CLAUDECODE") or os.environ.get("CODEX_THREAD_ID") or os.environ.get("CODEX_SESSION_ID"))
 
 
 def save_reviewed(findings: dict[str, dict]) -> None:
@@ -2982,7 +2988,7 @@ def save_allowlist(entries: dict[str, dict]) -> None:
 
 
 def _who() -> str:
-    return "agent" if os.environ.get("CLAUDECODE") else _cmd("git", "config", "--get", "user.name") or "maintainer"
+    return "agent" if in_agent_session() else _cmd("git", "config", "--get", "user.name") or "maintainer"
 
 
 def _split_reason(args: list[str]) -> tuple[list[str], str]:

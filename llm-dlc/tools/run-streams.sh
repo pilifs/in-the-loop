@@ -450,13 +450,22 @@ clear_scope() {
   return 0
 }
 
+# The client the run gives a loop (RUN_STREAMS_AGENTS, "a=codex,b=claude", then RUN_STREAMS_AGENT), or nothing.
+client_of() {
+  local pair
+  for pair in ${RUN_STREAMS_AGENTS//,/ }; do
+    [[ "${pair%%=*}" == "$1" ]] && { printf '%s' "${pair#*=}"; return; }
+  done
+  printf '%s' "${RUN_STREAMS_AGENT:-}"
+}
+
 # Run one loop until it is finished, as the header says: LABEL, the workspace it
 # runs in, its name, and its brief there, which is what feature-loop.sh is given.
 # With a watcher the loop takes command lines from a directory of its own (conductor.py command), which is how it
 # is told to end after its cycle under way; a brief's loop is asked nothing through it. Exits 0 when its
 # brief says done, 3 when it is blocked, 130 if interrupted.
 supervise() {
-  local label=$1 dir=$2 loop=$4 brief=$2/$4 code status failed=0 waited ids
+  local label=$1 dir=$2 loop=$4 brief=$2/$4 code status failed=0 waited ids client
   local commands= reruns=0
   if [[ -n "${RUN_STREAMS_WATCHER:-}" ]]; then
     commands=$STATE/loops/$label
@@ -493,6 +502,10 @@ supervise() {
       fi
     fi
     clear_scope "$(basename "$loop" .md)" "$label" "$dir"
+    # Who carries this loop's turns, when the run says (brief_run.py start --agent, --stream-agent): feature-loop.sh
+    # takes it over the brief's own `- client:` setting. Without a word from the run, the brief's stands.
+    client=$(client_of "$label")
+    [[ -n "$client" ]] && export FEATURE_LOOP_CLIENT=$client
     log "[$label] starting feature-loop.sh $loop in $dir"
     phase "$label" running
     LOOP_CONDUCTOR=$commands "$dir/llm-dlc/tools/feature-loop.sh" "$loop" </dev/null 2>&1 | python3 -u "$ROOT/llm-dlc/tools/streams_status.py" tag "$label" "$STATE"

@@ -88,7 +88,7 @@ class SingleRunTest(unittest.TestCase):
         self.root = self.tmp / "checkout"
         tools = self.root / "llm-dlc/tools"
         tools.mkdir(parents=True)
-        for name in ("feature-loop.sh", "loop-common.sh", "conductor.py"):
+        for name in ("feature-loop.sh", "loop-common.sh", "conductor.py", "agent_client.py"):
             shutil.copy(TOOLS / name, tools / name)
         (self.root / ".gitignore").write_text("llm-dlc/loop-summaries/\n")
         (self.root / "notes").mkdir()
@@ -374,6 +374,56 @@ class SingleRunTest(unittest.TestCase):
         project = self.config / "projects" / str(self.root).replace("/", "-").replace(".", "-")
         self.assertFalse((project / f"{PARENT}.jsonl").exists(), "the parent's copy is removed after the one turn")
         self.assertIn(f"was forked from session {PARENT}", self.record())
+
+    @cost("tool")
+    def test_a_run_given_to_codex_takes_the_same_texts_keeps_its_own_thread_and_compacts_between_cycles(self):
+        codex_log = self.tmp / "codex.jsonl"
+        codex = {"AGENT_CLIENT_CODEX": str(TOOLS / "codex_standin.py"), "CODEX_STANDIN_STATE": str(self.tmp / "codex"),
+                 "CODEX_STANDIN_LOG": str(codex_log), "CODEX_STANDIN_MODES": "commit"}
+        started = self.start("--prompt", PROMPT, "--continue", CONTINUE, "--client", "codex", "--model", "claude-opus-5-5", **codex)
+        self.assertEqual((started["client"], started["model"], started["runs"], started["effort"]),
+                         ("codex", "claude-opus-5-5", "gpt-6.2-sol", "high"))
+        first = self.wait()
+        self.assertEqual((first["kind"], first["event"]["type"], first["cycle"]["cycle"]), ("question", "run", 1))
+        self.assertIn(f"the stand-in's report of turn 1 (commit); it was told: {PROMPT}", first["cycle"]["report"])
+        self.assertEqual(len(first["cycle"]["commits"]), 1)
+        self.assertIn("Made-up work by the stand-in, turn 1", first["cycle"]["commits"][0])
+        self.assertIsNone(first["cycle"]["cost"])  # Codex reports tokens: the dollars are not known, and not nought
+        self.tool("answer", "thing", "continue", "--reason", "The thing does not work yet.")
+        second = self.wait(kind="question")
+        self.assertEqual(second["cycle"]["cycle"], 2)
+        self.assertIn(f"report of turn 2 (commit); it was told: {CONTINUE}", second["cycle"]["report"])
+        self.tool("answer", "thing", "stop", "--reason", "The thing works.")
+        self.assertEqual(self.wait(kind="ended")["kind"], "ended")
+        calls = [json.loads(line) for line in codex_log.read_text().splitlines()]
+        work = [c["argv"] for c in calls if c["argv"][0] == "exec"]
+        # the first turn starts a thread with the user's prompt, word for word, on the model that stands for Opus 5.5
+        self.assertNotIn("resume", work[0])
+        self.assertEqual((work[0][-1], work[0][work[0].index("-m") + 1]), (PROMPT, "gpt-6.2-sol"))
+        self.assertIn('model_reasoning_effort="high"', work[0])
+        thread = json.loads((self.root / "llm-dlc/loop-summaries/agent-sessions" / f"{started['session']}.json").read_text())["thread"]
+        # between the cycles the thread is compacted by the client, not sent the word /compact
+        self.assertEqual([c["argv"][0] for c in calls][:3], ["exec", "app-server", "exec"])
+        self.assertEqual((self.tmp / "codex" / "compacted").read_text().split()[0], thread)
+        self.assertNotIn("/compact", [argv[-1] for argv in work])
+        # every later turn resumes that thread, and the second cycle takes the continue message as it is
+        self.assertTrue(all(argv[1] == "resume" and argv[-2] == thread for argv in work[1:]))
+        self.assertEqual(work[1][-1], CONTINUE)
+        # nothing of the run or of the session that started it reaches the worker, and Claude Code ran no turn
+        self.assertEqual([(c["identity"], c["run"]) for c in calls], [([], [])] * len(calls))
+        self.assertEqual(self.calls(), [])
+        text = self.record()
+        self.assertIn("The session's turns are carried by codex, which runs gpt-6.2-sol for the claude-opus-5-5 this loop asks for.", text)
+        self.assertRegex(text, r"Ended \S+ \S+ after 2 cycle\(s\): the run was ended there \(the watcher: The thing works\.\)")
+        self.assertEqual(json.loads(self.tool("status", "thing")[1])["client"], "codex")
+        # a run keeps its client, and a Codex session is not a fork of a Claude Code conversation
+        status, _, err = self.tool("start", "thing", "--client", "claude", ok=False)
+        self.assertEqual(status, 1)
+        self.assertIn("keeps the client it started with", err)
+        status, _, err = self.tool("start", "other", "--prompt", PROMPT, "--client", "codex", "--fork", PARENT, ok=False)
+        self.assertIn("cannot start as a fork", err)
+        status, _, err = self.tool("start", "other", "--prompt", PROMPT, "--client", "codex", "--model", "claude-sonnet-5-5", ok=False)
+        self.assertIn("no Codex model stands for claude-sonnet-5-5", err)
 
     @cost("tool")
     def test_what_cannot_start_says_why_and_starts_nothing(self):

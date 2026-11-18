@@ -83,6 +83,9 @@ llm-dlc/
   tools/single_run.py               the watcher's tools for a single agent's run (/single-agent-run): start, wait,
                                     answer, the continue message, stop, land; test_single_run.py tests it and
                                     feature-loop.sh's `single-agent` loop
+  tools/agent_client.py             the client boundary of a loop's turn: starts, resumes and compacts a Codex turn and
+                                    prints the stream the loops read from Claude Code; test_agent_client.py tests it
+                                    over codex_standin.py, a stand-in for the client
   decisions/<name>.jsonl            a run's decision record: what its conductor decided (a parallel run's conductor, or the
                                     watcher of a proof loop, whose record is prove-change), with the confidence, how hard it
                                     is to undo and the user's review, and the questions queued for the user (schema.json)
@@ -425,6 +428,62 @@ in files (`llm-dlc/loop-summaries/single-NAME/`), so another session can take a 
   it stands (or a new `--prompt` of the user's). `cycles NAME +N` changes the count, as typed in a loop's terminal.
 
 The loop statistics count such a run as a moonshot named `single-NAME`, each text it sent a cycle.
+
+### Claude Code or Codex
+
+A loop's session can be carried by Codex instead of Claude Code, chosen when the run starts: `single_run.py start
+NAME --client codex`, `brief_run.py start NAME --agent codex` (every stream) or `--agent claude --stream-agent
+b=codex` (a mixed run), `brief_run.py foundation NAME --agent codex`, a brief's own `- client: codex` setting, or
+`FEATURE_LOOP_CLIENT=codex` for a loop run by hand. Everything else is the same: the briefs, the instruction of a
+cycle, the commit check, the decision, the conductor's questions, the verification queue, the record.
+
+- **One boundary.** [`tools/agent_client.py`](tools/agent_client.py) is the only place that knows Codex. It starts
+  a turn with `codex exec --json`, resumes with `codex exec resume THREAD`, and prints **the stream the loops
+  already read from Claude Code** (`init`, `assistant` text and tool calls, `compact_boundary`, one closing
+  `result`), so the progress display, the compaction watch, a cycle's report and the cost accounting have one
+  reader. Claude Code's turns are started as they always were.
+- **Models are resolved once, at launch.** A brief keeps its model's name. The operator's equivalences give what
+  Codex runs for it: Fable 5.2 is Astra 6.2 (`gpt-6.2-astra`), Opus 5.5 is Sol 6.2 (`gpt-6.2-sol`); a Codex model
+  named outright is taken as it is. A model with no equivalent (Sonnet 5.5, Fable 5.1) is refused before a turn
+  is spent, by the preflight and by the loop, which is how an unmapped role shows up. The effort is always passed
+  on: the machine's own Codex default may be another. The item judge of a templated moonshot and the standalone
+  verification loop stay on Claude Code.
+- **Session identity.** A loop names its session by a UUID; Codex names its thread itself. The binding is a file
+  of the workspace the loop runs in (`llm-dlc/loop-summaries/agent-sessions/SESSION.json`), written whole when
+  Codex reports the thread, and every later turn resumes that exact thread; a client that reports another ends
+  the turn as an error. Each attempt keeps Codex's own events, its stderr and its last message beside it
+  (`agent-sessions/attempts/SESSION/`), so a turn that died leaves what it said. A session keeps its client, and a
+  Codex session cannot start as a fork of a Claude Code conversation: both clients start from the written
+  handoff, the brief and its inbox.
+- **Compaction is an operation, not a text.** Between cycles the loop compacts the session. `/compact` sent to
+  Codex would only be text, so `agent_client.py compact` asks Codex's app server (`thread/compact/start`) and
+  waits for the end. Codex's own automatic compaction keeps the machine's settings.
+- **Permissions.** A Codex turn runs in the workspace-write sandbox with requests to leave it reviewed
+  automatically (`--approve-for-me`), the counterpart of the `--permission-mode auto` the loops give Claude Code:
+  `sync.py commit` writes the repository's store, which is outside a sibling workspace. With an approval policy
+  alone a headless turn cannot ask, and added writable folders do not open the store (tried on CLI 0.169,
+  2026-11-18). What only a person may do stays refused by the tools themselves, for both clients: `sync.py allow
+  approve`, `review accept` and `single_run.py message` check for a person at a terminal, and that check knows
+  Codex's mark on the commands it runs as it knows Claude Code's. [`.codex/rules/`](../.codex/rules/llm-dlc.rules)
+  says the same for a person's own Codex in a trusted checkout.
+- **The same instructions.** Codex reads this repository's `CLAUDE.md` in place (`project_doc_fallback_filenames`,
+  passed on the command line because a fresh sibling workspace is not a project Codex trusts, and in
+  [`.codex/config.toml`](../.codex/config.toml)). The skills are the files under `.claude/skills/`, reached by
+  Codex through relative links in `.agents/skills/`; a skill only the user may start (`publish`,
+  `review-findings`) says so for Codex too (`agents/openai.yaml` beside it). `agent_client.py instructions
+  --client codex` renders what the model would be given (no model is called) and checks it: `CLAUDE.md`'s first
+  and last lines are there, nothing shadows it (`AGENTS.md`), it fits the byte budget, each skill is linked, and
+  no user-only skill is offered to a work turn. It prints paths, digests and pass or fail. A brief's preflight
+  runs it when a stream is Codex's.
+- **Identity and cost.** A Codex started from a Claude Code session would inherit that session's identity and
+  have its commits and jobs credited to the watcher: the boundary removes it and keeps who started the loop in
+  the binding. A job is submitted under Codex's own thread. Codex reports a turn's tokens and no dollars, so a
+  Codex turn's cost is **unknown**, shown as `$?` (or `$1.50+?` beside known dollars) with its tokens in the
+  status bar and the summaries, never as nought.
+- **Not yet.** Codex sessions are not in the published traces: `sync.py` does not read Codex's logs, and must not
+  until the redaction rules cover Codex's account identifiers. A commit a Codex worker makes is traced without
+  its own session. The proof stages of `/prove-java-change`, runtime (released) checkouts and Codex hooks are
+  not ported.
 
 ## Sessions
 
