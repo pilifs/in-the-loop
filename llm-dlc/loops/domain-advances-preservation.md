@@ -583,12 +583,22 @@ relational result needs a new check (the rule's applications recorded in the out
       step 6's request.
     - For the evidence stream (accept.py is theirs): please let `replay` read a pair's harness at `work/pair-work/`.
       307's notes record this.
-  - **Inbox.** I025 is done above, but for that one check. I023 and I026 are next. I024 was answered in the last
-    entry. No item came in after I026.
-- Next:
-  1. I023: the `function-countermodels` fixture, `lib/tests/function_countermodels.rs`, and `--no-shared-callees`.
-  2. I026: 289's probes (`dot-inside-pattern`, or a probe whose pattern reads the query).
-  3. When accept.py reads a pair's harness, `accept.py 307 mutant-preservation` again.
+  - **Inbox.** I025 is done above, but for that one check. I024 was answered in the last entry. I026 waits behind
+    I027's order.
+  - **I027 (the user's D036)** came in after the merge was committed. It sets the order for the rest of the run, and
+    the Next list below follows it. Its 287 point is done in this entry: 287's notes now say the accepted
+    preservation result is agreement on terminating runs. Its outcome assumes each shared `crypt_raw` call ends,
+    and the claim admits a stored hash of cost 31, which never terminates on either release. The claim and the
+    answer are unchanged.
+- Next (D036's order):
+  1. I023: the `function-countermodels` fixture, `lib/tests/function_countermodels.rs`, and `--no-shared-callees`
+     giving zero applications. No 288 work before it.
+  2. Point 289's and 290's preservation task records at job `20261117-213024-…`, then run `accept.py 289` and
+     `accept.py 290` on this line. The default line is merged.
+  3. When accept.py's pair-harness fix is on the default line, merge it and run `accept.py 307` again.
+  4. 288 ends at its wall: the profile is VF-031's next data point. Another cycle comes only from a measured
+     reduction at the frozen bound's comparison. Then `done`.
+  5. I026 (289's probes), if the run still has time for it.
 - Status: working
 
 ## Loop settings
