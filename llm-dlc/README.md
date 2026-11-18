@@ -78,7 +78,8 @@ llm-dlc/
   tools/unstale.py                  puts a jj workspace right after another session's operation met its own (stale, or a
                                     second copy of the working-copy change); test_unstale.py tests it
   tools/brief_run.py                the watcher's tools for a brief's run (/run-brief): preflight, the foundation
-                                    stage, start, wait, status; test_brief_run.py tests it and run-streams.sh's part
+                                    stage, start, wait, status, merge (in an order, or early), trial merges, a
+                                    stream's rerun, helpers; test_brief_run.py tests it and run-streams.sh's part
   tools/single_run.py               the watcher's tools for a single agent's run (/single-agent-run): start, wait,
                                     answer, the continue message, stop, land; test_single_run.py tests it and
                                     feature-loop.sh's `single-agent` loop
@@ -266,7 +267,7 @@ generated trace files regenerated, the session logs it names taken from the work
 that conflicts in real work is taken back), takes the stream's inbox acknowledgements, answers `merged`, and
 records the merge in the brief's Progress, whose status it sets to `done` once every stream is merged and says
 done (`blocked: stream S: ...` when one was left blocked), in one commit with the decision. The watcher then runs
-the default test run, as after any merge. A conflict it can see through it resolves by hand, as the watcher of a
+`default_run.py after-merge`, which runs the default test run when one is due (below). A conflict it can see through it resolves by hand, as the watcher of a
 proof run does between examples ([`runtime.md`](runtime.md)), and the same command then records it; anything else
 it answers `leave` and reports. A stream left blocked is put to it as well: what it committed is usually worth
 having. Without a watcher nothing is merged, and the end of the run names the command for each stream. Until
@@ -289,6 +290,51 @@ leaves the results to it. Merging itself holds `sync.py`'s lock across its jj st
 uncommitted in the working copy (sync.py writes it on every run, for any session) neither holds a merge back
 nor comes along: it is dropped and written again by the next `sync.py` run. In the first rehearsal it was there
 after the foundation landed, and a second merge would have waited for a commit no session was going to make.
+
+**When the streams' lines conflict, they are merged in an order.** Merging each stream the moment it is finished
+assumes the merges don't interact. `brief_run.py trial NAME` finds out early: it merges every pair of the streams'
+lines, and each with the default line, beside every working copy (a merge commit made with `jj new --no-edit`,
+read and abandoned), and lists the files each pair conflicts in beyond the generated ones and the test inventory.
+When a pair conflicts in real work, the watcher tells both streams and proposes an order to the user, set with
+`brief_run.py order NAME STREAM ...`: `merge` then refuses a stream while one before it in the order has commits
+the line lacks, and the held-back stream's question names what to merge first. A stream ahead in the order that
+is still at work is merged as far as it has committed (`merge NAME STREAM --early`: what its session has not
+committed stays with it, no question is answered, and the brief's status is left alone), so a finished stream
+does not wait for a running one. In the `domain-advances` run (2026-11-17) two streams conflicted in one file, an
+order was set by hand, and the stream held back had its merge question answered `leave` for four hours.
+
+**A stream whose loop died is run again inside the run.** `brief_run.py rerun NAME STREAM` leaves a request in the
+run's directory (`rerun/STREAM`), and `run-streams.sh` starts the stream's loop again once its own process there
+has ended, however it ended, with its counts at nought, and puts it to the watcher to merge when it is finished;
+after the run has ended, the same command starts the run again for that stream. Before any loop starts,
+`run-streams.sh` stops a scope (`feature-loop-BRIEF.scope`) that holds only what an ended loop left: when the
+kernel kills a session for memory, the tests it ran live on there, `feature-loop.sh` refuses to start beside them,
+and that refusal counted as the stream's second failure, which left it blocked for the rest of the run (VF-037).
+A scope with a loop at work in it, one started by hand, is left alone.
+
+**Helpers take work no stream owns.** The watcher does none of the brief's work, so work that turns up without an
+owner (a tool whose stream has finished, a repair the run needs now) went undone or was improvised. A helper is a
+Claude Code session the user has open in a tmux pane and names, at the start (`/run-brief --helper "tmux 3" NAME`)
+or at any time after; the first is for low-hanging work, and the user may add others with a role of their own (a
+specialist on a larger model for one wall). `brief_run.py helper NAME add HELPER --at "tmux 3"` records it (a pane
+at a shell prompt is refused: what is typed there would be run). `helper NAME task HELPER --title T --file F`
+writes a narrow brief with a stream's standing rules around the watcher's text, puts the helper's workspace,
+`NAME-HELPER`, at the default line's one last commit (never from a merge in progress), and types one line into the
+pane that names the brief. The helper commits there and ends with `helper NAME done TASK --report-file F`; `wait`
+returns the task with its report and commits, the watcher merges it (`helper NAME merge TASK`) and tells the
+streams it concerns with an inbox item of kind `delivered`. Material from a session outside the run (another
+tool's review, a note) comes in the same way: as new files only, merged by the watcher, and acknowledged by the
+stream it is for.
+
+**The watcher commits the run's decision record, the user's answers included.** `decisions.py answer` writes into
+the default working copy, where only the watcher commits during a run; `wait` commits the record whenever it has
+changed, under a message that says it holds both. Before 2026-11-18 only a merge did, and a user's answer went
+into a commit of verification results under that commit's message.
+
+**A loop's session is given nothing of the run.** `feature-loop.sh` drops its own and the run's variables
+(`RUN_STREAMS_*`, `FEATURE_LOOP_*`, `LOOP_WATCH_*`, `PROVE_LOOP_*`, `LOOP_CONDUCTOR`) before it starts `claude`:
+with `RUN_STREAMS_WATCHER` in its shell, a stream's test of these scripts put its made-up merge questions to the
+real watcher (2026-11-17). The preflight also refuses a watcher whose own environment carries a run's variables.
 
 **A stream no longer waits for the end of the run for an answer.** Without a watcher, a stream that stops
 `blocked:` is finished, as it stands. With one, `run-streams.sh` asks before it counts the

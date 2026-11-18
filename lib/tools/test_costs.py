@@ -699,6 +699,8 @@ SKIP_DIRS = {".git", ".jj", "target", "node_modules", "__pycache__", ".state"}
 # shared cost decorator. A test of them is chosen as any other, by changing or importing what changed.
 NOT_BY_NAME = re.compile(r"^(llm-dlc/traces/|llm-dlc/index\.json$|llm-dlc/README\.md$|llm-dlc/decisions/|verification/results/|"
                          r"verification/jobs/|lib/tests/costs\.json$|examples/index\.json$|examples/README\.md$)")
+INVENTORY_PATH = "lib/tests/costs.json"
+TIERS_READS = re.compile(r"lib/tools/(test_costs|cost_tier)\.py")
 SHARED = {"cost_tier.py"}  # imported by every test file: what it names says nothing of one test
 
 
@@ -779,13 +781,20 @@ def changed_selection(root, doc, changed):
     or when its source or that of a module it imports names a changed file by its path or, for a distinctive name,
     by its file name: a test that reads a schema, a sidecar or a script it runs. Naming counts in the test file and
     the modules it imports directly, and not for the files NOT_BY_NAME lists. Rust runs when lib/ changed beyond
-    its Python tools and pages; only the test binaries that changed, when nothing else of lib/ did."""
+    its Python tools and pages; only the test binaries that changed, when nothing else of lib/ did (and `tiers`, the
+    one binary that reads them, for the two Python tools). A change to the
+    inventory (lib/tests/costs.json) chooses nothing, in either language: it is an indicative file that every test
+    file's rows are written into, and a new row is no reason to run all of `cargo test` (the user, 2026-11-18;
+    until then it did, which is what filled a stream's memory in VF-037). The lint that reads it is in the default
+    run."""
     root = Path(root)
+    changed = [c for c in changed if c != INVENTORY_PATH]
     rust_changed = [c for c in changed if RUST_INPUTS.search(c)]
     rust = None
     if rust_changed:
-        only_tests = all(re.fullmatch(r"lib/tests/[^/]+\.rs", c) for c in rust_changed)
-        rust = [Path(c).stem for c in rust_changed] if only_tests else []
+        # The two Python tools are Rust's input for one binary alone: tests/tiers.rs reads them for its lint.
+        only_tests = all(re.fullmatch(r"lib/tests/[^/]+\.rs", c) or TIERS_READS.fullmatch(c) for c in rust_changed)
+        rust = sorted({"tiers" if TIERS_READS.fullmatch(c) else Path(c).stem for c in rust_changed}) if only_tests else []
     modules, cache, chosen = _python_modules(root), {}, {}
     changed_abs = {(root / c).resolve(): c for c in changed}
     names = [(c, Path(c).name) for c in changed]
@@ -1296,6 +1305,8 @@ def main(argv=None):
                         a.rust_jobs, a.python_jobs, tally=(tally := []))
         if started and code == 0:
             started.passed(tally[-1] if tally else "passed")
+        if whole:
+            default_run.attempted(ROOT, code == 0)  # what `default_run.py after-merge` asks: when, and how it ended
         held.close()
         return code
     if a.command == "lint":

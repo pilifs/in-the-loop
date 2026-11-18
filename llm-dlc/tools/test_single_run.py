@@ -69,6 +69,9 @@ if work:
 projects.mkdir(parents=True, exist_ok=True)
 with open(projects / (session + ".jsonl"), "a") as f:
     f.write("{}\n")
+# what the session's shell sees of the run that started it
+call["run"] = sorted(k for k in os.environ if k.startswith(("RUN_STREAMS_", "FEATURE_LOOP_", "LOOP_WATCH_", "PROVE_LOOP_"))
+                     or k == "LOOP_CONDUCTOR")
 with open(log, "a") as f:
     f.write(json.dumps(call) + "\n")
 emit({"type": "result", "subtype": "success", "result": "the stand-in's report of turn %d (%s)" % (turns + 1, mode),
@@ -202,6 +205,8 @@ class SingleRunTest(unittest.TestCase):
                          [("continue", "The thing does not work yet."), ("stop", "The thing works.")])
         self.assertTrue(all("single-agent run" in d["asked"]["question"] for d in made))
         self.assertEqual(json.loads(self.tool("wait", "thing", "--timeout", 1)[1])["kind"], "not-running")
+        # the agent's shell holds nothing of the loop or the run: a test it ran of these scripts would ask the real watcher
+        self.assertEqual([c["run"] for c in self.calls()], [[]] * len(self.calls()))
 
     @cost("tool")
     def test_a_message_a_person_sets_while_a_cycle_runs_is_what_the_next_cycle_takes_and_a_watcher_sets_none(self):

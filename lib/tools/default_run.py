@@ -12,6 +12,17 @@ one machine: a run in one workspace covers the same tree in another.
     default_run.py gate [--rev REV] [--run]  exit 0 when one does (sync.py push and release.py cut ask this); with
                                              --run, a default run is started here when none does, and asked again
 
+    default_run.py after-merge [--final] [--within SECONDS] [--memory SIZE] [--rust-jobs N]
+                                             the default run after a merge, when it is due: it is the most expensive
+                                             thing a session runs inline, and merges are frequent, so not every merge
+                                             runs it (the user, 2026-11-18). It runs when the last one here failed,
+                                             or when none has passed here within SECONDS (an hour); with --final,
+                                             for the last merge of a run or before a push, whenever no passed run
+                                             covers @-. It runs in a memory cap of its own (8G, `none` for no cap)
+                                             with N Rust test binaries at a time (2), so that it cannot fill the
+                                             memory of the session that started it (VF-037). Exits as the run does,
+                                             0 when none was due.
+
 One at a time: two runs in one workspace share cargo's target directory and the tests' work folders under it, and
 overwrite what the other is reading (VF-034: two at once failed Rust tests that pass alone). `test_costs.py run`
 holds `lock()` while it runs, and a second run waits for it.
@@ -32,6 +43,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 CACHE = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "in-the-loop"
 RECORD = CACHE / "default-runs.jsonl"
+ATTEMPTS = CACHE / "default-run-attempts.json"  # each checkout's last whole default run: when, and whether it passed
+WITHIN = 3600  # seconds a passed run here stands for the merges after it
 KEPT = 200  # records kept, the newest
 MARK = "default run:"
 # Paths whose changes no test reads: a record still covers a commit that differs from its tree only here.
@@ -109,6 +122,60 @@ def last(rev: str = "@-", root: Path = ROOT, path: Path = RECORD) -> dict | None
     return None
 
 
+def attempted(root: Path = ROOT, ok: bool = True, path: Path | None = None, now: float | None = None) -> None:
+    """Note that a whole default run ended in ROOT just now, and how."""
+    path = path or ATTEMPTS
+    try:
+        try:
+            all_ = json.loads(path.read_text())
+        except (OSError, ValueError):
+            all_ = {}
+        all_[str(Path(root).resolve())] = {"when": now if now is not None else time.time(), "ok": ok}
+        path.parent.mkdir(parents=True, exist_ok=True)
+        tmp = path.with_suffix(f".{os.getpid()}.tmp")
+        tmp.write_text(json.dumps(all_, indent=1) + "\n")
+        tmp.replace(path)
+    except OSError as e:
+        print(f"{MARK} the run's end could not be noted ({e})", flush=True)
+
+
+def due(root: Path = ROOT, final: bool = False, within: float = WITHIN, rev: str = "@-", path: Path | None = None,
+        now: float | None = None) -> tuple[bool, str]:
+    """(whether a default run is due after a merge in ROOT, why). See `after-merge` in the header."""
+    now = now if now is not None else time.time()
+    if last(rev, root):
+        return False, f"a passed default run covers {rev} as it is"
+    if final:
+        return True, f"no passed default run covers {rev}, and this is the last merge"
+    try:
+        at = (json.loads((path or ATTEMPTS).read_text()) or {}).get(str(Path(root).resolve()))
+    except (OSError, ValueError):
+        at = None
+    if not at:
+        return True, "no default run is known to have ended here"
+    ago = f"{max(0, int((now - at['when']) // 60))} min ago"
+    if not at.get("ok"):
+        return True, f"the last default run here failed ({ago}): it is taken up before new work"
+    if now - at["when"] >= within:
+        return True, f"the last default run here passed {ago}, more than {int(within // 60)} min"
+    return False, (f"a default run passed here {ago}: the merges of the {int(within // 60)} min after it don't run another. "
+                   f"The run's last merge does (--final), and so does a push")
+
+
+def after_merge(root: Path = ROOT, final: bool = False, within: float = WITHIN, memory: str = "8G", rust_jobs: int = 2) -> int:
+    run, why = due(root, final, within)
+    if not run:
+        print(f"{MARK} not run: {why}", flush=True)
+        return 0
+    argv = [sys.executable, str(root / "lib/tools/test_costs.py"), "run", "--rust-jobs", str(rust_jobs)]
+    import shutil
+    if memory != "none" and shutil.which("systemd-run"):
+        argv = ["systemd-run", "--user", "--scope", "-q", "-p", f"MemoryMax={memory}", "-p", "MemorySwapMax=0", *argv]
+    print(f"{MARK} running it: {why} ({'no memory cap' if argv[0] != 'systemd-run' else 'capped at ' + memory}, "
+          f"{rust_jobs} Rust test binaries at a time)", flush=True)
+    return subprocess.run(argv, cwd=root).returncode
+
+
 class Started:
     """What `started()` saw: the tree a run began on, checked again when it ends."""
 
@@ -163,7 +230,14 @@ def main(argv: list[str] | None = None) -> int:
     g = sub.add_parser("gate")
     g.add_argument("--rev", default="@-")
     g.add_argument("--run", action="store_true", help="start a default run here when none covers REV")
+    m = sub.add_parser("after-merge")
+    m.add_argument("--final", action="store_true", help="the last merge of a run, or before a push: whenever no passed run covers @-")
+    m.add_argument("--within", type=float, default=WITHIN, metavar="SECONDS")
+    m.add_argument("--memory", default="8G", help="the run's memory cap (`none` for no cap)")
+    m.add_argument("--rust-jobs", type=int, default=2, metavar="N")
     a = ap.parse_args(argv)
+    if a.command == "after-merge":
+        return after_merge(ROOT, a.final, a.within, a.memory, a.rust_jobs)
     if a.command == "last":
         r = last(a.rev)
         print(json.dumps(r, indent=1) if r else f"no passed default run covers {a.rev}")

@@ -154,8 +154,9 @@ When the run has ended:
 - A run in a workspace: `python3 llm-dlc/tools/single_run.py land NAME` brings its commits to this line, moved
   forward when the line has not moved, else by a merge with the generated trace files regenerated. A merge that
   conflicts in real work is taken back and says where: resolve it as "Between two examples" in
-  `llm-dlc/runtime.md` shows, or leave it and tell the user. After a merge, run the default test run inline
-  (`python3 lib/tools/test_costs.py run`), as `CLAUDE.md` asks; a failure is reported, not fixed by you. If the
+  `llm-dlc/runtime.md` shows, or leave it and tell the user. After a merge, run
+  `python3 lib/tools/default_run.py after-merge --final`: the default test run, in a memory cap of its own,
+  unless a passed run already covers the line as it stands; a failure is reported, not fixed by you. If the
   user said to leave the workspace unmerged, leave it.
 - Tell the user: whether the outcome was reached, by your reading of the last report and the commits, and what
   is left; each cycle in a line (what it did, your answer); the continue messages that were set and when; what

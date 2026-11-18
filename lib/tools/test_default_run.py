@@ -93,6 +93,64 @@ class Records(unittest.TestCase):
         run.assert_not_called()
 
 
+class AfterAMerge(unittest.TestCase):
+    """Whether a default run is due after a merge: the last one here failed, or none passed here within the hour."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.path = Path(self.tmp.name) / "attempts.json"
+        self.root = Path(self.tmp.name) / "repo"
+        self.root.mkdir()
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def due(self, covered=None, **kw):
+        with mock.patch.object(dr, "last", return_value=covered):
+            return dr.due(self.root, path=self.path, now=10_000, **kw)
+
+    def test_a_merge_within_the_hour_of_a_passed_run_runs_none_and_a_later_one_does(self):
+        self.assertEqual(self.due()[0], True, "nothing is known of this checkout")
+        dr.attempted(self.root, True, self.path, now=10_000 - 600)
+        run, why = self.due()
+        self.assertFalse(run)
+        self.assertIn("10 min ago", why)
+        dr.attempted(self.root, True, self.path, now=10_000 - 3700)
+        self.assertTrue(self.due()[0])
+        self.assertFalse(self.due(within=7200)[0])
+
+    def test_a_run_that_failed_is_due_again_at_once(self):
+        dr.attempted(self.root, False, self.path, now=10_000 - 60)
+        run, why = self.due()
+        self.assertTrue(run)
+        self.assertIn("failed", why)
+
+    def test_the_last_merge_runs_it_unless_a_passed_run_covers_the_commit(self):
+        dr.attempted(self.root, True, self.path, now=10_000 - 60)
+        self.assertTrue(self.due(final=True)[0])
+        self.assertFalse(self.due(final=True, covered={"tree": "t1"})[0])
+        self.assertFalse(self.due(covered={"tree": "t1"})[0])
+
+    def test_another_checkouts_run_says_nothing_of_this_one(self):
+        dr.attempted(Path(self.tmp.name) / "other", True, self.path, now=10_000 - 60)
+        self.assertTrue(self.due()[0])
+
+    def test_a_due_run_is_capped_and_limited_and_one_not_due_runs_nothing(self):
+        with mock.patch.object(dr, "due", return_value=(True, "made up")), mock.patch.object(dr.subprocess, "run") as run, \
+                mock.patch("shutil.which", return_value="/usr/bin/systemd-run"), contextlib.redirect_stdout(io.StringIO()):
+            run.return_value.returncode = 3
+            self.assertEqual(dr.after_merge(self.root), 3)
+        argv = run.call_args.args[0]
+        self.assertEqual(argv[:2], ["systemd-run", "--user"])
+        self.assertIn("MemoryMax=8G", argv)
+        self.assertEqual(argv[-3:], ["run", "--rust-jobs", "2"])
+        with mock.patch.object(dr, "due", return_value=(False, "made up")), mock.patch.object(dr.subprocess, "run") as run, \
+                contextlib.redirect_stdout(io.StringIO()) as out:
+            self.assertEqual(dr.after_merge(self.root), 0)
+        run.assert_not_called()
+        self.assertIn("not run: made up", out.getvalue())
+
+
 @cost("tool")
 class Locking(unittest.TestCase):
     @cost("tool")

@@ -710,6 +710,10 @@ run_claude() {
   FRESH=
   (
     [[ -n "${LOOP_WATCH_PID:-}" ]] && printf '%s\n' "$BASHPID" >"$LOOP_WATCH_PID"
+    # The session is given the instruction and nothing of the run that started it: with the loop's and the run's
+    # variables in its shell, a test it ran of these very scripts asked the real watcher its made-up questions
+    # (RUN_STREAMS_WATCHER, 2026-11-17).
+    unset "${!RUN_STREAMS_@}" "${!FEATURE_LOOP_@}" "${!LOOP_WATCH_@}" "${!PROVE_LOOP_@}" LOOP_CONDUCTOR
     exec claude -p "$1" "${session[@]}" --model "$MODEL" --effort "$EFFORT" "${compact[@]}" "${ISOLATION[@]}" \
       --permission-mode auto --output-format stream-json --verbose </dev/null
   ) | tee ${2:+"$2"} | show_progress

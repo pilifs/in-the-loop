@@ -34,12 +34,41 @@ intervals. This is what it runs. BRIEF is a brief's name or file, as run-streams
         `merge` question for it (`merged`), and records the merge in the brief's Progress, whose status it sets
         to `done` once every stream is merged and says done, and commits that. Run again after a merge made by
         hand, it records that merge. A merge that conflicts in real work is taken back and reported.
+    brief_run.py merge BRIEF STREAM --early
+        the same merge for a stream that is still at work: its line as committed so far comes in, what its
+        session has not committed stays where it is, no question is answered and the brief's status is left
+        alone. For a stream whose line another's has to follow (`order`), and to shorten the end of a run.
+    brief_run.py trial BRIEF
+        merge every pair of the streams' lines, and each with the default line, on trial: nothing is committed
+        and no working copy changes. Prints the files each pair conflicts in beyond the generated ones, which
+        is what a merge order is decided from, early, while it is cheap.
+    brief_run.py order BRIEF [STREAM ...] [--clear]
+        the order the streams are merged in, when their lines conflict: `merge` then refuses a stream while one
+        before it in the order has commits this line lacks, and names the merge to make first (`--early` for one
+        still at work; `merge --out-of-order` overrides). Without streams, prints the order.
+    brief_run.py rerun BRIEF STREAM
+        run a stream's loop again inside the run: one whose loop has ended, however it ended (a session killed,
+        two stops without a status, blocked). run-streams.sh takes the request once the stream's own process
+        has ended, clears what the ended loop left in its scope, and looks after the loop as from the start; when
+        the run itself has ended, this starts it again for that stream.
+    brief_run.py helper BRIEF add NAME --at "tmux TARGET" [--role TEXT]
+    brief_run.py helper BRIEF task NAME --title TEXT --file FILE [--no-send]
+    brief_run.py helper BRIEF done TASK --report TEXT | --report-file FILE
+    brief_run.py helper BRIEF merge TASK
+    brief_run.py helper BRIEF list
+        helpers: sessions the user has open (each in a tmux pane) that take work the run has no owner for. The
+        first is for low-hanging work, small and well bounded; the user may add others for a harder problem (a
+        specialist). `task` writes a narrow brief with a stream's standing rules (the watcher's FILE says what
+        is asked), puts the helper's workspace, NAME-HELPER, at the default line's last commit (made on first
+        use; never from a merge in progress), and types one line into the helper's pane that names the brief.
+        The helper commits there and ends with `done`, run from the default workspace's copy of this script;
+        `wait` then returns it, and `merge` brings its commits to the default line as `land` does.
     brief_run.py wait BRIEF [--interval SECONDS] [--timeout SECONDS]
         block until something needs the watcher, and print it as JSON: a `question` (a loop ended blocked: rerun
         or leave; a stream is finished: merge it), `attention` (the integration check stopped passing, or a decision is open for the user),
         `results` (results came back and were collected and committed; what is in `attention` is to triage),
-        `verification` (jobs waited and no runner was at work: one was started), `summary` (every 30 minutes, or
-        `interval`), or `ended`. Exit 3 with nothing after the timeout: wait again. At each look at the queue it
+        `verification` (jobs waited and no runner was at work: one was started), `helper` (a helper's task is
+        done: read its report and merge it), `summary` (every 30 minutes, or `interval`), or `ended`. Exit 3 with nothing after the timeout: wait again. At each look at the queue it
         also records the inbox items the streams' committed Progress acknowledges (inbox.py collect).
     brief_run.py collect BRIEF
         collect the results that are back and commit them, with the paths a commit of results holds and nothing
@@ -203,6 +232,8 @@ def loops_in(root: Path) -> list[int]:
 
 
 SESSION = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
+# What a run hands the loops it starts, to find its watcher: a session that carries one was started inside a run.
+RUN_VARIABLES = ("RUN_STREAMS_WATCHER", "LOOP_CONDUCTOR", "FEATURE_LOOP_RECORD_AS", "FEATURE_LOOP_FIRST", "FEATURE_LOOP_CONTINUE")
 
 # -- before the run
 
@@ -377,6 +408,12 @@ def preflight(run: Run) -> dict:
     elif pids := loops_in(root):
         blocking.append(f"a loop is at work in the default workspace (pid {pids[0]}; a proof run's, or a brief's own): the "
                         f"brief's own loop would commit into its work. Start once it has ended")
+    carried = sorted(k for k in os.environ if k in RUN_VARIABLES or k.startswith("LOOP_WATCH_"))
+    if carried:
+        blocking.append(f"this session's environment holds a run's own variables ({', '.join(carried[:6])}): it was started "
+                        f"inside a loop or another run, and a run started from it would hand them on to its streams, "
+                        f"whose tests of these scripts would then ask the real watcher their made-up questions. Watch "
+                        f"from a session started outside any loop")
     dirty = jj(root, "diff", "-r", "@", "--name-only").stdout.split()
     if dirty:
         notes.append(f"the default workspace has uncommitted changes ({len(dirty)} files, {dirty[0]} first): another "
@@ -558,20 +595,21 @@ def adopt_logs(root: Path) -> None:
         subprocess.run([sys.executable, str(sync), "adopt-logs"], cwd=root, capture_output=True, text=True, stdin=subprocess.DEVNULL)
 
 
-def land(run: Run, workspace: str, message: tuple[str, str] | None = None) -> dict:
-    """Bring WORKSPACE's line to the default workspace's (see the header), and the session logs it names."""
-    out = _land(run, workspace, message)
+def land(run: Run, workspace: str, message: tuple[str, str] | None = None, at_work: bool = False) -> dict:
+    """Bring WORKSPACE's line to the default workspace's (see the header), and the session logs it names. AT_WORK:
+    its session is still working there, and what it has not committed stays there."""
+    out = _land(run, workspace, message, at_work)
     adopt_logs(run.root)
     return out
 
 
-def _land(run: Run, workspace: str, message: tuple[str, str] | None) -> dict:
+def _land(run: Run, workspace: str, message: tuple[str, str] | None, at_work: bool = False) -> dict:
     root = run.root
     with sync_lock(root):
         dirty = jj(root, "diff", "-r", "@", "--name-only").stdout.split()  # also snapshots the working copy
         theirs, ours = commit_id(root, f"{workspace}@-"), commit_id(root, "@-")
         left = jj(root, "diff", "-r", f"{workspace}@", "--name-only", snapshot=False).stdout.split()
-        if left:
+        if left and not at_work:
             raise Problem(f"the workspace {workspace} has uncommitted changes ({', '.join(left[:5])}): its session commits them first")
         if is_ancestor(root, theirs, ours):
             return {"landed": "nothing to land: the line already has it", "commit": watch.head_change(root)}
@@ -732,40 +770,95 @@ def brief_status_after(run: Run, check: dict) -> str:
         folder = Path(s["folder"])
         merged = s.get("exists") and merged_in(run.root, s["workspace"])
         rows.append((s["label"], merged, streams_status.brief_status(folder / s["brief"]) if s.get("exists") else None))
-    if not all(m for _, m, _ in rows):
-        return "working"
+    if not all(m for _, m, _ in rows) or any((status or "").startswith(("working", "waiting")) for _, _, status in rows):
+        return "working"  # a stream not merged, or one merged early that is still at work
     blocked = [f"stream {label}: {status}" for label, _, status in rows if not (status or "").startswith("done")]
     return "done" if not blocked else "blocked: " + "; ".join(blocked)
 
 
 def commit_own_record(run: Run) -> None:
-    """Commit the watcher's own answers (conductor.py decide writes them to the run's decision record and commits
-    nothing), so they don't count as another session's uncommitted files that a merge must wait for."""
+    """Commit the run's decision record when it has changed: the watcher's own answers (conductor.py decide writes
+    them and commits nothing) and the user's (decisions.py answer, which another session may have run for them
+    here). The watcher is the session that commits in this working copy while a run is under way, so it commits
+    both, under a message that says so: until 2026-11-18 only a merge did, and a user's answer left uncommitted
+    went into the next commit of results under that commit's message."""
     own = [f"llm-dlc/decisions/{run.dir.name}.jsonl", f"llm-dlc/decisions/{run.dir.name}.md"]
     dirty = jj(run.root, "diff", "-r", "@", "--name-only").stdout.split()
     mine = [f for f in dirty if f in own]
     if not mine:
         return
     r = subprocess.run([sys.executable, str(run.root / "llm-dlc" / "tools" / "sync.py"), "commit", "--only", *mine,
-                        "-m", f"Record the watcher's answers in the {run.name} run",
-                        "-m", f"The decisions the watcher of the brief {run.brief} took while it ran, committed before it "
-                              f"merges a stream."],
+                        "-m", f"Record the decisions of the {run.name} run",
+                        "-m", f"The run's decision record as it stands: what the watcher of the brief {run.brief} decided "
+                              f"while it ran, and what the user answered (decisions.py answer). The watcher commits the "
+                              f"record whenever it has changed, since it is the session that commits in this working copy "
+                              f"during a run."],
                        cwd=run.root, capture_output=True, text=True, stdin=subprocess.DEVNULL)
     if r.returncode != 0:
         raise Problem(f"could not commit the run's decision record first: {(r.stderr or r.stdout).strip()[-600:]}")
 
 
-def cmd_merge(run: Run, label: str) -> int:
+def cmd_merge(run: Run, label: str, early: bool = False, out_of_order: bool = False) -> int:
     with writer(run.root):
-        return merge(run, label)
+        return merge(run, label, early, out_of_order)
 
 
-def merge(run: Run, label: str) -> int:
+def before_in_order(run: Run, label: str) -> list[dict]:
+    """The streams the run's merge order puts before LABEL whose lines hold commits the default line lacks: each
+    with whether its loop is finished, which says how it is merged first."""
+    order = run.read().get("mergeOrder") or []
+    if label not in order:
+        return []
+    rows = {s["label"]: s for s in preflight(run)["streams"]}
+    out = []
+    for other in order[:order.index(label)]:
+        s = rows.get(other)
+        if s and s.get("exists") and not merged_in(run.root, s["workspace"]):
+            status = streams_status.brief_status(Path(s["folder"]) / s["brief"]) or ""
+            finished = status.startswith(("done", "blocked"))
+            out.append({"stream": other, "status": status or "no status",
+                        "merge": f"python3 llm-dlc/tools/brief_run.py merge {run.name} {other}" + ("" if finished else " --early")})
+    return out
+
+
+def merge(run: Run, label: str, early: bool = False, out_of_order: bool = False) -> int:
     s = stream_of(run, label)
     workspace, root = s["workspace"], run.root
     head = jj(root, "log", "--no-graph", "-r", f"{workspace}@-", "-T", "change_id.short(12)", snapshot=False).stdout.strip()
     status = streams_status.brief_status(Path(s["folder"]) / s["brief"]) or "no status"
+    first = before_in_order(run, label)
+    if first and not out_of_order:
+        raise Problem(f"the run's merge order ({', '.join(run.read()['mergeOrder'])}) puts {', '.join(f['stream'] for f in first)} "
+                      f"before {label}, with commits this line lacks: first " + "; then ".join(f"`{f['merge']}`" for f in first)
+                      + f". `merge {run.name} {label} --out-of-order` merges it anyway")
+    if early and status.startswith(("done", "blocked")):
+        early = False  # it is finished: the merge is its merge
     commit_own_record(run)
+    if early:
+        out = land(run, workspace, (f"Merge stream {label}'s line so far into the line, while it is still at work",
+                                    f"The stream {label} of the brief {run.brief} is still at work ({status}). The run's watcher "
+                                    f"merges what it has committed so far ({head}), so that the lines that have to follow it "
+                                    f"can come in and the end of the run has less to merge; what its session has not committed "
+                                    f"stays in its workspace {workspace}, and its later commits come in by its next merge. "
+                                    f"Nothing but the generated trace files met; they were regenerated from the session files."),
+                   at_work=True)
+        line = f"merged stream {label}'s line so far ({head}), while it is still at work"
+        text = (root / run.brief).read_text()
+        if line not in text and not out["landed"].startswith("nothing"):
+            brief = root / run.brief
+            brief.write_text(record_merge(text, f"- {conductor.now()[:10]}, the watcher: {line}.",
+                                          streams_status.brief_status(brief) or "working"))
+            r = subprocess.run([sys.executable, str(root / "llm-dlc" / "tools" / "sync.py"), "commit", "--only", run.brief,
+                                "-m", f"Record the early merge of stream {label} in the {run.name} brief's Progress",
+                                "-m", f"The run's watcher merged stream {label}'s line so far ({head}) into the default line "
+                                      f"while the stream is still at work; the brief's status is unchanged."],
+                               cwd=root, capture_output=True, text=True, stdin=subprocess.DEVNULL)
+            if r.returncode != 0:
+                raise Problem(f"the line is merged, but recording it reported: {(r.stderr or r.stdout).strip()[-600:]}")
+        out.update(early=True, stream=label, head=head, commit=watch.head_change(root),
+                   note="its later commits come in by its next merge, which it is put to you for when it is finished")
+        print(json.dumps(out, indent=1))
+        return 0
     out = land(run, workspace, (f"Merge stream {label} of the {run.name} run into the line",
                                 f"The stream {label} of the brief {run.brief} is finished ({status}), and the run's watcher "
                                 f"merges each stream the moment it is, while the others still run. Its workspace "
@@ -801,7 +894,364 @@ def merge(run: Run, label: str) -> int:
             raise Problem(f"the stream is merged, but recording it reported: {(r.stderr or r.stdout).strip()[-600:]}")
         out["briefStatus"] = new_status
     out["commit"] = watch.head_change(root)
+    # what the order held back behind this stream and is finished: its turn has come
+    order = run.read().get("mergeOrder") or []
+    due = []
+    for other in order[order.index(label) + 1:] if label in order else []:
+        o = next((x for x in preflight(run)["streams"] if x["label"] == other), None)
+        if (o and o.get("exists") and not merged_in(root, o["workspace"]) and not before_in_order(run, other)
+                and (streams_status.brief_status(Path(o["folder"]) / o["brief"]) or "").startswith(("done", "blocked"))):
+            due.append(f"python3 llm-dlc/tools/brief_run.py merge {run.name} {other}")
+    if due:
+        out["nowDue"] = due
     print(json.dumps(out, indent=1))
+    return 0
+
+
+# -- a trial merge, and the order it gives
+
+def trial_merge(root: Path, a: str, b: str) -> list[str]:
+    """The files a merge of commits A and B conflicts in. The merge is made beside every working copy (`jj new
+    --no-edit`), read and abandoned: no line and no workspace changes."""
+    mark = f"brief_run.py trial {uuid.uuid4()}"
+    r = jj(root, "new", "--no-edit", a, b, "-m", mark, snapshot=False)
+    if r.returncode != 0:
+        raise Problem(f"the trial merge could not be made: {r.stderr.strip()}")
+    made = jj(root, "log", "--no-graph", "-r", f'description(substring:"{mark}")', "-T", 'commit_id ++ "\n"', snapshot=False).stdout.split()
+    try:
+        if len(made) != 1:
+            raise Problem("the trial merge was not found again")
+        listed = jj(root, "resolve", "--list", "-r", made[0], snapshot=False)
+        if listed.returncode != 0 and "No conflicts" not in listed.stderr:
+            raise Problem(f"jj resolve --list: {listed.stderr.strip()}")
+        return [m[1] for m in re.finditer(r"^(.*?)\s{2,}\S.*$", listed.stdout, re.M)] if listed.returncode == 0 else []
+    finally:
+        for commit in made:
+            jj(root, "abandon", commit, snapshot=False)
+
+
+INVENTORY = "lib/tests/costs.json"  # rewritten by every stream that adds a test: it is regenerated, not resolved
+
+
+def trial(run: Run) -> dict:
+    root = run.root
+    lines = {"the default line": commit_id(root, "@-")}
+    for s in preflight(run)["streams"]:
+        if s.get("exists"):
+            lines[s["label"]] = commit_id(root, f"{s['workspace']}@-")
+    names, pairs = list(lines), []
+    for i, a in enumerate(names):
+        for b in names[i + 1:]:
+            if is_ancestor(root, lines[a], lines[b]) or is_ancestor(root, lines[b], lines[a]):
+                pairs.append({"a": a, "b": b, "conflicts": [], "note": "one holds the other: nothing to merge"})
+                continue
+            files = trial_merge(root, lines[a], lines[b])
+            real = [f for f in files if not generated(f) and f != INVENTORY]
+            pairs.append({"a": a, "b": b, "conflicts": real,
+                          **({"regenerated": sorted(set(files) - set(real))} if set(files) - set(real) else {})})
+    meet = [p for p in pairs if p["conflicts"]]
+    return {"lines": {k: v[:12] for k, v in lines.items()}, "pairs": pairs, "order": run.read().get("mergeOrder") or None,
+            "note": ("no two lines conflict in real work: each stream is merged the moment it is finished, in any order"
+                     if not meet else
+                     f"{len(meet)} pair(s) conflict in real work. Tell the streams concerned through their inboxes, and "
+                     f"propose a merge order to the user (`brief_run.py order {run.name} STREAM ...`): the stream whose "
+                     f"change the other has to build on first, and each later one merges the default line into its own "
+                     f"before it is finished. A stream ahead in the order is merged while it still runs (`merge ... --early`), "
+                     f"so that nothing finished waits for it")}
+
+
+def cmd_order(run: Run, streams: list[str], clear: bool) -> int:
+    known = [s["label"] for s in run.plan["streams"]]
+    if clear:
+        run.update(mergeOrder=[])
+    elif streams:
+        unknown = [x for x in streams if x not in known]
+        if unknown or len(set(streams)) != len(streams):
+            raise Problem(f"a merge order names each stream once at most, of {', '.join(known) or 'none'}: {' '.join(streams)}")
+        run.update(mergeOrder=streams)
+    order = run.read().get("mergeOrder") or []
+    print(json.dumps({"order": order or None, "unordered": [k for k in known if k not in order],
+                      "note": "a stream is merged once every stream before it in the order has its commits on this line; "
+                              "a stream the order does not name is merged whenever it is finished"}, indent=1))
+    return 0
+
+
+# -- a stream run again inside the run
+
+def cmd_rerun(run: Run, label: str) -> int:
+    s = stream_of(run, label)
+    folder = Path(s["folder"])
+    at_work = loops_in(folder)
+    if at_work:
+        raise Problem(f"the stream {label}'s loop is at work (pid {at_work[0]}): there is nothing to run again")
+    request = run.dir / "rerun" / label
+    request.parent.mkdir(parents=True, exist_ok=True)
+    request.write_text(conductor.now() + "\n")
+    out = {"stream": label, "status": streams_status.brief_status(folder / s["brief"]) or "no status",
+           "phase": streams_status.read(run.dir / f"{label}.phase") or None}
+    if watch.alive((run.read().get("run") or {}).get("pid")):
+        asked = conductor.pending(run.dir)
+        asked = asked if asked and asked.get("loop") == label and asked.get("type") != "ended" else None
+        out["next"] = ("run-streams.sh starts its loop again within seconds: it clears what the ended loop left in its "
+                       "scope first, and puts the stream to you to merge when it is finished")
+        if asked:
+            out["next"] = (f"its {asked['type']} question (event {asked['n']}) is still open, and run-streams.sh starts the loop "
+                           f"again once that is answered: `python3 llm-dlc/tools/conductor.py decide "
+                           f"{run.dir.relative_to(run.root)} {asked['n']} {'|'.join(conductor.answers(asked))} --reason TEXT`")
+        print(json.dumps(out, indent=1))
+        return 0
+    out["next"] = "the run itself had ended: started again, for this stream"
+    print(json.dumps(out, indent=1))
+    return cmd_start(run)
+
+
+# -- helpers: sessions the user has open, for work the run has no owner for
+
+SHELLS = ("bash", "zsh", "sh", "fish", "dash", "ksh")
+FIRST_ROLE = "low-hanging work: small, well-bounded pieces that no stream of the run owns"
+LATER_ROLE = "what the user added it for (a harder problem, a specialist): ask them when it is not clear"
+
+
+def tmux(*args: str) -> subprocess.CompletedProcess:
+    try:
+        return subprocess.run(["tmux", *args], capture_output=True, text=True)
+    except OSError as e:
+        return subprocess.CompletedProcess(args, 127, "", f"tmux: {e.strerror}")
+
+
+def pane_of(at: str) -> dict:
+    """The tmux pane a helper is in, from the user's word for it ("tmux 3": window 3 of this session)."""
+    m = re.fullmatch(r"\s*tmux\s+(\S+)\s*", at)
+    if not m:
+        raise Problem(f'a helper is named by its tmux window or pane, as "tmux 3": {at!r}')
+    r = tmux("display-message", "-p", "-t", m[1], "#{pane_id}\t#{session_name}:#{window_index}.#{pane_index}\t#{pane_current_command}")
+    if r.returncode != 0 or r.stdout.count("\t") != 2:
+        raise Problem(f"no tmux pane at {m[1]} ({(r.stderr or r.stdout).strip() or 'tmux said nothing'})")
+    pane, where, command = r.stdout.rstrip("\n").split("\t")
+    return {"pane": pane, "where": where, "command": command}
+
+
+def done_file(run: Run, task_id: str) -> Path:
+    return run.dir / "helpers" / f"{task_id}.done.json"
+
+
+def helpers(run: Run) -> dict:
+    """The run's helpers and their tasks. That a task is done is the helper's to say, from its own session, and it
+    says it in a file of its own (`done`): the run's state file is rewritten whole by the watcher's `wait`, and a
+    second writer's change could be lost between its read and its write."""
+    out = dict(run.read().get("helpers") or {})
+    for h in out.values():
+        for task in h.get("tasks") or []:
+            if "done" not in task:
+                try:
+                    task.update(json.loads(done_file(run, task["id"]).read_text()))
+                except (OSError, ValueError):
+                    pass
+    return out
+
+
+def helper_workspace(run: Run, name: str) -> str:
+    return f"{run.name}-{name}"
+
+
+def tasks_of(run: Run) -> dict[str, tuple[str, dict]]:
+    return {t["id"]: (name, t) for name, h in helpers(run).items() for t in h.get("tasks") or []}
+
+
+def save_task(run: Run, name: str, task: dict) -> None:
+    all_ = helpers(run)
+    h = all_[name]
+    h["tasks"] = [t for t in h.get("tasks") or [] if t["id"] != task["id"]] + [task]
+    h["tasks"].sort(key=lambda t: t["id"])
+    run.update(helpers=all_)
+
+
+def cmd_helper_add(run: Run, name: str, at: str, role: str | None) -> int:
+    if not re.fullmatch(r"[a-z][a-z0-9-]{0,23}", name):
+        raise Problem(f"a helper's name is lower-case letters, digits and dashes: {name!r}")
+    all_ = helpers(run)
+    pane = pane_of(at)
+    if pane["command"] in SHELLS:
+        raise Problem(f"the pane {pane['where']} is at a shell prompt ({pane['command']}), not in a session: what is typed "
+                      f"there would be run as a command. Open the helper's Claude Code session in it first")
+    taken = next((n for n, h in all_.items() if h["pane"] == pane["pane"] and n != name), None)
+    if taken:
+        raise Problem(f"the pane {pane['where']} is the helper {taken}'s")
+    before = all_.get(name) or {}
+    all_[name] = {**before, "at": at.strip(), **pane, "role": role or before.get("role") or (FIRST_ROLE if not [n for n in all_ if n != name] else LATER_ROLE),
+                  "workspace": helper_workspace(run, name), "added": before.get("added") or conductor.now(),
+                  "tasks": before.get("tasks") or []}
+    run.update(helpers=all_)
+    print(json.dumps({"helper": name, **{k: all_[name][k] for k in ("at", "where", "command", "role", "workspace")},
+                      "note": "it takes a task with `helper BRIEF task NAME --title ... --file ...`: one at a time, each merged "
+                              "before the next"}, indent=1))
+    return 0
+
+
+def helper_folder(run: Run, name: str) -> Path:
+    """The helper's workspace, at the default line's last commit: made on first use, and for a later task moved
+    there once its last one is merged and nothing uncommitted is left in it."""
+    root, ws = run.root, helper_workspace(run, name)
+    heads = jj(root, "log", "--no-graph", "-r", "@-", "-T", 'commit_id ++ "\n"').stdout.split()
+    if len(heads) != 1:
+        raise Problem("the default workspace is in the middle of a merge (its working copy has two parents): commit the "
+                      "merge first, so the helper starts from the line's one last commit")
+    known = workspaces(root)
+    if ws not in known:
+        folder = root.parent / f"{root.name}-{ws}"
+        if folder.exists():
+            raise Problem(f"{folder} already exists, but no jj workspace is at it: delete it first")
+        r = jj(root, "workspace", "add", "--name", ws, "-r", heads[0], str(folder))
+        if r.returncode != 0:
+            raise Problem(f"could not add the workspace {ws}: {r.stderr.strip()}")
+        adopt_logs(folder)
+        return folder
+    folder = known[ws]
+    if folder is None or not folder.is_dir():
+        raise Problem(f"jj knows the workspace {ws} but not its folder")
+    dirty = [f for f in jj(folder, "diff", "-r", "@", "--name-only").stdout.splitlines() if f.strip()]
+    left = [f for f in dirty if not regenerable(folder, f)]
+    if left:
+        raise Problem(f"the helper's workspace {ws} has uncommitted files ({', '.join(left[:5])}): its last task is not "
+                      f"finished, or they are to be committed or discarded by the helper first")
+    if dirty:
+        jj(folder, "restore", "--", *dirty)  # trace output only: sync.py writes it again
+    if not merged_in(root, ws):
+        raise Problem(f"the helper's workspace {ws} has commits this line lacks: merge its last task first "
+                      f"(`brief_run.py helper {run.name} merge TASK`)")
+    r = jj(folder, "new", heads[0])
+    if r.returncode != 0:
+        raise Problem(f"could not bring the workspace {ws} to the line's last commit: {r.stderr.strip()}")
+    return folder
+
+
+RULES = """You are asked to help the run of the brief `{brief}`, which its watcher keeps. This is one narrow piece of
+work for that run. Do this and nothing else, by the rules a stream of the run works under:
+
+- Work only in the jj workspace `{workspace}`, at `{folder}`. It is at the default line's last commit
+  (`{base}`). Change no file in any other checkout: not the default workspace's, not a stream's.
+- That folder's `CLAUDE.md` holds there as it does everywhere: commit from that folder with
+  `python3 llm-dlc/tools/sync.py commit -m ... -m ...`, run the tests of what you changed, and queue proofs and
+  model checks as jobs.
+- Stay inside the task. If it turns out to need more than it says, a decision, or a change to something a stream
+  is working on, stop and say so in your report: don't widen it.
+- Don't merge, push, or land anything. The watcher merges what you commit, and tells the streams it concerns.
+- When it is done, or you can't finish it, say so with a few lines in a file (what you changed, how you verified
+  it, what is left and why) and run, as it is written here:
+  `python3 {root}/llm-dlc/tools/brief_run.py helper {name} done {task} --report-file FILE`
+"""
+
+
+def cmd_helper_task(run: Run, name: str, title: str, file: str, send: bool) -> int:
+    all_ = helpers(run)
+    if name not in all_:
+        raise Problem(f"the run has no helper {name}: its helpers are {', '.join(all_) or 'none'}. The user names one "
+                      f'(`helper {run.name} add NAME --at "tmux 3"`)')
+    h = all_[name]
+    out_ = [t["id"] for t in h.get("tasks") or [] if not t.get("merged") and not t.get("dropped")]
+    if out_:
+        raise Problem(f"the helper {name} has a task that is not merged yet ({out_[0]}): one at a time")
+    try:
+        asked = Path(file).expanduser().read_text().strip()
+    except OSError as e:
+        raise Problem(f"the task's text, {file}, can't be read ({e.strerror})")
+    if not asked or not " ".join(title.split()):
+        raise Problem("a task has a title and a text that says what is asked")
+    pane = h
+    if send:  # before anything is made: a pane that is gone is looked up again by the user's word for it
+        pane = pane_of(h["at"]) if tmux("display-message", "-p", "-t", h["pane"], "#{pane_id}").returncode != 0 else h
+        if tmux("display-message", "-p", "-t", pane["pane"], "#{pane_current_command}").stdout.strip() in SHELLS:
+            raise Problem(f"the helper's pane ({h['where']}) is at a shell prompt now: nothing was typed there, and no task "
+                          f"was made. Ask the user where the helper's session is, and name its pane again "
+                          f"(`helper {run.name} add {name} --at ...`)")
+    folder = helper_folder(run, name)
+    task_id = f"{name}-T{len(h.get('tasks') or []) + 1:03d}"
+    base = watch.head_change(run.root) or ""
+    path = run.dir / "helpers" / f"{task_id}.md"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(f"# Helper task {task_id} for the run of `{run.brief}`: {' '.join(title.split())}\n\n"
+                    + RULES.format(brief=run.brief, workspace=h["workspace"], folder=folder, base=base, root=run.root,
+                                   name=run.name, task=task_id)
+                    + f"\n## The task\n\n{asked}\n")
+    line = (f"Helper task {task_id} for the run of the brief {run.name}, from its watcher: read the file {path} in full "
+            f"and do what it asks, in the workspace it names.")
+    sent = None
+    if send:
+        typed = tmux("send-keys", "-t", pane["pane"], "-l", line)
+        if typed.returncode == 0:
+            typed = tmux("send-keys", "-t", pane["pane"], "Enter")
+        if typed.returncode != 0:
+            raise Problem(f"the task is written ({path}), but could not be typed into the helper's pane: "
+                          f"{typed.stderr.strip()}. Give the helper this line yourself: {line}")
+        sent = conductor.now()
+    save_task(run, name, {"id": task_id, "title": " ".join(title.split()), "file": str(path), "folder": str(folder),
+                          "base": change_of(folder), "sent": sent, "asked": conductor.now()})
+    print(json.dumps({"task": task_id, "helper": name, "file": str(path), "workspace": h["workspace"], "folder": str(folder),
+                      "sent": sent or "not typed into its pane", "line": line,
+                      "next": "`wait` returns the task when the helper says it is done"}, indent=1))
+    return 0
+
+
+def change_of(folder: Path) -> str | None:
+    r = jj(folder, "log", "--no-graph", "-r", "@-", "-T", "change_id", snapshot=False)
+    return r.stdout.strip() or None if r.returncode == 0 else None
+
+
+def cmd_helper_done(run: Run, task_id: str, report: str | None, report_file: str | None) -> int:
+    found = tasks_of(run).get(task_id)
+    if found is None:
+        raise Problem(f"the run of {run.name} has no helper task {task_id}")
+    name, task = found
+    if report_file:
+        try:
+            report = Path(report_file).expanduser().read_text()
+        except OSError as e:
+            raise Problem(f"the report, {report_file}, can't be read ({e.strerror})")
+    if not (report or "").strip():
+        raise Problem("say in a few lines what you changed, how you verified it and what is left: --report TEXT or --report-file FILE")
+    path = done_file(run, task_id)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(f".{os.getpid()}.tmp")
+    tmp.write_text(json.dumps({"done": conductor.now(), "report": report.strip()[:REPORT_LIMIT]}, indent=1) + "\n")
+    os.replace(tmp, path)
+    print(f"recorded: the watcher of the {run.name} run is told that {task_id} is done, reads this report and merges "
+          f"what you committed in {task['folder']}. Nothing more is asked of you for it")
+    return 0
+
+
+def helper_assessment(run: Run, name: str, task: dict) -> dict:
+    folder = Path(task["folder"])
+    left = [f for f in jj(folder, "diff", "-r", "@", "--name-only").stdout.splitlines() if f.strip() and not generated(f)]
+    return {"task": task["id"], "helper": name, "title": task["title"], "report": task.get("report"),
+            "commits": watch.commits(folder, task.get("base")), "uncommitted": left[:20],
+            "merge": f"python3 llm-dlc/tools/brief_run.py helper {run.name} merge {task['id']}"}
+
+
+def cmd_helper_merge(run: Run, task_id: str) -> int:
+    found = tasks_of(run).get(task_id)
+    if found is None:
+        raise Problem(f"the run of {run.name} has no helper task {task_id}")
+    name, task = found
+    ws = helpers(run)[name]["workspace"]
+    with writer(run.root):
+        commit_own_record(run)
+        out = land(run, ws, (f"Merge helper task {task_id} of the {run.name} run into the line",
+                             f"{task['title']}: work the run of the brief {run.brief} had no owner for, done by the helper "
+                             f"{name} (a session the user has open) in its workspace {ws} from a narrow brief of the watcher's, "
+                             f"which merges it. The line had moved on since the task was given, so its commits come in by a "
+                             f"merge. Nothing but the generated trace files met; they were regenerated from the session files."))
+    save_task(run, name, {**task, "merged": conductor.now(), "commit": out.get("commit")})
+    out.update(task=task_id, note="tell the streams it concerns through their inboxes (inbox.py send NAME-STREAM --kind "
+                                  "delivered --do ... --commit CHANGE), each with what changed and where; the helper's "
+                                  "workspace is kept for its next task")
+    print(json.dumps(out, indent=1))
+    return 0
+
+
+def cmd_helper_list(run: Run) -> int:
+    print(json.dumps({name: {**{k: h.get(k) for k in ("at", "where", "role", "workspace")},
+                             "tasks": [{k: t.get(k) for k in ("id", "title", "sent", "done", "merged")} for t in h.get("tasks") or []]}
+                      for name, h in helpers(run).items()}, indent=1))
     return 0
 
 
@@ -944,6 +1394,7 @@ def cmd_start(run: Run) -> int:
     for name in ("ended.seen",):
         (run.dir / name).unlink(missing_ok=True)
     env = {**os.environ, "RUN_STREAMS_WATCHER": str(run.dir), "RUN_STREAMS_NEW_WINDOW": "no"}
+    env.pop("LOOP_CONDUCTOR", None)  # another loop's, if this session carries one: each stream is given its own
     for key in ("TMUX", "TMUX_PANE"):  # the watcher's pane is not the run's: no status bar is drawn on it
         env.pop(key, None)
     with open(run.dir / "streams.log", "a") as out:
@@ -1028,7 +1479,11 @@ def state(run: Run) -> dict:
             "foundation": check["foundation"], "loops": rows,
             "spent": round(sum(r["spent"] for r in rows) + ((check["foundation"] or {}).get("cost") or 0), 2),
             "integration": result[1] if result else None,
-            "openDecisions": record,
+            "openDecisions": record, "mergeOrder": data.get("mergeOrder") or None,
+            "helpers": {name: {"at": h.get("at"), "role": h.get("role"),
+                               "open": [t["id"] + (" (done, not merged)" if t.get("done") else "") for t in h.get("tasks") or []
+                                        if not t.get("merged") and not t.get("dropped")]}
+                        for name, h in helpers(run).items()},
             "jobs": {k: queue.get(k) or [] for k in ("pending", "running", "finished")}, "blocking": check["blocking"]}
 
 
@@ -1071,6 +1526,9 @@ def summary(run: Run, s: dict) -> str:
             lines.append("  - time: " + ", ".join(spans))
     if s["integration"]:
         lines.append(f"- integration: {s['integration']}")
+    for name, h in (s.get("helpers") or {}).items():
+        if h["open"]:
+            lines.append(f"- helper {name} ({h['at']}): {', '.join(h['open'])}")
     if s["openDecisions"]:
         lines.append(f"- open for the user: {', '.join(s['openDecisions'])} (`python3 llm-dlc/tools/decisions.py show ID`)")
     queue = s["jobs"]
@@ -1105,7 +1563,11 @@ def next_thing(run: Run, interval: float) -> dict | None:
 
     event = conductor.pending(run.dir)
     if event is not None and event.get("type") == "merge":
+        first = before_in_order(run, event.get("loop"))
         return {"kind": "question", "event": {**event, "secondsLeft": int(event["deadline"] - time.time())},
+                **({"order": {"first": first, "note": "the run's merge order puts these before it, with commits this line "
+                                                      "lacks: merge each first, with the command it names, then this one"}}
+                   if first else {}),
                 "merge": f"python3 llm-dlc/tools/brief_run.py merge {run.name} {event.get('loop')}",
                 "leave": f"python3 llm-dlc/tools/conductor.py decide {run.dir.relative_to(run.root)} {event['n']} leave --reason TEXT"}
     if event is not None and event.get("type") != "ended":
@@ -1119,6 +1581,13 @@ def next_thing(run: Run, interval: float) -> dict | None:
         if watch.now() - last >= interval:
             run.update(foundation={**run.read()["foundation"], "told": watch.now()})
             return {"kind": "foundation", **foundation_progress(foundation)}
+    for name, h in helpers(run).items():
+        for task in h.get("tasks") or []:
+            if task.get("done") and not task.get("merged") and once(f"helper:{task['id']}:{task['done']}"):
+                return {"kind": "helper", **helper_assessment(run, name, task),
+                        "note": "read the report against what the task asked, and the commits; merge it with the command "
+                                "`merge` names, then tell the streams it concerns through their inboxes. What it left "
+                                "undone, or widened, is yours to judge: a new task, the user, or a finding"}
     started = (data.get("run") or {}).get("started")
     if started and not watch.alive(data["run"].get("pid")) and once(f"ended:{started}"):
         return {"kind": "ended", "state": state(run)}
@@ -1148,6 +1617,8 @@ def cmd_wait(run: Run, interval: float | None, timeout: float) -> int:
         if thing is None and (looked is None or time.monotonic() - looked >= watch.QUEUE_LOOK):
             looked = time.monotonic()
             if run.read().get("run"):
+                with contextlib.suppress(Problem), writer(run.root):
+                    commit_own_record(run)  # the watcher's answers and the user's, as they come
                 collect_acknowledgements(run)
                 if setting(run.root / run.brief, "verification") != "separate":
                     thing = tend(run)
@@ -1194,6 +1665,34 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
     m = sub.add_parser("merge")
     m.add_argument("brief")
     m.add_argument("stream")
+    m.add_argument("--early", action="store_true", help="a stream still at work: its line as committed so far")
+    m.add_argument("--out-of-order", action="store_true", help="before a stream the run's merge order puts first")
+    sub.add_parser("trial").add_argument("brief")
+    o = sub.add_parser("order")
+    o.add_argument("brief")
+    o.add_argument("streams", nargs="*")
+    o.add_argument("--clear", action="store_true")
+    r = sub.add_parser("rerun")
+    r.add_argument("brief")
+    r.add_argument("stream")
+    h = sub.add_parser("helper")
+    h.add_argument("brief")
+    hs = h.add_subparsers(dest="action", required=True)
+    ha = hs.add_parser("add")
+    ha.add_argument("name")
+    ha.add_argument("--at", required=True, help='where its session is: "tmux 3"')
+    ha.add_argument("--role")
+    ht = hs.add_parser("task")
+    ht.add_argument("name")
+    ht.add_argument("--title", required=True)
+    ht.add_argument("--file", required=True, help="what is asked, in the watcher's words")
+    ht.add_argument("--no-send", action="store_true", help="write the task and print the line, typing nothing")
+    hd = hs.add_parser("done")
+    hd.add_argument("task")
+    hd.add_argument("--report")
+    hd.add_argument("--report-file")
+    hs.add_parser("merge").add_argument("task")
+    hs.add_parser("list")
     x = sub.add_parser("stop")
     x.add_argument("brief")
     x.add_argument("--now", action="store_true", help="interrupt mid-cycle instead of stopping at a boundary")
@@ -1231,7 +1730,24 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
         if args.command == "start":
             return cmd_start(run)
         if args.command == "merge":
-            return cmd_merge(run, args.stream)
+            return cmd_merge(run, args.stream, args.early, args.out_of_order)
+        if args.command == "trial":
+            print(json.dumps(trial(run), indent=1))
+            return 0
+        if args.command == "order":
+            return cmd_order(run, args.streams, args.clear)
+        if args.command == "rerun":
+            return cmd_rerun(run, args.stream)
+        if args.command == "helper":
+            if args.action == "add":
+                return cmd_helper_add(run, args.name, args.at, args.role)
+            if args.action == "task":
+                return cmd_helper_task(run, args.name, args.title, args.file, not args.no_send)
+            if args.action == "done":
+                return cmd_helper_done(run, args.task, args.report, args.report_file)
+            if args.action == "merge":
+                return cmd_helper_merge(run, args.task)
+            return cmd_helper_list(run)
         if args.command == "wait":
             return cmd_wait(run, args.interval, args.timeout)
         if args.command == "verification":
