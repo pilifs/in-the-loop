@@ -14,8 +14,9 @@ when every one of these holds; one that fails, or that the evidence has nothing 
                 with the driver at that path in the job's checkout; the outcome is the one that step wrote. Every step
                 of the job is such a plain run of a driver (the pipeline runs a step with bash -c, so anything else,
                 before or after, can write the outcome): plain words only, the flags --timeout, --work (once) and the
-                trial flags alone (not --jvmcontract, which runs another checker), no environment set by the job; and
-                no later step writes the same outcome folder
+                trial flags alone (not --jvmcontract, which runs another checker), a --work inside the step's folder
+                (not absolute, not leaving it by `..`), no environment set by the job; and no later step writes the
+                same outcome folder, compared as one path (--work and task joined)
     outcome     the outcome file is among the job's collected outputs and has the bytes the result records
     conclusion  the outcome's own verdict is the recorded answer (verified: established, violation: refuted)
     claim       the claim file is the one the job ran (its bytes at the job's source commit) and the one frozen
@@ -38,7 +39,8 @@ when every one of these holds; one that fails, or that the evidence has nothing 
                 compared on no input inside it
     replay      (refuted) the witness reproduced on a JVM, and where the claim assumes something, a record that the
                 assumption held on it: the harness the JVM ran, whose source the job collected
-                (`work/harness/PropertyHarness.java`), returns before the call wherever the outcome's assumption does
+                (`work/harness/PropertyHarness.java`, a pair task's `work/pair-work/harness/PropertyHarness.java`),
+                returns before the call wherever the outcome's assumption does
                 not hold, so its failure there is on an assumed input
     mutant      (a constructed mutant's task) the JAR's hash in the step's log is the one the mutant replay's receipt
                 records
@@ -219,6 +221,10 @@ def driver_run(run: str) -> dict | str:
             return f"`{flag}` has no {DRIVER_FLAGS[flag]} after it"
         flags[flag] = value
     work = flags.get("--work")
+    # The pipeline runs every step in <state>/work/<job id>, which is known when the job is written: an absolute
+    # --work, or one that leaves that folder, can name the folder another step writes under another spelling.
+    if work and (work.startswith("/") or posixpath.normpath(work).split("/")[0] == ".."):
+        return f"`--work {work}` is not a folder inside the step's own (absolute, or leaving it by `..`)"
     return {"folder": words[at].rsplit("/proofs/", 1)[0], "task": words[at + 1],
             "work": posixpath.normpath(work) if work else None, "trial": [f for f in flags if f in TRIAL_FLAGS]}
 
@@ -368,7 +374,9 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
     if not chosen["work"]:
         said("step", UNBOUND, f"step {step.get('index')} names no --work folder, so its outcome is in no collected file")
         return done(**base, actual=None, identity=identity)
-    later = next((s for s in every[every.index(chosen) + 1 :] if (s["work"], s["task"]) == (chosen["work"], task_id)), None)
+    # The folder a step's outcome goes to, as one path: `--work a --task b/T` and `--work a/b --task T` are one.
+    written = posixpath.normpath(f"{chosen['work']}/{task_id}")
+    later = next((s for s in every[every.index(chosen) + 1 :] if s["work"] and posixpath.normpath(f"{s['work']}/{s['task']}") == written), None)
     if later:
         said("step", FAIL, f"step {later['step'].get('index')}, after step {step.get('index')}, writes the same outcome folder "
                            f"({chosen['work']}/{task_id})")
@@ -569,7 +577,9 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
             said("replay", FAIL, "the outcome has no witness")
         elif replay.get("by") == "jvm" and replay.get("reproduced") is True:
             assumed = inner.get("assume")
-            harness = f"{work}/work/harness/PropertyHarness.java"
+            # The checker writes the harness beside the property it checks: a prove run's under work/harness/, a pair's
+            # (RegressionPair#agree's) under work/pair-work/harness/. Only the one of the task's kind is the one it ran.
+            harness = f"{work}/work/{'pair-work/' if task.get('kind') == 'equivalence' else ''}harness/PropertyHarness.java"
             source_ok = harness in outputs and file_sha256(root / harness) == outputs[harness].get("sha256")
             if not assumed:
                 said("replay", OK, f"reproduced on a JVM: {witness.get('input')}")
