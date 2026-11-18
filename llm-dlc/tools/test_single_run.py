@@ -102,7 +102,7 @@ class SingleRunTest(unittest.TestCase):
         (self.config / "projects/-somewhere-else" / f"{PARENT}.jsonl").write_text("{}\n")
         self.log, self.go = self.tmp / "standin.jsonl", self.tmp / "go"
         env = {"PATH": f"{bin}:{os.environ['PATH']}", "CLAUDE_CONFIG_DIR": str(self.config), "STANDIN_LOG": str(self.log),
-               "STANDIN_GO": str(self.go), "XDG_STATE_HOME": str(self.tmp / "state"), "XDG_RUNTIME_DIR": str(self.tmp),
+               "STANDIN_GO": str(self.go), "XDG_STATE_HOME": str(self.tmp / "state"), "XDG_CACHE_HOME": str(self.tmp / "cache"), "XDG_RUNTIME_DIR": str(self.tmp),
                "JJ_USER": "Made Up", "JJ_EMAIL": "made@up.invalid", "JJ_CONFIG": os.devnull}
         patched = mock.patch.dict(os.environ, env)
         patched.start()

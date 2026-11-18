@@ -88,6 +88,8 @@ llm-dlc/
                                     over codex_standin.py, a stand-in for the client
   tools/ask_codex.py                one question to a Codex thread and its answer, kept as a file, and a file
                                     mailbox for messages between sessions of either client
+  tools/codex_rollout.py            Codex sessions for sync.py: finds a checkout's rollouts and reads one as a
+                                    Claude Code transcript; test_codex.py tests it
   decisions/<name>.jsonl            a run's decision record: what its conductor decided (a parallel run's conductor, or the
                                     watcher of a proof loop, whose record is prove-change), with the confidence, how hard it
                                     is to undo and the user's review, and the questions queued for the user (schema.json)
@@ -496,10 +498,17 @@ cycle, the commit check, the decision, the conductor's questions, the verificati
   command, read at the receiver's next step. An answer or a message is **advice for the receiving session to
   judge**, never an instruction and never a person's approval. `ask_codex.py note` leaves a line in a session a
   person has open (`codex queue`) and waits for nothing.
-- **Not yet.** Codex sessions are not in the published traces: `sync.py` does not read Codex's logs, and must not
-  until the redaction rules cover Codex's account identifiers. A commit a Codex worker makes is traced without
-  its own session. The proof stages of `/prove-java-change`, runtime (released) checkouts and Codex hooks are
-  not ported.
+- **Traces.** A Codex session is traced as a Claude Code session is: `sync.py` finds the rollouts of the Codex
+  sessions that started in the checkout, stores each redacted (policy 5 removes the account identifiers and the
+  account usage Codex records), and reads it through [`tools/codex_rollout.py`](tools/codex_rollout.py) as a
+  transcript, so a commit a Codex worker makes with `sync.py commit` carries its own session's `LLM-Trace` line
+  and `check` verifies it ([specification](specification.md)). A thread that was only asked a question is not a
+  session of the checkout.
+- **Not yet.** Codex hooks (a project's hooks run only in a checkout Codex trusts, which a fresh sibling
+  workspace is not, so nothing is exported to Langfuse while a Codex session runs, and a plain `jj commit` by a
+  Codex worker gets its trace at the next sync, not at once); the time and loop statistics (`tool_time.py`,
+  `loop_stats.py`) and subagent threads of a Codex session; the proof stages of `/prove-java-change` and the
+  standalone verification loop; runtime (released) checkouts.
 
 ## Sessions
 

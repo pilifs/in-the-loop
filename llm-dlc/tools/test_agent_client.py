@@ -59,6 +59,14 @@ class Resolving(unittest.TestCase):
                          {"input_tokens": 400, "cache_read_input_tokens": 600, "cache_creation_input_tokens": 5,
                           "output_tokens": 40, "reasoning_output_tokens": 7})
 
+    def test_a_turns_tokens_are_the_rise_of_the_threads_total_and_a_count_that_fell_is_the_turns(self):
+        first = {"input_tokens": 1000, "cached_input_tokens": 600, "cache_write_input_tokens": 0, "output_tokens": 40, "reasoning_output_tokens": 7}
+        later = {"input_tokens": 2500, "cached_input_tokens": 1900, "cache_write_input_tokens": 0, "output_tokens": 90, "reasoning_output_tokens": 7}
+        self.assertEqual(agent_client.turn_tokens(first, None), (first, first))
+        own, total = agent_client.turn_tokens(later, first)
+        self.assertEqual((own["input_tokens"], own["cached_input_tokens"], own["output_tokens"], total), (1500, 1300, 50, later))
+        self.assertEqual(agent_client.turn_tokens(first, later)[0], first)
+
     def test_an_event_of_codex_becomes_what_the_loops_read_and_most_become_nothing(self):
         t = agent_client.translate
         self.assertEqual(t({"type": "turn.started"}, "s"), [])
@@ -84,6 +92,7 @@ class Fixture(unittest.TestCase):
         self.session = str(uuid.uuid4())
         self.env = {**{k: v for k, v in os.environ.items() if k not in agent_client.PARENT_MARKERS},
                     "AGENT_CLIENT_CODEX": str(STANDIN), "AGENT_CLIENT_STATE": str(self.base / "state"),
+                    "XDG_CACHE_HOME": str(self.base / "cache"),
                     "CODEX_STANDIN_STATE": str(self.base / "codex"), "CODEX_STANDIN_LOG": str(self.log)}
 
     def tearDown(self):
@@ -109,7 +118,9 @@ class Fixture(unittest.TestCase):
 class ATurn(Fixture):
     @cost("tool")
     def test_the_first_turn_starts_a_thread_with_the_model_the_effort_and_the_checkouts_instructions(self):
-        code, events, err = self.turn("Do the first piece.", CLAUDE_CODE_SESSION_ID="11111111-1111-4111-8111-111111111111", CLAUDECODE="1")
+        code, events, err = self.turn("Do the first piece.", CLAUDE_CODE_SESSION_ID="11111111-1111-4111-8111-111111111111", CLAUDECODE="1",
+                                      RUN_STREAMS_WATCHER="the-watcher", LOOP_CONDUCTOR="made-up", FEATURE_LOOP_RECORD_AS="made-up",
+                                      TMPDIR="/tmp")
         self.assertEqual(code, 0, err)
         argv = self.calls()[0]["argv"]
         self.assertEqual(argv[:2], ["exec", "--json"])
@@ -136,6 +147,10 @@ class ATurn(Fixture):
                          ("codex", events[0]["thread_id"], "gpt-6.2-sol", "high", 1))
         self.assertEqual(bound["parent"], {"client": "claude", "session": "11111111-1111-4111-8111-111111111111"})
         self.assertEqual(self.calls()[0]["identity"], [])
+        # nor is anything of the run that started it, and its temporary files have a folder of the session's own, on disk
+        self.assertEqual(self.calls()[0]["run"], [])
+        self.assertEqual(self.calls()[0]["tmp"], str(self.base / "cache/in-the-loop/agent-tmp" / self.session))
+        self.assertTrue(Path(self.calls()[0]["tmp"]).is_dir())
         self.assertTrue(Path(result["attempt"]).is_file())
         given = json.loads(Path(result["attempt"]).with_suffix(".given.json").read_text())
         self.assertEqual(given["prompt"], {"sha256": __import__("hashlib").sha256(b"Do the first piece.").hexdigest(), "chars": 19})
@@ -158,6 +173,10 @@ class ATurn(Fixture):
         self.assertEqual(self.calls()[1]["cwd"], str(self.cwd))
         self.assertIn("report of turn 2", events[-1]["result"])
         self.assertEqual((self.binding()["thread"], self.binding()["attempts"]), (thread, 2))
+        # Codex reports the thread's running total when a turn ends: the turn's own tokens are the rise
+        usage = events[-1]["usage"]
+        self.assertEqual((usage["input_tokens"], usage["cache_read_input_tokens"], usage["output_tokens"]), (400, 600, 40))
+        self.assertEqual((self.binding()["tokens"]["input_tokens"], self.binding()["tokens"]["output_tokens"]), (2000, 80))
         attempts = sorted(p.name for p in (self.base / "state" / "attempts" / self.session).glob("*.jsonl"))
         self.assertEqual([a[:4] for a in attempts], ["001-", "002-"])
         self.assertEqual(self.client("exists", "--client", "codex", "--session", self.session, "--cwd", str(self.cwd))[0], 0)
@@ -278,6 +297,17 @@ class TheInstructions(Fixture):
         self.assertEqual((code, out["problems"], out["delivered"]), (0, [], {"first": True, "last": True}))
         self.assertEqual(out["sources"][0]["path"], str(self.cwd / "CLAUDE.md"))
         self.assertEqual(len(out["sources"][0]["sha256"]), 64)
+        self.assertIn("RUN_STREAMS_*", out["environment"]["removed"])
+        # a file of notes the instructions point at is one more source, and one they do not name is a problem
+        (self.cwd / "llm-dlc").mkdir()
+        (self.cwd / "llm-dlc/operating-notes.md").write_text("# Notes\n")
+        code, out = self.check()
+        self.assertEqual(code, 1)
+        self.assertIn("llm-dlc/operating-notes.md is there and CLAUDE.md does not name it", out["problems"][0])
+        with open(self.cwd / "CLAUDE.md", "a") as f:
+            f.write("- Before a merge or a test run, read llm-dlc/operating-notes.md, which holds the rules of practice.\n")
+        code, out = self.check()
+        self.assertEqual((code, [Path(x["path"]).name for x in out["sources"]]), (0, ["CLAUDE.md", "operating-notes.md"]))
         self.assertNotIn("made-up rule", json.dumps(out))  # digests and pass or fail, never the text
 
     @cost("tool")

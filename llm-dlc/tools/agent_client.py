@@ -70,6 +70,7 @@ MODELS = {"claude-fable-5-2": "gpt-6.2-astra", "claude-opus-5-5": "gpt-6.2-sol"}
 EFFORTS = ("low", "medium", "high", "xhigh", "max")
 SESSION = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
 INSTRUCTIONS = "CLAUDE.md"
+NOTES = ("llm-dlc/operating-notes.md",)
 SHADOWS = ("AGENTS.override.md", "AGENTS.md")  # Codex reads these before any fallback name
 DOC_BUDGET = 32 * 1024  # Codex's default project_doc_max_bytes
 # What every Codex turn is started with, whatever the machine's own config says.
@@ -136,16 +137,37 @@ def now() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
 
 
-def child_env() -> tuple[dict, dict | None]:
-    """The child's environment without the parent session's identity, and that identity for the binding."""
+# A run's own variables: the watcher's, the loop's and the conductor's. A worker that inherits them takes its own
+# commands for the run's (a `sync.py commit` that thinks it is the watcher's, a nested loop that records under the
+# run's name). Claude Code's workers get the same from feature-loop.sh and, in a stream's workspace, from
+# .claude/settings.local.json, which Codex does not read.
+RUN_PREFIXES = ("RUN_STREAMS_", "FEATURE_LOOP_", "LOOP_WATCH_", "PROVE_LOOP_")
+RUN_NAMES = ("LOOP_CONDUCTOR",)
+
+
+def tmp_of(session: str | None) -> Path:
+    """A session's own folder for temporary files, on disk: /tmp here is memory with a quota per user, which
+    test leftovers have filled, and Claude Code gives each of its sessions a scratch folder that Codex does not.
+    Not inside the checkout, where a test's leftovers would be the working copy's."""
+    base = Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache") / "in-the-loop" / "agent-tmp"
+    return base / (session or "none")
+
+
+def child_env(session: str | None = None) -> tuple[dict, dict | None]:
+    """The child's environment without the parent session's identity or a run's variables, with a folder of
+    its own for temporary files; and that identity, for the binding."""
     env = dict(os.environ)
     parent = None
     if env.get("CLAUDE_CODE_SESSION_ID"):
         parent = {"client": "claude", "session": env["CLAUDE_CODE_SESSION_ID"]}
     elif env.get("CODEX_THREAD_ID"):
         parent = {"client": "codex", "thread": env["CODEX_THREAD_ID"]}
-    for key in PARENT_MARKERS:
-        env.pop(key, None)
+    for key in [k for k in env if k in PARENT_MARKERS or k in RUN_NAMES or k.startswith(RUN_PREFIXES)]:
+        del env[key]
+    if session:
+        tmp = tmp_of(session)
+        tmp.mkdir(parents=True, exist_ok=True)
+        env["TMPDIR"] = str(tmp)
     return env, parent
 
 
@@ -154,13 +176,26 @@ def emit(event: dict) -> None:
 
 
 def usage_of(u: dict) -> dict:
-    """Codex's token counts for a turn, under the keys the loops read from Claude Code: OpenAI's input count
-    includes the cached tokens, Claude's does not."""
+    """Token counts of Codex's (a turn's own: see turn_tokens), under the keys the loops read from Claude Code:
+    OpenAI's input count includes the cached tokens, Claude's does not."""
     cached = int(u.get("cached_input_tokens") or 0)
     return {"input_tokens": max(0, int(u.get("input_tokens") or 0) - cached), "cache_read_input_tokens": cached,
             "cache_creation_input_tokens": int(u.get("cache_write_input_tokens") or 0),
             "output_tokens": int(u.get("output_tokens") or 0),
             "reasoning_output_tokens": int(u.get("reasoning_output_tokens") or 0)}
+
+
+TOKEN_KEYS = ("input_tokens", "cached_input_tokens", "cache_write_input_tokens", "output_tokens", "reasoning_output_tokens")
+
+
+def turn_tokens(reported: dict, before: dict | None) -> tuple[dict, dict]:
+    """(this turn's tokens, the thread's totals) from what Codex reports when a turn ends, which is **the thread's
+    running total**, not the turn's (seen on CLI 0.169, 2026-11-18: five turns of one thread reported 371k, 434k,
+    555k, 995k and 1081k input tokens). The turn's own are the rise since the totals the binding kept; a count
+    that fell (another counter, a fork) is taken as the turn's."""
+    total = {k: int(reported.get(k) or 0) for k in TOKEN_KEYS}
+    rise = {k: total[k] - int((before or {}).get(k) or 0) for k in TOKEN_KEYS}
+    return (rise if all(v >= 0 for v in rise.values()) else total), total
 
 
 def translate(event: dict, session: str) -> list[dict]:
@@ -255,7 +290,8 @@ def cmd_run(session: str, model: str, effort: str, cwd: Path, sandbox: str, prom
     attempt = attempt_path(session, cwd, n)
     last = attempt.with_suffix(".last.md")
     turn = Turn(session, cwd, attempt)
-    env, parent = child_env()
+    tokens: dict | None = None  # the thread's totals, once the turn has ended
+    env, parent = child_env(session)
     argv = codex_argv(model, effort, last, (before or {}).get("thread"), cwd, sandbox, prompt)
     # What this attempt was given, by digest: two clients sent the same task show the same one (the loop logs its
     # own for a Claude Code turn), and the text itself stays in the client's own log.
@@ -309,7 +345,8 @@ def cmd_run(session: str, model: str, effort: str, cwd: Path, sandbox: str, prom
                 if kind == "item.completed" and item.get("type") == "agent_message" and (item.get("text") or "").strip():
                     turn.last_text = item["text"]
             elif kind == "turn.completed":
-                turn.usage = usage_of(event.get("usage") or {})
+                own, tokens = turn_tokens(event.get("usage") or {}, (before or {}).get("tokens"))
+                turn.usage = usage_of(own)
                 turn.ended = True
             elif kind in ("turn.failed", "error"):
                 err = event.get("error") if isinstance(event.get("error"), dict) else event
@@ -319,7 +356,8 @@ def cmd_run(session: str, model: str, effort: str, cwd: Path, sandbox: str, prom
                 emit(out)
     code = child.wait()
     if before or turn.thread:
-        bind(session, cwd, attempts=n, attempt=str(attempt), last={"ended": now(), "exit": code, "result": turn.ended and not turn.error})
+        bind(session, cwd, attempts=n, attempt=str(attempt), last={"ended": now(), "exit": code, "result": turn.ended and not turn.error},
+             **({"tokens": tokens} if tokens else {}))
     try:
         final = last.read_text().strip()
     except OSError:
@@ -442,12 +480,20 @@ def cmd_compact(session: str, cwd: Path, timeout: float) -> int:
 def instructions(cwd: Path) -> dict:
     root = root_of(cwd)
     source = root / INSTRUCTIONS
-    out = {"client": "codex", "root": str(root), "sources": [], "problems": []}
+    out = {"client": "codex", "root": str(root), "sources": [], "problems": [],
+           "environment": {"removed": [*PARENT_MARKERS, *RUN_NAMES, *(f"{p}*" for p in RUN_PREFIXES)],
+                           "TMPDIR": str(tmp_of("SESSION"))}}
     if not source.is_file():
         out["problems"].append(f"{source} is not there")
         return out
     text = source.read_bytes()
     out["sources"].append({"path": str(source), "bytes": len(text), "sha256": hashlib.sha256(text).hexdigest()})
+    for name in NOTES:  # what the instructions send a session to read: the same file for both clients
+        if (root / name).is_file():
+            data = (root / name).read_bytes()
+            out["sources"].append({"path": str(root / name), "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()})
+            if name not in text.decode(errors="replace"):
+                out["problems"].append(f"{name} is there and {INSTRUCTIONS} does not name it: no session is sent to read it")
     folder = cwd
     while True:
         for name in SHADOWS:

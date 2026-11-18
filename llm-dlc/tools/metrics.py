@@ -264,9 +264,15 @@ def read_transcript(entries: list[dict], agent: str | None, clean: Clean) -> dic
             _add_usage(call, msg.get("usage") or {})
             for b in _blocks(msg):
                 if b.get("type") == "tool_use" and b.get("id") not in tools:
-                    tools[b.get("id")] = _new_tool(b, e, line, call, agent, clean)
+                    tool = tools[b.get("id")] = _new_tool(b, e, line, call, agent, clean)
                     call["tools"].append(b.get("name"))
                     call["tool_calls"] += 1
+                    if (r := b.get("codexResult")) is not None:  # a Codex command or patch: its result is on the same line
+                        text, end = _text(r.get("content")), r.get("end") or ts
+                        tool.update(end=end, ms=_ms(end) - _ms(tool["start"]), result_chars=len(text),
+                                    status="error" if r.get("is_error") else "ok")
+                        if r.get("is_error"):
+                            tool.update(error_kind=error_kind(text), error=_clip(text, clean))
             if prompts:
                 prompts[-1]["end"] = max(prompts[-1]["end"], ts)
         elif kind == "user":

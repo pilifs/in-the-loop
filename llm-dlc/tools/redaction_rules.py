@@ -17,8 +17,12 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable, NamedTuple
 
-REDACTION_POLICY = 4           # bump when redaction changes the bytes it produces
-REDACT_KEYS = {"organizationUuid", "accountUuid", "userID"}  # account identifiers Claude Code records
+REDACTION_POLICY = 5           # bump when redaction changes the bytes it produces (5: Codex account identifiers and usage)
+REDACT_KEYS = {"organizationUuid", "accountUuid", "userID",  # account identifiers Claude Code records,
+               "creator_user_id", "creator_account_id", "chatgpt_user_id", "chatgpt_account_id"}  # and Codex
+# Account usage Codex records with its token counts (plan, credit balance, how much of each limit is used):
+# not secret, but about the account, so the whole object goes.
+REDACT_OBJECTS = {"rate_limits": "[REDACTED:account-usage]"}
 # Email addresses that are public by design or placeholders; every other address is redacted.
 PUBLIC_EMAILS = ("@example.com", "@example.org", "@users.noreply.github.com", "noreply@github.com",
                  "noreply@anthropic.com", "git@github.com", "@langfuse.local", "@localhost")
@@ -59,7 +63,8 @@ SECRET_PATTERNS = [
     ("curl-user", r"((?:^|\s)(?:-u|--user)[ =])(?![\[\$])([^\s:\"']+:[^\s\"']+)", r"\1[REDACTED:curl-user]"),
     # Account identifiers inside strings (a transcript or ~/.claude.json echoed by a tool),
     # where the structural rule in _scrub cannot see the key.
-    ("account-id", r"((?:accountUuid|organizationUuid|userID)\\*[\"']?\s*[:=]\s*\\*[\"']?)([0-9A-Fa-f\-]{32,64})",
+    ("account-id", r"((?:accountUuid|organizationUuid|userID|creator_user_id|creator_account_id|chatgpt_user_id|chatgpt_account_id)"
+                   r"\\*[\"']?\s*[:=]\s*\\*[\"']?)([0-9A-Fa-f\-]{32,64}|user-[A-Za-z0-9]{16,64})",
      r"\1[REDACTED:account-id]"),
     # KEY=VALUE and "key": "value" pairs whose key says it is a secret: .env files, shell exports,
     # YAML, JSON. Templates (${VAR}, <placeholder>, {{ }}), ${VAR:-defaults}, expressions, paths,
@@ -119,7 +124,8 @@ GATES = {
     "basic-auth": Gate(("basic",), ignorecase=True),
     "url-password": Gate(("://",), pattern="@"),
     "curl-user": Gate(("-u ", "-u=", "--user ", "--user=")),
-    "account-id": Gate(("accountUuid", "organizationUuid", "userID")),
+    "account-id": Gate(("accountUuid", "organizationUuid", "userID", "creator_user_id", "creator_account_id",
+                        "chatgpt_user_id", "chatgpt_account_id")),
     # Each keyword holds one of these words, and the hint matches in the rule's match: see HINTS,
     # which is then tested on each string of a line that passes.
     "env-secret": Gate(("pass", "secret", "token", "credential", "key", "auth"), ignorecase=True,
@@ -210,11 +216,13 @@ def _walk(obj, fn):
 
 def _scrub(obj):
     """Rules that act on JSON structure rather than on strings: account identifiers that
-    Claude Code records under known keys, and thinking-block signatures (opaque bytes)."""
+    Claude Code and Codex record under known keys, Codex's account usage, and thinking-block
+    signatures (opaque bytes)."""
     if isinstance(obj, list):
         return [_scrub(v) for v in obj]
     if isinstance(obj, dict):
-        return {k: "[REDACTED:account-id]" if k in REDACT_KEYS and isinstance(v, str) else _scrub(v)
+        return {k: "[REDACTED:account-id]" if k in REDACT_KEYS and isinstance(v, str)
+                else REDACT_OBJECTS[k] if k in REDACT_OBJECTS and v is not None else _scrub(v)
                 for k, v in obj.items() if not (k == "signature" and obj.get("type") == "thinking")}
     return obj
 
@@ -223,7 +231,8 @@ def _unscrubbed(obj) -> bool:
     if isinstance(obj, list):
         return any(_unscrubbed(v) for v in obj)
     if isinstance(obj, dict):
-        return any((k in REDACT_KEYS and isinstance(v, str) and not v.startswith("[REDACTED")) or _unscrubbed(v)
+        return any((k in REDACT_KEYS and isinstance(v, str) and not v.startswith("[REDACTED"))
+                   or (k in REDACT_OBJECTS and v is not None and v != REDACT_OBJECTS[k]) or _unscrubbed(v)
                    for k, v in obj.items())
     return False
 
@@ -532,6 +541,6 @@ RULES_STAMP = f"{{RULES_HASH}}@{{RULES_GENERATED}}"
 
 _STAMP_MARK = "# --- " + "stamp"
 # --- stamp: written by `sync.py stamp`; the hash covers everything above this line.
-RULES_HASH = "5af6bb15e22867255de50c5382680563e36571c2a25406c207ba1f706a8a8016"
+RULES_HASH = "78c668e7b10737a14e92b82c81e36f3b862976e35c590e0dbf75e66e00c95d80"
 RULES_GENERATED = "2026-11-01T23:27:26+00:00"
 RULES_STAMP = f"{RULES_HASH}@{RULES_GENERATED}"

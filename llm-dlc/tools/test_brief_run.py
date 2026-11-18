@@ -145,7 +145,7 @@ class Fixture(unittest.TestCase):
         self.log = base / "claude.jsonl"
         env = {"JJ_USER": "Made Up", "JJ_EMAIL": "made-up@example.com", "JJ_CONFIG": str(base / "jj-config.toml"),
                "PATH": f"{base / 'bin'}:{os.environ['PATH']}", "STANDIN_LOG": str(self.log), "STATUSES": str(self.statuses),
-               "CLAUDE_CONFIG_DIR": str(base / "claude"), "XDG_STATE_HOME": str(base / "state"),
+               "CLAUDE_CONFIG_DIR": str(base / "claude"), "XDG_STATE_HOME": str(base / "state"), "XDG_CACHE_HOME": str(base / "cache"),
                "VERIFY_MACHINE_CONFIG": ""}
         self.env = mock.patch.dict(os.environ, env)
         self.env.start()

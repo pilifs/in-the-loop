@@ -61,6 +61,8 @@ def setUpModule():
     mock.patch.object(sync, "CHECK_CACHE", state / "check-cache.json").start()
     mock.patch.object(sync, "SYNC_CACHE", state / "sync-cache.json").start()
     mock.patch.object(sync, "UPLOADS", state / "uploads.json").start()
+    # These tests name where the sessions are (sync.claude_project_dir): this machine's Codex sessions are not among them.
+    mock.patch.object(sync.codex_rollout, "SESSIONS", state / "no-codex-sessions").start()
 
 
 def tearDownModule():
@@ -953,7 +955,7 @@ class Fingerprints(unittest.TestCase):
 
     TOOLS = Path(__file__).resolve().parent
     SOURCES = ("sync.py", "redactor.py", "redaction_rules.py", "measure.py", "metrics.py", "loop_stats.py", "mode.py",
-               "decisions.py")
+               "decisions.py", "codex_rollout.py")
 
     def imports(self, name: str) -> set[str]:
         tree = ast.parse((self.TOOLS / name).read_text())

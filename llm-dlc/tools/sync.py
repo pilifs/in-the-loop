@@ -128,6 +128,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import decisions  # llm-dlc/tools/decisions.py
+import codex_rollout  # llm-dlc/tools/codex_rollout.py: Codex sessions, read as Claude Code transcripts
 import loop_stats  # llm-dlc/tools/loop_stats.py
 import metrics  # llm-dlc/tools/metrics.py
 import mode  # llm-dlc/tools/mode.py: development or runtime
@@ -195,7 +196,7 @@ DEFAULT_BRANCH = "main"        # summary links point at the published copy on th
 JJ = shutil.which("jj") or str(Path.home() / ".local" / "bin" / "jj")
 MAX_ATTR = 64 * 1024           # truncate large tool outputs sent to Langfuse
 LIVE_SECONDS = 600             # a transcript written this recently may have an unfinished turn
-EDIT_TOOLS = {"Edit", "Write", "NotebookEdit", "MultiEdit"}
+EDIT_TOOLS = {"Edit", "Write", "NotebookEdit", "MultiEdit", "apply_patch"}  # apply_patch: Codex
 # Logs are served from R2 by the Worker in llm-dlc/infra/cdn; the URL path is the object key.
 CDN_BASE = "https://terminalvalue.net"
 CDN_BUCKET = "llm-traces"
@@ -364,6 +365,65 @@ def claude_project_dir() -> Path:
     return Path.home() / ".claude" / "projects" / re.sub(r"[^A-Za-z0-9]", "-", str(REPO))
 
 
+sid_of = codex_rollout.session_id  # a transcript's session id: its name, or for a Codex rollout the id in it
+
+
+_ASKED: frozenset[str] | None = None
+
+
+def asked_threads() -> frozenset[str]:
+    """The Codex threads ask_codex.py asked a question of: a consultation, kept as an exchange file where the
+    asking session's run is, and not a session of this checkout. A forked one starts from a session of somewhere
+    else, which is not this repository's to publish."""
+    global _ASKED
+    if _ASKED is None:
+        folder = os.environ.get("ASK_CODEX_STATE")
+        if not folder:
+            r = subprocess.run(["jj", "--ignore-working-copy", "workspace", "root", "--name", "default"], cwd=REPO,
+                               capture_output=True, text=True)
+            folder = Path(r.stdout.strip() if r.returncode == 0 and r.stdout.strip() else REPO) / "llm-dlc" / "loop-summaries" / "exchanges"
+        try:
+            named = json.loads((Path(folder) / "threads.json").read_text())
+        except (OSError, ValueError):
+            named = {}
+        _ASKED = frozenset(str(t.get("thread")) for t in named.values() if isinstance(t, dict)) if isinstance(named, dict) else frozenset()
+    return _ASKED
+
+
+def codex_transcripts() -> list[Path]:
+    """The rollouts of the Codex sessions started in this checkout, less the threads that were only asked a question."""
+    found = codex_rollout.rollouts_in(REPO)
+    return [p for p in found if sid_of(p) not in asked_threads()] if found else []  # no rollout: nothing to ask jj
+
+
+def session_transcripts() -> list[Path]:
+    """Every session of this checkout: its Claude Code transcripts, then the rollouts of the Codex
+    sessions started in the repo."""
+    return sorted(claude_project_dir().glob("*.jsonl")) + codex_transcripts()
+
+
+def transcript_of(sid: str) -> Path:
+    """A session's transcript: Claude Code's if there is one, else the Codex rollout with that id."""
+    claude = claude_project_dir() / f"{sid}.jsonl"
+    if claude.exists():
+        return claude
+    return next((p for p in codex_transcripts() if sid_of(p) == sid), claude)
+
+
+def log_entries(data: bytes) -> list[dict]:
+    """A log's entries, a Codex rollout's as Claude Code transcript entries (codex_rollout.claude_view)."""
+    entries = read_jsonl(data)
+    return codex_rollout.claude_view(entries) if codex_rollout.looks_like_rollout(entries) else entries
+
+
+def edited_paths(b: dict) -> list[str]:
+    """The files an edit tool's call names: one for Claude Code's tools, any number for Codex's patches."""
+    if b.get("name") not in EDIT_TOOLS:
+        return []
+    inp = b.get("input") or {}
+    return [p for p in inp.get("file_paths") or [inp.get("file_path") or inp.get("notebook_path")] if isinstance(p, str)]
+
+
 def read_jsonl(data: bytes) -> list[dict]:
     out = []
     for line in data.decode(errors="replace").splitlines():
@@ -440,9 +500,8 @@ def summarize(entries: list[dict], repo_prefix: str) -> dict:
                 if b.get("type") == "tool_use" and b.get("id") not in seen_tools:
                     seen_tools.add(b.get("id"))
                     tools[b.get("name")] = tools.get(b.get("name"), 0) + 1
-                    inp = b.get("input") or {}
-                    path = inp.get("file_path") or inp.get("notebook_path")
-                    if b.get("name") in EDIT_TOOLS and isinstance(path, str):
+                    errors += bool((b.get("codexResult") or {}).get("is_error"))
+                    for path in edited_paths(b):
                         files.add(path[len(repo_prefix) + 1:] if path.startswith(repo_prefix + "/") else path)
         elif e.get("type") == "user":
             errors += sum(1 for b in blocks(e.get("message")) if b.get("type") == "tool_result" and b.get("is_error"))
@@ -453,7 +512,8 @@ def summarize(entries: list[dict], repo_prefix: str) -> dict:
     started, ended = windows[0]["started"], windows[-1]["ended"]
     return {
         "title": title, "first_prompt": first_prompt,
-        "client": {"tool": "claude-code", "version": version}, "models": sorted(models),
+        "client": {"tool": "codex" if codex_rollout.looks_like_view(entries) else "claude-code", "version": version},
+        "models": sorted(models),
         "started": started, "ended": ended,
         "duration_seconds": round((ts_ns(ended) - ts_ns(started)) / 1e9) if started and ended else None,
         "stats": {"turns": sum(w["turns"] for w in windows), "api_calls": len(seen_msgs),
@@ -549,12 +609,12 @@ _tools_digest: str | None = None
 
 
 def tools_digest() -> str:
-    """SHA-256 of the source of sync.py and metrics.py, read once: for results that depend on more
-    than the redactor and the rules (Redactor.fingerprint)."""
+    """SHA-256 of the source of sync.py, metrics.py and codex_rollout.py (how a Codex log is read), read once:
+    for results that depend on more than the redactor and the rules (Redactor.fingerprint)."""
     global _tools_digest
     if _tools_digest is None:
         h = hashlib.sha256()
-        for source in (Path(__file__), Path(metrics.__file__)):
+        for source in (Path(__file__), Path(metrics.__file__), Path(codex_rollout.__file__)):
             h.update(source.read_bytes() + b"\0")
         _tools_digest = h.hexdigest()
     return _tools_digest
@@ -649,7 +709,7 @@ def session_state(transcript: Path, status: str, current: bool, index: list[dict
     link_commits stamps or lists (with a margin around the session's span for the ones it may have
     made), its note, and the bytes of the files it wrote. A session whose state is the one recorded
     right after it was last processed would be processed into the same files and descriptions."""
-    sid = transcript.stem
+    sid = sid_of(transcript)
 
     def stat(p: Path):
         try:
@@ -684,25 +744,26 @@ def session_state(transcript: Path, status: str, current: bool, index: list[dict
 
 
 def running_session() -> str | None:
-    """The session that runs this command, as Claude Code tells its tools."""
-    return os.environ.get("CLAUDE_CODE_SESSION_ID") or None
+    """The session that runs this command, as Claude Code or Codex tells its tools. Codex first: a
+    Codex started from a Claude Code session passes the Claude session's variables on to its commands."""
+    return os.environ.get("CODEX_THREAD_ID") or os.environ.get("CLAUDE_CODE_SESSION_ID") or None
 
 
 def sync_session(transcript: Path, redact: Redactor, status: str,
                  cache: LocalCache | None = None) -> tuple[str, dict, list[dict], list[tuple]]:
     """Snapshot one session's log (and subagent logs) and rewrite its manifest. Returns the session
     id, the manifest, the log's entries, and (agent, entries) of each subagent log."""
-    sid = transcript.stem
+    sid = sid_of(transcript)
     old = load_manifest(sid)
     data = redacted(transcript, sid, old.get("log", {}).get("sha256"), redact, sid, cache)
-    entries = read_jsonl(data)
+    entries = log_entries(data)
     log = store_log(sid, data)
     known_subagents = {s["agent"]: s["log"]["sha256"] for s in old.get("subagents", [])}
     subagents, subagent_entries = [], []
     subdir = transcript.parent / sid / "subagents"
     for sub in sorted(subdir.glob("*.jsonl")) if subdir.is_dir() else []:
         sub_data = redacted(sub, sid, known_subagents.get(sub.stem), redact, f"{sid}/{sub.stem}", cache)
-        sub_entries = read_jsonl(sub_data)
+        sub_entries = log_entries(sub_data)
         s = summarize(sub_entries, redact.string(str(REPO)))
         subagents.append({"agent": sub.stem, "models": s["models"], "stats": s["stats"],
                           "log": store_log(sid, sub_data)})
@@ -914,8 +975,7 @@ def _turn_md(n: int, turn: list[dict], repo_prefix: str) -> str | None:
         for b in blocks(e.get("message")) if e.get("type") == "assistant" else []:
             if b.get("type") == "tool_use":
                 tools[b.get("name")] = tools.get(b.get("name"), 0) + 1
-                path = (b.get("input") or {}).get("file_path")
-                if b.get("name") in EDIT_TOOLS and isinstance(path, str):
+                for path in edited_paths(b):
                     path = path[len(repo_prefix) + 1:] if path.startswith(repo_prefix + "/") else path
                     files += [path] if path not in files else []
             elif b.get("type") == "text" and b.get("text", "").strip():
@@ -1126,7 +1186,7 @@ def session_metrics(sid: str, m: dict, entries: list[dict], redact: Redactor,
     """metrics.json of a session, from its redacted logs and manifest and from the price list.
     `subagents`: (agent, entries) of the manifest's subagent logs, when the caller has them."""
     if subagents is None:
-        subagents = [(s["agent"], read_jsonl(load_log(sid, s["log"]["sha256"]) or b"")) for s in m.get("subagents", [])]
+        subagents = [(s["agent"], log_entries(load_log(sid, s["log"]["sha256"]) or b"")) for s in m.get("subagents", [])]
     return metrics.dumps(metrics.session(m, entries, subagents, json.loads(PRICING.read_text()), redact.string))
 
 
@@ -1232,7 +1292,7 @@ def metrics_problems(sid: str, m: dict, data, redact: Redactor, checks: CheckCac
                 perf.count("metrics cache hits")
                 same = entry["same"]
         if same is None:
-            same = text == session_metrics(sid, m, read_jsonl(data() if callable(data) else data), redact)
+            same = text == session_metrics(sid, m, log_entries(data() if callable(data) else data), redact)
             if key:
                 checks.put(key, {"same": same})
         if not same:
@@ -2127,7 +2187,7 @@ def process(transcript: Path, redact: Redactor, status: str, live: bool, current
     with write_index. Langfuse is not contacted: the Stop hook sends turns. live: the last turn may be
     unfinished. current: the session is the one running now, so @ is its working copy.
     publishing: @ is a trace record, which carries every session with log no commit points at yet."""
-    known = {c.get("log_sha256") for c in load_manifest(transcript.stem).get("commits", [])}
+    known = {c.get("log_sha256") for c in load_manifest(sid_of(transcript)).get("commits", [])}
     with perf.phase("snapshot"):
         sid, m, entries, subagents = sync_session(transcript, redact, status, cache)
     if publishing:
@@ -2225,7 +2285,7 @@ def langfuse_send(sid: str, live: bool | None = None) -> None:
             mark_hook_unsent(sid, False)
         return
     live = m.get("status") != "ended" if live is None else live
-    export_langfuse(sid, read_jsonl(data), m, live=live)
+    export_langfuse(sid, log_entries(data), m, live=live)
     if not live:  # a live log kept its last turn back: it is not done
         state = langfuse_state(sid)
         state["complete"] = m["log"]["sha256"]
@@ -2426,7 +2486,7 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
     src, full = claude_project_dir(), full_audit(args)
     named = [a for a in args if a not in ("--full", "--all")]
     every = full or publishing or "--all" in args
-    paths = [src / f"{a}.jsonl" for a in named] if named else sorted(src.glob("*.jsonl"))
+    paths = [transcript_of(a) for a in named] if named else session_transcripts()
     redact = redact or Redactor()
     cache, states = transcript_cache(redact, full), sync_cache(redact, trusted=not every)
     me, index, unchanged = running_session(), commit_index(), 0
@@ -2434,8 +2494,9 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
         publish_runs(redact)  # before the sessions: their summaries list the copies
         for p in paths:
             live = time.time() - p.stat().st_mtime < LIVE_SECONDS
-            status, current = "open" if live else "ended", live or p.stem == me
-            if not named and not every and states.entries.get(p.stem) == session_state(p, status, current, index):
+            sid = sid_of(p)
+            status, current = "open" if live else "ended", live or sid == me
+            if not named and not every and states.entries.get(sid) == session_state(p, status, current, index):
                 unchanged += 1
                 perf.count("sessions unchanged, not synced")
                 continue
@@ -2444,16 +2505,16 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
                 m = process(p, redact, status, live, current=current, publishing=publishing, cache=cache)
             index = commit_index()  # process may have described changes
             if publishing:  # its manifest records git SHAs that a sync outside a publish leaves out
-                states.entries.pop(p.stem, None)
+                states.entries.pop(sid, None)
             else:
-                states.entries[p.stem] = {**session_state(p, status, current, index), "sources": state["sources"]}
+                states.entries[sid] = {**session_state(p, status, current, index), "sources": state["sources"]}
             s = m["stats"]
             print(f"{m['session_id']}  {s['turns']} turns  {s['tool_calls']} tools  log sha256:{m['log']['sha256'][:12]}… "
                   f"{m['log']['bytes']:,} B  commits: {len(m['commits'])}{'  (live)' if live else ''}")
         if unchanged:
             print(f"{unchanged} sessions unchanged since their last sync (--all syncs them anyway)")
         with perf.phase("metrics elsewhere"):
-            refresh_metrics({p.stem for p in src.glob("*.jsonl")}, redact, states)
+            refresh_metrics({sid_of(p) for p in session_transcripts()}, redact, states)
         publish_runs(redact)  # again, for a session whose trace the loop above started
         for sid in sorted({p.parent.parent.name for p in TRACES.glob("*/runs/*.md")}):
             splice_runs(sid)  # a session rendered above already lists its runs; one traced elsewhere does not
@@ -2482,7 +2543,7 @@ def refresh_metrics(here: set[str], redact: Redactor, states: LocalCache) -> int
             continue
         if (data := load_log(sid, logs[0])) is None:
             continue
-        text = session_metrics(sid, m, read_jsonl(data), redact)
+        text = session_metrics(sid, m, log_entries(data), redact)
         if write_if_changed(metrics_path(sid), text):
             changed += 1
             print(f"{sid}  metrics.json recomputed from its stored log (transcript in another workspace's folder)")
@@ -2492,8 +2553,9 @@ def refresh_metrics(here: set[str], redact: Redactor, states: LocalCache) -> int
 
 def transcripts_of(p: Path) -> list[tuple[str, Path]]:
     """A session's transcript and its subagents', each with its key in the transcript cache."""
-    subdir = p.parent / p.stem / "subagents"
-    return [(p.stem, p)] + ([(f"{p.stem}/{s.stem}", s) for s in sorted(subdir.glob("*.jsonl"))] if subdir.is_dir() else [])
+    sid = sid_of(p)
+    subdir = p.parent / sid / "subagents"
+    return [(sid, p)] + ([(f"{sid}/{s.stem}", s) for s in sorted(subdir.glob("*.jsonl"))] if subdir.is_dir() else [])
 
 
 def redacted_now(path: Path, sid: str, key: str, redact: Redactor, cache: LocalCache | None) -> tuple[bytes, bytes]:
@@ -2531,16 +2593,16 @@ def cmd_scan(args: list[str]) -> int:
     src, full = claude_project_dir(), full_audit(args)
     args = [a for a in args if a != "--full"]
     named = args not in ([], ["--all"])
-    paths = [src / f"{a}.jsonl" for a in args] if named else sorted(src.glob("*.jsonl"))
+    paths = [transcript_of(a) for a in args] if named else session_transcripts()
     redact, errors = Redactor(), 0
     scans, checks, transcripts = preview_caches(redact, full)
     for p in paths:
         for key, path in transcripts_of(p):
             if not named and older_than_stamp(path):
                 continue
-            name = p.stem if path == p else f"{p.stem} agent {path.stem}"
-            raw, data = redacted_now(path, p.stem, key, redact, transcripts)
-            found = scans.hits(p.stem, sha256(data), data)
+            name = sid_of(p) if path == p else f"{sid_of(p)} agent {path.stem}"
+            raw, data = redacted_now(path, sid_of(p), key, redact, transcripts)
+            found = scans.hits(sid_of(p), sha256(data), data)
             kinds = Counter(k.decode() for k in re.findall(rb"\[REDACTED:([a-z.\-]+)\]", data))
             print(f"{name}: {len(raw):,} B raw, {len(data):,} B redacted; "
                   + (", ".join(f"{k} {n}" for k, n in kinds.most_common()) if kinds else "no redaction markers"))
@@ -2577,12 +2639,13 @@ def scan_targets(redact: Redactor, everything: bool, transcripts: LocalCache | N
     def due(path: Path) -> bool:
         return everything or not older_than_stamp(path)
 
-    for p in sorted(claude_project_dir().glob("*.jsonl")):
+    for p in session_transcripts():
+        sid = sid_of(p)
         for key, path in transcripts_of(p):
             if due(path):
-                data = redacted_now(path, p.stem, key, redact, transcripts)[1] if transcripts is not None \
+                data = redacted_now(path, sid, key, redact, transcripts)[1] if transcripts is not None \
                     else redact(path.read_text(errors="replace"))
-                yield p.stem, p.stem, sha256(data), data, len(data)
+                yield sid, sid, sha256(data), data, len(data)
     for sid, m in all_manifests().items():
         for sha, info in m.get("logs", {}).items():
             path = log_path(sid, sha)
@@ -2886,10 +2949,8 @@ def stamp_equivalent(rev: str = "@-") -> int:
                 if key not in seen:
                     seen.add(key)
                     yield line
-        src = claude_project_dir()
-        for p in sorted(src.glob("*.jsonl")):
-            subdir = p.parent / p.stem / "subagents"
-            for t in [p] + (sorted(subdir.glob("*.jsonl")) if subdir.is_dir() else []):
+        for p in session_transcripts():
+            for _, t in transcripts_of(p):
                 yield from distinct(t.read_text(errors="replace"))
         for gz in sorted(TRACES.glob("*/logs/*.jsonl.gz")):
             yield from distinct(gzip.decompress(gz.read_bytes()).decode(errors="replace"))

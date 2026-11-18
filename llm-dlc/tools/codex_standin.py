@@ -40,7 +40,8 @@ def log(argv):
         with open(os.environ["CODEX_STANDIN_LOG"], "a") as f:
             f.write(json.dumps({"argv": argv, "cwd": os.getcwd(),
                                 "identity": sorted(k for k in os.environ if k in ("CLAUDECODE", "CLAUDE_CODE_SESSION_ID", "CODEX_THREAD_ID")),
-                                "run": sorted(k for k in os.environ if k.startswith(("RUN_STREAMS_", "FEATURE_LOOP_", "LOOP_WATCH_"))
+                                "tmp": os.environ.get("TMPDIR"),
+                                "run": sorted(k for k in os.environ if k.startswith(("RUN_STREAMS_", "FEATURE_LOOP_", "LOOP_WATCH_", "PROVE_LOOP_"))
                                               or k == "LOOP_CONDUCTOR")}) + "\n")
 
 
@@ -121,7 +122,7 @@ def run_exec(argv):
     for path in options.get("-o", []):
         Path(path).write_text(final + "\n")
     say({"type": "turn.completed", "usage": {"input_tokens": 1000 * n, "cached_input_tokens": 600 * n, "cache_write_input_tokens": 0,
-                                              "output_tokens": 40, "reasoning_output_tokens": 7}})
+                                              "output_tokens": 40 * n, "reasoning_output_tokens": 7 * n}})  # the thread's totals, as Codex gives
     return 0
 
 
