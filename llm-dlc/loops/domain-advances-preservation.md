@@ -712,7 +712,12 @@ relational result needs a new check (the rule's applications recorded in the out
   1. 288 ends at its wall: the profile is VF-031's next data point. Another cycle comes only from a measured
      reduction at the frozen bound's comparison. Then `done`.
   2. I026 (289's probes), if the run still has time for it.
-- Status: working
+- 2026-11-18, after the run (by the watcher, at the user's word; D037, D038). The user stopped the run at a boundary
+  after the I028/I029 cycle, and this stream was merged into the default line (`qtsxxpmp`). 288 is closed out
+  administratively: its profile is VF-031's next data point, with a cross-link to VF-043's proposed locale lemma. Its
+  preservation claim stays open, and proof work reopens only after a measured improvement at the bound-8 comparison.
+  I026 goes to VF-044's pass as two coverage probes. I030 is done by this entry. What is left is in VF-044.
+- Status: done
 
 ## Loop settings
 

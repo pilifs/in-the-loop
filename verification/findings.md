@@ -21,7 +21,8 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 ### VF-044: what the domain-advances run left when the user stopped it, for a stronger agent to take on
 
 - **Status**: open (the user's decision on 2026-11-18: the run was stopped after preservation's cycle under way, and
-  what is outstanding is recorded here for a more capable agent to take on later).
+  what is outstanding is recorded here for a more capable agent to take on later). Funded by the user's
+  run-streams-domain-advances-D038 as one bounded, independent pass, in the order under **Needs**.
 - **Raised**: 2026-11-18 03:22 UTC on `vm-1`, by the watcher of the domain-advances run (session 6c5c7798). The
   preservation stream stopped at a boundary at `nwylyxlo` with its status still `working`, merged at `qtsxxpmp`.
   The brief's status reads `blocked: stream preservation: working`. Evidence, state and challenge ended `done` and
@@ -57,15 +58,22 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
     of it not that cycle's (see VF-036). With `TMPDIR` inside the checkout, `test_claude_setup.py` and
     `test_performance.py` fail, because their temporary folders sit below the repository's `CLAUDE.md`. They pass
     with `TMPDIR` outside it.
-- **Needs**: a stronger agent, in this order:
+- **Needs**: a stronger agent, in this order (D038):
   1. An adversarial pass on I028 and I029, run like the challenge stream: countermodels a JVM tells apart, each with
-     a checker-side test. Include the absorb test above, and bring `check.py --rule-landed` up to date.
-  2. Frozen-bound jobs on the final checker for 287, 307 (both answers), 289 and 290. Then point each task record at
-     its new job and run `accept.py` again.
-  3. I026.
-  4. 288's closeout: the VF-031 entry, the cross-link to VF-043, and the status of 288's preservation work. Then the
-     locale lemma, if wanted, benchmarked first on the bound-8 final comparison.
-  5. The items in VF-042 (what state and evidence left open) and VF-043 (bindings over sequences of values).
+     a checker-side test. Test the unresolved two-branch String merge in `absorb` directly (the absorb test above),
+     challenge the allocation rule, and bring `check.py --rule-landed` up to date.
+  2. Fresh frozen-bound jobs on the checker that results, for 287, 307 (both tasks), 289 and 290. Then point each
+     task record at its new job and run `accept.py` again.
+  3. VF-042's demonstrated false proofs, state's I018 (exception messages) and evidence's I014 (initializer
+     settings), before those features are relied on in a new example.
+  4. I026, delegated as its two concrete coverage probes. It comes back to the user only if the results warrant
+     expanding 289's frozen claim.
+  5. VF-041's `restsOn` reporting fix, delegated, so that 287 visibly says "agreement on terminating runs".
+  
+  288's closeout is done: it was recorded administratively under D037 after the run (VF-031's entry and its
+  cross-link to VF-043, and the preservation brief's status). Its preservation claim stays open, and proof work
+  reopens only after a measured improvement at the bound-8 comparison. The companion claims are ordered by D039
+  (VF-040, VF-043, VF-038, VF-039).
   
   The claim questions the user deferred stay theirs: D023, D028, D029, D032 and D034, with VF-038, VF-039 and VF-040.
 - **Tracked in**: the domain-advances brief (`llm-dlc/loops/domain-advances.md`) and its preservation and challenge
@@ -117,10 +125,12 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
     verified (at `vqquvmnm`) with the class observed under that setting while the result says "it read no system
     property" and nothing of the setting: refuse each or state the setting; the checker-side test is in
     `lib/tests/fixtures/setting-countermodels/README.md`.
-  - Evidence's I015 (accept.py: a later step's `--work` compared as resolved folders; the domain check reading the
-    outcome's own bound): given to a session the user brought in during the run; struck from here if it lands.
-  - Evidence's I016 (286's gap packet observed beside the route is read by nothing): no action unless wanted.
-- **Needs**: an owner for each, in the next brief that touches the observer and the JDK models.
+  - Evidence's I015, half done. The first half landed during the run (`lvorrywx`): accept.py compares a later step's
+    `--work` as resolved folders. The second half stays open: where a claim states no bound, accept.py's domain check
+    reads the outcome's own bound (`examples/tools/accept.py`, around line 537).
+  - Evidence's I016 (286's gap packet observed beside the route is read by nothing): optional, and it can wait (D038).
+- **Needs**: an owner for each, in the next brief that touches the observer and the JDK models. I018 and I014 are
+  demonstrated false proofs and come first, before those features are relied on in a new example (D038, VF-044).
 - **Tracked in**: run-streams-domain-advances-D036; the inbox items named.
 - **Closes when**: each is fixed with its checker-side test, or decided not to be.
 
@@ -137,7 +147,8 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   what an outcome rests on (`restsOn`), but `llm-dlc/tools/changes.py`'s projection (around line 69) keeps the evidence
   limits and drops the checker's assumptions, so the milestone report would not say it.
 - **Needs**: `changes.py` and the milestone report carry `restsOn` whole; 287's notes say "agreement on terminating
-  runs"; a later proof of equal divergence, or a claim restricted to costs that terminate, if wanted.
+  runs"; a later proof of equal divergence, or a claim restricted to costs that terminate, if wanted. The reporting
+  fix is delegated to VF-044's pass (D038).
 - **Tracked in**: run-streams-domain-advances-D036; preservation's item I027.
 - **Closes when**: the report shows each accepted answer's assumptions, and 287's statement says what was proved.
 
@@ -158,7 +169,11 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Needs**: the proposed claim frozen as a further claim file of 286, its tasks added (a refutation on 5.3.18, the
   proof on 5.3.19, and the mutant refuted), and a probe of its cost at bound 8 with two values. Closing the
   non-ASCII lowering gap in `bmc/strings.rs` would let a later claim drop the ASCII restriction.
-- **Tracked in**: run-streams-domain-advances-D034; the state stream's Progress and item I009.
+- **Priority** (the user's D039, 2026-11-18): first among brief 3.5's companion claims, with 288's binding (VF-043).
+  The original 286 claim stays (D034). Before the two-value companion is frozen, review a bounded sequence of
+  permitted and denied updates that observes both writes, since the challenge stream found binders that pass the
+  two-value proposal (VF-043).
+- **Tracked in**: run-streams-domain-advances-D034, D039; the state stream's Progress and item I009; VF-043.
 - **Closes when**: the added claim is frozen and refutes the mutant, or the user decides the limit stands.
 
 ### VF-039: 287's claims accept a wrong fix that keeps the 72-byte guard for checking only
@@ -175,7 +190,9 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Needs**: a claim that `encode` / `hashpw(String, String)` throws `IllegalArgumentException` exactly beyond 72 UTF-8
   bytes would tell the mutant from the fix. A new claim is the user's to freeze. Until then, 287's results are read as
   not telling a check-only guard from the fix.
-- **Tracked in**: run-streams-domain-advances-D032; the preservation stream's item I007.
+- **Priority** (the user's D039, 2026-11-18): third among brief 3.5's companion claims. Prepare D032's encode-side
+  claim as a separate claim, for the public operation the current checks leave out.
+- **Tracked in**: run-streams-domain-advances-D032, D039; the preservation stream's item I007.
 - **Closes when**: the user freezes such a claim and it refutes the mutant, or decides the limit stands.
 
 ### VF-038: 307's frozen claim justifies its encoding assumption by a specification that says no such thing for `getBytes(String)`
@@ -195,7 +212,9 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   encode alike by implementation, not on every conforming JDK; 307's notes say so with the result. A restated claim
   whose assumption cites the implementation of the pinned builds is prepared after the run, together with the companion
   claim under a non-UTF-8 default if the user chooses one (I008, deferred: D028), so that one freeze covers both.
-- **Tracked in**: run-streams-domain-advances-D028 and D029; the preservation stream's item I008.
+- **Priority** (the user's D039, 2026-11-18): second among brief 3.5's companion claims. Take D029's pinned-JDK
+  citation correction and D028's non-UTF-8 companion in one review, as the pilot for environment-specific evidence.
+- **Tracked in**: run-streams-domain-advances-D028, D029 and D039; the preservation stream's item I008.
 - **Closes when**: the user freezes a restated claim, or decides to keep the wording with this finding as its record.
 
 ### VF-037: a stream's `test_costs.py run --changed` filled its loop's 12G cap, and the OOM killer killed the session instead of the tests
@@ -365,6 +384,8 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   it, the adapter source added to `preparation.adapters` (290's notes say how). (2) The checker: capped probes stop at
   `StringBuilder.append(Object)` in `MvcRequestMatcher.toString` (an enum constant appended), and at the frozen bound
   reach the 4 GiB cap after 133 s, so after that gap is closed the proof is one job.
+- **Priority** (the user's D039, 2026-11-18): D023 stays settled (290's frozen claim is kept). The richer
+  observation proposal goes to brief 04, not brief 3.5.
 - **Tracked in**: `examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/example.json`
   (notes); decision `prove-change-D005` (`llm-dlc/decisions/prove-change.md`).
 - **Closes when**: a restated preservation claim is decided at the frozen bound, and the initializer audit is recorded
@@ -408,7 +429,18 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   two refutations (the fixed release's proof took 19m42s, so the refuting path search is slower than the full proof) or
   to change the claim's bounds or the engine search order so the violating path is found early; likewise for
   preservation. Then queue the jobs with the new step.
-- **Tracked in**: the three jobs' `logs/1-the-claim-at-the-frozen-bound.log` and `outcome.json` under their outputs.
+- **Next data point** (2026-11-18, the domain-advances run's preservation stream, step 7 of its Progress; closed out
+  under D037 and D038): capped probes at the frozen bound prove the lemmas, then leave the pair undecided after
+  about 4100 paths and 8700 solver calls, 136 of 160 s in the solver. Of those, about 72 s configure the binder
+  (spring-beans' `canonicalPropertyName`, the same bytecode in both releases) and the matcher takes under 3 s. Trials
+  verify in 13 s at bound 3 and 42 s at 4, and stay undecided past 150 s at 5 and 6. The costliest query is the
+  last, `RegressionPair.agree`'s relational comparison. Relating the two releases' `simpleMatch` lemma applications
+  saved nothing (154 related at bound 4, 46 s against 42 s). No job was queued, because one at the frozen bound on
+  the same checker would repeat this entry. The next approach is the per-release locale lemma, recorded as a
+  proposed proof component in VF-043. Proof work reopens only after it shows a measured improvement at the bound-8
+  comparison. The preservation claim stays open.
+- **Tracked in**: the three jobs' `logs/1-the-claim-at-the-frozen-bound.log` and `outcome.json` under their outputs;
+  VF-043 (the locale lemma); VF-044; the domain-advances preservation brief's Progress.
 - **Closes when**: the three tasks, rerun, give refuted, refuted and established.
 
 ### VF-030: the proof-tier job after example 286's engine changes stopped at `heap.rs`, so the tests after it and every Python proof test never ran
