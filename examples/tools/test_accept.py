@@ -373,6 +373,25 @@ class ChangedArtifact(Checkout):
             invocation={"how": "adapter", "checked": "2026-01-02", "evidence": "made up", "entry": "fixture.Other#allowed(Ljava/lang/String;)Z, made up"}))
         self.assertTrue(self.check("regex-probe")["accepted"])
 
+    def test_an_outcome_naming_an_overload_by_the_descriptors_types_is_about_the_tasks_target(self):
+        """The checker names one of several overloads with its parameter types (example 307's
+        `BCrypt#hashpw(java.lang.String, java.lang.String)`): that is the task's target when the types are its
+        descriptor's, and another method when they are not."""
+        paths = self.beside("regex-probe", "refuted")  # target fixture.RegexGate#allowed(Ljava/lang/String;)Z
+        for same in ("fixture.RegexGate#allowed", "fixture.RegexGate#allowed(java.lang.String)",
+                     "fixture.RegexGate#allowed( java.lang.String )"):
+            with self.subTest(same=same):
+                rewrite(self.root, paths, lambda o: o.update(target=same))
+                r = self.check("regex-probe")
+                self.assertTrue(r["accepted"], r.get("why"))
+        for other in ("fixture.RegexGate#allowed(int)", "fixture.RegexGate#allowed(String)",
+                      "fixture.RegexGate#allowed(java.lang.String, int)", "fixture.RegexGate#allowed()",
+                      "fixture.RegexGate#allowed(java.lang.String[])", "fixture.RegexGate#allowedTwice(java.lang.String)",
+                      "fixture.Other#allowed(java.lang.String)", "fixture.RegexGate#allowed(java.lang.String"):
+            with self.subTest(other=other):
+                rewrite(self.root, paths, lambda o: o.update(target=other))
+                self.refused("regex-probe", "entry", other)
+
     def test_a_task_or_an_adapter_that_is_not_what_the_job_ran_is_refused(self):
         (self.folder / "replay").mkdir(exist_ok=True)
         (self.folder / "replay/Adapter.java").write_text("class Adapter {}\n")
@@ -769,6 +788,29 @@ class StepsPastTheFix(Checkout):
         result["steps"].insert(0, {**result["steps"][0], "index": 0, "run": f"cp -r verification/forged/. {self.WORK}"})
         (self.root / self.paths["result"]).write_text(json.dumps(result))
         self.refused("fixed-security", "step", "not the job file's", self.committed)
+
+
+class Targets(unittest.TestCase):
+    def test_a_descriptors_parameters_are_spelled_as_the_checker_names_an_overloads(self):
+        self.assertEqual(accept.descriptor_parameters("(Ljava/lang/String;[I[[Lpkg/A$B;JZ)V"),
+                         ["java.lang.String", "int[]", "pkg.A$B[][]", "long", "boolean"])
+        self.assertEqual(accept.descriptor_parameters("()V"), [])
+        for bad in ("Ljava/lang/String;", "(Ljava/lang/String)V", "(Q)V"):
+            with self.subTest(bad=bad):
+                self.assertIsNone(accept.descriptor_parameters(bad))
+
+    def test_a_target_with_types_is_the_tasks_only_with_its_descriptors_types(self):
+        task = "pkg.C#m(Lpkg/A$B;[B)V"
+        for same in ("pkg.C#m", "pkg.C#m(pkg.A$B, byte[])", "pkg.C#m(pkg.A.B, byte[])"):
+            with self.subTest(same=same):
+                self.assertTrue(accept.same_target(same, task))
+        for other in ("pkg.C#m(A.B, byte[])", "pkg.C#m(pkg.A$B, byte)", "pkg.C#m(pkg.A$B)", "pkg.C#n(pkg.A$B, byte[])", "pkg.D#m"):
+            with self.subTest(other=other):
+                self.assertFalse(accept.same_target(other, task))
+        # A task target with no descriptor says no types to hold a list of them to.
+        self.assertTrue(accept.same_target("pkg.C#m", "pkg.C#m"))
+        self.assertFalse(accept.same_target("pkg.C#m(int)", "pkg.C#m"))
+        self.assertFalse(accept.same_target("pkg.C#m", ""))
 
 
 class ThisCheckout(unittest.TestCase):

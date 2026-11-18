@@ -12,20 +12,20 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-18T00:58:01.788Z",
-  "duration_seconds": 44418,
+  "ended": "2026-11-18T00:58:10.211Z",
+  "duration_seconds": 44427,
   "stats": {
     "turns": 24,
-    "api_calls": 209,
+    "api_calls": 210,
     "tool_calls": 210,
     "tool_errors": 4,
     "compactions": 1,
     "peak_context_tokens": 288290,
     "usage": {
-      "input_tokens": 460,
-      "output_tokens": 148116,
-      "cache_read_input_tokens": 33186914,
-      "cache_creation_input_tokens": 761080
+      "input_tokens": 462,
+      "output_tokens": 148836,
+      "cache_read_input_tokens": 33427276,
+      "cache_creation_input_tokens": 762230
     }
   },
   "tools": {
@@ -61,24 +61,24 @@
     {
       "index": 1,
       "started": "2026-11-17T19:59:47.700Z",
-      "ended": "2026-11-18T00:58:01.788Z",
+      "ended": "2026-11-18T00:58:10.211Z",
       "turns": 10,
-      "api_calls": 112,
+      "api_calls": 113,
       "usage": {
-        "input_tokens": 242,
-        "output_tokens": 73536,
-        "cache_read_input_tokens": 17345893,
-        "cache_creation_input_tokens": 348612
+        "input_tokens": 244,
+        "output_tokens": 74256,
+        "cache_read_input_tokens": 17586255,
+        "cache_creation_input_tokens": 349762
       },
-      "peak_context_tokens": 240366
+      "peak_context_tokens": 241514
     }
   ],
   "log": {
-    "sha256": "f9a03c59044607197c9620b9f0316285b55d44dc196fc1b084e03c63fa0eae4f",
-    "bytes": 4910154,
-    "lines": 1567,
-    "gzip_bytes": 898970,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/f9a03c59044607197c9620b9f0316285b55d44dc196fc1b084e03c63fa0eae4f.jsonl.gz"
+    "sha256": "49f7beeb087dddd9f43d4cdb90f4195156570229502e33a76f6630f9ebbdcd25",
+    "bytes": 4915093,
+    "lines": 1570,
+    "gzip_bytes": 900158,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/49f7beeb087dddd9f43d4cdb90f4195156570229502e33a76f6630f9ebbdcd25.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1169,6 +1169,22 @@
       "summary": "Merge stream state of the domain-advances run into the line",
       "body": "At the user's plan (D035), after challenge's line, as D021 orders. Conflicts resolved by hand: lib/src/bmc/mod.rs at the spot I002 named, where challenge's lemma rule (every object given when a <clinit> starts in a lemma's proof) and state's write-set rule (the framed method's inputs marked at the harness's call) are both kept, challenge's first; their conditions are disjoint (a framed method is not <clinit>), and the challenge stream is asked for countermodels of the two together. Five countermodel test files both lines added (challenge wrote them, state copied and extended them): state's versions, which hold challenge's whole. lib/README.md: state's side of its hunk, whose initializer paragraph is the line's. 286's and 288's notes: the union of both sides. lib/tests/costs.json by a three-way merge by row (lint agrees); examples/index.json regenerated; trace files regenerated. validate_example.py 286 and 288 pass; the default test run follows.",
       "log_sha256": "f9a03c59044607197c9620b9f0316285b55d44dc196fc1b084e03c63fa0eae4f"
+    },
+    {
+      "change_id": "utzknmuowzrkqurtvwktklmlvnurrkxu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "accept.py takes an outcome that names an overload by its descriptor's parameter types as the task's target",
+      "body": "Example 307's outcomes name their target BCrypt#hashpw(java.lang.String, java.lang.String), since hashpw is overloaded, and accept.py's entry check compared that with the task's target cut at '(' and refused both of 307's decided tasks on that alone. The check now takes an outcome target with parameter types when they are exactly the task descriptor's, spelled as the checker spells them (qualified, arrays as [], a nested class as A$B or A.B); a simple name, other types, another count, or a list of types where the task's target has no descriptor is still refused, and a plain target is matched as before. Verified: test_accept.py's new tests (the fixture's overloaded target accepted, eight other targets refused, and the descriptor parsing), the overload test failing against the old check (2 subtests), same_target true for 307's two real outcome targets, test_costs.py run --changed --only python (6 of 6 files) under a 6G cap, and test_costs.py lint. The Rust half of --changed was not run: no Rust file changed, and it is selected only because lib/tests/costs.json, where the three new rows are, lies under lib/. accept.py 307 was not run here; the watcher runs it after the merge.",
+      "log_sha256": "49f7beeb087dddd9f43d4cdb90f4195156570229502e33a76f6630f9ebbdcd25"
+    },
+    {
+      "change_id": "yknnwozxwnqlxnsxyyqvtsnymotxtppm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge accept.py's check of an overloaded target into the line",
+      "body": "From a session the user asked for it (utzknmuo): accept.py's entry check took 307's outcome target BCrypt#hashpw(java.lang.String, java.lang.String), which names the overload by its parameter types, for another target than the task's and refused it. same_target() now accepts parameter types when they are exactly the task descriptor's, as the checker spells them, and still refuses simple names, other types, another count, an unclosed list, or a typed target where the task has no descriptor. test_accept.py: 48 tests, 3 new; the overload test fails on the old check. Merged with no conflict; the default test run follows.",
+      "log_sha256": "49f7beeb087dddd9f43d4cdb90f4195156570229502e33a76f6630f9ebbdcd25"
     }
   ],
   "logs": {
@@ -1194,6 +1210,12 @@
       "bytes": 3888897,
       "lines": 1288,
       "gzip_bytes": 707743,
+      "url": null
+    },
+    "49f7beeb087dddd9f43d4cdb90f4195156570229502e33a76f6630f9ebbdcd25": {
+      "bytes": 4915093,
+      "lines": 1570,
+      "gzip_bytes": 900158,
       "url": null
     },
     "5fdbc05d089c8341bdc0b2c1e0ddfd20fe18222609a7f6f3a52da36f83c56979": {

@@ -1201,6 +1201,12 @@ change `xpmzppvnrskw` · [log `2ab16d90235b`](https://terminalvalue.net/raw-trac
 
 At the user's plan (D035), after challenge's line, as D021 orders. Conflicts resolved by hand: lib/src/bmc/mod.rs at the spot I002 named, where challenge's lemma rule (every object given when a &lt;clinit> starts in a lemma's proof) and state's write-set rule (the framed method's inputs marked at the harness's call) are both kept, challenge's first; their conditions are disjoint (a framed method is not &lt;clinit>), and the challenge stream is asked for countermodels of the two together. Five countermodel test files both lines added (challenge wrote them, state copied and extended them): state's versions, which hold challenge's whole. lib/README.md: state's side of its hunk, whose initializer paragraph is the line's. 286's and 288's notes: the union of both sides. lib/tests/costs.json by a three-way merge by row (lint agrees); examples/index.json regenerated; trace files regenerated. validate_example.py 286 and 288 pass; the default test run follows.
 
+### Merge accept.py's check of an overloaded target into the line
+
+change `yknnwozxwnql` · [log `2ab16d90235b`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz)
+
+From a session the user asked for it (utzknmuo): accept.py's entry check took 307's outcome target BCrypt#hashpw(java.lang.String, java.lang.String), which names the overload by its parameter types, for another target than the task's and refused it. same_target() now accepts parameter types when they are exactly the task descriptor's, as the checker spells them, and still refuses simple names, other types, another count, an unclosed list, or a typed target where the task has no descriptor. test_accept.py: 48 tests, 3 new; the overload test fails on the old check. Merged with no conflict; the default test run follows.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/2ab16d90235b1aa5268e8c3abf75f9517c49fa0be23d2f8d93e42fa6ba5874b4.jsonl.gz) has every step in between: reasoning, tool calls and their results.

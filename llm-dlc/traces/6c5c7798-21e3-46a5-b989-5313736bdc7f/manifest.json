@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-18T00:56:36.571Z",
-  "duration_seconds": 199750,
+  "ended": "2026-11-18T00:59:42.625Z",
+  "duration_seconds": 199936,
   "stats": {
     "turns": 238,
-    "api_calls": 1524,
-    "tool_calls": 1380,
+    "api_calls": 1526,
+    "tool_calls": 1382,
     "tool_errors": 27,
     "compactions": 6,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 3520,
-      "output_tokens": 977862,
-      "cache_read_input_tokens": 372773498,
-      "cache_creation_input_tokens": 2276696
+      "input_tokens": 3526,
+      "output_tokens": 978674,
+      "cache_read_input_tokens": 373678782,
+      "cache_creation_input_tokens": 2278867
     }
   },
   "tools": {
-    "Bash": 1316,
+    "Bash": 1318,
     "SendMessage": 12,
     "ToolSearch": 11,
     "Edit": 10,
@@ -143,24 +143,24 @@
     {
       "index": 6,
       "started": "2026-11-17T12:55:11.414Z",
-      "ended": "2026-11-18T00:56:36.571Z",
+      "ended": "2026-11-18T00:59:42.625Z",
       "turns": 86,
-      "api_calls": 423,
+      "api_calls": 425,
       "usage": {
-        "input_tokens": 1016,
-        "output_tokens": 182331,
-        "cache_read_input_tokens": 107912813,
-        "cache_creation_input_tokens": 410101
+        "input_tokens": 1022,
+        "output_tokens": 183143,
+        "cache_read_input_tokens": 108818097,
+        "cache_creation_input_tokens": 412272
       },
-      "peak_context_tokens": 451748
+      "peak_context_tokens": 453919
     }
   ],
   "log": {
-    "sha256": "7de4b3febd42fe99ceaea595e8e37689a68f198f2c0cc4ce161cfe542c719078",
-    "bytes": 29224188,
-    "lines": 12643,
-    "gzip_bytes": 4877402,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/7de4b3febd42fe99ceaea595e8e37689a68f198f2c0cc4ce161cfe542c719078.jsonl.gz"
+    "sha256": "b8d2d4e0443a27b3183966182dc7edee3c066ffa2153e533f7aae3f8e0af8881",
+    "bytes": 29341794,
+    "lines": 12671,
+    "gzip_bytes": 4904406,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/b8d2d4e0443a27b3183966182dc7edee3c066ffa2153e533f7aae3f8e0af8881.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2443,6 +2443,22 @@
       "summary": "Merge stream state of the domain-advances run into the line",
       "body": "At the user's plan (D035), after challenge's line, as D021 orders. Conflicts resolved by hand: lib/src/bmc/mod.rs at the spot I002 named, where challenge's lemma rule (every object given when a <clinit> starts in a lemma's proof) and state's write-set rule (the framed method's inputs marked at the harness's call) are both kept, challenge's first; their conditions are disjoint (a framed method is not <clinit>), and the challenge stream is asked for countermodels of the two together. Five countermodel test files both lines added (challenge wrote them, state copied and extended them): state's versions, which hold challenge's whole. lib/README.md: state's side of its hunk, whose initializer paragraph is the line's. 286's and 288's notes: the union of both sides. lib/tests/costs.json by a three-way merge by row (lint agrees); examples/index.json regenerated; trace files regenerated. validate_example.py 286 and 288 pass; the default test run follows.",
       "log_sha256": "7de4b3febd42fe99ceaea595e8e37689a68f198f2c0cc4ce161cfe542c719078"
+    },
+    {
+      "change_id": "utzknmuowzrkqurtvwktklmlvnurrkxu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "accept.py takes an outcome that names an overload by its descriptor's parameter types as the task's target",
+      "body": "Example 307's outcomes name their target BCrypt#hashpw(java.lang.String, java.lang.String), since hashpw is overloaded, and accept.py's entry check compared that with the task's target cut at '(' and refused both of 307's decided tasks on that alone. The check now takes an outcome target with parameter types when they are exactly the task descriptor's, spelled as the checker spells them (qualified, arrays as [], a nested class as A$B or A.B); a simple name, other types, another count, or a list of types where the task's target has no descriptor is still refused, and a plain target is matched as before. Verified: test_accept.py's new tests (the fixture's overloaded target accepted, eight other targets refused, and the descriptor parsing), the overload test failing against the old check (2 subtests), same_target true for 307's two real outcome targets, test_costs.py run --changed --only python (6 of 6 files) under a 6G cap, and test_costs.py lint. The Rust half of --changed was not run: no Rust file changed, and it is selected only because lib/tests/costs.json, where the three new rows are, lies under lib/. accept.py 307 was not run here; the watcher runs it after the merge.",
+      "log_sha256": "b8d2d4e0443a27b3183966182dc7edee3c066ffa2153e533f7aae3f8e0af8881"
+    },
+    {
+      "change_id": "yknnwozxwnqlxnsxyyqvtsnymotxtppm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge accept.py's check of an overloaded target into the line",
+      "body": "From a session the user asked for it (utzknmuo): accept.py's entry check took 307's outcome target BCrypt#hashpw(java.lang.String, java.lang.String), which names the overload by its parameter types, for another target than the task's and refused it. same_target() now accepts parameter types when they are exactly the task descriptor's, as the checker spells them, and still refuses simple names, other types, another count, an unclosed list, or a typed target where the task has no descriptor. test_accept.py: 48 tests, 3 new; the overload test fails on the old check. Merged with no conflict; the default test run follows.",
+      "log_sha256": "b8d2d4e0443a27b3183966182dc7edee3c066ffa2153e533f7aae3f8e0af8881"
     }
   ],
   "logs": {
@@ -3039,6 +3055,12 @@
       "lines": 3337,
       "gzip_bytes": 1396009,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/b72acd2a9fb9768900e0639e3c4d0302eec6133dc09ace70c524bc56ee17eafa.jsonl.gz"
+    },
+    "b8d2d4e0443a27b3183966182dc7edee3c066ffa2153e533f7aae3f8e0af8881": {
+      "bytes": 29341794,
+      "lines": 12671,
+      "gzip_bytes": 4904406,
+      "url": null
     },
     "ba517426fa161c060eb7acbb673b48d0b283fa141eb1ee15c4bfe692392e7c1d": {
       "bytes": 24384647,
