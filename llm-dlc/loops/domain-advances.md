@@ -228,7 +228,10 @@ temporary folders a check leaves) is taken up.
 - 2026-11-18, the watcher: merged stream challenge (yulpuuronznk), which says done.
 - 2026-11-18, the watcher: merged stream state (kmytvuopwxtu), which says done.
 - 2026-11-18, the watcher: merged stream preservation (nwylyxloopst), which says working.
-- Status: blocked: stream preservation: working
+- 2026-11-18, after the run, the watcher at the user's word: the user stopped the run at a boundary after preservation's
+  I028/I029 cycle. Preservation's brief now says done, with 288 closed out under D037. The run's decisions are closed:
+  D001-D037 reviewed, and D038 and D039 recorded. What is left is VF-044, for a later pass.
+- Status: done
 
 ## Loop settings
 
