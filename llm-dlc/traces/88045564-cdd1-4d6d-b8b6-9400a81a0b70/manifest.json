@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "88045564-cdd1-4d6d-b8b6-9400a81a0b70",
-  "status": "open",
+  "status": "ended",
   "title": "Agent brief preservation work 287 308",
   "first_prompt": "<command-name>/model</command-name>\n            <command-message>model</command-message>\n            <command-args></command-args>",
   "client": {
@@ -297,6 +297,22 @@
       "immutable": false,
       "summary": "Record the watcher's answers in the domain-advances run",
       "body": "The decisions the watcher of the brief llm-dlc/loops/domain-advances.md took while it ran, committed before it merges a stream.",
+      "log_sha256": "bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0"
+    },
+    {
+      "change_id": "tqmpowvxsrvqozpqowlrkqvprrytwvyt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of the code two versions are taken to share past the reach's fix: an override removed, a hidden field, an interface's initializer two ways and the target's own class's, each taken as identical or tied where a JVM tells the versions apart",
+      "body": "Item 5 of the challenge brief, against the preservation stream's kskmpmny (its fix for domain-advances-preservation-I010). The fix holds: built apart with the sources touched, tie_countermodels.rs passes there, its checker-side test included. Past it, lib/src/shared.rs's reach still leaves out five things, each shown by lib/tests/fixtures/reach-countermodels (old/ against new/), where each version alone gives 2 (0 for hidden) against 1 on a JVM (lib/tests/reach_countermodels.rs). Under the defaults, each of these is 'identical in both versions; nothing to prove' at kskmpmny and on this line alike, since the shortcut is older than the run: removed (an override the previous version declared and the new one inherits; only the new version's reach is walked and the old one is looked up by the new one's declaring class), hidden (a field the previous version declared that hides an inherited one; fields are not compared), constant (an interface's static read through an implementing class; the JVM initializes the interface, initialized() takes superclasses only), defaulted (making an object initializes a superinterface with a default method) and Own#f (the target's own class's initializer). looped, constant's read in a loop past the bound, is Verified under the ties at kskmpmny, non-vacuous; on this line it gets no verdict.\n\nshared.rs is the preservation stream's this run, so nothing in lib/src changes here: the README's checker-side test, which fails on all six at kskmpmny, goes to it as a failure item citing this commit. Audit: the shortcut needs no --before-classpath, which 288 to 290 all pass; 289's rerun on kskmpmny unwinds fully; 287's BCrypt implements no interface and uses only its own fields in both pinned releases. No accepted result is affected. Inbox I004 is acknowledged as waiting: preservation's call-level rule is not committed yet. Verified: the changed tests under MemoryMax=8G with --rust-jobs 1 passed after test_costs.py estimate and tag; lint agrees.",
+      "log_sha256": "bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0"
+    },
+    {
+      "change_id": "mnwtrnrpzlqtvrxxmtzknmkprqzrnxso",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Countermodels of a stand-in a lemma's proof rested on, and of an Error a logged record's getter raises with no athrow, each proved with nothing stated where a JVM says otherwise",
+      "body": "Item 5 of the challenge brief, against state's stand-ins (qlylowvo, prove --stand-in) and preservation's logging fix (lqkwokqq). A lemma's proof is a check of its own, given the check's stand-ins. The check that uses the lemma states the lemma as proved, and states only what its own run's engine noted. So at state's zlvqxmst, built apart, sn.Use#viaLemma is Verified through a lemma whose proof called a narrowly sampled stand-in, and its result names no stand-in; a JVM gives 32 where 0 is proved (lib/tests/fixtures/stand-in-countermodels). A model on request is lost the same way. Preservation's scan refuses athrow in a logged record's classes, but a JVM raises an Error without one: an OutOfMemoryError (new long[Integer.MAX_VALUE]) and a StackOverflowError (a recursion) in getMessage() each leave log through StreamHandler.publish's catch (Exception). Both are Verified 'log returned' at kskmpmny (lib/tests/fixtures/log-countermodels). The rules are those streams', so nothing in lib/src changes; each README has the checker-side test, which goes to the owner as a failure item. No accepted result rests on either: 286's simpleMatch lemma calls only String methods, and 287's LocationResolvingLogRecord neither recurses nor allocates by input.",
       "log_sha256": "bf175102924541578948bc9e12c37dc7c3fbb02e186f1ed86663a706166309e0"
     }
   ],

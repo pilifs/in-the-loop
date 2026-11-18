@@ -184,6 +184,11 @@ impl Engine<'_> {
                     (None, _) | (_, None) => FALSE,
                     (Some(a), Some(b)) if a == b => TRUE,
                     (Some(a), Some(b)) => {
+                        if path.objects[a].given || path.objects[b].given {
+                            if let Err(stop) = self.reads(path, || "reads an array that was there before the call (isEqual)".into()) {
+                                return Some(Err(stop));
+                            }
+                        }
                         let (x, y) = (path.objects[a].as_array()?.clone(), path.objects[b].as_array()?.clone());
                         let mut same = vec![self.b.eq(&x.length, &y.length)];
                         let zero = self.b.constant(0, 8);
@@ -201,6 +206,11 @@ impl Engine<'_> {
             }
             (ARRAYS, "copyOf", [Val::R(original), Val::I(length)]) => {
                 let Some(original) = *original else { return Some(self.raise(path, "java/lang/NullPointerException")) };
+                if path.objects[original].given {
+                    if let Err(stop) = self.reads(path, || "reads an array that was there before the call (copyOf)".into()) {
+                        return Some(Err(stop));
+                    }
+                }
                 let from = path.objects[original].as_array()?.clone();
                 let class = path.objects[original].class.clone();
                 let negative = self.b.negative(length);
