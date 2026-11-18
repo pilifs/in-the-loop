@@ -574,17 +574,63 @@ The preservation stream owns pairing; `examples/tools/accept.py` is the evidence
       at bound 2 it passed. Streaming the samples into an incremental SHA-256 (`stand_in.rs`, `digest.rs`) would keep
       the same hash; not done.
   - Job `20261117-235132-example-288-s-binding-under-its-locales` runs both checks at bound 8.
-- Next:
-  - Jobs 233000's and 235132's results.
-  - "Done when", first item: 286's `records/refusals/fixed-protected-state-mutation.json` and
-    `vulnerable-protected-state-mutation.json` still record the 2026-11-14 route refusal (the `DataBinder` receiver).
-    - The vulnerable one is decided and accepted (job 192205): close it.
-    - The fixed one's observed blocker is now non-ASCII `toLowerCase()` (job 222610): record it, with the test that
-      closes it.
-    - The packet format is the evidence stream's (`workflow_handoff.py`), so read how 285's packets were closed first.
-  - "Done when", third item: the corrected formalization (I009's two values and an ASCII `field`), proposed to the
-    user as a new claim file. The ASCII trial proved at bound 8 by job 222610 is its evidence.
-- Status: working
+- 2026-11-18, "Done when", first and third items: the fixed task's chain of blockers recorded, and the corrected
+  formalization proposed (frozen claim unchanged; the accepted refutation unaffected). Inbox: nothing open.
+  - **The jobs.** All three passed as expected.
+    - 233000: the fixed task's ASCII trial at bound 8 is proved through the setters' contracts. It names those of
+      `setName` and `setTouchy`.
+    - 235132: 288's two checks at bound 8 (6.1.14 proved, 6.1.13 refuted and replayed).
+    - 225439 had already passed.
+    - The result folder of 222610 and its outputs are restored on this line from the collector's commit (`uztvymnl`),
+      since the new packet cites them.
+  - **The route's packets stay as they are.** The route still refuses both tasks at the `DataBinder` receiver. 286's
+    other tasks accepted beside the route keep their route packet open, and the evidence stream's tests count them
+    (19 blocked tasks, five causes).
+    - A packet's `closed` needs a route receipt (`test_workflow_refusal.py`), which a beside-route acceptance is not.
+    - So the vulnerable one is "decided at bound 8 and accepted" by its `besideRoute` record, with no change to its
+      packet.
+  - **The fixed task's chain on the real path** is one gap: non-ASCII `String.toLowerCase()` at
+    `DataBinder.isAllowed:828`.
+    - Its packet is `records/refusals/fixed-protected-state-mutation-beside-route.json`: the job (222610), the log's,
+      outcome's and evidence's hashes, the diagnostic, the semantics needed, the closure and the strategies.
+    - It states no `refusal`, and no handoff blocker points at it, so `workflow_refusal.py`, the handoff and the
+      inventory read nothing new. `target.json`'s predicted java-semantics blocker of the task has a dated note
+      pointing at it.
+  - **The closure test**, `lowering_outside_ascii_is_the_one_gap_286s_fixed_protected_state_task_stops_at`
+    (`lib/tests/claims.rs`, tool tier, 2 s).
+    - `claims.C#loweredToAge` is isAllowed's decision: `s.toLowerCase().equals("age")` exactly when `s` is an ASCII
+      spelling of age. It holds for every String on a JVM, since no code point outside ASCII lowers to `a`, `g` or `e`
+      under any locale of `C.LOCALES`. `C.main` sweeps every code point; only U+0130 and U+212A lower to ASCII
+      (`i`, `k`).
+    - The check is unverifiable at the same gap over all Strings, and proved over ASCII ones under the locale
+      assumption.
+    - The gap is closed when the first check is proved; then the task is rerun at bound 8.
+  - **The corrected formalization, proposed** as `claims/proposed/protected-age-kept-two-values.json`. It is
+    schema-shaped, not frozen, and used by no task.
+    - Two values, `{first, "5"}` then `{second, "32"}`, with both names inputs. This takes I009's binder, which drops
+      only the first suppressed value.
+    - Both names ASCII: the checker's restriction, not the binder's, as the sweep shows.
+    - Its entry `BindingAdapter#ageAfterBindingTwice` is described, not written: it changes the adapter set
+      `accept.py` compares, so the accepted refutation would be run again. It has not been probed.
+  - **The example.** 286's README has a 5.3.19 result paragraph, "Which statement is accepted", the open item and a
+    "Beside the route" table. Its `example.json` has a note. 288's note has job 235132's result.
+  - **Checks.** `validate_example 286` and `288` pass; `run --changed` passes (27 of 27); `accept.py 286
+    vulnerable-protected-state-mutation` still accepts (12 checks).
+  - An inbox item to the evidence stream, sent after this commit, says what the new packet is and that wiring gaps
+    observed beside the route into the handoff is theirs to decide.
+- "Done when" is met:
+  - **The tasks.** The vulnerable task is decided at bound 8 and accepted. The fixed task's chain on the real path is
+    recorded with its job and a closure test.
+  - **The contract.** The effect contract is refuted on the adversarial setter and proved on the honest one. Each side
+    condition of its use has a countermodel test, and it has two consumers (286 on 5.3.19, 288 on 6.1.13 and 6.1.14).
+  - **The statement.** The notes say which statement is accepted: the frozen claim for 5.3.18, none yet for 5.3.19,
+    with the corrected one proposed.
+- Left for the user: whether the proposed claim becomes a claim file of 286; then its entry, the rerun of the accepted
+  refutation with the new adapter set, and a probe of its cost at bound 8.
+- Left, optional: closing the non-ASCII lowering gap itself (Unicode's case tables and a sigma's context in
+  `bmc/strings.rs`, sampled over every code point); streaming a stand-in's samples into an incremental SHA-256
+  (`stand_in.rs`, `digest.rs`).
+- Status: done
 
 ## Loop settings
 

@@ -182,6 +182,31 @@ fn lower_casing_under_a_locale_that_is_an_input_is_the_definition_written_out() 
     assert!(o.output.contains("java.lang.String.toLowerCase()") && o.output.contains("java.util.Locale.<init>"), "{}", o.output);
 }
 
+/// The one gap example 286's fixed protected-state task meets on its real path under the frozen claim (job
+/// 20261117-222610; the example's `records/refusals/fixed-protected-state-mutation-beside-route.json`):
+/// `field.toLowerCase()` in `DataBinder.isAllowed` of a String with a unit outside ASCII, which the checker leaves
+/// the JDK's call (`lib/src/bmc/strings.rs`). `claims.C#loweredToAge` is the decision that call serves, true for
+/// every String on a JVM: no code point outside ASCII lowers to `a`, `g` or `e` under any locale of the table (the
+/// fixture's `main` sweeps them all). Over ASCII Strings it is proved, under the locale assumption. The gap is closed
+/// when the first check below is proved, with no assumption beyond the locale's: then rerun 286's task at bound 8.
+#[test]
+fn lowering_outside_ascii_is_the_one_gap_286s_fixed_protected_state_task_stops_at() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let swept = Command::new("java").args(["-XX:-UsePerfData", "-cp"]).arg(classes).arg("claims.C").output().expect("java runs");
+    assert!(swept.status.success(), "{}", String::from_utf8_lossy(&swept.stderr));
+    assert_eq!(String::from_utf8_lossy(&swept.stdout).trim(), "no code point outside ASCII lowers to a, g or e");
+    let o = run(&options(classes, "claims.C#loweredToAge", 3, "C-loweredToAge"));
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.output.contains("jdk-reference-method:java.lang.String.toLowerCase()Ljava/lang/String;"), "{}", o.output);
+    let mut ascii = options(classes, "claims.C#loweredToAge", 3, "C-loweredToAge-ascii");
+    ascii.assume = Some("s.chars().allMatch(c -> c < 128)".into());
+    let o = run(&ascii);
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let stated = o.stated.map(|s| s.assumptions).unwrap_or_default();
+    assert!(stated.iter().any(|a| a.text == jvmcontract::bmc::strings::LOCALE_ASSUMPTION), "{stated:?}");
+}
+
 /// A protective pattern that is an input (`Engine::literal_then_any` in `lib/src/bmc/regex.rs`): characters that
 /// stand for themselves followed by `.*`, under each combination of `CASE_INSENSITIVE` and `DOTALL`, either chosen by
 /// an input, on any String, line terminators and surrogates included. Each model is its definition written out, on

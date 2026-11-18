@@ -12,34 +12,36 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:56:51.005Z",
-  "ended": "2026-11-17T23:55:07.462Z",
-  "duration_seconds": 39496,
+  "ended": "2026-11-18T00:11:43.541Z",
+  "duration_seconds": 40493,
   "stats": {
-    "turns": 146,
-    "api_calls": 1333,
-    "tool_calls": 1294,
+    "turns": 151,
+    "api_calls": 1400,
+    "tool_calls": 1362,
     "tool_errors": 14,
-    "compactions": 22,
+    "compactions": 23,
     "peak_context_tokens": 273336,
     "usage": {
-      "input_tokens": 2754,
-      "output_tokens": 999278,
-      "cache_read_input_tokens": 163033782,
-      "cache_creation_input_tokens": 3276286
+      "input_tokens": 2888,
+      "output_tokens": 1054331,
+      "cache_read_input_tokens": 172015121,
+      "cache_creation_input_tokens": 3460090
     }
   },
   "tools": {
-    "Bash": 1221,
-    "Read": 24,
-    "Edit": 17,
-    "Write": 14,
+    "Bash": 1282,
+    "Read": 27,
+    "Edit": 19,
+    "Write": 16,
     "Monitor": 9,
     "ToolSearch": 8,
     "TaskStop": 1
   },
   "files_touched": [
+    "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/claims/proposed/protected-age-kept-two-values.json",
     "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/beans.py",
     "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/proofs/beans/protected-setters.contract",
+    "examples/286-spring-framework-cve-2022-22968-case-sensitive-disallowed-fields/records/refusals/fixed-protected-state-mutation-beside-route.json",
     "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/proofs/beans.py",
     "lib/models/java/util/joiner/StringJoiner.java",
     "lib/models/java/util/lists/ArrayDeque.java",
@@ -369,24 +371,38 @@
     {
       "index": 22,
       "started": "2026-11-17T23:38:25.347Z",
-      "ended": "2026-11-17T23:55:07.462Z",
-      "turns": 4,
-      "api_calls": 59,
+      "ended": "2026-11-17T23:55:41.446Z",
+      "turns": 5,
+      "api_calls": 61,
       "usage": {
-        "input_tokens": 120,
-        "output_tokens": 46323,
-        "cache_read_input_tokens": 6822011,
-        "cache_creation_input_tokens": 149102
+        "input_tokens": 124,
+        "output_tokens": 47562,
+        "cache_read_input_tokens": 7148676,
+        "cache_creation_input_tokens": 152456
       },
-      "peak_context_tokens": 162533
+      "peak_context_tokens": 165887
+    },
+    {
+      "index": 23,
+      "started": "2026-11-17T23:56:34.020Z",
+      "ended": "2026-11-18T00:11:43.541Z",
+      "turns": 4,
+      "api_calls": 65,
+      "usage": {
+        "input_tokens": 130,
+        "output_tokens": 53814,
+        "cache_read_input_tokens": 8654674,
+        "cache_creation_input_tokens": 180450
+      },
+      "peak_context_tokens": 193881
     }
   ],
   "log": {
-    "sha256": "5f25c399fbf96bc9b53d1ffb9e6290ee553ce767f16d09261a695fe12e79f421",
-    "bytes": 34943125,
-    "lines": 12301,
-    "gzip_bytes": 6139205,
-    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/5f25c399fbf96bc9b53d1ffb9e6290ee553ce767f16d09261a695fe12e79f421.jsonl.gz"
+    "sha256": "2a57c9145b731f5630b7d63c9e4dd9e494aa5d928201a4ec0c936f217b394fc0",
+    "bytes": 36790896,
+    "lines": 12913,
+    "gzip_bytes": 6450703,
+    "path": "llm-dlc/traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/logs/2a57c9145b731f5630b7d63c9e4dd9e494aa5d928201a4ec0c936f217b394fc0.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -605,6 +621,14 @@
       "summary": "Example 288's binding under its locales runs through the permitted setters' effect contracts in 286's form: kept on 6.1.14, refuted on 6.1.13 through Id under tr-TR (verification pending)",
       "body": "The state stream's step 6, its second consumer. examples/288-.../proofs/beans/example288/adapter/ProtectedBinding#protectedKept binds one property value {field, value} onto 288's own ProtectedBean. id and admin are disallowed by \"id\" and \"ADMIN\". The binder is configured under one locale of 288's table (root, en-US, tr-TR, az-AZ, lt-LT) and binds under another. The entry returns whether id is 0 and admin false. proofs/beans/org/springframework/beans/ProtectedBeanStandIn.java is the bean wrapper's write on that bean, written as 286's is. It was sampled against each release's setPropertyValue(PropertyValue): 741,600 samples under the five locales, all equal on 6.1.14 and 6.1.13; with U+0130 dropped from its lookup (by mutation), 785 differ. proofs/beans/protected-setters.contract gives setName and setTitle the effect contract 286's setters have. proofs/beans.py runs both releases at bound 8 over ASCII simple names and any value, with 286's models and observed initializers. In capped probes, 6.1.14 is proved in 86 s (peak 830 MB), resting on both contracts and the sampled stand-in. 6.1.13 is refuted at protectedKept(2, 2, \"Id\", \"-9\"), and the witness ran on a JVM. Nothing of 288's target.json, adapter set or claims changes. validate_example 288 passes, and run --changed passes 22 of 22. accept.py 286 vulnerable-protected-state-mutation still accepts (12 checks).\n\nWhat the second use shows: the contract's form carried over unchanged, the class name aside. It is applied where the path has set the default locale to tr-TR or az-AZ, and needs no use-site condition for that, since a contract's proof reads nothing that was there before the call. What was particular to 286 was the binder's part: the stand-in's lookup took only A-Z to lower-case to a property's first unit, but U+0130 lowers to the i of id. So the setters' part transfers as a proved contract, and the binder's part is per bean and sampled. A cost found on the way: prove --stand-in holds the sampler's whole output in memory, then joins it again for the hash, in each sub-run. A first sampler of 2 million lines (600 MB) made the bound-8 check go past the 4 GB probe cap. The sampler was cut to 230 MB; streaming the samples into an incremental hash is left in the brief's Next.\n\nJob 20261117-235132-example-288-s-binding-under-its-locales runs both checks at bound 8. Job 20261117-225439 (286's adversarial fixture) passed. The brief is out of date in one respect: 286's records/refusals packets for the protected-state tasks still record the 2026-11-14 route refusal, and the brief's Done-when first item reads them as the record of blockers. They are the next piece.",
       "log_sha256": "5f25c399fbf96bc9b53d1ffb9e6290ee553ce767f16d09261a695fe12e79f421"
+    },
+    {
+      "change_id": "kmytvuopwxtuzrntqoursorwrlkwmmqu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Example 286's fixed protected-state task: its one blocker on the real path recorded with its job and closure test, and a corrected formalization proposed to the user as a new claim file",
+      "body": "The state stream's 'Done when', first and third items (llm-dlc/loops/domain-advances-state.md). Jobs 233000 (the fixed task's ASCII trial at bound 8, proved through the permitted setters' effect contracts) and 235132 (example 288's binding at bound 8: proved on 6.1.14, refuted on 6.1.13 and replayed) passed as expected.\n\nUnder the frozen claim, job 20261117-222610 met one strict gap on 286's real path at bound 8: String.toLowerCase() of a field with a unit outside ASCII, at DataBinder.isAllowed:828. It is recorded in records/refusals/fixed-protected-state-mutation-beside-route.json with the job, the hashes of its log, outcome and evidence, the diagnostic, the semantics needed and the closure. The packet states no refusal and no handoff blocker points at it, so workflow_refusal.py, the handoff and the gap inventory, which are the evidence stream's, read nothing new. The route's own packets are unchanged: the route still refuses both protected-state tasks at the DataBinder receiver, and a packet's 'closed' needs a route receipt, which a beside-route acceptance is not, as for 286's other tasks accepted beside the route. The vulnerable task is decided and accepted by its besideRoute record. Job 222610's result folder and outputs are restored on this line from the collector's commit, since the packet cites them.\n\nThe closure test is lib/tests/claims.rs lowering_outside_ascii_is_the_one_gap_286s_fixed_protected_state_task_stops_at (tool tier). claims.C#loweredToAge is isAllowed's decision: a String lowers to age exactly when it is an ASCII spelling of it. C.main shows that on a JVM by sweeping every code point outside ASCII under each locale of C.LOCALES. The test requires the check to be unverifiable at the gap over all Strings and proved over ASCII ones under the locale assumption; the gap is closed when the first is proved.\n\nThe proposed claim, claims/proposed/protected-age-kept-two-values.json, is schema-shaped, not frozen and used by no task. It binds two values whose names are inputs, which refutes a binder that drops only the first suppressed value (inbox item domain-advances-state-I009). It also restricts the names to ASCII, a restriction of the checker's and not of the binder's. Its entry is described, not written, since it changes the adapter set accept.py compares. 286's README and notes say which statement is accepted: the frozen claim for 5.3.18, none yet for 5.3.19. 288's note has job 235132's result.\n\nVerified: validate_example 286 and 288 pass, run --changed passes 27 of 27, and accept.py 286 vulnerable-protected-state-mutation still accepts with 12 checks. The brief's Done when is met, and its status is done. The rest of the brief is not out of date.",
+      "log_sha256": "2a57c9145b731f5630b7d63c9e4dd9e494aa5d928201a4ec0c936f217b394fc0"
     }
   ],
   "logs": {
@@ -624,6 +648,12 @@
       "bytes": 5262429,
       "lines": 1802,
       "gzip_bytes": 876630,
+      "url": null
+    },
+    "2a57c9145b731f5630b7d63c9e4dd9e494aa5d928201a4ec0c936f217b394fc0": {
+      "bytes": 36790896,
+      "lines": 12913,
+      "gzip_bytes": 6450703,
       "url": null
     },
     "3e74a3b6d1a8129e7d2b771b732c77db9732c8a2408524ffe1ec1727d4f9e11e": {
