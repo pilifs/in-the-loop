@@ -590,15 +590,45 @@ relational result needs a new check (the rule's applications recorded in the out
     preservation result is agreement on terminating runs. Its outcome assumes each shared `crypt_raw` call ends,
     and the claim admits a stored hash of cost 31, which never terminates on either release. The claim and the
     answer are unchanged.
+- 2026-11-18, I023 (the one-function rule's side conditions; *working formalization* and *accepted claim* unchanged).
+  - **The failure, reproduced.** The challenge's checker-side test, added to `lib/tests/function_countermodels.rs`,
+    failed on its seven: `filled`, `copied`, `interned`, `same`, `tagged`, `overflowed` and `exhausted`, each Verified.
+    An eighth, found while reading the rule, failed too: a String result was never null. `NAMED` in
+    `lib/tests/pairing.rs` is a callee that returns null past 1, tested for null by one version only. `nulled` was
+    Verified, and `same` is its control.
+  - **The side conditions**, each needed: with each one switched off alone (a temporary switch, removed), its pair is
+    proved again.
+    - `shared::one_function` refuses three things:
+      - `if_acmp` in the callee (`interned`);
+      - a call that can come back to itself, by the declaring classes (`overflowed`);
+      - a `newarray` whose length `Straight` does not read from constants and static fields' arrays, or a JDK call
+        given a length (`StringBuilder(int)`, `setLength`, `Arrays.copyOf*`) (`exhausted`).
+    - A JDK call given an array or an `Object` counts as an array store (`filled`, `copied`).
+    - At the call (`bmc/ties.rs`): each allocation's length must be known and at most 65536. A String result is null
+      or a new String, under a bit that a related call takes over.
+    - In `same_lit` (`bmc/mod.rs`): an `==` on such a String ends the path with no verdict, so the check runs again as
+      written (`same`, `tagged`).
+  - **The switch.** `--no-shared-callees` now reaches the rule through `relocate::Previous::calls_as_one_function`.
+    The new `no_shared_callees_takes_no_call_as_one_function` counts 0 calls.
+  - **The tests.** `function_countermodels.rs` passes, 2 of 2. `pairing.rs` passes, 20 of 20.
+  - **The capped probes** at the frozen bounds give the verdicts as before:
+    - 287 `preservation`: verified, 53 paths, 52 calls taken, 48 related.
+    - 307 `preservation`: verified in 83 s. Only `crypt_raw` is taken now (48 calls, 44 related, 55 paths), where the
+      accepted job took `hashpw(byte[], String)` (72, 66, 75 paths). Its `Arrays.copyOf(passwordb, passwordb.length +
+      1)` is a JDK call given a length, now refused. That costs precision, not soundness, and the proof holds without
+      it.
+    - 307 `mutant-preservation`: refuted at a non-ASCII password.
+    - 289 and 290 `preservation`: verified; neither takes a call.
+    - The accepted 287 and 307 answers are not affected, as the challenge's audit found.
+  - **The docs.** `lib/README.md` and the module docs of `bmc/ties.rs` state the new side conditions.
+  - **Inbox.** I023 is done. The fixture's README is the challenge stream's and is unchanged. No new item.
 - Next (D036's order):
-  1. I023: the `function-countermodels` fixture, `lib/tests/function_countermodels.rs`, and `--no-shared-callees`
-     giving zero applications. No 288 work before it.
-  2. Point 289's and 290's preservation task records at job `20261117-213024-…`, then run `accept.py 289` and
+  1. Point 289's and 290's preservation task records at job `20261117-213024-…`, then run `accept.py 289` and
      `accept.py 290` on this line. The default line is merged.
-  3. When accept.py's pair-harness fix is on the default line, merge it and run `accept.py 307` again.
-  4. 288 ends at its wall: the profile is VF-031's next data point. Another cycle comes only from a measured
+  2. When accept.py's pair-harness fix is on the default line, merge it and run `accept.py 307` again.
+  3. 288 ends at its wall: the profile is VF-031's next data point. Another cycle comes only from a measured
      reduction at the frozen bound's comparison. Then `done`.
-  5. I026 (289's probes), if the run still has time for it.
+  4. I026 (289's probes), if the run still has time for it.
 - Status: working
 
 ## Loop settings

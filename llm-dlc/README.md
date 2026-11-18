@@ -338,7 +338,7 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 | Started | Session | Prompts | Commits | Status |
 |---|---|---|---|---|
 | 2026-11-17 18:37 UTC | [Agent brief preservation work 287 308](traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | 7 | 31 | ended |
-| 2026-11-17 12:56 UTC | [f28025bc-e46b-4a87-a943-bfb79dea5465](traces/f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 71 | 160 | open |
+| 2026-11-17 12:56 UTC | [f28025bc-e46b-4a87-a943-bfb79dea5465](traces/f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 87 | 161 | open |
 | 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 151 | 28 | open |
 | 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 132 | 25 | open |
 | 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](traces/7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 84 | 22 | open |

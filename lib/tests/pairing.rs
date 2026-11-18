@@ -372,12 +372,18 @@ fn onces() -> &'static (PathBuf, PathBuf) {
 }
 
 fn onced(variant: &str) -> equivalence::Outcome {
+    onced_with(variant, true)
+}
+
+/// `shared_callees`: false as `--no-shared-callees` makes it.
+fn onced_with(variant: &str, shared_callees: bool) -> equivalence::Outcome {
     let (old, new) = onces();
     let mut o = equivalence::Options::new(old, new, &format!("app.{variant}.Once#digest"));
     o.engine = Engine::Native;
     o.jbmc = NO_JBMC.into();
     o.assume = Some("x != 12345".into());
-    o.work = Some(tmp(&format!("once-{variant}")));
+    o.shared_callees = shared_callees;
+    o.work = Some(tmp(&format!("once-{variant}{}", if shared_callees { "" } else { "-as-written" })));
     equivalence::run(&o).unwrap()
 }
 
@@ -391,6 +397,17 @@ fn a_call_both_versions_share_is_one_function_of_its_inputs() {
     assert!(o.output.contains("taken as one function of both"), "{}", o.output);
     let stated = o.pair.as_ref().and_then(|p| p.stated.as_ref()).expect("the pair's statement");
     assert!(stated.assumptions.iter().any(|a| a.text.starts_with("each call of app.same.Once.run taken as one function of both versions")), "{:?}", stated.assumptions);
+}
+
+/// `--no-shared-callees` proves each callee as written, as its help says: no call is taken as one function of both
+/// versions, and the outcome states no such assumption.
+#[test]
+fn no_shared_callees_takes_no_call_as_one_function() {
+    jvmcontract::tool_tier!();
+    let o = onced_with("same", false);
+    let native = o.search.as_ref().and_then(|s| s.native.as_ref()).expect("the own checker's account");
+    assert_eq!(native.calls_as_one_function, 0, "{native:?}");
+    assert!(!o.output.contains("taken as one function of both"), "{}", o.output);
 }
 
 /// The countermodels are pairs of versions a JVM tells apart, on one of the first 64 inputs (each version in a JVM
@@ -518,6 +535,47 @@ fn no_call_on_a_receiver_is_one_function_of_two_versions_that_may_differ() {
     jvmcontract::tool_tier!();
     let proved: Vec<&str> = KEYED[1..].iter().copied().filter(|v| keyed_check(v).verdict == Verdict::Verified).collect();
     assert!(proved.is_empty(), "proved to agree, though a JVM tells them apart: {proved:?}");
+}
+
+/// A String result of a call taken as one function of both versions (`bmc/ties.rs`): `name`, a method with a loop
+/// that both versions share, returns a String it builds, or null past 1. In `same` both versions test the result
+/// for null, and are proved to agree with the calls taken. In `nulled` only the previous version does, so the two
+/// differ past 1. A result taken as never null would prove them to agree (checked against the rule before its
+/// result could be null, 2026-11-18).
+const NAMED: [&str; 2] = ["same", "nulled"];
+
+fn named(variant: &str, old: bool) -> String {
+    let check = if old { "" } else { "if (k == 12345) { throw new IllegalArgumentException(); }" };
+    let body = if variant == "nulled" && !old { "return 0;" } else { "return s == null ? 1 : 0;" };
+    format!(
+        "package app.{variant};\npublic final class Named {{\n    public static int digest(int k) {{\n        {check}\n        String s = name(k);\n        {body}\n    }}\n    static String name(int k) {{\n        StringBuilder b = new StringBuilder();\n        for (int i = 0; i < 3; i++) {{\n            b.append('x');\n        }}\n        return k > 1 ? null : b.toString();\n    }}\n}}\n"
+    )
+}
+
+fn named_check(variant: &str) -> equivalence::Outcome {
+    static NAMEDS: std::sync::OnceLock<(PathBuf, PathBuf)> = std::sync::OnceLock::new();
+    let (old, new) = NAMEDS.get_or_init(|| {
+        let paths: Vec<String> = NAMED.iter().map(|v| format!("app/{v}/Named.java")).collect();
+        let sources = |old: bool| paths.iter().zip(NAMED).map(|(p, v)| (p.as_str(), named(v, old))).collect::<Vec<_>>();
+        (compile("named-old", &sources(true), &[]), compile("named-new", &sources(false), &[]))
+    });
+    let mut o = equivalence::Options::new(old, new, &format!("app.{variant}.Named#digest"));
+    o.engine = Engine::Native;
+    o.jbmc = NO_JBMC.into();
+    o.assume = Some("k != 12345".into());
+    o.work = Some(tmp(&format!("named-{variant}")));
+    equivalence::run(&o).unwrap()
+}
+
+#[test]
+fn a_string_a_call_taken_as_one_function_returns_may_be_null() {
+    jvmcontract::tool_tier!();
+    let same = named_check("same");
+    assert_eq!(same.verdict, Verdict::Verified, "{}", same.output);
+    let native = same.search.as_ref().and_then(|s| s.native.as_ref()).expect("the own checker's account");
+    assert!(native.calls_as_one_function >= 2 && native.calls_related >= 1, "{native:?}");
+    let nulled = named_check("nulled");
+    assert_ne!(nulled.verdict, Verdict::Verified, "the previous version returns 1 past 1 and the new one 0: {}", nulled.output);
 }
 
 /// The countermodels are pairs of versions a JVM tells apart, on one of the first 64 inputs, and `same` is not.

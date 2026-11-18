@@ -70,6 +70,17 @@
 //! ones any. The inputs must have one shape (which references are null, which are one object, each array's type and
 //! cells), or the calls are not related.
 //!
+//! What a run of the callee can show that its inputs' values do not decide is kept out by the code it may have
+//! ([`crate::shared::one_function`]): no comparison of references (the inputs name a String by its content, not by
+//! which object it is), no call that can come back to itself, and no array of a length the inputs give, made by the
+//! code or by a JDK method given a length (a `StackOverflowError` or an `OutOfMemoryError` is not among the
+//! outcomes). A JDK method given an array (`Arrays.fill`, `System.arraycopy`) counts as a store into it. Each array
+//! the code makes has a length known at the call, within what the engine makes as written. A String result is null
+//! or a new String, under bits an earlier call's take where their inputs are equal, and which object it is, is not
+//! computed: a comparison of it by reference ends the path with no verdict. The countermodels are in
+//! `tests/fixtures/function-countermodels` (`lib/tests/function_countermodels.rs`) and `lib/tests/pairing.rs`
+//! (`NAMED`). `--no-shared-callees` takes no call as one function.
+//!
 //! An instance method is taken where nothing can read its receiver after the call: no live local of any frame holds
 //! it (an exception's handler is a way on from the call), no other place on a stack, no static field and no other
 //! object. What the call leaves in the receiver is then no part of what the caller sees, and is not computed. bcrypt's
@@ -471,7 +482,7 @@ impl Engine<'_> {
         if !self.calls_as_one_function || self.pure.is_some() || caller == crate::pairing::CLASS || member.name == "<init>" {
             return None;
         }
-        let previous = self.previous.clone()?;
+        let previous = self.previous.clone().filter(|p| p.calls_as_one_function)?;
         let numeric = |t: &Type| matches!(t, Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long);
         let array_result = matches!(&descriptor.ret, Type::Array(e) if numeric(e));
         let result_type = numeric(&descriptor.ret) || descriptor.ret == Type::Void || descriptor.ret == Type::Object("java/lang/String".into()) || array_result;
@@ -500,6 +511,11 @@ impl Engine<'_> {
             _ => None,
         };
         if array_result && result_length.is_none() {
+            return None;
+        }
+        // Each array the code makes has a length known here, and one the engine would make as written: else the
+        // call's outcome may be an `OutOfMemoryError`, which is not among the bits.
+        if !one.allocations.iter().all(|l| self.length_value(path, l).is_some_and(|n| n <= 1 << 16)) {
             return None;
         }
         let (function, uses) = self.code_key(&class, &member.name, &member.descriptor, &previous)?;
@@ -637,10 +653,14 @@ impl Engine<'_> {
                 path.objects.push(Obj { array: Some(Array { element: (**element).clone(), length, cells, refs: Vec::new() }), ..Obj::new(&class) });
                 Some(Val::R(Some(path.objects.len() - 1)))
             }
+            // A String: null, or a new String whose content is not computed, and an earlier call's wherever their
+            // inputs are equal. Which object it is is not computed either: a comparison of it by reference ends the
+            // path with no verdict ([`Engine::same_lit`]).
             Type::Object(_) => {
                 let o = self.alloc(path, "java/lang/String");
                 path.objects[o].limit = Some(ONE_FUNCTION_RESULT.to_string());
-                let mut v = Val::R(Some(o));
+                let null = self.b.fresh(1)[0];
+                let mut v = choose(&mut self.b, null, &Val::R(None), &Val::R(Some(o))).unwrap_or(Val::R(Some(o)));
                 for (same, c) in earlier.iter().rev() {
                     v = c.result.as_ref().and_then(|theirs| choose(&mut self.b, *same, theirs, &v)).unwrap_or(v);
                 }

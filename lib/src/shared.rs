@@ -697,8 +697,9 @@ pub(crate) struct OneFunction {
     /// The exception classes a call may end with, by internal name: the JDK's that its code makes, and those the JVM
     /// and the JDK methods it may call throw ([`ONE_FUNCTION_THROWN`]).
     pub throws: Vec<String>,
-    /// Whether its code stores into an array: then every array a call reaches through its arguments, its receiver
-    /// and the static fields it takes holds what the call left, which is part of its outcome.
+    /// Whether its code stores into an array, itself or through a JDK method it gives an array (`Arrays.fill`,
+    /// `System.arraycopy`, `String.getBytes(int, int, byte[], int)`): then every array a call reaches through its
+    /// arguments, its receiver and the static fields it takes holds what the call left, which is part of its outcome.
     pub writes_arrays: bool,
     /// The static fields, by declaring class and name, whose value its code may take other than to `clone` it at
     /// once: the only ones of which an array it reads may be the very object it stores into. A static it never
@@ -711,6 +712,11 @@ pub(crate) struct OneFunction {
     /// Of such an array, its length as the code computes it, where that is constants and the lengths of the arrays
     /// static fields hold: bcrypt's `crypt_raw` returns `new byte[cdata.length * 4]`, `cdata` a copy of a table.
     pub result_length: Option<Length>,
+    /// The length of each array its code makes, as [`Straight`] reads it: the caller takes the call only where each
+    /// is a number it knows, and none is past what the engine makes as written. An array of a length the inputs
+    /// give is refused here, since what a JVM does with one (an `OutOfMemoryError` for `new long[k]` at a large
+    /// `k`) is not among the outcomes.
+    pub allocations: Vec<Length>,
 }
 
 /// A length a method computes from constants and the lengths of the arrays static fields hold (by declaring class
@@ -723,7 +729,11 @@ pub(crate) enum Length {
     Op(ArithOp, Box<Length>, Box<Length>),
 }
 
-/// What the JVM and the JDK methods [`one_function`] lets a callee call may throw: a superset, which is sound.
+/// What the JVM and the JDK methods [`one_function`] lets a callee call may throw: a superset of what the code can
+/// decide, which is sound. An `Error` the code decides is refused instead: a `StackOverflowError` of a recursion, an
+/// `OutOfMemoryError` of an array of a length the inputs give, or of a JDK method given a length
+/// ([`ONE_FUNCTION_SIZED`]). What is left is the JVM's own limits, a heap or a stack already all but full, which no
+/// check models anywhere.
 const ONE_FUNCTION_THROWN: &[&str] = &[
     "java/lang/NullPointerException",
     "java/lang/ArrayIndexOutOfBoundsException",
@@ -757,6 +767,16 @@ const ONE_FUNCTION_JDK: &[(&str, &[&str])] = &[
     ("java/security/MessageDigest", &["isEqual"]),
 ];
 
+/// The JDK methods of [`ONE_FUNCTION_JDK`] that make an array or a builder's room of a length they are given as a
+/// number, by class, name and descriptor: refused in a callee taken as one function, since a large length is an
+/// `OutOfMemoryError` the outcome does not hold.
+const ONE_FUNCTION_SIZED: &[(&str, &str, &str)] = &[
+    ("java/lang/StringBuilder", "<init>", "(I)V"),
+    ("java/lang/StringBuffer", "<init>", "(I)V"),
+    ("java/lang/StringBuilder", "setLength", "(I)V"),
+    ("java/lang/StringBuffer", "setLength", "(I)V"),
+];
+
 /// Whether a call of `root` (a static method, or an instance method whose receiver the caller shows no one reads
 /// after the call) may be taken as one function of both versions, by its code: what it may throw, whether it
 /// writes arrays and which static fields it takes, or why not. The code must be closed ([`reach`]), contain a loop (a callee
@@ -767,6 +787,14 @@ const ONE_FUNCTION_JDK: &[(&str, &[&str])] = &[
 /// the objects it makes, and on nothing a run could make otherwise: the same code on the same values gives the same
 /// outcome. The caller checks the rest at the call: the arguments' and the static fields' kinds, and that those
 /// classes are initialized.
+///
+/// What a run of the code can show that its inputs' values do not decide is refused, each shown by a pair of
+/// `tests/fixtures/function-countermodels`: a comparison of references (`if_acmp`), since the inputs name a String
+/// by its content and not by which object it is, and two calls may return one String or two; a call that can come
+/// back to itself (a `StackOverflowError`); an array of a length [`Straight`] does not read from constants and
+/// static fields, or a JDK method given a length ([`ONE_FUNCTION_SIZED`]) or a copy's length (`Arrays.copyOf`,
+/// `copyOfRange`) as a number (an `OutOfMemoryError`). A JDK method given an array may write it, so it counts as a
+/// store into an array.
 pub(crate) fn one_function(cp: &ClassPath, root: &MemberRef) -> Result<OneFunction, String> {
     let reached = reach(cp, root);
     if !reached.closed {
@@ -775,6 +803,13 @@ pub(crate) fn one_function(cp: &ClassPath, root: &MemberRef) -> Result<OneFuncti
     let mut throws: BTreeSet<String> = ONE_FUNCTION_THROWN.iter().map(|s| s.to_string()).collect();
     let (mut writes_arrays, mut looped) = (false, false);
     let mut taken_statics = BTreeSet::new();
+    let mut allocations = Vec::new();
+    // The calls among the application's methods, by the class that declares each, for the recursion check below.
+    let mut calls: BTreeMap<MemberRef, BTreeSet<MemberRef>> = BTreeMap::new();
+    let declared = |m: &MemberRef| match cp.find_method(&m.owner, &m.name, &m.descriptor) {
+        Some((class, _)) => MemberRef::new(&class.name, &m.name, &m.descriptor),
+        None => m.clone(),
+    };
     for (m, _) in &reached.methods {
         if !cp.is_application(&m.owner) {
             continue;
@@ -782,14 +817,26 @@ pub(crate) fn one_function(cp: &ClassPath, root: &MemberRef) -> Result<OneFuncti
         let Some((class, method)) = cp.find_method(&m.owner, &m.name, &m.descriptor) else { return Err(format!("{m:?} does not load")) };
         let Some(code) = &method.code else { continue };
         let insns = code.instructions().map_err(|e| e.to_string())?;
+        let mut targets: HashSet<u32> = insns.iter().flat_map(|(_, insn)| insn.targets()).collect();
+        targets.extend(code.exception_table.iter().map(|h| u32::from(h.handler_pc)));
+        let descriptor = method.parsed_descriptor().map_err(|e| e.to_string())?;
+        let parameters = descriptor.params.iter().map(|t| if matches!(t, Type::Long | Type::Double) { 2 } else { 1 }).sum::<usize>() + usize::from(!method.is_static());
+        let straight = Straight { cp, class: &class, insns: &insns, targets: &targets, parameters };
+        let caller = declared(m);
         for (at, (pc, insn)) in insns.iter().enumerate() {
             let (pc, insn) = (*pc, insn.clone());
             let back = |target: &u32| *target <= pc;
             match &insn {
-                Insn::If(_, t) | Insn::IfICmp(_, t) | Insn::IfACmp(_, t) | Insn::IfNull(t) | Insn::IfNonNull(t) | Insn::Goto(t) if back(t) => looped = true,
+                Insn::IfACmp(..) => return Err(format!("{}.{} compares references by identity (==), which the inputs, Strings by their content, do not decide", m.owner, m.name)),
+                Insn::If(_, t) | Insn::IfICmp(_, t) | Insn::IfNull(t) | Insn::IfNonNull(t) | Insn::Goto(t) if back(t) => looped = true,
                 Insn::TableSwitch { default, targets, .. } if back(default) || targets.iter().any(back) => looped = true,
                 Insn::LookupSwitch { default, pairs } if back(default) || pairs.iter().any(|(_, t)| back(t)) => looped = true,
                 Insn::ArrayStore(_) => writes_arrays = true,
+                Insn::NewArray(_) | Insn::ANewArray(_) => match at.checked_sub(1).and_then(|i| straight.int(i, 0)) {
+                    Some((length, _)) => allocations.push(length),
+                    None => return Err(format!("{}.{} makes an array of a length its inputs may give", m.owner, m.name)),
+                },
+                Insn::MultiANewArray(..) => return Err(format!("{}.{} makes an array of arrays", m.owner, m.name)),
                 Insn::PutStatic(_) if m.name != "<clinit>" => return Err(format!("{}.{} writes a static field", m.owner, m.name)),
                 Insn::GetStatic(i) => {
                     let field = class.pool.member(*i).map_err(|e| e.to_string())?;
@@ -825,7 +872,17 @@ pub(crate) fn one_function(cp: &ClassPath, root: &MemberRef) -> Result<OneFuncti
                 Insn::InvokeStatic(i) | Insn::InvokeSpecial(i) | Insn::InvokeVirtual(i) | Insn::InvokeInterface(i) => {
                     let callee = class.pool.member(*i).map_err(|e| e.to_string())?;
                     if cp.is_application(&callee.owner) {
+                        calls.entry(caller.clone()).or_default().insert(declared(&callee));
                         continue;
+                    }
+                    let sized = ONE_FUNCTION_SIZED.iter().any(|(owner, name, descriptor)| *owner == callee.owner && *name == callee.name && *descriptor == callee.descriptor)
+                        || callee.owner == "java/util/Arrays" && callee.name.starts_with("copyOf");
+                    if sized {
+                        return Err(format!("{}.{} calls {}.{} with a length its inputs may give", m.owner, m.name, callee.owner, callee.name));
+                    }
+                    // A JDK method given an array may write it, as one given an Object may (`System.arraycopy`).
+                    if callee.descriptor.split(')').next().is_some_and(|params| params.contains('[') || params.contains("Ljava/lang/Object;")) && !callee.owner.starts_with('[') {
+                        writes_arrays = true;
                     }
                     let listed = ONE_FUNCTION_JDK.iter().any(|(owner, names)| *owner == callee.owner && names.contains(&callee.name.as_str()));
                     let clone = callee.owner.starts_with('[') && callee.name == "clone";
@@ -841,8 +898,33 @@ pub(crate) fn one_function(cp: &ClassPath, root: &MemberRef) -> Result<OneFuncti
     if !looped {
         return Err("its code has no loop".into());
     }
+    if let Some(m) = recursive(&calls) {
+        return Err(format!("{}.{} can call itself", m.owner, m.name));
+    }
     let (returns_made, result_length) = returns_made(cp, root).unwrap_or((false, None));
-    Ok(OneFunction { throws: throws.into_iter().collect(), writes_arrays, taken_statics, returns_made, result_length })
+    Ok(OneFunction { throws: throws.into_iter().collect(), writes_arrays, taken_statics, returns_made, result_length, allocations })
+}
+
+/// A method on a cycle of `calls` (each method to the ones it calls), if there is one.
+fn recursive(calls: &BTreeMap<MemberRef, BTreeSet<MemberRef>>) -> Option<MemberRef> {
+    // Depth first, each method white (absent), grey (on the stack: false) or black (done: true).
+    fn visit<'a>(m: &'a MemberRef, calls: &'a BTreeMap<MemberRef, BTreeSet<MemberRef>>, state: &mut BTreeMap<&'a MemberRef, bool>) -> Option<MemberRef> {
+        match state.get(m) {
+            Some(false) => return Some(m.clone()),
+            Some(true) => return None,
+            None => {}
+        }
+        state.insert(m, false);
+        for callee in calls.get(m).into_iter().flatten() {
+            if let Some(found) = visit(callee, calls, state) {
+                return Some(found);
+            }
+        }
+        state.insert(m, true);
+        None
+    }
+    let mut state = BTreeMap::new();
+    calls.keys().find_map(|m| visit(m, calls, &mut state))
 }
 
 /// Whether `root` returns an array of numbers it made: every `areturn` follows an `aload` of a local that is no

@@ -3192,6 +3192,16 @@ impl<'a> Engine<'a> {
         let mut pairs = Vec::new();
         for (g, t) in &xs {
             for (h, u) in &ys {
+                if let (Some(t), Some(u)) = (t, u) {
+                    // Which object a String a call taken as one function returned is, is not computed ([`ties`]):
+                    // two calls on equal inputs may return one object or two, and a literal is one object. A
+                    // later call on equal inputs holds the earlier one's very value, so not even one reference
+                    // compared with itself is known to be one object.
+                    let opaque = |o: usize| path.objects[o].limit.as_deref() == Some(ties::ONE_FUNCTION_RESULT);
+                    if (opaque(*t) || opaque(*u)) && self.b.and(*g, *h) != FALSE {
+                        return unsupported("a comparison by reference (==) of a String a call taken as one function of both versions returned (lib/src/bmc/ties.rs): which object it is, is not computed");
+                    }
+                }
                 if t == u {
                     pairs.push(self.b.and(*g, *h));
                 } else if let (Some(t), Some(u)) = (t, u) {
