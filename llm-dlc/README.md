@@ -15,6 +15,8 @@ llm-dlc/
   README.md                         this file: the procedure, and an index of sessions
   specification.md                  the specification: identifiers, invariants, storage, redaction
   runtime.md                        runtime mode: a released copy on a user's machine, where none of the tracing applies
+  operating-notes.md                rules of practice learned in earlier runs, each with its reason; CLAUDE.md points
+                                    at it, so every agent reads it, whichever client runs it
   performance.md                    where sync.py's time goes, measured, and why it stays in Python for now
   index.json                        every session and the commits it made (generated)
   pricing.json                      list prices per model, written by hand, used for the metrics

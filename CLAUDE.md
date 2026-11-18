@@ -48,3 +48,9 @@ Every test, Rust and Python, has a cost tier, listed in `lib/tests/costs.json` (
 - Put what you learn about one example in that example's `notes` in its `example.json`, not in a shared README. Duplicating context there is fine: examples are often read alone.
 - Shared pages (`examples/README.md`, `examples/approaches.md`, the apps' and models' READMEs, `lib/README.md`) describe what holds for many examples, and point at examples by tag or number rather than narrating them. A new model configuration is described in its model's README.
 - Tag a new example with at least one domain and one defect tag; add to the vocabulary only when nothing fits. `python3 examples/tools/build.py --render-only NNN` rewrites a page and the router without running anything.
+
+## Operating notes
+
+- [`llm-dlc/operating-notes.md`](llm-dlc/operating-notes.md) holds the rules of practice learned in earlier runs, each with its reason. Read it before a merge, a default test run, a build made apart from the checkout, a fetch from outside, or work in a fresh jj workspace.
+- Keep temporary files off `/tmp`: on the machine the loops run on it is memory with a quota per user, and when it fills, commands lose their output. Set `TMPDIR` to a folder under `~/.cache/in-the-loop/`, never one inside the checkout, and leave what is already in `/tmp` to the user.
+- A rule that another agent would need goes into this file or the operating notes, not only into a client's own memory (Claude Code's auto-memory, which Codex does not read and a fresh workspace does not have). A client's memory is for that client's conveniences and for where its own work stands.
