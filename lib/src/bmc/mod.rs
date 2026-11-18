@@ -2519,10 +2519,6 @@ impl<'a> Engine<'a> {
         if into.summarized != other.summarized {
             into.summarized = Rc::new(into.summarized.intersection(&other.summarized).cloned().collect());
         }
-        if !Rc::ptr_eq(&into.calls, &other.calls) {
-            let both: std::collections::BTreeSet<u64> = other.calls.iter().map(|c| c.id).collect();
-            into.calls = Rc::new(into.calls.iter().filter(|c| both.contains(&c.id)).cloned().collect());
-        }
         let prefix = into.cond.iter().zip(&other.cond).take_while(|(x, y)| x == y).count();
         let common: Vec<Lit> = into.cond[prefix..].iter().copied().filter(|l| other.cond[prefix..].contains(l)).collect();
         let rest_into: Vec<Lit> = into.cond[prefix..].iter().copied().filter(|l| !common.contains(l)).collect();
@@ -2534,6 +2530,23 @@ impl<'a> Engine<'a> {
         into.cond.extend(common);
         if either != TRUE {
             into.cond.push(either);
+        }
+        // The calls both paths made ([`ties::Call`]), made before they parted, so alike but for a String result's
+        // number: each path numbers its objects as its state reaches them, and where the two name different
+        // objects the merged record takes this path's where it is taken and the other's elsewhere.
+        if !Rc::ptr_eq(&into.calls, &other.calls) {
+            let theirs: BTreeMap<u64, &ties::Call> = other.calls.iter().map(|c| (c.id, c)).collect();
+            let mut calls = Vec::with_capacity(into.calls.len());
+            for c in into.calls.iter() {
+                let Some(d) = theirs.get(&c.id) else { continue };
+                let mut c = c.clone();
+                c.result = match (&c.result, &d.result) {
+                    (Some(x), Some(y)) => choose(&mut self.b, takes_into, x, y),
+                    _ => None,
+                };
+                calls.push(c);
+            }
+            into.calls = Rc::new(calls);
         }
         let choose = |b: &mut Blaster, x: &mut Val, y: &Val| {
             if let Some(v) = choose(b, takes_into, x, y) {

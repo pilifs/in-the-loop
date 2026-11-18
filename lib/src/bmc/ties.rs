@@ -68,14 +68,22 @@
 //! cells of each array and String, each number; an array whose cells hold any values by the name of its content),
 //! and new bits elsewhere: two calls are related by congruence, so that equal inputs give equal outcomes and unequal
 //! ones any. The inputs must have one shape (which references are null, which are one object, each array's type and
-//! cells), or the calls are not related.
+//! cells), or the calls are not related. The new bits are named by the inputs as formulas, so two calls on the same
+//! formulas end alike even where a merge let go of the record that relates them ([`Engine::absorb`] keeps only the
+//! calls both paths made). A record holds an array result's cells as the call returned them ([`Call`]): a later
+//! related call takes those, not what the array holds when it is made, which the caller may have written since
+//! (`stale` in `tests/fixtures/record-countermodels`, I028). A merge chooses a String result by its guard where the
+//! two paths name different objects by it.
 //!
 //! What a run of the callee can show that its inputs' values do not decide is kept out by the code it may have
 //! ([`crate::shared::one_function`]): no comparison of references (the inputs name a String by its content, not by
 //! which object it is), no call that can come back to itself, and no array of a length the inputs give, made by the
 //! code or by a JDK method given a length (a `StackOverflowError` or an `OutOfMemoryError` is not among the
-//! outcomes). A JDK method given an array (`Arrays.fill`, `System.arraycopy`) counts as a store into it. Each array
-//! the code makes has a length known at the call, within what the engine makes as written. A String result is null
+//! outcomes). Nor anything that lets a loop keep what each round makes past any heap: an array of references, an
+//! object of the application's own class, a String made longer (`append`, `insert`, `concat`, `a + b`); an exception
+//! given a cause is no sealed argument, so the reach refuses it (`tests/fixtures/allocation-countermodels` and `KEPT`
+//! in `lib/tests/pairing.rs`, I029). A JDK method given an array (`Arrays.fill`, `System.arraycopy`) counts as a store
+//! into it. Each array the code makes has a length known at the call, within what the engine makes as written. A String result is null
 //! or a new String, under bits an earlier call's take where their inputs are equal, and which object it is, is not
 //! computed: a comparison of it by reference ends the path with no verdict. The countermodels are in
 //! `tests/fixtures/function-countermodels` (`lib/tests/function_countermodels.rs`) and `lib/tests/pairing.rs`
@@ -114,6 +122,9 @@ const WRITTEN: i64 = 4;
 const READ: i64 = 5;
 /// What a call taken as one function wrote into an array whose cells hold any values, and the cells it returned.
 const RESULT: i64 = 6;
+/// The first number of a place under a call's key ([`Ties::bits`]) for what it ended with: whether it threw, which
+/// class, a number it returned, whether a String it returned is null, and the cells it left in each array it reached.
+const OUTCOME: i64 = 7;
 
 /// The keys met so far and the bits each tied place was given.
 #[derive(Default)]
@@ -155,8 +166,12 @@ pub(super) struct Call {
     /// One bit: whether it threw; and the index of the class it threw.
     threw: Bits,
     which: Bits,
-    /// What it returned, if anything.
+    /// What it returned, if anything: a String by its object's number, which a merge chooses by its guard where the
+    /// two paths name different objects ([`super::Engine::absorb`]).
     pub(super) result: Option<Val>,
+    /// An array result's cells as the call returned them. A later related call takes these, not the cells the
+    /// object holds when it is made, which the caller may have written since.
+    returned: Vec<Bits>,
     /// The cells of each array it reached, after it, in the order its inputs reach them.
     written: Vec<Vec<Bits>>,
 }
@@ -165,7 +180,7 @@ pub(super) struct Call {
 impl Call {
     /// A record of a call that returned `result`, for the tests of what keeps it ([`super::collect`]).
     pub(super) fn returning(id: u64, result: Val) -> Call {
-        Call { id, function: 0, shape: Vec::new(), inputs: Vec::new(), threw: vec![FALSE], which: vec![FALSE], result: Some(result), written: Vec::new() }
+        Call { id, function: 0, shape: Vec::new(), inputs: Vec::new(), threw: vec![FALSE], which: vec![FALSE], result: Some(result), returned: Vec::new(), written: Vec::new() }
     }
 }
 
@@ -582,14 +597,6 @@ impl Engine<'_> {
         }
         // The earlier calls of the same code with inputs of the same shape, each with whether its inputs are these.
         let earlier: Vec<(Lit, Call)> = path.calls.iter().filter(|c| c.function == function && c.shape == shape).cloned().collect::<Vec<_>>().into_iter().map(|c| (self.same_inputs(&inputs, &c.inputs), c)).filter(|(same, _)| *same != FALSE).collect();
-        let k = one.throws.len();
-        let width = (usize::BITS - (k.max(2) - 1).leading_zeros()) as usize;
-        let mut threw = self.b.fresh(1);
-        let mut which = self.b.fresh(width);
-        for (same, c) in earlier.iter().rev() {
-            threw = self.b.ite_bits(*same, &c.threw, &threw);
-            which = self.b.ite_bits(*same, &c.which, &which);
-        }
         // The call's inputs as formulas: what names an array result's content, and an array's of any cells it may
         // write.
         let mut key = vec![RESULT];
@@ -610,6 +617,17 @@ impl Engine<'_> {
             }
         }
         let call_key = self.ties.key(key);
+        // What it ended with: bits named by the inputs as formulas, as an array result's cells are, so that two calls
+        // on the same formulas end alike even where a merge let go of the record that relates them; and an earlier
+        // call's wherever their inputs are equal.
+        let k = one.throws.len();
+        let width = (usize::BITS - (k.max(2) - 1).leading_zeros()) as usize;
+        let mut threw = self.ties.bits(&mut self.b, call_key, vec![OUTCOME, 0], 1).0;
+        let mut which = self.ties.bits(&mut self.b, call_key, vec![OUTCOME, 1], width).0;
+        for (same, c) in earlier.iter().rev() {
+            threw = self.b.ite_bits(*same, &c.threw, &threw);
+            which = self.b.ite_bits(*same, &c.which, &which);
+        }
         let mut written = Vec::new();
         if one.writes_arrays {
             for (j, &o) in arrays.iter().enumerate() {
@@ -619,7 +637,7 @@ impl Engine<'_> {
                 }
                 let array = path.objects[o].array.as_ref()?;
                 let w = cell_width(&array.element);
-                let mut cells: Vec<Bits> = (0..array.cells.len()).map(|_| self.b.fresh(w)).collect();
+                let mut cells: Vec<Bits> = (0..array.cells.len()).map(|i| self.ties.bits(&mut self.b, call_key, vec![OUTCOME, 4, j as i64, i as i64], w).0).collect();
                 // Where the inputs are equal, the cells below the length are the earlier call's; the length is
                 // within both arrays' cells, so a cell one has and the other doesn't is past it.
                 for (same, c) in earlier.iter().rev() {
@@ -632,6 +650,7 @@ impl Engine<'_> {
             }
         }
         // From here the call is taken: the path changes.
+        let mut returned = Vec::new();
         let result = match &descriptor.ret {
             Type::Void => None,
             // An array the call made ([`crate::shared::OneFunction::returns_made`]), of the length the code gives
@@ -641,13 +660,15 @@ impl Engine<'_> {
                 let n = result_length?;
                 let width = cell_width(element);
                 let mut cells: Vec<Bits> = (0..n).map(|i| self.ties.bits(&mut self.b, call_key, vec![RESULT, i as i64], width).0).collect();
+                // The earlier call's cells as it returned them: its array may have been written since.
                 for (same, c) in earlier.iter().rev() {
-                    if let Some(theirs) = c.result.as_ref().and_then(|r| match r { Val::R(Some(t)) => path.objects[*t].array.as_ref().filter(|a| a.cells.len() == n).map(|a| a.cells.clone()), _ => None }) {
-                        for (mine, theirs) in cells.iter_mut().zip(&theirs) {
+                    if c.returned.len() == n {
+                        for (mine, theirs) in cells.iter_mut().zip(&c.returned) {
                             *mine = self.b.ite_bits(*same, theirs, mine);
                         }
                     }
                 }
+                returned = cells.clone();
                 let length = self.b.constant(n as i64, 32);
                 let class = descriptor.ret.descriptor();
                 path.objects.push(Obj { array: Some(Array { element: (**element).clone(), length, cells, refs: Vec::new() }), ..Obj::new(&class) });
@@ -659,7 +680,7 @@ impl Engine<'_> {
             Type::Object(_) => {
                 let o = self.alloc(path, "java/lang/String");
                 path.objects[o].limit = Some(ONE_FUNCTION_RESULT.to_string());
-                let null = self.b.fresh(1)[0];
+                let null = self.ties.bits(&mut self.b, call_key, vec![OUTCOME, 3], 1).0[0];
                 let mut v = choose(&mut self.b, null, &Val::R(None), &Val::R(Some(o))).unwrap_or(Val::R(Some(o)));
                 for (same, c) in earlier.iter().rev() {
                     v = c.result.as_ref().and_then(|theirs| choose(&mut self.b, *same, theirs, &v)).unwrap_or(v);
@@ -667,7 +688,7 @@ impl Engine<'_> {
                 Some(v)
             }
             t => {
-                let fresh = self.typed_fresh(t);
+                let fresh = self.typed_fresh(t, call_key);
                 let mut v = if *t == Type::Long { Val::J(fresh) } else { Val::I(fresh) };
                 for (same, c) in earlier.iter().rev() {
                     v = c.result.as_ref().and_then(|theirs| choose(&mut self.b, *same, theirs, &v)).unwrap_or(v);
@@ -681,7 +702,7 @@ impl Engine<'_> {
         if !earlier.is_empty() {
             self.ties.calls_related += 1;
         }
-        let call = Call { id: self.ties.last_call, function, shape, inputs, threw: threw.clone(), which: which.clone(), result: result.clone(), written: written.clone() };
+        let call = Call { id: self.ties.last_call, function, shape, inputs, threw: threw.clone(), which: which.clone(), result: result.clone(), returned, written: written.clone() };
         Rc::make_mut(&mut path.calls).push(call);
         for (j, (&o, cells)) in arrays.iter().zip(written).enumerate() {
             if path.objects[o].unknown {
@@ -859,21 +880,21 @@ impl Engine<'_> {
         self.b.all(&lits)
     }
 
-    /// New bits for a result of the type `t`, within its range as an `int` holds it (a `boolean` is 0 or 1).
-    fn typed_fresh(&mut self, t: &Type) -> Bits {
-        let extend = |mut bits: Bits, signed: bool, to: usize| {
-            let top = if signed { *bits.last().expect("a bit") } else { FALSE };
-            bits.resize(to, top);
-            bits
+    /// The bits of a result of the type `t` under the call's key, within its range as an `int` holds it (a `boolean`
+    /// is 0 or 1).
+    fn typed_fresh(&mut self, t: &Type, call_key: u64) -> Bits {
+        let (width, signed, to) = match t {
+            Type::Boolean => (1, false, 32),
+            Type::Byte => (8, true, 32),
+            Type::Char => (16, false, 32),
+            Type::Short => (16, true, 32),
+            Type::Long => (64, false, 64),
+            _ => (32, false, 32),
         };
-        match t {
-            Type::Boolean => extend(self.b.fresh(1), false, 32),
-            Type::Byte => extend(self.b.fresh(8), true, 32),
-            Type::Char => extend(self.b.fresh(16), false, 32),
-            Type::Short => extend(self.b.fresh(16), true, 32),
-            Type::Long => self.b.fresh(64),
-            _ => self.b.fresh(32),
-        }
+        let mut bits = self.ties.bits(&mut self.b, call_key, vec![OUTCOME, 2], width).0;
+        let top = if signed { *bits.last().expect("a bit") } else { FALSE };
+        bits.resize(to, top);
+        bits
     }
 
     /// A call taken as one function ends: it throws each class of `thrown` where its literal holds, and returns

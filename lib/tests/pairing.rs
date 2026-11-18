@@ -538,7 +538,7 @@ fn no_call_on_a_receiver_is_one_function_of_two_versions_that_may_differ() {
 }
 
 /// A String result of a call taken as one function of both versions (`bmc/ties.rs`): `name`, a method with a loop
-/// that both versions share, returns a String it builds, or null past 1. In `same` both versions test the result
+/// that both versions share, returns a String it makes from an array it fills, or null past 1. In `same` both versions test the result
 /// for null, and are proved to agree with the calls taken. In `nulled` only the previous version does, so the two
 /// differ past 1. A result taken as never null would prove them to agree (checked against the rule before its
 /// result could be null, 2026-11-18).
@@ -548,7 +548,7 @@ fn named(variant: &str, old: bool) -> String {
     let check = if old { "" } else { "if (k == 12345) { throw new IllegalArgumentException(); }" };
     let body = if variant == "nulled" && !old { "return 0;" } else { "return s == null ? 1 : 0;" };
     format!(
-        "package app.{variant};\npublic final class Named {{\n    public static int digest(int k) {{\n        {check}\n        String s = name(k);\n        {body}\n    }}\n    static String name(int k) {{\n        StringBuilder b = new StringBuilder();\n        for (int i = 0; i < 3; i++) {{\n            b.append('x');\n        }}\n        return k > 1 ? null : b.toString();\n    }}\n}}\n"
+        "package app.{variant};\npublic final class Named {{\n    public static int digest(int k) {{\n        {check}\n        String s = name(k);\n        {body}\n    }}\n    static String name(int k) {{\n        char[] c = new char[3];\n        for (int i = 0; i < 3; i++) {{\n            c[i] = 'x';\n        }}\n        return k > 1 ? null : new String(c);\n    }}\n}}\n"
     )
 }
 
@@ -576,6 +576,90 @@ fn a_string_a_call_taken_as_one_function_returns_may_be_null() {
     assert!(native.calls_as_one_function >= 2 && native.calls_related >= 1, "{native:?}");
     let nulled = named_check("nulled");
     assert_ne!(nulled.verdict, Verdict::Verified, "the previous version returns 1 past 1 and the new one 0: {}", nulled.output);
+}
+
+/// What a call taken as one function of both versions (`bmc/ties.rs`) may keep: `keep`, a method both versions
+/// share, runs a loop of `k` rounds, and `digest` answers an `OutOfMemoryError` from it with -1 in the previous
+/// version and -2 in the new one. Each array it makes is of a constant length, at most 65536, so the check at the
+/// call passes. In `same` each round's array is dropped at the end of the round, so no heap runs out and the versions
+/// agree. Each other variant keeps what every round makes, so that a large `k` fills any heap: `rows` in an array of
+/// references, `nodes` in a list of objects of the application's own class, `grown` by `String.concat`, `built` by
+/// `StringBuilder.append`, `joined` by `a + b`, and `chained` as the causes of a chain of exceptions. An
+/// `OutOfMemoryError` is not among the call's outcomes, so the rule would prove each of the first five pairs to agree
+/// without the side condition that refuses it in `shared::one_function` (each switched off in turn, 2026-11-18;
+/// I029). `chained` is refused by the reach, since a `Throwable` given to the JDK is no sealed type.
+const KEPT: [&str; 7] = ["same", "rows", "nodes", "grown", "built", "joined", "chained"];
+
+fn kept(variant: &str, old: bool) -> String {
+    let body = match variant {
+        "rows" => "Object[] kept = new Object[16384];\n        for (int i = 0; i < k && i < 16384; i++) {\n            kept[i] = new long[65536];\n            acc++;\n        }",
+        "nodes" => "Node head = null;\n        for (int i = 0; i < k; i++) {\n            Node n = new Node();\n            n.next = head;\n            n.cells = new long[65536];\n            head = n;\n            acc++;\n        }",
+        "grown" => "String s = \"x\";\n        for (int i = 0; i < k; i++) {\n            s = s.concat(s);\n        }\n        acc = s.length();",
+        "built" => "StringBuilder b = new StringBuilder(\"x\");\n        for (int i = 0; i < k; i++) {\n            b.append(b.toString());\n        }\n        acc = b.length();",
+        "joined" => "String s = \"x\";\n        for (int i = 0; i < k; i++) {\n            s = s + s;\n        }\n        acc = s.length();",
+        "chained" => "RuntimeException e = null;\n        for (int i = 0; i < k; i++) {\n            e = new RuntimeException(\"round\", e);\n            acc++;\n        }",
+        _ => "for (int i = 0; i < k && i < 64; i++) {\n            long[] t = new long[65536];\n            t[i] = i;\n            acc += (int) t[i];\n        }",
+    };
+    format!(
+        "package app.{variant};\npublic final class Kept {{\n    public static int digest(int k) {{\n        try {{\n            return keep(k);\n        }} catch (OutOfMemoryError e) {{\n            return {};\n        }}\n    }}\n    static final class Node {{\n        Node next;\n        long[] cells;\n    }}\n    static int keep(int k) {{\n        int acc = 0;\n        {body}\n        return acc;\n    }}\n}}\n",
+        if old { -1 } else { -2 }
+    )
+}
+
+/// Every variant, the previous versions in one folder and the new ones in another.
+fn kepts() -> &'static (PathBuf, PathBuf) {
+    static KEPTS: std::sync::OnceLock<(PathBuf, PathBuf)> = std::sync::OnceLock::new();
+    KEPTS.get_or_init(|| {
+        let paths: Vec<String> = KEPT.iter().map(|v| format!("app/{v}/Kept.java")).collect();
+        let sources = |old: bool| paths.iter().zip(KEPT).map(|(p, v)| (p.as_str(), kept(v, old))).collect::<Vec<_>>();
+        (compile("kept-old", &sources(true), &[]), compile("kept-new", &sources(false), &[]))
+    })
+}
+
+fn kept_check(variant: &str) -> equivalence::Outcome {
+    let (old, new) = kepts();
+    let mut o = equivalence::Options::new(old, new, &format!("app.{variant}.Kept#digest"));
+    o.engine = Engine::Native;
+    o.jbmc = NO_JBMC.into();
+    o.assume = Some("k >= 0".into());
+    o.work = Some(tmp(&format!("kept-{variant}")));
+    equivalence::run(&o).unwrap()
+}
+
+#[test]
+fn a_call_that_keeps_nothing_a_loop_makes_is_one_function_of_its_inputs() {
+    jvmcontract::tool_tier!();
+    let o = kept_check("same");
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    let native = o.search.as_ref().and_then(|s| s.native.as_ref()).expect("the own checker's account");
+    assert!(native.calls_as_one_function >= 2 && native.calls_related >= 1, "{native:?}");
+}
+
+/// The countermodels are pairs of versions a JVM tells apart at a `k` past what a 32 MiB heap holds (each version
+/// in a JVM of its own), and `same` is not.
+#[test]
+fn each_kept_countermodel_differs_on_a_jvm() {
+    jvmcontract::tool_tier!();
+    let (old, new) = kepts();
+    let runner = "public class Run {\n    public static void main(String[] variants) throws Exception {\n        for (String v : variants) {\n            Object r;\n            try { r = Class.forName(\"app.\" + v + \".Kept\").getMethod(\"digest\", int.class).invoke(null, 1 << 30); }\n            catch (java.lang.reflect.InvocationTargetException e) { r = e.getCause().getClass().getName(); }\n            System.out.println(v + \" \" + r);\n        }\n    }\n}\n";
+    let run_dir = compile("kept-runner", &[("Run.java", runner.to_string())], &[]);
+    let outputs = |version: &Path| {
+        let cp = format!("{}:{}", run_dir.display(), version.display());
+        let out = Command::new("java").args(["-Xmx32m", "-cp", &cp, "Run"]).args(KEPT).output().expect("java runs");
+        assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
+        String::from_utf8_lossy(&out.stdout).lines().map(String::from).collect::<Vec<_>>()
+    };
+    let (before, after) = (outputs(old), outputs(new));
+    for (i, v) in KEPT.iter().enumerate() {
+        assert_eq!(before[i] == after[i], *v == "same", "{v}: {} | {}", before[i], after[i]);
+    }
+}
+
+#[test]
+fn no_call_keeps_what_a_loop_makes_past_its_outcome() {
+    jvmcontract::tool_tier!();
+    let proved: Vec<&str> = KEPT[1..].iter().copied().filter(|v| kept_check(v).verdict == Verdict::Verified).collect();
+    assert!(proved.is_empty(), "proved to agree, though a JVM tells them apart: {proved:?}");
 }
 
 /// The countermodels are pairs of versions a JVM tells apart, on one of the first 64 inputs, and `same` is not.

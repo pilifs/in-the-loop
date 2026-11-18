@@ -662,16 +662,56 @@ relational result needs a new check (the rule's applications recorded in the out
     length (`allocation-countermodels`, `kept`) is left out of a call taken as one function, and the pair is proved.
     It is a soundness defect in this stream's rule, like I028, so the two are taken together next. The fixtures are
     the challenge stream's `orxlmwsv`, to be merged.
-- Next (D036's order, with I028 and I029):
-  1. Merge `orxlmwsv` (the `record-` and `allocation-countermodels`). I028: a related call takes the earlier array
-     result's cells as they were when it returned; `absorb` merges a String result by the merge's guard where the
-     two paths name different objects. I029: refuse what lets a call keep memory a loop decides (an array of
-     references, an object of the application's own class, a String that grows, an exception given a cause), each
-     with a countermodel first. Then the READMEs' tests in `record_countermodels.rs` and
-     `allocation_countermodels.rs`, and capped probes of 287, 307, 289 and 290.
-  2. 288 ends at its wall: the profile is VF-031's next data point. Another cycle comes only from a measured
+- 2026-11-18, I028 and I029 (the one-function rule's soundness; *working formalization* and *accepted claim*
+  unchanged). Merged the challenge stream's `orxlmwsv` (the `record-` and `allocation-countermodels`, and its 288 and
+  289 wrong-implementation notes). Only generated files and two notes lists conflicted, each kept whole. No file of
+  either parent was dropped.
+  - **I028, the record** (`bmc/ties.rs`, `bmc/mod.rs`). Three changes:
+    - A call's record holds an array result's cells as the call returned them (`Call::returned`), and a later related
+      call takes those. `stale` is now a violation. It was proved with the old reading back (a temporary switch,
+      removed).
+    - A merge keeps a call both paths made and chooses its String result by the merge's guard where the two paths
+      name different objects (`absorb`). No countermodel was found that the old merge proved, after two shapes. A
+      misnumbered record needs two opaque Strings merged object by object, which happens only past the merge
+      threshold, and the paths explored before it already give a real witness. The limit is stated in
+      `lib/README.md`.
+    - A call's outcome bits (whether it threw, which class, a number result, a String's null bit, the cells it
+      writes) are now named by its inputs as formulas, as an array result's cells already were. So two calls on the
+      same formulas end alike even where a merge let go of the record relating them. That is what left `swapped`
+      undecided: it is now refuted at its real witness, `k=1`.
+  - **I029, memory a loop keeps** (`shared::one_function`). The rule refuses an array of references, an object of the
+    application's own class, and a String made longer (`StringBuilder`/`StringBuffer` `append` and `insert`,
+    `String.concat`, `a + b`). `kept` now runs as written and is undecided.
+    - Countermodels first: `KEPT` in `lib/tests/pairing.rs`, with `same` (proved, its calls taken) and six that a JVM
+      tells apart on a 32 MiB heap: `rows`, `nodes`, `grown`, `built`, `joined` and `chained`.
+    - With each refusal switched off alone (a temporary switch, removed), exactly its own rows were proved: `rows`,
+      `nodes`, `grown` with `built`, and `joined`.
+    - `chained` (an exception given a cause) was not proved with its own refusal off. The reach already refuses it,
+      since a `Throwable` handed to the JDK is no sealed type, so that refusal was dropped as dead.
+    - `NAMED`'s callee now fills a `char[]` in place of `append`.
+  - **The tests.** The READMEs' checker-side tests are in `lib/tests/record_countermodels.rs` and
+    `allocation_countermodels.rs`, and pass. The inventory is estimated, tagged and linted. `run --changed` passed
+    (26 of 26), `validate_example.py` 287, 288, 289 and 307 pass, and the default run passed after the merge (54 of
+    54). A first default run, with `TMPDIR` inside the checkout, failed `test_claude_setup.py` and
+    `test_performance.py`: their temporary folders then sit below the repository's `CLAUDE.md`. Both pass with
+    `TMPDIR` outside it.
+  - **Capped probes** at the frozen bounds give the verdicts and counts as before:
+    - 287 `preservation`: verified in 104 s (53 paths, 52 calls taken, 48 related);
+    - 307 `preservation`: verified in 80 s (55 paths, 48 taken, 44 related);
+    - 307 `mutant-preservation`: refuted at a non-ASCII password;
+    - 289 and 290 `preservation`: verified (1373 and 573 paths).
+    287's and 307's notes say the accepted answers stand.
+  - **For the challenge stream.** The hand script `callee-countermodels/check.py --rule-landed` expects `same`, `copied`
+    and `parsed` verified. Each of its methods makes a `new Hash()` and appends to a `StringBuilder`, which the rule
+    now refuses, so they run as written. That costs precision, not soundness.
+  - **The volume.** /tmp's tmpfs ran out of this user's quota during the probes: 42 of 53 GB used, most of it not this
+    cycle's. This cycle's probes ran with their work and `TMPDIR` under `lib/target/`, and the tests with `TMPDIR` under `~/.cache`. I removed only my
+    own scratch from this cycle. Clearing /tmp is the user's.
+  - **Inbox.** I028 and I029 are done above. No new item.
+- Next (D036's order):
+  1. 288 ends at its wall: the profile is VF-031's next data point. Another cycle comes only from a measured
      reduction at the frozen bound's comparison. Then `done`.
-  3. I026 (289's probes), if the run still has time for it.
+  2. I026 (289's probes), if the run still has time for it.
 - Status: working
 
 ## Loop settings

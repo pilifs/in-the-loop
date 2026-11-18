@@ -732,8 +732,11 @@ pub(crate) enum Length {
 /// What the JVM and the JDK methods [`one_function`] lets a callee call may throw: a superset of what the code can
 /// decide, which is sound. An `Error` the code decides is refused instead: a `StackOverflowError` of a recursion, an
 /// `OutOfMemoryError` of an array of a length the inputs give, or of a JDK method given a length
-/// ([`ONE_FUNCTION_SIZED`]). What is left is the JVM's own limits, a heap or a stack already all but full, which no
-/// check models anywhere.
+/// ([`ONE_FUNCTION_SIZED`]), or of what a loop keeps. Since the code makes no array of references, no object of the
+/// application's own class and no longer String ([`ONE_FUNCTION_GROWING`]), and the reach refuses an exception given
+/// a cause (a `Throwable` is no sealed type), what a call holds at once is the arrays and Strings its locals, its
+/// receiver's fields and its exceptions' messages hold, each of a length checked at the call. What is left is the
+/// JVM's own limits, a heap or a stack already all but full, which no check models anywhere.
 const ONE_FUNCTION_THROWN: &[&str] = &[
     "java/lang/NullPointerException",
     "java/lang/ArrayIndexOutOfBoundsException",
@@ -753,9 +756,9 @@ const ONE_FUNCTION_THROWN: &[&str] = &[
 /// property; neither is here.
 const ONE_FUNCTION_JDK: &[(&str, &[&str])] = &[
     ("java/lang/Object", &["<init>"]),
-    ("java/lang/String", &["<init>", "length", "isEmpty", "charAt", "equals", "hashCode", "substring", "indexOf", "lastIndexOf", "startsWith", "endsWith", "getBytes", "toString", "toCharArray", "contains", "concat", "valueOf", "compareTo"]),
-    ("java/lang/StringBuilder", &["<init>", "append", "toString", "charAt", "length", "setLength", "setCharAt", "insert", "reverse", "deleteCharAt", "delete"]),
-    ("java/lang/StringBuffer", &["<init>", "append", "toString", "charAt", "length", "setLength", "setCharAt", "insert", "reverse", "deleteCharAt", "delete"]),
+    ("java/lang/String", &["<init>", "length", "isEmpty", "charAt", "equals", "hashCode", "substring", "indexOf", "lastIndexOf", "startsWith", "endsWith", "getBytes", "toString", "toCharArray", "contains", "valueOf", "compareTo"]),
+    ("java/lang/StringBuilder", &["<init>", "toString", "charAt", "length", "setLength", "setCharAt", "reverse", "deleteCharAt", "delete"]),
+    ("java/lang/StringBuffer", &["<init>", "toString", "charAt", "length", "setLength", "setCharAt", "reverse", "deleteCharAt", "delete"]),
     ("java/lang/Integer", &["parseInt", "valueOf", "toString", "intValue", "compare", "max", "min", "sum", "signum", "numberOfLeadingZeros", "numberOfTrailingZeros", "bitCount", "rotateLeft", "rotateRight", "toUnsignedLong", "highestOneBit", "lowestOneBit", "reverse", "reverseBytes", "toHexString", "toBinaryString"]),
     ("java/lang/Long", &["parseLong", "valueOf", "toString", "longValue", "compare", "max", "min", "sum", "signum", "numberOfLeadingZeros", "numberOfTrailingZeros", "bitCount", "rotateLeft", "rotateRight", "highestOneBit", "lowestOneBit", "reverse", "reverseBytes"]),
     ("java/lang/Character", &["isDigit", "digit", "forDigit", "isLetter", "isLetterOrDigit", "isWhitespace", "isHighSurrogate", "isLowSurrogate", "isSurrogate", "toCodePoint", "valueOf", "charValue"]),
@@ -777,6 +780,18 @@ const ONE_FUNCTION_SIZED: &[(&str, &str, &str)] = &[
     ("java/lang/StringBuffer", "setLength", "(I)V"),
 ];
 
+/// The JDK methods that make a String or a builder's text longer than any it was given, by class and name: refused
+/// in a callee taken as one function, and so not in [`ONE_FUNCTION_JDK`], since a loop of them can grow one past
+/// any heap, an `OutOfMemoryError` the outcome does not hold. A joining of Strings (`a + b`, `StringConcatFactory`)
+/// is refused for the same reason.
+const ONE_FUNCTION_GROWING: &[(&str, &str)] = &[
+    ("java/lang/StringBuilder", "append"),
+    ("java/lang/StringBuilder", "insert"),
+    ("java/lang/StringBuffer", "append"),
+    ("java/lang/StringBuffer", "insert"),
+    ("java/lang/String", "concat"),
+];
+
 /// Whether a call of `root` (a static method, or an instance method whose receiver the caller shows no one reads
 /// after the call) may be taken as one function of both versions, by its code: what it may throw, whether it
 /// writes arrays and which static fields it takes, or why not. The code must be closed ([`reach`]), contain a loop (a callee
@@ -793,8 +808,10 @@ const ONE_FUNCTION_SIZED: &[(&str, &str, &str)] = &[
 /// by its content and not by which object it is, and two calls may return one String or two; a call that can come
 /// back to itself (a `StackOverflowError`); an array of a length [`Straight`] does not read from constants and
 /// static fields, or a JDK method given a length ([`ONE_FUNCTION_SIZED`]) or a copy's length (`Arrays.copyOf`,
-/// `copyOfRange`) as a number (an `OutOfMemoryError`). A JDK method given an array may write it, so it counts as a
-/// store into an array.
+/// `copyOfRange`) as a number (an `OutOfMemoryError`). So is what lets a loop keep what each round makes, past any
+/// heap (an `OutOfMemoryError` too; `tests/fixtures/allocation-countermodels`, and `KEPT` in `tests/pairing.rs`): an
+/// array of references, an object of the application's own class, and a String made longer ([`ONE_FUNCTION_GROWING`]).
+/// A JDK method given an array may write it, so it counts as a store into an array.
 pub(crate) fn one_function(cp: &ClassPath, root: &MemberRef) -> Result<OneFunction, String> {
     let reached = reach(cp, root);
     if !reached.closed {
@@ -832,7 +849,8 @@ pub(crate) fn one_function(cp: &ClassPath, root: &MemberRef) -> Result<OneFuncti
                 Insn::TableSwitch { default, targets, .. } if back(default) || targets.iter().any(back) => looped = true,
                 Insn::LookupSwitch { default, pairs } if back(default) || pairs.iter().any(|(_, t)| back(t)) => looped = true,
                 Insn::ArrayStore(_) => writes_arrays = true,
-                Insn::NewArray(_) | Insn::ANewArray(_) => match at.checked_sub(1).and_then(|i| straight.int(i, 0)) {
+                Insn::ANewArray(_) => return Err(format!("{}.{} makes an array of references, whose cells can keep what a loop makes", m.owner, m.name)),
+                Insn::NewArray(_) => match at.checked_sub(1).and_then(|i| straight.int(i, 0)) {
                     Some((length, _)) => allocations.push(length),
                     None => return Err(format!("{}.{} makes an array of a length its inputs may give", m.owner, m.name)),
                 },
@@ -860,6 +878,8 @@ pub(crate) fn one_function(cp: &ClassPath, root: &MemberRef) -> Result<OneFuncti
                             return Err(format!("{}.{} makes an exception of its own class, {made}", m.owner, m.name));
                         }
                         throws.insert(made);
+                    } else if cp.is_application(&made) {
+                        return Err(format!("{}.{} makes an object of the application's own class, {made}, whose fields can keep what a loop makes", m.owner, m.name));
                     }
                 }
                 Insn::InvokeDynamic(i) => {
@@ -868,6 +888,7 @@ pub(crate) fn one_function(cp: &ClassPath, root: &MemberRef) -> Result<OneFuncti
                     if bootstraps.get(bootstrap_index as usize).is_none_or(|b| b.method.member.owner != "java/lang/invoke/StringConcatFactory") {
                         return Err(format!("{}.{} makes a lambda or another dynamic call", m.owner, m.name));
                     }
+                    return Err(format!("{}.{} joins Strings (`a + b`), which a loop can grow past any heap", m.owner, m.name));
                 }
                 Insn::InvokeStatic(i) | Insn::InvokeSpecial(i) | Insn::InvokeVirtual(i) | Insn::InvokeInterface(i) => {
                     let callee = class.pool.member(*i).map_err(|e| e.to_string())?;
@@ -884,9 +905,12 @@ pub(crate) fn one_function(cp: &ClassPath, root: &MemberRef) -> Result<OneFuncti
                     if callee.descriptor.split(')').next().is_some_and(|params| params.contains('[') || params.contains("Ljava/lang/Object;")) && !callee.owner.starts_with('[') {
                         writes_arrays = true;
                     }
+                    if ONE_FUNCTION_GROWING.iter().any(|(owner, name)| *owner == callee.owner && *name == callee.name) {
+                        return Err(format!("{}.{} calls {}.{}, which makes a String longer than it was, so that a loop can grow one past any heap", m.owner, m.name, callee.owner, callee.name));
+                    }
+                    let exception = callee.name == "<init>" && cp.is_subtype(&callee.owner, "java/lang/Throwable");
                     let listed = ONE_FUNCTION_JDK.iter().any(|(owner, names)| *owner == callee.owner && names.contains(&callee.name.as_str()));
                     let clone = callee.owner.starts_with('[') && callee.name == "clone";
-                    let exception = callee.name == "<init>" && cp.is_subtype(&callee.owner, "java/lang/Throwable");
                     if !(listed || clone || exception) {
                         return Err(format!("{}.{} calls {}.{}, which may read state of the JDK's a run can change", m.owner, m.name, callee.owner, callee.name));
                     }
