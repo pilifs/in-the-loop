@@ -153,23 +153,18 @@ def command(case, engine, mode, classes, work, options, staging=None):
     return cmd + common
 
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+from process_usage import wait as wait_measured
+
+
 def measure(cmd, limit):
     """Runs a command, returning its exit code, output, wall and CPU seconds, and the peak resident memory of it and
     every process it waited for (JBMC, the JVM it tests contracts on) in MB."""
     with tempfile.TemporaryFile() as out, tempfile.TemporaryFile() as err:
         start = time.monotonic()
         process = subprocess.Popen(cmd, stdout=out, stderr=err)
-        killed = False
-        while True:
-            pid, status, usage = os.wait4(process.pid, os.WNOHANG)
-            if pid:
-                break
-            if time.monotonic() - start > limit and not killed:
-                process.kill()
-                killed = True
-            time.sleep(0.01)
+        killed, usage = wait_measured(process, limit)
         wall = time.monotonic() - start
-        process.returncode = os.waitstatus_to_exitcode(status)
         out.seek(0)
         err.seek(0)
         return {

@@ -105,7 +105,11 @@ class Execution:
                         snapshot[name]["excerpt"] = data[:4096].decode(errors="replace")
         save(self.directory / "checker.json", snapshot)
         candidate = any(o.get("counterexample") for o in outcomes)
-        self.stage("candidate-recorded" if candidate else "checker-returned", checkerEvidence="checker.json",
+        exhausted = record.status == "timed-out" or any(
+            o.get("verdict") == "unverifiable" and ((o.get("search") or {}).get("runs") or [{}])[-1].get("ending") == "timeout"
+            for o in outcomes)
+        self.stage("candidate-recorded" if candidate else "checker-returned", budgetExhausted=exhausted,
+                   usage=record.identities.get("usage"), checkerEvidence="checker.json",
                    checkerStatus=record.status, checkerSeconds=record.seconds,
                    missing=["independent witness qualification", "receipt"] if candidate else ["receipt"])
         return candidate
@@ -117,5 +121,10 @@ class Execution:
         return result
 
     def finish(self, receipt):
+        result = self.directory.parents[1] / receipt.attempt / "result.json"
+        stored = json.loads(result.read_text()) if result.is_file() else {}
+        problem = (stored.get("evidence") or {}).get("problem") or (
+            ((stored.get("attempt") or {}).get("execution") or {}).get("reason"))
         self.stage("receipt-published", status=receipt.execution, receipt=receipt.path,
-                   preparedClaim=receipt.claim, missing=[], endedAt=now().isoformat())
+                   preparedClaim=receipt.claim, firstBlocker=problem, missing=["eligible conclusion"] if problem else [],
+                   endedAt=now().isoformat())

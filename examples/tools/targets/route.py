@@ -70,7 +70,7 @@ def prepare_revision(plan, revision, directory, shared):
     return prepared
 
 
-def run(folder, example, target, task, workdir, *, retry_of=None, interrupt_after_candidate=False, shared=None):
+def run(folder, example, target, task, workdir, *, retry_of=None, interrupt_after_candidate=False, shared=None, checker_seconds=None):
     """One attempt at the task: plan, prepare each revision, run the controls and the verifier, ingest. Returns the
     Receipt, or the first Unsupported (a preparation that fails is returned as one, with its stage and diagnostic)."""
     result = resolve(folder, example, target, task)
@@ -78,7 +78,10 @@ def run(folder, example, target, task, workdir, *, retry_of=None, interrupt_afte
         return result
     p = result
     out = Path(folder) / p.outputs.get("receipts", f"receipts/{task}")
-    execution = executions.Execution.start(out, p, runtime.VERIFIER_TIMEOUT, retry_of)
+    timeout = runtime.VERIFIER_TIMEOUT if checker_seconds is None else checker_seconds
+    if not isinstance(timeout, int) or timeout <= 0:
+        return Unsupported("run-verifier", interfaces.RUNTIME, "the checker budget must be a positive number of seconds", stage="budget")
+    execution = executions.Execution.start(out, p, timeout, retry_of)
     if isinstance(execution, Unsupported):
         return execution
     workdir = Path(workdir) / execution.state["id"]
@@ -106,7 +109,7 @@ def run(folder, example, target, task, workdir, *, retry_of=None, interrupt_afte
             return execution.refuse(Unsupported("run-controls", interfaces.RUNTIME, problem, stage="adapter-correspondence"))
         execution.stage("adapter-correspondence", correspondenceEvidence="correspondence.json")
     if p.kind != "replay":
-        verifier = runtime.run_verifier(p, prepared, workdir / "verifier", before_launch=execution.launching)
+        verifier = runtime.run_verifier(p, prepared, workdir / "verifier", before_launch=execution.launching, timeout=timeout)
         if isinstance(verifier, Unsupported):
             return execution.refuse(verifier)
         candidate = execution.checked(verifier)

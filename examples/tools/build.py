@@ -68,6 +68,11 @@ import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))  # the pipeline imports build.py by its path
+from checker_output import (VERDICT_LABEL, advice_record, camel, conclude_outcome, equivalence_counterexamples,
+                            execution_status, file_digest, is_outcome, json_outcome, json_outcomes, last_line,
+                            no_verdict_label, property_assertion, property_counterexample, property_headline,
+                            property_record, search_record, stated_record, typed_call, violation, witness_record,
+                            without_root)
 import result_format  # noqa: E402  the stored result's format, and the flat view everything here reads
 from targets import route as target_route, sidecar, workflow as target_workflow  # noqa: E402  real-world examples' target.json (llm-dlc/loops/example-targets.md)
 from targets.interfaces import Unsupported  # noqa: E402
@@ -92,12 +97,6 @@ TOOL_APPS = {
     "shop": {"root": "examples/apps/shop", "tests": "shop.Tests", "stubs": "src/stubs/java"},
 }
 IGNORE = shutil.ignore_patterns("build", ".gradle", ".kotlin", "*.class")
-
-VERDICT_LABEL = {
-    "violation": "✗ Violation",
-    "verified": "✓ Verified",
-    "unverifiable": "⚠ Unverifiable",
-}
 
 # Per-approach caches, filled on first use. The scratch directory they live in belongs to the execution, not to the
 # module: it is made on first use and removed at exit, so importing build.py (as the pipeline does, for plan()) makes
@@ -230,6 +229,14 @@ def main(argv):
         results = [run_task(folder, name, shared=shared) for name in tasks]
         return max(results)
     argv, task = task_argument(argv)
+    checker_seconds = None
+    if task and "--checker-seconds" in argv:
+        i = argv.index("--checker-seconds")
+        if i + 1 == len(argv) or not argv[i + 1].isascii() or not argv[i + 1].isdigit() or int(argv[i + 1]) < 1:
+            print("--checker-seconds takes a positive integer", file=sys.stderr)
+            return 2
+        checker_seconds = int(argv[i + 1])
+        argv = argv[:i] + argv[i + 2:]
     retry_of = None
     interrupt = task and "--interrupt-after-candidate" in argv
     if interrupt:
@@ -249,7 +256,7 @@ def main(argv):
         return 2  # nothing has run
     wanted = set(ids)
     if task:
-        return run_task(next(f for f in folders if f.name[:3] == ids[0]), task, plan_only=mode == "--plan", retry_of=retry_of, interrupt=interrupt)
+        return run_task(next(f for f in folders if f.name[:3] == ids[0]), task, plan_only=mode == "--plan", retry_of=retry_of, interrupt=interrupt, checker_seconds=checker_seconds)
     if mode == "--plan":
         # What each run would take, as JSON, running nothing: every constructed example's by default.
         plans = [plan(load_example(f)) for f in folders if (f.name[:3] in wanted if wanted else True)]
@@ -370,7 +377,7 @@ def task_problem(mode, ids, task, folders):
     return None
 
 
-def run_task(folder, task, plan_only=False, *, retry_of=None, interrupt=False, shared=None):
+def run_task(folder, task, plan_only=False, *, retry_of=None, interrupt=False, shared=None, checker_seconds=None):
     """`--plan ID --task T` prints the task's plan; `ID --task T` makes one attempt at it through the target route
     (examples/tools/targets/route.py). An attempt that stops at an Unsupported result prints a not-executed line
     naming it and exits 1, as an unexecuted example does; one that gives a receipt prints its conclusion and exits 0
@@ -382,6 +389,8 @@ def run_task(folder, task, plan_only=False, *, retry_of=None, interrupt=False, s
         return 0
     print(f"{folder.name}: running task {task} (target route)", flush=True)
     policy = {}
+    if checker_seconds is not None:
+        policy["checker_seconds"] = checker_seconds
     if shared is not None:
         policy["shared"] = shared
     if retry_of:
@@ -651,33 +660,6 @@ def validate(document, schema_name, path):
 EXECUTION_STATUSES = ("completed", "timed-out", "killed", "invalid-output", "tool-error")
 
 
-def last_line(output):
-    lines = [line.strip() for line in (output or "").splitlines() if line.strip()]
-    return lines[-1] if lines else None
-
-
-def execution_status(returncode, output, timed_out=None, known=(0, 1)):
-    """How a verifier's process ended: {"status", "exitCode", "reason"}. `known` are the exit codes that mean the
-    verifier finished (0 verified, 1 violated or cannot be verified, for jvmcontract and the Java verifier); any
-    other is the tool's own failure. A negative code is a signal (Python's convention), and so is 128 + N from a shell
-    or a wrapper script. `timed_out` is the limit in seconds when the runner gave up waiting."""
-    if timed_out is not None:
-        return {"status": "timed-out", "exitCode": None, "reason": f"the verifier did not finish within {timed_out} s"}
-    if returncode < 0:
-        return {"status": "killed", "exitCode": returncode, "reason": f"the verifier was killed by signal {-returncode}"}
-    if 128 < returncode <= 128 + 64 and returncode not in known:
-        return {"status": "killed", "exitCode": returncode,
-                "reason": f"the verifier exited with code {returncode}, a shell's report of signal {returncode - 128}"}
-    if returncode not in known:
-        line = last_line(output)
-        return {"status": "tool-error", "exitCode": returncode,
-                "reason": f"the verifier failed with exit code {returncode}" + (f": {line}" if line else ", printing nothing")}
-    if not (output or "").strip():
-        return {"status": "invalid-output", "exitCode": returncode,
-                "reason": f"the verifier exited with code {returncode} and printed nothing"}
-    return {"status": "completed", "exitCode": returncode, "reason": None}
-
-
 def conclude(returncode, output, evidence, reported=True, timed_out=None, known=(0, 1)):
     """The execution and the verdict of a verifier run that exits 0 when the claim holds and 1 when it does not or
     cannot be checked (jvmcontract verify, equivalence and prove; the Java verifier). `evidence` is what the runner
@@ -693,40 +675,6 @@ def conclude(returncode, output, evidence, reported=True, timed_out=None, known=
     if "cannot be verified" in output:
         return execution, "unverifiable"
     return violation(execution, evidence, reported)
-
-
-def violation(execution, evidence, reported):
-    """A completed run that reports a violation: one, when the runner has read what shows it and the verifier wrote
-    its report; otherwise output the runner cannot read."""
-    if evidence and reported:
-        return execution, "violation"
-    reason = ("the verifier reported a violation but wrote no SARIF report" if evidence else
-              f"the verifier exited with code {execution['exitCode']}, but its output shows no violation the runner can "
-              "read and no reason it cannot be verified")
-    return {"status": "invalid-output", "exitCode": execution["exitCode"], "reason": reason}, None
-
-
-def conclude_outcome(returncode, output, outcome, evidence, reported):
-    """`conclude` for a run with `--json`, whose verdict is the outcome's: the exit code must agree with it (0 for
-    verified, 1 otherwise), and a violation needs its witness and the report as before. `outcome` is None when the
-    verifier's standard output is not one."""
-    execution = execution_status(returncode, output)
-    if execution["status"] != "completed":
-        return execution, None
-    if outcome is None:
-        return {"status": "invalid-output", "exitCode": returncode,
-                "reason": "the verifier's --json output is not an outcome the runner can read"}, None
-    verdict = outcome.get("verdict")
-    if verdict not in VERDICT_LABEL or (returncode == 0) != (verdict == "verified"):
-        return {"status": "invalid-output", "exitCode": returncode,
-                "reason": f"the verifier exited with code {returncode}, but its outcome's verdict is {verdict!r}"}, None
-    if verdict == "violation":
-        return violation(execution, evidence, reported)
-    return execution, verdict
-
-
-def no_verdict_label(execution):
-    return f"⚠ No verdict: {execution['reason']}"
 
 
 def expectation(result, expected):
@@ -1709,130 +1657,6 @@ def label_assumptions(result):
                                    + ", ".join(f"{k} {v}" for v, k in sorted(levels.items())) + ")")
 
 
-def without_root(value, root):
-    """`value` with the patched copy's root taken out of every string in it, as `tool()` does for text."""
-    if isinstance(value, str):
-        return value.replace(str(root) + "/", "")
-    if isinstance(value, list):
-        return [without_root(v, root) for v in value]
-    if isinstance(value, dict):
-        return {k: without_root(v, root) for k, v in value.items()}
-    return value
-
-
-def is_outcome(value):
-    return isinstance(value, dict) and isinstance(value.get("output"), str)
-
-
-def json_outcome(proc, root):
-    """The library's outcome from a run with `--json`, with the patched copy's root taken out, or None when the
-    standard output is not one."""
-    try:
-        outcome = json.loads(proc.stdout)
-    except ValueError:
-        return None
-    return without_root(outcome, root) if is_outcome(outcome) else None
-
-
-def json_outcomes(proc, root):
-    """The library's outcomes from `prove --json`, one per property of the target in the order the properties file
-    declares them, with the patched copy's root taken out; None when the standard output is not such a list."""
-    try:
-        outcomes = json.loads(proc.stdout)
-    except ValueError:
-        return None
-    if not isinstance(outcomes, list) or not outcomes or not all(map(is_outcome, outcomes)):
-        return None
-    return without_root(outcomes, root)
-
-
-def typed_call(call, classes):
-    """A call from the outcome as the result keeps it, with the SHA-256 of the class file it names in the classes
-    the run built (`classes` by `after` and `before`), or None when that file is not there."""
-    root = classes.get(call["classes"])
-    path = Path(root) / call["class_file"] if root else None
-    return {"class": call["class"], "classFile": call["class_file"],
-            "classFileSha256": file_digest(path) if path and path.is_file() else None, "classes": call["classes"],
-            "method": call["method"], "descriptor": call["descriptor"], "static": call["static"],
-            **({"receiver": call["receiver"]} if call.get("receiver") else {}), "arguments": call["arguments"],
-            **({"setup": call["setup"]} if call.get("setup") else {})}
-
-
-def witness_record(c, classes):
-    """The counterexample as data, from the outcome's typed fields: the inputs (and those found before shrinking),
-    the patched version's call, and for a regression proof the previous version's. None from a tool that gives
-    no typed fields."""
-    if not c.get("call") or "inputs" not in c:
-        return None
-    return {"inputs": c["inputs"], **({"foundInputs": c["found_inputs"]} if c.get("found_inputs") else {}),
-            **({"replayObservations": c["replay_observations"]} if c.get("replay_observations") else {}),
-            "call": typed_call(c["call"], classes),
-            **({"previousCall": typed_call(c["previous_call"], classes)} if c.get("previous_call") else {})}
-
-
-def equivalence_counterexamples(outcome, classes=None):
-    """The outcome's witness as the result's counterexample: the input, what the version before did (`contract`)
-    and what the patched one does (`actual`), with the input the checker found before it was shrunk, and the
-    witness as data (`witness`) with the class files' digests from `classes`."""
-    c = (outcome or {}).get("counterexample")
-    if not c:
-        return []
-    witness = witness_record(c, classes or {})
-    return [{"input": c["input"], "contract": c["before"], "actual": c["after"],
-             **({"found": c["found"]} if c.get("found") else {}), "shrinkRuns": c.get("shrink_runs", 0),
-             **({"witness": witness} if witness else {})}]
-
-
-def search_record(outcome):
-    """The checker run a verdict comes from, from the outcome's `search`: the engine, the checker, its settings and
-    time, the input range the verdict was found in, and the own checker's numbers. None when no checker ran."""
-    s = (outcome or {}).get("search")
-    if not s:
-        return None
-    record = {"engine": s["engine"], "checker": s["checker"], "seconds": round(s["seconds"], 3), "properties": s["properties"],
-              "unwind": s["unwind"], "maxArrayLength": s["max_array_length"], "stage": s.get("stage")}
-    if outcome.get("shared"):
-        record["sharedCallees"] = outcome["shared"]
-    if s.get("fallback"):
-        record["fallback"] = s["fallback"]
-    if s.get("runs"):
-        record["deadlineSeconds"] = s["deadline_seconds"]
-        record["runs"] = camel(s["runs"])
-    if s.get("native"):
-        # Its numbers; what it says in words has fields of its own (a receipt with a loop covered by an invariant
-        # was refused at check_result while these were copied with the numbers: example 287's fixed-guard).
-        record["native"] = {re.sub(r"_(\w)", lambda m: m.group(1).upper(), k): v for k, v in s["native"].items() if not isinstance(v, list)}
-        if s["native"].get("loops"):
-            record["loopsCoveredByInvariants"] = s["native"]["loops"]
-        if s["native"].get("assumed"):
-            record["modelsAssume"] = s["native"]["assumed"]
-    if s.get("gap_mode"):
-        record["gapMode"] = s["gap_mode"]
-    if s.get("gaps"):
-        record["gaps"] = [{"id": g["id"], "kind": g["kind"], "call": g["call"], "sites": g["sites"],
-                           "approximation": g["approximation"], "treatment": g["treatment"],
-                           **({"checker": g["checker"]} if g.get("checker") else {}),
-                           **({"contract": camel(g["contract"])} if g.get("contract") else {})} for g in s["gaps"]]
-    return record
-
-
-def camel(value):
-    """`value` with every key in it in camelCase, as the result keeps the library's snake_case fields."""
-    if isinstance(value, dict):
-        return {re.sub(r"_(\w)", lambda m: m.group(1).upper(), k): camel(v) for k, v in value.items()}
-    if isinstance(value, list):
-        return [camel(v) for v in value]
-    return value
-
-
-def stated_record(outcome):
-    """The statement the verdict is about, as data (step 2a of llm-dlc/loops/sound-verdicts.md), from the outcome's
-    `stated`: its domain, assumptions with their basis, observations, bounds, models, checker, gap mode and
-    confirmation. None from a run that built no statement, or a tool from before it said."""
-    s = (outcome or {}).get("stated")
-    return camel(s) if s else None
-
-
 # The note a regression proof with the proof cache prints for each changed helper it offered for a proof of its own
 # (lib/src/proof_cache.rs, Helpers): shared after that proof, or left as written in both versions and why.
 HELPER_NOTE = re.compile(r"^note: (?P<callee>[\w.$]+), changed(?:: (?P<shared>.*)|, stays as written in both versions: (?P<why>.*))$", re.M)
@@ -2042,20 +1866,6 @@ def contract_lines(res):
         lines.append(f"- `{g['id']}`, {g['call']} at {', '.join(g['sites'])}: {c['summary']}. Written by {c['writtenBy']} "
                      f"({where}, line {c['line']}); {evidence_words(c)}.")
     return lines + [""]
-
-
-def advice_record(outcome, folder, name):
-    """What a run under --gaps advised returned when it stopped at gaps with no contract (step 3a of
-    llm-dlc/loops/sound-verdicts.md), from the outcome's `advice`: each gap with what a contract for it must state
-    and its template, whose whole file is copied to `name` in the example's folder. None when there is none."""
-    a = (outcome or {}).get("advice")
-    if not a:
-        return None
-    (folder / name).write_text(a["template"])
-    record = camel({k: v for k, v in a.items() if k not in ("template", "template_file")})
-    record["claim"].pop("harness", None)  # the work directory's; the page's harness is statement.java
-    record["templateFile"] = name
-    return record
 
 
 def remove_stale_templates(folder):
@@ -2433,52 +2243,6 @@ def scan_examples(folders, wanted):
     for call, ids in sorted(exact.items(), key=lambda kv: (-len(kv[1]), kv[0])):
         print(f"  {call}: {len(ids)}")
     return 0
-
-
-def property_headline(verdicts):
-    """The verdict over a target's properties, every one of them required: a violation when any is refuted (the
-    others, unresolved ones included, stay in the result beside it), verified only when every one is, and
-    unverifiable otherwise. None when a verdict is not one the runner knows."""
-    if not verdicts or any(v not in VERDICT_LABEL for v in verdicts):
-        return None
-    if "violation" in verdicts:
-        return "violation"
-    return "verified" if all(v == "verified" for v in verdicts) else "unverifiable"
-
-
-def property_counterexample(outcome, classes=None):
-    """A property outcome's witness as a result's counterexample: the input, the assertion it fails (`contract`;
-    null for a property that is its throws clauses alone), what the method did (`actual`), what a throws clause
-    required instead, the input the checker found before it was shrunk, and the witness as data."""
-    c = outcome.get("counterexample")
-    if not c:
-        return None
-    witness = witness_record(c, classes or {})
-    return {"input": c["input"], "contract": property_assertion(outcome), "actual": c["outcome"],
-            **({"expected": c["expected"]} if c.get("expected") else {}),
-            **({"found": c["found"]} if c.get("found") else {}), "shrinkRuns": c.get("shrink_runs", 0),
-            **({"witness": witness} if witness else {})}
-
-
-def property_assertion(outcome):
-    """The assertion as checked, or None for a property that is its throws clauses alone (the tool checks `true`
-    beside them: that the method returns where no clause applies)."""
-    throws = outcome.get("throws_checked") or outcome.get("throws") or []
-    return None if outcome.get("assert") == "true" and throws else outcome.get("assert")
-
-
-def property_record(outcome, harness, statement, classes=None, folder=None, template=None):
-    """One property's outcome as the result keeps it: what it states, its verdict, and its own evidence; under
-    --gaps advised, the advice of a proof that stopped at gaps, its template copied to `template` in `folder`."""
-    throws = outcome.get("throws_checked") or outcome.get("throws") or []
-    replay = outcome.get("replay")
-    return {"harness": harness, "assert": property_assertion(outcome), "assume": outcome.get("assume"),
-            **({"throws": throws} if throws else {}), "verdict": outcome["verdict"], "domain": outcome.get("domain"),
-            "proof": outcome.get("proof"), "problem": outcome.get("problem"), "vacuous": outcome.get("vacuous"),
-            "counterexample": property_counterexample(outcome, classes), "statement": statement,
-            "search": search_record(outcome), "replay": {"by": replay["by"], "reproduced": replay["reproduced"]} if replay else None,
-            **({"stated": stated_record(outcome)} if outcome.get("stated") else {}),
-            **({"advice": advice_record(outcome, folder, template)} if outcome.get("advice") and folder else {})}
 
 
 def run_tool_property(folder, example, root, module, result):
@@ -3038,11 +2802,6 @@ def checkpoint_dir():
     if where == "off":
         return None
     return Path(where) if where else EXAMPLES / ".checkpoints"
-
-
-def file_digest(path):
-    path = Path(path)
-    return hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None
 
 
 TOOL_IDENTITY = {}

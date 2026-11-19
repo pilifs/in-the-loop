@@ -72,7 +72,10 @@ def plans(number: str) -> tuple[bool, str, list[str]]:
     if not ok:
         return False, tail(out), []
     try:
-        tasks = json.loads(out)[0]["tasks"]
+        plan = json.loads(out)[0]
+        if "tasks" not in plan:
+            return plan["executable"], plan.get("notExecuted") or f"ordinary {plan['approach']} plan", []
+        tasks = plan["tasks"]
     except (ValueError, LookupError, TypeError):
         return False, tail(out), []
     refused = [f"{t['task']}: {t['notExecuted']}" for t in tasks if not t.get("executable")]

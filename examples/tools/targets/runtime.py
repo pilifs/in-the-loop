@@ -77,9 +77,11 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import time
 from pathlib import Path
 
+from checker_output import decode as _outcomes
 from targets import recipes
 from targets import interfaces, runtime_jar, runtime_jdk, runtime_maven, runtime_upstream, sidecar
 from targets.interfaces import RUNTIME, Artifact, PreparedTarget, Unsupported
@@ -1297,14 +1299,26 @@ def _observations(stdout, inputs, convention="PROBES"):
     return tuple(observed), None
 
 
-def _run_one(argv, cwd, out, err, timeout, env=None):
+def _run_one(argv, cwd, out, err, timeout, env=None, usage=None):
     """(status, exitCode, seconds) of one process, its streams written to `out` and `err`, in the fixed environment
     `env` (the controls' by default) and nothing inherited."""
     started = time.monotonic()
     with open(out, "w") as o, open(err, "w") as e:
         try:
-            proc = subprocess.run(argv, cwd=cwd, env=dict(env or CONTROL_ENV), stdin=subprocess.DEVNULL, stdout=o, stderr=e,
-                                  timeout=timeout)
+            options = dict(cwd=cwd, env=dict(env or CONTROL_ENV), stdin=subprocess.DEVNULL, stdout=o, stderr=e)
+            if usage is None:
+                proc = subprocess.run(argv, timeout=timeout, **options)
+            else:
+                if str(HERE.parents[2] / "lib/tools") not in sys.path:
+                    sys.path.append(str(HERE.parents[2] / "lib/tools"))
+                from process_usage import wait as wait_measured
+                with subprocess.Popen(argv, start_new_session=True, **options) as proc:
+                    timed_out, measured = wait_measured(proc, timeout, process_group=True)
+                usage.update(cpuSeconds=round(measured.ru_utime + measured.ru_stime, 4),
+                             peakRssBytes=measured.ru_maxrss * (1 if sys.platform == "darwin" else 1024),
+                             memoryMeasure="wait4 ru_maxrss, maximum process RSS including waited-for children")
+                if timed_out:
+                    return "timed-out", None, round(time.monotonic() - started, 3)
         except subprocess.TimeoutExpired:
             return "timed-out", None, round(time.monotonic() - started, 3)
         except OSError as x:
@@ -1595,20 +1609,6 @@ def _verifier_env(jdk):
     return env
 
 
-def _outcomes(stdout, command):
-    """The verifier's --json outcome as observations: the list `prove` prints, or `equivalence`'s one outcome; None
-    (with why) when the output is not one. Raw: nothing is judged here."""
-    try:
-        value = json.loads(stdout)
-    except json.JSONDecodeError as e:
-        return None, f"the verifier's standard output is not JSON: {e}"
-    outcomes = value if command == "prove" else [value]
-    if not isinstance(outcomes, list) or not outcomes or not all(
-            isinstance(o, dict) and isinstance(o.get("output"), str) for o in outcomes):
-        return None, f"the verifier's standard output is not {command}'s --json outcome"
-    return tuple(outcomes), None
-
-
 def _probe(exe, sides, target, env, workdir, attempt, paths=None):
     """The capability probe beside the proof: jvmcontract's static gap scan of the target in each revision (it proves
     nothing; a strict proof that reaches a gap is refused by name). Its argv, exit and the gaps it lists."""
@@ -1636,7 +1636,7 @@ def _probe(exe, sides, target, env, workdir, attempt, paths=None):
     return probes
 
 
-def run_verifier(plan, prepared, workdir, *, before_launch=None):
+def run_verifier(plan, prepared, workdir, *, before_launch=None, timeout=None):
     """The verifier on the prepared artifacts, with the plan's engine, gaps and bounds: one raw ExecutionRecord
     (kind `verifier`; revision None for a pair), or Unsupported.
 
@@ -1662,6 +1662,7 @@ def run_verifier(plan, prepared, workdir, *, before_launch=None):
     (--before-classpath), where it was refused before 2026-11-15 (VF-027's two-dependency-closures). The
     record is also written to workdir/verifier.json, which the record names (`record`, beside the attempt's
     `directory` and, when it didn't start, its `reason`), so ingestion can bundle it with the streams."""
+    timeout = VERIFIER_TIMEOUT if timeout is None else timeout
     stop = lambda why, stage="verifier", **kw: Unsupported("run-verifier", RUNTIME, why, stage=stage, **kw)
     if plan.kind not in VERIFIER_KINDS:
         return stop(f"a {plan.kind} task runs no verifier here (it runs {', '.join(VERIFIER_KINDS)})", "plan")
@@ -1700,13 +1701,13 @@ def run_verifier(plan, prepared, workdir, *, before_launch=None):
         recipe = recipes.translate(plan)
         if isinstance(recipe, Unsupported):
             raise Refused("claim", recipe.reason)
-        invocation = recipe.bind(plan, exe, sides, rel(workdir), VERIFIER_TIMEOUT)
+        invocation = recipe.bind(plan, exe, sides, rel(workdir), timeout)
         argv = invocation.argv
         env = _verifier_env(jdk)
         identities.update({
             "jdk": jdk["version"], "jdkFeature": jdk["feature"], "jdkHome": jdk["home"], "jdkRelease": jdk["release"],
             "engine": plan.engine, "gaps": plan.gaps, "bounds": dict(plan.claim.get("bounds") or {}),
-            "timeout": VERIFIER_TIMEOUT, "scope": _scope(plan, sides),
+            "timeout": timeout, "scope": _scope(plan, sides),
             "classpath": invocation.classpaths, "checkedEntry": invocation.entry, "recipe": recipe.describe(),
             "commits": {r: p.commit for r, (_, p, _) in sides.items()},
             "environment": {k: v for k, v in env.items() if k != "PATH"}, "cwd": "the attempt directory"})
@@ -1731,7 +1732,9 @@ def run_verifier(plan, prepared, workdir, *, before_launch=None):
         return record
     if before_launch is not None:
         before_launch(argv, identities)
-    status, code, seconds = _run_one(argv, attempt, out, err, VERIFIER_TIMEOUT + VERIFIER_GRACE, env)
+    usage = {}
+    status, code, seconds = _run_one(argv, attempt, out, err, timeout + VERIFIER_GRACE, env, usage=usage)
+    identities["usage"] = usage
     observations, problem = (None, f"the verifier {status}" + (f" (signal {-code})" if status == "killed" else "")) \
         if status != "exited" else _outcomes(out.read_text(errors="replace"), VERIFIER_KINDS[plan.kind])
     record = interfaces.ExecutionRecord(kind="verifier", revision=revision, argv=argv, status=status, exitCode=code,

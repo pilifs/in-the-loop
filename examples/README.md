@@ -525,7 +525,7 @@ takes. Nothing is written for it, so an earlier `result.json` stays the record o
 example means every constructed one, so the real-world ones are left out without failing.
 
 A real-world example or local fixture control with a target sidecar (`target.json`, [`schema/target.schema.json`](schema/target.schema.json),
-from [`example-targets.md`](../llm-dlc/loops/example-targets.md)) is the exception: it is run one task at a time.
+from [`example-targets.md`](../llm-dlc/loops/example-targets.md)) has one receipt per task execution.
 `build.py --plan NNN` lists its tasks' plans, `build.py --plan NNN --task T` prints one, and `build.py NNN --task T`
 makes one attempt through [`tools/targets/`](tools/targets/__init__.py): plan, prepare each revision, run the
 controls and the verifier, and ingest one receipt per task and attempt. An attempt that stops at an interface not yet
@@ -541,7 +541,15 @@ on several revisions. Compare the key for "the same claim", the id for "on the s
 names the revision its classes are (`revision`), since the verifier calls a one-revision proof's classes `after`.
 A source slice's receipt labels each revision's scope (`claim.target.scopes`), and lists in `claim.target.matched`
 each class its preparation found byte-identical with a published JAR the sidecar names (`slice.matches`).
-Without `--task` it is not run either. Its historical `verdictLabel` stays its report's; the index carries the sidecar's projection beside
+For proof tasks, `--plan` includes the proof recipe, checked entry, semantic options and expected checker evidence.
+`build.py NNN --tasks A,B` runs each task and shares matching source preparations for the duration of that batch.
+`--checker-seconds N` sets the operational deadline of one task. `--retry-of EXECUTION` links its new execution
+to a previous one. The journal under `receipts/T/executions/EXECUTION` preserves its binding, invocation, stage
+timings and any checker candidate even if qualification stops. The history command shows the latest attempt
+beside eligible evidence, in JSON or Markdown. For example, run
+`python3 examples/tools/targets/workflow_handoff.py handoff 198 --markdown`. [Gradebook](198-gradebook-final-slot/README.md)
+
+A target requires a task selection to run. Its historical `verdictLabel` stays its report's; the index carries the sidecar's projection beside
 it (`target`: family, role, readiness, claim statuses, observed and predicted gaps), which `find.py --family`,
 `--role`, `--readiness`, `--claim-status` and `--gap` filter on. [`gap-inventory.md`](gap-inventory.md) ranks the
 observed capability gaps across these targets, by distinct families and blocked obligations, each with its smallest

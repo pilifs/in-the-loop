@@ -180,7 +180,7 @@ streams for a brief that ran them. The *with its streams* row adds the streams t
 
 ## Verification loop
 
-62 runs from 2026-11-03 to 11-17, on `claude-sonnet-5-5`: 18 h 17 min active, 242 commits, 263,932 tokens written, $16.18 ($0.26 a run). Of the 369 verification jobs on record, 291 are tied to the loop cycle that submitted them.
+62 runs from 2026-11-03 to 11-17, on `claude-sonnet-5-5`: 18 h 17 min active, 242 commits, 263,932 tokens written, $16.18 ($0.26 a run). Of the 373 verification jobs on record, 291 are tied to the loop cycle that submitted them.
 
 ## Runs
 

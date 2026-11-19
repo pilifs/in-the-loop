@@ -927,6 +927,7 @@ class Checks(unittest.TestCase):
         problems([shas[2]])
         self.assertEqual(rendered.call_count, 8)
 
+    @cost("tool")
     def test_tree_files_are_what_jj_file_show_prints(self):
         with mock.patch.object(sync, "REPO", Path(sync.__file__).resolve().parents[2]):
             if not sync.has_jj():

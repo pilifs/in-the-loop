@@ -21,7 +21,7 @@ def witness_problem(inputs, parameters, nullable, aliases, bound):
             return "the JVM witness does not identify the planned roots by name and type"
         name, data = expected["name"], value["value"]
         if data is None:
-            if name not in nullable:
+            if expected["type"] == "int" or name not in nullable:
                 return f"{name} is null outside its planned domain"
         elif isinstance(data, dict):
             earlier = data.get("same")
@@ -135,6 +135,14 @@ def statement_problem(plan, outcome, entry):
             return "the checked unwind differs from the claim"
         if any(p.get("kind") == "array" for p in parameters) and actual.get("max_array_length") != bounds.get("maxArrayLength"):
             return "the checked array domain differs from the claim"
+    if plan.kind == "equivalence" and not any(isinstance(o, dict) for o in claim.get("observations", [])):
+        inner = outcome.get("pair") or outcome
+        if claim.get("assume") != (inner.get("assume") or None):
+            return "the paired checker precondition differs from the frozen claim"
+        if claim.get("allowedChange") and outcome.get("verdict") == "verified":
+            outside = (stated.get("vacuity") or {}).get("outside")
+            if outside != claim["allowedChange"]:
+                return "the eligible statement lacks an independently reached comparison outside the allowed change"
     if plan.kind == "prove":
         if (outcome.get("assume") or None, outcome.get("assert"), outcome.get("throws_checked") or outcome.get("throws") or []) != (
                 claim.get("assume") or None, claim.get("assert"), claim.get("throws") or []):

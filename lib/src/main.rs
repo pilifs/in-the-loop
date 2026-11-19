@@ -179,6 +179,9 @@ enum Command {
         /// Only this entry point of the old build, by its id (`POST /quotes`; repeatable). Default: every one.
         #[arg(long = "entry")]
         entries: Vec<String>,
+        /// Compare only the returned amount (including whether the method returned), or only the ordered effects and payloads.
+        #[arg(long = "observe", value_enum)]
+        observation: Option<jvmcontract::effects::Projection>,
         /// The most attempts a trace records; past it, the result is unresolved. Default: the spec's.
         #[arg(long)]
         trace_bound: Option<u32>,
@@ -869,6 +872,18 @@ struct ProveArgs {
     details: bool,
 }
 
+/// The proof wire format is independent of the CLI's human-readable output.
+#[derive(serde::Serialize)]
+struct WireOutcome<'a, T> {
+    wire_version: u8,
+    #[serde(flatten)]
+    outcome: &'a T,
+}
+
+fn wire_outcome<T>(outcome: &T) -> WireOutcome<'_, T> {
+    WireOutcome { wire_version: 1, outcome }
+}
+
 fn main() -> ExitCode {
     match run(Cli::parse()) {
         Ok(code) => ExitCode::from(code as u8),
@@ -967,7 +982,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
             options.cache = args.cache;
             let outcome = equivalence::run(&options)?;
             if args.json {
-                println!("{}", serde_json::to_string_pretty(&outcome).expect("serializable"));
+                println!("{}", serde_json::to_string_pretty(&wire_outcome(&outcome)).expect("serializable"));
             } else {
                 print!("{}", outcome.output);
                 if args.details {
@@ -1047,7 +1062,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
                 }
             }
             if args.json {
-                println!("{}", serde_json::to_string_pretty(&outcomes).expect("serializable"));
+                println!("{}", serde_json::to_string_pretty(&outcomes.iter().map(wire_outcome).collect::<Vec<_>>()).expect("serializable"));
             }
             Ok(exit)
         }
@@ -1142,10 +1157,10 @@ fn run(cli: Cli) -> Result<i32, Error> {
             }
             Ok(0)
         }
-        Command::Effects { before, after, entries, trace_bound, unwind, max_array_length, cache, environment, json, report, sources, base } => {
+        Command::Effects { before, after, entries, observation, trace_bound, unwind, max_array_length, cache, environment, json, report, sources, base } => {
             let bounds = jvmcontract::spec::ClaimBounds { unwind, max_array_length };
             let environment = environment.as_deref().map(jvmcontract::environment::load).transpose().map_err(|u| Error::new(u.to_string()))?.unwrap_or_default();
-            let checks = jvmcontract::effects::check_builds(&before, &after, &entries, trace_bound, bounds, cache.as_deref(), &environment).map_err(|u| Error::new(u.to_string()))?;
+            let checks = jvmcontract::effects::check_builds_projected(&before, &after, &entries, trace_bound, bounds, cache.as_deref(), &environment, observation).map_err(|u| Error::new(u.to_string()))?;
             if let Some(report) = &report {
                 jvmcontract::sarif::write(&report.join("effects.sarif"), &jvmcontract::effects::findings(&checks, &sources, base.as_deref()))?;
             }

@@ -438,6 +438,10 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
             said("outcome", FAIL, f"{work}/outcome.json holds {len(outcome)} outcomes, not one")
             return done(**base, actual=None, identity=identity)
         outcome = outcome[0]
+    from checker_output import supported_version
+    if not supported_version(outcome):
+        said("outcome", FAIL, "the checker outcome has an unsupported wire format")
+        return done(**base, actual=None, identity=identity)
     said("outcome", OK, f"{work}/outcome.json, sha256 {outputs[f'{work}/outcome.json']['sha256'][:12]}, as the job wrote it")
     # An equivalence outcome carries the checked property of the pair inside it.
     inner = outcome.get("pair") if isinstance(outcome.get("pair"), dict) else outcome
@@ -516,7 +520,17 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
         pair_java = f"{work}/work/pair/RegressionPair.java"
         text = (root / pair_java).read_text() if pair_java in outputs and file_sha256(root / pair_java) == outputs[pair_java].get("sha256") else None
         ran_with = re.search(r"meant to affect \(`([^`]*)`", outcome.get("output") or "")
-        if not allowed and text is not None and "meantToChange" in text:
+        spec = (outcome.get("stated") or {}).get("spec") or {}
+        contract = spec.get("contract") or {}
+        vacuity = stated.get("vacuity") or {}
+        # Only selected-observation harnesses with an independently checked mapping report this contract.
+        if (outcome.get("wire_version") == 1 and spec.get("observations") == claim.get("observations")
+                and contract.get("required") and contract.get("approved_changes") == [] and not allowed):
+            said("expressions", OK, "the selected observation contract requires agreement and approves no changes")
+        elif (outcome.get("wire_version") == 1 and allowed and vacuity.get("status") == "non-vacuous"
+              and vacuity.get("witness") and vacuity.get("outside") == allowed):
+            said("expressions", OK, "the JVM or checker probe reached a comparison outside the task's allowed change")
+        elif not allowed and text is not None and "meantToChange" in text:
             said("expressions", FAIL, f"the generated pair ({pair_java}) skips the inputs of an allowed change, and the task allows none")
         elif not allowed and ran_with:
             said("expressions", FAIL, f"the outcome says it ran with an allowed change (`{ran_with.group(1)}`), and the task allows none")

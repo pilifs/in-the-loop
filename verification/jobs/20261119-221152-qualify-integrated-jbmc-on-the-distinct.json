@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261119-221152-qualify-integrated-jbmc-on-the-distinct",
+  "title": "Qualify integrated JBMC on the distinct single-cell array grid",
+  "description": "Build each actual array method with a scalar entry whose low bits represent all four distinct, non-null one-cell heaps. Check the injective complete-root observer on the JVM, then establish the preserving pair and replay the skipped-write witness for the distinguishing pair with JBMC.",
+  "kind": "other",
+  "capabilities": [
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "197"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-19T22:11:52+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 8,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "2m",
+    "timeout": "6m"
+  },
+  "steps": [
+    {
+      "name": "Four concrete heaps, two actual JBMC comparisons",
+      "run": "python3 examples/197-shared-int-array-poststates/proofs/grid/check.py --output verification/restart-jbmc-grid.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/restart-jbmc-grid.json"
+  ]
+}

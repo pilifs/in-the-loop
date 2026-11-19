@@ -26,7 +26,7 @@ SIGNATURES = {
     (workflow, "handoff"): ["folder", "example", "target", "task"],
     (runtime, "prepare"): ["plan", "revision", "workdir"],
     (runtime, "run_controls"): ["plan", "prepared", "workdir"],
-    (runtime, "run_verifier"): ["plan", "prepared", "workdir", "before_launch"],
+    (runtime, "run_verifier"): ["plan", "prepared", "workdir", "before_launch", "timeout"],
 }
 
 # The frozen fields of each type, in order: an owner may append a field with a default, never change these.

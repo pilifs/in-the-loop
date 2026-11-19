@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261119-221555-retain-a-measured-gcd-checker-timeout-an",
+  "title": "Retain a measured GCD checker timeout and its linked retry",
+  "description": "Use one prepared fixed revision and frozen 441-input power claim. Run the real native solver at one second, then retry at 600 seconds with a fresh work directory. Preserve stage timings, checker CPU and RSS, shared artifact identity, and both execution records.",
+  "kind": "other",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "309"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-19T22:15:55+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 8,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Fixed power family with two deadlines",
+      "run": "python3 examples/309-commons-math-238-gcd/controls/retry_budget.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/309-commons-math-238-gcd/receipts/powers-fix",
+    "examples/309-commons-math-238-gcd/records/budget-comparison.json"
+  ]
+}

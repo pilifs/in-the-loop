@@ -143,11 +143,19 @@ impl Trace {
     }
 }
 
+/// A projection of the recorded entry-point trace. The concrete replay always reads the whole original trace.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, clap::ValueEnum)]
+pub enum Projection {
+    Result,
+    Effects,
+}
+
 /// The model both builds run under: the modeled calls in log order, which of them are observed (with the payload
 /// paths their stubs snapshot), the bound, the exception classes the outcome tells apart, and the string literals a
 /// snapshot can name.
 #[derive(Debug, Clone)]
 struct Model {
+    projection: Option<Projection>,
     calls: Vec<String>,
     /// For each call, the payload paths when it is an observed effect, `None` for a read.
     observed: Vec<Option<Vec<String>>>,
@@ -350,8 +358,12 @@ pub fn check(claim: &CanonicalClaim, old: &EntryPointSpec, new: &EntryPointSpec,
 /// different key. Everything else in the result (the specs' unresolved parts, the external inputs, the status
 /// mapping) is worked out again on every run, hit or not, and a stored refutation is replayed on a JVM as a new one is.
 pub fn check_with(claim: &CanonicalClaim, old: &EntryPointSpec, new: &EntryPointSpec, before: &Path, after: &Path, cache: Option<&Path>) -> Result<Checked, Unsupported> {
+    check_projected(claim, old, new, before, after, cache, None)
+}
+
+fn check_projected(claim: &CanonicalClaim, old: &EntryPointSpec, new: &EntryPointSpec, before: &Path, after: &Path, cache: Option<&Path>, projection: Option<Projection>) -> Result<Checked, Unsupported> {
     let work = crate::tla::tempfile_path("jvmcontract-effects");
-    let checked = check_in(&work, claim, old, new, before, after, cache, None);
+    let checked = check_in(&work, claim, old, new, before, after, cache, None, projection);
     let _ = std::fs::remove_dir_all(&work);
     checked
 }
@@ -522,7 +534,7 @@ fn check_planned_in(work: &Path, claim: &CanonicalClaim, before: &Path, after: &
     }
     let planned = Planned { before: made_before, after: made_after, names: flat.iter().map(|(p, _)| p.clone()).collect(), domain: words.clone(), assumptions };
     let claim = CanonicalClaim { observations, ..claim.clone() };
-    check_in(work, &claim, &spec, &spec, before, after, cache, Some(&planned))
+    check_in(work, &claim, &spec, &spec, before, after, cache, Some(&planned), None)
 }
 
 /// The claim an entry point's own spec holds a new build to: its inputs, every observation it has, its environment
@@ -607,6 +619,12 @@ pub fn findings(checks: &[EntryCheck], sources: &[PathBuf], base: Option<&Path>)
 /// as unsupported, and the others are still checked. With `cache`, each proof runs under the proof cache
 /// ([`check_with`]).
 pub fn check_builds(before: &Path, after: &Path, only: &[String], trace_bound: Option<u32>, bounds: ClaimBounds, cache: Option<&Path>, environment: &[ModeledCall]) -> Result<Vec<EntryCheck>, Unsupported> {
+    check_builds_projected(before, after, only, trace_bound, bounds, cache, environment, None)
+}
+
+/// Check a return or the ordered effects independently, retaining the full recording stubs on both builds.
+pub fn check_builds_projected(before: &Path, after: &Path, only: &[String], trace_bound: Option<u32>, bounds: ClaimBounds,
+                              cache: Option<&Path>, environment: &[ModeledCall], projection: Option<Projection>) -> Result<Vec<EntryCheck>, Unsupported> {
     // The modelled calls a person declares (`--environment`): the environment stream's (E1–E3). Until it builds
     // their models, they are refused before any entry point is checked.
     crate::environment::declared(environment)?;
@@ -620,7 +638,15 @@ pub fn check_builds(before: &Path, after: &Path, only: &[String], trace_bound: O
     let obligations = crate::observations::compare(&old, &new);
     let mut out = Vec::new();
     for spec in old.iter().filter(|s| only.is_empty() || only.contains(&s.id)) {
-        let claim = with_environment(claim_for(spec, trace_bound, bounds.clone()), environment, &spec.handler);
+        let mut claim = with_environment(claim_for(spec, trace_bound, bounds.clone()), environment, &spec.handler);
+        if let Some(projection) = projection {
+            claim.observations.retain(|o| matches!((projection, o),
+                (Projection::Result, Observation::Result) | (Projection::Effects, Observation::Effect { .. })));
+            if claim.observations.is_empty() {
+                return Err(unsupported(format!("{} declares no {projection:?} observation", spec.id)));
+            }
+            claim.contract.required = claim.observations.iter().map(Observation::id).collect();
+        }
         let matched = obligations.iter().find(|o| o.entry == spec.id && o.change != Change::Removed && o.change != Change::New).map(|o| o.new_entry.clone().unwrap_or_else(|| spec.id.clone()));
         let counterpart = matched.as_ref().and_then(|id| new.iter().find(|s| &s.id == id));
         let new_entry = matched.clone().filter(|id| id != &spec.id);
@@ -639,7 +665,7 @@ pub fn check_builds(before: &Path, after: &Path, only: &[String], trace_bound: O
             out.push(EntryCheck { entry: spec.id.clone(), handler: spec.handler.clone(), source_line: spec.source_line, new_entry, checked: Some(checked), unsupported: None });
             continue;
         };
-        match check_with(&claim, spec, counterpart, before, after, cache) {
+        match check_projected(&claim, spec, counterpart, before, after, cache, projection) {
             Ok(checked) => out.push(EntryCheck { entry: spec.id.clone(), handler: spec.handler.clone(), source_line: spec.source_line, new_entry, checked: Some(checked), unsupported: None }),
             Err(u) => out.push(EntryCheck { entry: spec.id.clone(), handler: spec.handler.clone(), source_line: spec.source_line, new_entry, checked: None, unsupported: Some(u.what.clone()) }),
         }
@@ -740,7 +766,7 @@ struct Planned {
 
 /// [`check`], with the builds, the proof and the JVM run under `work`.
 #[allow(clippy::too_many_arguments)] // the parts of one check
-fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &EntryPointSpec, before: &Path, after: &Path, cache: Option<&Path>, planned: Option<&Planned>) -> Result<Checked, Unsupported> {
+fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &EntryPointSpec, before: &Path, after: &Path, cache: Option<&Path>, planned: Option<&Planned>, projection: Option<Projection>) -> Result<Checked, Unsupported> {
     let required = claim.contract.required.clone();
     let environment = claim.environment.clone().unwrap_or_else(|| old.environment.clone());
     let handler = old.handler.split('#').next().unwrap_or("").rsplit('.').next().unwrap_or("").to_string();
@@ -886,7 +912,7 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
         }
     }
     let models = calls.iter().map(|c| lowered(c)).collect();
-    let model = Model { calls, observed, bound: environment.trace_bound as usize, exceptions, literals: literals.into_iter().collect(), classes: classes.into_iter().collect(), models, string_bound: claim.bounds.max_array_length as usize, content: planned.is_some() };
+    let model = Model { projection, calls, observed, bound: environment.trace_bound as usize, exceptions, literals: literals.into_iter().collect(), classes: classes.into_iter().collect(), models, string_bound: claim.bounds.max_array_length as usize, content: planned.is_some() };
 
     let _ = std::fs::remove_dir_all(work);
     let old_version = prepare(old, &before_cp, &before_local, before, &work.join("before"), &model, 1, planned.map(|p| p.before.as_slice()))?;
@@ -995,6 +1021,9 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
             };
             if tb.kind != ta.kind {
                 refuted.insert("exception".into());
+                if projection == Some(Projection::Result) && (tb.kind == 0 || ta.kind == 0) {
+                    refuted.insert("result".into());
+                }
             } else if tb.kind == 0 && tb.result != ta.result {
                 refuted.insert("result".into());
             }
@@ -1013,6 +1042,9 @@ fn check_in(work: &Path, claim: &CanonicalClaim, old: &EntryPointSpec, new: &Ent
                 for i in tb.attempts.iter().chain(&ta.attempts).map(|x| x.0) {
                     refuted.insert(format!("effect:{}", model.calls[i]));
                 }
+            }
+            if projection.is_some() && !required.iter().any(|id| refuted.contains(id)) {
+                return Ok(Checked { proof, before: Some(tb), after: Some(ta), ..unresolved("the replay did not differ on a selected observation".into()) });
             }
             let accounting = required.iter().map(|id| Accounted { observation: id.clone(), state: if refuted.contains(id) { ObservationState::Refuted } else { ObservationState::Unresolved } }).collect();
             let stubs = model.calls.iter().map(|c| short(c)).collect::<Vec<_>>().join(", ");
@@ -1575,7 +1607,8 @@ fn rewrite(spec: &EntryPointSpec, cp: &ClassPath, local: &[String], build: &Path
         None => ("()V", &no_constructor),
     };
     std::fs::write(out.join(format!("{entry}.class")), entry_class(&entry, &stubs, class_name, method_name, &method.descriptor, descriptor, ctor_descriptor, ctor, model, &present, tag, planned)).map_err(|e| unsupported(e.to_string()))?;
-    Ok(Prepared { target: format!("{}#{METHOD}", entry.replace('/', ".")), entry, descriptor: entry_descriptor, params, strings })
+    let checked_method = if model.projection.is_some() { "project" } else { METHOD };
+    Ok(Prepared { target: format!("{}#{checked_method}", entry.replace('/', ".")), entry, descriptor: entry_descriptor, params, strings })
 }
 
 /// How a stub of `call` (descriptor `d`) reads `path` at the call sites `sites`; `known` are the payload classes a
@@ -2410,6 +2443,51 @@ fn entry_class(name: &str, stubs: &str, handler: &str, method: &str, method_desc
     code.load(Kind::Ref, log);
     code.return_(Some(Kind::Ref));
     let entry_descriptor = format!("({})[J", inputs.iter().chain(&environment).map(Type::descriptor).collect::<String>());
+    if let Some(projection) = model.projection {
+        let call = w.pool.method_ref(name, METHOD, &entry_descriptor);
+        let mut selected = CodeBuilder::new();
+        selected.max_stack = slot.max(8);
+        selected.max_locals = slot + 2;
+        for (t, s) in inputs.iter().chain(&environment).zip(&slots) {
+            selected.load(kind_of(t), *s);
+        }
+        selected.op_u16(0xb8, call);
+        selected.store(Kind::Ref, slot);
+        match projection {
+            Projection::Effects => {
+                // Drop the return and escaping-exception words. Count, unresolved marker and ordered payloads stay.
+                for index in [0, 1] {
+                    selected.load(Kind::Ref, slot);
+                    selected.iconst(index);
+                    selected.op(0x09); // lconst_0
+                    selected.op(0x50); // lastore
+                }
+                selected.load(Kind::Ref, slot);
+            }
+            Projection::Result => {
+                selected.iconst(3);
+                selected.op_u8(0xbc, 11); // long[3]: absence of a return, value, unresolved marker
+                selected.store(Kind::Ref, slot + 1);
+                for (index, raw) in [(0, 0), (1, 1), (2, 3)] {
+                    selected.load(Kind::Ref, slot + 1);
+                    selected.iconst(index);
+                    selected.load(Kind::Ref, slot);
+                    selected.iconst(raw);
+                    selected.op(0x2f); // laload
+                    if index == 0 {
+                        selected.op(0x09);
+                        selected.op(0x94); // lcmp: zero for a return, one for every exception
+                        selected.op(0x85); // i2l
+                    }
+                    selected.op(0x50);
+                }
+                selected.load(Kind::Ref, slot + 1);
+            }
+        }
+        selected.return_(Some(Kind::Ref));
+        w.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: "project".into(),
+                                      descriptor: entry_descriptor.clone(), code: Some(selected) });
+    }
     w.methods.push(MethodWriter { access: flags::PUBLIC | flags::STATIC, name: METHOD.into(), descriptor: entry_descriptor, code: Some(code) });
     w.to_bytes()
 }

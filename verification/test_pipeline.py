@@ -616,7 +616,7 @@ class PipelineTest(unittest.TestCase):
         """A constructed example in the stub repo, with build.py beside it to plan its run."""
         tools = self.repo.dir / "examples/tools"
         tools.mkdir(parents=True, exist_ok=True)
-        for module in ("build.py", "result_format.py"):  # build.py and the modules it imports
+        for module in ("build.py", "checker_output.py", "result_format.py"):  # build.py and the modules it imports
             shutil.copy(HERE.parent / "examples/tools" / module, tools / module)
         if not (tools / "targets").exists():
             shutil.copytree(HERE.parent / "examples/tools/targets", tools / "targets",

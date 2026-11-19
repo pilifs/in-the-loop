@@ -72,6 +72,7 @@ def receipt_history(folder, plan, entries):
         if transfer:
             limits.append(transfer["mapping"])
         receipts.append({
+            "firstBlocker": evidence.get("problem") or (attempt.get("execution") or {}).get("reason"),
             "restsOn": rests, "limits": limits, "id": a["attempt"], "path": a["path"], "claimKey": (claim.get("target") or {}).get("claimKey") or recorded_key,
             "preparedClaim": claim.get("id"), "taskInputsCurrent": a["path"] in current,
             "problem": a["problem"], "execution": a["execution"], "conclusion": a["status"],
@@ -114,14 +115,18 @@ def inventory(folder, example, target, claim_filter=None, revision=None):
             if not data or data.get("schema") != "target-execution/v1" or data.get("id") != path.parent.name:
                 continue
             executions.append({**{k: data.get(k) for k in ("id", "claimKey", "revisions", "preparedClaim", "bindingId", "status",
-                               "startedAt", "retryOf", "lastCompletedStage", "missing", "refusal", "injected",
-                               "job", "budget", "strategy", "receipt")}, "path": path.relative_to(folder).as_posix()})
+                               "startedAt", "retryOf", "lastCompletedStage", "firstBlocker", "missing", "refusal", "injected",
+                               "job", "budget", "budgetExhausted", "usage", "strategy", "receipt")}, "path": path.relative_to(folder).as_posix()})
+        by_id = {r["id"]: r for r in entries}
+        for e in executions:
+            if not e.get("firstBlocker") and e["id"] in by_id:
+                e["firstBlocker"] = by_id[e["id"]]["firstBlocker"]
         known = {e["id"] for e in executions}
         for r in entries:
             if r["id"] not in known:
                 executions.append({"id": r["id"], "claimKey": r["claimKey"], "revisions": revisions,
                                    "preparedClaim": r["preparedClaim"], "status": r["execution"], "path": r["path"],
-                                   "startedAt": r["ingestedAt"], "lastCompletedStage": "receipt-published"})
+                                   "startedAt": r["ingestedAt"], "firstBlocker": r["firstBlocker"], "lastCompletedStage": "receipt-published"})
         executions.sort(key=lambda e: e["id"])
         row = {
             "task": name, "kind": task["kind"], "revisions": revisions,
@@ -163,8 +168,17 @@ def inventory(folder, example, target, claim_filter=None, revision=None):
         group["subjects"].append(row)
     if claim_filter and not claims and not replays:
         raise ValueError(f"no claim {claim_filter!r} matches the selected revision of {example['id']}")
+    required = {}
+    for group in claims.values():
+        for subject in group["subjects"]:
+            if subject.get("expected") and group["claimKey"]:
+                pair = group["claimKey"], tuple(subject["revisions"])
+                required.setdefault(pair, set()).add(subject["conclusion"])
     return {"schema": "example-claim-history/v1", "example": example["id"], "claims": list(claims.values()),
+            "coverage": {"requiredClaimSubjects": len(required), "decidedClaimSubjects": sum(
+                len(answers) == 1 and bool(answers & {"established", "refuted"}) for answers in required.values())},
             "replays": replays, "otherExampleJobs": other_jobs}
+
 
 def markdown(value):
     lines = [f"# Example {value['example']} claim history", ""]
@@ -175,6 +189,8 @@ def markdown(value):
                           + ", ".join(subject["revisions"]) + f". Eligible conclusion: {subject['conclusion']}.", ""])
             if last:
                 lines.append(f"Latest execution [{last['id']}]({last['path']}) reached {last['lastCompletedStage']}.")
+                if last.get("firstBlocker"):
+                    lines.append("First blocker: " + last["firstBlocker"])
                 if last.get("missing"):
                     lines.append("Missing evidence: " + ", ".join(last["missing"]) + ".")
             lines.append("")

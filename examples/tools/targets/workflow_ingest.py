@@ -491,7 +491,8 @@ def replay_outcome(plan, target, bound, records, oracle):
 
 def verifier_outcome(plan, bound, records):
     """The flat fields of a proof attempt, from its one verifier record (the module's docstring)."""
-    import build
+    import checker_output as wire
+    from result_format import CONCLUSION
     verifiers = [r for r in records if r.kind == "verifier"]
     if len(verifiers) != 1:
         raise Refused(f"a {plan.kind} attempt has {len(verifiers)} verifier records, not one", stage="records")
@@ -499,7 +500,7 @@ def verifier_outcome(plan, bound, records):
     outcomes = list(v.observations) if v.observations is not None else None
     if plan.kind != "prove" and outcomes is not None:
         outcomes = outcomes if len(outcomes) == 1 else None
-    readable = outcomes is not None and outcomes and all(build.is_outcome(o) for o in outcomes)
+    readable = outcomes is not None and outcomes and all(wire.is_outcome(o) for o in outcomes)
     output = "".join(o["output"] for o in outcomes) if readable else ""
     fields = {"counterexamples": [], "proof": None, "problem": None, "domain": None, "replay": None,
               "properties": None, "property": None}
@@ -512,19 +513,19 @@ def verifier_outcome(plan, bound, records):
         execution = {"status": "killed", "exitCode": v.exitCode, "reason": "the verifier was killed"}
     else:
         # An exit code jvmcontract uses for a verdict (0 or 1) completes only with a readable outcome.
-        execution = build.execution_status(v.exitCode, "--json outcome" if readable else "")
+        execution = wire.execution_status(v.exitCode, "--json outcome" if readable else "")
         if execution["status"] == "invalid-output":
             execution["reason"] = (f"the verifier exited with code {v.exitCode}, and its --json outcome is missing or "
                                    "unreadable: no verdict, a violation least of all")
     verdict = None
     if execution["status"] == "completed":
         if plan.kind == "prove":
-            props = [build.property_record(o, f"property-{n}" if len(outcomes) > 1 else None, None)
+            props = [wire.property_record(o, f"property-{n}" if len(outcomes) > 1 else None, None)
                         for n, o in enumerate(outcomes, 1)]
-            headline = build.property_headline([o.get("verdict") for o in outcomes])
+            headline = wire.property_headline([o.get("verdict") for o in outcomes])
             witnesses = [r["counterexample"] for r in props if r["counterexample"]]
             evidence = witnesses if all(r["counterexample"] for r in props if r["verdict"] == "violation") else []
-            execution, verdict = build.conclude_outcome(v.exitCode, output, {"verdict": headline}, evidence, True)
+            execution, verdict = wire.conclude_outcome(v.exitCode, output, {"verdict": headline}, evidence, True)
             if verdict is not None:
                 lead = next(r for want in ("violation", "unverifiable", "verified") for r in props if r["verdict"] == want)
                 fields.update({"properties": props, "counterexamples": witnesses, "domain": lead["domain"],
@@ -534,8 +535,8 @@ def verifier_outcome(plan, bound, records):
                                             **({"throws": lead["throws"]} if lead.get("throws") else {})}})
         else:
             outcome = outcomes[0]
-            witnesses = build.equivalence_counterexamples(outcome)
-            execution, verdict = build.conclude_outcome(v.exitCode, output, outcome, witnesses, True)
+            witnesses = wire.equivalence_counterexamples(outcome)
+            execution, verdict = wire.conclude_outcome(v.exitCode, output, outcome, witnesses, True)
             if verdict is not None:
                 replay = outcome.get("replay")
                 fields.update({"counterexamples": witnesses if verdict == "violation" else [], "domain": outcome.get("domain"),
@@ -597,17 +598,17 @@ def verifier_outcome(plan, bound, records):
                 fields.update(proof=None, problem=reason)
                 break
         if len(outcomes) == 1:
-            fields["stated"] = build.stated_record(outcomes[0])
+            fields["stated"] = wire.stated_record(outcomes[0])
     name_revisions(plan, fields["counterexamples"])
     vacuous = verdict == "verified" and any((r or {}).get("vacuous") for r in (fields["properties"] or []))
     if vacuous:
         fields["coverage"] = {"vacuous": True, "reason": next(r["vacuous"] for r in fields["properties"] if r.get("vacuous"))}
-    status = build.CONCLUSION.get(verdict) if verdict else None
+    status = CONCLUSION.get(verdict) if verdict else None
     if execution["status"] != "completed" or verdict is None:
-        expectation, label = "not-evaluable", build.no_verdict_label(execution)
+        expectation, label = "not-evaluable", wire.no_verdict_label(execution)
     else:
         expectation = "yes" if status == plan.expected and not vacuous else "no"
-        label = build.VERDICT_LABEL[verdict] + (", vacuously: no input in the domain reaches the calls" if vacuous else "")
+        label = wire.VERDICT_LABEL[verdict] + (", vacuously: no input in the domain reaches the calls" if vacuous else "")
     fields.update({"verdict": verdict, "verdictLabel": label, "execution": execution, "expectation": expectation})
     if fields["problem"] is None and execution["status"] != "completed":
         fields["problem"] = execution["reason"]

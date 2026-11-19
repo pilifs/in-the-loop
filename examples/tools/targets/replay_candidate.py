@@ -35,6 +35,8 @@ def source(entry, claim, inputs, names):
             literal = str(value)
         statements.append(f'{arg["type"]} {arg["name"]} = {literal};')
     condition = claim.get("assume") or "true"
+    if claim.get("allowedChange"):
+        condition = f'({condition}) && !({claim["allowedChange"]})'
     statements.append(f'if (!({condition})) {{ System.out.println("outside"); return; }}')
     ret = "long" if descriptor.endswith("J") else "int"
     statements.extend([f"{ret} result = 0;", "Throwable failure = null;",
