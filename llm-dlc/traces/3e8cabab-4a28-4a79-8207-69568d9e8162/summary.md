@@ -2672,31 +2672,31 @@ Since 2026-11-19 the machine has Google's Chrome for Testing headless shell (158
 
 ### The foundation-first plan and its three domain workstreams, as a brief for one agent's run
 
-change `mwmkmrmroqvk` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`b2135a8bb359`](https://github.com/pilifs/in-the-loop/commit/b2135a8bb3596388414fb3b841475ef8fd5a69f5) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Copied unchanged from the user's planning folder (overall-plan-foundation-domain-streams-in-the-loop.md, dated 2026-11-19, baseline 65df5fe7). Part 1 is a foundation milestone: qualify the checker (VF-044's ordered pass, VF-042, I026, VF-041), bind executed claims to planned ones and keep attempt history discoverable, a shared 71-input array domain with its observer, and transfer and cost checks. Part 2 is the Spring binding and authorization, Java data processing and runtime safety workstreams that resume after Part 1's exit checks. Its links are pinned to commit 65df5fe7 on GitHub and to upstream sources. It is the brief for a single-agent run with Codex.
 
 ### Record verification results for 1 job(s)
 
-change `vmttywvmzuts` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`711a4fc4489e`](https://github.com/pilifs/in-the-loop/commit/711a4fc4489e47c111256e2e05f0d7387ce6ac3d) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261119-154132-challenge-i028-and-i029-on-the-shared-ca: passed: 1 passed step(s) in 15.4s, peak 91.2 MiB (estimated 6m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the foundation-domain-streams run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `uqyzxqynxtly` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`ff20c56e3a08`](https://github.com/pilifs/in-the-loop/commit/ff20c56e3a08c2d20b354ca5dd36b81749f7fed1) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261119-155814-foundation-requalification-of-290-preser: passed: 1 passed step(s) in 16.4s, peak 263.6 MiB (estimated 10m00s, 4.0 GiB); 3 output file(s) changed; signals: jvmcontract:holds×2 Applied 3 output(s). Collected by the watcher of the foundation-domain-streams run, which keeps the queue while the run is under way.
 
 ### Record verification results for 4 job(s)
 
-change `klvxszvvstpz` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`38a73fbfde2e`](https://github.com/pilifs/in-the-loop/commit/38a73fbfde2e04605e1f4e03a2d829ea8c1526cc) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 4 of the 4 job(s). 20261119-155814-foundation-requalification-of-287-preser: passed: 1 passed step(s) in 2m01s, peak 2.1 GiB (estimated 10m00s, 6.0 GiB); 4 output file(s) changed; signals: jvmcontract:holds×2 Applied 4 output(s). 20261119-155814-foundation-requalification-of-289-preser: passed: 1 passed step(s) in 1m00s, peak 551.7 MiB (estimated 10m00s, 4.0 GiB); 3 output file(s) changed; signals: jvmcontract:holds×2 Applied 3 output(s). 20261119-155814-foundation-requalification-of-307-mutant: passed: 1 passed step(s) in 1m34s, peak 1.2 GiB (estimated 10m00s, 6.0 GiB); 5 output file(s) changed; signals: jvmcontract:fails×2 Applied 5 output(s). 20261119-155814-foundation-requalification-of-307-preser: passed: 1 passed step(s) in 1m37s, peak 992.6 MiB (estimated 10m00s, 6.0 GiB); 5 output file(s) changed; signals: jvmcontract:holds×2 Applied 5 output(s). Collected by the watcher of the foundation-domain-streams run, which keeps the queue while the run is under way.
 
 ### Record verification results for 4 job(s)
 
-change `tylkwuzvmupp` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+[`ad49b99c7ab8`](https://github.com/pilifs/in-the-loop/commit/ad49b99c7ab8277bee72e641f547deb8b94ac78f) · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 3 of the 4 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-164548-197-paired-array-observation-return-only: passed: 1 passed step(s) in 3.8s, peak 107.9 MiB (estimated 2m00s, 2.0 GiB); 13 output file(s) changed; signals: example:task-as-expected×1 Applied 13 output(s). 20261119-164549-197-integrated-jbmc-preserving-and-discr: failed: 1 failed step(s) in 5.6s, peak 87.3 MiB (estimated 5m00s, 3.0 GiB); 1 output file(s) changed 20261119-164549-197-paired-array-observation-both-roots: passed: 1 passed step(s) in 3.6s, peak 107.7 MiB (estimated 2m00s, 2.0 GiB); 13 output file(s) changed; signals: example:task-as-expected×1 Applied 13 output(s). 20261119-164549-197-paired-array-observation-right-root: passed: 1 passed step(s) in 3.8s, peak 110.2 MiB (estimated 2m00s, 2.0 GiB); 13 output file(s) changed; signals: example:task-as-expected×1 Applied 13 output(s). Collected by the watcher of the foundation-domain-streams run, which keeps the queue while the run is under way.
 

@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (open) |
+| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (ended) |
 | When | 2026-11-17 12:37 UTC to 2026-11-19 21:18 UTC (3400 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.326 |
@@ -1672,61 +1672,61 @@ Brings in the five commits the session in tmux window 3 made in the browser-note
 
 ### The foundation-first plan and its three domain workstreams, as a brief for one agent's run
 
-change `mwmkmrmroqvk` · [log `29e2f2d886b7`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/29e2f2d886b716edcbb8a114051453edec5c03c2fc2fda72558af242b8b61322.jsonl.gz)
+[`b2135a8bb359`](https://github.com/pilifs/in-the-loop/commit/b2135a8bb3596388414fb3b841475ef8fd5a69f5) · [log `29e2f2d886b7`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/29e2f2d886b716edcbb8a114051453edec5c03c2fc2fda72558af242b8b61322.jsonl.gz)
 
 Copied unchanged from the user's planning folder (overall-plan-foundation-domain-streams-in-the-loop.md, dated 2026-11-19, baseline 65df5fe7). Part 1 is a foundation milestone: qualify the checker (VF-044's ordered pass, VF-042, I026, VF-041), bind executed claims to planned ones and keep attempt history discoverable, a shared 71-input array domain with its observer, and transfer and cost checks. Part 2 is the Spring binding and authorization, Java data processing and runtime safety workstreams that resume after Part 1's exit checks. Its links are pinned to commit 65df5fe7 on GitHub and to upstream sources. It is the brief for a single-agent run with Codex.
 
 ### VF-045: a Codex worker can pick up the run-brief skill by itself, since nothing marks it as one only a person starts
 
-change `szltqvkkotvv` · [log `2a0af9ae7d54`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/2a0af9ae7d54f52acd588c05f38d30539cd486dc2b9d02e36dbd14745d900064.jsonl.gz)
+[`23dd5ae56eee`](https://github.com/pilifs/in-the-loop/commit/23dd5ae56eeeb32ff23d3256a873e7fdc50ac2b3) · [log `2a0af9ae7d54`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/2a0af9ae7d54f52acd588c05f38d30539cd486dc2b9d02e36dbd14745d900064.jsonl.gz)
 
 In the first minute of the single-agent Codex run foundation-domain-streams, the agent said it would use the run-brief skill. It read the skill and ran brief_run.py status, which is read-only, then chose to work on the brief directly, starting nothing. Only publish and review-findings are marked as started by a person alone, for both clients. run-brief, single-agent-run, prove-java-change and run-verification are not. Recorded as minor, at the user's word, to address later by a skill change or by rewording how a run is invoked.
 
 ### Record verification results for 1 job(s)
 
-change `xtxykmnvqzwm` · [log `8f9bf47d929a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/8f9bf47d929ac4df661ed8db937a955e0195b6fa5334caa7effd6ccf7f769d3a.jsonl.gz)
+[`79536d5f14c4`](https://github.com/pilifs/in-the-loop/commit/79536d5f14c4b14849f9c974aa1826f86da17a15) · [log `8f9bf47d929a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/8f9bf47d929ac4df661ed8db937a955e0195b6fa5334caa7effd6ccf7f769d3a.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261119-152603-foundation-baseline-on-seven-existing-ar: passed: 1 passed step(s) in 20.0s, peak 3.8 GiB (estimated 5m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the foundation-domain-streams run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `vmttywvmzuts` · [log `02d7d2515a87`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/02d7d2515a872b91fda69ece9e7b95d2f1ce165b14733a2a1a51c1b4d6285846.jsonl.gz)
+[`711a4fc4489e`](https://github.com/pilifs/in-the-loop/commit/711a4fc4489e47c111256e2e05f0d7387ce6ac3d) · [log `02d7d2515a87`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/02d7d2515a872b91fda69ece9e7b95d2f1ce165b14733a2a1a51c1b4d6285846.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261119-154132-challenge-i028-and-i029-on-the-shared-ca: passed: 1 passed step(s) in 15.4s, peak 91.2 MiB (estimated 6m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the foundation-domain-streams run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `uqyzxqynxtly` · [log `44c38faaa6d6`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/44c38faaa6d6b92e04b2c70f0e60b5e1b679f26425ed0bae67bd838627a1713f.jsonl.gz)
+[`ff20c56e3a08`](https://github.com/pilifs/in-the-loop/commit/ff20c56e3a08c2d20b354ca5dd36b81749f7fed1) · [log `44c38faaa6d6`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/44c38faaa6d6b92e04b2c70f0e60b5e1b679f26425ed0bae67bd838627a1713f.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261119-155814-foundation-requalification-of-290-preser: passed: 1 passed step(s) in 16.4s, peak 263.6 MiB (estimated 10m00s, 4.0 GiB); 3 output file(s) changed; signals: jvmcontract:holds×2 Applied 3 output(s). Collected by the watcher of the foundation-domain-streams run, which keeps the queue while the run is under way.
 
 ### Record verification results for 4 job(s)
 
-change `klvxszvvstpz` · [log `3916233874ca`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/3916233874ca0e57de3e59d203b334d793c28a708e7c3b5ee444661ece60230b.jsonl.gz)
+[`38a73fbfde2e`](https://github.com/pilifs/in-the-loop/commit/38a73fbfde2e04605e1f4e03a2d829ea8c1526cc) · [log `3916233874ca`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/3916233874ca0e57de3e59d203b334d793c28a708e7c3b5ee444661ece60230b.jsonl.gz)
 
 Outputs applied for 4 of the 4 job(s). 20261119-155814-foundation-requalification-of-287-preser: passed: 1 passed step(s) in 2m01s, peak 2.1 GiB (estimated 10m00s, 6.0 GiB); 4 output file(s) changed; signals: jvmcontract:holds×2 Applied 4 output(s). 20261119-155814-foundation-requalification-of-289-preser: passed: 1 passed step(s) in 1m00s, peak 551.7 MiB (estimated 10m00s, 4.0 GiB); 3 output file(s) changed; signals: jvmcontract:holds×2 Applied 3 output(s). 20261119-155814-foundation-requalification-of-307-mutant: passed: 1 passed step(s) in 1m34s, peak 1.2 GiB (estimated 10m00s, 6.0 GiB); 5 output file(s) changed; signals: jvmcontract:fails×2 Applied 5 output(s). 20261119-155814-foundation-requalification-of-307-preser: passed: 1 passed step(s) in 1m37s, peak 992.6 MiB (estimated 10m00s, 6.0 GiB); 5 output file(s) changed; signals: jvmcontract:holds×2 Applied 5 output(s). Collected by the watcher of the foundation-domain-streams run, which keeps the queue while the run is under way.
 
 ### A review of the Python architecture around jvmcontract, as a brief for a fast-follow run
 
-change `nqxqrnuslyyk` · [log `307b4d511a86`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/307b4d511a86b6f2a31713964402ad079bab9d254f6c2122d3f67fd34b4688a4.jsonl.gz)
+[`eb52dbc710f8`](https://github.com/pilifs/in-the-loop/commit/eb52dbc710f81da1d5c0e10d88c84bfde8df5998) · [log `307b4d511a86`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/307b4d511a86b6f2a31713964402ad079bab9d254f6c2122d3f67fd34b4688a4.jsonl.gz)
 
 Copied unchanged from the user's planning folder (in-the-loop-python-proof-architecture-review.md, reviewing 2fd3369f). It recommends keeping Python for planning, preparation, controls and evidence, and refactoring where a declared claim becomes a jvmcontract invocation. It names a concrete gap: the ordinary equivalence command drops a claim's input assumption, shown on 307, where three distinct claim keys produced one identical command. Its implementation order: fix the gap with two benign fixtures and a field audit; a typed invocation model, with 307 migrated in shadow runs; the adapter boundary on 289; and result decoding extracted, with comparable attempts. It is meant to follow the foundation work now under way. Its links are pinned to commit 2fd3369f on GitHub.
 
 ### Record verification results for 1 job(s)
 
-change `tsnplpuzyvls` · [log `64e0bf5112d6`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/64e0bf5112d6764e7ac0d87ec1f62aaac18abee62d21f5c7a4f23e6ec7a313c5.jsonl.gz)
+[`620dcf5795ac`](https://github.com/pilifs/in-the-loop/commit/620dcf5795ac8f95f9ea21a1c97eff46c69271aa) · [log `64e0bf5112d6`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/64e0bf5112d6764e7ac0d87ec1f62aaac18abee62d21f5c7a4f23e6ec7a313c5.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261119-163916-recheck-290-preservation-with-qualified: passed: 1 passed step(s) in 15.6s, peak 262.8 MiB (estimated 10m00s, 4.0 GiB); 3 output file(s) changed; signals: jvmcontract:holds×2 Applied 3 output(s). Collected by the watcher of the foundation-domain-streams run, which keeps the queue while the run is under way.
 
 ### Record verification results for 4 job(s)
 
-change `tylkwuzvmupp` · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
+[`ad49b99c7ab8`](https://github.com/pilifs/in-the-loop/commit/ad49b99c7ab8277bee72e641f547deb8b94ac78f) · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
 
 Outputs applied for 3 of the 4 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-164548-197-paired-array-observation-return-only: passed: 1 passed step(s) in 3.8s, peak 107.9 MiB (estimated 2m00s, 2.0 GiB); 13 output file(s) changed; signals: example:task-as-expected×1 Applied 13 output(s). 20261119-164549-197-integrated-jbmc-preserving-and-discr: failed: 1 failed step(s) in 5.6s, peak 87.3 MiB (estimated 5m00s, 3.0 GiB); 1 output file(s) changed 20261119-164549-197-paired-array-observation-both-roots: passed: 1 passed step(s) in 3.6s, peak 107.7 MiB (estimated 2m00s, 2.0 GiB); 13 output file(s) changed; signals: example:task-as-expected×1 Applied 13 output(s). 20261119-164549-197-paired-array-observation-right-root: passed: 1 passed step(s) in 3.8s, peak 110.2 MiB (estimated 2m00s, 2.0 GiB); 13 output file(s) changed; signals: example:task-as-expected×1 Applied 13 output(s). Collected by the watcher of the foundation-domain-streams run, which keeps the queue while the run is under way.
 
 ### Allow list: Filip Stankovic approved 59528b1b, 9d2b431b
 
-change `yvumlrwlonwv` · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
+[`7f44aa7da1f4`](https://github.com/pilifs/in-the-loop/commit/7f44aa7da1f488e9cc637b6a3e5e1d66bd8f97c8) · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
 
 Filip Stankovic approved 2 value(s) at their terminal with sync.py allow; the command committed the decision itself.
 
@@ -1735,13 +1735,13 @@ Filip Stankovic approved 2 value(s) at their terminal with sync.py allow; the co
 
 ### Pin the starting locale of the initializer mutation control
 
-change `puyvvsptynuo` · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
+[`23c53cefe560`](https://github.com/pilifs/in-the-loop/commit/23c53cefe560e9944b183fb6bccf72b4d00ab2af) · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
 
 The JVM on this host starts in en. The control correctly refused the locale change, but its diagnostic check expected a transition from en-US. Set the fixture JVM's language and country so that both ends of the transition are reproducible. The targeted observed_countermodels test failed before the change and now passes.
 
 ### Freeze the foundation benchmark selection (verification pending)
 
-change `puvsmmuyrtnv` · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
+[`f556d71c147b`](https://github.com/pilifs/in-the-loop/commit/f556d71c147b77834e3eacf33576ae44ddaca6fd) · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
 
 Seven existing array, alias and division cases are selected by exact ID. Record compiled class and oracle digests, checker tree, budget and cache conditions with the phase data for comparison on the integrated checker. The benchmark and timing-reader tests passed. The changed Rust run exposed a host-locale expectation, now pinned and retested separately.
 
@@ -1749,7 +1749,7 @@ Verification pending in job 20261119-152603-foundation-baseline-on-seven-existin
 
 ### Expose claim and revision history from the example handoff
 
-change `vtrzpvvwylxk` · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
+[`a83cb424ca6a`](https://github.com/pilifs/in-the-loop/commit/a83cb424ca6a8460a635cb66d26f903c87ba8ae6) · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
 
 Group source claims across subjects while keeping each subject's receipts, traceable jobs, replay tasks and beside-route acceptance. The existing task handoff still works. Import the dated preservation trials for 288, including the slower shared-lemma experiment and the bound-8 retry condition, without changing the frozen sidecar.
 
@@ -1757,7 +1757,7 @@ The public handoff listed all three source claims, six proof tasks and two repla
 
 ### Challenge shared call results at a heap merge (verification pending)
 
-change `ttlvlsktmpsq` · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
+[`03cded2868c6`](https://github.com/pilifs/in-the-loop/commit/03cded2868c6dd63b3ed6e9412b125885eb9ed97) · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
 
 Run the actual absorb operation on two heaps whose string results are numbered in opposite orders. Compare branch-dependent strings and saved array results on the public checker and JVM. The three controls were refuted. The allocation and recursion cases gave named refusals. Replace the old challenge script's allocating positive with a scalar loop that actually uses the rule. A capped probe verified it with 88 related calls.
 
@@ -1765,7 +1765,7 @@ Verification pending in job 20261119-154132-challenge-i028-and-i029-on-the-share
 
 ### Recheck the frozen preservation tasks (verification pending)
 
-change `ywllyqnwqxos` · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
+[`53ea07031ecf`](https://github.com/pilifs/in-the-loop/commit/53ea07031ecff2db0375d72e3be9c437060c7d2e) · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
 
 The native shared-callee challenge passed on revision 345f6fe4. Reuse that checker for the five original frozen comparisons. Each job retains the previous inputs, deadline and resource settings, with its own output path so the older results remain available. The five job schemas, commands and budgets were checked against their predecessors.
 
@@ -1773,7 +1773,7 @@ Verification pending in jobs 20261119-155814-foundation-requalification-of-287-p
 
 ### Bind input lengths before accepting a proof and retain its assumptions
 
-change `vlskszvymutr` · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
+[`ba85d39b9686`](https://github.com/pilifs/in-the-loop/commit/ba85d39b9686857edbea1e179fc6f8dd6293127d) · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
 
 Require a length-sensitive beside-route proof to use a bound declared by its frozen claim or task, or the versioned planner default committed in the job's source-claim link. A result cannot supply its own missing bound. Check witness values without counting the number of arguments as an array length. Report the provenance and carry evidence limits and checker assumptions independently into the JSON and text milestone views.
 
@@ -1781,7 +1781,7 @@ All 51 acceptance tests and all 22 milestone tests passed, including bound drift
 
 ### Measure Commons Text LCS on its release bytes and a shared-row control
 
-change `optrpnspplox` · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
+[`ac57da998c31`](https://github.com/pilifs/in-the-loop/commit/ac57da998c31e4ba4de7b63760185daf3f92b41d) · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
 
 Example 308 pins the release class, source blob, independent subsequence oracle and mutation patch. On JDK 21 the release JAR and source rebuild agreed on all 225 inputs, while the shared-row control disagreed on 44. Its score on ab and aa changed from 1 to 2. javap confirmed the two-dimensional allocation at offset 18 on each build.
 
@@ -1789,13 +1789,13 @@ Both ordinary JVM replay tasks passed and published receipts, including 44 misma
 
 ### Isolate submission identity in the pipeline test
 
-change `ovmrqsvwylss` · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
+[`99c98f25f480`](https://github.com/pilifs/in-the-loop/commit/99c98f25f480909cf3adf7a2e7b67e97ad209529) · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
 
 The test inherited the real Codex thread ID when exercising its synthetic Claude session, so it failed on this worker. Clear both identities in the fixture and cover the actual precedence when a Codex worker inherits a parent session. The formerly failing case and the affected pipeline test file passed.
 
 ### Qualify JVM settings and modeled error details (verification pending)
 
-change `tmokwlllqwry` · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
+[`0356aa8b8475`](https://github.com/pilifs/in-the-loop/commit/0356aa8b8475a11ce41fb22b8cae7653ab88beed) · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
 
 The native checker refuses to establish JVM messages and causes from exception details chosen by a JDK model. Class initialization observations refuse the known indirect property reads, dynamic member lookup and unbound CPU, filesystem or charset settings in the initialized classes. The four exception and six initializer countermodels now have named refusals on the checker and independent JVM controls. The changed Rust suite, focused JVM tests and inventory lint passed.
 
@@ -1803,7 +1803,7 @@ Verification pending in job 20261119-163916-recheck-290-preservation-with-qualif
 
 ### Qualify paired int-array observations (verification pending)
 
-change `mpxnznrlvpru` · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
+[`bd340fe62b7e`](https://github.com/pilifs/in-the-loop/commit/bd340fe62b7ee89c491fabbcf25ccd424fe7c872) · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
 
 Example 197 freezes three obligations over two possibly shared nullable arrays. The public checker reconstructs fresh heaps from scalar choices, compares the selected projections and replays each distinguishing input on a JVM. The replay returns its own observation descriptors, actual values and root identities. The evidence routes compare complete descriptors, alias policy, input bounds and bound environment against the independent plan.
 
@@ -1813,37 +1813,37 @@ Verification pending in jobs 20261119-164548-197-paired-array-observation-return
 
 ### Merge collected foundation verification results
 
-change `myzoozzwnzwv` · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
+[`b46a1d702d98`](https://github.com/pilifs/in-the-loop/commit/b46a1d702d985838e8a0eb2f5478411fbb3195e6) · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
 
 Bring in the collector's seven benchmark and frozen comparison jobs and the subsequent initializer-sensitive rerun. The baseline has 13 of 14 correct engine outcomes, four JVM-reproduced refutations and one JBMC memory refusal. All five frozen obligations had accepted outcomes when checked against the collected evidence, including the later 290 result. The trace generator reconciled the two generated index conflicts.
 
 ### Merge the single-agent run foundation-domain-streams into the line
 
-change `ywptznkxtsuo` · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
+[`1a7e957f76a4`](https://github.com/pilifs/in-the-loop/commit/1a7e957f76a42f41ec352ed8a336440a51fe9d3a) · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
 
 The single-agent run foundation-domain-streams (session d5915903-1b7e-4ced-97d0-04b700f48cd3) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.
 
 ### VF-046: OpenAI's cybersecurity filter ended the Codex run's turn on the CVE examples
 
-change `rpqnxnovxxqq` · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
+[`ad0a49bc3795`](https://github.com/pilifs/in-the-loop/commit/ad0a49bc37954829c4a74fdda25c626e21195440) · [log `329d5a4c2a28`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz)
 
 The single-agent Codex run foundation-domain-streams stopped with status 1 after 102 minutes of cycle 1, when Codex flagged the conversation for possible cybersecurity risk while the agent weighed example 289's authorization-bypass controls (I026). The finding records what happened, that any Codex turn deep in the CVE examples can be cut off the same way, that the failed turn reported no usage, and the choices for the user. The run's 18 commits were landed (ywptznkx) and the fast-follow run goes on in the same session.
 
 ### Expect a JVM replay for qualified equivalence claims, and index 197's receipts
 
-change `zqpyvkxwqttv` · [log `c985532ec270`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/c985532ec2708e469f2dd9a9d422f25e330f995d7285d1ab8fdfacc7b5a9d9e5.jsonl.gz)
+[`219a0e3e19d9`](https://github.com/pilifs/in-the-loop/commit/219a0e3e19d9e4384c3cbacdcb7690c80207a0d2) · [log `c985532ec270`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/c985532ec2708e469f2dd9a9d422f25e330f995d7285d1ab8fdfacc7b5a9d9e5.jsonl.gz)
 
 The default run after landing the foundation-domain-streams run failed in examples/tools/targets/test_acceptance.py. The run's paired-array work (mpxnznrl) replays a witness on the JVM for claims with frozen observation descriptors, as qualification.check requires, so 197's two refuted equivalence receipts record replay.by jvm, where the test expected the interpreter for every native equivalence refutation; the test now expects the JVM for qualified claims (dict observations or a bound environment) and the interpreter otherwise. 197's three receipts, collected while the run went on, were not yet in examples/index.json; build.py --index-only brought it up to date (return-only established, right-root and both-roots refuted, as expected). targets.test_acceptance passes.
 
 ### VF-046: the cybersecurity flag stays with the Codex session
 
-change `ykpskkstwxtp` · [log `4762412586d7`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/4762412586d7791a93372ea69d31fc1ce2c0686cd220b6f918612aa33066889a.jsonl.gz)
+[`39f0e378234d`](https://github.com/pilifs/in-the-loop/commit/39f0e378234d96f5b9d0ac7380487a970a9e788a) · [log `4762412586d7`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/4762412586d7791a93372ea69d31fc1ce2c0686cd220b6f918612aa33066889a.jsonl.gz)
 
 The fast-follow run python-proof-architecture continued the flagged session d5915903 with a prompt about Python plumbing, and Codex refused the turn after 20 seconds and 0 steps with the same message. The finding now records that a flagged session, or a fork of it, cannot be continued, so a run must go on from a new session.
 
 ### Allow list: Filip Stankovic approved fede9fa3
 
-change `qlvqkslntwyk` · [log `7b2b7e07dd5b`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7b2b7e07dd5b73769be7f9fe1c29c3b539d8ef9d08448601bcab917a7be9bba0.jsonl.gz)
+[`a05b3b2ba86d`](https://github.com/pilifs/in-the-loop/commit/a05b3b2ba86d979809e24722d782f71feed2fed2) · [log `7b2b7e07dd5b`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7b2b7e07dd5b73769be7f9fe1c29c3b539d8ef9d08448601bcab917a7be9bba0.jsonl.gz)
 
 Filip Stankovic approved 1 value(s) at their terminal with sync.py allow; the command committed the decision itself.
 
