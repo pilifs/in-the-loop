@@ -1,0 +1,46 @@
+[
+  {
+    "claimKey": "837ceed6b2ee72a9",
+    "entry": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+    "inputs": [
+      {
+        "name": "u",
+        "type": "int",
+        "value": 65536
+      },
+      {
+        "name": "v",
+        "type": "int",
+        "value": 65536
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "19f135afe3e64aaf5410a520d4498eb3a9bf562ce352e1f991210074be767ab2",
+        "classpath": [
+          "d2350ce730d3d898ebae3951fa20567694d62a4af10e8695c5c88e74a434cf52"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint u = 65536;\nint v = 65536;\nif (!((u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0))) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = org.apache.commons.math.util.MathUtils.gcd(u, v); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == (u < v ? u : v)));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          131072,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  }
+]

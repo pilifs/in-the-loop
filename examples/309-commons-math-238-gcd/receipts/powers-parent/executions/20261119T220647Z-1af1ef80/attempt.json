@@ -1,0 +1,276 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261119T220647Z-1af1ef80",
+  "task": "powers-parent",
+  "claimKey": "837ceed6b2ee72a9",
+  "revisions": [
+    "parent"
+  ],
+  "startedAt": "2026-11-19T22:06:47.110366+00:00",
+  "retryOf": null,
+  "budget": {
+    "checkerSeconds": 600
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261119-215949-math-238-direct-recipe-on-frozen-power-a",
+  "sourceCommit": "12aa88a27c1c7aab3b8d1a9798ca697abb43947d",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 0.001
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 0.0665
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 0.092
+    },
+    {
+      "stage": "candidate-recorded",
+      "elapsedSeconds": 187.0548
+    },
+    {
+      "stage": "witness-qualification",
+      "elapsedSeconds": 187.4093
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 187.4936
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "parent": {
+      "revision": "4564adbf19ebc6da19befcc7dbef310a00b4de13",
+      "target": {
+        "class": "org.apache.commons.math.util.MathUtils",
+        "method": "gcd",
+        "descriptor": "(II)I",
+        "loadedFrom": "slice/parent.jar",
+        "classSha256": "19f135afe3e64aaf5410a520d4498eb3a9bf562ce352e1f991210074be767ab2"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "1adbc9cf2977ba7b25c4dbee9c1a6a97274e0cbeafb9f1d23606db6de0ad286b",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "slice/parent.jar",
+          "sha256": "d2350ce730d3d898ebae3951fa20567694d62a4af10e8695c5c88e74a434cf52",
+          "role": "original",
+          "coordinates": null,
+          "origin": "an extracted source slice of 4564adbf19ebc6da19befcc7dbef310a00b4de13: src/java/org/apache/commons/math/util/MathUtils.java, compiled by JDK 21 with --release 21 -parameters -g"
+        }
+      ]
+    }
+  },
+  "bindingId": "8b43d55f734b7e81b02aa7a01c43553b623bd582f0035b0dc0ed03747640be85",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f0d04d56bbe9ef5b883e6425b233e4dcc9251c36/jvmcontract",
+    "prove",
+    "org.apache.commons.math.util.MathUtils#gcd(int, int)",
+    "--classes",
+    "prepare/parent/slice/parent.jar",
+    "--assume",
+    "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+    "--assert",
+    "result == (u < v ? u : v)",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "32",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "600",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "78d2b65af410c155a40fea6d7dce8a2fe52273ee272b5a44c1b4c0482d24ce93",
+    "commit": "12aa88a27c1c7aab3b8d1a9798ca697abb43947d",
+    "libTree": "f0d04d56bbe9ef5b883e6425b233e4dcc9251c36",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 32,
+      "maxArrayLength": 8
+    },
+    "timeout": 600,
+    "scope": {
+      "label": "extracted-source-slice",
+      "meaning": "an extracted source slice: the named files of the exact commit compiled alone against pinned published JARs, not the commit's own build; a claim about it is about those classes, and reaches the commit's build only through a recorded correspondence",
+      "method": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "revisions": {
+        "parent": {
+          "commit": "4564adbf19ebc6da19befcc7dbef310a00b4de13",
+          "loadedFrom": "slice/parent.jar",
+          "classSha256": "19f135afe3e64aaf5410a520d4498eb3a9bf562ce352e1f991210074be767ab2",
+          "origin": "an extracted source slice of 4564adbf19ebc6da19befcc7dbef310a00b4de13: src/java/org/apache/commons/math/util/MathUtils.java, compiled by JDK 21 with --release 21 -parameters -g",
+          "parameters": {
+            "names": [
+              "u",
+              "v"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "parent": [
+        {
+          "path": "slice/parent.jar",
+          "sha256": "d2350ce730d3d898ebae3951fa20567694d62a4af10e8695c5c88e74a434cf52",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "checkedEntry": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == (u < v ? u : v)"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "32"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "8"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "parent": "4564adbf19ebc6da19befcc7dbef310a00b4de13"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "5632",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx3686m"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "parent": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f0d04d56bbe9ef5b883e6425b233e4dcc9251c36/jvmcontract",
+          "gaps",
+          "--target",
+          "org.apache.commons.math.util.MathUtils#gcd(int, int)",
+          "--classes",
+          "prepare/parent/slice/parent.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "stdout": "verifier/probe-parent.stdout",
+        "stderr": "verifier/probe-parent.stderr",
+        "gaps": []
+      }
+    }
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 186.96,
+  "missing": [],
+  "replayEvidence": "replay.json",
+  "receipt": "receipts/powers-parent/20261119T220647Z-1af1ef80/result.json",
+  "preparedClaim": "d8adc1c650239da8",
+  "endedAt": "2026-11-19T22:09:54.604059+00:00"
+}

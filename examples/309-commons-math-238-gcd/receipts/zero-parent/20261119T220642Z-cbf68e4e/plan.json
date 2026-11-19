@@ -1,0 +1,199 @@
+{
+  "plan": {
+    "example": "309",
+    "task": "zero-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "zero-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "file": "claims/zero.json",
+      "sha256": "dce32fee22b4f54cfb10ecc6120a25a4be0161a3811a58f1b8ec1fcba2eeab49",
+      "property": "zero",
+      "claimKind": "property",
+      "statement": "For u equal to zero and v between zero and 255 inclusive, the gcd equals v.",
+      "assume": "u == 0 && v >= 0 && v <= 255",
+      "assert": "result == v",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 32
+      },
+      "defaultBounds": [
+        "maxArrayLength"
+      ],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "finite-driver",
+          "kind": "driver",
+          "path": "driver/gcd/GcdCases.java",
+          "sha256": "d1a9b4c3afed1ff34f8efa9f7c5f1b7cd82159e4cb9e1dec04ce2c1a51928b7f"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "426a122917c4f7ad27839b3855dc5d614e386fd9a7b19a20841c55f57c6d7050"
+        }
+      ],
+      "key": "29ba8401a8e5653f"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "source-slice",
+        "repository": "https://github.com/apache/commons-math",
+        "commit": "4564adbf19ebc6da19befcc7dbef310a00b4de13",
+        "published": [],
+        "slice": {
+          "files": [
+            "src/java/org/apache/commons/math/util/MathUtils.java"
+          ],
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "21",
+            "-parameters",
+            "-g"
+          ]
+        },
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/zero-parent"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261119-215949-math-238-direct-recipe-on-frozen-power-a/examples/309-commons-math-238-gcd",
+    "network": true
+  },
+  "inputs": {
+    "example": "309",
+    "task": "zero-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "zero-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "file": "claims/zero.json",
+      "sha256": "dce32fee22b4f54cfb10ecc6120a25a4be0161a3811a58f1b8ec1fcba2eeab49",
+      "property": "zero",
+      "claimKind": "property",
+      "statement": "For u equal to zero and v between zero and 255 inclusive, the gcd equals v.",
+      "assume": "u == 0 && v >= 0 && v <= 255",
+      "assert": "result == v",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 32
+      },
+      "defaultBounds": [
+        "maxArrayLength"
+      ],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "finite-driver",
+          "kind": "driver",
+          "path": "driver/gcd/GcdCases.java",
+          "sha256": "d1a9b4c3afed1ff34f8efa9f7c5f1b7cd82159e4cb9e1dec04ce2c1a51928b7f"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "426a122917c4f7ad27839b3855dc5d614e386fd9a7b19a20841c55f57c6d7050"
+        }
+      ],
+      "key": "29ba8401a8e5653f"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "source-slice",
+        "repository": "https://github.com/apache/commons-math",
+        "commit": "4564adbf19ebc6da19befcc7dbef310a00b4de13",
+        "published": [],
+        "slice": {
+          "files": [
+            "src/java/org/apache/commons/math/util/MathUtils.java"
+          ],
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "21",
+            "-parameters",
+            "-g"
+          ]
+        },
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "1d31ab35fe0df45a433a7658477b91535c2a2b7adf58dbcc5af7b01886df5f2d"
+}

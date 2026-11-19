@@ -1,0 +1,672 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261119-215949-math-238-direct-recipe-on-frozen-power-a",
+  "title": "MATH-238 direct recipe on frozen power and zero families",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6m23s, peak 994.5 MiB (estimated 9m00s, 4.0 GiB); 57 output file(s) changed; signals: example:task-as-expected×4",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261119-215949-math-238-direct-recipe-on-frozen-power-a.json",
+    "sha256": "6792c4ed8a672b0aae572913b2d5945a004d4dea0b2e93f90d345fd72c308e0c",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261119-215949-math-238-direct-recipe-on-frozen-power-a",
+      "title": "MATH-238 direct recipe on frozen power and zero families",
+      "description": "Retry the four checkpoint obligations with a typed direct recipe. Share each compiled revision across its claims and bind the statement, verifier invocation, and independent concrete witness qualification to the execution.",
+      "kind": "other",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "309"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-19T21:59:49+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "9m",
+        "timeout": "28m"
+      },
+      "steps": [
+        {
+          "name": "Four property obligations sharing two preparations",
+          "run": "python3 examples/tools/build.py 309 --tasks zero-parent,zero-fix,powers-parent,powers-fix",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/309-commons-math-238-gcd/receipts"
+      ]
+    }
+  },
+  "sourceCommit": "12aa88a27c1c7aab3b8d1a9798ca697abb43947d",
+  "startedAt": "2026-11-19T22:04:04+00:00",
+  "finishedAt": "2026-11-19T22:13:06+00:00",
+  "wallSeconds": 542.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3892723,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1680.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 540.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1042771968,
+    "wallSeconds": 384.0,
+    "cpuSeconds": 385.7,
+    "memoryOfEstimate": 0.24,
+    "durationOfEstimate": 0.71
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Four property obligations sharing two preparations",
+      "run": "python3 examples/tools/build.py 309 --tasks zero-parent,zero-fix,powers-parent,powers-fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1680.0,
+      "cancelled": false,
+      "wallSeconds": 383.995,
+      "cpuSeconds": 385.658,
+      "cpuThrottledSeconds": 0.462,
+      "peakMemoryBytes": 1042771968,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-four-property-obligations-shar.log",
+        "lines": 8,
+        "bytes": 850,
+        "sha256": "88531a99b2ba957ae3414e1cc318092ecdf3f423214feded15272382339938ea",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 4
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "309-commons-math-238-gcd: task zero-parent: established (completed; as expected), receipt receipts/zero-parent/20261119T220642Z-cbf68e4e/result.json",
+          "groups": [
+            "309",
+            "zero-parent",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "309-commons-math-238-gcd: task zero-fix: established (completed; as expected), receipt receipts/zero-fix/20261119T220644Z-f3179886/result.json",
+          "groups": [
+            "309",
+            "zero-fix",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "309-commons-math-238-gcd: task powers-parent: refuted (completed; as expected), receipt receipts/powers-parent/20261119T220647Z-1af1ef80/result.json",
+          "groups": [
+            "309",
+            "powers-parent",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "309-commons-math-238-gcd: task powers-fix: established (completed; as expected), receipt receipts/powers-fix/20261119T220954Z-969e5847/result.json",
+          "groups": [
+            "309",
+            "powers-fix",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "309-commons-math-238-gcd: running task zero-parent (target route)",
+        "309-commons-math-238-gcd: task zero-parent: established (completed; as expected), receipt receipts/zero-parent/20261119T220642Z-cbf68e4e/result.json",
+        "309-commons-math-238-gcd: running task zero-fix (target route)",
+        "309-commons-math-238-gcd: task zero-fix: established (completed; as expected), receipt receipts/zero-fix/20261119T220644Z-f3179886/result.json",
+        "309-commons-math-238-gcd: running task powers-parent (target route)",
+        "309-commons-math-238-gcd: task powers-parent: refuted (completed; as expected), receipt receipts/powers-parent/20261119T220647Z-1af1ef80/result.json",
+        "309-commons-math-238-gcd: running task powers-fix (target route)",
+        "309-commons-math-238-gcd: task powers-fix: established (completed; as expected), receipt receipts/powers-fix/20261119T220954Z-969e5847/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "ca45874d01822e7d14f723142d4c8903561178c3ca56d974bcbb20f46e1c4193",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/plan.json",
+      "change": "added",
+      "bytes": 5592,
+      "sha256": "4349dc8f2728750e777ee53d4c0c301be0289eda402a959e9088c247d0bffb45",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 3583,
+      "sha256": "c0d57306072d922efb0a040da3d034e18646be7e14dccd31b355a0b2346893a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/records/controls.json",
+      "change": "added",
+      "bytes": 16014,
+      "sha256": "4496af794c2df89a6a695d4ae42a27112d387e346457b4c1b0986ffa48db7ef4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/records/execution.json",
+      "change": "added",
+      "bytes": 28998,
+      "sha256": "ba337ea4e5b264057174bda5e7e01b9ff671f14a1d45a30dc0cd4da9af274175",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/records/streams.json",
+      "change": "added",
+      "bytes": 1945,
+      "sha256": "bbb6ad6508567032b11b61e7f1c216f46a1d473f005677a6f86d75f74df2692c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 404,
+      "sha256": "1a35f0c96a4c708e3dddfa41b0a23d436c349cdb68fb0633dc164ebf23b3577f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/records/verifier.json",
+      "change": "added",
+      "bytes": 12959,
+      "sha256": "e1ca5632b18bf822d1bc1804b322cf2885ebf1f104688d71aa13e39b1b0df569",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5743,
+      "sha256": "a01eb16f0146ce7270a874ce71d00ddc3037728683a0d44e5d37a8f817846dea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/result.json",
+      "change": "added",
+      "bytes": 16738,
+      "sha256": "0d3eaf1b50885b3f5bd0d9248cf17ad8a7a92ae7c6aa8011f988750d81dc42c2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-fix/executions/20261119T220954Z-969e5847/attempt.json",
+      "change": "added",
+      "bytes": 8404,
+      "sha256": "c28c94a7f6f356e5c2faa8f5051ca954c917c2157ad2e09780e5463dd8e79d05",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-fix/executions/20261119T220954Z-969e5847/checker.json",
+      "change": "added",
+      "bytes": 7117,
+      "sha256": "4075ec97f3a814daeffe7c9bad281a738e103bec9ff87d3a0934fa5cbf3cfb22",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "ef4685ddb7878483e4b52ffd3e1a8b12b301b9d8a0dfcf75e5acde0672311189",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/plan.json",
+      "change": "added",
+      "bytes": 5491,
+      "sha256": "34650b251d0d3667df0295ecbf33456a6d9430f11a781a856c64d0c9cc5d7d91",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 3637,
+      "sha256": "c9b32e32de57ce124fe00d17507ad7901e7abcd2b27c302429d4c6d346ad5ad1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/records/controls.json",
+      "change": "added",
+      "bytes": 16095,
+      "sha256": "cb6525259c9b2d043110707a7b518e66ecb65a3947ab72a477dec5efd3979bdb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/records/execution.json",
+      "change": "added",
+      "bytes": 32221,
+      "sha256": "7ac3de6df505b8f4e8630fa684a767ad65deb0bd86b079bd494b9b0be347165c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "3d0caa7c3c2b7322a2792a8947e00be6128a84da51028968f756966812740876",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 651,
+      "sha256": "0c73fdea2305103d3c892a5b7495fbeafa1deb944ac060bd45f9578b037120d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/records/verifier.json",
+      "change": "added",
+      "bytes": 13971,
+      "sha256": "8403e80627994b15f598e7ae38c3ddab1e4ba24c3ccb4a7d0759396ecf41ef90",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6608,
+      "sha256": "21f66bd8c41df248589cd70044e33f5cfd3e6590f07c48d81d976deef7c3b74f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/result.json",
+      "change": "added",
+      "bytes": 18238,
+      "sha256": "1feb1bb6ad0aa6042e68ee23b1e59f3261f0629953138132704c2a1d3caf20b5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-parent/executions/20261119T220647Z-1af1ef80/attempt.json",
+      "change": "added",
+      "bytes": 8578,
+      "sha256": "d7a8f693d9ca321024f9b6363278c6b3e9199676e6dd1a7c535292acafcdefc2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-parent/executions/20261119T220647Z-1af1ef80/checker.json",
+      "change": "added",
+      "bytes": 8037,
+      "sha256": "236a1daf0d96c1fda62f1dc1eb8fa9d5dba40fe798162017f0a887e48efe4789",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/powers-parent/executions/20261119T220647Z-1af1ef80/replay.json",
+      "change": "added",
+      "bytes": 1708,
+      "sha256": "63e6ce918ab337d172c4b17208bb30c176d588df15b76f6a719a42585c221776",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "7314f685cf6f637f7836e0ff29aaaebbb582957c239ad24e5d887998c2f9a127",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/plan.json",
+      "change": "added",
+      "bytes": 5374,
+      "sha256": "a0e1e29d4197cee698d766ae671202a6499e13c9e7681c1776411d64e71a7322",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 3583,
+      "sha256": "c0d57306072d922efb0a040da3d034e18646be7e14dccd31b355a0b2346893a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/records/controls.json",
+      "change": "added",
+      "bytes": 16010,
+      "sha256": "ac2da4a8233a2162911d9dd1bc5f9a189c8b5557d4c6a47b0f86f6c61b657254",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/records/execution.json",
+      "change": "added",
+      "bytes": 28531,
+      "sha256": "2ce1b1ce5ac2b63778091469ddb20a732a298e853cae0f88a93ff3fb5db042c3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/records/streams.json",
+      "change": "added",
+      "bytes": 1945,
+      "sha256": "292646c1d6a9eee78cc91440ff36abfcd09e562261b2f3b4f645f4c0a4be5796",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 319,
+      "sha256": "eeb0b46e9ad63becfb327d5186ab64ee9d8ef51d93cd377478c39ca7060837c1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/records/verifier.json",
+      "change": "added",
+      "bytes": 12488,
+      "sha256": "c0c80348caa98623337efb965a357bfc9868d8cf319436e588d5315f0c8289fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5443,
+      "sha256": "3ed9984719d3901167aec9be941f5da3cb7f8bc367cff759f792910f0425e414",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/result.json",
+      "change": "added",
+      "bytes": 16148,
+      "sha256": "eead9977817765fe39d95c80279e5c9d7a58f6d628974851ebea8c8379c23105",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-fix/executions/20261119T220644Z-f3179886/attempt.json",
+      "change": "added",
+      "bytes": 8228,
+      "sha256": "7023d122511288a9f09712d146fc8ed0b470507108dbe2292047648019951ec3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-fix/executions/20261119T220644Z-f3179886/checker.json",
+      "change": "added",
+      "bytes": 6734,
+      "sha256": "82ecc8dc7d8208e2687a14338dc7fc245c2144a70d6058c6da1471e729632789",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "25a4df2fe15005db0c2eb0c0f78ea534f07715d0cbd4bca49cfeae72e59fc6f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/plan.json",
+      "change": "added",
+      "bytes": 5277,
+      "sha256": "7dc7ef4935ad861150fb558240a91fee2197f3b226c9eb643c9d15b39d6b4ab9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 3637,
+      "sha256": "c9b32e32de57ce124fe00d17507ad7901e7abcd2b27c302429d4c6d346ad5ad1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/records/controls.json",
+      "change": "added",
+      "bytes": 16091,
+      "sha256": "0f6bfcf9043ea14fcdce87fa91ecdbe9670803580f3394a7823a76a380bf16b1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/records/execution.json",
+      "change": "added",
+      "bytes": 28647,
+      "sha256": "3202eb66488afcad539093afb208f8769693111a0e057a0f9e9d123c0b9b3b40",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/records/streams.json",
+      "change": "added",
+      "bytes": 1969,
+      "sha256": "bbffce744e53e04c9f94f02b43471920a6ad7667cb296177342ea0dc0f3fa72c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 319,
+      "sha256": "eeb0b46e9ad63becfb327d5186ab64ee9d8ef51d93cd377478c39ca7060837c1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/records/verifier.json",
+      "change": "added",
+      "bytes": 12541,
+      "sha256": "60c2efb20edf7f3b19a2cb1b25f4e8fec41e84392c89d3a51e801f1b6fcf6f55",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5450,
+      "sha256": "5a65893b273e5a63c59a84a11e5d604d54b0c784195653b884180b98b1dad5f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/result.json",
+      "change": "added",
+      "bytes": 16204,
+      "sha256": "bdd6d3199a419cb3b1c7619cd02151c53770421ab32fcdbcdf48fd7dc471713e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-parent/executions/20261119T220642Z-cbf68e4e/attempt.json",
+      "change": "added",
+      "bytes": 8283,
+      "sha256": "99c0b99418913865ff095735293409a5061f5078195a7249e30f0022fdace0bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/309-commons-math-238-gcd/receipts/zero-parent/executions/20261119T220642Z-cbf68e4e/checker.json",
+      "change": "added",
+      "bytes": 6745,
+      "sha256": "d21afce8efd30a7ed51bea0b6878886da8161908cd62f8eacb37cd1adccab70e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-19T22:13:22+00:00",
+    "applied": [
+      "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/completion.json",
+      "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/plan.json",
+      "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/records/control-fix-jdk21.stderr",
+      "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/records/control-fix-jdk21.stdout",
+      "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/records/controls.json",
+      "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/records/execution.json",
+      "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/records/streams.json",
+      "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/records/verifier-output.txt",
+      "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/records/verifier.json",
+      "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/records/verifier.stderr",
+      "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/records/verifier.stdout",
+      "examples/309-commons-math-238-gcd/receipts/powers-fix/20261119T220954Z-969e5847/result.json",
+      "examples/309-commons-math-238-gcd/receipts/powers-fix/executions/20261119T220954Z-969e5847/attempt.json",
+      "examples/309-commons-math-238-gcd/receipts/powers-fix/executions/20261119T220954Z-969e5847/checker.json",
+      "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/completion.json",
+      "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/plan.json",
+      "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/records/control-parent-jdk21.stderr",
+      "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/records/control-parent-jdk21.stdout",
+      "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/records/controls.json",
+      "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/records/execution.json",
+      "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/records/streams.json",
+      "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/records/verifier-output.txt",
+      "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/records/verifier.json",
+      "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/records/verifier.stderr",
+      "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/records/verifier.stdout",
+      "examples/309-commons-math-238-gcd/receipts/powers-parent/20261119T220647Z-1af1ef80/result.json",
+      "examples/309-commons-math-238-gcd/receipts/powers-parent/executions/20261119T220647Z-1af1ef80/attempt.json",
+      "examples/309-commons-math-238-gcd/receipts/powers-parent/executions/20261119T220647Z-1af1ef80/checker.json",
+      "examples/309-commons-math-238-gcd/receipts/powers-parent/executions/20261119T220647Z-1af1ef80/replay.json",
+      "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/completion.json",
+      "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/plan.json",
+      "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/records/control-fix-jdk21.stderr",
+      "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/records/control-fix-jdk21.stdout",
+      "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/records/controls.json",
+      "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/records/execution.json",
+      "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/records/streams.json",
+      "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/records/verifier-output.txt",
+      "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/records/verifier.json",
+      "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/records/verifier.stderr",
+      "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/records/verifier.stdout",
+      "examples/309-commons-math-238-gcd/receipts/zero-fix/20261119T220644Z-f3179886/result.json",
+      "examples/309-commons-math-238-gcd/receipts/zero-fix/executions/20261119T220644Z-f3179886/attempt.json",
+      "examples/309-commons-math-238-gcd/receipts/zero-fix/executions/20261119T220644Z-f3179886/checker.json",
+      "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/completion.json",
+      "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/plan.json",
+      "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/records/control-parent-jdk21.stderr",
+      "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/records/control-parent-jdk21.stdout",
+      "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/records/controls.json",
+      "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/records/execution.json",
+      "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/records/streams.json",
+      "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/records/verifier-output.txt",
+      "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/records/verifier.json",
+      "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/records/verifier.stderr",
+      "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/records/verifier.stdout",
+      "examples/309-commons-math-238-gcd/receipts/zero-parent/20261119T220642Z-cbf68e4e/result.json",
+      "examples/309-commons-math-238-gcd/receipts/zero-parent/executions/20261119T220642Z-cbf68e4e/attempt.json",
+      "examples/309-commons-math-238-gcd/receipts/zero-parent/executions/20261119T220642Z-cbf68e4e/checker.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "f0d04d56bbe9ef5b883e6425b233e4dcc9251c36",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f0d04d56bbe9ef5b883e6425b233e4dcc9251c36/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}
