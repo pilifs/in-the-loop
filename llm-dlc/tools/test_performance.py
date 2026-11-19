@@ -932,12 +932,18 @@ class Checks(unittest.TestCase):
             if not sync.has_jj():
                 self.skipTest("no jj")
             commits = [c["commit_id"] for c in sync.jj_commits("::@- & ~root()")[:40:8]]
-            wanted = [(c, p) for c in commits for p in ("llm-dlc/README.md", "no/such/file", "llm-dlc")]
+            wanted = [(c, p) for c in commits for p in
+                      ("llm-dlc/README.md", "llm-dlc/loops/java-foundation-starter.zip", "no/such/file", "llm-dlc")]
             wanted.append(("0" * 40, "llm-dlc/README.md"))
             found = sync.tree_files(wanted)
             for c, p in wanted:
-                r = sync.jj("file", "show", "-r", c, p)
-                expected = r.stdout.encode() if r.returncode == 0 and p != "llm-dlc" else None
+                # jj emits the concatenated contents of a directory; tree_files looks up blobs.
+                expected = None
+                if p != "llm-dlc":
+                    r = subprocess.run([sync.JJ, "--ignore-working-copy", "file", "show", "-r", c, p],
+                                       cwd=sync.REPO, capture_output=True, timeout=60)
+                    if r.returncode == 0:
+                        expected = r.stdout
                 self.assertEqual(found[c, p], expected, (c, p))
 
 
