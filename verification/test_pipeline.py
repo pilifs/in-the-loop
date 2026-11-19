@@ -117,13 +117,18 @@ class PipelineTest(unittest.TestCase):
     def test_a_job_names_the_session_that_submitted_it(self):
         """The loop statistics tie a job to the loop cycle that submitted it by the session it names, so a
         submit without --session names the session Claude Code says is running it."""
-        def submitted(title, *args, session):
-            env = {k: v for k, v in os.environ.items() if k != "CLAUDE_CODE_SESSION_ID"}
-            with mock.patch.dict(os.environ, {**env, **({"CLAUDE_CODE_SESSION_ID": session} if session else {})}, clear=True):
+        def submitted(title, *args, session, thread=None):
+            env = {k: v for k, v in os.environ.items() if k not in ("CLAUDE_CODE_SESSION_ID", "CODEX_THREAD_ID")}
+            if session:
+                env["CLAUDE_CODE_SESSION_ID"] = session
+            if thread:
+                env["CODEX_THREAD_ID"] = thread
+            with mock.patch.dict(os.environ, env, clear=True):
                 job_id = self.repo.submit(title, "--run", "true", *args)
             return json.loads((self.repo.dir / f"verification/jobs/{job_id}.json").read_text())["submitted"]
 
         self.assertEqual(submitted("From a session", session="made-up-session").get("session"), "made-up-session")
+        self.assertEqual(submitted("From a Codex worker", session="parent-session", thread="worker-thread")["session"], "worker-thread")
         self.assertEqual(submitted("Named outright", "--session", "another-made-up", session="made-up-session").get("session"),
                          "another-made-up")
         self.assertNotIn("session", submitted("From a terminal", session=None))

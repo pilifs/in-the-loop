@@ -64,10 +64,6 @@ Require a length-sensitive beside-route proof to use a bound declared by its fro
 
 All 51 acceptance tests and all 22 milestone tests passed, including bound drift, replay membership, ordinary defaults and a compatibility check on an existing beside-route task. The human report for 287 now shows the termination assumption on its preservation evidence.
 
-### (in progress)
-
-change `nquytywoqqps`, not yet described
-
 ### Measure Commons Text LCS on its release bytes and a shared-row control
 
 change `optrpnspplox` · [log `8f209bdbae5f`](https://terminalvalue.net/raw-traces/01a1f467-8590-7ff3-bcdd-e52e5af7e3bc/8f209bdbae5fbb5633607841611c874eb531c298f0c542972b013a892e4fd16e.jsonl.gz)
@@ -75,6 +71,12 @@ change `optrpnspplox` · [log `8f209bdbae5f`](https://terminalvalue.net/raw-trac
 Example 308 pins the release class, source blob, independent subsequence oracle and mutation patch. On JDK 21 the release JAR and source rebuild agreed on all 225 inputs, while the shared-row control disagreed on 44. Its score on ab and aa changed from 1 to 2. javap confirmed the two-dimensional allocation at offset 18 on each build.
 
 Both ordinary JVM replay tasks passed and published receipts, including 44 mismatches for the altered artifact. The native transfer probe reached the multidimensional allocation and refused it at unwind 18 and array bound 4. Its outcome and measured cost are recorded independently of the frozen claim. The example validator and all four router and contract checks passed.
+
+### Isolate submission identity in the pipeline test
+
+change `ovmrqsvwylss` · [log `8f209bdbae5f`](https://terminalvalue.net/raw-traces/01a1f467-8590-7ff3-bcdd-e52e5af7e3bc/8f209bdbae5fbb5633607841611c874eb531c298f0c542972b013a892e4fd16e.jsonl.gz)
+
+The test inherited the real Codex thread ID when exercising its synthetic Claude session, so it failed on this worker. Clear both identities in the fixture and cover the actual precedence when a Codex worker inherits a parent session. The formerly failing case and the affected pipeline test file passed.
 
 ## Conversation
 
