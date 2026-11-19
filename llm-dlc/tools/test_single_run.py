@@ -389,6 +389,7 @@ class SingleRunTest(unittest.TestCase):
         self.assertEqual(len(first["cycle"]["commits"]), 1)
         self.assertIn("Made-up work by the stand-in, turn 1", first["cycle"]["commits"][0])
         self.assertIsNone(first["cycle"]["cost"])  # Codex reports tokens: the dollars are not known, and not nought
+        self.assertIsNone(json.loads(self.tool("status", "thing")[1])["spent"])  # nor is the run's spend
         self.tool("answer", "thing", "continue", "--reason", "The thing does not work yet.")
         second = self.wait(kind="question")
         self.assertEqual(second["cycle"]["cycle"], 2)

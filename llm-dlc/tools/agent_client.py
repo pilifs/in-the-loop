@@ -284,7 +284,7 @@ def rollout_of(thread: str) -> Path | None:
 
 class Compactions:
     """The compactions Codex makes by itself in the middle of a turn. `exec --json` prints nothing for one (probed
-    2026-11-19, CLI 0.169: five in one turn, and the stream held only the turn's items), but the thread's log gets
+    2026-11-19, CLI 0.170: five in one turn, and the stream held only the turn's items), but the thread's log gets
     a `compacted` line each time, with the size of the context it replaced. So the log is read as the turn goes:
     what was appended since the turn began, at each event of the stream and once more at its end. The loops read
     the boundary as they read Claude Code's (a moonshot's compaction with no commit is put to its watcher)."""
@@ -347,15 +347,16 @@ def after_turn(cwd: Path, thread: str, model: str, committed: list[str], log: Pa
     runs = [("hook-commit", {**base, "hook_event_name": "PostToolUse", "tool_name": "Bash", "tool_input": {"command": c}})
             for c in committed[-1:]]
     runs.append(("hook", {**base, "hook_event_name": "Stop"}))
-    with open(log, "a") as out:
-        for name, payload in runs:
-            try:
-                r = subprocess.run([sys.executable, str(tool), name], input=json.dumps(payload), cwd=cwd, env=env,
-                                   capture_output=True, text=True, timeout=120)
-                if r.returncode or r.stdout.strip() or r.stderr.strip():
-                    out.write(f"{now()} sync.py {name}: status {r.returncode}\n{r.stdout}{r.stderr}")
-            except (OSError, subprocess.TimeoutExpired) as e:
-                out.write(f"{now()} sync.py {name}: {e}\n")
+    for name, payload in runs:
+        try:
+            r = subprocess.run([sys.executable, str(tool), name], input=json.dumps(payload), cwd=cwd, env=env,
+                               capture_output=True, text=True, timeout=120)
+            said = f"status {r.returncode}\n{r.stdout}{r.stderr}" if r.returncode or r.stdout.strip() or r.stderr.strip() else ""
+        except (OSError, subprocess.TimeoutExpired) as e:
+            said = f"{e}\n"
+        if said:  # a hook that ran and had nothing to say leaves no file
+            with open(log, "a") as out:
+                out.write(f"{now()} sync.py {name}: {said}")
 
 
 def cmd_run(session: str, model: str, effort: str, cwd: Path, sandbox: str, prompt: str) -> int:

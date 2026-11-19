@@ -314,6 +314,7 @@ class AfterATurn(Fixture):
         self.assertEqual(Path(ran["payload"]["transcript_path"]).name, f"rollout-2026-01-01T00-00-00-{thread}.jsonl")
         self.assertEqual(Path(ran["cwd"]), self.cwd)
         self.assertEqual(events[-1]["subtype"], "success")  # the hooks come before the result: the turn is over when they are
+        self.assertFalse(Path(events[-1]["attempt"]).with_suffix(".hooks.log").exists())  # a hook with nothing to say leaves no file
 
     @cost("tool")
     def test_a_commit_made_without_sync_gets_the_commit_hook_and_a_hook_that_fails_stops_nothing(self):

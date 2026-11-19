@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T19:24:01.389Z",
-  "ended": "2026-11-19T13:44:26.976Z",
-  "duration_seconds": 325226,
+  "ended": "2026-11-19T13:53:51.659Z",
+  "duration_seconds": 325790,
   "stats": {
-    "turns": 52,
-    "api_calls": 1399,
-    "tool_calls": 1506,
+    "turns": 54,
+    "api_calls": 1420,
+    "tool_calls": 1525,
     "tool_errors": 50,
     "compactions": 11,
     "peak_context_tokens": 466857,
     "usage": {
-      "input_tokens": 2868,
-      "output_tokens": 1967310,
-      "cache_read_input_tokens": 376003576,
-      "cache_creation_input_tokens": 5034133
+      "input_tokens": 2914,
+      "output_tokens": 1980613,
+      "cache_read_input_tokens": 382290066,
+      "cache_creation_input_tokens": 5056600
     }
   },
   "tools": {
-    "Bash": 1290,
+    "Bash": 1309,
     "Write": 78,
     "Edit": 48,
     "Read": 43,
@@ -278,24 +278,24 @@
     {
       "index": 11,
       "started": "2026-11-18T05:37:49.230Z",
-      "ended": "2026-11-19T13:44:26.976Z",
-      "turns": 2,
-      "api_calls": 85,
+      "ended": "2026-11-19T13:53:51.659Z",
+      "turns": 4,
+      "api_calls": 106,
       "usage": {
-        "input_tokens": 172,
-        "output_tokens": 100012,
-        "cache_read_input_tokens": 17126624,
-        "cache_creation_input_tokens": 403072
+        "input_tokens": 218,
+        "output_tokens": 113315,
+        "cache_read_input_tokens": 23413114,
+        "cache_creation_input_tokens": 425539
       },
-      "peak_context_tokens": 287817
+      "peak_context_tokens": 310745
     }
   ],
   "log": {
-    "sha256": "872594a48b5ab5d9d8d9db1d4dcc3a1d25321a527dadf3b81e2c81892e80011b",
-    "bytes": 36222600,
-    "lines": 12598,
-    "gzip_bytes": 6265861,
-    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/872594a48b5ab5d9d8d9db1d4dcc3a1d25321a527dadf3b81e2c81892e80011b.jsonl.gz"
+    "sha256": "058977968000511575312a97c326a252d1e6db1f51a0c27af917a4c6f5f0ccbe",
+    "bytes": 36469145,
+    "lines": 12757,
+    "gzip_bytes": 6295422,
+    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/058977968000511575312a97c326a252d1e6db1f51a0c27af917a4c6f5f0ccbe.jsonl.gz"
   },
   "subagents": [
     {
@@ -3087,6 +3087,22 @@
       "summary": "Propose the made-up rollout file name of test_codex.py for the allow list",
       "body": "Finding b24f7c44 (long-token) is the name of a made-up Codex rollout file in llm-dlc/tools/test_codex.py: the word rollout, a date and a made-up thread id, 64 characters in all, which the rules read as a long token wherever this session's log quotes the test. Checked with the masked view of the finding and by finding the one line of the test that holds it. It stays a warning of check until the user approves the proposal in their own terminal.",
       "log_sha256": "872594a48b5ab5d9d8d9db1d4dcc3a1d25321a527dadf3b81e2c81892e80011b"
+    },
+    {
+      "change_id": "smynoszkyozlztmwxlzsvmuotrplrnmp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "058977968000511575312a97c326a252d1e6db1f51a0c27af917a4c6f5f0ccbe"
+    },
+    {
+      "change_id": "wkxzqttmqqwmmuwvkwlvrvtnqlvuqlos",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "After a live single-agent rehearsal with Codex on the merged line: an unknown spend is not nought, a silent hook leaves no file, and the probes' client version is 0.170",
+      "body": "A two-cycle rehearsal of a single agent's run carried by Codex (run codex-check, Sol at low effort, in a disposable workspace, started from the default workspace with single_run.py start --client codex) passed on the merged line: both cycles committed with the worker's own trace lines, the loop compacted between them, the record names the thread, the loop statistics find the run by it (2 cycles, 2 commits, cost shown as unknown), the time report files the commit's wait under the tool that ran, and the check in its workspace reports 0 errors. Its commits are not part of this line.\n\nThree small things it showed. The run's status gave a spend of 0 when no cycle's dollars are known (every cycle of a Codex run): it is now null, as a cycle's cost already was. The adapter left an empty .hooks.log beside every attempt: a hook that ran and had nothing to say now leaves no file. And the client had updated itself to 0.170.0 on 2026-11-18, before the hook probes and all of the probes of 2026-11-19 (hooks, automatic compaction, permission profiles), which the pages and the two commits before this one put at 0.169: the pages now say 0.170. What was measured on 0.169 (a resumed turn keeps no sandbox, usage as the thread's total) is given every turn regardless, and the rehearsal on 0.170 went through with it.\n\nVerified by the two extended tests (the status of a Codex run through the real loop and the stand-in; no hook log after a quiet hook) and the tests of what changed, 20 of 20 Python test files (python3 lib/tools/test_costs.py run --changed --rust-jobs 1 under an 8G cap).",
+      "log_sha256": "058977968000511575312a97c326a252d1e6db1f51a0c27af917a4c6f5f0ccbe"
     }
   ],
   "logs": {
@@ -3095,6 +3111,12 @@
       "lines": 2584,
       "gzip_bytes": 1459689,
       "url": "https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/020433e64136b589de4ec8c00700c7e93d48ef2133e625820613754b52e6e726.jsonl.gz"
+    },
+    "058977968000511575312a97c326a252d1e6db1f51a0c27af917a4c6f5f0ccbe": {
+      "bytes": 36469145,
+      "lines": 12757,
+      "gzip_bytes": 6295422,
+      "url": null
     },
     "10ce8026cc87063be6985585b10dea1a3fd22fba8101bb609b7e5ebcffe798f2": {
       "bytes": 3077579,

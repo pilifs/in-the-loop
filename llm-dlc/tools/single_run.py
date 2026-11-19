@@ -468,7 +468,9 @@ def state(run: Run) -> dict:
             "cycle": under_way,
             "question": {k: asked.get(k) for k in ("n", "type", "cycle")} if asked and asked.get("needsVerdict") else None,
             "commits": watch.commits(folder, data.get("base")) if data.get("base") else [],
-            "spent": round(sum((data.get("cycleCosts") or {}).values()), 2), "cycleCosts": data.get("cycleCosts") or {},
+            # dollars are known for the cycles a client reported them for: none yet, or a Codex run's, is not nought
+            "spent": round(sum(data["cycleCosts"].values()), 2) if data.get("cycleCosts") else None,
+            "cycleCosts": data.get("cycleCosts") or {},
             "continueMessage": run.message.read_text().strip() if run.message.exists() else None,
             "messageSet": history[-1]["time"] if history else None, "messagesSet": len(history),
             "jobs": queue_counts(run.root), "verificationQueue": data.get("verification"),

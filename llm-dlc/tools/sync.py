@@ -2760,7 +2760,7 @@ def in_agent_session() -> bool:
 #
 # Two files hold decisions only a person takes: the allow list's approved entries and the reviewed findings. The
 # commands that write them refuse an agent's shell (person_at_terminal), and Claude Code is denied the files by
-# .claude/settings.json. Codex has no such bar that works (probed 2026-11-19, CLI 0.169: a file marked `read` in a
+# .claude/settings.json. Codex has no such bar that works (probed 2026-11-19, CLI 0.170: a file marked `read` in a
 # permission profile is patched all the same once the automatic reviewer lets the request through, and one marked
 # `deny` cannot be read by sync.py either), so the bar is here, for every client: the person's commands leave a
 # record on this machine of each decision they wrote, and `check` reports as an error a decision in either file
