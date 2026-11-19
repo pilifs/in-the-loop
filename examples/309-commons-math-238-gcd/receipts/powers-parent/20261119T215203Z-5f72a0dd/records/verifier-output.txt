@@ -1,0 +1,6 @@
+✗ Property of org.apache.commons.math.util.MathUtils#gcd(int, int) violated: `result == (u < v ? u : v)` where (u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0):
+  gcd(u=65536, v=65536)
+    outcome: 131072
+  (found by jvmcontract's own checker (CaDiCaL) in 184.3 s searching inputs in [-100000:100000], replayed in the interpreter; domain u: int × v: int)
+
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.

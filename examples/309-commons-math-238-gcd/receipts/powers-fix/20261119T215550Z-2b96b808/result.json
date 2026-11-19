@@ -1,0 +1,446 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "b8cdf9222d34f16d",
+    "format": 1,
+    "example": "309",
+    "statement": {
+      "approach": "target",
+      "task": "powers-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "revisions": [
+        "fix"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "powers-fix",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+        "file": "claims/powers.json",
+        "sha256": "0cec13c37763c5d3995b289b9797a1543d69df2c4342d89951543e496358f163",
+        "property": "powers",
+        "claimKind": "property",
+        "statement": "For two powers of two with exponents from zero through twenty the gcd is the smaller operand.",
+        "assume": "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+        "assert": "result == (u < v ? u : v)",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 32,
+          "maxArrayLength": 8
+        },
+        "explicitBounds": {
+          "unwind": 32
+        },
+        "defaultBounds": [
+          "maxArrayLength"
+        ],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "finite-driver",
+            "kind": "driver",
+            "path": "driver/gcd/GcdCases.java",
+            "sha256": "d1a9b4c3afed1ff34f8efa9f7c5f1b7cd82159e4cb9e1dec04ce2c1a51928b7f"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "426a122917c4f7ad27839b3855dc5d614e386fd9a7b19a20841c55f57c6d7050"
+          }
+        ],
+        "key": "837ceed6b2ee72a9"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 8
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "powers-fix",
+      "sidecar": "45e546ecdf50a5cfdc44f0d57a120f6e046050a30121296fc89661ba2590e632",
+      "revisions": {
+        "fix": "dabf3a5beb9ab697d570154b9961078a8586c787"
+      },
+      "dependencies": [
+        {
+          "revision": "fix",
+          "position": 0,
+          "role": "driver",
+          "sha256": "1adbc9cf2977ba7b25c4dbee9c1a6a97274e0cbeafb9f1d23606db6de0ad286b"
+        },
+        {
+          "revision": "fix",
+          "position": 1,
+          "role": "original",
+          "sha256": "b6149ad671e272ad253356bcba4ae551b287a70a350b2bcae235d9d3aa8d3f14"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/powers.json": "0cec13c37763c5d3995b289b9797a1543d69df2c4342d89951543e496358f163",
+        "controls/oracle.py": "426a122917c4f7ad27839b3855dc5d614e386fd9a7b19a20841c55f57c6d7050",
+        "driver/gcd/GcdCases.java": "d1a9b4c3afed1ff34f8efa9f7c5f1b7cd82159e4cb9e1dec04ce2c1a51928b7f"
+      },
+      "claimKey": "837ceed6b2ee72a9",
+      "scopes": {
+        "fix": "extracted-source-slice"
+      }
+    }
+  },
+  "attempt": {
+    "id": "20261119T215550Z-2b96b808",
+    "claim": "b8cdf9222d34f16d",
+    "startedAt": "2026-11-19T21:55:50+00:00",
+    "seconds": 224.7,
+    "engine": "native",
+    "options": [
+      "prove",
+      "org.apache.commons.math.util.MathUtils#gcd(int, int)",
+      "--classes",
+      "prepare/fix/slice/fix.jar",
+      "--assume",
+      "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+      "--assert",
+      "result == (u < v ? u : v)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "32",
+      "--max-array-length",
+      "8",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "7a6ad79f859c290d679a54adb71d74cb3f26672920789fe239382f11481d9021"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "29ee6f933a6baa9a2ad12e6894512d7be7a9e4dec7ff4cd44fb9720cf00eba08",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261119-214238-math-238-direct-method-checkpoint-compar",
+      "sourceCommit": "33b804ffe8d8767dc1e9d220f005abb4e5a1b527",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261119-214238-math-238-direct-method-checkpoint-compar"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control fix on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-fix-jdk21.stdout",
+        "stderr": "records/control-fix-jdk21.stderr"
+      },
+      {
+        "name": "verifier fix on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 224.607,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 32,
+      "maxArrayLength": 8,
+      "complete": true
+    }
+  },
+  "conclusion": {
+    "claim": "b8cdf9222d34f16d",
+    "attempt": "20261119T215550Z-2b96b808",
+    "status": "established",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == (u < v ? u : v)",
+        "status": "established",
+        "evidence": {
+          "harness": null,
+          "assert": "result == (u < v ? u : v)",
+          "assume": "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+          "verdict": "verified",
+          "domain": "u: int × v: int",
+          "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over u: int × v: int in 224.5 s; loops unwound 32 times with unwinding assertions",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 224.525,
+            "properties": 1,
+            "unwind": 32,
+            "maxArrayLength": 8,
+            "stage": null,
+            "deadlineSeconds": 600.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 600.0,
+                "seconds": 224.288,
+                "ended": "verified",
+                "ending": "verified",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 5.266,
+                  "encoding": 9.129,
+                  "solving": 209.893,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 1633894,
+                  "clauses": 5557392
+                }
+              },
+              {
+                "checker": "native",
+                "purpose": "probe",
+                "stage": null,
+                "budgetSeconds": 375.475,
+                "seconds": 0.005,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.004,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 626,
+                  "clauses": 1864
+                }
+              }
+            ],
+            "native": {
+              "paths": 447,
+              "merges": 0,
+              "solverCalls": 2546,
+              "solvingSeconds": 209.892637124,
+              "gatesEvaluated": 271341,
+              "evaluatingSeconds": 0.0439199,
+              "divisions": 671,
+              "divisionsBuilt": 207,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 1633894,
+              "clauses": 5557392,
+              "seconds": 224.287699232,
+              "loadingSeconds": 7.3939e-05,
+              "decodingSeconds": 5.6526e-05,
+              "encodingSeconds": 9.129359149,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict"
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "u",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "v",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "u: int × v: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == (u < v ? u : v)",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 32,
+              "maxArrayLength": null,
+              "complete": true
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+              "classes": 37,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null,
+            "vacuity": {
+              "status": "non-vacuous",
+              "basis": "probe",
+              "text": "Some input in the domain reaches the calls: the tool's own checker found gcd(u=16, v=16).",
+              "witness": "gcd(u=16, v=16)"
+            }
+          }
+        }
+      }
+    ],
+    "label": "✓ Verified",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"fix\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over u: int × v: int in 224.5 s; loops unwound 32 times with unwinding assertions",
+    "problem": null,
+    "domain": "u: int × v: int",
+    "replay": null,
+    "property": {
+      "assert": "result == (u < v ? u : v)",
+      "assume": "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "2c14dfe2b7752533662cd4b519dea8254e918e7536c15775831a303f6d56a792",
+        "bytes": 26965
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "372e41d2a438e5e9a2bd4e1b8a4febd14613636a493ecdea9ba15b572397a85d",
+        "bytes": 404
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "d38c0d3b1da3585b8e741f2a3aa4483ba9907193e27fe833fb97b58ac522119c",
+        "bytes": 1945
+      },
+      {
+        "path": "records/control-fix-jdk21.stdout",
+        "sha256": "c0d57306072d922efb0a040da3d034e18646be7e14dccd31b355a0b2346893a5",
+        "bytes": 3583
+      },
+      {
+        "path": "records/control-fix-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "9017608b65489474562811838ddb599731e27ca4746643bcec172c7ec753a565",
+        "bytes": 15964
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "67beb83a120ef452875e27ba721decbc2244100aa9176d978e20bd40c20d46c6",
+        "bytes": 5742
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "800dbdf6233ab655bcb1d5202afaec451587fd623c67b0adee7c91d4feef0f89",
+        "bytes": 11206
+      }
+    ]
+  }
+}
