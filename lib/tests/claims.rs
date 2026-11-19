@@ -114,7 +114,7 @@ fn lambdas_method_references_and_the_stream_models_run_as_the_loops_they_stand_f
 fn a_glob_stated_with_the_regex_library_matches_as_the_matcher_written_out() {
     jvmcontract::tool_tier!();
     let Some(classes) = classes() else { return };
-    for method in ["parts", "constant", "exact", "ignoringCase"] {
+    for method in ["parts", "constant", "exact", "ignoringCase", "caseRanges"] {
         proved(classes, &format!("claims.R#{method}"), 3);
     }
 }

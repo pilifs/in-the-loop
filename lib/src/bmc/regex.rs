@@ -39,8 +39,8 @@
 //! alternatives (`|`), the quantifiers `*`, `+`, `?`, `{n}`, `{n,}` and `{n,m}` (greedy: a reluctant one is the same
 //! language and is refused all the same, a possessive one is not), and the anchors `\A`, `^` (the input's
 //! beginning, without `MULTILINE`) and `\z`. Nothing else: no `$` (which also matches before a last line
-//! terminator), back reference, look-around, flag or Unicode class. A class or an alternative under
-//! `CASE_INSENSITIVE` is refused too.
+//! terminator), back reference, look-around, flag or Unicode class. With `CASE_INSENSITIVE`, literals and
+//! bracket ranges match both ASCII cases. Negation applies to the resulting character set.
 //!
 //! - `String.matches(String)` of a String whose content the engine holds and a regex that is such a constant:
 //!   whether the regex matches the whole String. `NullPointerException` for a null regex.
@@ -143,16 +143,6 @@ impl Node {
             Node::Seq(nodes) | Node::Alt(nodes) => nodes.iter().any(Node::wide),
             Node::Repeat(node, _, _) => node.wide(),
             Node::Begin | Node::End => false,
-        }
-    }
-
-    /// Whether the expression is letters only as [`Engine::atom_matches`] folds them: no class and no alternative.
-    fn folds(&self) -> bool {
-        match self {
-            Node::One(Atom::Class(..)) | Node::Alt(_) => false,
-            Node::One(_) | Node::Begin | Node::End => true,
-            Node::Seq(nodes) => nodes.iter().all(Node::folds),
-            Node::Repeat(node, _, _) => node.folds(),
         }
     }
 
@@ -659,9 +649,6 @@ impl Engine<'_> {
                         Err(stop) => return Some(Err(stop)),
                     },
                 };
-                if flags.insensitive != FALSE && pieces.iter().any(|piece| matches!(&piece.kind, Kind::Node(node) if !node.folds())) {
-                    return None;
-                }
                 self.regex_object(path, PATTERN, Regex::Pattern(pieces, flags))
             }
             _ => return None,
@@ -1011,6 +998,23 @@ impl Engine<'_> {
         next
     }
 
+    fn class_contains(&mut self, ranges: &[(u16, u16)], raw: &Bits) -> Lit {
+        let mut found = FALSE;
+        for &(lo, hi) in ranges {
+            let low = self.b.constant(i64::from(lo), 16);
+            let inside = if lo == hi {
+                self.b.eq(raw, &low)
+            } else {
+                let high = self.b.constant(i64::from(hi), 16);
+                let below = self.b.ult(raw, &low);
+                let above = self.b.ult(&high, raw);
+                self.b.and(-below, -above)
+            };
+            found = self.b.or(found, inside);
+        }
+        found
+    }
+
     /// Whether `atom` matches the input unit `raw`, which is `unit` as units are compared.
     fn atom_matches(&mut self, atom: &Atom, flags: Flags, raw: &Bits, unit: &Bits) -> Lit {
         match atom {
@@ -1026,20 +1030,18 @@ impl Engine<'_> {
                 self.b.eq(unit, &constant)
             }
             Atom::Class(ranges, negated) => {
-                let within: Vec<Lit> = ranges
-                    .iter()
-                    .map(|&(lo, hi)| {
-                        if lo == hi {
-                            let constant = self.b.constant(i64::from(lo), 16);
-                            return self.b.eq(raw, &constant);
-                        }
-                        let (low, high) = (self.b.constant(i64::from(lo), 16), self.b.constant(i64::from(hi), 16));
-                        let below = self.b.ult(raw, &low);
-                        let above = self.b.ult(&high, raw);
-                        self.b.and(-below, -above)
-                    })
-                    .collect();
-                let is = self.any(&within);
+                let mut is = self.class_contains(ranges, raw);
+                if flags.insensitive != FALSE {
+                    // Without UNICODE_CASE, Pattern.CIRange adds just the other spelling of an ASCII letter.
+                    // When the flag is set, `unit` is lower-cased already. Flip bit 5 only for those letters.
+                    let letter = self.class_contains(&[(u16::from(b'a'), u16::from(b'z'))], unit);
+                    let fold = self.b.and(flags.insensitive, letter);
+                    let mut other = raw.clone();
+                    other[5] = -other[5];
+                    let alternate = self.class_contains(ranges, &other);
+                    let included = self.b.and(fold, alternate);
+                    is = self.b.or(is, included);
+                }
                 if *negated {
                     -is
                 } else {

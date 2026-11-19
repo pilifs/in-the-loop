@@ -61,6 +61,11 @@ public final class Samples {
     /** Samples as many inputs as the argument says (20000 with none), from a fixed seed. */
     public static void main(String[] args) {
         Random r = new Random(287);
+        for (int c = 0; c < 128; c++) {
+            String s = Character.toString((char) c);
+            check(R.caseRanges(s, false) && R.caseRanges(s, true), "bracket ranges at " + c);
+        }
+        check(R.caseRanges("\u212a", true) && R.caseRanges("ab", true) && R.caseRanges("", true), "bracket range boundaries");
         int samples = args.length > 0 ? Integer.parseInt(args[0]) : 20000;
         for (int i = 0; i < samples; i++) {
             String s = text(r, 6);

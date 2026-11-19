@@ -94,4 +94,17 @@ public final class R {
         return Pattern.compile("a.*\\+", 0).matcher(s).matches() == want;
     }
 
+    public static boolean caseRanges(String s, boolean fold) {
+        if (!bmp(s)) return true;
+        int flags = fold ? Pattern.CASE_INSENSITIVE : 0;
+        boolean included = false, excluded = false;
+        if (s.length() == 1) {
+            char c = s.charAt(0);
+            included = c >= 'A' && c <= 'C' || c >= 'x' && c <= 'z' || c >= '0' && c <= '2';
+            if (fold) included |= c >= 'a' && c <= 'c' || c >= 'X' && c <= 'Z';
+            excluded = c >= 'B' && c <= 'D' || c == '.' || c == ',' || fold && c >= 'b' && c <= 'd';
+        }
+        return Pattern.compile("(?:[A-Cx-z]|[0-2])", flags).matcher(s).matches() == included
+                && Pattern.compile("[^B-D.,]", flags).matcher(s).matches() == (s.length() == 1 && !excluded);
+    }
 }
