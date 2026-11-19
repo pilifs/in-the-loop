@@ -28,6 +28,12 @@ No CVE kernel yet: the brief welcomes them where a fixed version exists, and non
 The workloads are the ones step 5b's per-phase table is over: `scalar-arithmetic`, `div-rem`, `binary-search`,
 `utf8`, `array-mutation` and `records`, with `array-bounds` for the range check and `semantics` for group 1.
 
+The foundation brief uses `--selection foundation-v1 --groups 1,3 --engines native,jbmc --modes strict
+--timeout 30 --search 2000`. It fixes seven existing claims about shared locals, two arrays, integer division,
+reverse and prefix sums. The result records the selected class files, oracle and case specification digests,
+checker tree and job limits alongside the phase measurements. The checker proof cache is disabled. The host
+page cache is unmeasured. Compare the baseline and candidate using the same settings and artifacts.
+
 ## The answers, from the JVM
 
 Every case has an expected answer, `verified` or `violation`, and it does not come from the tool:

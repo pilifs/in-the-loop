@@ -24,6 +24,14 @@ change `puyvvsptynuo` · [log `8b249cdfe3dc`](https://terminalvalue.net/raw-trac
 
 The JVM on this host starts in en. The control correctly refused the locale change, but its diagnostic check expected a transition from en-US. Set the fixture JVM's language and country so that both ends of the transition are reproducible. The targeted observed_countermodels test failed before the change and now passes.
 
+### Freeze the foundation benchmark selection (verification pending)
+
+change `puvsmmuyrtnv` · [log `8b249cdfe3dc`](https://terminalvalue.net/raw-traces/01a1f467-8590-7ff3-bcdd-e52e5af7e3bc/8b249cdfe3dcf0e59bc87ae498c24c6b4a12e8f877c18587e7a83c2a2c2ff5cf.jsonl.gz)
+
+Seven existing array, alias and division cases are selected by exact ID. Record compiled class and oracle digests, checker tree, budget and cache conditions with the phase data for comparison on the integrated checker. The benchmark and timing-reader tests passed. The changed Rust run exposed a host-locale expectation, now pinned and retested separately.
+
+Verification pending in job 20261119-152603-foundation-baseline-on-seven-existing-ar on the pre-change checker. It exercises both engines on the same strict claims.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/01a1f467-8590-7ff3-bcdd-e52e5af7e3bc/8b249cdfe3dcf0e59bc87ae498c24c6b4a12e8f877c18587e7a83c2a2c2ff5cf.jsonl.gz) has every step in between: reasoning, tool calls and their results.

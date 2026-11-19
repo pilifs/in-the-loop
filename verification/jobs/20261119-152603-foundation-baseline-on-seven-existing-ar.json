@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261119-152603-foundation-baseline-on-seven-existing-ar",
+  "title": "Foundation baseline on seven existing array and division claims",
+  "description": "Measure the original checker on a fixed selection before changing its semantics. The same seven specifications, input bounds, strict profile and JVM oracles will be rerun on the integrated checker. Record verdicts, replay, phase time and peak RSS alongside artifact digests and job budgets.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence",
+    "benchmark"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/run.py"
+    ]
+  },
+  "expected": "Fourteen native and JBMC rows, one per engine and claim. Refusals retain their reason. A contradicted establishment or failed replay is a finding.",
+  "submitted": {
+    "at": "2026-11-19T15:26:03+00:00",
+    "session": "01a1f467-856b-7d02-9458-ab076e5fef2f"
+  },
+  "requires": [
+    "jvmcontract",
+    "javac",
+    "java",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m"
+  },
+  "steps": [
+    {
+      "name": "foundation-v1 baseline",
+      "run": "python3 lib/benchmark/run.py --selection foundation-v1 --groups 1,3 --engines native,jbmc --modes strict --timeout 30 --search 2000 --out lib/benchmark/foundation-baseline.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/foundation-baseline.json"
+  ]
+}
