@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-19T21:38:42.012Z",
-  "duration_seconds": 360675,
+  "ended": "2026-11-19T21:46:12.179Z",
+  "duration_seconds": 361125,
   "stats": {
     "turns": 316,
-    "api_calls": 1903,
-    "tool_calls": 1730,
+    "api_calls": 1907,
+    "tool_calls": 1733,
     "tool_errors": 29,
     "compactions": 8,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 4424,
-      "output_tokens": 1145324,
-      "cache_read_input_tokens": 453035500,
-      "cache_creation_input_tokens": 2918612
+      "input_tokens": 4434,
+      "output_tokens": 1147387,
+      "cache_read_input_tokens": 453689616,
+      "cache_creation_input_tokens": 2923723
     }
   },
   "tools": {
-    "Bash": 1636,
+    "Bash": 1639,
     "Edit": 27,
     "SendMessage": 17,
     "ToolSearch": 12,
@@ -173,24 +173,24 @@
     {
       "index": 8,
       "started": "2026-11-19T18:00:49.571Z",
-      "ended": "2026-11-19T21:38:42.012Z",
+      "ended": "2026-11-19T21:46:12.179Z",
       "turns": 13,
-      "api_calls": 78,
+      "api_calls": 82,
       "usage": {
-        "input_tokens": 182,
-        "output_tokens": 31479,
-        "cache_read_input_tokens": 8643028,
-        "cache_creation_input_tokens": 130336
+        "input_tokens": 192,
+        "output_tokens": 33542,
+        "cache_read_input_tokens": 9297144,
+        "cache_creation_input_tokens": 135447
       },
-      "peak_context_tokens": 161300
+      "peak_context_tokens": 166906
     }
   ],
   "log": {
-    "sha256": "0d67eea2ee4397055dd6cca6b0c0a7be7067018f8bb9d2139bc3c36ea1da275a",
-    "bytes": 37252808,
-    "lines": 16008,
-    "gzip_bytes": 6281870,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/0d67eea2ee4397055dd6cca6b0c0a7be7067018f8bb9d2139bc3c36ea1da275a.jsonl.gz"
+    "sha256": "13bd63886d868f51ae0f6f9d1c133f3655f8e51f48f534ea89d36ed390acad6e",
+    "bytes": 37359722,
+    "lines": 16047,
+    "gzip_bytes": 6302043,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/13bd63886d868f51ae0f6f9d1c133f3655f8e51f48f534ea89d36ed390acad6e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3337,6 +3337,14 @@
       "summary": "VF-045: a second Codex session opened the run-brief skill before working alone",
       "body": "The single-agent run foundation-and-python-restart, a new Codex session given a prompt that calls the work 'written for multiple agents', read .agents/skills/run-brief/SKILL.md in its first minute, then decided the brief was for one agent and worked on it directly, starting nothing. The finding records this second occurrence.",
       "log_sha256": "0d67eea2ee4397055dd6cca6b0c0a7be7067018f8bb9d2139bc3c36ea1da275a"
+    },
+    {
+      "change_id": "lxnwsprmkwzvlluzpulzsqslymrvrpov",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Codex sessions start without the Pets, Hotline, Safety Settings and Sites apps",
+      "body": "The ChatGPT account gives every Codex session its apps as deferred tools (codex_apps). On the user's word (2026-11-19), four that no work in this repository has a use for are turned off: Pets, Hotline, Safety Settings and Sites. GitHub, ChatGPT Space, Codex Document Control and Plugin Management stay. The loops pass the settings on every turn (CODEX_CONFIG in agent_client.py, as apps.<connector id>.enabled=false), and .codex/config.toml carries the same for a person's own Codex in a trusted checkout. Run 1 of foundation-domain-streams called none of the eight apps. Verified with codex debug prompt-input (CLI 0.170) rendered with CODEX_CONFIG: only the four kept apps' namespaces remain, and CLAUDE.md is still read; the TOML parses; the changed tests pass (8 of 8 files).",
+      "log_sha256": "13bd63886d868f51ae0f6f9d1c133f3655f8e51f48f534ea89d36ed390acad6e"
     }
   ],
   "logs": {
@@ -3429,6 +3437,12 @@
       "lines": 11103,
       "gzip_bytes": 4338990,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/12532ffef31d94a214fac0694f02c58fe10be6e6347d12e2b1cc5d0033a6e0ca.jsonl.gz"
+    },
+    "13bd63886d868f51ae0f6f9d1c133f3655f8e51f48f534ea89d36ed390acad6e": {
+      "bytes": 37359722,
+      "lines": 16047,
+      "gzip_bytes": 6302043,
+      "url": null
     },
     "13ea35b32aeb07797708361cf0baf623748a272bb0c47171eab16bcdd0922ff4": {
       "bytes": 30001103,
