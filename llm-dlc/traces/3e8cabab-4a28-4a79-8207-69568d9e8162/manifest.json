@@ -3124,7 +3124,7 @@
     },
     {
       "change_id": "xmkuvovnprovyxpkwvklwovrkuuwoozy",
-      "commit_id": null,
+      "commit_id": "8922ef5b82e259e7090935484d9286777fb8a433",
       "immutable": false,
       "summary": "Operating notes: the headless browser both clients now have is for reading only",
       "body": "Since 2026-11-19 the machine has Google's Chrome for Testing headless shell (158.0.8127.36) at ~/.cache/in-the-loop/browsers/current, sandboxed through the AppArmor profile /etc/apparmor.d/chrome-for-testing (Ubuntu 23.10+ otherwise refuses the user namespaces Chromium's sandbox needs), and both Claude Code and Codex have it as the user-level MCP server chrome-devtools (chrome-devtools-mcp 1.13.0: headless, a new empty profile per session, Google's usage statistics off). The new section says when to use it (pages a plain fetch or a research API does not serve), that it reads only (no logins, accounts, forms or posts; never --no-sandbox), that downloads are untrusted data, that research notes name each source by URL, date and the hash of a downloaded file, and how a newer Chrome is installed beside the old one with the current link repointed. Machine-side setup (browser, AppArmor profile, both registrations) is outside the repository and was done at the user's word. Verified: test_agent_client.py (24, the only test that names the file) under a 4G cap with TMPDIR off /tmp; agent_client.py instructions --client codex reports no problems, with operating-notes.md among its sources; a Javadoc page rendered through the current link with the sandbox on.",
