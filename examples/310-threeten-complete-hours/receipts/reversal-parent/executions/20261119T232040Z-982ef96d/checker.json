@@ -1,0 +1,213 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2806e3d9115a8cac49343e69e87b7a6f58381cb5/jvmcontract",
+    "prove",
+    "civil.Hours#completeHours(int, int)",
+    "--classes",
+    "prepare/parent/adapter-parent.jar",
+    "--classpath",
+    "prepare/parent/slice/parent.jar",
+    "--assume",
+    "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+    "--assert",
+    "result == -civil.Hours.completeHours(endTick, startTick)",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "600",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 1,
+  "seconds": 0.446,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "civil.Hours#completeHours(int, int)",
+      "domain": "startTick: int × endTick: int",
+      "assume": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+      "assert": "result == -civil.Hours.completeHours(endTick, startTick)",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": null,
+      "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "civil.Hours#completeHours(int, int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "uri": null,
+          "line": 13
+        }
+      ],
+      "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assertion: unknown name \"civil\"; the names are startTick, endTick, result); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✗ civil.Hours#completeHours(int, int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 0.013358014,
+        "properties": 1,
+        "unwind": 16,
+        "max_array_length": 8,
+        "stage": null,
+        "native": {
+          "paths": 5,
+          "merges": 0,
+          "solver_calls": 4,
+          "solving_seconds": 7.9459e-05,
+          "gates_evaluated": 104,
+          "evaluating_seconds": 3.737e-06,
+          "divisions": 3,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 3865,
+          "clauses": 12404,
+          "seconds": 0.012061936,
+          "loading_seconds": 0.002724326,
+          "decoding_seconds": 0.000363635,
+          "encoding_seconds": 0.002399288,
+          "witness_seconds": 0.0
+        },
+        "gap_mode": "strict",
+        "gaps": [
+          {
+            "id": "jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.ServiceLoader.load(java.lang.Class)",
+            "sites": [
+              "org.threeten.bp.chrono.Chronology.<clinit>:148"
+            ],
+            "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+            "treatment": "refused"
+          }
+        ],
+        "deadline_seconds": 600.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 600.0,
+            "seconds": 0.012,
+            "ended": "no-verdict",
+            "ending": "no-verdict",
+            "phases": {
+              "loading": 0.003,
+              "lowering": 0.0,
+              "symbolic": 0.006,
+              "encoding": 0.002,
+              "solving": 0.0,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 3865,
+              "clauses": 12404
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.434,
+          "setup": 0.001,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.012,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.421
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "startTick",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            },
+            {
+              "name": "endTick",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "startTick: int × endTick: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result == -civil.Hours.completeHours(endTick, startTick)",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 16,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+          "classes": 37,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 6847,
+    "sha256": "c72361d9f5106282131ad11eb6f7c89ba7835c6bb8034e119c5370cf347c6575"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

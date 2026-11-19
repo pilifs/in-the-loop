@@ -1,0 +1,320 @@
+{
+  "wire_version": 1,
+  "verdict": "unverifiable",
+  "target": "civil.Hours#completeHours(int, int)",
+  "domain": "startTick: int × endTick: int",
+  "counterexample": null,
+  "proof": null,
+  "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at before.org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+  "statement": "verifier/work/pair/RegressionPair.java",
+  "findings": [
+    {
+      "rule_id": "unverifiable",
+      "message": "RegressionPair#agree cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at before.org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "uri": null,
+      "line": 38
+    }
+  ],
+  "output": "note: checked as a property of the pair of versions: RegressionPair.agree (verifier/work/pair/RegressionPair.java) calls the previous version's civil.Hours#completeHours(int, int), relocated under `before`, and then the new one's on the same inputs, each on its own dependency closure, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n✗ civil.Hours#completeHours(int, int) cannot be verified as a property of the pair of versions (below)\n✗ RegressionPair#agree cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at before.org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+  "work": "verifier/work",
+  "search": {
+    "engine": "native",
+    "checker": "jvmcontract's own checker (CaDiCaL)",
+    "seconds": 0.033753673,
+    "properties": 1,
+    "unwind": 16,
+    "max_array_length": 8,
+    "stage": null,
+    "native": {
+      "paths": 6,
+      "merges": 0,
+      "solver_calls": 8,
+      "solving_seconds": 0.001272284,
+      "gates_evaluated": 183,
+      "evaluating_seconds": 9.329e-6,
+      "divisions": 4,
+      "divisions_built": 2,
+      "multiplications": 0,
+      "multiplications_built": 0,
+      "variables": 10695,
+      "clauses": 36409,
+      "seconds": 0.030619361,
+      "loading_seconds": 0.005940884,
+      "decoding_seconds": 0.000347862,
+      "encoding_seconds": 0.008196271,
+      "witness_seconds": 0.0
+    },
+    "gap_mode": "strict",
+    "gaps": [
+      {
+        "id": "jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13",
+        "kind": "jdk-static-method",
+        "call": "java.util.ServiceLoader.load(java.lang.Class)",
+        "sites": [
+          "before.org.threeten.bp.chrono.Chronology.<clinit>:148"
+        ],
+        "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+        "treatment": "refused"
+      }
+    ],
+    "deadline_seconds": 600.0,
+    "runs": [
+      {
+        "checker": "native",
+        "purpose": "proof",
+        "stage": null,
+        "budget_seconds": 600.0,
+        "seconds": 0.031,
+        "ended": "no-verdict",
+        "ending": "no-verdict",
+        "phases": {
+          "loading": 0.006,
+          "lowering": 0.0,
+          "symbolic": 0.015,
+          "encoding": 0.008,
+          "solving": 0.001,
+          "trace": 0.0,
+          "other": 0.0
+        },
+        "formula": {
+          "variables": 10695,
+          "clauses": 36409
+        }
+      }
+    ]
+  },
+  "stated": {
+    "kind": "property",
+    "domain": {
+      "parameters": [
+        {
+          "name": "startTick",
+          "type": "int",
+          "kind": "primitive",
+          "null": false
+        },
+        {
+          "name": "endTick",
+          "type": "int",
+          "kind": "primitive",
+          "null": false
+        }
+      ],
+      "shared_arrays": false,
+      "text": "startTick: int × endTick: int"
+    },
+    "assumptions": [
+      {
+        "kind": "precondition",
+        "text": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191 && startTick / 96 == endTick / 96",
+        "basis": "stated"
+      },
+      {
+        "kind": "initialization",
+        "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+        "basis": "engine"
+      }
+    ],
+    "observations": {
+      "result": "the result and the parameters, against result",
+      "exceptions": "none may be thrown"
+    },
+    "bounds": {
+      "unwind": 16,
+      "max_array_length": null,
+      "complete": false
+    },
+    "models": {
+      "used": true,
+      "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+      "classes": 37,
+      "jdk": "21.0.13"
+    },
+    "checker": {
+      "engine": "native",
+      "name": "jvmcontract's own checker (CaDiCaL)",
+      "solver": "CaDiCaL 1.9.5 (bundled)",
+      "fallback": null,
+      "sat": {
+        "solver": "CaDiCaL",
+        "version": "1.9.5",
+        "source": "bundled by the Rust crate cadical 0.1.16",
+        "configuration": [
+          "CaDiCaL's default options",
+          "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+          "the run's deadline through CaDiCaL's terminate callback",
+          "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+        ]
+      }
+    },
+    "gap_mode": "strict",
+    "confirmation": null
+  },
+  "pair": {
+    "verdict": "unverifiable",
+    "target": "RegressionPair#agree",
+    "domain": "startTick: int × endTick: int",
+    "assume": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191 && startTick / 96 == endTick / 96",
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at before.org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+    "statement": "verifier/work/pair-work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "RegressionPair#agree cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at before.org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "uri": null,
+        "line": 38
+      }
+    ],
+    "output": "✗ RegressionPair#agree cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at before.org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+    "work": "verifier/work/pair-work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.033753673,
+      "properties": 1,
+      "unwind": 16,
+      "max_array_length": 8,
+      "stage": null,
+      "native": {
+        "paths": 6,
+        "merges": 0,
+        "solver_calls": 8,
+        "solving_seconds": 0.001272284,
+        "gates_evaluated": 183,
+        "evaluating_seconds": 9.329e-6,
+        "divisions": 4,
+        "divisions_built": 2,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 10695,
+        "clauses": 36409,
+        "seconds": 0.030619361,
+        "loading_seconds": 0.005940884,
+        "decoding_seconds": 0.000347862,
+        "encoding_seconds": 0.008196271,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13",
+          "kind": "jdk-static-method",
+          "call": "java.util.ServiceLoader.load(java.lang.Class)",
+          "sites": [
+            "before.org.threeten.bp.chrono.Chronology.<clinit>:148"
+          ],
+          "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 600.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 600.0,
+          "seconds": 0.031,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.006,
+            "lowering": 0.0,
+            "symbolic": 0.015,
+            "encoding": 0.008,
+            "solving": 0.001,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 10695,
+            "clauses": 36409
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.045,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.031,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.013
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "startTick",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "endTick",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "startTick: int × endTick: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191 && startTick / 96 == endTick / 96",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 16,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+        "classes": 37,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+}

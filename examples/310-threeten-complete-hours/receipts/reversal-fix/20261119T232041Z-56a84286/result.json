@@ -1,0 +1,445 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "60982e1e80280db5",
+    "format": 1,
+    "example": "310",
+    "statement": {
+      "approach": "target",
+      "task": "reversal-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.threeten.bp.LocalDateTime#until(Lorg/threeten/bp/temporal/Temporal;Lorg/threeten/bp/temporal/TemporalUnit;)J",
+      "revisions": [
+        "fix"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "reversal-fix",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "org.threeten.bp.LocalDateTime#until(Lorg/threeten/bp/temporal/Temporal;Lorg/threeten/bp/temporal/TemporalUnit;)J",
+        "file": "claims/reversal.json",
+        "sha256": "eaff1f657104c9d1f5f50323ac7696859a57ec16bb76dce92de31645330bb30a",
+        "property": "reversal",
+        "claimKind": "property",
+        "statement": "Reversing the endpoints negates the returned whole hours.",
+        "assume": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+        "assert": "result == -civil.Hours.completeHours(endTick, startTick)",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 16,
+          "maxArrayLength": 8
+        },
+        "explicitBounds": {
+          "unwind": 16
+        },
+        "defaultBounds": [
+          "maxArrayLength"
+        ],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "clock-driver",
+            "kind": "driver",
+            "path": "driver/civil/ClockCases.java",
+            "sha256": "f438b7afc1663077cc9b24cb41983e334654ae1505d841c870eaf0584fab505f"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "f0e94343912deba019b0f590e0aa1a110bd5a491529d3a3b63c5f16131d5c081"
+          }
+        ],
+        "adapter": {
+          "entry": "civil.Hours#completeHours(II)J",
+          "mapping": "Independent ticks 0 through 191 denote quarter-hours from 2012-06-15 00:00, local civil time on June 15 and 16. The unit is ChronoUnit.HOURS. No zone conversion.",
+          "correspondence": "finite-oracle",
+          "cases": 36864
+        },
+        "key": "198eb98e8893c523"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 8
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "reversal-fix",
+      "sidecar": "6d6b02b27fb9d767e89e4bc2e4a9ecb29232be6d01501880c1b6e2bb433912d9",
+      "revisions": {
+        "fix": "f0b2eaf1856b7fb5fdf78de3cedc9781b6619b88"
+      },
+      "dependencies": [
+        {
+          "revision": "fix",
+          "position": 0,
+          "role": "driver",
+          "sha256": "666493df1bcae8df9c6586ae1e479ddde4cb83f245335d2df23335c1ecc60a1f"
+        },
+        {
+          "revision": "fix",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "88043dcfead2a23100f82fd5054577ec6dbf887bbf3ccee2daf5bb07c2df0786"
+        },
+        {
+          "revision": "fix",
+          "position": 2,
+          "role": "original",
+          "sha256": "66a46dda841cb03c4130ac6f4af0dfa35c661af85d0a7dab47a35dc7f31204d2"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/civil/Hours.java": "6e31ff7f00294ae0c6ea199da283dcb666d260cc50ba7cbd0c8da03320998974",
+        "claims/reversal.json": "eaff1f657104c9d1f5f50323ac7696859a57ec16bb76dce92de31645330bb30a",
+        "controls/oracle.py": "f0e94343912deba019b0f590e0aa1a110bd5a491529d3a3b63c5f16131d5c081",
+        "driver/civil/ClockCases.java": "f438b7afc1663077cc9b24cb41983e334654ae1505d841c870eaf0584fab505f"
+      },
+      "claimKey": "198eb98e8893c523",
+      "scopes": {
+        "fix": "extracted-source-slice"
+      }
+    }
+  },
+  "attempt": {
+    "id": "20261119T232041Z-56a84286",
+    "claim": "60982e1e80280db5",
+    "startedAt": "2026-11-19T23:20:41+00:00",
+    "seconds": 0.5,
+    "engine": "native",
+    "options": [
+      "prove",
+      "civil.Hours#completeHours(int, int)",
+      "--classes",
+      "prepare/fix/adapter-fix.jar",
+      "--classpath",
+      "prepare/fix/slice/fix.jar",
+      "--assume",
+      "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+      "--assert",
+      "result == -civil.Hours.completeHours(endTick, startTick)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "8",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "566f1111726f27c8f97e277eb5504daefe78d8e92a12223691037167a5d765ee"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "51a0142b507ae5e9c6f1a2b1b0ffc7785c9a648f189a78ead52b9f4ca651f21a",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261119-231539-retry-threetenbp-hours-after-exact-jdk-a",
+      "sourceCommit": "a78b7348a842915985827118844fa68fced87cc7",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261119-231539-retry-threetenbp-hours-after-exact-jdk-a"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control fix on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-fix-jdk21.stdout",
+        "stderr": "records/control-fix-jdk21.stderr"
+      },
+      {
+        "name": "verifier fix on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.424,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "60982e1e80280db5",
+    "attempt": "20261119T232041Z-56a84286",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == -civil.Hours.completeHours(endTick, startTick)",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == -civil.Hours.completeHours(endTick, startTick)",
+          "assume": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+          "verdict": "unverifiable",
+          "domain": "startTick: int × endTick: int",
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.014,
+            "properties": 1,
+            "unwind": 16,
+            "maxArrayLength": 8,
+            "stage": null,
+            "deadlineSeconds": 600.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 600.0,
+                "seconds": 0.012,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.003,
+                  "lowering": 0.0,
+                  "symbolic": 0.007,
+                  "encoding": 0.002,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 3865,
+                  "clauses": 12404
+                }
+              }
+            ],
+            "native": {
+              "paths": 5,
+              "merges": 0,
+              "solverCalls": 4,
+              "solvingSeconds": 5.4874e-05,
+              "gatesEvaluated": 104,
+              "evaluatingSeconds": 3.606e-06,
+              "divisions": 3,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 3865,
+              "clauses": 12404,
+              "seconds": 0.01219146,
+              "loadingSeconds": 0.002860941,
+              "decodingSeconds": 0.000311582,
+              "encodingSeconds": 0.002420035,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.util.ServiceLoader.load(java.lang.Class)",
+                "sites": [
+                  "org.threeten.bp.chrono.Chronology.<clinit>:148"
+                ],
+                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+                "treatment": "refused"
+              }
+            ]
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "startTick",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "endTick",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "startTick: int × endTick: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == -civil.Hours.completeHours(endTick, startTick)",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 16,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+              "classes": 37,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"fix\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+    "domain": "startTick: int × endTick: int",
+    "replay": null,
+    "property": {
+      "assert": "result == -civil.Hours.completeHours(endTick, startTick)",
+      "assume": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "fc706f87e693dc07de925b2a51788f8aa22a301f9740b7d9652562279e741cd8",
+        "bytes": 65846
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "6aa3ce56cdcab8302e0c320fd92df9a019480bafd0e844f13f0a74a9ab5c075b",
+        "bytes": 779
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "139980eb32708e458c0f0d7365f720e03cde8ba064960c9f6e7e6ff58e793ff1",
+        "bytes": 1947
+      },
+      {
+        "path": "records/control-fix-jdk21.stdout",
+        "sha256": "9a41a5fd7b9a5932e6937a5633bacb300e7086c59219381b533c990fa3de4012",
+        "bytes": 15661
+      },
+      {
+        "path": "records/control-fix-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "f04aae91f5a73d44e81996a2ba4e3f5d572306690b58187d5dd710e9fd8fdb84",
+        "bytes": 36073
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "4e55c8c9a2297e28959b99fe12c116d363e353c4b40a62a55c832865f2160fd9",
+        "bytes": 6846
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "63a866cc1cccc3525e0edbb28b161c2bd42d59a850ddc1772cbc9d3d5ef9cb7f",
+        "bytes": 29347
+      }
+    ]
+  }
+}
