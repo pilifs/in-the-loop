@@ -47,6 +47,33 @@ artifact of identical source. Only then a narrower slice of the example. Credent
 
 **Why:** a reader of the published history must be able to reproduce the build without the user's accounts.
 
+## Reading the web: the headless browser is for reading
+
+Since 2026-11-19 the machine has a browser for pages a plain fetch cannot read, such as pages rendered by
+JavaScript: Javadoc, specifications, recent papers, upstream documentation. It is Google's Chrome for Testing
+headless shell (pinned at 158.0.8127.36), at `~/.cache/in-the-loop/browsers/current/chrome-headless-shell`.
+
+- **Both clients have it** as the MCP server `chrome-devtools` (`chrome-devtools-mcp@1.13.0`, registered for the
+  user in `~/.claude.json` and `~/.codex/config.toml`). It runs headless, with a new empty profile for each
+  session (`--isolated`), and with the package's usage statistics to Google turned off. From a shell:
+  `chrome-headless-shell --headless --user-data-dir="$(mktemp -d)" --dump-dom URL`.
+- **Prefer an API or a plain fetch** where one serves the content (arXiv, OpenAlex, Semantic Scholar, the GitHub
+  API, a raw file): the browser is for what they do not reach.
+- **Read only.** No logins, no accounts, no forms submitted, nothing posted. Never `--no-sandbox`: Chromium's
+  sandbox is what keeps a hostile page from the user's files. It works here because of the AppArmor profile
+  `/etc/apparmor.d/chrome-for-testing`, which lets this binary create the user namespaces Ubuntu (23.10 and
+  later) otherwise refuses; without it the browser stops with "No usable sandbox!".
+- **A download is untrusted data**: each in a new folder of its own, never run, read with scripts kept elsewhere
+  (`python3 -I`).
+- **Name each source** in a research note by its URL and the date it was read, with the hash of a file that was
+  downloaded, so that a reader of the published history can find it again.
+- **A newer Chrome** is installed beside the old one (`npx @puppeteer/browsers install chrome-headless-shell@VERSION
+  --path ~/.cache/in-the-loop/browsers`) and `current` repointed at it. The AppArmor profile's path pattern covers
+  every version, and both registrations name `current`, so nothing else changes.
+
+**Why:** the project needs sources that research APIs do not serve, and a browser that follows links on the open
+web must not carry the user's logins or write anywhere in their name.
+
 ## Check for a decision before fixing an infrastructure problem met mid-task
 
 Look in [`verification/findings.md`](../verification/findings.md) and the run's decisions
