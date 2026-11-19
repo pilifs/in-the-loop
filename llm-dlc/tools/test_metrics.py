@@ -203,6 +203,16 @@ class Output(unittest.TestCase):
         self.assertEqual((r["commits"][0]["sessions"], r["commits"][0]["output_tokens"]), (["s1", "s2"], 3))
         self.assertEqual(r["by_day"][0]["prompts"], 2)
 
+    def test_a_call_over_a_models_long_context_size_is_priced_at_its_long_context_rates(self):
+        pricing = {"models": {"m-long": {"input": 2, "output": 10, "cache_read": 0.1, "cache_write_5m": 2.5, "cache_write_1h": 5,
+                                         "long_context": {"above": 272_000, "input": 4, "output": 15, "cache_read": 0.2,
+                                                          "cache_write_5m": 5, "cache_write_1h": 10}}}}
+        call = lambda fresh, cached: {"model": "m-long", "input_tokens": fresh, "output_tokens": 1_000_000, "cache_read_tokens": cached,
+                                      "cache_write_tokens": 0, "cache_write_5m_tokens": 0, "cache_write_1h_tokens": 0}
+        self.assertEqual(metrics.costs(call(72_000, 200_000), pricing), (round(0.144 + 10 + 0.02, 6), round(0.544 + 10, 6)))  # at the size
+        self.assertEqual(metrics.costs(call(72_001, 200_000), pricing), (round(0.288004 + 15 + 0.04, 6), round(1.088004 + 15, 6)))  # over it
+        self.assertEqual(metrics.costs({**call(1_000_000, 0), "model": "m-a"}, PRICING)[0], 60.0)  # a model with one price
+
     def test_an_unknown_model_is_flagged_not_priced_at_zero_silently(self):
         s = build([prompt(at(0), "go"), reply(at(0, 1), "a", usage(), model="m-new")])
         self.assertEqual(s["totals"]["unpriced_calls"], 1)

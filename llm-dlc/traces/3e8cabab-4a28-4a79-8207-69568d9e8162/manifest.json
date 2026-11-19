@@ -12,38 +12,40 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T19:24:01.389Z",
-  "ended": "2026-11-19T13:59:12.287Z",
-  "duration_seconds": 326111,
+  "ended": "2026-11-19T14:24:46.265Z",
+  "duration_seconds": 327645,
   "stats": {
-    "turns": 55,
-    "api_calls": 1424,
-    "tool_calls": 1528,
+    "turns": 57,
+    "api_calls": 1492,
+    "tool_calls": 1600,
     "tool_errors": 50,
     "compactions": 11,
     "peak_context_tokens": 466857,
     "usage": {
-      "input_tokens": 2922,
-      "output_tokens": 1984849,
-      "cache_read_input_tokens": 383541843,
-      "cache_creation_input_tokens": 5061520
+      "input_tokens": 3064,
+      "output_tokens": 2057402,
+      "cache_read_input_tokens": 409917661,
+      "cache_creation_input_tokens": 5183203
     }
   },
   "tools": {
-    "Bash": 1311,
+    "Bash": 1371,
     "Write": 78,
-    "Edit": 48,
+    "Edit": 51,
     "Read": 43,
-    "AskUserQuestion": 12,
-    "ToolSearch": 10,
-    "ScheduleWakeup": 6,
+    "AskUserQuestion": 13,
+    "ToolSearch": 11,
+    "WebFetch": 11,
+    "ScheduleWakeup": 7,
     "SendMessage": 6,
-    "WebFetch": 6,
     "Agent": 4,
     "TaskStop": 3,
-    "Skill": 1
+    "Skill": 1,
+    "WebSearch": 1
   },
   "files_touched": [
     ".claude/settings.json",
+    ".claude/skills/single-agent-run/SKILL.md",
     "/tmp/claude-1001/-home-user-code-in-the-loop/3e8cabab-4a28-4a79-8207-69568d9e8162/scratchpad/codex/hooks/live_after_turn.py",
     "/tmp/claude-1001/-home-user-code-in-the-loop/3e8cabab-4a28-4a79-8207-69568d9e8162/scratchpad/codex/hooks/pipe_test.py",
     "/tmp/claude-1001/-home-user-code-in-the-loop/3e8cabab-4a28-4a79-8207-69568d9e8162/scratchpad/codex/hooks/probe_shell.py",
@@ -278,24 +280,24 @@
     {
       "index": 11,
       "started": "2026-11-18T05:37:49.230Z",
-      "ended": "2026-11-19T13:59:12.287Z",
-      "turns": 5,
-      "api_calls": 110,
+      "ended": "2026-11-19T14:24:46.265Z",
+      "turns": 7,
+      "api_calls": 178,
       "usage": {
-        "input_tokens": 226,
-        "output_tokens": 117551,
-        "cache_read_input_tokens": 24664891,
-        "cache_creation_input_tokens": 430459
+        "input_tokens": 368,
+        "output_tokens": 190104,
+        "cache_read_input_tokens": 51040709,
+        "cache_creation_input_tokens": 552142
       },
-      "peak_context_tokens": 315665
+      "peak_context_tokens": 439121
     }
   ],
   "log": {
-    "sha256": "8bd92a75b3bcb00870b4c126b4714d71172af8e4c259187f294892cd507402df",
-    "bytes": 36542269,
-    "lines": 12792,
-    "gzip_bytes": 6309392,
-    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/8bd92a75b3bcb00870b4c126b4714d71172af8e4c259187f294892cd507402df.jsonl.gz"
+    "sha256": "69e459a7f43ce8bc38fce1cda9db4fb91ab12de5034685ff347da4164e6f398d",
+    "bytes": 37700087,
+    "lines": 13375,
+    "gzip_bytes": 6473317,
+    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/69e459a7f43ce8bc38fce1cda9db4fb91ab12de5034685ff347da4164e6f398d.jsonl.gz"
   },
   "subagents": [
     {
@@ -3103,6 +3105,14 @@
       "summary": "Allow list: Filip Stankovic approved b24f7c44",
       "body": "Filip Stankovic approved 1 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\nb24f7c44  long-token  rol…6e (64 chars): A made-up rollout file name in llm-dlc/tools/test_codex.py (rollout-, a date and a made-up thread id, 64 characters): a test fixture, not a token",
       "log_sha256": "8bd92a75b3bcb00870b4c126b4714d71172af8e4c259187f294892cd507402df"
+    },
+    {
+      "change_id": "pqnmyuxtmloqrtulkyxpwvszqsqotpts",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A failed turn or compaction ends a loop needing attention, and a single agent's run is checked at its start, its restart and its landing",
+      "body": "An outside review of the Codex work found four things; this takes up what bears on a single agent's run, with the user's decisions of 2026-11-19 (the rule for failed turns holds for every loop; the network is open to Codex workers; list prices for the two Codex models).\n\nA turn that did not end well is not a cycle. feature-loop.sh only logged a worker turn the client had ended with an error (a quota, an interruption) or cut off, and on the last cycle of a count it then skipped the watcher's verdict, compacted, summarized and exited 0; a failed compaction was logged and ignored. It now reads the turn's own event stream: no result, or a result that is not a success, stops the loop with status 1 and a record line that says the session needs attention, before any compaction or summary; a compaction that fails stops it too, after the summary when the run was ending anyway. A turn that ends well with no commit is judged as before. Claude Code's own compaction shows as a boundary in its stream (seen in the logs of earlier runs), which the rule takes for success.\n\nA single run's start and restart. A Codex run now gets the check a brief's Codex streams get, in the agent's folder: the client is there and is given the checkout's CLAUDE.md whole. A restart keeps the count of cycles and the queue's setting of the leg before unless given its own (--cycles N, 0 for none; --verification) and prints what it kept; before, a bare restart dropped the count and turned the queue back on. A restart of a Codex run whose record names a thread, and whose binding is gone, is refused: a new thread would be told to go on with work it never saw.\n\nDecisions only a person takes. One that no person is recorded as having taken now waives nothing (the redactor is given only published or recorded decisions, so the finding stays raised), a new question of sync.py (decisions, with --at REV for a commit) says which there are, and landing a workspace's line asks it first and leaves the line where it is. A push already refuses while check has the error. The user's own approval of b24f7c44, made in their terminal while this was written, left its record and the check finds nothing: the legitimate path works.\n\nAlso: the network is open inside a Codex worker's sandbox (probed: a host is not resolved without the setting, reached with it); AGENT_CLIENT_CODEX_SETTINGS gives a rehearsal extra client settings; OpenAI's list prices for gpt-6.2-astra and gpt-6.2-sol are in pricing.json (from developers.openai.com/api/docs/pricing, 2026-11-19), with the rates of a prompt over 272K tokens, which metrics.py applies per call; the Stop hook of .codex/hooks.json shows a message while it runs.\n\nVerified by eight new tests and the changed ones: through single_run.py with a one-cycle cap and the Codex stand-in, a turn that fails, one that is cut off, a compaction that fails and a quiet turn that ends well; a restart's kept limits; the instruction check and the lost thread; an unrecorded decision that waives nothing and a line that is asked; landing refused and then allowed; the long-context price. The tests of what changed pass, 26 of 26 Python test files (python3 lib/tools/test_costs.py run --changed --rust-jobs 1 under an 8G cap).",
+      "log_sha256": "69e459a7f43ce8bc38fce1cda9db4fb91ab12de5034685ff347da4164e6f398d"
     }
   ],
   "logs": {
@@ -3225,6 +3235,12 @@
       "lines": 2384,
       "gzip_bytes": 1391165,
       "url": "https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/69122164fc60d1f4d14976b6e06c75b3d6bb8327001c8e86bc2b1255e7d0245d.jsonl.gz"
+    },
+    "69e459a7f43ce8bc38fce1cda9db4fb91ab12de5034685ff347da4164e6f398d": {
+      "bytes": 37700087,
+      "lines": 13375,
+      "gzip_bytes": 6473317,
+      "url": null
     },
     "69f00127dd071bdbdb632b627334da200c01ea1d9b4ecc22fca337138a5bcf4c": {
       "bytes": 12710289,

@@ -1141,6 +1141,7 @@ class CommitChecks(unittest.TestCase):
         def report(listed):
             with mock.patch.object(sync, "reviewed_problems", return_value=[]), \
                  mock.patch.object(sync, "allowlist_problems", return_value=([], [])), \
+                 mock.patch.object(sync, "decision_problems", return_value=[]), \
                  mock.patch.object(sync, "all_manifests", return_value={}), \
                  mock.patch.object(sync, "check_sessions", return_value=([], ["made-up warning"], ["n1", "n2"], 0)), \
                  mock.patch.object(sync, "check_trailers", return_value=([], [])), \

@@ -14,7 +14,7 @@ is feature-loop.sh's `single-agent`, with this run's directory as its conductor.
     single_run.py start NAME [--prompt TEXT | --prompt-file FILE] [--continue TEXT | --continue-file FILE]
                         [--brief FILE] [--workspace WS] [--session ID | --fork ID] [--model ID] [--effort LEVEL]
                         [--memory SIZE] [--cycles N] [--verdict-wait SECONDS] [--summary-interval SECONDS]
-                        [--no-verification]
+                        [--no-verification | --verification]
         start the run, detached. A new run needs its first text (--prompt). Without --continue the message is
         DEFAULT_CONTINUE. --brief names a file the agent is pointed at in every cycle, in one sentence after the
         text; nothing else is added to either text. The agent works in this checkout, or with --workspace in the
@@ -23,7 +23,11 @@ is feature-loop.sh's `single-agent`, with this run's directory as its conductor.
         gives a loop), or with --session one of that folder's that it continues, or with --fork a copy of any
         session of this machine, which carries on untouched. Run again on a run that has stopped, it continues the
         same session, and that leg's first cycle takes the continue message, or --prompt when one is given;
-        --continue is refused there, since the message of a run that exists is changed by `message` alone.
+        --continue is refused there, since the message of a run that exists is changed by `message` alone. That
+        leg keeps the count of cycles and the queue's setting of the leg before unless it is given its own
+        (--cycles N, 0 for no limit; --verification), and `start` prints what it kept. A Codex run is checked
+        first: that the client is given this checkout's CLAUDE.md whole in the agent's folder, and, at a restart,
+        that the thread the run had can still be found.
     single_run.py wait NAME [--interval SECONDS] [--timeout SECONDS]
         block until something needs the watcher, and print it: a `question` (a cycle has ended: another, or stop;
         or the session compacted with no commit), `results` and `verification` (the queue, kept as the watcher
@@ -75,6 +79,7 @@ import agent_client
 import brief_run
 import conductor
 import doctor
+import loop_stats
 import watch
 
 REPO = Path(__file__).resolve().parents[2]
@@ -276,6 +281,19 @@ def cmd_start(run: Run, a: argparse.Namespace) -> int:
     if client == "codex" and a.fork:
         raise Problem("a Codex session cannot start as a fork of a Claude Code conversation: give it the brief and the "
                       "prompt, which is the handoff both clients read")
+    if client == "codex":
+        # As a brief's run checks before a Codex stream starts: the client is there, and in the folder the agent
+        # works in it is given this checkout's CLAUDE.md whole (nothing shadows it, nothing is cut off).
+        problems = brief_run.codex_ready(folder)
+        if problems:
+            raise Problem("; ".join(problems))
+        # A run that has had a thread continues that thread. With its binding gone, the loop would start a new
+        # one and give it the continue message: a session that knows nothing of the run, with nothing to say so.
+        if not new and thread_named(data) and not agent_client.binding(data.get("session") or "", folder):
+            raise Problem(f"the run {run.name} had a Codex thread ({thread_named(data)}), and the folder no longer says which "
+                          f"({folder}/llm-dlc/loop-summaries/agent-sessions/{data.get('session')}.json is gone): a new thread "
+                          f"would know nothing of the run. Start the rest as a new run, by another name, with what was "
+                          f"reached written into its prompt or brief")
     if new:
         if a.session and client == "codex" and not agent_client.binding(a.session, folder):
             raise Problem(f"no Codex session {a.session} of {folder} to continue (llm-dlc/loop-summaries/agent-sessions there)")
@@ -286,8 +304,18 @@ def cmd_start(run: Run, a: argparse.Namespace) -> int:
             raise Problem(f"no transcript of session {a.fork} to fork, under {projects}")
     session = data.get("session") or a.session or str(uuid.uuid4())
     memory = a.memory or data.get("memory") or doctor.budget(doctor.machine())["loopMemory"]
+    # A leg keeps the limits of the leg before unless it is given its own: a bare `start NAME` on a run that had
+    # stopped used to drop its count of cycles and turn its verification queue back on, with nothing to say so.
+    kept = []
     cycles = a.cycles if a.cycles is not None else None
+    if cycles is None and not new and data.get("cycles"):
+        cycles = data["cycles"]
+        kept.append(f"cycles: {cycles}, as the leg before (--cycles N changes it, --cycles 0 removes the limit)")
+    cycles = cycles or None  # 0 is no limit
     queue = "off" if a.no_verification else "on" if is_default(run.root) else "off: this checkout is not the default workspace"
+    if not new and not a.no_verification and not a.verification and data.get("verification") == "off":
+        queue = "off"
+        kept.append("verificationQueue: off, as the leg before (--verification turns it on)")
 
     run.dir.mkdir(parents=True, exist_ok=True)
     set_message(run, given or (run.message.read_text() if run.message.exists() else DEFAULT_CONTINUE + "\n"),
@@ -316,9 +344,21 @@ def cmd_start(run: Run, a: argparse.Namespace) -> int:
         "client": client, "model": data["model"], **({"runs": resolved["model"]} if resolved["model"] != data["model"] else {}),
         "effort": data["effort"], "memory": memory, "cycles": cycles or "no limit",
         "firstCycleTakes": legs[-1]["first"], "continueMessage": run.message.read_text().strip(), "brief": brief,
-        "verificationQueue": queue, "output": str(run.dir / "loop.log"),
+        "verificationQueue": queue, **({"keptFromTheLegBefore": kept} if kept else {}), "output": str(run.dir / "loop.log"),
         "next": f"run `python3 llm-dlc/tools/single_run.py wait {run.name}` as a background task"}, indent=1))
     return 0
+
+
+def thread_named(data: dict) -> str | None:
+    """The Codex thread a run's last record names (feature-loop.sh writes the line once the thread exists)."""
+    for leg in reversed(data.get("legs") or []):
+        try:
+            found = loop_stats.RECORD_THREAD.search(Path(leg.get("record") or "").read_text())
+        except OSError:
+            continue
+        if found:
+            return found["thread"]
+    return None
 
 
 def cmd_loop(run: Run) -> int:
@@ -359,7 +399,9 @@ def cmd_loop(run: Run) -> int:
     records = sorted((folder / "llm-dlc" / "loop-summaries").glob(f"*-{run.loop}.md"))
     record = str(records[-1]) if records else None
     how = {0: "the run was ended by its watcher, by a stop, or its cycles ran out",
-           1: "a cycle made no commit and no verdict came, the session compacted and was stopped, or the loop could not start",
+           1: "a turn or a compaction did not end well (a quota, a cut-off, an error of the client), a cycle made no commit "
+              "and no verdict came, the session compacted and was stopped, or the loop could not start: the record's "
+              "last line says which",
            2: "the loop refused its arguments", 130: "interrupted"}.get(status, "see the loop's output")
     loop = {**(run.read().get("loop") or {}), "ended": conductor.now(), "status": status, "record": record}
     legs = list(run.read().get("legs") or [])
@@ -742,6 +784,8 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
     s.add_argument("--cycles", type=int)
     s.add_argument("--verdict-wait", type=int, help=f"seconds the loop waits for the watcher after a cycle ({VERDICT_WAIT})")
     s.add_argument("--no-verification", action="store_true", help="leave the verification queue alone")
+    s.add_argument("--verification", action="store_true",
+                   help="at a restart: keep the verification queue again, after a leg that left it alone")
     s.add_argument("--summary-interval", type=float, help=f"seconds between two summaries of `wait` ({INTERVAL})")
     w = named("wait", "block until something needs the watcher")
     w.add_argument("--interval", type=float)
@@ -774,8 +818,8 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
             return cmd_list(root)
         run = Run(root, args.name)
         if args.command == "start":
-            if args.cycles is not None and args.cycles < 1:
-                raise Problem("--cycles takes a count of 1 or more")
+            if args.cycles is not None and args.cycles < 0:
+                raise Problem("--cycles takes a count of 1 or more, or 0 for no limit")
             return cmd_start(run, args)
         if args.command == "loop":
             return cmd_loop(run)

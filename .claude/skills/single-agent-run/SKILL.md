@@ -68,7 +68,10 @@ First, always: `python3 llm-dlc/tools/single_run.py list`, and for a run of the 
 - A run of that name that has ended: `start NAME` continues its session, with the continue message as it stands
   as its first text. Continue one only when the user asks, or after a stop that only waited on jobs (stage 2).
   A `--prompt` on a restart is the user's own words from their request, never yours, and `--continue` is refused
-  there. If the user means a new piece of work, it takes another name.
+  there. The leg keeps the count of cycles and the queue's setting of the leg before, and `start` prints what
+  it kept (`keptFromTheLegBefore`): pass `--cycles N` (0 for no limit) or `--verification` only when the user
+  wants them changed, and tell the user the limits the leg runs under. If the user means a new piece of work, it
+  takes another name.
 - No such run: go on with stage 1.
 
 ## 1. Start it
@@ -161,11 +164,20 @@ user.
 
 When the run has ended:
 
+- Read how it ended before anything else: the `ended` event's `status` and `note`, and the last line of the
+  loop's record. Status 0 is an end by your `stop`, by a stop, or by the count of cycles. **Status 1 is not an
+  end of the work**: a turn or a compaction did not end well (the client hit a quota, was cut off, or failed), a
+  cycle made no commit and no verdict came, or the loop could not start; the record's last line says which, and
+  that the session needs attention. Report that as what it is, with the line, and do not land or call the
+  outcome reached on the strength of earlier cycles. `start NAME` continues the session once the cause is gone
+  (a quota that has come back, say), at the user's word.
 - Collect what is back (`single_run.py collect NAME`) and triage it as above.
 - A run in a workspace: `python3 llm-dlc/tools/single_run.py land NAME` brings its commits to this line, moved
   forward when the line has not moved, else by a merge with the generated trace files regenerated. A merge that
   conflicts in real work is taken back and says where: resolve it as "Between two examples" in
-  `llm-dlc/runtime.md` shows, or leave it and tell the user. After a merge, run
+  `llm-dlc/runtime.md` shows, or leave it and tell the user. A line that changes what only a person decides (an
+  approval in the allow list or an accepted finding that no person is recorded as having taken) is not landed
+  at all: tell the user what `land` printed, and change neither file yourself. After a merge, run
   `python3 lib/tools/default_run.py after-merge --final`: the default test run, in a memory cap of its own,
   unless a passed run already covers the line as it stands; a failure is reported, not fixed by you. If the
   user said to leave the workspace unmerged, leave it.

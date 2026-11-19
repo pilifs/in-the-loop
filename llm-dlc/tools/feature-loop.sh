@@ -741,7 +741,7 @@ fi
 
 cleanup() {
   [[ -n "$reader" ]] && kill "$reader" 2>/dev/null
-  rm -f "$STATE" "$LOCK" "$STATE.pid" "$STATE.compacted" "$STATE.notes" "$STATE.turn" "$STATE.item-stop" "$FEATURE_LOOP_COPY"
+  rm -f "$STATE" "$LOCK" "$STATE.pid" "$STATE.compacted" "$STATE.notes" "$STATE.turn" "$STATE.compact" "$STATE.item-stop" "$FEATURE_LOOP_COPY"
   # Last, however the loop ended, so the session to resume or read is on screen.
   log "session: $SESSION_ID"
 }
@@ -796,6 +796,40 @@ if text and text.strip():
 else:
     sys.exit(1)
 ' "$1"
+}
+
+# Why the turn whose event stream is in a file did not end well, or nothing when it did. A turn ends well with a
+# result that says success. One that was cut off or died leaves no result, and one that the client ended with an
+# error (a quota, an interruption, a failure of its own) says so in its result: neither is a cycle's work, and
+# before 2026-11-19 both were only logged, so a run could end "after N cycle(s)" with status 0 on a last cycle
+# that had failed. With `compact` as a second argument the stream is a compaction's, which also ends well with a
+# boundary in the stream.
+turn_failure() {
+  python3 -c '
+import json, sys
+last, boundary = None, False
+try:
+    lines = list(open(sys.argv[1], encoding="utf-8", errors="replace"))
+except OSError:
+    lines = []
+for line in lines:
+    try:
+        e = json.loads(line)
+    except ValueError:
+        continue
+    if not isinstance(e, dict):
+        continue
+    if e.get("type") == "result":
+        last = e
+    elif e.get("type") == "system" and e.get("subtype") == "compact_boundary":
+        boundary = True
+if last is None:
+    if not (sys.argv[2:] == ["compact"] and boundary):
+        print("the client left no result (it was cut off, or it died)")
+elif last.get("subtype") != "success" or last.get("is_error"):
+    text = " ".join(str(last.get("result") or "").split())[:300]
+    print("the client reported %s%s" % (last.get("subtype") or "an error", ": " + text if text else ""))
+' "$@"
 }
 
 # Ask the session for a summary of the run's commits and append it to the record.
@@ -1206,6 +1240,20 @@ while :; do
   fi
 
   after=$(last_change) || exit 1
+  failure=$(turn_failure "$STATE.turn")
+  if [[ -n "$failure" ]]; then
+    # Before any verdict and before the compact, whatever the count of cycles says: the session keeps what it
+    # had for whoever looks at why, and the loop's status says that someone must. A turn that ended well and
+    # made no commit is another matter, and goes on below as it always did.
+    made=
+    if [[ "$after" != "$before" ]]; then
+      made=", after its commit $(jj log --no-graph -r @- -T 'change_id.short()')"
+      note "- cycle $cycle, ${item:+item $item, }$(stamp), \`$(jj log --no-graph -r @- -T 'change_id.short()')\`: $(jj log --no-graph -r @- -T 'description.first_line()')"
+    fi
+    log "cycle $cycle: the turn did not end well ($failure)$made, stopping; session $SESSION_ID needs attention"
+    note; note "Stopped $(stamp): the turn of cycle $cycle${item:+ (item $item)} did not end well$made: $failure; session $SESSION_ID needs attention."
+    exit 1
+  fi
   if [[ "$after" == "$before" && -z "$SINGLE" ]]; then
     log "cycle $cycle: no commit, stopping; session $SESSION_ID needs attention"
     note; note "Stopped $(stamp): cycle $cycle${item:+ (item $item)} made no commit; session $SESSION_ID needs attention."
@@ -1288,7 +1336,19 @@ while :; do
   [[ "$decision" == stop ]] && close_status
 
   log "cycle $cycle: compact"
-  run_claude "/compact" || log "cycle $cycle: compact exited with status $?"
+  run_claude "/compact" "$STATE.compact" || log "cycle $cycle: compact exited with status $?"
+  failure=$(turn_failure "$STATE.compact" compact)
+  rm -f "$STATE.compact"
+  if [[ -n "$failure" ]]; then
+    # A cycle is one context window, so the next would start on this one's: the loop stops and says so. A run
+    # that was ending here anyway still gets its summary, since its work is committed; its status is not 0.
+    log "cycle $cycle: the compaction did not end well ($failure), stopping; session $SESSION_ID needs attention"
+    read -r _ left <"$STATE"
+    [[ "$decision" == stop || "$left" == 0 ]] && summarize
+    note; note "Stopped $(stamp): the compaction after cycle $cycle did not end well: $failure; session $SESSION_ID needs attention."
+    log "record of the run: $SUMMARY"
+    exit 1
+  fi
 
   apply_commands
   read -r cycle remaining <"$STATE"

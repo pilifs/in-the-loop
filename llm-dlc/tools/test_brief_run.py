@@ -46,6 +46,12 @@ FAKE_SYNC = textwrap.dedent('''\
     if sys.argv[1] == "adopt-logs":
         open(os.environ["STATUSES"] + "/adopted", "a").write(os.getcwd() + "\\n")
         sys.exit(0)
+    if sys.argv[1] == "decisions":  # asked of a workspace's line before it is landed
+        open(os.environ["STATUSES"] + "/decisions-asked", "a").write(" ".join(sys.argv[2:]) + "\\n")
+        if os.environ.get("STANDIN_DECISIONS"):
+            print(os.environ["STANDIN_DECISIONS"])
+            sys.exit(1)
+        sys.exit(0)
     Path("llm-dlc/index.json").write_text("".join(sorted(p.name + "\\n" for p in Path("sessions").glob("*"))))
     if os.environ.get("STANDIN_LATE") == "1":  # another session writes into the working copy meanwhile
         Path("verification").mkdir(exist_ok=True)
@@ -395,6 +401,21 @@ class TheFoundation(Fixture):
         self.assertEqual((self.root / "llm-dlc/index.json").read_text(), "base\ncollector\nfoundation\n")
         self.assertIn("Merge the foundation of the made-up run", self.jj(self.root, "log", "--no-graph", "-r", "@-", "-T", "description"))
         self.assertEqual(self.jj(self.root, "diff", "-r", "@", "--name-only"), "")
+
+    @cost("tool")
+    def test_a_line_that_changes_what_only_a_person_decides_is_not_landed(self):
+        self.foundation()
+        with mock.patch.dict(os.environ, {"STANDIN_DECISIONS": "allowlist.json: abcd1234 (public-ip) is a decision in the file that no person took"}):
+            code, _, err = self.run_tool("land", "made-up")
+        self.assertEqual(code, 1)
+        self.assertIn("is not landed: it changes what only a person decides", err)
+        self.assertIn("abcd1234 (public-ip)", err)
+        self.assertFalse((self.root / "lib-foundation.txt").exists())  # the line is where it was
+        asked = (self.statuses / "decisions-asked").read_text().split()
+        self.assertEqual((asked[0], asked[1].endswith("@-")), ("--at", True))  # the workspace's last commit, before any merge
+        code, out, err = self.run_tool("land", "made-up")  # settled by a person: it lands
+        self.assertEqual(code, 0, err)
+        self.assertTrue((self.root / "lib-foundation.txt").exists())
 
     @cost("tool")
     def test_what_another_session_wrote_during_the_merge_stays_uncommitted(self):

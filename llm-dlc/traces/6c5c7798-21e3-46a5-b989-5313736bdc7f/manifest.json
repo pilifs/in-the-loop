@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-19T14:00:35.329Z",
-  "duration_seconds": 333189,
+  "ended": "2026-11-19T14:17:39.143Z",
+  "duration_seconds": 334212,
   "stats": {
-    "turns": 267,
-    "api_calls": 1699,
-    "tool_calls": 1554,
+    "turns": 268,
+    "api_calls": 1708,
+    "tool_calls": 1561,
     "tool_errors": 27,
     "compactions": 7,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 3922,
-      "output_tokens": 1064078,
-      "cache_read_input_tokens": 409204693,
-      "cache_creation_input_tokens": 2668348
+      "input_tokens": 3940,
+      "output_tokens": 1068202,
+      "cache_read_input_tokens": 411059618,
+      "cache_creation_input_tokens": 2675535
     }
   },
   "tools": {
-    "Bash": 1473,
+    "Bash": 1480,
     "Edit": 22,
     "SendMessage": 17,
     "ToolSearch": 11,
@@ -157,24 +157,24 @@
     {
       "index": 7,
       "started": "2026-11-18T01:46:52.545Z",
-      "ended": "2026-11-19T14:00:35.329Z",
-      "turns": 23,
-      "api_calls": 134,
+      "ended": "2026-11-19T14:17:39.143Z",
+      "turns": 24,
+      "api_calls": 143,
       "usage": {
-        "input_tokens": 302,
-        "output_tokens": 62221,
-        "cache_read_input_tokens": 16932107,
-        "cache_creation_input_tokens": 349114
+        "input_tokens": 320,
+        "output_tokens": 66345,
+        "cache_read_input_tokens": 18787032,
+        "cache_creation_input_tokens": 356301
       },
-      "peak_context_tokens": 203110
+      "peak_context_tokens": 211528
     }
   ],
   "log": {
-    "sha256": "5c2bab54603107643bba70615b9de942e2208f0baebb29335238ba24c2584c38",
-    "bytes": 33394163,
-    "lines": 14273,
-    "gzip_bytes": 5577824,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/5c2bab54603107643bba70615b9de942e2208f0baebb29335238ba24c2584c38.jsonl.gz"
+    "sha256": "c9745b840caf731e734780ddd17dd58b3f5cd21dd37b432d8ada155c9c872242",
+    "bytes": 33507238,
+    "lines": 14351,
+    "gzip_bytes": 5592101,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/c9745b840caf731e734780ddd17dd58b3f5cd21dd37b432d8ada155c9c872242.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3017,6 +3017,14 @@
       "summary": "Allow list: Filip Stankovic approved b24f7c44",
       "body": "Filip Stankovic approved 1 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\nb24f7c44  long-token  rol…6e (64 chars): A made-up rollout file name in llm-dlc/tools/test_codex.py (rollout-, a date and a made-up thread id, 64 characters): a test fixture, not a token",
       "log_sha256": "5c2bab54603107643bba70615b9de942e2208f0baebb29335238ba24c2584c38"
+    },
+    {
+      "change_id": "pqnmyuxtmloqrtulkyxpwvszqsqotpts",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A failed turn or compaction ends a loop needing attention, and a single agent's run is checked at its start, its restart and its landing",
+      "body": "An outside review of the Codex work found four things; this takes up what bears on a single agent's run, with the user's decisions of 2026-11-19 (the rule for failed turns holds for every loop; the network is open to Codex workers; list prices for the two Codex models).\n\nA turn that did not end well is not a cycle. feature-loop.sh only logged a worker turn the client had ended with an error (a quota, an interruption) or cut off, and on the last cycle of a count it then skipped the watcher's verdict, compacted, summarized and exited 0; a failed compaction was logged and ignored. It now reads the turn's own event stream: no result, or a result that is not a success, stops the loop with status 1 and a record line that says the session needs attention, before any compaction or summary; a compaction that fails stops it too, after the summary when the run was ending anyway. A turn that ends well with no commit is judged as before. Claude Code's own compaction shows as a boundary in its stream (seen in the logs of earlier runs), which the rule takes for success.\n\nA single run's start and restart. A Codex run now gets the check a brief's Codex streams get, in the agent's folder: the client is there and is given the checkout's CLAUDE.md whole. A restart keeps the count of cycles and the queue's setting of the leg before unless given its own (--cycles N, 0 for none; --verification) and prints what it kept; before, a bare restart dropped the count and turned the queue back on. A restart of a Codex run whose record names a thread, and whose binding is gone, is refused: a new thread would be told to go on with work it never saw.\n\nDecisions only a person takes. One that no person is recorded as having taken now waives nothing (the redactor is given only published or recorded decisions, so the finding stays raised), a new question of sync.py (decisions, with --at REV for a commit) says which there are, and landing a workspace's line asks it first and leaves the line where it is. A push already refuses while check has the error. The user's own approval of b24f7c44, made in their terminal while this was written, left its record and the check finds nothing: the legitimate path works.\n\nAlso: the network is open inside a Codex worker's sandbox (probed: a host is not resolved without the setting, reached with it); AGENT_CLIENT_CODEX_SETTINGS gives a rehearsal extra client settings; OpenAI's list prices for gpt-6.2-astra and gpt-6.2-sol are in pricing.json (from developers.openai.com/api/docs/pricing, 2026-11-19), with the rates of a prompt over 272K tokens, which metrics.py applies per call; the Stop hook of .codex/hooks.json shows a message while it runs.\n\nVerified by eight new tests and the changed ones: through single_run.py with a one-cycle cap and the Codex stand-in, a turn that fails, one that is cut off, a compaction that fails and a quiet turn that ends well; a restart's kept limits; the instruction check and the lost thread; an unrecorded decision that waives nothing and a line that is asked; landing refused and then allowed; the long-context price. The tests of what changed pass, 26 of 26 Python test files (python3 lib/tools/test_costs.py run --changed --rust-jobs 1 under an 8G cap).",
+      "log_sha256": "c9745b840caf731e734780ddd17dd58b3f5cd21dd37b432d8ada155c9c872242"
     }
   ],
   "logs": {
@@ -3745,6 +3753,12 @@
       "lines": 11037,
       "gzip_bytes": 4318339,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/c6f010b0c7cddb2bcfa09c4357e32dbff6e172e0dbeba28fda8e01c05ae34a11.jsonl.gz"
+    },
+    "c9745b840caf731e734780ddd17dd58b3f5cd21dd37b432d8ada155c9c872242": {
+      "bytes": 33507238,
+      "lines": 14351,
+      "gzip_bytes": 5592101,
+      "url": null
     },
     "d3c4ab83f9d384001aca53e04db6f7f61d9857211d258b2906ac443a1f846844": {
       "bytes": 14048486,

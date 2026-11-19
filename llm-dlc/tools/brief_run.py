@@ -682,6 +682,16 @@ def land(run: Run, workspace: str, message: tuple[str, str] | None = None, at_wo
 
 def _land(run: Run, workspace: str, message: tuple[str, str] | None, at_work: bool = False) -> dict:
     root = run.root
+    # Before anything moves: a line whose allow list or reviewed findings hold a decision no person is recorded as
+    # having taken is not landed. An agent's patch to either file waives nothing where it was made (sync.py leaves
+    # its finding raised), and it does not come onto this line by a merge either; a person settles it first.
+    tool = root / "llm-dlc" / "tools" / "sync.py"
+    if tool.exists():
+        asked = subprocess.run([sys.executable, str(tool), "decisions", "--at", f"{workspace}@-"], cwd=root,
+                               capture_output=True, text=True, stdin=subprocess.DEVNULL)
+        if asked.returncode != 0:
+            raise Problem(f"the workspace {workspace}'s line is not landed: it changes what only a person decides.\n"
+                          f"{(asked.stdout or asked.stderr).strip()[-1500:]}")
     with sync_lock(root):
         dirty = jj(root, "diff", "-r", "@", "--name-only").stdout.split()  # also snapshots the working copy
         theirs, ours = commit_id(root, f"{workspace}@-"), commit_id(root, "@-")

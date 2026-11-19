@@ -81,6 +81,8 @@ Commands:
   sync.py allow drop ID...      remove entries, proposed or approved
   sync.py allow vouch           say that the decisions `check` finds no record of were a person's;
                                 a person at a terminal only
+  sync.py decisions [--at REV]  the decisions in the allow list and the reviewed findings that no person is
+                                recorded as having taken, here or in a commit (status 1 when there is one)
   sync.py stamp [--full]        after a change to redaction_rules.py: rescan everything, then
                                 record the rules as applied, so older files aren't scanned again;
                                 open warnings become allow-list proposals, open errors refuse it
@@ -358,7 +360,12 @@ class Redactor(redactor.Redactor):
     """The rules with this machine's literals, less the false positives a person has reviewed."""
 
     def __init__(self) -> None:
-        super().__init__(personal_literals(), load_reviewed() | allowed_ids())
+        # A decision nobody is known to have taken waives nothing: an entry patched into either file leaves its
+        # finding raised, here and in every check, until a person settles it (unrecorded_decisions).
+        open_ = unrecorded_decisions()
+        reviewed = {fid: e for fid, e in load_reviewed().items() if fid not in open_.get(REVIEWED.name, {})}
+        allowed = {fid: e for fid, e in allowed_ids().items() if fid not in open_.get(ALLOWLIST.name, {})}
+        super().__init__(personal_literals(), reviewed | allowed)
 
 
 # --------------------------------------------------------------------------- transcripts
@@ -2798,15 +2805,22 @@ def _decisions(name: str, doc: dict) -> dict[str, dict]:
     return {fid: e for fid, e in (doc.get("findings") or {}).items() if isinstance(e, dict)}
 
 
-def unrecorded_decisions() -> dict[str, dict[str, dict]]:
+def unrecorded_decisions(rev: str | None = None) -> dict[str, dict[str, dict]]:
     """{file name: {id: entry}} of the decisions in the two files that are neither in a published commit (the file
     as it is at the newest immutable ancestors of @) nor recorded here as a person's. The commits are asked only
-    when the two files changed since they were last found in order."""
+    when the two files changed since they were last found in order. With REV, the files as they are in that
+    commit, against its own published ancestors: what a line would bring in, asked before it is merged."""
     if not has_jj():
         return {}
     current, state = {}, hashlib.sha256()
     for path in (ALLOWLIST, REVIEWED):
-        data = path.read_bytes() if path.exists() else b""
+        if REPO not in path.parents:
+            continue  # not a file of this repository: no commit of it to ask about
+        if rev:
+            r = jj("file", "show", "-r", rev, str(path.relative_to(REPO)))
+            data = r.stdout.encode() if r.returncode == 0 else b""
+        else:
+            data = path.read_bytes() if path.exists() else b""
         state.update(data + b"\0")
         try:
             current[path] = _decisions(path.name, json.loads(data)) if data else {}
@@ -2815,7 +2829,7 @@ def unrecorded_decisions() -> dict[str, dict[str, dict]]:
     doc = load_decided()
     if state.hexdigest() in doc.get("in order", []):
         return {}
-    bases = [c["commit_id"] for c in jj_commits("heads(immutable() & ::@)")] if any(current.values()) else []
+    bases = [c["commit_id"] for c in jj_commits(f"heads(immutable() & ::({rev or '@'}))")] if any(current.values()) else []
     open_ = {}
     for path, decisions in current.items():
         published = []
@@ -2837,9 +2851,21 @@ def unrecorded_decisions() -> dict[str, dict[str, dict]]:
     return open_
 
 
-def decision_problems() -> list[str]:
+def cmd_decisions(args: list[str]) -> int:
+    """`sync.py decisions [--at REV]`: the decisions no person is recorded as having taken, in this working copy or
+    in a commit. Status 1 when there is one: brief_run.py's `land` asks it of a workspace's line before merging."""
+    if args and (len(args) != 2 or args[0] != "--at"):
+        print("usage: sync.py decisions [--at REV]", file=sys.stderr)
+        return 2
+    problems = decision_problems(args[1] if args else None)
+    for line in problems or ["every decision in the allow list and the reviewed findings is published or recorded as a person's"]:
+        print(line)
+    return 1 if problems else 0
+
+
+def decision_problems(rev: str | None = None) -> list[str]:
     errors = []
-    for name, missing in unrecorded_decisions().items():
+    for name, missing in unrecorded_decisions(rev).items():
         how = "sync.py allow approve" if name == ALLOWLIST.name else "sync.py review accept"
         for fid, e in sorted(missing.items()):
             errors.append(f"{name}: {fid[:8]} ({e.get('kind')}) is a decision in the file that no person is recorded as having "
@@ -4204,6 +4230,8 @@ def run(cmd: str, args: list[str]) -> int:
         return cmd_stamp(args)
     elif cmd == "regenerate":
         return cmd_regenerate(args)
+    elif cmd == "decisions":
+        return cmd_decisions(args)
     elif cmd == "adopt-logs":
         return cmd_adopt_logs(args)
     elif cmd == "langfuse":

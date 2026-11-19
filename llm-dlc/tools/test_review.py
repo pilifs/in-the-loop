@@ -242,11 +242,13 @@ class Decisions(unittest.TestCase):
         tmp = Path(self.tmp.name)
         self.fid = sync.finding_id("public-ip", self.IP)
         self.published = {}  # {file name: document} at the newest published commit
+        self.lines = {}      # {revision: {file name: document}}: the files in another line's commit
         self.asked = []
 
         def jj(*args):
             self.asked.append(args)
-            doc = self.published.get(Path(args[-1]).name)
+            rev = args[args.index("-r") + 1]
+            doc = (self.published if rev == "base" else self.lines.get(rev, {})).get(Path(args[-1]).name)
             return mock.Mock(returncode=0 if doc is not None else 1, stdout=json.dumps(doc) if doc is not None else "")
         (tmp / "cache.json").write_text(json.dumps({self.fid: {"level": "warn", "kind": "public-ip", "value": self.IP, "count": 1, "where": ["s"]}}))
         self.patches = [mock.patch.object(sync, "ALLOWLIST", tmp / "allowlist.json"), mock.patch.object(sync, "REPO", tmp),
@@ -297,7 +299,7 @@ class Decisions(unittest.TestCase):
         self.assertEqual(len(sync.decision_problems()), 1)
         self.published["allowlist.json"] = {"schema": sync.ALLOWLIST_SCHEMA, "entries": {self.fid: entry}}
         self.assertEqual(sync.decision_problems(), [])
-        self.assertIn("heads(immutable() & ::@)", self.asked)
+        self.assertIn("heads(immutable() & ::(@))", self.asked)
         self.asked.clear()
         self.assertEqual(sync.decision_problems(), [])  # found in order once: not asked again
         self.assertEqual(self.asked, [])
@@ -305,6 +307,36 @@ class Decisions(unittest.TestCase):
         self.assertEqual(len(sync.decision_problems()), 1)
         with mock.patch.object(sync, "has_jj", return_value=False):  # a copy with no history to ask
             self.assertEqual(sync.decision_problems(), [])
+
+    def test_a_decision_nobody_took_waives_nothing_and_a_persons_does(self):
+        self.by_hand()
+        self.assertIn("public-ip", sync.Redactor().review_hits(line(self.IP)))  # the finding stays raised
+        terminal, answer = self.as_person()
+        with terminal, answer:
+            self.assertEqual(sync.cmd_allow(["vouch"]), 0)
+        r = sync.Redactor()
+        self.assertEqual(r.review(line(self.IP)), [])  # a person's decision: the value is left out
+        # the same for a reviewed finding written by hand
+        fid = sync.finding_id("other-home-dir", HOME_A)
+        sync.save_reviewed({fid: {"kind": "other-home-dir", "masked": "x", "reason": "by hand", "authorized_by": "Made Up", "date": "2000-01-01"}})
+        self.assertNotIn(fid, sync.Redactor().reviewed)
+
+    def test_a_lines_commit_is_asked_before_it_is_landed(self):
+        entry = self.by_hand()
+        doc = json.loads(sync.ALLOWLIST.read_text())
+        sync.ALLOWLIST.unlink()  # this working copy has nothing: the question is about the other line's commit
+        self.lines["stream@-"] = {"allowlist.json": doc}
+        out = io.StringIO()
+        with mock.patch("sys.stdout", out):
+            self.assertEqual(sync.cmd_decisions(["--at", "stream@-"]), 1)
+        self.assertIn(f"allowlist.json: {self.fid[:8]} (public-ip)", out.getvalue())
+        self.assertIn("heads(immutable() & ::(stream@-))", self.asked)
+        self.published["allowlist.json"] = doc  # published on the line's own ancestors: nothing to ask about
+        self.assertEqual(sync.cmd_decisions(["--at", "stream@-"]), 0)
+        self.published.clear()
+        sync.record_decisions("allowlist.json", {self.fid: entry})  # or a person's, recorded on this machine
+        self.assertEqual(sync.cmd_decisions(["--at", "stream@-"]), 0)
+        self.assertEqual(sync.cmd_decisions(["--at"]), 2)
 
     def test_a_person_vouches_and_an_agent_cannot(self):
         self.by_hand()

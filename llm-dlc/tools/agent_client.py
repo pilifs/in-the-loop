@@ -260,11 +260,21 @@ def codex_argv(model: str, effort: str, last: Path, thread: str | None, cwd: Pat
     # itself read-only with approvals off and could not commit, 2026-11-18, CLI 0.169). Tried the same day: with
     # the approval policy alone, and no reviewer, a headless turn cannot ask at all, and --add-dir does not open
     # the store. A sandbox named outright (read-only, for a role that must not write) is given as it is.
+    # The network is open inside that sandbox, by the user's word (2026-11-19): a worker fetches sources and
+    # dependencies as a Claude Code worker does. Without the setting a command in the sandbox resolves no host,
+    # and each fetch waits on the automatic reviewer (probed that day, CLI 0.170: refused, then let through when
+    # asked; with the setting, through at once).
     if sandbox == "auto":
-        for setting in ('sandbox_mode="workspace-write"', 'approval_policy="on-request"', 'approvals_reviewer="auto_review"'):
+        for setting in ('sandbox_mode="workspace-write"', 'approval_policy="on-request"', 'approvals_reviewer="auto_review"',
+                        "sandbox_workspace_write.network_access=true"):
             argv += ["-c", setting]
     else:
         argv += ["-c", f'sandbox_mode="{sandbox}"']
+    # A rehearsal's own settings, one to a line (a low model_auto_compact_token_limit, to see a compaction without
+    # filling a window): given last, so they stand over the ones above. Not for a run that is to be relied on.
+    for setting in (os.environ.get("AGENT_CLIENT_CODEX_SETTINGS") or "").splitlines():
+        if setting.strip():
+            argv += ["-c", setting.strip()]
     argv += ["-o", str(last)]
     # A resumed thread keeps its folder: `resume` takes none.
     if thread:

@@ -91,6 +91,8 @@ class SingleRunTest(unittest.TestCase):
         for name in ("feature-loop.sh", "loop-common.sh", "conductor.py", "agent_client.py"):
             shutil.copy(TOOLS / name, tools / name)
         (self.root / ".gitignore").write_text("llm-dlc/loop-summaries/\n")
+        # the checkout's instructions, which a Codex run is checked to be given whole before it starts
+        (self.root / "CLAUDE.md").write_text("".join(f"- A made-up rule of this checkout, number {i}, long enough to be a marker.\n" for i in range(8)))
         (self.root / "notes").mkdir()
         (self.root / "notes/brief.md").write_text("# The made-up thing\n\nIt should work.\n")
         bin = self.tmp / "bin"
@@ -375,6 +377,101 @@ class SingleRunTest(unittest.TestCase):
         self.assertFalse((project / f"{PARENT}.jsonl").exists(), "the parent's copy is removed after the one turn")
         self.assertIn(f"was forked from session {PARENT}", self.record())
 
+    def codex(self, **more):
+        self.codex_log = self.tmp / "codex.jsonl"
+        return {"AGENT_CLIENT_CODEX": str(TOOLS / "codex_standin.py"), "CODEX_STANDIN_STATE": str(self.tmp / "codex"),
+                "CODEX_STANDIN_LOG": str(self.codex_log), **more}
+
+    def codex_calls(self):
+        """What the stand-in was run for, the check of the instructions before the run (`debug prompt-input`) left out."""
+        return [json.loads(line)["argv"][0] for line in self.codex_log.read_text().splitlines() if json.loads(line)["argv"][0] != "debug"]
+
+    @cost("tool")
+    def test_a_last_cycle_whose_turn_failed_ends_the_run_needing_attention_and_not_as_done(self):
+        # One cycle, so no question is put to the watcher and the count ends the run: before 2026-11-19 a turn that
+        # had failed there was logged, compacted over and summarized, and the run ended with status 0.
+        self.start("--prompt", PROMPT, "--client", "codex", "--cycles", 1, **self.codex(CODEX_STANDIN_MODES="fail"))
+        ended = self.wait(kind="ended")
+        self.assertEqual((ended["event"]["status"], ended["state"]["running"]), (1, False))
+        self.assertIn("a turn or a compaction did not end well", ended["event"]["note"])
+        text = self.record()
+        self.assertRegex(text, r"Stopped \S+ \S+: the turn of cycle 1 did not end well: the client reported error_\w+: "
+                               r".*usage limit.*; session \S+ needs attention\.")
+        self.assertNotIn("Ended ", text)
+        self.assertEqual(self.codex_calls(), ["exec"])  # no compaction and no summary over a turn that failed
+        # a turn that was cut off leaves no result at all, and is no cycle's work either
+        self.start("--prompt", PROMPT, "--client", "codex", "--cycles", 1, name="cut", **self.codex(CODEX_STANDIN_MODES="truncated",
+                   CODEX_STANDIN_STATE=str(self.tmp / "codex-cut")))
+        ended = self.wait("cut", kind="ended")
+        self.assertEqual(ended["event"]["status"], 1)
+        self.assertRegex(self.record("cut"), r"Stopped \S+ \S+: the turn of cycle 1 did not end well: the client ")
+
+    @cost("tool")
+    def test_a_compaction_that_fails_is_not_a_normal_end_and_a_turn_that_ends_well_with_no_commit_still_is(self):
+        self.start("--prompt", PROMPT, "--client", "codex", "--cycles", 1,
+                   **self.codex(CODEX_STANDIN_MODES="commit", CODEX_STANDIN_COMPACT="fail"))
+        ended = self.wait(kind="ended")
+        self.assertEqual(ended["event"]["status"], 1)
+        text = self.record()
+        self.assertRegex(text, r"Stopped \S+ \S+: the compaction after cycle 1 did not end well: .*; session \S+ needs attention\.")
+        self.assertIn("Made-up work by the stand-in, turn 1", text)  # the cycle's commit is in the record
+        self.assertIn("## Summary", text)                             # and the run that was ending gets its summary
+        # the count's last cycle ended well and made no commit: the run ends as it always did
+        self.start("--prompt", PROMPT, "--client", "codex", "--cycles", 1, name="quiet",
+                   **self.codex(CODEX_STANDIN_MODES="idle", CODEX_STANDIN_STATE=str(self.tmp / "codex-quiet")))
+        ended = self.wait("quiet", kind="ended")
+        self.assertEqual(ended["event"]["status"], 0)
+        self.assertRegex(self.record("quiet"), r"- cycle 1, \S+ \S+: no commit\n(.|\n)*Ended \S+ \S+ after 1 cycle\(s\)\.")
+
+    @cost("tool")
+    def test_a_restart_keeps_the_leg_befores_limits_and_says_so(self):
+        started = self.start("--prompt", PROMPT, "--cycles", 1)
+        self.assertNotIn("keptFromTheLegBefore", started)
+        self.assertEqual(self.wait(kind="ended")["event"]["status"], 0)
+        # a bare restart: the count of cycles and the queue left alone are the leg before's, not the defaults
+        with mock.patch.dict(os.environ, {"STANDIN_MODES": "commit"}):
+            again = json.loads(self.tool("start", "thing", "--memory", "none", "--verdict-wait", 30)[1])
+        self.assertEqual((again["cycles"], again["verificationQueue"]), (1, "off"))
+        self.assertEqual(len(again["keptFromTheLegBefore"]), 2)
+        self.assertIn("--cycles 0 removes the limit", again["keptFromTheLegBefore"][0])
+        self.assertIn("--verification turns it on", again["keptFromTheLegBefore"][1])
+        self.assertEqual(self.wait(kind="ended")["event"]["status"], 0)  # one cycle more, and it ended by its count
+        self.assertRegex(self.record(), r"Ended \S+ \S+ after 1 cycle\(s\)\.")
+        # a limit given anew is the leg's own, and 0 removes it
+        with mock.patch.dict(os.environ, {"STANDIN_MODES": "commit", "STANDIN_GO": str(self.go)}):
+            free = json.loads(self.tool("start", "thing", "--memory", "none", "--verdict-wait", 30, "--cycles", 0, "--no-verification")[1])
+        self.assertEqual((free["cycles"], "keptFromTheLegBefore" in free), ("no limit", False))
+        self.tool("stop", "thing", "--now")
+
+    @cost("tool")
+    def test_a_codex_run_starts_only_with_the_checkouts_instructions_and_restarts_only_with_its_thread(self):
+        codex = self.codex(CODEX_STANDIN_MODES="commit")
+        # what Codex reads first when it is there: the run would be given other instructions than this checkout's
+        (self.root / "AGENTS.md").write_text("Other instructions.\n")
+        with mock.patch.dict(os.environ, codex):
+            status, _, err = self.tool("start", "thing", "--prompt", PROMPT, "--client", "codex", "--memory", "none", "--no-verification", ok=False)
+        self.assertEqual(status, 1)
+        self.assertIn("AGENTS.md shadows CLAUDE.md", err)
+        self.assertFalse((self.run_dir() / "watch.json").exists() and json.loads((self.run_dir() / "watch.json").read_text()).get("loop"))
+        (self.root / "AGENTS.md").unlink()
+        started = self.start("--prompt", PROMPT, "--client", "codex", "--cycles", 1, **codex)
+        self.assertEqual(self.wait(kind="ended")["event"]["status"], 0)
+        binding = self.root / "llm-dlc/loop-summaries/agent-sessions" / f"{started['session']}.json"
+        thread = json.loads(binding.read_text())["thread"]
+        # the folder no longer says which thread the run had: a new one would be told to go on with work it never saw
+        kept = binding.read_text()
+        binding.unlink()
+        with mock.patch.dict(os.environ, codex):
+            status, _, err = self.tool("start", "thing", "--memory", "none", ok=False)
+        self.assertEqual(status, 1)
+        self.assertIn(f"had a Codex thread ({thread})", err)
+        self.assertEqual(self.codex_calls().count("exec"), 2)  # the one cycle and its summary: nothing since
+        binding.write_text(kept)
+        with mock.patch.dict(os.environ, codex):
+            again = json.loads(self.tool("start", "thing", "--memory", "none")[1])
+        self.assertEqual((again["cycles"], again["firstCycleTakes"]), (1, "the continue message"))
+        self.assertEqual(self.wait(kind="ended")["event"]["status"], 0)
+
     @cost("tool")
     def test_a_run_given_to_codex_takes_the_same_texts_keeps_its_own_thread_and_compacts_between_cycles(self):
         codex_log = self.tmp / "codex.jsonl"
@@ -397,6 +494,9 @@ class SingleRunTest(unittest.TestCase):
         self.tool("answer", "thing", "stop", "--reason", "The thing works.")
         self.assertEqual(self.wait(kind="ended")["kind"], "ended")
         calls = [json.loads(line) for line in codex_log.read_text().splitlines()]
+        # before anything of the run: the check that Codex is given the checkout's instructions in the agent's folder
+        self.assertEqual(calls[0]["argv"][:2], ["debug", "prompt-input"])
+        calls = calls[1:]
         work = [c["argv"] for c in calls if c["argv"][0] == "exec"]
         # the first turn starts a thread with the user's prompt, word for word, on the model that stands for Opus 5.5
         self.assertNotIn("resume", work[0])
@@ -440,7 +540,7 @@ class SingleRunTest(unittest.TestCase):
                           (("start", "thing", "--prompt", PROMPT, "--session", PARENT), "no session"),
                           (("start", "thing", "--prompt", PROMPT, "--fork", PARENT.replace("0", "1")), "no transcript"),
                           (("start", "thing", "--prompt", PROMPT, "--brief", "nowhere.md"), "no brief at"),
-                          (("start", "thing", "--prompt", PROMPT, "--cycles", "0"), "1 or more"),
+                          (("start", "thing", "--prompt", PROMPT, "--cycles", "-1"), "1 or more"),
                           (("status", "thing"), "no run thing here"),
                           (("message", "thing"), "no run thing here")):
             status, _, err = self.tool(*args, "--memory", "none", ok=False) if args[0] == "start" else self.tool(*args, ok=False)

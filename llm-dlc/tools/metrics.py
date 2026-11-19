@@ -127,10 +127,15 @@ def costs(row: dict, pricing: dict) -> tuple[float | None, float | None]:
     p = pricing["models"].get(row["model"])
     if p is None:
         return None, None
+    fresh = row["input_tokens"] + row["cache_read_tokens"] + row["cache_write_tokens"]
+    # A model whose list price depends on the size of the request (OpenAI's: a prompt over 272K tokens is billed
+    # whole at other rates) has them under `long_context`, with the size `above` which they hold. A row is one call.
+    long = p.get("long_context")
+    if long and fresh > long["above"]:
+        p = {**p, **long}
     usd = (row["input_tokens"] * p["input"] + row["output_tokens"] * p["output"]
            + row["cache_read_tokens"] * p["cache_read"] + row["cache_write_5m_tokens"] * p["cache_write_5m"]
            + row["cache_write_1h_tokens"] * p["cache_write_1h"])
-    fresh = row["input_tokens"] + row["cache_read_tokens"] + row["cache_write_tokens"]
     return round(usd / 1e6, 6), round((fresh * p["input"] + row["output_tokens"] * p["output"]) / 1e6, 6)
 
 

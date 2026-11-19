@@ -152,9 +152,19 @@ class ATurn(Fixture):
         self.assertIn('model_reasoning_effort="high"', argv)  # never the machine's own default
         self.assertIn('project_doc_fallback_filenames=["CLAUDE.md"]', argv)
         # the workspace-write sandbox, and nobody is there to answer a request to leave it: Codex's own review does
-        for setting in ('sandbox_mode="workspace-write"', 'approval_policy="on-request"', 'approvals_reviewer="auto_review"'):
+        # with the network open in it, as a Claude Code worker has it (the user's word, 2026-11-19)
+        for setting in ('sandbox_mode="workspace-write"', 'approval_policy="on-request"', 'approvals_reviewer="auto_review"',
+                        "sandbox_workspace_write.network_access=true"):
             self.assertIn(setting, argv)
         self.assertEqual((argv[argv.index("-C") + 1], argv[-1]), (str(self.cwd), "Do the first piece."))
+        # a rehearsal's own settings come after them, and a role that only reads is given neither the network nor a way out
+        given = agent_client.codex_argv("gpt-6.2-sol", "low", Path("last.md"), None, self.cwd, "auto", "x")
+        self.assertNotIn("model_auto_compact_token_limit=40000", given)
+        with mock.patch.dict(os.environ, {"AGENT_CLIENT_CODEX_SETTINGS": "model_auto_compact_token_limit=40000\n"}):
+            given = agent_client.codex_argv("gpt-6.2-sol", "low", Path("last.md"), None, self.cwd, "auto", "x")
+        self.assertGreater(given.index("model_auto_compact_token_limit=40000"), given.index("sandbox_workspace_write.network_access=true"))
+        reading = agent_client.codex_argv("gpt-6.2-sol", "low", Path("last.md"), None, self.cwd, "read-only", "x")
+        self.assertEqual([x for x in reading if "network_access" in x or "approvals_reviewer" in x], [])
         # the stream is the one the loops read from Claude Code
         self.assertEqual([e["type"] for e in events], ["system", "assistant", "assistant", "assistant", "result"])
         self.assertEqual((events[0]["subtype"], events[0]["session_id"], events[0]["client"]), ("init", self.session, "codex"))

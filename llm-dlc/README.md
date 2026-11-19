@@ -220,7 +220,7 @@ While it runs, it reads commands typed in its terminal, followed by Enter. It pr
 | `inf` | no limit |
 | `?`, `help` | where the loop stands, or the list of commands |
 
-A cycle under way always finishes, commit and compact included. When the count reaches 0 the loop exits 0. Ctrl-C stops it at once, with exit status 130. Started without a terminal, it runs the number of cycles it was given.
+A cycle under way always finishes, commit and compact included. When the count reaches 0 the loop exits 0. A turn that did not end well is not a cycle, whatever the count: when the client reports an error (a quota, an interruption, a failure of its own) or leaves no result at all, the loop stops there with status 1 and says in its record that the session needs attention, before any compaction or summary; so does a compaction that fails, after the summary when the run was ending anyway. A turn that ends well and commits nothing is judged as before (a loop on a brief stops; a single agent's run asks its watcher). Ctrl-C stops it at once, with exit status 130. Started without a terminal, it runs the number of cycles it was given.
 
 It commits locally and pushes nothing. It has no spending limit.
 
@@ -428,7 +428,11 @@ in files (`llm-dlc/loop-summaries/single-NAME/`), so another session can take a 
   `brief_run.py land` does. The watcher keeps the verification queue as a brief's watcher does (it collects and
   commits results and starts the runner), unless another run's watcher keeps it or the checkout is not the default
   workspace. A run whose agent only waits on jobs is stopped, `single_run.py jobs NAME` waits for the queue, and
-  `start NAME` continues the same session.
+  `start NAME` continues the same session. That leg keeps the leg before's count of cycles and its setting of
+  the queue unless it is given its own (`--cycles N`, 0 for none; `--verification`), and `start` prints what it
+  kept. A Codex run is checked before it starts, as a brief's Codex streams are: that Codex is given the
+  checkout's `CLAUDE.md` whole in the agent's folder, and at a restart that the thread the run had can still be
+  found (a new thread would know nothing of the run).
 - **Stopping and continuing.** `stop NAME` ends the run after the cycle under way, `stop NAME --now` interrupts it,
   and `start NAME` on a run that has ended continues its session, the first cycle taking the continue message as
   it stands (or a new `--prompt` of the user's). `cycles NAME +N` changes the count, as typed in a loop's terminal.
@@ -478,14 +482,20 @@ cycle, the commit check, the decision, the conductor's questions, the verificati
   approval policy alone and no reviewer a headless turn cannot ask, and added writable folders do not open the
   store (tried on CLI 0.169, 2026-11-18). What only a person may do stays refused by the tools themselves, for
   both clients: `sync.py allow approve`, `review accept` and `single_run.py message` check for a person at a
-  terminal, and that check knows Codex's mark on the commands it runs as it knows Claude Code's.
+  terminal, and that check knows Codex's mark on the commands it runs as it knows Claude Code's. The network is
+  open inside the sandbox (`sandbox_workspace_write.network_access`, the user's word of 2026-11-19), as it is for
+  a Claude Code worker: without it a command in the sandbox resolves no host and every fetch waits on the
+  automatic reviewer.
 - **The allow list and the reviewed findings.** Claude Code is denied the two files by `.claude/settings.json`.
   Codex has no bar that works for them (probed 2026-11-19, CLI 0.170): a file marked `read` in a permission
   profile is patched all the same, once the automatic reviewer lets the request through, and one marked `deny`
   cannot be read by `sync.py` either. So the bar is in the tool, for every client: the commands a person runs
   (`allow approve`, `allow add`, `review accept`) leave a record of each decision on the machine, and `check`
   reports as an error a decision in either file that is neither in a published commit nor in that record
-  ([specification](specification.md)). A patch to the file is found at the next commit, before anything is pushed.
+  ([specification](specification.md)). Such a decision waives nothing meanwhile (its finding stays raised),
+  `brief_run.py land` and `single_run.py land` ask the same of a workspace's line before they merge it (`sync.py
+  decisions --at REV`) and leave it where it is, and a push refuses while `check` has the error: a patch to
+  either file is found at the next commit, takes no effect, and reaches neither the default line nor the remote.
   [`.codex/rules/`](../.codex/rules/llm-dlc.rules) says the same for a person's own Codex in a trusted checkout.
 - **The same instructions.** Codex reads this repository's `CLAUDE.md` in place (`project_doc_fallback_filenames`,
   passed on the command line because a fresh sibling workspace is not a project Codex trusts, and in
@@ -500,7 +510,9 @@ cycle, the commit check, the decision, the conductor's questions, the verificati
   have its commits and jobs credited to the watcher: the boundary removes it and keeps who started the loop in
   the binding. A job is submitted under Codex's own thread. Codex reports a turn's tokens and no dollars, so a
   Codex turn's cost is **unknown**, shown as `$?` (or `$1.50+?` beside known dollars) with its tokens in the
-  status bar and the summaries, never as nought.
+  status bar and the summaries, never as nought. The statistics made from a session's log are priced once the
+  model has a row in `pricing.json` (OpenAI's list prices for Sol and Astra since 2026-11-19, with the rates of a
+  prompt over 272K tokens): what a subscription bills is not that figure.
 - **Asking, not typing.** A session that wants a Codex thread's word (an expert's, say) does not type into
   another agent's terminal: a pasted text races the person using it, and the reply has to be read off a screen.
   [`tools/ask_codex.py`](tools/ask_codex.py) `ask --thread NAME --prompt-file FILE` runs one read-only turn of a
@@ -550,7 +562,7 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 | 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 151 | 28 | open |
 | 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 163 | 144 | open |
 | 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](traces/7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 84 | 22 | open |
-| 2026-11-17 12:37 UTC | [/run-brief invocation options](traces/e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 38 | 205 | open |
+| 2026-11-17 12:37 UTC | [/run-brief invocation options](traces/e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 43 | 206 | open |
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 12 | 1 | ended |
 | 2026-11-17 02:26 UTC | [6da9b537-ecce-46cf-99fa-7cae16e7ce99](traces/6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 1 | 2 | ended |
 | 2026-11-17 02:13 UTC | [Window 11 verification loop](traces/b74acbd8-95de-40d7-8793-79948e8c27ae/summary.md) | 11 | 14 | ended |
@@ -571,9 +583,9 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 | 2026-11-16 15:14 UTC | [0d14bf6f-8e0a-47cf-bce9-778897fc474e](traces/0d14bf6f-8e0a-47cf-bce9-778897fc474e/summary.md) | 3 | 2 | ended |
 | 2026-11-16 05:44 UTC | [55c8cba6-01ea-400f-bee3-52e9db3aaba0](traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/summary.md) | 1 | 8 | ended |
 | 2026-11-15 23:45 UTC | [5399f71b-f38b-4670-8fbe-9aa44d5cd46d](traces/5399f71b-f38b-4670-8fbe-9aa44d5cd46d/summary.md) | 3 | 3 | ended |
-| 2026-11-15 19:24 UTC | [Prove-java-change skill and in-the-loop runtime](traces/3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | 55 | 337 | open |
+| 2026-11-15 19:24 UTC | [Prove-java-change skill and in-the-loop runtime](traces/3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | 57 | 338 | open |
 | 2026-11-15 17:34 UTC | [48807e20-0bdb-4031-8ced-d21d16fc3816](traces/48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) | 1 | 6 | ended |
-| 2026-11-15 17:27 UTC | [Moonshot loop status](traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 267 | 355 | open |
+| 2026-11-15 17:27 UTC | [Moonshot loop status](traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 268 | 356 | open |
 | 2026-11-15 16:13 UTC | [a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31](traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) | 41 | 90 | ended |
 | 2026-11-15 14:52 UTC | [Moonshot loop stats backfill](traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/summary.md) | 11 | 12 | ended |
 | 2026-11-15 12:23 UTC | [72d38e75-aae0-402e-9b8a-881beec53824](traces/72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | 61 | 21 | ended |
