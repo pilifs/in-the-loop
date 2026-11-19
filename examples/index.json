@@ -9247,6 +9247,104 @@
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 307 TASK"
       }
+    },
+    {
+      "id": "308",
+      "path": "examples/308-commons-text-longest-common-subsequence",
+      "title": "Apache Commons Text longest common subsequence on two distinct score rows",
+      "summary": "Compare the public score in Commons Text 1.13.1 with exhaustive subsequence enumeration. An altered build makes the two working rows share storage.",
+      "origin": "real-world",
+      "system": "Apache Commons Text",
+      "symbol": "org.apache.commons.text.similarity.LongestCommonSubsequence#apply",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "JVM oracle agrees on 225 release inputs and disagrees on 44 control inputs",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each CharSequence operand is an actual String of length zero to three over a and b. The original and altered source builds use the same compiler and flags. The release JAR is a third, independently checked artifact.",
+        "The release and source rebuild each matched 225 expected scores. The shared-row control differed on 44. The public native probe at unwind 18 and array bound 4 reached the multidimensional allocation and reported it outside the fragment. See the probe intention in history and the matching execution in records."
+      ],
+      "source": "https://github.com/apache/commons-text/blob/a70c34e028ab279bb89565606e1ab09011a41bc2/src/main/java/org/apache/commons/text/similarity/LongestCommonSubsequence.java",
+      "target": {
+        "family": "java-data-processing",
+        "role": "calibration",
+        "case": "commons-text-lcs",
+        "tasks": [
+          "replay",
+          "mutant-replay",
+          "score",
+          "mutant-score"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "mutant-replay": "scaffolded",
+          "score": "scaffolded",
+          "mutant-score": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "mutant-replay": null,
+          "score": "established",
+          "mutant-score": "refuted"
+        },
+        "claims": {
+          "score": null,
+          "mutant-score": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261119T160609Z-4f66cd3b/result.json",
+            "attempt": "20261119T160609Z-4f66cd3b",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "mutant-replay": {
+            "path": "receipts/mutant-replay/20261119T160613Z-27c423d8/result.json",
+            "attempt": "20261119T160613Z-27c423d8",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "JVM oracle agrees on 225 release inputs and disagrees on 44 control inputs",
+          "source": "https://github.com/apache/commons-text/blob/a70c34e028ab279bb89565606e1ab09011a41bc2/src/main/java/org/apache/commons/text/similarity/LongestCommonSubsequence.java",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 308 TASK"
+      }
     }
   ]
 }

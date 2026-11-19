@@ -1,0 +1,30 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {"case": "commons-text-lcs", "family": "java-data-processing", "role": "calibration", "sourceConfidence": "reproduced"},
+  "history": {
+    "repository": "https://github.com/apache/commons-text",
+    "revisions": {
+      "release": {"commit": "a70c34e028ab279bb89565606e1ab09011a41bc2", "release": "1.13.1", "checked": "The release source JAR and the pinned git blob of LongestCommonSubsequence.java agree."},
+      "mutant": {"mutant": {"base": "release", "patch": "controls/shared-row.patch", "sha256": "5d550a0bb5c9fee49468bca13d7502eb90adc16ddc121f3e3248a4f89082b11f", "description": "Both rows of the score matrix refer to the first row."}}
+    },
+    "pairs": [{"name": "mutation", "kind": "mutation", "before": "release", "after": "mutant"}]
+  },
+  "preparation": {
+    "route": "published-artifact", "jdks": ["21"], "adapters": ["adapter/score/LcsScore.java", "adapter/score/ScoreOracle.java"],
+    "artifacts": [{"revision": "release", "coordinates": "org.apache.commons:commons-text:1.13.1", "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-text/1.13.1/commons-text-1.13.1.jar", "sha256": "76434bd2dd778ab140d84b3c6ffa40c40fe6219909f5ed1d8b8977c5ae8e50c8"}]
+  },
+  "tasks": [
+    {"id": "replay", "kind": "replay", "relation": "calibration", "revision": "release", "target": "org.apache.commons.text.similarity.LongestCommonSubsequence#apply(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/Integer;"},
+    {"id": "mutant-replay", "kind": "replay", "relation": "calibration", "pair": "mutation", "target": "org.apache.commons.text.similarity.LongestCommonSubsequence#apply(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/Integer;"},
+    {"id": "score", "kind": "prove", "relation": "calibration", "revision": "release", "claim": "claims/score.json", "requires": ["replay"], "expected": "established", "engine": "native", "gaps": "strict", "target": "org.apache.commons.text.similarity.LongestCommonSubsequence#apply(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/Integer;",
+     "invocation": {"how": "adapter", "checked": "2026-11-19", "entry": "score.LcsScore#score(II)I", "evidence": "pilot.py compiles the selector adapter and invokes the public release method on all 225 pairs."}},
+    {"id": "mutant-score", "kind": "prove", "relation": "calibration", "revision": "mutant", "claim": "claims/score.json", "requires": ["mutant-replay"], "expected": "refuted", "engine": "native", "gaps": "strict", "target": "org.apache.commons.text.similarity.LongestCommonSubsequence#apply(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/Integer;",
+     "invocation": {"how": "adapter", "checked": "2026-11-19", "entry": "score.LcsScore#score(II)I", "evidence": "pilot.py compiles the same adapter. The row-sharing control differs from the oracle on 44 inputs."}}
+  ],
+  "controls": [
+    {"id": "public-score-driver", "kind": "driver", "path": "driver/score/ScoreDriver.java"},
+    {"id": "subsequence-enumeration", "kind": "oracle", "path": "controls/oracle.py"},
+    {"id": "shared-row", "kind": "mutation", "path": "controls/shared-row.patch", "revision": "mutant"}
+  ]
+}

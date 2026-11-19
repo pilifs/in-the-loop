@@ -164,7 +164,8 @@ class RouterTest(unittest.TestCase):
                 if (EXAMPLES / name / "target.json").exists():
                     self.assertIsNotNone(index[name[:3]]["target"])
         for number in PACKETS:
-            self.assertIn(index[number]["target"]["role"], ("negative", "positive"))
+            roles = ("negative", "positive") if number in KNOWN else ("negative", "positive", "calibration", "control")
+            self.assertIn(index[number]["target"]["role"], roles)
 
     def test_every_target_projection_carries_its_readiness(self):
         """Request 5: the index projects each sidecar example's derived readiness, so find.py --readiness reaches
