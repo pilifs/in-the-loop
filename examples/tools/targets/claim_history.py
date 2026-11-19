@@ -290,23 +290,21 @@ def markdown(value):
                     lines.append("First blocker: " + last["firstBlocker"])
                 if last.get("missing"):
                     lines.append("Missing evidence: " + ", ".join(last["missing"]) + ".")
-                earlier = [e for e in subject["executions"] if e["id"] != last["id"]
-                           and e["claimKey"] == group["claimKey"] and e["revisions"] == subject["revisions"]]
-                if earlier:
-                    lines.extend(["", "Earlier executions", ""])
-                    for e in reversed(earlier):
-                        flags = [label for key, label in (("injected", "injected stop"), ("budgetExhausted", "budget exhausted")) if e.get(key)]
-                        if e["id"] == last.get("retryOf"):
-                            flags.append("retried by the latest execution")
-                        detail = ", ".join([e["status"] or "recorded", *flags])
-                        lines.append(f"- [{e['id']}]({e['path']}) reached {e['lastCompletedStage']} ({detail}).")
             lines.append("")
             for record in subject["evidence"]:
                 link = record.get("receipt") or record.get("job")
                 lines.append(f"- {record['answer']} ([evidence]({link}))")
                 lines.extend("  - Rests on " + reason for reason in record.get("restsOn", []) if reason)
                 lines.extend("  - Limit: " + reason for reason in record.get("limits", []) if reason)
-            for attempt in subject["executions"][:-1]:
-                lines.append(f"- Earlier [{attempt['id']}]({attempt['path']}) reached {attempt['lastCompletedStage']}.")
+            earlier = [e for e in subject["executions"] if last and e["id"] != last["id"]
+                       and e["claimKey"] == group["claimKey"] and e["revisions"] == subject["revisions"]]
+            if earlier:
+                lines.extend(["", "Earlier executions", ""])
+                for e in reversed(earlier):
+                    flags = [label for key, label in (("injected", "injected stop"), ("budgetExhausted", "budget exhausted")) if e.get(key)]
+                    if e["id"] == last.get("retryOf"):
+                        flags.append("retried by the latest execution")
+                    detail = ", ".join([e["status"] or "recorded", *flags])
+                    lines.append(f"- [{e['id']}]({e['path']}) reached {e['lastCompletedStage']} ({detail}).")
             lines.append("")
     return "\n".join(lines) + "\n"

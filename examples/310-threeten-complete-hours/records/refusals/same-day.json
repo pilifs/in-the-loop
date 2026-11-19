@@ -1,0 +1,143 @@
+{
+  "schema": "example-target-refusal/v1",
+  "task": "same-day",
+  "claimKey": "e5d30978a554dfeb",
+  "revisions": [
+    "parent",
+    "fix"
+  ],
+  "refusal": {
+    "stage": "verifier",
+    "text": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at before.org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+  },
+  "observed": {
+    "job": "20261119-231539-retry-threetenbp-hours-after-exact-jdk-a",
+    "result": "verification/results/20261119-231539-retry-threetenbp-hours-after-exact-jdk-a/result.json",
+    "receipt": "examples/310-threeten-complete-hours/receipts/same-day/20261119T232039Z-9c9e8e44/result.json",
+    "receiptSha256": "77716d1c7c9be5a956997de8afe5f6d5039a63b807a5fbc9fb4829d14b3b4dc0",
+    "verifierOutput": "examples/310-threeten-complete-hours/receipts/same-day/20261119T232039Z-9c9e8e44/records/verifier.stdout",
+    "verifierOutputSha256": "521d7ea1a831e25611fa3fb3e40167ba7e0feaf7db8c8acff3a8088c6952bc1a",
+    "execution": "20261119T232039Z-9c9e8e44",
+    "retryOf": "20261119T220651Z-c5e50cd8"
+  },
+  "verifier": {
+    "jvmcontract": "566f1111726f27c8f97e277eb5504daefe78d8e92a12223691037167a5d765ee",
+    "commit": "a78b7348a842915985827118844fa68fced87cc7",
+    "libTree": "2806e3d9115a8cac49343e69e87b7a6f58381cb5",
+    "engine": "native",
+    "gaps": "strict",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS"
+  },
+  "command": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2806e3d9115a8cac49343e69e87b7a6f58381cb5/jvmcontract",
+    "equivalence",
+    "--before",
+    "verifier/classes/parent",
+    "--after",
+    "verifier/classes/fix",
+    "--target",
+    "civil.Hours#completeHours(int, int)",
+    "--classpath",
+    "prepare/fix/slice/fix.jar",
+    "--before-classpath",
+    "prepare/parent/slice/parent.jar",
+    "--assume",
+    "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191 && startTick / 96 == endTick / 96",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "600",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "bindingId": "a720236ead649c7609333e3cb116a0cc37b02807d6b877a5658ceb5d370db796",
+  "entryBindings": {
+    "parent": {
+      "entry": "civil.Hours#completeHours(II)J",
+      "classSha256": "31c5b75569bdd8625b1f56fc9e2ff665634c78535bc42afd67d515ee49aa2ab4",
+      "loadedFrom": "adapter-parent.jar",
+      "subject": "org.threeten.bp.LocalDateTime#until(Lorg/threeten/bp/temporal/Temporal;Lorg/threeten/bp/temporal/TemporalUnit;)J",
+      "subjectClassSha256": "d3b8106a23088cc52da37698327d22c02c590e1ab6ebeea8556deafe03640114"
+    },
+    "fix": {
+      "entry": "civil.Hours#completeHours(II)J",
+      "classSha256": "31c5b75569bdd8625b1f56fc9e2ff665634c78535bc42afd67d515ee49aa2ab4",
+      "loadedFrom": "adapter-fix.jar",
+      "subject": "org.threeten.bp.LocalDateTime#until(Lorg/threeten/bp/temporal/Temporal;Lorg/threeten/bp/temporal/TemporalUnit;)J",
+      "subjectClassSha256": "17ff61f44577467e739fba14c1eb95fbcb338adb8a6dcefe4ec48ae83862da17"
+    }
+  },
+  "artifacts": [
+    {
+      "revision": "parent",
+      "path": "adapter-parent.jar",
+      "sha256": "88043dcfead2a23100f82fd5054577ec6dbf887bbf3ccee2daf5bb07c2df0786",
+      "role": "adapter"
+    },
+    {
+      "revision": "parent",
+      "path": "slice/parent.jar",
+      "sha256": "85a8dc921b282c09d82a1d62bdcf70ed894107331cce5329c33fe6f1fea5a3bf",
+      "role": "original"
+    },
+    {
+      "revision": "fix",
+      "path": "adapter-fix.jar",
+      "sha256": "88043dcfead2a23100f82fd5054577ec6dbf887bbf3ccee2daf5bb07c2df0786",
+      "role": "adapter"
+    },
+    {
+      "revision": "fix",
+      "path": "slice/fix.jar",
+      "sha256": "66a46dda841cb03c4130ac6f4af0dfa35c661af85d0a7dab47a35dc7f31204d2",
+      "role": "original"
+    }
+  ],
+  "diagnostic": [
+    {
+      "id": "jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13",
+      "kind": "jdk-static-method",
+      "call": "java.util.ServiceLoader.load(java.lang.Class)",
+      "sites": [
+        "before.org.threeten.bp.chrono.Chronology.<clinit>:148"
+      ],
+      "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+      "treatment": "refused"
+    }
+  ],
+  "reproducer": {
+    "check": "python3 examples/tools/targets/workflow_refusal.py 310 same-day",
+    "attempt": "python3 examples/tools/build.py 310 --task same-day",
+    "job": "20261119-231539-retry-threetenbp-hours-after-exact-jdk-a",
+    "target": "org.threeten.bp.LocalDateTime#until(Lorg/threeten/bp/temporal/Temporal;Lorg/threeten/bp/temporal/TemporalUnit;)J",
+    "checkedEntry": "civil.Hours#completeHours(II)J"
+  },
+  "semantics": "ServiceLoader discovers chronology providers while Chronology initializes its ID and calendar-type registries. The native checker stops at load(Class) on the bound classpath.",
+  "why": "Execution of the original upstream initialization stops before the strict checker can decide the hours claim. The JVM control qualifies the adapter on its two-date grid.",
+  "module": {
+    "likely": [
+      "lib/src/bmc/runtime.rs",
+      "lib/src/bmc/gaps.rs"
+    ],
+    "note": "An observed registry also requires its ConcurrentHashMap state."
+  },
+  "strategies": [
+    {
+      "by": "20261119T220651Z-c5e50cd8",
+      "outcome": "BigInteger.valueOf(long) during Duration initialization"
+    },
+    {
+      "by": "20261119T232039Z-9c9e8e44",
+      "outcome": "Unresolved at chronology service discovery"
+    }
+  ]
+}

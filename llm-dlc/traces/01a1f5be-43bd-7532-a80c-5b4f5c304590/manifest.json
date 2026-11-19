@@ -12,27 +12,27 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-19T23:20:20.101Z",
-  "duration_seconds": 6170,
+  "ended": "2026-11-19T23:28:59.359Z",
+  "duration_seconds": 6689,
   "stats": {
     "turns": 2,
-    "api_calls": 417,
-    "tool_calls": 1096,
-    "tool_errors": 46,
+    "api_calls": 463,
+    "tool_calls": 1234,
+    "tool_errors": 51,
     "compactions": 1,
     "peak_context_tokens": 410632,
     "usage": {
-      "input_tokens": 726370,
-      "output_tokens": 214852,
-      "cache_read_input_tokens": 110016256,
+      "input_tokens": 771528,
+      "output_tokens": 231253,
+      "cache_read_input_tokens": 125225344,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 665,
-    "exec": 406,
-    "apply_patch": 16,
-    "wait": 9
+    "Bash": 753,
+    "exec": 450,
+    "apply_patch": 20,
+    "wait": 11
   },
   "files_touched": [
     "examples/310-threeten-complete-hours/README.md",
@@ -42,6 +42,7 @@
     "examples/tools/targets/claim_history.py",
     "examples/tools/targets/executions.py",
     "examples/tools/targets/route.py",
+    "examples/tools/targets/test_gap_inventory.py",
     "examples/tools/targets/test_recipes.py",
     "lib/src/bmc/gaps.rs",
     "lib/src/bmc/mod.rs",
@@ -73,24 +74,24 @@
     {
       "index": 1,
       "started": "2026-11-19T22:50:27.520Z",
-      "ended": "2026-11-19T23:20:20.101Z",
+      "ended": "2026-11-19T23:28:59.359Z",
       "turns": 1,
-      "api_calls": 128,
+      "api_calls": 174,
       "usage": {
-        "input_tokens": 307546,
-        "output_tokens": 64639,
-        "cache_read_input_tokens": 28012416,
+        "input_tokens": 352704,
+        "output_tokens": 81040,
+        "cache_read_input_tokens": 43221504,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 311773
+      "peak_context_tokens": 353908
     }
   ],
   "log": {
-    "sha256": "a802a2f8c1d3c45b88ee0c9ab84f2b75d436bbb0e5833ba415b1f66cff238345",
-    "bytes": 10921003,
-    "lines": 3326,
-    "gzip_bytes": 4026124,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/a802a2f8c1d3c45b88ee0c9ab84f2b75d436bbb0e5833ba415b1f66cff238345.jsonl.gz"
+    "sha256": "73a0995638584c4c507ae92b8c4a6abf9fbcb14caaf0590eff1c9464124fb209",
+    "bytes": 11676336,
+    "lines": 3690,
+    "gzip_bytes": 4303855,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/73a0995638584c4c507ae92b8c4a6abf9fbcb14caaf0590eff1c9464124fb209.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -271,20 +272,36 @@
       "log_sha256": "494d38906766c5a7b4028b30b9b64e7116bc803dfa0b2f2c1de6d366c00549df"
     },
     {
-      "change_id": "lkpyllkulpyssrpvwvxonwtxllwumrpx",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "a802a2f8c1d3c45b88ee0c9ab84f2b75d436bbb0e5833ba415b1f66cff238345"
-    },
-    {
       "change_id": "rrosmsokmqzztpowoqvlvulyszomsltl",
       "commit_id": null,
       "immutable": false,
       "summary": "Keep temporary jj file splits out of the verification queue",
       "body": "A runner polling another workspace picked up a ThreeTenBP job while sync.py was setting aside files outside a scoped commit. The transient tree carried only the first checker change. For a runnable job the queue now checks which commit last touched its file, including jobs with explicit source revisions, and waits while that commit is the temporary set-aside.\n\nThe queue regression exercises two simultaneous views of the same job, both revision choices and a commit message with an adjacent metadata line. On the actual recorded history the queue skips 0c74dbf6 and finds a78b7348. All 24 selected test files passed, including the 40 pipeline tests.",
       "log_sha256": "a802a2f8c1d3c45b88ee0c9ab84f2b75d436bbb0e5833ba415b1f66cff238345"
+    },
+    {
+      "change_id": "utsnpupxotvqozmullurtmyxpkvrwrxy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-230939-retry-threetenbp-hours-after-exact-jdk-a: failed: 4 passed, 1 failed step(s) in 28.1s, peak 233.9 MiB (estimated 3m00s, 3.0 GiB); 89 output file(s) changed; signals: example:task-unexpected×5 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "73a0995638584c4c507ae92b8c4a6abf9fbcb14caaf0590eff1c9464124fb209"
+    },
+    {
+      "change_id": "zpymnulpnmwtqulnopqmvuqossqvulnp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261119-231539-retry-threetenbp-hours-after-exact-jdk-a: passed: 5 passed step(s) in 28.9s, peak 210.8 MiB (estimated 3m00s, 3.0 GiB); 89 output file(s) changed; signals: example:task-unexpected×5 Applied 89 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "73a0995638584c4c507ae92b8c4a6abf9fbcb14caaf0590eff1c9464124fb209"
+    },
+    {
+      "change_id": "ymmomsosuvlporkkqqxnqknoolvvtlvr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Integrate the clock retries and record all five native blockers",
+      "body": "The pinned checker on a78b7348 passes Duration initialization on the original ThreeTenBP artifacts and stops at ServiceLoader.load in Chronology initialization for all five strict claims. Each task now has a rerunnable refusal packet in the gap inventory. The public JVM witness refutes the parent clock, satisfies the fixed clock and fails membership for the same-day domain.\n\nThe collector’s earlier job remains in history with its factory-only checker and regex refusals. The merged handoff links each execution once with its stage and qualifications. All 178 collected output digests matched. The independent checker of the eight public attempts, example 310 validation and all 28 selected test files passed.",
+      "log_sha256": "73a0995638584c4c507ae92b8c4a6abf9fbcb14caaf0590eff1c9464124fb209"
     }
   ],
   "logs": {
@@ -316,6 +333,12 @@
       "bytes": 5759696,
       "lines": 1625,
       "gzip_bytes": 2092336,
+      "url": null
+    },
+    "73a0995638584c4c507ae92b8c4a6abf9fbcb14caaf0590eff1c9464124fb209": {
+      "bytes": 11676336,
+      "lines": 3690,
+      "gzip_bytes": 4303855,
       "url": null
     },
     "7611b18a2e0d3254811ac5761b6c1bc22f1601e4b96eaf1e2564bc871cec8747": {

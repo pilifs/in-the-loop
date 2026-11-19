@@ -1,0 +1,120 @@
+{
+  "schema": "example-target-refusal/v1",
+  "task": "reversal-fix",
+  "claimKey": "198eb98e8893c523",
+  "revisions": [
+    "fix"
+  ],
+  "refusal": {
+    "stage": "verifier",
+    "text": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+  },
+  "observed": {
+    "job": "20261119-231539-retry-threetenbp-hours-after-exact-jdk-a",
+    "result": "verification/results/20261119-231539-retry-threetenbp-hours-after-exact-jdk-a/result.json",
+    "receipt": "examples/310-threeten-complete-hours/receipts/reversal-fix/20261119T232041Z-56a84286/result.json",
+    "receiptSha256": "a01dc71c3951c31379eaf69dc2a66dd40ac73354cab7af2b190d2e06d34569c5",
+    "verifierOutput": "examples/310-threeten-complete-hours/receipts/reversal-fix/20261119T232041Z-56a84286/records/verifier.stdout",
+    "verifierOutputSha256": "4e55c8c9a2297e28959b99fe12c116d363e353c4b40a62a55c832865f2160fd9",
+    "execution": "20261119T232041Z-56a84286",
+    "retryOf": "20261119T220653Z-b7c57bb2"
+  },
+  "verifier": {
+    "jvmcontract": "566f1111726f27c8f97e277eb5504daefe78d8e92a12223691037167a5d765ee",
+    "commit": "a78b7348a842915985827118844fa68fced87cc7",
+    "libTree": "2806e3d9115a8cac49343e69e87b7a6f58381cb5",
+    "engine": "native",
+    "gaps": "strict",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS"
+  },
+  "command": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2806e3d9115a8cac49343e69e87b7a6f58381cb5/jvmcontract",
+    "prove",
+    "civil.Hours#completeHours(int, int)",
+    "--classes",
+    "prepare/fix/adapter-fix.jar",
+    "--classpath",
+    "prepare/fix/slice/fix.jar",
+    "--assume",
+    "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+    "--assert",
+    "result == -civil.Hours.completeHours(endTick, startTick)",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "600",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "bindingId": "b1d79c2d083e7caf2254f654b00ef585063f3c17d1cb9efec0901ef49817f1bf",
+  "entryBindings": {
+    "fix": {
+      "entry": "civil.Hours#completeHours(II)J",
+      "classSha256": "31c5b75569bdd8625b1f56fc9e2ff665634c78535bc42afd67d515ee49aa2ab4",
+      "loadedFrom": "adapter-fix.jar",
+      "subject": "org.threeten.bp.LocalDateTime#until(Lorg/threeten/bp/temporal/Temporal;Lorg/threeten/bp/temporal/TemporalUnit;)J",
+      "subjectClassSha256": "17ff61f44577467e739fba14c1eb95fbcb338adb8a6dcefe4ec48ae83862da17"
+    }
+  },
+  "artifacts": [
+    {
+      "revision": "fix",
+      "path": "adapter-fix.jar",
+      "sha256": "88043dcfead2a23100f82fd5054577ec6dbf887bbf3ccee2daf5bb07c2df0786",
+      "role": "adapter"
+    },
+    {
+      "revision": "fix",
+      "path": "slice/fix.jar",
+      "sha256": "66a46dda841cb03c4130ac6f4af0dfa35c661af85d0a7dab47a35dc7f31204d2",
+      "role": "original"
+    }
+  ],
+  "diagnostic": [
+    {
+      "id": "jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13",
+      "kind": "jdk-static-method",
+      "call": "java.util.ServiceLoader.load(java.lang.Class)",
+      "sites": [
+        "org.threeten.bp.chrono.Chronology.<clinit>:148"
+      ],
+      "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+      "treatment": "refused"
+    }
+  ],
+  "reproducer": {
+    "check": "python3 examples/tools/targets/workflow_refusal.py 310 reversal-fix",
+    "attempt": "python3 examples/tools/build.py 310 --task reversal-fix",
+    "job": "20261119-231539-retry-threetenbp-hours-after-exact-jdk-a",
+    "target": "org.threeten.bp.LocalDateTime#until(Lorg/threeten/bp/temporal/Temporal;Lorg/threeten/bp/temporal/TemporalUnit;)J",
+    "checkedEntry": "civil.Hours#completeHours(II)J"
+  },
+  "semantics": "ServiceLoader discovers chronology providers while Chronology initializes its ID and calendar-type registries. The native checker stops at load(Class) on the bound classpath.",
+  "why": "Execution of the original upstream initialization stops before the strict checker can decide the hours claim. The JVM control qualifies the adapter on its two-date grid.",
+  "module": {
+    "likely": [
+      "lib/src/bmc/runtime.rs",
+      "lib/src/bmc/gaps.rs"
+    ],
+    "note": "An observed registry also requires its ConcurrentHashMap state."
+  },
+  "strategies": [
+    {
+      "by": "20261119T220653Z-b7c57bb2",
+      "outcome": "BigInteger.valueOf(long) during Duration initialization"
+    },
+    {
+      "by": "20261119T232041Z-56a84286",
+      "outcome": "Unresolved at chronology service discovery"
+    }
+  ]
+}

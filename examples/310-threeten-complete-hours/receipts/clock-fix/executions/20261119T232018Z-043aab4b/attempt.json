@@ -1,0 +1,108 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261119T232018Z-043aab4b",
+  "task": "clock-fix",
+  "claimKey": "0cab770b1b39f331",
+  "revisions": [
+    "fix"
+  ],
+  "startedAt": "2026-11-19T23:20:18.017322+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "jvmSecondsPerRevision": 30
+  },
+  "strategy": {
+    "engine": "jvm",
+    "operation": "review-witness"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261119-231539-retry-threetenbp-hours-after-exact-jdk-a",
+  "sourceCommit": "a78b7348a842915985827118844fa68fced87cc7",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "witness-supplied",
+      "elapsedSeconds": 0.0002
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 3.9381
+    },
+    {
+      "stage": "witness-replayed",
+      "elapsedSeconds": 4.4596
+    }
+  ],
+  "status": "replay-rejected",
+  "lastCompletedStage": "witness-replayed",
+  "witnessFile": "midnight-witness.json",
+  "witnessSha256": "9c3a16e6c8507dcdf08a43a906449d3eabd88f125d5b4f11fdc53a4e8b6aa77b",
+  "bindings": {
+    "fix": {
+      "revision": "f0b2eaf1856b7fb5fdf78de3cedc9781b6619b88",
+      "target": {
+        "class": "org.threeten.bp.LocalDateTime",
+        "method": "until",
+        "descriptor": "(Lorg/threeten/bp/temporal/Temporal;Lorg/threeten/bp/temporal/TemporalUnit;)J",
+        "loadedFrom": "slice/fix.jar",
+        "classSha256": "17ff61f44577467e739fba14c1eb95fbcb338adb8a6dcefe4ec48ae83862da17",
+        "adapterCalls": [
+          "org.threeten.bp.LocalDateTime#of(IIIII)Lorg/threeten/bp/LocalDateTime;",
+          "org.threeten.bp.LocalDateTime#until(Lorg/threeten/bp/temporal/Temporal;Lorg/threeten/bp/temporal/TemporalUnit;)J"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "666493df1bcae8df9c6586ae1e479ddde4cb83f245335d2df23335c1ecc60a1f",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-fix.jar",
+          "sha256": "88043dcfead2a23100f82fd5054577ec6dbf887bbf3ccee2daf5bb07c2df0786",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "slice/fix.jar",
+          "sha256": "66a46dda841cb03c4130ac6f4af0dfa35c661af85d0a7dab47a35dc7f31204d2",
+          "role": "original",
+          "coordinates": null,
+          "origin": "an extracted source slice of f0b2eaf1856b7fb5fdf78de3cedc9781b6619b88: src/main/java/org/threeten/bp/Clock.java, src/main/java/org/threeten/bp/DateTimeException.java, src/main/java/org/threeten/bp/DayOfWeek.java, src/main/java/org/threeten/bp/Duration.java, src/main/java/org/threeten/bp/Instant.java, src/main/java/org/threeten/bp/LocalDate.java, src/main/java/org/threeten/bp/LocalDateTime.java, src/main/java/org/threeten/bp/LocalTime.java, src/main/java/org/threeten/bp/Month.java, src/main/java/org/threeten/bp/MonthDay.java, src/main/java/org/threeten/bp/OffsetDateTime.java, src/main/java/org/threeten/bp/OffsetTime.java, src/main/java/org/threeten/bp/Period.java, src/main/java/org/threeten/bp/Ser.java, src/main/java/org/threeten/bp/Year.java, src/main/java/org/threeten/bp/YearMonth.java, src/main/java/org/threeten/bp/ZoneId.java, src/main/java/org/threeten/bp/ZoneOffset.java, src/main/java/org/threeten/bp/ZoneRegion.java, src/main/java/org/threeten/bp/ZonedDateTime.java, src/main/java/org/threeten/bp/chrono/ChronoDateImpl.java, src/main/java/org/threeten/bp/chrono/ChronoLocalDate.java, src/main/java/org/threeten/bp/chrono/ChronoLocalDateTime.java, src/main/java/org/threeten/bp/chrono/ChronoLocalDateTimeImpl.java, src/main/java/org/threeten/bp/chrono/ChronoPeriod.java, src/main/java/org/threeten/bp/chrono/ChronoPeriodImpl.java, src/main/java/org/threeten/bp/chrono/ChronoZonedDateTime.java, src/main/java/org/threeten/bp/chrono/ChronoZonedDateTimeImpl.java, src/main/java/org/threeten/bp/chrono/Chronology.java, src/main/java/org/threeten/bp/chrono/Era.java, src/main/java/org/threeten/bp/chrono/HijrahChronology.java, src/main/java/org/threeten/bp/chrono/HijrahDate.java, src/main/java/org/threeten/bp/chrono/HijrahEra.java, src/main/java/org/threeten/bp/chrono/IsoChronology.java, src/main/java/org/threeten/bp/chrono/IsoEra.java, src/main/java/org/threeten/bp/chrono/JapaneseChronology.java, src/main/java/org/threeten/bp/chrono/JapaneseDate.java, src/main/java/org/threeten/bp/chrono/JapaneseEra.java, src/main/java/org/threeten/bp/chrono/MinguoChronology.java, src/main/java/org/threeten/bp/chrono/MinguoDate.java, src/main/java/org/threeten/bp/chrono/MinguoEra.java, src/main/java/org/threeten/bp/chrono/Ser.java, src/main/java/org/threeten/bp/chrono/ThaiBuddhistChronology.java, src/main/java/org/threeten/bp/chrono/ThaiBuddhistDate.java, src/main/java/org/threeten/bp/chrono/ThaiBuddhistEra.java, src/main/java/org/threeten/bp/format/DateTimeBuilder.java, src/main/java/org/threeten/bp/format/DateTimeFormatStyleProvider.java, src/main/java/org/threeten/bp/format/DateTimeFormatSymbols.java, src/main/java/org/threeten/bp/format/DateTimeFormatter.java, src/main/java/org/threeten/bp/format/DateTimeFormatterBuilder.java, src/main/java/org/threeten/bp/format/DateTimeParseContext.java, src/main/java/org/threeten/bp/format/DateTimeParseException.java, src/main/java/org/threeten/bp/format/DateTimePrintContext.java, src/main/java/org/threeten/bp/format/DateTimeTextProvider.java, src/main/java/org/threeten/bp/format/FormatStyle.java, src/main/java/org/threeten/bp/format/SignStyle.java, src/main/java/org/threeten/bp/format/SimpleDateTimeFormatStyleProvider.java, src/main/java/org/threeten/bp/format/SimpleDateTimeTextProvider.java, src/main/java/org/threeten/bp/format/TextStyle.java, src/main/java/org/threeten/bp/jdk8/DefaultInterfaceChronoLocalDate.java, src/main/java/org/threeten/bp/jdk8/DefaultInterfaceChronoLocalDateTime.java, src/main/java/org/threeten/bp/jdk8/DefaultInterfaceChronoZonedDateTime.java, src/main/java/org/threeten/bp/jdk8/DefaultInterfaceEra.java, src/main/java/org/threeten/bp/jdk8/DefaultInterfaceTemporal.java, src/main/java/org/threeten/bp/jdk8/DefaultInterfaceTemporalAccessor.java, src/main/java/org/threeten/bp/jdk8/Jdk8Methods.java, src/main/java/org/threeten/bp/temporal/ChronoField.java, src/main/java/org/threeten/bp/temporal/ChronoUnit.java, src/main/java/org/threeten/bp/temporal/IsoFields.java, src/main/java/org/threeten/bp/temporal/JulianFields.java, src/main/java/org/threeten/bp/temporal/Temporal.java, src/main/java/org/threeten/bp/temporal/TemporalAccessor.java, src/main/java/org/threeten/bp/temporal/TemporalAdjuster.java, src/main/java/org/threeten/bp/temporal/TemporalAdjusters.java, src/main/java/org/threeten/bp/temporal/TemporalAmount.java, src/main/java/org/threeten/bp/temporal/TemporalField.java, src/main/java/org/threeten/bp/temporal/TemporalQueries.java, src/main/java/org/threeten/bp/temporal/TemporalQuery.java, src/main/java/org/threeten/bp/temporal/TemporalUnit.java, src/main/java/org/threeten/bp/temporal/UnsupportedTemporalTypeException.java, src/main/java/org/threeten/bp/temporal/ValueRange.java, src/main/java/org/threeten/bp/temporal/WeekFields.java, src/main/java/org/threeten/bp/zone/Ser.java, src/main/java/org/threeten/bp/zone/StandardZoneRules.java, src/main/java/org/threeten/bp/zone/TzdbZoneRulesCompiler.java, src/main/java/org/threeten/bp/zone/TzdbZoneRulesProvider.java, src/main/java/org/threeten/bp/zone/ZoneOffsetTransition.java, src/main/java/org/threeten/bp/zone/ZoneOffsetTransitionRule.java, src/main/java/org/threeten/bp/zone/ZoneRules.java, src/main/java/org/threeten/bp/zone/ZoneRulesBuilder.java, src/main/java/org/threeten/bp/zone/ZoneRulesException.java, src/main/java/org/threeten/bp/zone/ZoneRulesProvider.java, compiled by JDK 21 with -g -parameters --add-exports java.base/sun.util.calendar=ALL-UNNAMED"
+        }
+      ]
+    }
+  },
+  "bindingId": "5cad1bc6f1f8eb4fe9ae7861684f73c9598ee3ffceb11549c245c9e705fa5f03",
+  "firstBlocker": "the admitted input satisfies the property or agrees on every selected observation",
+  "replayEvidence": "replay.json",
+  "endedAt": "2026-11-19T23:20:22.476979+00:00",
+  "missing": [
+    "an admitted witness differing on a selected observation"
+  ]
+}

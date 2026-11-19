@@ -11,8 +11,9 @@ Phase 5 step 4 of [`example-targets.md`](../llm-dlc/loops/example-targets.md) (d
 | 1 | `input-construction:receiver-of-several-constructors` | input-construction | 2: bcrypt-input-limit, spring-data-binding | 8 | no | examples/tools/targets/runtime.py (run_verifier passes no --plan) and the claim format; lib/src/construction.rs | VF-027 |
 | 2 | `input-construction:string-parameter` | input-construction | 2: bcrypt-input-limit, spring-data-binding | 3 | no | lib/src/values.rs | VF-027, VF-028 |
 | 3 | `verifier-interface:two-dependency-closures` | verifier-interface | 2: bcrypt-input-limit, spring-data-binding | 3 | yes | examples/tools/targets/runtime.py (the refusal); lib/src/main.rs (equivalence's --classpath) and lib/src/equivalence.rs | VF-027 |
-| 4 | `input-construction:interface-parameter` | input-construction | 1: boot-method-metrics | 4 | no | lib/src/construction.rs; lib/src/environment.rs | VF-027 |
-| 5 | `jdk-constructor:java.lang.StringBuilder.<init>()V` | java-semantics | 1: commons-numbers-pow | 1 | no | lib/src/models.rs | VF-027 |
+| 4 | `jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;` | java-semantics | 1: threeten-complete-hours | 5 | no | lib/src/bmc/gaps.rs; lib/src/bmc/runtime.rs |  |
+| 5 | `input-construction:interface-parameter` | input-construction | 1: boot-method-metrics | 4 | no | lib/src/construction.rs; lib/src/environment.rs | VF-027 |
+| 6 | `jdk-constructor:java.lang.StringBuilder.<init>()V` | java-semantics | 1: commons-numbers-pow | 1 | no | lib/src/models.rs | VF-027 |
 
 ### 1. `input-construction:receiver-of-several-constructors`
 
@@ -38,7 +39,15 @@ Phase 5 step 4 of [`example-targets.md`](../llm-dlc/loops/example-targets.md) (d
 - **Owner modules**: examples/tools/targets/runtime.py (the refusal); lib/src/main.rs (equivalence's --classpath) and lib/src/equivalence.rs.
 - **Closure test** (each obligation's, here the reproducer's): the unchanged claim 93e54e75b16748cd rerun on the same artifacts with the extended checker: its receipt decides it (established or refuted, not vacuous) and its reasons name none of this packet's gaps; a narrower task's receipt doesn't close it.
 
-### 4. `input-construction:interface-parameter`
+### 4. `jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;`
+
+- **Blocks**: [310](310-threeten-complete-hours/README.md) `clock-parent` (0cab770b1b39f331), `clock-fix` (0cab770b1b39f331), `reversal-parent` (198eb98e8893c523), `reversal-fix` (198eb98e8893c523), `same-day` (e5d30978a554dfeb).
+- **Smallest reproducer**: [310](310-threeten-complete-hours/records/refusals/clock-fix.json) `clock-fix`, observed by job `20261119-231539-retry-threetenbp-hours-after-exact-jdk-a`. Rerun it, predicting the refusal: `python3 examples/tools/targets/workflow_refusal.py 310 clock-fix`.
+- **Missing semantics** (from that packet): ServiceLoader discovers chronology providers while Chronology initializes its ID and calendar-type registries. The native checker stops at load(Class) on the bound classpath.
+- **Owner modules**: lib/src/bmc/gaps.rs; lib/src/bmc/runtime.rs.
+- **Closure test** (each obligation's, here the reproducer's): the unchanged claim 0cab770b1b39f331 rerun on the same artifacts with the extended checker: its receipt decides it (established or refuted, not vacuous) and its reasons name none of this packet's gaps; a narrower task's receipt doesn't close it.
+
+### 5. `input-construction:interface-parameter`
 
 - **Blocks**: [305](305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/README.md) `preservation` (98f4a389c1ccd7ff), `finite-outcome-before` (46b0bb5f1f51a112), `finite-outcome-after` (46b0bb5f1f51a112), `mutant-preservation` (98f4a389c1ccd7ff).
 - **Smallest reproducer**: [305](305-spring-boot-e8de5a6d-outcome-enum-keeps-mvc-outcome-tags/records/refusals/finite-outcome-after.json) `finite-outcome-after`, observed by job `20261114-234213-example-305-finite-outcome-after-phase-5`, 0.2 s. Rerun it, predicting the refusal: `python3 examples/tools/targets/workflow_refusal.py 305 finite-outcome-after`.
@@ -46,7 +55,7 @@ Phase 5 step 4 of [`example-targets.md`](../llm-dlc/loops/example-targets.md) (d
 - **Owner modules**: lib/src/construction.rs; lib/src/environment.rs.
 - **Closure test** (each obligation's, here the reproducer's): the unchanged claim 46b0bb5f1f51a112 rerun on the same artifacts with the extended checker: its receipt decides it (established or refuted, not vacuous) and its reasons name none of this packet's gaps; a narrower task's receipt doesn't close it.
 
-### 5. `jdk-constructor:java.lang.StringBuilder.<init>()V`
+### 6. `jdk-constructor:java.lang.StringBuilder.<init>()V`
 
 - **Blocks**: [105](105-commons-numbers-223-pow-of-minus-two-to-the-31/README.md) `confined-change` (6bef0dff1140dc6d).
 - **Smallest reproducer**: [105](105-commons-numbers-223-pow-of-minus-two-to-the-31/records/refusals/confined-change.json) `confined-change`, observed by job `20261114-234214-example-105-confined-change-phase-5-step`, 217.6 s. Rerun it, predicting the refusal: `python3 examples/tools/targets/workflow_refusal.py 105 confined-change`.

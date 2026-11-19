@@ -9930,7 +9930,8 @@
       "existingTestsPassed": null,
       "notes": [
         "Both revisions agree with direct JVM calls through the hours adapter. The pinned parent returns 1 hour from 23:30 to 00:15 the next day and -1 in reverse. The fix returns zero in both directions. Same-day and sign-reversal checks pass on both.",
-        "Both the correct hours adapter and its wrong-unit control ran on both pinned artifacts. The hours adapter agreed with all 36,864 independently constructed calls in each revision. The MINUTES control differed on 36,672 pairs per revision. All five strict native obligations reached BigInteger.valueOf(long) in Duration.<clinit> and remain open. Their collected attempt bundles are discoverable from workflow_handoff.py."
+        "Both the correct hours adapter and its wrong-unit control ran on both pinned artifacts. The hours adapter agreed with all 36,864 independently constructed calls in each revision. The MINUTES control differed on 36,672 pairs per revision. The first five strict attempts stopped at BigInteger.valueOf(long) in Duration.<clinit>. Their collected attempt bundles are discoverable from workflow_handoff.py.",
+        "Five linked retries on the original bindings now pass Duration initialization and stop at java.util.ServiceLoader.load in Chronology.<clinit> at line 148. All five strict proof obligations remain open. The public JVM review of ticks 94 and 97 refutes the parent clock claim, satisfies the fixed clock claim and rejects the same-day witness on domain membership. The two observed-initializer diagnostics and the intermediate local checker outputs are recorded in records/initialization-probes.json."
       ],
       "source": "https://github.com/ThreeTen/threetenbp/commit/f0b2eaf1856b7fb5fdf78de3cedc9781b6619b88",
       "target": {
@@ -9945,14 +9946,14 @@
           "reversal-fix",
           "same-day"
         ],
-        "readiness": "scaffolded",
+        "readiness": "blocked",
         "taskReadiness": {
           "replay": "scaffolded",
-          "clock-parent": "scaffolded",
-          "clock-fix": "scaffolded",
-          "reversal-parent": "scaffolded",
-          "reversal-fix": "scaffolded",
-          "same-day": "scaffolded"
+          "clock-parent": "blocked",
+          "clock-fix": "blocked",
+          "reversal-parent": "blocked",
+          "reversal-fix": "blocked",
+          "same-day": "blocked"
         },
         "expected": {
           "replay": null,
@@ -9963,11 +9964,11 @@
           "same-day": "established"
         },
         "claims": {
-          "clock-parent": null,
-          "clock-fix": null,
-          "reversal-parent": null,
-          "reversal-fix": null,
-          "same-day": null
+          "clock-parent": "unresolved",
+          "clock-fix": "unresolved",
+          "reversal-parent": "unresolved",
+          "reversal-fix": "unresolved",
+          "same-day": "unresolved"
         },
         "receipts": {
           "replay": {
@@ -9977,12 +9978,56 @@
             "status": null,
             "expectation": "yes",
             "attempts": 1
+          },
+          "clock-parent": {
+            "path": "receipts/clock-parent/20261119T232031Z-836bc31e/result.json",
+            "attempt": "20261119T232031Z-836bc31e",
+            "execution": "completed",
+            "status": "unresolved",
+            "expectation": "no",
+            "attempts": 1
+          },
+          "clock-fix": {
+            "path": "receipts/clock-fix/20261119T232035Z-909d4947/result.json",
+            "attempt": "20261119T232035Z-909d4947",
+            "execution": "completed",
+            "status": "unresolved",
+            "expectation": "no",
+            "attempts": 1
+          },
+          "reversal-parent": {
+            "path": "receipts/reversal-parent/20261119T232040Z-982ef96d/result.json",
+            "attempt": "20261119T232040Z-982ef96d",
+            "execution": "completed",
+            "status": "unresolved",
+            "expectation": "no",
+            "attempts": 1
+          },
+          "reversal-fix": {
+            "path": "receipts/reversal-fix/20261119T232041Z-56a84286/result.json",
+            "attempt": "20261119T232041Z-56a84286",
+            "execution": "completed",
+            "status": "unresolved",
+            "expectation": "no",
+            "attempts": 1
+          },
+          "same-day": {
+            "path": "receipts/same-day/20261119T232039Z-9c9e8e44/result.json",
+            "attempt": "20261119T232039Z-9c9e8e44",
+            "execution": "completed",
+            "status": "unresolved",
+            "expectation": "no",
+            "attempts": 1
           }
         },
         "staleReceipts": [],
         "unreadable": [],
-        "gaps": [],
-        "gapIds": [],
+        "gaps": [
+          "java-semantics"
+        ],
+        "gapIds": [
+          "jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13"
+        ],
         "unevidencedGaps": [],
         "predictedGaps": [],
         "historical": {
