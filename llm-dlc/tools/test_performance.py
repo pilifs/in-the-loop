@@ -61,6 +61,8 @@ def setUpModule():
     mock.patch.object(sync, "CHECK_CACHE", state / "check-cache.json").start()
     mock.patch.object(sync, "SYNC_CACHE", state / "sync-cache.json").start()
     mock.patch.object(sync, "UPLOADS", state / "uploads.json").start()
+    # These tests name where the sessions are (sync.claude_project_dir): this machine's Codex sessions are not among them.
+    mock.patch.object(sync.codex_rollout, "SESSIONS", state / "no-codex-sessions").start()
 
 
 def tearDownModule():
@@ -953,7 +955,7 @@ class Fingerprints(unittest.TestCase):
 
     TOOLS = Path(__file__).resolve().parent
     SOURCES = ("sync.py", "redactor.py", "redaction_rules.py", "measure.py", "metrics.py", "loop_stats.py", "mode.py",
-               "decisions.py")
+               "decisions.py", "codex_rollout.py")
 
     def imports(self, name: str) -> set[str]:
         tree = ast.parse((self.TOOLS / name).read_text())
@@ -1398,6 +1400,37 @@ class HookCursor(unittest.TestCase):
         seen = []
         real = MadeUpRedactor.__call__
         return seen, mock.patch.object(MadeUpRedactor, "__call__", lambda r, text: seen.append(len(text)) or real(r, text))
+
+    def test_a_codex_log_is_sent_turn_by_turn_and_no_turn_twice(self):
+        # Codex's Stop hook, and agent_client.py after a turn it ran, give the session's rollout as the transcript.
+        thread = "00000000-0000-7000-8000-00000000000c"
+        at = lambda s: f"2026-01-01T00:00:{s:02d}.000Z"
+
+        def turn(n, second):
+            return [
+                {"timestamp": at(second), "type": "event_msg", "payload": {"type": "item_completed", "turn_id": f"turn-{n}", "item": {
+                    "type": "UserMessage", "content": [{"type": "text", "text": f"made-up prompt {n}"}]}}},
+                {"timestamp": at(second + 2), "type": "response_item", "payload": {"type": "message", "role": "assistant",
+                                                                                 "content": [{"type": "output_text", "text": f"reply {n}"}]}},
+                {"timestamp": at(second + 2), "type": "token_usage_record", "payload": {
+                    "response_id": f"resp_{n}", "usage": {"input_tokens": 10, "output_tokens": 2}}},
+                {"timestamp": at(second + 3), "type": "event_msg", "payload": {"type": "task_complete", "turn_id": f"turn-{n}"}},
+            ]
+        meta = [{"timestamp": at(0), "type": "session_meta", "payload": {"id": thread, "cwd": "/repo", "cli_version": "0.0"}},
+                {"timestamp": at(0), "type": "turn_context", "payload": {"model": "gpt-made-up", "effort": "low"}}]
+        text = lambda entries: "".join(json.dumps(e) + "\n" for e in entries).encode()
+        rollout = self.transcript.parent / f"rollout-2026-01-01T00-00-00-{thread}.jsonl"
+        sync.save_manifest(thread, {"session_id": thread, "log": {"sha256": "0" * 64}})
+        with mock.patch.object(sync, "STATE", self.state_new):
+            rollout.write_bytes(text(meta + turn(1, 1) + turn(2, 10)))
+            self.assertEqual(sync.hook_export(rollout, self.r), 2)
+            self.assertEqual(sync.hook_export(rollout, self.r), 0)
+            rollout.write_bytes(text(meta + turn(1, 1) + turn(2, 10) + turn(3, 20)))
+            self.assertEqual(sync.hook_export(rollout, self.r, live=True), 0)  # the last turn may still be running
+            self.assertEqual(sync.hook_export(rollout, self.r), 1)
+            self.assertEqual(sync.langfuse_state(thread)["exported"], sorted(f"codex-turn-{n}-{i}" for n, i in ((1, 2), (2, 6), (3, 10))))
+        names = [s["name"] for b in self.sent for s in b["resourceSpans"][0]["scopeSpans"][0]["spans"] if "parentSpanId" not in s]
+        self.assertEqual(names, ["turn 1", "turn 2", "turn 3"])
 
     def test_it_reads_only_what_follows_the_cursor(self):
         rng = random.Random(1)

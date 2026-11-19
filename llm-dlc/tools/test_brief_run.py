@@ -97,6 +97,7 @@ FAKE_LOOP = textwrap.dedent('''\
     cd "$(dirname "$0")/../.." || exit 1
     name=$(basename "$1" .md)
     echo "$name $PWD" >>"$STATUSES/runs"
+    echo "$name ${FEATURE_LOOP_CLIENT:-unset}" >>"$STATUSES/clients"
     n=$(grep -c "^$name " "$STATUSES/runs")
     status=$(sed -n "${n}p" "$STATUSES/$name"); [[ -n "$status" ]] || status=$(tail -n 1 "$STATUSES/$name")
     sed -i "s/^- Status: .*/- Status: $status/" "$1"
@@ -144,7 +145,7 @@ class Fixture(unittest.TestCase):
         self.log = base / "claude.jsonl"
         env = {"JJ_USER": "Made Up", "JJ_EMAIL": "made-up@example.com", "JJ_CONFIG": str(base / "jj-config.toml"),
                "PATH": f"{base / 'bin'}:{os.environ['PATH']}", "STANDIN_LOG": str(self.log), "STATUSES": str(self.statuses),
-               "CLAUDE_CONFIG_DIR": str(base / "claude"), "XDG_STATE_HOME": str(base / "state"),
+               "CLAUDE_CONFIG_DIR": str(base / "claude"), "XDG_STATE_HOME": str(base / "state"), "XDG_CACHE_HOME": str(base / "cache"),
                "VERIFY_MACHINE_CONFIG": ""}
         self.env = mock.patch.dict(os.environ, env)
         self.env.start()
@@ -800,6 +801,389 @@ class ARunOfStreams(Fixture):
         self.assertEqual({r["loop"]: (r["status"], r["merged"]) for r in thing["state"]["loops"]},
                          {"a": ("done", False), "b": ("done", False)})  # nobody answered the merge questions
         self.assertEqual(sorted(self.runs()), ["made-up-a", "made-up-b"])
+
+
+class TheOrderOfMerges(Fixture):
+    """A trial merge finds where two streams' lines meet, an order holds the later one back, and a stream ahead in
+    the order is merged while it is still at work."""
+
+    def workspace(self, label: str) -> Path:
+        folder = self.root.parent / f"root-made-up-{label}"
+        self.jj(self.root, "workspace", "add", "--name", f"made-up-{label}", "-r", "@-", str(folder))
+        return folder
+
+    def set_status(self, folder: Path, label: str, status: str) -> None:
+        self.write(f"llm-dlc/loops/made-up-{label}.md", brief(workspace=f"made-up-{label}", status=status), folder,
+                   f"made-up-{label}: {status}")
+
+    @cost("tool")
+    def test_a_trial_merge_names_the_files_two_lines_meet_in_and_changes_nothing(self):
+        a, b = self.workspace("a"), self.workspace("b")
+        self.write("llm-dlc/index.json", "base\na\n", a)
+        self.write("lib.txt", "a's\n", a, "a: the shared file")
+        self.write("llm-dlc/index.json", "base\nb\n", b)
+        self.write("lib.txt", "b's\n", b, "b: the shared file")
+        self.write("left.txt", "not committed\n", b)
+        before = self.jj(self.root, "log", "--no-graph", "-r", "all()", "-T", "commit_id ++ \"\\n\"")
+        code, out, err = self.run_tool("trial", "made-up")
+        self.assertEqual(code, 0, err)
+        got = json.loads(out)
+        pairs = {(p["a"], p["b"]): p for p in got["pairs"]}
+        self.assertEqual(pairs[("a", "b")]["conflicts"], ["lib.txt"])
+        self.assertEqual(pairs[("a", "b")]["regenerated"], ["llm-dlc/index.json"])  # generated: never a reason for an order
+        self.assertEqual(pairs[("the default line", "a")]["conflicts"], [])
+        self.assertIn("propose a merge order to the user", got["note"])
+        self.assertEqual(self.jj(self.root, "log", "--no-graph", "-r", "all()", "-T", "commit_id ++ \"\\n\""), before)
+        self.assertEqual((b / "left.txt").read_text(), "not committed\n")
+
+    @cost("tool")
+    def test_lines_that_do_not_meet_need_no_order(self):
+        a, b = self.workspace("a"), self.workspace("b")
+        self.write("a.txt", "a\n", a, "a: its own file")
+        self.write("b.txt", "b\n", b, "b: its own file")
+        got = json.loads(self.run_tool("trial", "made-up")[1])
+        self.assertEqual([p["conflicts"] for p in got["pairs"]], [[], [], []])
+        self.assertIn("in any order", got["note"])
+
+    @cost("tool")
+    def test_an_order_holds_a_stream_back_and_the_one_before_it_is_merged_while_it_still_works(self):
+        a, b = self.workspace("a"), self.workspace("b")
+        self.write("a.txt", "a\n", a, "a: the first half")
+        self.write("a-later.txt", "not committed yet\n", a)
+        self.write("b.txt", "b\n", b)
+        self.set_status(b, "b", "done")
+        self.assertEqual(self.run_tool("order", "made-up", "a", "a")[0], 1)
+        self.assertEqual(self.run_tool("order", "made-up", "a", "c")[0], 1)
+        code, out, _ = self.run_tool("order", "made-up", "a", "b")
+        self.assertEqual((code, json.loads(out)["order"]), (0, ["a", "b"]))
+        code, _, err = self.run_tool("merge", "made-up", "b")
+        self.assertEqual(code, 1)
+        self.assertIn("first `python3 llm-dlc/tools/brief_run.py merge made-up a --early`", err)
+        # the watcher's question for b says the same
+        run = self.run_of()
+        run.update(run={"pid": os.getpid(), "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())})
+        conductor.append_event(self.dir, type="merge", needsVerdict=True, answers=["merged", "leave"], deadline=time.time() + 60,
+                               loop="b", workspace="made-up-b", brief="llm-dlc/loops/made-up-b.md", status="done")
+        thing = json.loads(self.run_tool("wait", "made-up", "--timeout", "0")[1])
+        self.assertEqual([f["stream"] for f in thing["order"]["first"]], ["a"])
+        # a's line so far comes in; what it has not committed stays with it, and the brief is still working
+        code, out, err = self.run_tool("merge", "made-up", "a", "--early")
+        self.assertEqual(code, 0, err)
+        self.assertTrue(json.loads(out)["early"])
+        self.assertTrue((self.root / "a.txt").exists())
+        self.assertFalse((self.root / "a-later.txt").exists())
+        self.assertEqual((a / "a-later.txt").read_text(), "not committed yet\n")
+        text = (self.root / "llm-dlc/loops/made-up.md").read_text()
+        self.assertRegex(text, r"the watcher: merged stream a's line so far \(\w+\), while it is still at work\.\n- Status: working\n")
+        # now b, and the brief stays working: a is merged so far, and not finished
+        code, out, err = self.run_tool("merge", "made-up", "b")
+        self.assertEqual(code, 0, err)
+        self.assertEqual(json.loads(out).get("briefStatus", "working"), "working")
+        self.assertIn("- Status: working\n", (self.root / "llm-dlc/loops/made-up.md").read_text())
+        # a's later commits come in by its own merge, when it is finished
+        self.jj(a, "commit", "-m", "a: the second half")
+        self.set_status(a, "a", "done")
+        code, out, err = self.run_tool("merge", "made-up", "a")
+        self.assertEqual(code, 0, err)
+        self.assertTrue((self.root / "a-later.txt").exists())
+        self.assertIn("- Status: done\n", (self.root / "llm-dlc/loops/made-up.md").read_text())
+
+    @cost("tool")
+    def test_an_order_can_be_overridden_and_cleared(self):
+        a, b = self.workspace("a"), self.workspace("b")
+        self.write("a.txt", "a\n", a, "a: its file")
+        self.write("b.txt", "b\n", b)
+        self.set_status(b, "b", "done")
+        self.run_tool("order", "made-up", "a", "b")
+        self.assertEqual(self.run_tool("merge", "made-up", "b", "--out-of-order")[0], 0)
+        self.assertTrue((self.root / "b.txt").exists())
+        self.assertIsNone(json.loads(self.run_tool("order", "made-up", "--clear")[1])["order"])
+
+
+TMUX = textwrap.dedent("""\
+    #!/usr/bin/env python3
+    # tmux's stand-in: one pane, %7, in window 3; what it is running is the file pane-command (claude without one).
+    import os, sys
+    from pathlib import Path
+    state = Path(os.environ["STATUSES"])
+    args = sys.argv[1:]
+    command = (state / "pane-command").read_text().strip() if (state / "pane-command").exists() else "claude"
+    if args[0] == "display-message":
+        if args[args.index("-t") + 1] not in ("3", "%7"):
+            sys.exit("can't find pane")
+        print(args[-1].replace("#{pane_id}", "%7").replace("#{session_name}:#{window_index}.#{pane_index}", "main:3.0")
+              .replace("#{pane_current_command}", command))
+    elif args[0] == "send-keys":
+        with open(state / "typed", "a") as f:
+            f.write(args[-1] + "\\n")
+""")
+
+
+class Helpers(Fixture):
+    """Sessions the user has open take work the run has no owner for: a narrow brief, a workspace of their own, and
+    the watcher's merge."""
+
+    def setUp(self):
+        super().setUp()
+        tmux = Path(self.tmp.name) / "bin" / "tmux"
+        tmux.write_text(TMUX)
+        tmux.chmod(0o755)
+        self.task = Path(self.tmp.name) / "task.md"
+        self.task.write_text("Make `helped.txt` say what the run needs.\n")
+        self.folder = self.root.parent / "root-made-up-helper"
+
+    @cost("tool")
+    def test_a_helper_is_a_pane_the_user_names_and_never_a_shell_prompt(self):
+        self.assertEqual(self.run_tool("helper", "made-up", "add", "helper", "--at", "window 3")[0], 1)
+        code, _, err = self.run_tool("helper", "made-up", "add", "helper", "--at", "tmux 9")
+        self.assertEqual(code, 1)
+        self.assertIn("no tmux pane at 9", err)
+        (self.statuses / "pane-command").write_text("bash\n")
+        code, _, err = self.run_tool("helper", "made-up", "add", "helper", "--at", "tmux 3")
+        self.assertEqual(code, 1)
+        self.assertIn("at a shell prompt", err)
+        (self.statuses / "pane-command").unlink()
+        code, out, err = self.run_tool("helper", "made-up", "add", "helper", "--at", "tmux 3")
+        self.assertEqual(code, 0, err)
+        got = json.loads(out)
+        self.assertEqual((got["where"], got["workspace"]), ("main:3.0", "made-up-helper"))
+        self.assertIn("low-hanging work", got["role"])
+        code, _, err = self.run_tool("helper", "made-up", "add", "specialist", "--at", "tmux 3")
+        self.assertEqual(code, 1)
+        self.assertIn("is the helper helper's", err)
+        self.assertEqual(self.run_tool("helper", "made-up", "task", "nobody", "--title", "x", "--file", str(self.task))[0], 1)
+        self.assertNotIn("made-up-helper", self.jj(self.root, "workspace", "list"))  # a workspace is made for a task only
+
+    @cost("tool")
+    def test_a_task_is_a_narrow_brief_typed_into_the_pane_and_its_work_is_merged_by_the_watcher(self):
+        self.run_tool("helper", "made-up", "add", "helper", "--at", "tmux 3")
+        code, out, err = self.run_tool("helper", "made-up", "task", "helper", "--title", "The orphaned file", "--file", str(self.task))
+        self.assertEqual(code, 0, err)
+        got = json.loads(out)
+        self.assertEqual((got["task"], got["folder"]), ("helper-T001", str(self.folder)))
+        text = Path(got["file"]).read_text()
+        self.assertIn("# Helper task helper-T001 for the run of `llm-dlc/loops/made-up.md`: The orphaned file", text)
+        self.assertIn(f"Work only in the jj workspace `made-up-helper`, at `{self.folder}`", text)
+        self.assertIn("Don't merge, push, or land anything", text)
+        self.assertIn("helper made-up done helper-T001 --report-file FILE", text)
+        self.assertTrue(text.rstrip().endswith("Make `helped.txt` say what the run needs."))
+        typed = (self.statuses / "typed").read_text().splitlines()
+        self.assertEqual((typed[0], typed[1]), (got["line"], "Enter"))
+        self.assertIn(got["file"], typed[0])
+        self.assertIn(str(self.folder), (self.statuses / "adopted").read_text())  # the session logs it lacked
+        # one at a time
+        code, _, err = self.run_tool("helper", "made-up", "task", "helper", "--title", "Another", "--file", str(self.task))
+        self.assertEqual(code, 1)
+        self.assertIn("not merged yet (helper-T001)", err)
+        # the helper works there, commits, and says it is done; the line moves meanwhile
+        self.write("helped.txt", "what the run needs\n", self.folder, "helper: the orphaned file")
+        self.write("lib.txt", "two\n", self.root, "the line moves on")
+        run = self.run_of()
+        run.update(run={"pid": os.getpid(), "started": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())})
+        code, out, err = self.run_tool("wait", "made-up", "--timeout", "0")
+        self.assertEqual(json.loads(out or "{}").get("kind"), "nothing", err)
+        self.assertEqual(self.run_tool("helper", "made-up", "done", "helper-T001")[0], 1)  # a report is asked for
+        code, out, err = self.run_tool("helper", "made-up", "done", "helper-T001", "--report", "Wrote helped.txt; nothing is left.")
+        self.assertEqual(code, 0, err)
+        thing = json.loads(self.run_tool("wait", "made-up", "--timeout", "0")[1])
+        self.assertEqual((thing["kind"], thing["task"], thing["report"]), ("helper", "helper-T001", "Wrote helped.txt; nothing is left."))
+        self.assertEqual(len(thing["commits"]), 1, thing)
+        self.assertIn("the orphaned file", thing["commits"][0])
+        self.assertEqual(json.loads(self.run_tool("wait", "made-up", "--timeout", "0")[1])["kind"], "nothing")  # told once
+        code, out, err = self.run_tool("helper", "made-up", "merge", "helper-T001")
+        self.assertEqual(code, 0, err)
+        self.assertEqual((self.root / "helped.txt").read_text(), "what the run needs\n")
+        self.assertEqual((self.root / "lib.txt").read_text(), "two\n")
+        # its next task starts from the line as it is now, in the same workspace
+        code, out, err = self.run_tool("helper", "made-up", "task", "helper", "--title", "A second", "--file", str(self.task), "--no-send")
+        self.assertEqual(code, 0, err)
+        self.assertEqual((json.loads(out)["task"], json.loads(out)["sent"]), ("helper-T002", "not typed into its pane"))
+        self.assertEqual((self.folder / "lib.txt").read_text(), "two\n")
+        self.assertEqual(len((self.statuses / "typed").read_text().splitlines()), 2)
+        listed = json.loads(self.run_tool("helper", "made-up", "list")[1])
+        self.assertEqual([(t["id"], bool(t["merged"])) for t in listed["helper"]["tasks"]], [("helper-T001", True), ("helper-T002", False)])
+
+    @cost("tool")
+    def test_a_pane_back_at_a_shell_prompt_is_typed_nothing(self):
+        self.run_tool("helper", "made-up", "add", "helper", "--at", "tmux 3")
+        (self.statuses / "pane-command").write_text("zsh\n")
+        code, _, err = self.run_tool("helper", "made-up", "task", "helper", "--title", "The orphaned file", "--file", str(self.task))
+        self.assertEqual(code, 1)
+        self.assertIn("nothing was typed there", err)
+        self.assertFalse((self.statuses / "typed").exists())
+        self.assertNotIn("made-up-helper", self.jj(self.root, "workspace", "list"))  # and nothing was made for it
+
+
+class AStreamRunAgain(Fixture):
+    """A stream whose loop ended is run again inside the run, at the watcher's word, and a scope that holds only what
+    an ended loop left is cleared before a loop starts."""
+
+    def until_ended(self, seconds: float = 90) -> list[dict]:
+        """Answer what the run asks until it ends: a blocked stream is asked to be run again (`rerun`) and its
+        question answered `leave`, a finished one is merged. Returns the questions, in order."""
+        asked, until = [], time.time() + seconds
+        pid = self.run_of().read()["run"]["pid"]
+        while watch.alive(pid) and time.time() < until:
+            try:
+                os.waitpid(pid, os.WNOHANG)
+            except ChildProcessError:
+                pass
+            event = conductor.pending(self.dir)
+            if event is None or event.get("type") == "ended":
+                time.sleep(0.2)
+                continue
+            asked.append(event)
+            if event["type"] == "merge":
+                code, _, err = self.run_tool("merge", "made-up", event["loop"])
+                self.assertEqual(code, 0, err)
+            else:
+                code, out, err = self.run_tool("rerun", "made-up", event["loop"])
+                self.assertEqual(code, 0, err)
+                self.assertIn("question (event", json.loads(out)["next"])
+                conductor.cmd_decide(self.dir, event["n"], "leave", "it is run again by a request, not by this answer")
+        return asked
+
+    @cost("tool")
+    def test_a_stream_that_ended_is_run_again_inside_the_run_and_merged_when_it_is_finished(self):
+        for name, statuses in (("made-up-a", ["blocked: its session was killed", "done"]), ("made-up-b", ["done"])):
+            (self.statuses / name).write_text("".join(s + "\n" for s in statuses))
+        with mock.patch.dict(os.environ, {"RUN_STREAMS_POLL": "1", "RUN_STREAMS_STATUS_EVERY": "1", "RUN_STREAMS_RERUN_POLL": "0.2"}):
+            self.assertEqual(self.run_tool("start", "made-up")[0], 0)
+            asked = self.until_ended()
+        log = (self.dir / "streams.log").read_text()
+        self.assertEqual(sorted((e["type"], e["loop"]) for e in asked), [("blocked", "a"), ("merge", "a"), ("merge", "b")], log)
+        self.assertIn("[a] run again inside the run, as the watcher asked", log)
+        self.assertEqual(self.runs().count("made-up-a"), 2)
+        self.assertIn("every stream is finished: merged a b; not merged none", log)
+        self.assertFalse((self.dir / "rerun" / "a").exists())
+        self.assertIn("- Status: done\n", (self.root / "llm-dlc/loops/made-up.md").read_text())
+
+    @cost("tool")
+    def test_after_the_run_has_ended_a_rerun_starts_it_again_for_that_stream(self):
+        p = self.streams(("made-up-a", ["blocked: its session was killed", "done"]), ("made-up-b", ["done"]))
+        out, _ = p.communicate(timeout=120)
+        self.assertEqual((p.returncode, self.runs().count("made-up-a")), (1, 1), out)
+        with mock.patch.dict(os.environ, {"RUN_STREAMS_POLL": "1", "RUN_STREAMS_STATUS_EVERY": "1", "RUN_STREAMS_RERUN_POLL": "0.2"}):
+            code, out, err = self.run_tool("rerun", "made-up", "a")
+            self.assertEqual(code, 0, err)
+            self.assertIn("the run itself had ended: started again, for this stream", out)
+            asked = self.until_ended()
+        log = (self.dir / "streams.log").read_text()
+        self.assertIn("[a] its brief says blocked: its session was killed, and the watcher asked for it to be run again", log)
+        self.assertEqual(sorted((e["type"], e["loop"]) for e in asked), [("merge", "a"), ("merge", "b")], log)
+        self.assertEqual((self.runs().count("made-up-a"), self.runs().count("made-up-b")), (2, 1))
+        self.assertEqual(self.run_tool("rerun", "made-up", "c")[0], 1)
+
+    @cost("tool")
+    def test_a_scope_that_holds_only_what_an_ended_loop_left_is_stopped_before_the_loop_starts(self):
+        base = Path(self.tmp.name)
+        systemctl = base / "bin" / "systemctl"
+        # systemd's stand-in: the scope of stream a is active until it is stopped, and holds one process
+        systemctl.write_text(textwrap.dedent("""\
+            #!/usr/bin/env bash
+            echo "$*" >>"$STATUSES/systemctl"
+            case "$2" in
+              is-active) [[ "$4" == feature-loop-made-up-a.scope && ! -e "$STATUSES/stopped" ]] ;;
+              show) echo /left ;;
+              stop) touch "$STATUSES/stopped" ;;
+            esac
+        """))
+        systemctl.chmod(0o755)
+        left = subprocess.Popen(["sleep", "60"], cwd=base)  # a test the ended loop left running, in a folder of its own
+        self.addCleanup(left.kill)
+        (base / "cgroup" / "left").mkdir(parents=True)
+        (base / "cgroup" / "left" / "cgroup.procs").write_text(f"{left.pid}\n")
+        p = self.streams(("made-up-a", ["done"]), ("made-up-b", ["done"]), RUN_STREAMS_CGROUP_ROOT=str(base / "cgroup"))
+        out, _ = p.communicate(timeout=120)
+        self.assertIn("[a] feature-loop-made-up-a.scope holds only what an ended loop left (1 process(es)): stopping it", out)
+        self.assertNotIn("[b] feature-loop-made-up-b.scope holds", out)
+        self.assertIn("--user stop feature-loop-made-up-a.scope", (self.statuses / "systemctl").read_text())
+        self.assertEqual(sorted(self.runs()), ["made-up-a", "made-up-b"])
+
+
+class WhoCarriesAStream(Fixture):
+    """A run's choice of client, for all its streams and for single ones: shown before anything starts, refused
+    when a role has no model or the client is not given the checkout's instructions, and handed to each loop."""
+
+    def setUp(self):
+        super().setUp()
+        self.codex = mock.patch.dict(os.environ, {"AGENT_CLIENT_CODEX": str(TOOLS / "codex_standin.py"),
+                                                  "CODEX_STANDIN_STATE": str(Path(self.tmp.name) / "codex")})
+        self.codex.start()
+        self.addCleanup(self.codex.stop)
+        self.write("CLAUDE.md", "".join(f"- A made-up rule of this checkout, number {i}, long enough to be a marker.\n" for i in range(8)))
+        for s in self.STREAMS:
+            self.write(f"llm-dlc/loops/made-up-{s}.md", brief(workspace=f"made-up-{s}", extra=["- model: claude-opus-5-5"]))
+        self.jj(self.root, "commit", "-m", "the checkout's instructions, and each stream's model")
+
+    def streams_of(self) -> dict:
+        return {s["label"]: s for s in json.loads(self.run_tool("preflight", "made-up")[1])["streams"]}
+
+    @cost("tool")
+    def test_without_a_word_every_stream_is_claude_codes_and_a_brief_may_name_its_own_client(self):
+        rows = self.streams_of()
+        self.assertEqual({k: (r["client"], r["runs"], r["effort"]) for k, r in rows.items()},
+                         {"a": ("claude", "claude-opus-5-5", "high"), "b": ("claude", "claude-opus-5-5", "high")})
+        self.write("llm-dlc/loops/made-up-b.md", brief(workspace="made-up-b", extra=["- model: claude-fable-5-2", "- client: codex", "- effort: xhigh"]))
+        self.assertEqual((self.streams_of()["b"]["client"], self.streams_of()["b"]["runs"], self.streams_of()["b"]["effort"]),
+                         ("codex", "gpt-6.2-astra", "xhigh"))
+
+    @cost("tool")
+    def test_the_runs_choice_is_recorded_handed_to_each_loop_and_kept_by_a_later_start(self):
+        for name in ("made-up-a", "made-up-b"):
+            (self.statuses / name).write_text("done\n")
+        self.assertEqual(self.run_tool("start", "made-up", "--stream-agent", "c=codex")[0], 1)
+        self.assertEqual(self.run_tool("start", "made-up", "--stream-agent", "b=gemini")[0], 1)
+        with mock.patch.dict(os.environ, {"RUN_STREAMS_POLL": "1", "RUN_STREAMS_STATUS_EVERY": "1", "RUN_STREAMS_MERGE_WAIT": "1"}):
+            code, out, err = self.run_tool("start", "made-up", "--agent", "claude", "--stream-agent", "b=codex")
+            self.assertEqual(code, 0, err)
+            self.assertIn("b: codex, gpt-6.2-sol at high effort (for the brief's claude-opus-5-5)", out)
+            self.assertIn("a: claude, claude-opus-5-5 at high effort", out)
+            pid = self.run_of().read()["run"]["pid"]
+            until = time.time() + 120
+            while watch.alive(pid) and time.time() < until:
+                try:
+                    os.waitpid(pid, os.WNOHANG)
+                except ChildProcessError:
+                    pass
+                time.sleep(0.2)
+        self.assertEqual(sorted((self.statuses / "clients").read_text().splitlines()), ["made-up-a claude", "made-up-b codex"])
+        self.assertEqual(self.run_of().read()["agents"], {"default": "claude", "streams": {"b": "codex"}})
+        rows = self.streams_of()  # the recorded choice is what a later look, and a later start, goes by
+        self.assertEqual((rows["a"]["client"], rows["b"]["client"], rows["b"]["runs"]), ("claude", "codex", "gpt-6.2-sol"))
+
+    @cost("tool")
+    def test_a_role_with_no_model_a_fork_and_a_client_without_the_instructions_each_block_a_codex_stream(self):
+        run = self.run_of()
+        run.update(agents={"default": "codex", "streams": {}})
+        self.assertEqual(json.loads(self.run_tool("preflight", "made-up")[1])["blocking"], [])
+        self.write("llm-dlc/loops/made-up-a.md", brief(workspace="made-up-a"))  # no model: the loop's default has no equivalent
+        blocking = json.loads(self.run_tool("preflight", "made-up")[1])["blocking"]
+        self.assertEqual(len(blocking), 1)
+        self.assertIn("the stream a (codex): no Codex model stands for claude-fable-5-1", blocking[0])
+        self.write("llm-dlc/loops/made-up-a.md", brief(workspace="made-up-a", extra=["- model: claude-opus-5-5", "- fork: 00000000-0000-4000-8000-000000000001"]))
+        self.write("llm-dlc/loops/made-up-b.md", brief(workspace="made-up-b", extra=["- model: claude-opus-5-5", "- fork: 00000000-0000-4000-8000-000000000001"]))
+        blocking = " ".join(json.loads(self.run_tool("preflight", "made-up")[1])["blocking"])
+        self.assertIn("Codex cannot continue a Claude Code conversation", blocking)
+        for s in self.STREAMS:
+            self.write(f"llm-dlc/loops/made-up-{s}.md", brief(workspace=f"made-up-{s}", extra=["- model: claude-opus-5-5"]))
+        self.write("AGENTS.md", "other instructions\n")
+        blocking = json.loads(self.run_tool("preflight", "made-up")[1])["blocking"]
+        self.assertEqual(len(blocking), 1)
+        self.assertIn("AGENTS.md shadows CLAUDE.md", blocking[0])
+        (self.root / "AGENTS.md").unlink()
+        with mock.patch.dict(os.environ, {"AGENT_CLIENT_CODEX": "no-such-client-here"}):
+            self.assertIn("no `codex` on the PATH", json.loads(self.run_tool("preflight", "made-up")[1])["blocking"][0])
+
+
+class TheWatchersOwnShell(Fixture):
+    @cost("tool")
+    def test_a_session_that_carries_a_runs_variables_does_not_start_one(self):
+        self.assertEqual(json.loads(self.run_tool("preflight", "made-up")[1])["blocking"], [])
+        with mock.patch.dict(os.environ, {"RUN_STREAMS_WATCHER": "/somewhere/else", "LOOP_CONDUCTOR": "/another"}):
+            blocking = json.loads(self.run_tool("preflight", "made-up")[1])["blocking"]
+        self.assertEqual(len(blocking), 1)
+        self.assertIn("LOOP_CONDUCTOR, RUN_STREAMS_WATCHER", blocking[0])
 
 
 if __name__ == "__main__":

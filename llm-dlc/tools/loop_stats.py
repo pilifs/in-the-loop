@@ -50,7 +50,11 @@ RECORD_TITLE = re.compile(r"^# Feature loop: (?P<loop>\S+)[ \t]*$", re.M)
 RECORD_STARTED = re.compile(
     rf"^Started (?P<started>{STAMP})(?: (?P<zone>[^,\s]+))?, (?P<cap>[^,\n]*?) cycles?, session (?P<sid>{UUID}), "
     r"(?P<model>\S+) at (?P<effort>\S+) effort", re.M)
+# A session carried by Codex is traced under Codex's thread id, not the id the loop gave it: the record says which
+# (feature-loop.sh writes the line once the thread exists), and the thread is then the session the run's turns are in.
+RECORD_THREAD = re.compile(rf"^Codex thread (?P<thread>{UUID}) carries session (?P<sid>{UUID})\.$", re.M)
 RECORD_CYCLE = re.compile(rf"^- cycle (?P<n>\d+), (?:item (?P<item>[^,]*), )?(?P<when>{STAMP}), `(?P<change>[a-z]+)`: (?P<summary>.*)$")
+RECORD_NO_COMMIT = re.compile(rf"^- cycle \d+, {STAMP}: no commit$")  # a single-agent run's: what follows is not the last commit's
 RECORD_DECIDED = re.compile(r"^  - decided to (?P<decision>continue|stop|unclear)\b")
 RECORD_END = re.compile(rf"^(?P<how>Ended|Stopped|Interrupted) (?P<when>{STAMP})(?P<rest>.*)$", re.M)
 RECORD_ITEMS = re.compile(r"^Each cycle puts the next item in place of \{\}: (?P<run>.*?) \(the list: (?P<all>.*)\)\.$", re.M)
@@ -61,9 +65,13 @@ RECORD_ITEMS_JUDGED = re.compile(
     r"^Each item stays in place of \{\} until a judge outside the session finds it finished: (?P<run>.*?) \(the list: (?P<all>.*)\)\.$", re.M)
 # "waiting" leaves an item open as "continues" does: the loop comes back to it when its verification jobs are in.
 RECORD_VERDICT = re.compile(r"^  - item (?P<item>\S+) (?P<verdict>continues|waiting|finished|left after)\b")
+# A single-agent run (feature-loop.sh's `single-agent`): the first cycle takes one text and every later one the
+# run's continue message, which a person may change between two cycles, so no opening words tell its instructions.
+RECORD_SINGLE = re.compile(r"^Every later cycle takes the run's continue message as it stands when the cycle starts", re.M)
 RECORD_BRIEF = re.compile(r"^Brief `(?P<brief>[^`]+)` at sha256 ", re.M)
 RECORD_FORK = re.compile(rf"^Session {UUID} was forked from session (?P<parent>{UUID})\.", re.M)
 REASONS = (  # how feature-loop.sh words each ending, first match wins
+    ("the run was ended there (the watcher", "watcher ended it"), ("the run was ended there (no verdict", "no watcher"),
     ("but the brief's status still says", "status left working"), ("the brief says done", "work done"),
     ("decided the work was done", "work done"), ("the brief says waiting on jobs", "waiting on jobs"),
     ("the brief says blocked", "blocked"), ("the session decided to stop", "decided to stop"),
@@ -78,6 +86,7 @@ DECIDE = re.compile(r"^Cycle (\d+) of the feature loop is committed\.")
 SUMMARY = re.compile(r"^The feature loop is ending after (\d+) cycle")
 STATUS = "You decided that the loop stops after this cycle"
 FORK = "This conversation goes on as one of the parallel streams it planned"
+FORK_SINGLE = "This conversation goes on, from here, as an unattended run of one agent"
 BRIEF = re.compile(r"^Work on the brief in `([^`]+)`")
 EVENTS = ("<cross-session-message", "<agent-message", "<task-notification", "[Request interrupted by user")
 VERIFY = "/run-verification"
@@ -154,6 +163,16 @@ def _record_ms(stamp: str, zone: str | None) -> int:
     return int(at.timestamp() * 1000) - offset * 60_000
 
 
+def record_session(text: str) -> str | None:
+    """The session whose log holds a record's turns: the Codex thread it names for the session of its header, or
+    that session itself. None for a text that is no record."""
+    head = RECORD_STARTED.search(text)
+    if not head:
+        return None
+    thread = RECORD_THREAD.search(text)
+    return thread["thread"] if thread and thread["sid"] == head["sid"] else head["sid"]
+
+
 def parse_record(name: str, text: str) -> dict | None:
     """A run record of feature-loop.sh as data, or None for a file that is not one. Its times are
     the script's clock: UTC since the script writes it so, and read as UTC from an older record
@@ -174,6 +193,8 @@ def parse_record(name: str, text: str) -> dict | None:
         if m := RECORD_CYCLE.match(line):
             last = cycles[int(m["n"])] = {"item": m["item"], "at": _record_ms(m["when"], zone), "change": m["change"],
                                           "summary": m["summary"].strip(), "decision": None, "verdict": None}
+        elif RECORD_NO_COMMIT.match(line):
+            last = None
         elif last is not None and (m := RECORD_DECIDED.match(line)):
             last["decision"] = m["decision"]
         elif last is not None and (m := RECORD_VERDICT.match(line)):
@@ -186,13 +207,13 @@ def parse_record(name: str, text: str) -> dict | None:
             (label for words, label in REASONS if words in rest), "cycle count reached" if how == "ended" else "stopped")
         end = {"outcome": how, "at": _record_ms(ends[-1]["when"], zone), "reason": reason, "how": rest}
     return {
-        "name": name, "loop": title["loop"], "session_id": head["sid"], "started": _record_ms(head["started"], zone),
+        "name": name, "loop": title["loop"], "session_id": record_session(text), "loop_session": head["sid"], "started": _record_ms(head["started"], zone),
         "zone": zone, "zone_known": zone in (None, "UTC", "GMT", "Z") or bool(re.fullmatch(r"[+-]\d{4}", zone or "")),
         "cap": int(head["cap"]) if head["cap"].strip().isdigit() else None, "model": head["model"], "effort": head["effort"],
         "instruction": instruction, "prefix": instruction.split("{}")[0][:80],
         "run_items": items["run"].split() if items else None,
         "all_items": items["all"].split() if items else judged["all"].split() if judged else None,
-        "brief": m["brief"] if (m := RECORD_BRIEF.search(header)) else None,
+        "brief": m["brief"] if (m := RECORD_BRIEF.search(header)) else None, "single": bool(RECORD_SINGLE.search(header)),
         "forked_from": m["parent"] if (m := RECORD_FORK.search(text)) else None,
         "cycles": cycles, "end": end,
     }
@@ -224,7 +245,7 @@ def _role(prompt: dict) -> tuple[str, int | None]:
         return "summary", int(m[1])
     if text.startswith(STATUS):
         return "status", None
-    if text.startswith(FORK):
+    if text.startswith((FORK, FORK_SINGLE)):
         return "fork", None
     if text.startswith(EVENTS):
         return "event", None
@@ -318,7 +339,8 @@ def _record_runs(session: _Session, records: list[dict]) -> list[_Run]:
                 continue
             role, detail = session.roles[index]
             text = prompt.get("text") or ""
-            if role == "human" and ((len(record["prefix"]) >= MIN_PREFIX and text.startswith(record["prefix"]))
+            if role == "human" and (record["single"]  # nobody types into a run's session: each is a cycle's text
+                                    or (len(record["prefix"]) >= MIN_PREFIX and text.startswith(record["prefix"]))
                                     or _loop_of(text, {}) == record["loop"]):
                 role = "instruction"
             if role in ("human", "command") and not record["end"]:
@@ -692,6 +714,18 @@ def _usd(value: float | None) -> str:
     return "?" if value is None else f"${value:,.2f}"
 
 
+def _cost(row: dict, known: str | None = None) -> str:
+    """A row's dollars, saying when model calls with no known price are not in them: a model that is not in
+    pricing.json has tokens and no dollars (Codex's, so far), and what is not known is shown as unknown, never as
+    nought. `known` is a figure made from the row's dollars (an average, a median), printed when every call has a
+    price and `?` otherwise."""
+    if not row.get("unpriced_calls"):
+        return _usd(row["usd"]) if known is None else known
+    if known is not None or not row["usd"]:
+        return "?"
+    return f"{_usd(row['usd'])}+?"
+
+
 def _day(ts: str | None) -> str:
     return ts[:16].replace("T", " ") if ts else "?"
 
@@ -812,7 +846,7 @@ def page(doc: dict) -> str:
 
     def summed(label: str, r: dict) -> list:
         return [label, r["runs"], r["cycles"], r["cycles_committed"], r["commits"], _jobs(r), _dur(r["busy_ms"]),
-                written(r), _usd(r["usd"]), _per(r["usd"], r["cycles_committed"])]
+                written(r), _cost(r), _cost(r, known=_per(r["usd"], r["cycles_committed"]))]
 
     glance = _table(["Category", "Loops>", "Runs>", "Cycles>", "With a commit>", "Commits>", "Jobs>", "Active>",
                      "Tokens written>", "Cost>", "Per committed cycle>"],
@@ -822,8 +856,8 @@ def page(doc: dict) -> str:
     def loop_line(r: dict, label: str | None = None) -> list:
         return [label or f"`{r['loop']}`", r["runs"], r["cycles"], r["cycles_committed"], r["commits"], _jobs(r),
                 ", ".join(f"`{m}`" for m in r["models"]) or "?", _period(r), _dur(r["elapsed_ms"]), _dur(r["busy_ms"]),
-                _dur(r["median_cycle_busy_ms"]), written(r), _usd(r["usd"]), _usd(r["median_cycle_usd"]),
-                _per(r["usd"], r["commits"])]
+                _dur(r["median_cycle_busy_ms"]), written(r), _cost(r), _cost(r, known=_usd(r["median_cycle_usd"])),
+                _cost(r, known=_per(r["usd"], r["commits"]))]
 
     def instructions(r: dict) -> str:
         """A moonshot's instruction, or each wording of one a person typed."""
@@ -850,7 +884,7 @@ def page(doc: dict) -> str:
                  "Tokens written>", "Peak context>", "Cost>", "Jobs>", "Proof", "Proof compute>", "Commit"],
                 [[i["item"], i["status"], i["attempts"], _dur(i["elapsed_ms"]) if i["attempts"] else "",
                   _dur(i["busy_ms"]) if i["attempts"] else "", f"{i['api_calls']:,}", f"{i['tool_calls']:,}",
-                  i["tool_errors"], written(i), f"{i['peak_context_tokens']:,}", _usd(i["usd"]) if i["attempts"] else "",
+                  i["tool_errors"], written(i), f"{i['peak_context_tokens']:,}", _cost(i) if i["attempts"] else "",
                   _jobs(i), i["proof"] if i["attempts"] else "", f"{i['job_cpu_seconds']:,.0f} CPU s" if i["jobs"] else "",
                   (f"`{i['changes'][-1]}` " if i["changes"] else "") + _cell(i["summary"], 70)] for i in rows]))
 
@@ -858,11 +892,12 @@ def page(doc: dict) -> str:
         return [f"`{c['run']}`", c["cycle"], c["item"] or "", _day(c["started"]), _dur(c["elapsed_ms"]),
                 _dur(c["busy_ms"]) if c["measured"] else "?", f"{c['api_calls']:,}", f"{c['tool_calls']:,}",
                 c["tool_errors"], f"{c['output_tokens']:,}", f"{c['peak_context_tokens']:,}",
-                _usd(c["usd"]) if c["measured"] else "?", c["commits"], _jobs(c), _cell(c["summary"], 70) or "*no commit*"]
+                _cost(c) if c["measured"] else "?", c["commits"], _jobs(c), _cell(c["summary"], 70) or "*no commit*"]
 
     hand = [r for r in moon if r["kind"] == BY_HAND]
     names = ", ".join(f"`{r['loop']}`" for r in hand)
-    spent = lambda rows: f"{sum(r['cycles'] for r in rows)} cycles, {_usd(sum(r['usd'] for r in rows))}"
+    spent = lambda rows: (f"{sum(r['cycles'] for r in rows)} cycles, "
+                          + _cost({"usd": sum(r["usd"] for r in rows), "unpriced_calls": sum(r.get("unpriced_calls") or 0 for r in rows)}))
     by_hand_glance = (f"The moonshot row includes {names} ({spent(hand)}), which a person ran by hand before the script "
                       "existed. See the note under [Moonshots](#moonshots).") if hand else ""
     by_hand = ("**Run by hand.** " + names + " is the loop before the loop. On 2026-10-31 a person typed an instruction, "
@@ -904,7 +939,7 @@ def page(doc: dict) -> str:
         ended = r["reason"] + (f" ({r['outcome']})" if r["outcome"] in ("stopped", "interrupted") and r["reason"] != r["outcome"] else "")
         return [_day(r["started"]), f"[`{r['run']}`]({r['record']})" if r["record"] else f"`{r['run']}`", r["kind"],
                 f"`{r['model']}`" if r["model"] else "?", r["cycles"], r["commits"], _dur(r["elapsed_ms"]),
-                _dur(r["busy_ms"]) if r["measured"] else "?", _usd(r["usd"]) if r["measured"] else "?", ended, r["source"]]
+                _dur(r["busy_ms"]) if r["measured"] else "?", _cost(r) if r["measured"] else "?", ended, r["source"]]
 
     run_table = _table(["Started", "Run", "Kind", "Model", "Cycles>", "Commits>", "Elapsed>", "Active>", "Cost>",
                         "How it ended", "Read from"],
@@ -916,6 +951,10 @@ def page(doc: dict) -> str:
     if doc["totals"]["records_without_session"]:
         notes.append("- **Left out:** these records name a session with no trace here: "
                      + ", ".join(f"`{n}`" for n in doc["totals"]["records_without_session"]) + ".")
+    if unpriced := [r["run"] for r in runs if r.get("unpriced_calls")]:
+        notes.append("- **Cost not known:** these runs made model calls of a model with no price in `llm-dlc/pricing.json` "
+                     "(a session Codex carried, so far). Their tokens and time are counted; a cost shown as `?` or "
+                     "ending in `+?` leaves those calls out: " + ", ".join(f"`{n}`" for n in unpriced) + ".")
     if typed := [r["run"] for r in runs if r["interjections"]]:
         notes.append("- **Other prompts:** these runs hold prompts that are not the script's, typed into the session "
                      "while the loop ran, and count them as their own: " + ", ".join(f"`{n}`" for n in typed) + ".")

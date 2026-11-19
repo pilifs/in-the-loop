@@ -74,10 +74,12 @@ KINDS = {
     "unblocked": "you may go on",
     "overturned": "a decision overturned that touches your work",
     "foundation": "what the run's foundation stage built before you started",
+    "delivered": "work done outside your stream is on the line for you",
 }
 # The state a decision an item names must be in, by kind (None: any).
 DECISION_STATES = {"interface": {"decided"}, "answer": {"decided"}, "queued": {"open"},
-                   "overturned": {"decided", "superseded"}, "failure": None, "unblocked": None, "foundation": None}
+                   "overturned": {"decided", "superseded"}, "failure": None, "unblocked": None, "foundation": None,
+                   "delivered": None}
 
 NAME_RE = re.compile(r"^[a-z0-9][a-z0-9-]*$")
 ITEM_RE = re.compile(r"^(?P<name>[a-z0-9][a-z0-9-]*)-I(?P<n>[0-9]{3,})$")

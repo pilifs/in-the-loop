@@ -347,6 +347,44 @@ class Briefs(unittest.TestCase):
         self.assertIn("stream `made-up-alpha`", page)
         self.assertIn("*with its streams*", page)
 
+    def test_a_run_codex_carried_is_found_by_the_thread_its_record_names_and_its_cost_is_unknown_not_nought(self):
+        thread = THIRD  # the id Codex gave its thread: the session's trace is under it, not under the loop's id
+        t = Transcript(thread)
+        # Codex compacts through its app server: a boundary in the log, and no prompt that says /compact
+        t.say(1, BRIEF_TEXT % "made-up-alpha", 1000, model="gpt-made-up").commit("Made-up change 1")
+        t.say(2, DECIDE % 1, 10, model="gpt-made-up")
+        t.entries.append({"type": "system", "subtype": "compact_boundary", "timestamp": at(3), "compactMetadata": {}})
+        t.say(5, BRIEF_TEXT % "made-up-alpha", 2000, model="gpt-made-up").commit("Made-up change 2")
+        t.say(6, DECIDE % 2, 10, model="gpt-made-up").say(9, SUMMARY % 2, 40, model="gpt-made-up")
+        text = record("made-up-alpha", SID, 0, [(1, 1, None, "continue"), (2, 5, None, "stop")], brief=True,
+                      end=f"Ended {stamp(10)} after 2 cycle(s): the session decided to stop; the brief says done.")
+        named = text.replace("## Commits\n\n", f"## Commits\n\nCodex thread {thread} carries session {SID}.\n\n")
+        self.assertEqual((loop_stats.record_session(text), loop_stats.record_session(named)), (SID, thread))
+        self.assertEqual((loop_stats.parse_record("r", named)["session_id"], loop_stats.parse_record("r", named)["loop_session"]),
+                         (thread, SID))
+        # a thread line for another session than the header's is not this record's
+        self.assertEqual(loop_stats.record_session(text + f"Codex thread {thread} carries session {OTHER}.\n"), SID)
+        doc = stats([t], [("2026-11-20-100000-made-up-alpha", named)])
+        run = one(doc["runs"], loop="made-up-alpha")
+        self.assertEqual((run["source"], run["measured"], run["session_id"], run["cycles"], run["cycles_committed"], run["commits"]),
+                         ("record", True, thread, 2, 2, 2))
+        self.assertEqual((run["usd"], run["unpriced_calls"], run["output_tokens"]), (0, 5, 1000 + 10 + 2000 + 10 + 40))
+        self.assertEqual(doc["totals"]["records_without_session"], [])
+        self.assertEqual([(c["decision"], c["commits"]) for c in doc["cycles"] if c["run"] == run["run"]],
+                         [("continue", 1), ("stop", 1)])
+        page = loop_stats.page(doc)
+        self.assertIn("**Cost not known:**", page)
+        self.assertNotIn("$0.00", page)  # tokens and time are counted; dollars nobody knows are not nought
+        # the record without the line names a session with no trace: the run is left out, and said to be
+        lost = stats([t], [("2026-11-20-100000-made-up-alpha", text)])
+        self.assertEqual(lost["totals"]["records_without_session"], ["2026-11-20-100000-made-up-alpha"])
+
+    def test_a_cost_that_leaves_out_unpriced_calls_says_so(self):
+        self.assertEqual([loop_stats._cost({"usd": 1.5, "unpriced_calls": 0}), loop_stats._cost({"usd": 1.5, "unpriced_calls": 2}),
+                          loop_stats._cost({"usd": 0, "unpriced_calls": 2}), loop_stats._cost({"usd": 1.5}, known="$0.75"),
+                          loop_stats._cost({"usd": 1.5, "unpriced_calls": 2}, known="$0.75")],
+                         ["$1.50", "$1.50+?", "?", "$0.75", "?"])
+
     def test_before_records_a_run_is_read_from_the_prompts(self):
         t = Transcript()
         t.say(0, "Plan the made-up loop with me", 300)

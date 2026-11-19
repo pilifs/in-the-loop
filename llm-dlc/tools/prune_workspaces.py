@@ -346,7 +346,7 @@ CONFIRMATION = "delete"
 
 def person_at_terminal() -> bool:
     """A check that an agent's shell fails, as sync.py's: it has no terminal, and Claude Code marks its environment."""
-    return sys.stdin.isatty() and sys.stdout.isatty() and not os.environ.get("CLAUDECODE")
+    return sys.stdin.isatty() and sys.stdout.isatty() and not (os.environ.get("CLAUDECODE") or os.environ.get("CODEX_THREAD_ID") or os.environ.get("CODEX_SESSION_ID"))
 
 
 def report(ws: Workspace) -> None:

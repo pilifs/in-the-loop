@@ -627,7 +627,8 @@ def cmd_answer(args, root: Path) -> int:
     line = {"kind": "answer", "id": ids[0], "seq": 0, "at": now(), "by": "user", "option": args.option,
             **({"note": args.note} if args.note else {})}
     write(name, root, [line])
-    print(f"answered {ids[0]}: {args.option}; commit it with sync.py commit, and the conductor applies it")
+    print(f"answered {ids[0]}: {args.option}; commit it with sync.py commit, and the conductor applies it (while a "
+          f"brief's run is under way here its watcher commits the record: leave it uncommitted)")
     return 0
 
 

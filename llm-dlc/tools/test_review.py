@@ -282,7 +282,8 @@ class Stamp(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             copy = Path(d) / "rules.py"
             text = Path(redaction_rules.__file__).read_text()
-            copy.write_text(text.replace("REDACTION_POLICY = 4", "REDACTION_POLICY = 5"))
+            policy = redaction_rules.REDACTION_POLICY
+            copy.write_text(text.replace(f"REDACTION_POLICY = {policy}", f"REDACTION_POLICY = {policy + 1}"))
             with mock.patch.object(redaction_rules, "__file__", str(copy)):
                 self.assertNotEqual(redaction_rules.source_hash(), self.current)
 

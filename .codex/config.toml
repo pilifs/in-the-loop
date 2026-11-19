@@ -1,0 +1,8 @@
+# Codex settings for this repository. Codex loads a project's own config only once the project is trusted in
+# ~/.codex/config.toml, and a fresh jj workspace beside this one is a project it has not seen: the loops pass the
+# same settings on the command line (llm-dlc/tools/agent_client.py), so this file is for a person's own Codex.
+#
+# CLAUDE.md is the agents' instructions, for Claude Code and for Codex alike: one file, read in place. Codex
+# reads AGENTS.override.md and AGENTS.md first when there is one, so this repository has neither
+# (`agent_client.py instructions --client codex` checks, and that the file fits Codex's byte budget).
+project_doc_fallback_filenames = ["CLAUDE.md"]

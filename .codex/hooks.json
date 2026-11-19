@@ -1,0 +1,27 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(jj workspace root 2>/dev/null || git rev-parse --show-toplevel 2>/dev/null || pwd)/llm-dlc/tools/sync.py\" hook",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "^Bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(jj workspace root 2>/dev/null || git rev-parse --show-toplevel 2>/dev/null || pwd)/llm-dlc/tools/sync.py\" hook-commit",
+            "timeout": 60
+          }
+        ]
+      }
+    ]
+  }
+}

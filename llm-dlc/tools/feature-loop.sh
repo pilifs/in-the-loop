@@ -39,6 +39,12 @@
 #                   names: the last stage of /prove-java-change, started by llm-dlc/tools/prove-loop.sh.
 #                   FEATURE_LOOP_RECORD_AS=NAME files the run under another loop's name (its record,
 #                   its scope and so its statistics), for a run that continues that loop's list.
+# One agent toward one outcome, watched from outside:
+#   single-agent    the loop of /single-agent-run, started by llm-dlc/tools/single_run.py, which names the run
+#                   (FEATURE_LOOP_RECORD_AS) and keeps its two texts in files: the first cycle of a run takes
+#                   FEATURE_LOOP_FIRST's, and every later one FEATURE_LOOP_CONTINUE's as it stands when the cycle
+#                   starts, so a person can change it between two cycles (never the watcher). FEATURE_LOOP_BRIEF names a brief
+#                   the session is pointed at each cycle, and FEATURE_LOOP_FORK a session to start as a fork of.
 # Briefs, by name or file:
 #   engines   work through llm-dlc/loops/engine-priorities.md (stock JBMC, native coverage, Bitwuzla)
 #   engines-STREAM  one stream of it run in parallel: llm-dlc/loops/engine-priorities-STREAM.md
@@ -78,6 +84,13 @@
 # were typed in the terminal, and asks it between two items whether to stop there
 # (FEATURE_LOOP_EXAMPLE_WAIT seconds, 120; FEATURE_LOOP_MERGE_WAIT, 7200, while the
 # conductor has a workspace to merge first). No answer in time means go on.
+#
+# A single-agent run has no items and no judge of its own: after each cycle, with a commit or without, the loop
+# asks its conductor (LOOP_CONDUCTOR, the watcher: conductor.py's `run` question) whether there is another, and
+# waits FEATURE_LOOP_JUDGE_WAIT seconds. `stop` ends the run after the compact, with the closing summary.
+# Without a verdict in time a cycle that committed is followed by another, as in a loop nobody watches, and a
+# cycle that did not ends the run where it is, as in every loop; FEATURE_LOOP_UNWATCHED cycles in a row
+# without a verdict (3) end it too, since nothing else measures the run and the watcher is gone.
 #
 # A third answer, "ITEM: waiting", is for an item with nothing left to do but act
 # on the results of verification jobs it queued. The loop then leaves it and takes
@@ -123,7 +136,17 @@
 # no transcript yet, as a fork of that one, so parallel streams all begin from
 # the conversation that planned them. FEATURE_LOOP_SESSION, FEATURE_LOOP_MODEL,
 # FEATURE_LOOP_EFFORT and FEATURE_LOOP_MEMORY_MAX override both the brief and
-# the defaults. FEATURE_LOOP_SESSION=new starts a fresh
+# the defaults. "- client: codex" (or FEATURE_LOOP_CLIENT=codex, which a run sets
+# for the streams it gives to Codex) has the session's turns carried by Codex
+# instead of Claude Code: the instruction, the cycle, the commit check, the
+# decision and the record are the same, and only the starting, resuming and
+# compacting of a turn go through llm-dlc/tools/agent_client.py, which prints
+# the stream this script already reads. The brief keeps its model's name: the
+# operator's equivalences give the Codex model for it (Fable 5.2: Astra 6.2,
+# Opus 5.5: Sol 6.2), and a model with none is refused before a turn is spent.
+# The effort is passed on as it is. A Codex session cannot start as a fork of a
+# Claude Code conversation. The item judge stays where it was (Claude Code).
+# FEATURE_LOOP_SESSION=new starts a fresh
 # session that the run's cycles share, and a session id with no transcript yet
 # (one opened but never sent a message) is created by the first turn.
 #
@@ -178,12 +201,14 @@ EFFORT=high
 MEMORY_MAX=3.5G
 WORKSPACE=
 FORK_FROM=
+CLIENT=
 TEMPLATE=
 ITEMS=()
 EVERY_ITEM=
+SINGLE=
 
 usage() {
-  echo "usage: feature-loop.sh features|tla|spring|relational|prove-examples|prove-change|engines|engines-STREAM|foundations|foundations-STREAM|cleanup|cleanup-STREAM|application-core|application-core-STREAM|example-targets|example-targets-STREAM|FILE.md [CYCLES] [UNTIL]" >&2
+  echo "usage: feature-loop.sh features|tla|spring|relational|prove-examples|prove-change|single-agent|engines|engines-STREAM|foundations|foundations-STREAM|cleanup|cleanup-STREAM|application-core|application-core-STREAM|example-targets|example-targets-STREAM|FILE.md [CYCLES] [UNTIL]" >&2
   exit 2
 }
 
@@ -248,6 +273,7 @@ case "$PROMPT" in
     v=$(setting session); [[ -n "$v" ]] && SESSION_ID=$v
     v=$(setting model); [[ -n "$v" ]] && MODEL=$v
     v=$(setting effort); [[ -n "$v" ]] && EFFORT=$v
+    CLIENT=$(setting client)
     v=$(setting memory); [[ -n "$v" ]] && MEMORY_MAX=$v
     WORKSPACE=$(setting workspace)
     FORK_FROM=$(setting fork)
@@ -300,8 +326,47 @@ case "$PROMPT" in
       PROMPT=$FEATURE_LOOP_RECORD_AS
     fi
     ;;
+  single-agent)
+    # The run is the caller's: single_run.py names it and keeps its texts, and the session is new unless it names one.
+    SINGLE=1
+    for v in FEATURE_LOOP_RECORD_AS FEATURE_LOOP_FIRST FEATURE_LOOP_CONTINUE LOOP_CONDUCTOR; do
+      [[ -n "${!v:-}" ]] || {
+        echo "feature-loop.sh: single-agent takes its run from $v; start it with llm-dlc/tools/single_run.py" >&2
+        exit 2
+      }
+    done
+    [[ "$FEATURE_LOOP_RECORD_AS" =~ ^[a-z0-9][a-z0-9-]*$ ]] || {
+      echo "feature-loop.sh: FEATURE_LOOP_RECORD_AS is a run's name, as single-NAME: $FEATURE_LOOP_RECORD_AS" >&2
+      exit 2
+    }
+    [[ -n "$(tr -d '[:space:]' <"$FEATURE_LOOP_FIRST" 2>/dev/null)" && -n "$(tr -d '[:space:]' <"$FEATURE_LOOP_CONTINUE" 2>/dev/null)" ]] || {
+      echo "feature-loop.sh: single-agent needs a text in both $FEATURE_LOOP_FIRST and $FEATURE_LOOP_CONTINUE" >&2
+      exit 2
+    }
+    PROMPT=$FEATURE_LOOP_RECORD_AS
+    SESSION_ID=new
+    MODEL=claude-fable-5-2
+    FORK_FROM=${FEATURE_LOOP_FORK:-}
+    ;;
   *) usage ;;
 esac
+
+# A single-agent run's instruction for a cycle: the text, and when the run has a brief, one sentence more that
+# names it, since after a compact the session's memory of the brief is a summary.
+single_text() {
+  local text=$1
+  if [[ -n "${FEATURE_LOOP_BRIEF:-}" ]]; then
+    text+=$'\n\n'"The brief for this work is \`$FEATURE_LOOP_BRIEF\`. Read it in full first, even if you have read it before: what you remember of it may be a summary."
+  fi
+  printf '%s' "$text"
+}
+# A text on one line, for the run's record.
+one_line() { printf '%s' "$1" | tr '\n' ' ' | sed 's/  */ /g; s/^ //; s/ $//'; }
+if [[ -n "$SINGLE" ]]; then
+  INSTRUCTION=$(single_text "$(<"$FEATURE_LOOP_FIRST")") || exit 1
+  single_continue=$(<"$FEATURE_LOOP_CONTINUE") || exit 1
+fi
+UNWATCHED=${FEATURE_LOOP_UNWATCHED:-3}
 
 SESSION_ID=${FEATURE_LOOP_SESSION:-$SESSION_ID}
 # Moonshots only: a brief has its own Loop until.
@@ -314,6 +379,19 @@ WATCH_COMPACT=$STOP_ON_COMPACT
 [[ -n "$AUTOCOMPACT" && -n "${LOOP_CONDUCTOR:-}" ]] && WATCH_COMPACT=1
 MODEL=${FEATURE_LOOP_MODEL:-$MODEL}
 EFFORT=${FEATURE_LOOP_EFFORT:-$EFFORT}
+# The client that carries the session's turns (see the header): Claude Code unless the run or the brief says Codex.
+# The model is resolved once, here, and what was asked for is kept for the record.
+CLIENT=${FEATURE_LOOP_CLIENT:-${CLIENT:-claude}}
+MODEL_ASKED=$MODEL
+AGENT_CLIENT=$ROOT/llm-dlc/tools/agent_client.py
+case "$CLIENT" in
+  claude) ;;
+  codex)
+    MODEL=$(python3 "$AGENT_CLIENT" resolve --client codex "$MODEL") || exit 2
+    python3 "$AGENT_CLIENT" plan --client codex --model "$MODEL" --effort "$EFFORT" >/dev/null || exit 2
+    ;;
+  *) echo "feature-loop.sh: '$CLIENT' is not a client (claude, codex)" >&2; exit 2 ;;
+esac
 MEMORY_MAX=${FEATURE_LOOP_MEMORY_MAX:-$MEMORY_MAX}
 # Templated moonshots only: an item takes cycles until the judge finds it finished.
 JUDGE=
@@ -458,9 +536,19 @@ FRESH=
 if [[ "$SESSION_ID" == new ]]; then
   SESSION_ID=$(python3 -c 'import uuid; print(uuid.uuid4())') || exit 1
   FRESH=1
+elif [[ "$CLIENT" == codex ]]; then
+  # Codex names its thread itself: the session is bound to it on the first turn (agent_client.py).
+  if ! python3 "$AGENT_CLIENT" exists --client codex --session "$SESSION_ID" --cwd "$ROOT"; then
+    log "session $SESSION_ID has no Codex thread yet: the first turn starts one"
+    FRESH=1
+  fi
 elif [[ ! -e "$(project_dir "$ROOT")/$SESSION_ID.jsonl" ]]; then
   log "session $SESSION_ID has no transcript yet: the first turn creates it"
   FRESH=1
+fi
+if [[ "$CLIENT" == codex && -n "$FORK_FROM" && -n "$FRESH" ]]; then
+  echo "feature-loop.sh: session $SESSION_ID is to start as a fork of $FORK_FROM, a Claude Code conversation, and Codex cannot continue one: a Codex worker starts from the written handoff (the brief and its inbox). Drop the fork, or run this loop with Claude Code" >&2
+  exit 2
 fi
 
 # The brief without its "## Progress" section, which the session updates as it goes.
@@ -475,12 +563,35 @@ if [[ -n "$BRIEF" ]]; then
   # sentence, with the precedence of the brief over the user's decisions over the conductor's messages.
   INSTRUCTION="$INSTRUCTION $(python3 llm-dlc/tools/inbox.py instruction "$PROMPT")" || exit 1
 fi
+# A session carried by Codex is traced under Codex's own thread id, which the record has to name for the run's
+# statistics and its published copy to find the session (loop_stats.py, sync.py). A session that is continued has
+# its thread already; a new one has it once its first turn has started, and the line is added then.
+CODEX_THREAD=
+if [[ "$CLIENT" == codex ]]; then
+  CODEX_THREAD=$(python3 "$AGENT_CLIENT" thread --session "$SESSION_ID" --cwd "$ROOT" 2>/dev/null) || CODEX_THREAD=
+fi
 {
   echo "# Feature loop: $PROMPT"
   echo
   echo "Started $(stamp) UTC, ${CYCLES/inf/no limit on} cycles, session $SESSION_ID, $MODEL at $EFFORT effort, after change $START."
   echo
-  echo "> $INSTRUCTION"
+  if [[ "$CLIENT" != claude ]]; then
+    echo "The session's turns are carried by $CLIENT$([[ "$MODEL" != "$MODEL_ASKED" ]] && echo ", which runs $MODEL for the $MODEL_ASKED this loop asks for")."
+    echo
+    if [[ -n "$CODEX_THREAD" ]]; then
+      echo "Codex thread $CODEX_THREAD carries session $SESSION_ID."
+      echo
+    fi
+  fi
+  if [[ -n "$SINGLE" ]]; then
+    echo "> $(one_line "$INSTRUCTION")"
+    echo
+    echo "Every later cycle takes the run's continue message as it stands when the cycle starts, and after each cycle a watcher outside the session decides whether there is another. The message at the start:"
+    echo
+    echo "> $(one_line "$single_continue")"
+  else
+    echo "> $INSTRUCTION"
+  fi
   echo
   if [[ -n "$JUDGE" ]]; then
     echo "Each item stays in place of {} until a judge outside the session finds it finished: ${PENDING[*]} (the list: ${ITEMS[*]})."
@@ -649,6 +760,20 @@ run_claude() {
   FRESH=
   (
     [[ -n "${LOOP_WATCH_PID:-}" ]] && printf '%s\n' "$BASHPID" >"$LOOP_WATCH_PID"
+    # The session is given the instruction and nothing of the run that started it: with the loop's and the run's
+    # variables in its shell, a test it ran of these very scripts asked the real watcher its made-up questions
+    # (RUN_STREAMS_WATCHER, 2026-11-17).
+    unset "${!RUN_STREAMS_@}" "${!FEATURE_LOOP_@}" "${!LOOP_WATCH_@}" "${!PROVE_LOOP_@}" LOOP_CONDUCTOR
+    if [[ "$CLIENT" == codex ]]; then
+      # The same instruction, through the other client: agent_client.py prints the stream this pipe reads.
+      # Compacting is an operation of the client's, not a text the model is sent.
+      if [[ "$1" == /compact ]]; then
+        exec python3 "$AGENT_CLIENT" compact --client codex --session "$SESSION_ID" --cwd "$ROOT"
+      fi
+      exec python3 "$AGENT_CLIENT" run --client codex --session "$SESSION_ID" --model "$MODEL" --effort "$EFFORT" \
+        --cwd "$ROOT" "$1"
+    fi
+    unset CODEX_THREAD_ID CODEX_SESSION_ID  # a Codex session that started this loop is not this session
     exec claude -p "$1" "${session[@]}" --model "$MODEL" --effort "$EFFORT" "${compact[@]}" "${ISOLATION[@]}" \
       --permission-mode auto --output-format stream-json --verbose </dev/null
   ) | tee ${2:+"$2"} | show_progress
@@ -797,6 +922,37 @@ judge_item() {
   fi
 }
 
+# After a cycle of a single-agent run, committed or not: its watcher (the conductor's `run` question) decides
+# whether there is another. Sets $decision to continue or stop, $run_reason, and $run_unanswered when the run ends
+# for want of a verdict on a cycle with no commit, which is a session that needs attention, as in every loop.
+unwatched=0
+judge_run() {
+  local asked committed=none
+  run_unanswered=
+  [[ "$after" != "$before" ]] && committed=$(jj log --no-graph -r @- -T 'change_id.short()')
+  asked=$(python3 llm-dlc/tools/conductor.py ask "$LOOP_CONDUCTOR" run --answers continue,stop --wait "$JUDGE_WAIT" \
+    "cycle=$cycle" "session=$SESSION_ID" "turn=$STATE.turn" "before=$before" "commit=$committed") || asked=none
+  if [[ -n "$asked" && "$asked" != none ]]; then
+    unwatched=0
+    decision=${asked%%$'\t'*}
+    run_reason="the watcher: ${asked#*$'\t'}"
+  else
+    unwatched=$(( unwatched + 1 ))
+    if [[ "$committed" == none ]]; then
+      decision=stop run_unanswered=1
+      run_reason="no verdict came from the watcher in ${JUDGE_WAIT}s, and the cycle made no commit"
+    elif (( unwatched >= UNWATCHED )); then
+      decision=stop
+      run_reason="no verdict came from the watcher after $unwatched cycle(s) in a row, so nothing watches the run"
+    else
+      decision=continue
+      run_reason="no verdict came from the watcher in ${JUDGE_WAIT}s, and the cycle committed, so the run goes on as a loop nobody watches does"
+    fi
+  fi
+  log "cycle $cycle: the run is to $decision: $run_reason"
+  note "  - decided to $decision: $run_reason"
+}
+
 # The conductor's command lines (conductor.py command), applied as if typed in the terminal.
 apply_commands() {
   [[ -n "${LOOP_CONDUCTOR:-}" ]] || return 0
@@ -919,11 +1075,17 @@ next_cycle() {
 # runs without the repo's hooks or any tool, so the copy is never synced: left
 # here, it would be published again as this workspace's.
 fork_session() {
-  local source here copied=
+  local source here copied= words
   source=$(project_dir "$(jj workspace root --ignore-working-copy --name default 2>/dev/null || echo "$ROOT")")/$FORK_FROM.jsonl
+  words="This conversation goes on as one of the parallel streams it planned: the loop of the brief \`$BRIEF\`, in the jj workspace at \`$ROOT\`, on a branch of its own, while other forks of this conversation work the other streams in their own workspaces. From now on, work only in this workspace and only on what that brief gives you. Tools are off for this one turn: reply in a few sentences with how you will approach the brief's phases, given what this conversation established. The loop's first cycle follows."
+  if [[ -n "$SINGLE" ]]; then
+    # The parent may be a session of any workspace of the repository (the watcher's own, say): the newest transcript of that id.
+    source=$(ls -t "$PROJECTS"/*/"$FORK_FROM.jsonl" 2>/dev/null | head -n 1)
+    words="This conversation goes on, from here, as an unattended run of one agent: you are now the session that does the work, alone, in the checkout at \`$ROOT\`, and no longer the one that planned it. The conversation you were forked from carries on separately and watches this run from outside; it will not talk to you, and you don't report to it. From now on work only in that checkout and follow its CLAUDE.md. Tools are off for this one turn: reply in a few sentences with what you know that the work will need. The run's first instruction follows."
+  fi
   here=$(project_dir "$ROOT")
-  if [[ ! -f "$source" ]]; then
-    log "no transcript of session $FORK_FROM to fork, at $source"
+  if [[ -z "$source" || ! -f "$source" ]]; then
+    log "no transcript of session $FORK_FROM to fork, at ${source:-$PROJECTS/*/$FORK_FROM.jsonl}"
     return 1
   fi
   mkdir -p "$here" || return 1
@@ -932,7 +1094,7 @@ fork_session() {
     copied=1
   fi
   log "starting session $SESSION_ID as a fork of $FORK_FROM"
-  claude -p "This conversation goes on as one of the parallel streams it planned: the loop of the brief \`$BRIEF\`, in the jj workspace at \`$ROOT\`, on a branch of its own, while other forks of this conversation work the other streams in their own workspaces. From now on, work only in this workspace and only on what that brief gives you. Tools are off for this one turn: reply in a few sentences with how you will approach the brief's phases, given what this conversation established. The loop's first cycle follows." \
+  claude -p "$words" \
     --resume "$FORK_FROM" --fork-session --session-id "$SESSION_ID" --model "$MODEL" --effort "$EFFORT" \
     --setting-sources user --tools "" --output-format stream-json --verbose </dev/null | show_progress
   [[ -n "$copied" ]] && rm -f -- "${here:?}/${FORK_FROM:?}.jsonl"
@@ -958,6 +1120,16 @@ with_state standing
 item_turns=0
 while :; do
   apply_commands
+  # A stop that came before this cycle began (before the first, or between the last look and here) ends the loop
+  # here: counted as a cycle to start, it left a count below zero, which nothing ended.
+  read -r cycle remaining <"$STATE"
+  if [[ "$remaining" == 0 ]]; then
+    log "stopped, as asked, before cycle $(( cycle + 1 ))"
+    (( cycle > 0 )) && summarize
+    note; note "Ended $(stamp) after $cycle cycle(s)."
+    log "record of the run: $SUMMARY"
+    exit 0
+  fi
   with_state next_cycle
   before=$(last_change) || exit 1
   if [[ -n "$BRIEF" && "$(brief_hash)" != "$BRIEF_HASH" ]]; then
@@ -986,6 +1158,22 @@ while :; do
     else
       log "cycle $cycle: $PROMPT, item $item"
     fi
+  elif [[ -n "$SINGLE" ]]; then
+    # The first cycle of a run takes its first text; every later one the continue message as it stands now.
+    if (( cycle > 1 )); then
+      # A file that can't be read, or is empty, changes nothing: the message stays the last one read.
+      text=$(cat -- "$FEATURE_LOOP_CONTINUE" 2>/dev/null) && [[ -n "${text//[[:space:]]/}" ]] || text=$single_continue
+      if [[ "$text" != "$single_continue" ]]; then
+        single_continue=$text
+        log "cycle $cycle: the continue message has changed"
+        note "  - from cycle $cycle the continue message is: $(one_line "$single_continue")"
+      fi
+      INSTRUCTION=$(single_text "$single_continue")
+      log "cycle $cycle: $PROMPT, the continue message"
+    else
+      log "cycle $cycle: $PROMPT, the run's first text"
+    fi
+    tell cycle-start "cycle=$cycle" "turn=$STATE.turn" "base=$before"
   else
     log "cycle $cycle: $PROMPT instruction"
   fi
@@ -997,8 +1185,18 @@ while :; do
     export LOOP_WATCH_STOP=$STOP_ON_COMPACT
     export LOOP_WATCH_CYCLE=$cycle LOOP_WATCH_ITEM=$item LOOP_WATCH_SESSION=$SESSION_ID
     export LOOP_WATCH_TRANSCRIPT="$(project_dir "$ROOT")/$SESSION_ID.jsonl"
+    [[ "$CLIENT" == codex ]] && export LOOP_WATCH_TRANSCRIPT="$ROOT/llm-dlc/loop-summaries/agent-sessions/$SESSION_ID.json"
   fi
-  run_claude "$INSTRUCTION" "$STATE.turn" || log "cycle $cycle: claude exited with status $?"
+  # What the cycle is told, by digest: the same task given to another client shows the same one.
+  log "cycle $cycle: the instruction is ${#INSTRUCTION} characters, sha256 $(printf '%s' "$INSTRUCTION" | sha256sum | cut -c1-16), carried by $CLIENT ($MODEL at $EFFORT effort)"
+  run_claude "$INSTRUCTION" "$STATE.turn" || log "cycle $cycle: $CLIENT exited with status $?"
+  if [[ "$CLIENT" == codex && -z "$CODEX_THREAD" ]]; then
+    CODEX_THREAD=$(python3 "$AGENT_CLIENT" thread --session "$SESSION_ID" --cwd "$ROOT" 2>/dev/null) || CODEX_THREAD=
+    if [[ -n "$CODEX_THREAD" ]]; then
+      note "Codex thread $CODEX_THREAD carries session $SESSION_ID."
+      note
+    fi
+  fi
   unset LOOP_WATCH_BASE LOOP_WATCH_PID LOOP_WATCH_MARK LOOP_WATCH_NOTES LOOP_WATCH_STOP LOOP_WATCH_CYCLE LOOP_WATCH_ITEM LOOP_WATCH_SESSION LOOP_WATCH_TRANSCRIPT
   if [[ -s "$STATE.compacted" ]]; then
     compacted=$(<"$STATE.compacted")
@@ -1008,13 +1206,19 @@ while :; do
   fi
 
   after=$(last_change) || exit 1
-  if [[ "$after" == "$before" ]]; then
+  if [[ "$after" == "$before" && -z "$SINGLE" ]]; then
     log "cycle $cycle: no commit, stopping; session $SESSION_ID needs attention"
     note; note "Stopped $(stamp): cycle $cycle${item:+ (item $item)} made no commit; session $SESSION_ID needs attention."
     exit 1
   fi
-  log "cycle $cycle: committed $(jj log --no-graph -r @- -T 'description.first_line()')"
-  note "- cycle $cycle, ${item:+item $item, }$(stamp), \`$(jj log --no-graph -r @- -T 'change_id.short()')\`: $(jj log --no-graph -r @- -T 'description.first_line()')"
+  if [[ "$after" == "$before" ]]; then
+    # A single-agent run: its watcher decides what a cycle with no commit means (the outcome reached, a question, or stuck).
+    log "cycle $cycle: no commit"
+    note "- cycle $cycle, $(stamp): no commit"
+  else
+    log "cycle $cycle: committed $(jj log --no-graph -r @- -T 'description.first_line()')"
+    note "- cycle $cycle, ${item:+item $item, }$(stamp), \`$(jj log --no-graph -r @- -T 'change_id.short()')\`: $(jj log --no-graph -r @- -T 'description.first_line()')"
+  fi
   # What a conductor let go on during the turn, under the cycle's line.
   if [[ -s "$STATE.notes" ]]; then
     while IFS= read -r line; do note "  - $line"; done <"$STATE.notes"
@@ -1060,7 +1264,18 @@ while :; do
 
   decision=continue
   # The last cycle of a count ends the loop anyway, so there is nothing to decide.
-  if [[ -n "$UNTIL" ]]; then
+  if [[ -n "$SINGLE" ]]; then
+    run_unanswered=
+    apply_commands  # a stop left during the turn ends the run without a question
+    read -r _ left <"$STATE"
+    [[ "$left" == 0 ]] || judge_run
+    if [[ -n "$run_unanswered" ]]; then
+      # Before the compact, so the session keeps its full context for the person who looks at why.
+      log "cycle $cycle: no commit and no verdict, stopping; session $SESSION_ID needs attention"
+      note; note "Stopped $(stamp): cycle $cycle made no commit, and no verdict came from the watcher; session $SESSION_ID needs attention."
+      exit 1
+    fi
+  elif [[ -n "$UNTIL" ]]; then
     read -r _ left <"$STATE"
     [[ "$left" == 0 ]] || decide
   fi
@@ -1090,6 +1305,13 @@ while :; do
       log "record of the run: $SUMMARY"
       exit 0
     fi
+  fi
+  if [[ "$decision" == stop && -n "$SINGLE" ]]; then
+    log "the run ends after cycle $cycle: $run_reason"
+    summarize
+    note; note "Ended $(stamp) after $cycle cycle(s): the run was ended there ($run_reason)."
+    log "record of the run: $SUMMARY"
+    exit 0
   fi
   if [[ "$decision" == stop ]]; then
     log "the session decided to stop: stopping after cycle $cycle"

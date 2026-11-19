@@ -15,6 +15,8 @@ llm-dlc/
   README.md                         this file: the procedure, and an index of sessions
   specification.md                  the specification: identifiers, invariants, storage, redaction
   runtime.md                        runtime mode: a released copy on a user's machine, where none of the tracing applies
+  operating-notes.md                rules of practice learned in earlier runs, each with its reason; CLAUDE.md points
+                                    at it, so every agent reads it, whichever client runs it
   performance.md                    where sync.py's time goes, measured, and why it stays in Python for now
   index.json                        every session and the commits it made (generated)
   pricing.json                      list prices per model, written by hand, used for the metrics
@@ -78,7 +80,18 @@ llm-dlc/
   tools/unstale.py                  puts a jj workspace right after another session's operation met its own (stale, or a
                                     second copy of the working-copy change); test_unstale.py tests it
   tools/brief_run.py                the watcher's tools for a brief's run (/run-brief): preflight, the foundation
-                                    stage, start, wait, status; test_brief_run.py tests it and run-streams.sh's part
+                                    stage, start, wait, status, merge (in an order, or early), trial merges, a
+                                    stream's rerun, helpers; test_brief_run.py tests it and run-streams.sh's part
+  tools/single_run.py               the watcher's tools for a single agent's run (/single-agent-run): start, wait,
+                                    answer, the continue message, stop, land; test_single_run.py tests it and
+                                    feature-loop.sh's `single-agent` loop
+  tools/agent_client.py             the client boundary of a loop's turn: starts, resumes and compacts a Codex turn and
+                                    prints the stream the loops read from Claude Code; test_agent_client.py tests it
+                                    over codex_standin.py, a stand-in for the client
+  tools/ask_codex.py                one question to a Codex thread and its answer, kept as a file, and a file
+                                    mailbox for messages between sessions of either client
+  tools/codex_rollout.py            Codex sessions for sync.py: finds a checkout's rollouts and reads one as a
+                                    Claude Code transcript; test_codex.py tests it
   decisions/<name>.jsonl            a run's decision record: what its conductor decided (a parallel run's conductor, or the
                                     watcher of a proof loop, whose record is prove-change), with the confidence, how hard it
                                     is to undo and the user's review, and the questions queued for the user (schema.json)
@@ -263,7 +276,7 @@ generated trace files regenerated, the session logs it names taken from the work
 that conflicts in real work is taken back), takes the stream's inbox acknowledgements, answers `merged`, and
 records the merge in the brief's Progress, whose status it sets to `done` once every stream is merged and says
 done (`blocked: stream S: ...` when one was left blocked), in one commit with the decision. The watcher then runs
-the default test run, as after any merge. A conflict it can see through it resolves by hand, as the watcher of a
+`default_run.py after-merge`, which runs the default test run when one is due (below). A conflict it can see through it resolves by hand, as the watcher of a
 proof run does between examples ([`runtime.md`](runtime.md)), and the same command then records it; anything else
 it answers `leave` and reports. A stream left blocked is put to it as well: what it committed is usually worth
 having. Without a watcher nothing is merged, and the end of the run names the command for each stream. Until
@@ -286,6 +299,51 @@ leaves the results to it. Merging itself holds `sync.py`'s lock across its jj st
 uncommitted in the working copy (sync.py writes it on every run, for any session) neither holds a merge back
 nor comes along: it is dropped and written again by the next `sync.py` run. In the first rehearsal it was there
 after the foundation landed, and a second merge would have waited for a commit no session was going to make.
+
+**When the streams' lines conflict, they are merged in an order.** Merging each stream the moment it is finished
+assumes the merges don't interact. `brief_run.py trial NAME` finds out early: it merges every pair of the streams'
+lines, and each with the default line, beside every working copy (a merge commit made with `jj new --no-edit`,
+read and abandoned), and lists the files each pair conflicts in beyond the generated ones and the test inventory.
+When a pair conflicts in real work, the watcher tells both streams and proposes an order to the user, set with
+`brief_run.py order NAME STREAM ...`: `merge` then refuses a stream while one before it in the order has commits
+the line lacks, and the held-back stream's question names what to merge first. A stream ahead in the order that
+is still at work is merged as far as it has committed (`merge NAME STREAM --early`: what its session has not
+committed stays with it, no question is answered, and the brief's status is left alone), so a finished stream
+does not wait for a running one. In the `domain-advances` run (2026-11-17) two streams conflicted in one file, an
+order was set by hand, and the stream held back had its merge question answered `leave` for four hours.
+
+**A stream whose loop died is run again inside the run.** `brief_run.py rerun NAME STREAM` leaves a request in the
+run's directory (`rerun/STREAM`), and `run-streams.sh` starts the stream's loop again once its own process there
+has ended, however it ended, with its counts at nought, and puts it to the watcher to merge when it is finished;
+after the run has ended, the same command starts the run again for that stream. Before any loop starts,
+`run-streams.sh` stops a scope (`feature-loop-BRIEF.scope`) that holds only what an ended loop left: when the
+kernel kills a session for memory, the tests it ran live on there, `feature-loop.sh` refuses to start beside them,
+and that refusal counted as the stream's second failure, which left it blocked for the rest of the run (VF-037).
+A scope with a loop at work in it, one started by hand, is left alone.
+
+**Helpers take work no stream owns.** The watcher does none of the brief's work, so work that turns up without an
+owner (a tool whose stream has finished, a repair the run needs now) went undone or was improvised. A helper is a
+Claude Code session the user has open in a tmux pane and names, at the start (`/run-brief --helper "tmux 3" NAME`)
+or at any time after; the first is for low-hanging work, and the user may add others with a role of their own (a
+specialist on a larger model for one wall). `brief_run.py helper NAME add HELPER --at "tmux 3"` records it (a pane
+at a shell prompt is refused: what is typed there would be run). `helper NAME task HELPER --title T --file F`
+writes a narrow brief with a stream's standing rules around the watcher's text, puts the helper's workspace,
+`NAME-HELPER`, at the default line's one last commit (never from a merge in progress), and types one line into the
+pane that names the brief. The helper commits there and ends with `helper NAME done TASK --report-file F`; `wait`
+returns the task with its report and commits, the watcher merges it (`helper NAME merge TASK`) and tells the
+streams it concerns with an inbox item of kind `delivered`. Material from a session outside the run (another
+tool's review, a note) comes in the same way: as new files only, merged by the watcher, and acknowledged by the
+stream it is for.
+
+**The watcher commits the run's decision record, the user's answers included.** `decisions.py answer` writes into
+the default working copy, where only the watcher commits during a run; `wait` commits the record whenever it has
+changed, under a message that says it holds both. Before 2026-11-18 only a merge did, and a user's answer went
+into a commit of verification results under that commit's message.
+
+**A loop's session is given nothing of the run.** `feature-loop.sh` drops its own and the run's variables
+(`RUN_STREAMS_*`, `FEATURE_LOOP_*`, `LOOP_WATCH_*`, `PROVE_LOOP_*`, `LOOP_CONDUCTOR`) before it starts `claude`:
+with `RUN_STREAMS_WATCHER` in its shell, a stream's test of these scripts put its made-up merge questions to the
+real watcher (2026-11-17). The preflight also refuses a watcher whose own environment carries a run's variables.
 
 **A stream no longer waits for the end of the run for an answer.** Without a watcher, a stream that stops
 `blocked:` is finished, as it stands. With one, `run-streams.sh` asks before it counts the
@@ -330,6 +388,144 @@ prints what it read and starts nothing.
 checked every minute, not every five (`RUN_STREAMS_POLL`); and a loop runs the tests of what it changed before a
 commit, not the whole default run ([brief-template.md](loops/brief-template.md), CLAUDE.md's Tests).
 
+### A single agent's run
+
+For an outcome well within one agent's reach, a brief with streams is more than the work needs.
+`/single-agent-run [OPTION ...] <the starting prompt>`
+([`.claude/skills/single-agent-run`](../.claude/skills/single-agent-run/SKILL.md)) runs one agent toward it with
+one watcher outside, as the first loops here ran one instruction over and over, with two differences: a watcher
+judges after each cycle whether there is another, and a person can change what the later cycles are told while
+the run is under way. The watcher is a Claude Code session on Opus 5.5 in the checkout, or one already open there that is
+asked in words; it does none of the work and runs [`tools/single_run.py`](tools/single_run.py), whose state is all
+in files (`llm-dlc/loop-summaries/single-NAME/`), so another session can take a run over.
+
+- **Two texts.** The first cycle is given the starting prompt, and every later one the run's **continue message**
+  as it stands when that cycle starts (`--continue "TEXT"`, else a default that asks for the next piece, a
+  commit, and a plain word when the outcome is reached or the rest needs the user). Both reach the agent word for
+  word. `--brief FILE` adds one sentence after the text of every cycle that names the file and asks for it to be
+  read in full, since after a compact the session's memory of it is a summary.
+- **A cycle is a context window.** The loop is `feature-loop.sh single-agent`: the text, the agent's turn, the
+  watcher's verdict, a compact. The session is new (Fable 5.2 at high effort, under a loop's memory cap), or
+  continues one (`--session`), or starts as a fork of one, such as the conversation that planned the work
+  (`--fork`). Within a turn the session compacts itself at 600k tokens, and a compaction with no commit since the
+  cycle began is put to the watcher, as in a proof run.
+- **After each cycle the watcher decides** (`single_run.py wait NAME`, then `answer NAME continue|stop --reason
+  ...`): it is given the agent's report, the cycle's commits, what was left uncommitted and the queue, and
+  judges them against the outcome. A cycle with no commit does not stop the loop by rule, as it does every other
+  loop: it is the watcher's to read (the outcome reached, a question, or stuck). The loop waits 15 minutes for
+  the verdict (`--verdict-wait`). Without one a cycle that committed is followed by another, a cycle that did
+  not ends the run before its compact, and three cycles in a row without one end it: nothing else measures such
+  a run. Each verdict is a decision in `llm-dlc/decisions/single-NAME.jsonl`.
+- **A person steers, and the watcher never does.** The continue message is written for a long run and reviewed
+  by whoever gives it. A person changes it between two cycles from their own terminal
+  (`single_run.py message NAME --file FILE`, refused from a Claude Code session as `sync.py allow approve` is); a
+  cycle under way is not interrupted, and the next one takes it. The run's record notes each change, and
+  `messages.jsonl` keeps every message with its time. The watcher has no way to set it, with an answer or on a
+  restart, and is told not to draft one unasked: when a run should not go on as the message reads, it answers
+  `stop` and says why. The loop ending is preferred to a watcher steering.
+- **Where the agent works.** In the checkout, or with `--workspace NAME` in a jj workspace of its own, made from
+  the line's last commit, when the checkout is busy; `single_run.py land NAME` then brings its commits in as
+  `brief_run.py land` does. The watcher keeps the verification queue as a brief's watcher does (it collects and
+  commits results and starts the runner), unless another run's watcher keeps it or the checkout is not the default
+  workspace. A run whose agent only waits on jobs is stopped, `single_run.py jobs NAME` waits for the queue, and
+  `start NAME` continues the same session.
+- **Stopping and continuing.** `stop NAME` ends the run after the cycle under way, `stop NAME --now` interrupts it,
+  and `start NAME` on a run that has ended continues its session, the first cycle taking the continue message as
+  it stands (or a new `--prompt` of the user's). `cycles NAME +N` changes the count, as typed in a loop's terminal.
+
+The loop statistics count such a run as a moonshot named `single-NAME`, each text it sent a cycle.
+
+### Claude Code or Codex
+
+A loop's session can be carried by Codex instead of Claude Code, chosen when the run starts: `single_run.py start
+NAME --client codex`, `brief_run.py start NAME --agent codex` (every stream) or `--agent claude --stream-agent
+b=codex` (a mixed run), `brief_run.py foundation NAME --agent codex`, a brief's own `- client: codex` setting, or
+`FEATURE_LOOP_CLIENT=codex` for a loop run by hand. Everything else is the same: the briefs, the instruction of a
+cycle, the commit check, the decision, the conductor's questions, the verification queue, the record.
+
+- **One boundary.** [`tools/agent_client.py`](tools/agent_client.py) is the only place that knows Codex. It starts
+  a turn with `codex exec --json`, resumes with `codex exec resume THREAD`, and prints **the stream the loops
+  already read from Claude Code** (`init`, `assistant` text and tool calls, `compact_boundary`, one closing
+  `result`), so the progress display, the compaction watch, a cycle's report and the cost accounting have one
+  reader. Claude Code's turns are started as they always were.
+- **Models are resolved once, at launch.** A brief keeps its model's name. The operator's equivalences give what
+  Codex runs for it: Fable 5.2 is Astra 6.2 (`gpt-6.2-astra`), Opus 5.5 is Sol 6.2 (`gpt-6.2-sol`); a Codex model
+  named outright is taken as it is. A model with no equivalent (Sonnet 5.5, Fable 5.1) is refused before a turn
+  is spent, by the preflight and by the loop, which is how an unmapped role shows up. The effort is always passed
+  on: the machine's own Codex default may be another. The item judge of a templated moonshot and the standalone
+  verification loop stay on Claude Code.
+- **Session identity.** A loop names its session by a UUID; Codex names its thread itself. The binding is a file
+  of the workspace the loop runs in (`llm-dlc/loop-summaries/agent-sessions/SESSION.json`), written whole when
+  Codex reports the thread, and every later turn resumes that exact thread; a client that reports another ends
+  the turn as an error. Each attempt keeps Codex's own events, its stderr and its last message beside it
+  (`agent-sessions/attempts/SESSION/`), so a turn that died leaves what it said. A session keeps its client, and a
+  Codex session cannot start as a fork of a Claude Code conversation: both clients start from the written
+  handoff, the brief and its inbox.
+- **Compaction is an operation, not a text.** Between cycles the loop compacts the session. `/compact` sent to
+  Codex would only be text, so `agent_client.py compact` asks Codex's app server (`thread/compact/start`) and
+  waits for the end. Codex's own automatic compaction keeps the machine's settings.
+- **Permissions.** A Codex turn runs in the workspace-write sandbox with requests to leave it reviewed
+  automatically (`sandbox_mode`, `approval_policy = "on-request"`, `approvals_reviewer = "auto_review"`: what
+  `--approve-for-me` sets), the counterpart of the `--permission-mode auto` the loops give Claude Code: `sync.py
+  commit` writes the repository's store, which is outside a sibling workspace. **Every turn is given them, a
+  resumed one too**: `codex exec resume` does not keep a thread's sandbox, and a resumed turn without them is
+  read-only with approvals off (the first live rehearsal's second cycle could not commit, and said so). With the
+  approval policy alone and no reviewer a headless turn cannot ask, and added writable folders do not open the
+  store (tried on CLI 0.169, 2026-11-18). What only a person may do stays refused by the tools themselves, for
+  both clients: `sync.py allow approve`, `review accept` and `single_run.py message` check for a person at a
+  terminal, and that check knows Codex's mark on the commands it runs as it knows Claude Code's.
+  [`.codex/rules/`](../.codex/rules/llm-dlc.rules) says the same for a person's own Codex in a trusted checkout.
+- **The same instructions.** Codex reads this repository's `CLAUDE.md` in place (`project_doc_fallback_filenames`,
+  passed on the command line because a fresh sibling workspace is not a project Codex trusts, and in
+  [`.codex/config.toml`](../.codex/config.toml)). The skills are the files under `.claude/skills/`, reached by
+  Codex through relative links in `.agents/skills/`; a skill only the user may start (`publish`,
+  `review-findings`) says so for Codex too (`agents/openai.yaml` beside it). `agent_client.py instructions
+  --client codex` renders what the model would be given (no model is called) and checks it: `CLAUDE.md`'s first
+  and last lines are there, nothing shadows it (`AGENTS.md`), it fits the byte budget, each skill is linked, and
+  no user-only skill is offered to a work turn. It prints paths, digests and pass or fail. A brief's preflight
+  runs it when a stream is Codex's.
+- **Identity and cost.** A Codex started from a Claude Code session would inherit that session's identity and
+  have its commits and jobs credited to the watcher: the boundary removes it and keeps who started the loop in
+  the binding. A job is submitted under Codex's own thread. Codex reports a turn's tokens and no dollars, so a
+  Codex turn's cost is **unknown**, shown as `$?` (or `$1.50+?` beside known dollars) with its tokens in the
+  status bar and the summaries, never as nought.
+- **Asking, not typing.** A session that wants a Codex thread's word (an expert's, say) does not type into
+  another agent's terminal: a pasted text races the person using it, and the reply has to be read off a screen.
+  [`tools/ask_codex.py`](tools/ask_codex.py) `ask --thread NAME --prompt-file FILE` runs one read-only turn of a
+  thread of its own and returns the answer as data; the first question to a name says where the thread comes
+  from (`--fork-of SESSION` forks an existing session, which is left as it was and never has two writers, or
+  `--new`). A question leaves the machine, so it goes through the redaction rules first and a finding refuses
+  it. Every exchange is a file (`llm-dlc/loop-summaries/exchanges/` in the default workspace), and so is a
+  message the other way: `ask_codex.py mail send|list|read` is a mailbox any session can write to with a shell
+  command, read at the receiver's next step. An answer or a message is **advice for the receiving session to
+  judge**, never an instruction and never a person's approval. `ask_codex.py note` leaves a line in a session a
+  person has open (`codex queue`) and waits for nothing.
+- **Traces.** A Codex session is traced as a Claude Code session is: `sync.py` finds the rollouts of the Codex
+  sessions that started in the checkout, stores each redacted (policy 5 removes the account identifiers and the
+  account usage Codex records), and reads it through [`tools/codex_rollout.py`](tools/codex_rollout.py) as a
+  transcript, so a commit a Codex worker makes with `sync.py commit` carries its own session's `LLM-Trace` line
+  and `check` verifies it ([specification](specification.md)). A thread that was only asked a question is not a
+  session of the checkout.
+- **Statistics.** Codex traces a session under its own thread id, not the id the loop gave it, so a loop's record
+  says which: `Codex thread THREAD carries session SESSION.`, written once the thread exists. The loop statistics
+  (`loop_stats.py`), the published record and the time report (`tool_time.py`) find the run's session by that
+  line. A Codex model call is timed from when the model was handed the turn (its items are written only when it
+  ends), a command a tool call ran is the call that is timed and filed by what it ran, and a cost that leaves out
+  calls of a model with no price is printed as `?` or `$1.50+?`, with a note naming the runs.
+- **Hooks.** The two hook commands of `.claude/settings.json` (`sync.py hook` at a turn's end, `sync.py
+  hook-commit` after a shell command) take Codex's payload as they take Claude Code's: `transcript_path` is
+  the session's rollout. `.codex/hooks.json` names them for a session a person runs in a checkout Codex trusts,
+  once that person has reviewed them there (`/hooks`): Codex loads a project's hooks only from a trusted
+  project, and runs only hooks someone approved. A loop's worker runs in a fresh sibling workspace, which is
+  neither, and the flag that would run them regardless (`--dangerously-bypass-hook-trust`) runs every other
+  unreviewed hook as well. So `agent_client.py` runs the two commands itself after each turn it carried, with
+  the same payload: `hook-commit` when the turn made a commit without `sync.py` (it traces the commit while it
+  is still the working copy's parent; otherwise the next sync does), then `hook`. Neither does anything twice,
+  and a failure is written beside the attempt (`*.hooks.log`) and stops nothing. `AGENT_CLIENT_HOOKS=off`
+  turns this off.
+- **Not yet.** Subagent threads of a Codex session; the proof stages of `/prove-java-change` and the
+  standalone verification loop; runtime (released) checkouts.
+
 ## Sessions
 
 Newest first. Each row links to the session summary. The [traces overview](traces/README.md) adds them all up, and [loop statistics](traces/loops.md) adds up the loops.
@@ -342,7 +538,7 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 | 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 151 | 28 | open |
 | 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 163 | 144 | open |
 | 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](traces/7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 84 | 22 | open |
-| 2026-11-17 12:37 UTC | [/run-brief invocation options](traces/e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 32 | 191 | ended |
+| 2026-11-17 12:37 UTC | [/run-brief invocation options](traces/e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 36 | 201 | open |
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 12 | 1 | ended |
 | 2026-11-17 02:26 UTC | [6da9b537-ecce-46cf-99fa-7cae16e7ce99](traces/6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 1 | 2 | ended |
 | 2026-11-17 02:13 UTC | [Window 11 verification loop](traces/b74acbd8-95de-40d7-8793-79948e8c27ae/summary.md) | 11 | 14 | ended |
@@ -363,9 +559,9 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 | 2026-11-16 15:14 UTC | [0d14bf6f-8e0a-47cf-bce9-778897fc474e](traces/0d14bf6f-8e0a-47cf-bce9-778897fc474e/summary.md) | 3 | 2 | ended |
 | 2026-11-16 05:44 UTC | [55c8cba6-01ea-400f-bee3-52e9db3aaba0](traces/55c8cba6-01ea-400f-bee3-52e9db3aaba0/summary.md) | 1 | 8 | ended |
 | 2026-11-15 23:45 UTC | [5399f71b-f38b-4670-8fbe-9aa44d5cd46d](traces/5399f71b-f38b-4670-8fbe-9aa44d5cd46d/summary.md) | 3 | 3 | ended |
-| 2026-11-15 19:24 UTC | [Prove-java-change skill and in-the-loop runtime](traces/3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | 48 | 323 | open |
+| 2026-11-15 19:24 UTC | [Prove-java-change skill and in-the-loop runtime](traces/3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | 51 | 333 | open |
 | 2026-11-15 17:34 UTC | [48807e20-0bdb-4031-8ced-d21d16fc3816](traces/48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) | 1 | 6 | ended |
-| 2026-11-15 17:27 UTC | [Moonshot loop status](traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 265 | 341 | open |
+| 2026-11-15 17:27 UTC | [Moonshot loop status](traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 266 | 347 | ended |
 | 2026-11-15 16:13 UTC | [a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31](traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) | 41 | 90 | ended |
 | 2026-11-15 14:52 UTC | [Moonshot loop stats backfill](traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/summary.md) | 11 | 12 | ended |
 | 2026-11-15 12:23 UTC | [72d38e75-aae0-402e-9b8a-881beec53824](traces/72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | 61 | 21 | ended |

@@ -76,6 +76,18 @@
 # stops waiting, no stream is put to the watcher to merge, and the script exits 3. Nothing is interrupted and nothing uncommitted
 # is left; running the script again continues, and removes the file.
 #
+# A stream is run again inside the run by a request in the state directory (rerun/LABEL: brief_run.py rerun
+# writes it): once the stream's own process here has ended, however it ended, its loop is started again as at
+# the start of the run, with its counts of failures and reruns at nought, and put to the watcher to merge when it
+# is finished. A request found at the start runs a stream whose status says done or blocked, which is otherwise
+# not run again. Until 2026-11-18 a stream that had ended (a session killed for memory, VF-037) could be started
+# again only by hand, outside this script's bookkeeping, or after the whole run.
+#
+# Before a loop is started its systemd scope (feature-loop-BRIEF.scope) is cleared of what an ended loop left
+# there: when the kernel kills a session for memory, the tests it ran live on in the scope, and feature-loop.sh
+# refuses to start beside them, which counted as the stream's second failure (VF-037). A scope a loop is still
+# at work in (one started by hand) is left alone.
+#
 # Each brief ends its "## Progress" with a status line its loop keeps current:
 # "- Status: working", "- Status: waiting on jobs ID ...", "- Status: done" or
 # "- Status: blocked: what needs the user". When a loop stops, this script reads
@@ -416,13 +428,44 @@ rerun_blocked() {
   [[ "${asked%%$'\t'*}" == rerun ]]
 }
 
+# Stop a loop's scope when all it holds is what an ended loop left (see the header): the loop's name, its label,
+# the folder it works in. Fails, leaving the scope alone, when a loop is at work in it: a feature loop in that
+# folder (a test of these scripts that the ended loop left running works in a folder of its own).
+CGROUPS=${RUN_STREAMS_CGROUP_ROOT:-/sys/fs/cgroup}
+clear_scope() {
+  local scope=feature-loop-$1.scope group pid left=0
+  systemctl --user is-active --quiet "$scope" 2>/dev/null || return 0
+  group=$(systemctl --user show -p ControlGroup --value "$scope" 2>/dev/null)
+  for pid in $(cat "$CGROUPS$group/cgroup.procs" 2>/dev/null); do
+    # feature-loop.sh runs from a private copy of itself, feature-loop.XXXXXX
+    if [[ "$(readlink "/proc/$pid/cwd" 2>/dev/null)" == "$3" ]] &&
+       tr '\0' ' ' <"/proc/$pid/cmdline" 2>/dev/null | grep -q 'feature-loop\.'; then
+      log "[$2] a loop is at work in $scope (pid $pid): not started beside it"
+      return 1
+    fi
+    left=$(( left + 1 ))
+  done
+  log "[$2] $scope holds only what an ended loop left ($left process(es)): stopping it before the loop starts"
+  systemctl --user stop "$scope" 2>/dev/null
+  return 0
+}
+
+# The client the run gives a loop (RUN_STREAMS_AGENTS, "a=codex,b=claude", then RUN_STREAMS_AGENT), or nothing.
+client_of() {
+  local pair
+  for pair in ${RUN_STREAMS_AGENTS//,/ }; do
+    [[ "${pair%%=*}" == "$1" ]] && { printf '%s' "${pair#*=}"; return; }
+  done
+  printf '%s' "${RUN_STREAMS_AGENT:-}"
+}
+
 # Run one loop until it is finished, as the header says: LABEL, the workspace it
 # runs in, its name, and its brief there, which is what feature-loop.sh is given.
 # With a watcher the loop takes command lines from a directory of its own (conductor.py command), which is how it
 # is told to end after its cycle under way; a brief's loop is asked nothing through it. Exits 0 when its
 # brief says done, 3 when it is blocked, 130 if interrupted.
 supervise() {
-  local label=$1 dir=$2 loop=$4 brief=$2/$4 code status failed=0 waited ids
+  local label=$1 dir=$2 loop=$4 brief=$2/$4 code status failed=0 waited ids client
   local commands= reruns=0
   if [[ -n "${RUN_STREAMS_WATCHER:-}" ]]; then
     commands=$STATE/loops/$label
@@ -458,6 +501,11 @@ supervise() {
         log "[$label] the jobs are back"
       fi
     fi
+    clear_scope "$(basename "$loop" .md)" "$label" "$dir"
+    # Who carries this loop's turns, when the run says (brief_run.py start --agent, --stream-agent): feature-loop.sh
+    # takes it over the brief's own `- client:` setting. Without a word from the run, the brief's stands.
+    client=$(client_of "$label")
+    [[ -n "$client" ]] && export FEATURE_LOOP_CLIENT=$client
     log "[$label] starting feature-loop.sh $loop in $dir"
     phase "$label" running
     LOOP_CONDUCTOR=$commands "$dir/llm-dlc/tools/feature-loop.sh" "$loop" </dev/null 2>&1 | python3 -u "$ROOT/llm-dlc/tools/streams_status.py" tag "$label" "$STATE"
@@ -543,7 +591,8 @@ stream() {
   status=$(status_of "$2/$4")
   log "[$label] finished: $status"
   phase "$label" "finished: $status"
-  offer_merge "$label" "$status"
+  # asked to be run again already (brief_run.py rerun): its merge is put to the watcher after that run
+  [[ -e "$STATE/rerun/$label" ]] || offer_merge "$label" "$status"
   exit "$code"
 }
 
@@ -604,7 +653,7 @@ integrate() {
 # claude and its output. Without job control, bash would start them ignoring
 # SIGINT, and a loop could neither be stopped by it nor record it.
 set -m
-declare -A PID
+declare -A PID ENDED
 MAIN=$$  # the background loops below end when this script is gone
 VERIFY=
 INTEGRATE=
@@ -662,10 +711,17 @@ status_bar() {
     sleep "$STATUS_EVERY"
   done
 }
+# A request to run a stream again (see the header), taken once: LABEL.
+rerun_asked() {
+  [[ -e "$STATE/rerun/$1" ]] || return 1
+  rm -f "$STATE/rerun/$1"
+}
 for s in "${STREAMS[@]}"; do
   brief=${BRIEF%.md}-$s.md
   status=$(status_of "${DIR[$s]}/$brief")
-  if finished "$status"; then
+  if finished "$status" && rerun_asked "$s"; then
+    log "[$s] its brief says $status, and the watcher asked for it to be run again"
+  elif finished "$status"; then
     log "[$s] its brief says $status: not run again"
     phase "$s" "finished: $status"
     offer_merge "$s" "$status" &  # from an earlier run of this script, perhaps not merged yet
@@ -683,10 +739,26 @@ if [[ -n "$INTEGRATION" ]] && (( ${#PID[@]} )); then
   INTEGRATE=$!
 fi
 
-for s in "${!PID[@]}"; do
-  wait "${PID[$s]}"
-  code=$?
-  (( code == 130 )) && { log "[$s] interrupted"; stop_all; wait; exit 130; }
+# Until every stream's process has ended: one that has ended is run again when the watcher asks (see the header).
+while (( ${#PID[@]} )); do
+  for s in "${!PID[@]}"; do
+    kill -0 "${PID[$s]}" 2>/dev/null && continue
+    wait "${PID[$s]}"
+    code=$?
+    (( code == 130 )) && { log "[$s] interrupted"; stop_all; wait; exit 130; }
+    unset "PID[$s]"
+    ENDED[$s]=1
+  done
+  for s in "${STREAMS[@]}"; do
+    [[ -n "${ENDED[$s]:-}" ]] || continue
+    stopping && break
+    rerun_asked "$s" || continue
+    log "[$s] run again inside the run, as the watcher asked"
+    unset "ENDED[$s]"
+    stream "$s" "${DIR[$s]}" "$NAME-$s" "${BRIEF%.md}-$s.md" &
+    PID[$s]=$!
+  done
+  (( ${#PID[@]} )) && sleep "${RUN_STREAMS_RERUN_POLL:-2}"
 done
 PID=()
 if [[ -n "$INTEGRATE" ]]; then

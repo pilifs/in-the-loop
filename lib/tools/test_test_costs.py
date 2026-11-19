@@ -429,8 +429,12 @@ class Changed(unittest.TestCase):
                                                             "schema/thing.schema.json", "lib/tests/costs.json"])
             self.assertEqual(chosen, {"tools/test_edited.py": "it changed", "tools/test_imports.py": "it imports tools/helper.py",
                                       "tools/test_reads.py": "it names data/thing.json"})
-            self.assertEqual(rust, [], "the inventory is read by the Rust tier test: all of cargo test")
+            self.assertIsNone(rust, "the inventory chooses nothing: a new row is no reason to run cargo test")
+            self.assertEqual(tc.changed_selection(root, doc, ["lib/tests/costs.json"]), (None, {}))
+            self.assertEqual(tc.changed_selection(root, doc, ["lib/src/thing.rs", "lib/tests/costs.json"])[0], [])
             self.assertEqual(tc.changed_selection(root, doc, ["lib/tests/pairing.rs"])[0], ["pairing"])
+            self.assertEqual(tc.changed_selection(root, doc, ["lib/tools/test_costs.py", "lib/tests/pairing.rs"])[0], ["pairing", "tiers"])
+            self.assertEqual(tc.changed_selection(root, doc, ["lib/tools/cost_tier.py", "lib/src/thing.rs"])[0], [])
             self.assertIsNone(tc.changed_selection(root, doc, ["lib/README.md", "tools/helper.py"])[0])
 
 
