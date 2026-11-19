@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (open) |
+| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (ended) |
 | When | 2026-11-15 19:24 UTC to 2026-11-19 14:31 UTC (5467 min) |
 | Models | `claude-fable-5-2` |
 | Client | claude-code 2.1.325 |
@@ -2660,9 +2660,15 @@ Verified by eight new tests and the changed ones: through single_run.py with a o
 
 ### Record session traces
 
-change `lzwlwmwznwxn` · [log `14c08c25dbfd`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/14c08c25dbfd25466521d4f069fe4e0351b34a323e309393ffb7a93fa08fdcf0.jsonl.gz)
+[`57e59ab69df3`](https://github.com/pilifs/in-the-loop/commit/57e59ab69df3eb84ff75ce1e631486faaf4104d1) · [log `14c08c25dbfd`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/14c08c25dbfd25466521d4f069fe4e0351b34a323e309393ffb7a93fa08fdcf0.jsonl.gz)
 
 Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.
+
+### Operating notes: the headless browser both clients now have is for reading only
+
+change `xmkuvovnprov` · [log `14c08c25dbfd`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/14c08c25dbfd25466521d4f069fe4e0351b34a323e309393ffb7a93fa08fdcf0.jsonl.gz)
+
+Since 2026-11-19 the machine has Google's Chrome for Testing headless shell (158.0.8127.36) at ~/.cache/in-the-loop/browsers/current, sandboxed through the AppArmor profile /etc/apparmor.d/chrome-for-testing (Ubuntu 23.10+ otherwise refuses the user namespaces Chromium's sandbox needs), and both Claude Code and Codex have it as the user-level MCP server chrome-devtools (chrome-devtools-mcp 1.13.0: headless, a new empty profile per session, Google's usage statistics off). The new section says when to use it (pages a plain fetch or a research API does not serve), that it reads only (no logins, accounts, forms or posts; never --no-sandbox), that downloads are untrusted data, that research notes name each source by URL, date and the hash of a downloaded file, and how a newer Chrome is installed beside the old one with the current link repointed. Machine-side setup (browser, AppArmor profile, both registrations) is outside the repository and was done at the user's word. Verified: test_agent_client.py (24, the only test that names the file) under a 4G cap with TMPDIR off /tmp; agent_client.py instructions --client codex reports no problems, with operating-notes.md among its sources; a Javadoc page rendered through the current link with the sandbox on.
 
 ## Conversation
 

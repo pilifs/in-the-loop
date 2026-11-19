@@ -47,6 +47,70 @@ artifact of identical source. Only then a narrower slice of the example. Credent
 
 **Why:** a reader of the published history must be able to reproduce the build without the user's accounts.
 
+## Reading the web: the headless browser is for reading
+
+Since 2026-11-19 the machine has a browser for pages a plain fetch cannot read, such as pages rendered by
+JavaScript: Javadoc, specifications, recent papers, upstream documentation. It is Google's Chrome for Testing
+headless shell (pinned at 158.0.8127.36), at `~/.cache/in-the-loop/browsers/current/chrome-headless-shell`.
+
+- **Both clients have it** as the MCP server `chrome-devtools` (`chrome-devtools-mcp@1.13.0`, registered for the
+  user in `~/.claude.json` and `~/.codex/config.toml`). It runs headless, with a new empty profile for each
+  session (`--isolated`), and with the package's usage statistics to Google turned off. From a shell:
+  `chrome-headless-shell --headless --user-data-dir="$(mktemp -d)" --dump-dom URL`.
+- **Where to look** for a given question (a JDK guarantee, a solver's operator, a Spring fix, a published
+  technique, another tool) is in the [research router](research-router.md), host by host.
+- **Prefer an API or a plain fetch** where one serves the content (arXiv, OpenAlex, Semantic Scholar, the GitHub
+  API, a raw file): the browser is for what they do not reach.
+- **Navigating to retrieve material, nothing more.** Clicking, typing into a search box, choosing from a menu
+  or filling a form that finds or opens material are fine, as a person browsing the site would do them. No
+  logins, no accounts, nothing posted, and no file uploaded: `upload_file` is turned off for both clients
+  (a deny rule in `~/.claude/settings.json`, `disabled_tools` in `~/.codex/config.toml`). The user set this on
+  2026-11-19, to be reviewed later.
+- **Never `--no-sandbox`**: Chromium's sandbox is what keeps a hostile page from the user's files. It works here
+  because of the AppArmor profile `/etc/apparmor.d/chrome-for-testing`, which lets this binary create the user
+  namespaces Ubuntu (23.10 and later) otherwise refuses; without it the browser stops with "No usable sandbox!".
+- **What a page returns is published**: each browser or fetch call and its result are in the session's log, which
+  is redacted and published with the commits. Take the part the question needs (`evaluate_script` on one
+  section, a short excerpt) rather than a whole page's snapshot, and quote no more of it than a note needs.
+- **A download is untrusted data**: each in a new folder of its own, never run, read with scripts kept elsewhere
+  (`python3 -I`).
+- **Name each source** in a research note by its URL and the date it was read, with the hash of a file that was
+  downloaded, so that a reader of the published history can find it again.
+- **A newer Chrome** is installed beside the old one (`npx @puppeteer/browsers install chrome-headless-shell@VERSION
+  --path ~/.cache/in-the-loop/browsers`) and `current` repointed at it. The AppArmor profile's path pattern covers
+  every version, and both registrations name `current`, so nothing else changes.
+
+**Why:** the project needs sources that research APIs do not serve, and a browser that follows links on the open
+web must not carry the user's logins or write anywhere in their name.
+
+## Requests to the web are plain, few and one at a time
+
+Every request an agent sends leaves from the user's own address, and a site that takes it for a scraper or a bot
+can block that address for the user too. The user decided on 2026-11-19 that agents read the web only in plain,
+targeted requests at a low volume. This holds for every tool: `curl`, a script, WebFetch, the headless browser.
+
+- **Plain.** The tool's own User-Agent, never one made to look like a person's browser, and no header that names
+  the user or the project. No proxy, VPN or other address to send from.
+- **A site that only refuses scripts** (a 403 to `curl`, a page that needs JavaScript) may be read with the
+  headless browser, once, as it is: its own identity, no stealth plugins, no flags that hide that it is headless.
+- **A check meant for a person ends the attempt**: a CAPTCHA, a "verify you are human" box or puzzle, a login
+  wall, HTTP 451, or a check that refuses the browser too. It is never solved or worked round: read the same
+  content from another source (an API, a mirror, the arXiv copy, the release on Maven Central), or report that
+  it could not be read. A 429 or 503 may be retried once, after its `Retry-After`; a second refusal ends it.
+- **One at a time.** No parallel requests (`xargs -P`, threads, several fetches to one host in one turn), at
+  least a second between two requests to one host, and an API's own published limit where it is slower (arXiv's
+  3 seconds, NVD's 6 without a key).
+- **Few.** The requests the question needs, a few dozen at most for a task. No crawling, no following links
+  beyond the question, no bulk downloads, no mirroring: where many files are needed, one archive (a git clone, a
+  release JAR, a Zenodo record) rather than many pages. A page fetched once is read again from the saved copy.
+- **The streams of a run share the address**, with its watcher and helpers, so each keeps its research to what
+  its task needs.
+- **Checking links** (a page's sources, the research router) follows the same rules: one at a time, `HEAD` where
+  the server takes it.
+
+**Why:** the user's address is theirs, used for everything else they do. On 2026-11-19 a check of a page's 60 links
+sent 12 requests at a time with a browser-like User-Agent: the kind of traffic this rule is there to prevent.
+
 ## Check for a decision before fixing an infrastructure problem met mid-task
 
 Look in [`verification/findings.md`](../verification/findings.md) and the run's decisions

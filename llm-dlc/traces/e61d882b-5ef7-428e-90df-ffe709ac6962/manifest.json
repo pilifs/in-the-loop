@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-19T14:57:16.318Z",
-  "duration_seconds": 181173,
+  "ended": "2026-11-19T15:01:16.906Z",
+  "duration_seconds": 181413,
   "stats": {
-    "turns": 47,
-    "api_calls": 419,
-    "tool_calls": 425,
-    "tool_errors": 12,
+    "turns": 49,
+    "api_calls": 438,
+    "tool_calls": 448,
+    "tool_errors": 13,
     "compactions": 2,
     "peak_context_tokens": 565519,
     "usage": {
-      "input_tokens": 936,
-      "output_tokens": 306047,
-      "cache_read_input_tokens": 116809670,
-      "cache_creation_input_tokens": 1608260
+      "input_tokens": 978,
+      "output_tokens": 320207,
+      "cache_read_input_tokens": 119797091,
+      "cache_creation_input_tokens": 1628881
     }
   },
   "tools": {
-    "Bash": 371,
-    "Edit": 24,
-    "Read": 15,
+    "Bash": 385,
+    "Edit": 32,
+    "Read": 16,
     "SendMessage": 5,
     "Write": 5,
     "ToolSearch": 2,
@@ -85,24 +85,24 @@
     {
       "index": 2,
       "started": "2026-11-19T14:56:02.859Z",
-      "ended": "2026-11-19T14:57:16.318Z",
-      "turns": 1,
-      "api_calls": 3,
+      "ended": "2026-11-19T15:01:16.906Z",
+      "turns": 3,
+      "api_calls": 22,
       "usage": {
-        "input_tokens": 6,
-        "output_tokens": 6142,
-        "cache_read_input_tokens": 315864,
-        "cache_creation_input_tokens": 118737
+        "input_tokens": 48,
+        "output_tokens": 20302,
+        "cache_read_input_tokens": 3303285,
+        "cache_creation_input_tokens": 139358
       },
-      "peak_context_tokens": 146748
+      "peak_context_tokens": 167369
     }
   ],
   "log": {
-    "sha256": "c9efdb00aada87fc51825c6502430ffd95948d94f8ae9a6d4b71c1e58b3ad98f",
-    "bytes": 8778355,
-    "lines": 3179,
-    "gzip_bytes": 1575088,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/c9efdb00aada87fc51825c6502430ffd95948d94f8ae9a6d4b71c1e58b3ad98f.jsonl.gz"
+    "sha256": "29e2f2d886b716edcbb8a114051453edec5c03c2fc2fda72558af242b8b61322",
+    "bytes": 9165145,
+    "lines": 3315,
+    "gzip_bytes": 1644689,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/29e2f2d886b716edcbb8a114051453edec5c03c2fc2fda72558af242b8b61322.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1637,7 +1637,7 @@
     {
       "change_id": "sokvoryzrtnwtxsurtksnxzkvxwkytsy",
       "commit_id": "5bb59759e1d9887f19274e921459bbef18a8f417",
-      "immutable": false,
+      "immutable": true,
       "summary": "/single-agent-run: one agent toward one outcome, with a watcher that judges after each cycle and can change what the next one is told",
       "body": "A third kind of watched run, beside /prove-java-change and /run-brief, for a goal well within one agent's reach, where a brief with streams is more than the work needs. The command takes a starting prompt, an optional brief file and a continue message. The first cycle is given the prompt, and every later one the run's continue message as it stands when that cycle starts, so the user can have the watcher change it between two cycles and steer a run that is under way. Both texts reach the agent word for word; a brief adds one sentence after each that names the file. After every cycle (one context window: the loop compacts the session after each) the watcher is given the agent's report, the cycle's commits, what it left uncommitted and the queue, and answers continue or stop; each answer is a decision in llm-dlc/decisions/single-NAME.jsonl.\n\nThe loop is a new mode of feature-loop.sh, single-agent, so a run has what every loop has: the memory cap, the record the loop statistics read, the session's own compaction at 600k tokens put to the watcher when no commit came, the closing summary, a count of cycles that can be changed while it runs. It differs from the other loops in one rule: a cycle with no commit does not stop it, because the watcher reads what that means (the outcome reached, a question, or stuck). Without a verdict in time (15 minutes, --verdict-wait) a cycle that committed is followed by another, one that did not ends the run before its compact as in every loop, and three in a row without a verdict end it, since nothing else measures such a run. llm-dlc/tools/single_run.py is the watcher's tool: start (in the checkout or in a jj workspace of its own, a new session, a continued one or a fork), wait, answer, message, status, summary, cycles, stop, jobs (for a run stopped only to wait on verification jobs), collect and land. It keeps the verification queue as a brief's watcher does, through brief_run.py's own functions, unless another run's watcher keeps it. The skill is .claude/skills/single-agent-run; llm-dlc/README.md has a section on it.\n\nAlso fixed in feature-loop.sh, for every loop: a stop that reached the loop before a cycle began (typed, or left by a watcher, before the first cycle or between the last look and the next cycle) was counted as a cycle to start, which left the count below zero, and nothing ended the loop. It now ends there. loop_stats.py reads the new record (every text such a run sent is a cycle, a cycle with no commit does not take the decision after it for the last commit's, and the watcher's own words for an ending are not matched against the other endings).\n\nVerified with llm-dlc/tools/test_single_run.py (13 tests: the loop run for real in a made-up jj repository with a stand-in claude, through each of the above, a workspace made and landed, a fork, a stop and a restart included), and test_costs.py run --changed: 16 of 16 files passed, test_prove_loop.py (30) and test_brief_run.py (39) among them. No real session was started: the first run is the user's.",
       "log_sha256": "f05af75c6619512ffa6ff1491e42f4d082eb7528774c3f2817f0c5ea1decc23a"
@@ -1645,7 +1645,7 @@
     {
       "change_id": "vykuwrpnmklmnzzlukrpzwxlkzxmxykw",
       "commit_id": "4b5cb3634b87a6c9cb6b78be2475ae62072c3b6f",
-      "immutable": false,
+      "immutable": true,
       "summary": "A single-agent run's continue message is a person's alone: the watcher can no longer set it",
       "body": "The user's decision on 2026-11-18, after reading the first version: the continue message is an option for a person to steer the session, given with an expert's review and written to account for a long run, and the watcher is never to modify it; the loop ending is preferred to a watcher steering, in almost all cases. The first version let the watcher set the message when the user asked, with an answer or by the message command.\n\nNow single_run.py message sets the message only for a person at their own terminal (stdin and stdout a terminal and no CLAUDECODE in the environment, the test sync.py uses for its approvals) and is refused from a session with words that say what to do instead: end the run and say why. The answer command takes no message any more, and start refuses --continue on a run that already exists, so a restart cannot change it either. Printing the message and its history stays open to all. The question a watcher is given after a cycle says the message is never its to change and that stop is the answer when the run should not go on as it reads. The skill tells the watcher not to set it, edit its file, draft a replacement unasked, or get a new text to the agent another way, and to answer stop when the next cycle would need to be told something the message does not say; if the user asks it for a change, it gives them the command to run themselves. The README section says the same.\n\nVerified with test_single_run.py (13 tests; the changed one shows the refusal from a session, a person's change taken by the next cycle and recorded as theirs, an answer that carries no message, and a restart that cannot change it) and test_costs.py run --changed: 16 of 16 files passed. In an earlier of the two runs of that command test_prove_loop.py failed once and passed when run again, with the machine at a load of 23 to 29 from the brief run under way; alone it passed three times in a row, and its tests wait one second for a verdict, which a loaded machine can miss. Which test it was is not known: the first run's output was not kept.",
       "log_sha256": "f05af75c6619512ffa6ff1491e42f4d082eb7528774c3f2817f0c5ea1decc23a"
@@ -1653,7 +1653,7 @@
     {
       "change_id": "ssvmwkmxqlovqmmwxuluvqqtptxqrplr",
       "commit_id": "a10468dae7dc35f2bcb256a56fe88a4384762ade",
-      "immutable": false,
+      "immutable": true,
       "summary": "A brief's watcher gets a merge order and early merges, a stream's rerun, helpers, and a default test run only when it is due",
       "body": "What the domain-advances run (2026-11-17) showed the /run-brief watcher could not do, from an agent's analysis of that run and the user's notes on it. Seven of its ten points are built here; three are left out at the user's word (help deciding when to stop, the stale cost in summaries, and cleaning up workspaces at the end, which could lose data).\n\nMerges that interact. `brief_run.py trial BRIEF` merges every pair of the streams' lines, and each with the default line, beside every working copy (`jj new --no-edit`, read, abandoned) and lists the files each pair conflicts in beyond the generated ones and the test inventory. `brief_run.py order BRIEF STREAM ...` records a merge order: `merge` refuses a stream while one before it has commits the line lacks, and the held-back stream's merge question names what to merge first. `merge BRIEF STREAM --early` merges a stream that is still at work as far as it has committed, leaving its uncommitted files, its question and the brief's status alone. In that run two streams conflicted in one file and the stream held back was answered `leave` for four hours.\n\nA stream whose loop died (VF-037). `brief_run.py rerun BRIEF STREAM` leaves a request that run-streams.sh takes once the stream's own process has ended: the loop starts again inside the run, with its counts at nought, and is put to the watcher to merge when finished; after the run has ended the same command starts it again for that stream. Before any loop starts, run-streams.sh stops a scope that holds only what an ended loop left (the tests a session killed for memory was running), which is what made the restart fail and count as the stream's second failure; a scope with a loop at work in it is left alone.\n\nHelpers. The user names a Claude Code session they have open, by its tmux pane (`/run-brief --helper \"tmux 3\"`, or later in words); the first is for low-hanging work and others may be added with a role of their own. `brief_run.py helper BRIEF add|task|done|merge|list`: a task is the watcher's text wrapped in a stream's standing rules, the helper's workspace is put at the default line's one last commit (never from a merge in progress), one line naming the task's file is typed into the pane (never into a pane at a shell prompt), the helper reports with `done`, `wait` returns it, and the watcher merges it. The skill also says how material from outside the run comes in (new files only, merged by the watcher, acknowledged through an inbox item of the new kind `delivered`) and when to suggest a specialist (the same wall for two cycles).\n\nWho commits what. `wait` now commits the run's decision record whenever it has changed, the user's answers with the watcher's, under a message that says so (a user's answer had gone into a commit of results under that commit's message); the skill says to record an action only after it happened. feature-loop.sh drops its own and the run's variables before it starts `claude`, so a stream's test of these scripts can no longer put made-up questions to the real watcher, and the preflight refuses a watcher whose own environment carries a run's variables.\n\nTests. A change to lib/tests/costs.json no longer chooses any test in `test_costs.py run --changed` (it ran all of cargo test, which filled a stream's memory in VF-037), and a change to test_costs.py or cost_tier.py chooses the one Rust binary that reads them, `tiers`, not all of them. `default_run.py after-merge` runs the default test run after a merge only when the last one in the checkout failed or none passed there within the hour, and with `--final` whenever no passed run covers the commit, in a memory cap of its own (8G) with two Rust test binaries at a time. CLAUDE.md's Tests section, lib/README.md and both watcher skills say to use it after a merge: the user asked for the default run to be run less, and never because of the inventory.\n\nVerified by 16 new tests (trial merges, the order, early merges, reruns inside and after a run, the scope cleared, helpers, the environment check, the due check) and: the tests of what changed passed, 25 of 25 (python3 lib/tools/test_costs.py run --changed --rust-jobs 1 under an 8G cap: the tiers binary of cargo test and 24 Python test files, among them all 50 tests of test_brief_run.py and the 13 of test_single_run.py), and the inventory's lint agrees. No real run has used any of this yet; the first /run-brief after the merge is the first end-to-end check. Nothing here is merged into the default line, where the domain-advances run's watcher is still at work.",
       "log_sha256": "f05af75c6619512ffa6ff1491e42f4d082eb7528774c3f2817f0c5ea1decc23a"
@@ -1661,7 +1661,7 @@
     {
       "change_id": "vnvltvyktkuqxowzutolwpuyzwvkywsm",
       "commit_id": "f5cb8beb29775f32e6201363e390431cb3e2871b",
-      "immutable": false,
+      "immutable": true,
       "summary": "A loop's session can be carried by Codex: one client boundary, models resolved at launch, the same instructions and skills for both clients",
       "body": "Brief 00 (\"Run Codex and Claude Code from the same loop instructions\", the user's, 2026-11-18): give the operator a choice of Codex or Claude Code for a loop's worker, with the briefs, the instruction of a cycle, the commit check, the conductor, the queue and the record unchanged. This is the worker's side of it, built on the current loops and not on the 2026-11-16 proof of concept's copies, whose findings it reuses.\n\nThe boundary is one file, llm-dlc/tools/agent_client.py. It starts a Codex turn (`codex exec --json`), resumes the session's own thread (`codex exec resume THREAD`), and prints the stream the loops already read from Claude Code (init, assistant text and tool calls, compact_boundary, one closing result), so the progress display, the compaction watch, a cycle's report and the cost accounting keep their one reader; Claude Code's turns are started as before, argument for argument. A loop names its session by a UUID and Codex names its thread itself: the binding is written whole when Codex reports the thread, a later turn resumes exactly that thread, and a client that reports another ends the turn as an error. Each attempt keeps Codex's events, its stderr, its last message and a digest of what it was given. Compaction between cycles is asked of Codex's app server (`thread/compact/start`), because `/compact` sent as a turn is only text. A failed turn, a stream that ends with no result, a cancelled turn and a mismatched thread each end as a result the loop can read.\n\nModels are resolved once: a brief keeps its model's name, and the operator's equivalences give Astra 6.2 for Fable 5.2 and Sol 6.2 for Opus 5.5; a model with no equivalent is refused before a turn is spent, and the effort is always passed on (the machine's own Codex default is another). The client is chosen at the start and kept: `single_run.py start --client codex`, `brief_run.py start --agent codex` or `--stream-agent b=codex` for a mixed run, `brief_run.py foundation --agent codex`, a brief's `- client:` setting, FEATURE_LOOP_CLIENT. The preflight shows each stream's client, model and effort, and blocks an unmapped model, a Codex stream that would fork a Claude Code conversation, and a Codex that is not given this checkout's CLAUDE.md.\n\nWhat was tried live on Codex CLI 0.169 before building, on scratch threads: the event format; resume by thread id; compaction through the app server, after which the thread still knew what it had read; and approvals. A headless turn with approval_policy on-request alone cannot ask to leave the sandbox, and added writable folders do not open the repository's store, so a worker in a sibling jj workspace could not commit; `--approve-for-me` (the workspace-write sandbox, requests reviewed automatically) let it, and is what a turn is started with, as the counterpart of the `--permission-mode auto` the loops give Claude Code.\n\nOne source for each instruction. Codex reads this repository's CLAUDE.md in place (project_doc_fallback_filenames, on the command line because a fresh sibling workspace is not a trusted project, and in .codex/config.toml). The skills are the files under .claude/skills, reached through relative links in .agents/skills; publish and review-findings, which only the user may start, say so for Codex too (agents/openai.yaml). `agent_client.py instructions --client codex` renders what the model would be given without calling one and checks it (CLAUDE.md's first and last lines present, nothing shadowing it, within the byte budget, each skill linked, no user-only skill offered to a work turn), printing paths, digests and pass or fail; run against the real client here it passes, and the two user-only skills are absent from the list Codex is offered. The three watcher skills now name both models approved for the watcher's role, Opus 5.5 and Sol 6.2, where they told any other model to stop.\n\nIdentity, authority and cost. A Codex started from a Claude Code session would inherit that session's identity: the boundary removes it and keeps who started the loop in the binding, and a job is submitted under Codex's own thread. The person-only guards (sync.py allow approve, review accept, the single-agent run's continue message, prune_workspaces) now recognize Codex's mark on the commands it runs as they did Claude Code's, since Codex may give a command a terminal. Codex reports tokens and no dollars, so a Codex turn's cost is unknown and is shown so ($? or $1.50+?, with its tokens) in the progress line, the status bar and the summaries, never as nought.\n\nNot in this commit: Codex sessions in the published traces (sync.py does not read Codex's logs, and must not before the redaction rules cover Codex's account identifiers; the proof of concept's reader and policy 5 are to be ported and the rules stamped), Codex hooks, the proof stages of /prove-java-change, and runtime checkouts. llm-dlc/loops/codex-pilot.md is the small two-stream brief the live rehearsals use.\n\nVerified by 29 new tests over a stand-in for the client (llm-dlc/tools/codex_standin.py): the adapter's 19, a two-cycle single-agent run carried by the stand-in through the real feature-loop.sh (the user's prompt and continue message reach it word for word, the thread is compacted by the client between the cycles and resumed, nothing of the run or of the watcher's identity reaches the worker, and Claude Code runs no turn), a run's choice of client per stream, and unknown costs. The tests of what changed passed, 31 of 31 Python test files (python3 lib/tools/test_costs.py run --changed --rust-jobs 1 under an 8G cap; no Rust input changed), and the files edited after that run started were run again (test_single_run, test_prove_loop, test_agent_client, test_runs, test_loop_stats, test_inbox: all pass). The live two-cycle rehearsals with real Codex workers follow this commit, from workspaces made from it.",
       "log_sha256": "f05af75c6619512ffa6ff1491e42f4d082eb7528774c3f2817f0c5ea1decc23a"
@@ -1669,7 +1669,7 @@
     {
       "change_id": "kutnwstupkopytwmmrntrsoxzqrrmmsp",
       "commit_id": "170f53f47f35806197cb88c517fde35035697156",
-      "immutable": false,
+      "immutable": true,
       "summary": "Every Codex turn is given its sandbox and approvals, a resumed one too; and a session asks a Codex thread by a tool, not by typing into its terminal",
       "body": "The first live rehearsal of a Codex worker (a Sol 6.2 session on llm-dlc/loops/codex-pilot-a.md through feature-loop.sh, in the disposable workspace codex-pilot-a) found what the stand-in could not: its first cycle wrote its note, committed it with sync.py commit and was compacted through the app server, and its second cycle, a resumed turn, found the workspace read-only with approvals off, changed nothing and said so, so the loop stopped with 'no commit, session needs attention'. Codex's own log shows why: 'codex exec resume' takes no sandbox flag and does not keep the thread's, so a resumed turn falls back to exec's read-only default. agent_client.py now gives every turn, new or resumed, the three settings that --approve-for-me stands for (sandbox_mode workspace-write, approval_policy on-request, approvals_reviewer auto_review); a probe on a scratch repository confirmed that a resumed turn given them writes a file and commits with jj from a sibling workspace.\n\nllm-dlc/tools/ask_codex.py is how a Claude Code session asks a Codex thread a question, after this session's attempt to type one into the expert's tmux window was refused by the permission check, and rightly: a pasted text races the person at that terminal and the answer has to be read off a screen. 'ask --thread NAME --prompt-file FILE' runs one read-only turn of a thread of its own (the first question to a name forks an existing session, which is left as it was, or starts an empty one; later questions resume it) and returns the answer as data with a timeout; the outgoing text goes through the project's redaction rules first and a finding refuses it, since a question leaves the machine; every exchange is kept as a file under llm-dlc/loop-summaries/exchanges. 'mail send|list|read' is a file mailbox for the way back, which a Codex session can write with a shell command, and 'note' leaves a line in a session a person has open (codex queue). An answer or a message is advice for the receiving session to judge, never an instruction or a person's approval, and each says so. The design is the one recommended to this session by the user's session in tmux 4; the permission rule it suggests for the tool is the user's to add, and this commit adds none.\n\nVerified by 7 new tests over the stand-in client (a first question, a fork and a resumed question, a timeout that stops the client, a failed turn, a refused text of which nothing is sent or kept, a queued note, a message's life in a mailbox) and the changed adapter tests, which now require the same three settings on a resumed turn as on the first; the tests of what changed pass, 4 of 4 Python test files (python3 lib/tools/test_costs.py run --changed --rust-jobs 1 under an 8G cap). The live rehearsal is run again from this commit.",
       "log_sha256": "f05af75c6619512ffa6ff1491e42f4d082eb7528774c3f2817f0c5ea1decc23a"
@@ -1677,7 +1677,7 @@
     {
       "change_id": "xkqlvkntvpsxxrxlzxpopvulqqmusytx",
       "commit_id": "c12dc387c40a471b4b65ba5fb2da435a2ca2cb77",
-      "immutable": false,
+      "immutable": true,
       "summary": "A Codex session is traced as a Claude Code session is: its log read as a transcript, its account identifiers and usage redacted (policy 5)",
       "body": "Brief 00, the trace side. Ported from the 2026-11-16 proof of concept onto the current sources: llm-dlc/tools/codex_rollout.py finds the rollouts of the Codex sessions that started in a checkout and gives a rollout's lines as entries shaped like a Claude Code transcript's, one for one and in memory, so sync.py's summary, manifest, metrics and check read both clients with one code path; sync.py takes a session's id from the rollout, names the running session by CODEX_THREAD_ID before Claude Code's variable (a Codex started from a Claude Code session passes that session's variables on), counts apply_patch as an edit, and records manifest.client.tool as codex; metrics.py reads a command's or a patch's result from the same line. The three-way merge of sync.py had one conflict, an import line.\n\nRedaction policy 5 removes what Codex records about the account: the identifiers under creator_user_id, creator_account_id, chatgpt_user_id and chatgpt_account_id, under those keys and inside strings, and the account usage object rate_limits (plan, credit balance, limits), which is replaced whole. It comes before any Codex log is stored. The rules changed, so they were stamped as CLAUDE.md prescribes, with 'sync.py stamp --equivalent': 303,536 distinct lines give the same results under the rules at the parent commit, so the stamp keeps its date and no published log changes. The test's account value is made up (the proof of concept's looked real and was not copied).\n\nBeyond the port: a thread that ask_codex.py only asked a question is not a session of the checkout (a forked one starts from a session of somewhere else, which is not this repository's to publish), so sync.py leaves those threads out, by the names file the tool keeps; the session lister is session_transcripts(), since a local cache named transcripts shadowed the proof of concept's name in cmd_scan; the caches' digest covers the reader; and prices are untouched, so a model with no row in pricing.json (the 6.2 models) has tokens and unpriced calls, not invented dollars.\n\nagent_client.py, from two further findings. Codex reports the thread's running total of tokens when a turn ends, not the turn's (five turns of the rehearsal's thread reported 371k, 434k, 555k, 995k, 1081k), so a turn's own tokens are the rise since the totals the binding keeps. And at the suggestion of the user's session in tmux 4: every Codex turn's environment is cleared of a run's variables too (RUN_STREAMS_*, FEATURE_LOOP_*, LOOP_WATCH_*, PROVE_LOOP_*, LOOP_CONDUCTOR), which Claude Code's workers get from feature-loop.sh and a stream workspace's settings.local.json, and each session gets a TMPDIR of its own on disk under ~/.cache/in-the-loop/agent-tmp, since /tmp here is memory with a per-user quota; 'agent_client.py instructions' reports both, and counts llm-dlc/operating-notes.md as a source once it exists and CLAUDE.md names it.\n\nA mistake of this session, for the record: while fixing test_performance.py I added a second setUpModule, which replaced the one that points the tests' caches at a temporary folder, and one run of the file then used this machine's real state in ~/.local/state/llm-traces. It reset the transcript, scan, check and sync caches, which the next check rebuilt, and it deleted the upload record (uploads.json), which is not recoverable: the record now starts empty, and a push decides what to upload from the manifests and the CDN as before. The setup is merged back into one function.",
       "log_sha256": "f05af75c6619512ffa6ff1491e42f4d082eb7528774c3f2817f0c5ea1decc23a"
@@ -1685,7 +1685,7 @@
     {
       "change_id": "kyxzuyqlzpnwsuxlmvxpvvuwqzyusorx",
       "commit_id": "073becea6db5af63e53eb62bdbff9947ff80004e",
-      "immutable": false,
+      "immutable": true,
       "summary": "Rules of practice move from one client's memory into the repository: llm-dlc/operating-notes.md, three lines in CLAUDE.md, and an allow rule for ask_codex.py",
       "body": "At the user's word (2026-11-18), following a recommendation from their session in tmux 4: a fresh Claude Code session in the default checkout was given two dozen notes from its client's private memory that a Codex session, and any session in a fresh workspace, never saw. The ones any agent needs are now llm-dlc/operating-notes.md, one short section per rule with its reason and date: temporary files off /tmp, the default test run only when due, an anonymous verifiable copy of a blocked artifact before credentials, checking for a decision before fixing an infrastructure problem, a fresh jj workspace (the cost inventory, a mid-merge base, adopting logs), a stale workspace, a library built apart, merging lines that both committed, shell commands that set off the commit hook, verification jobs that cannot be withdrawn, the machine's budget, and six decisions of the user that were written nowhere else (no new complexity in the verification pipeline before their rework, what was left out of the watcher on purpose, helpers' panes, the foundation prompt, folders, workspaces).\n\nCLAUDE.md gets a short last section: a pointer to that page with when to read it, the one rule every session needs at once (TMPDIR under ~/.cache/in-the-loop/, never /tmp or the checkout), and the rule that keeps this from happening again (a rule another agent would need goes into CLAUDE.md or the notes, not only into a client's memory). That tests are never chosen from lib/tests/costs.json was already in its Tests section. CLAUDE.md is 13,063 bytes, well inside Codex's 32 KiB budget, and 'agent_client.py instructions --client codex' reports no problems, the notes page among its sources, and CLAUDE.md's first and last lines delivered.\n\n.claude/settings.json allows 'python3 llm-dlc/tools/ask_codex.py', the one rule the tool's design asked of the user, who gave it. The moved text was reviewed for what a published page should not hold (it says 'the user', and names no account, session or home path), and the redaction rules find nothing in it. The memory files it replaces are removed from the client's memory after this commit, so no rule lives in two places.",
       "log_sha256": "f05af75c6619512ffa6ff1491e42f4d082eb7528774c3f2817f0c5ea1decc23a"
@@ -1693,7 +1693,7 @@
     {
       "change_id": "yowulwwmyuqyrvxwkzwmyxtpuvpskyur",
       "commit_id": "068f7e3a8d8141f9ae64cdf0fe2a16bfad5cce06",
-      "immutable": false,
+      "immutable": true,
       "summary": "The time and loop statistics read a session Codex carried: its record names the thread, a model call has its real start, and an unknown cost is not nought",
       "body": "Brief 00, asked for by the user before any real run: until now a loop that Codex carried was traced, but the statistics could not find it. Codex traces a session under its own thread id, not the id the loop gave it, so feature-loop.sh now writes 'Codex thread THREAD carries session SESSION.' into its record once the thread exists (in the header for a session that is continued, after the first turn for a new one; 'agent_client.py thread' prints it), and loop_stats.py, sync.py's publishing of run records and tool_time.py's discovery take the thread for the session where the record has that line.\n\nThree things would have made the numbers wrong. A Codex response's items are written to the log together when it ends, so a model call looked a few milliseconds long: codex_rollout.claude_view gives each call the time the model was handed the turn (a prompt, a tool call's output, a compaction) and metrics.py starts the call there. Codex's model calls a tool that runs commands, and the log has the call and each command: tool_time.py takes the commands for the calls where a batch has them, so a wait is counted once and filed by what ran. And a model with no row in pricing.json summed to $0.00: the statistics page prints such a cost as '?' or '$1.50+?' and names the runs in a note.\n\nChecked on the real log and records of the Astra rehearsal before its workspace was removed: two runs found by their records (2 cycles with 2 commits, then 1 cycle with none), 418 s of the first prompt's 418 s accounted for (404 s the model, 20 s tools; it was 4 s of model time before), the commit's 19 s filed under sync.py, every cost shown as '?'. The three rehearsal workspaces (codex-pilot-a, codex-pilot-a-claude, codex-single) are forgotten, their commits abandoned and their folders removed, at the user's word.\n\nVerified by five new tests and two extended ones (a Codex-carried run in loop_stats with its record line and without, the cost cells, a rollout read by tool_time with wrapper and commands, the call's start in test_codex, the record line through the real feature-loop.sh in test_single_run, 'thread' in test_agent_client); the tests of what changed pass, 23 of 23 Python test files (python3 lib/tools/test_costs.py run --changed --rust-jobs 1 under an 8G cap).",
       "log_sha256": "f05af75c6619512ffa6ff1491e42f4d082eb7528774c3f2817f0c5ea1decc23a"
@@ -1701,7 +1701,7 @@
     {
       "change_id": "mkrtspkomokykqlwtxsskouwwrovokxt",
       "commit_id": "4c94f7daf5816dd0d9568a1b5e1495c503d975c1",
-      "immutable": false,
+      "immutable": true,
       "summary": "Codex sessions get the checkout's two hooks: the adapter runs them after each turn it carried, and .codex/hooks.json names them for a trusted checkout",
       "body": "Brief 00. Claude Code runs two hook commands from .claude/settings.json: 'sync.py hook' at a turn's end (finished turns to Langfuse, where that is set up) and 'sync.py hook-commit' after a shell command (a commit made without sync.py gets its session's trace). A Codex session had neither. Both commands now take Codex's payload, whose transcript_path is the session's rollout: the session id is read from the rollout's name, and a Codex log is sent to Langfuse read whole, each prompt remembered by an id made of its turn and line (codex_rollout.claude_view gives prompts that id), so no turn is sent twice.\n\nWhere they run from was the question. Codex loads a project's hooks only from a project a person trusted, and runs only hooks a person reviewed; a loop's worker runs in a fresh sibling workspace, which is neither. Probes from a scratch folder (Codex CLI 0.169) showed: hooks given with -c run only with --dangerously-bypass-hook-trust; a project's .codex/hooks.json did not run even with that flag and a trust_level given with -c ('Untrusted project-local configuration is disabled'); a hook's command goes through a shell. The bypass flag would also run every other unreviewed hook, so agent_client.py runs the two commands itself after each Codex turn, with the payload Codex's hooks get: hook-commit when a command of the turn made a plain commit, then hook. A failure is written beside the attempt (*.hooks.log) and stops nothing; AGENT_CLIENT_HOOKS=off turns it off. .codex/hooks.json names the same two commands for a session a person runs in a trusted checkout; that Codex loads that file was not verified, since it needs a person's review in /hooks (the same definitions ran when given inline, and both commands pass a pipe-test with status 0 and no output).\n\nVerified by a real Codex turn through agent_client.py in a scratch jj repository with a recording stand-in for sync.py: both commands ran, given the real rollout named by the thread; by four new tests (the Stop payload and the commit hook through the stand-in, a hook that fails, the two hook files naming the same commands, a Codex log sent turn by turn by hook_export); and by the tests of what changed, 21 of 21 Python test files (python3 lib/tools/test_costs.py run --changed --rust-jobs 1 under an 8G cap).",
       "log_sha256": "f05af75c6619512ffa6ff1491e42f4d082eb7528774c3f2817f0c5ea1decc23a"
@@ -1709,7 +1709,7 @@
     {
       "change_id": "mzlwvtvvwuoqsoqvoxlzuzyosotswpxv",
       "commit_id": "4dbfda2c7cc14866743c612cbe4c7b5178e217eb",
-      "immutable": false,
+      "immutable": true,
       "summary": "Merge the single-agent-run line: /single-agent-run, the watcher improvements, Codex as a loop's client, operating notes",
       "body": "Merges the line built in the workspace single-agent-run into the default line, at the user's word (2026-11-18): the /single-agent-run skill, the watcher improvements of /run-brief, brief 00 (agent_client.py carries a loop's turns with Claude Code or Codex from the same instructions; ask_codex.py; Codex sessions traced, redacted under policy 5, counted in the time and loop statistics, and given the checkout's two hooks), and llm-dlc/operating-notes.md with its section in CLAUDE.md.\n\nThe lines had parted at 742ed2c6; the default line had gained 46 commits and this one 9. Outside the generated trace files they both changed lib/README.md, llm-dlc/README.md (both merged as the sum of the two sides: checked line by line against each side's own change) and lib/tests/costs.json, the only conflict. It is resolved as the default line's rows (34 Rust rows added, one removed, 199 rows re-measured there) plus the 80 Python rows this line added, in the estimator's order, with the summary counts of the ten test files this line touched recomputed; no row was changed by both sides, and the lint agrees (python3 lib/tools/test_costs.py lint). sync.py regenerate rewrote the generated trace files.\n\nThe default test run on the merged tree follows this commit (python3 lib/tools/default_run.py after-merge --final); its result is in the next commit or the report.",
       "log_sha256": "f05af75c6619512ffa6ff1491e42f4d082eb7528774c3f2817f0c5ea1decc23a"
@@ -1717,7 +1717,7 @@
     {
       "change_id": "mxoyskvpnqrlyqnktmunzuoksqzutvuy",
       "commit_id": "9fbf550ad9d3f3bff92223ebee894f7ba412727a",
-      "immutable": false,
+      "immutable": true,
       "summary": "A Codex turn's own compactions reach the loop, and a decision in the allow list that no person took is an error of check",
       "body": "Two things brief 00 had left open, taken up at the user's word and settled by probes of Codex CLI 0.169 from scratch folders (2026-11-19).\n\nAutomatic compaction in the middle of a turn: 'codex exec --json' prints nothing for one (a turn made to compact five times showed only its items), but the thread's log gets a 'compacted' line each time, with the size of the context it replaced. agent_client.py now reads the log as the turn goes (what was appended since the turn began, at each event and at the end) and prints Claude Code's compact_boundary for each, so a moonshot's compaction with no commit is put to its watcher under either client. The translation of a guessed stream event is gone, the stand-in compacts as Codex does, and the trace's boundary carries the size too. The loop's FEATURE_LOOP_AUTOCOMPACT is not passed to Codex: it is a size for Claude Code's window, and Codex keeps the model's own threshold.\n\nThe allow list and the reviewed findings: Codex's sandbox cannot keep them from a patch in a way the tools survive. A file marked 'read' in a permission profile was patched all the same (the automatic reviewer let the request through, as it did for the built-in read-only profile), and one marked 'deny' could not be read by any command, the repository's own tool included, with no way to ask. So the bar is in the tool, for every client: the three commands a person runs (approve and add of the allow list, accept of a review) record each decision they wrote on the machine (person-decisions.json in the state folder, a digest and never the value), and check reports as an error a decision in either file that is neither in the file as published (the newest immutable ancestors of @, asked only when the files change) nor in that record. A person who did take one says so with a new command, vouch, of the allow list, which agents are refused (the tool's own check, a deny rule in .claude/settings.json, a forbidden rule for Codex). The record is a file an agent could write: it catches a mistake or a habit, not a forgery. On this checkout every approved entry is published, so the check finds nothing.\n\nVerified by five new tests (a compaction read from a log once and only if it is the turn's; an approval a person made against one written by hand; a published decision and the cached answer; vouching; an accepted finding) and the changed ones (the adapter through the stand-in over three turns); test_review.py now keeps its state in a folder of its own, since a person's command writes the record. The tests of what changed pass, 23 of 23 Python test files (python3 lib/tools/test_costs.py run --changed --rust-jobs 1 under an 8G cap). The default test run on the merge before this commit passed, 58 of 58 (recorded for tree 93f833f7a9f1).",
       "log_sha256": "7e2551ec657f3acbdd40271e6c6496783fe074a6f5877cb9fb7138ee8c9b2e92"
@@ -1725,7 +1725,7 @@
     {
       "change_id": "nnrlosqoulwtrnxlltqykmoyluzrkwmk",
       "commit_id": "c255f4954b33bf1cd9d672c8d965ed4a618feaa2",
-      "immutable": false,
+      "immutable": true,
       "summary": "Propose the made-up rollout file name of test_codex.py for the allow list",
       "body": "Finding b24f7c44 (long-token) is the name of a made-up Codex rollout file in llm-dlc/tools/test_codex.py: the word rollout, a date and a made-up thread id, 64 characters in all, which the rules read as a long token wherever this session's log quotes the test. Checked with the masked view of the finding and by finding the one line of the test that holds it. It stays a warning of check until the user approves the proposal in their own terminal.",
       "log_sha256": "7e2551ec657f3acbdd40271e6c6496783fe074a6f5877cb9fb7138ee8c9b2e92"
@@ -1733,7 +1733,7 @@
     {
       "change_id": "wkxzqttmqqwmmuwvkwlvrvtnqlvuqlos",
       "commit_id": "b28d32f84d15b9c80378dd56d5e84920a87b0349",
-      "immutable": false,
+      "immutable": true,
       "summary": "After a live single-agent rehearsal with Codex on the merged line: an unknown spend is not nought, a silent hook leaves no file, and the probes' client version is 0.170",
       "body": "A two-cycle rehearsal of a single agent's run carried by Codex (run codex-check, Sol at low effort, in a disposable workspace, started from the default workspace with single_run.py start --client codex) passed on the merged line: both cycles committed with the worker's own trace lines, the loop compacted between them, the record names the thread, the loop statistics find the run by it (2 cycles, 2 commits, cost shown as unknown), the time report files the commit's wait under the tool that ran, and the check in its workspace reports 0 errors. Its commits are not part of this line.\n\nThree small things it showed. The run's status gave a spend of 0 when no cycle's dollars are known (every cycle of a Codex run): it is now null, as a cycle's cost already was. The adapter left an empty .hooks.log beside every attempt: a hook that ran and had nothing to say now leaves no file. And the client had updated itself to 0.170.0 on 2026-11-18, before the hook probes and all of the probes of 2026-11-19 (hooks, automatic compaction, permission profiles), which the pages and the two commits before this one put at 0.169: the pages now say 0.170. What was measured on 0.169 (a resumed turn keeps no sandbox, usage as the thread's total) is given every turn regardless, and the rehearsal on 0.170 went through with it.\n\nVerified by the two extended tests (the status of a Codex run through the real loop and the stand-in; no hook log after a quiet hook) and the tests of what changed, 20 of 20 Python test files (python3 lib/tools/test_costs.py run --changed --rust-jobs 1 under an 8G cap).",
       "log_sha256": "27c2466eead7451f9009da4c520d5920d5b4584884d19a442669c9028577c7cd"
@@ -1741,7 +1741,7 @@
     {
       "change_id": "lwptwvzvtunkkyksnonrulnsmwnkkumo",
       "commit_id": "7126eb6cf3f23dc82f21c1828e7d6c01e32dadb7",
-      "immutable": false,
+      "immutable": true,
       "summary": "Allow list: Filip Stankovic approved b24f7c44",
       "body": "Filip Stankovic approved 1 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\nb24f7c44  long-token  rol…6e (64 chars): A made-up rollout file name in llm-dlc/tools/test_codex.py (rollout-, a date and a made-up thread id, 64 characters): a test fixture, not a token",
       "log_sha256": "27c2466eead7451f9009da4c520d5920d5b4584884d19a442669c9028577c7cd"
@@ -1749,18 +1749,66 @@
     {
       "change_id": "pqnmyuxtmloqrtulkyxpwvszqsqotpts",
       "commit_id": "d40391c6811f39ab6ca9759d23bf0859f5ad8a8f",
-      "immutable": false,
+      "immutable": true,
       "summary": "A failed turn or compaction ends a loop needing attention, and a single agent's run is checked at its start, its restart and its landing",
       "body": "An outside review of the Codex work found four things; this takes up what bears on a single agent's run, with the user's decisions of 2026-11-19 (the rule for failed turns holds for every loop; the network is open to Codex workers; list prices for the two Codex models).\n\nA turn that did not end well is not a cycle. feature-loop.sh only logged a worker turn the client had ended with an error (a quota, an interruption) or cut off, and on the last cycle of a count it then skipped the watcher's verdict, compacted, summarized and exited 0; a failed compaction was logged and ignored. It now reads the turn's own event stream: no result, or a result that is not a success, stops the loop with status 1 and a record line that says the session needs attention, before any compaction or summary; a compaction that fails stops it too, after the summary when the run was ending anyway. A turn that ends well with no commit is judged as before. Claude Code's own compaction shows as a boundary in its stream (seen in the logs of earlier runs), which the rule takes for success.\n\nA single run's start and restart. A Codex run now gets the check a brief's Codex streams get, in the agent's folder: the client is there and is given the checkout's CLAUDE.md whole. A restart keeps the count of cycles and the queue's setting of the leg before unless given its own (--cycles N, 0 for none; --verification) and prints what it kept; before, a bare restart dropped the count and turned the queue back on. A restart of a Codex run whose record names a thread, and whose binding is gone, is refused: a new thread would be told to go on with work it never saw.\n\nDecisions only a person takes. One that no person is recorded as having taken now waives nothing (the redactor is given only published or recorded decisions, so the finding stays raised), a new question of sync.py (decisions, with --at REV for a commit) says which there are, and landing a workspace's line asks it first and leaves the line where it is. A push already refuses while check has the error. The user's own approval of b24f7c44, made in their terminal while this was written, left its record and the check finds nothing: the legitimate path works.\n\nAlso: the network is open inside a Codex worker's sandbox (probed: a host is not resolved without the setting, reached with it); AGENT_CLIENT_CODEX_SETTINGS gives a rehearsal extra client settings; OpenAI's list prices for gpt-6.2-astra and gpt-6.2-sol are in pricing.json (from developers.openai.com/api/docs/pricing, 2026-11-19), with the rates of a prompt over 272K tokens, which metrics.py applies per call; the Stop hook of .codex/hooks.json shows a message while it runs.\n\nVerified by eight new tests and the changed ones: through single_run.py with a one-cycle cap and the Codex stand-in, a turn that fails, one that is cut off, a compaction that fails and a quiet turn that ends well; a restart's kept limits; the instruction check and the lost thread; an unrecorded decision that waives nothing and a line that is asked; landing refused and then allowed; the long-context price. The tests of what changed pass, 26 of 26 Python test files (python3 lib/tools/test_costs.py run --changed --rust-jobs 1 under an 8G cap).",
       "log_sha256": "64bc1004e98b7404245a0b2257d225356a31be6448954a35d02f566cb570abdd"
     },
     {
       "change_id": "lzwlwmwznwxnnukuxnnqvtvlqrrnouvr",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "57e59ab69df3eb84ff75ce1e631486faaf4104d1",
+      "immutable": true,
       "summary": "Record session traces",
       "body": "Brings the published traces up to this point: conversation that came after a session's last commit, and sessions with no commit of their own.",
       "log_sha256": "c9efdb00aada87fc51825c6502430ffd95948d94f8ae9a6d4b71c1e58b3ad98f"
+    },
+    {
+      "change_id": "xmkuvovnprovyxpkwvklwovrkuuwoozy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Operating notes: the headless browser both clients now have is for reading only",
+      "body": "Since 2026-11-19 the machine has Google's Chrome for Testing headless shell (158.0.8127.36) at ~/.cache/in-the-loop/browsers/current, sandboxed through the AppArmor profile /etc/apparmor.d/chrome-for-testing (Ubuntu 23.10+ otherwise refuses the user namespaces Chromium's sandbox needs), and both Claude Code and Codex have it as the user-level MCP server chrome-devtools (chrome-devtools-mcp 1.13.0: headless, a new empty profile per session, Google's usage statistics off). The new section says when to use it (pages a plain fetch or a research API does not serve), that it reads only (no logins, accounts, forms or posts; never --no-sandbox), that downloads are untrusted data, that research notes name each source by URL, date and the hash of a downloaded file, and how a newer Chrome is installed beside the old one with the current link repointed. Machine-side setup (browser, AppArmor profile, both registrations) is outside the repository and was done at the user's word. Verified: test_agent_client.py (24, the only test that names the file) under a 4G cap with TMPDIR off /tmp; agent_client.py instructions --client codex reports no problems, with operating-notes.md among its sources; a Javadoc page rendered through the current link with the sandbox on.",
+      "log_sha256": "29e2f2d886b716edcbb8a114051453edec5c03c2fc2fda72558af242b8b61322"
+    },
+    {
+      "change_id": "msqwzmwyyzkokoznttolxylpyllmvkzz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A research router: where an agent looks on the web for outside evidence, by question and by task",
+      "body": "llm-dlc/research-router.md, adapted from a list of sources the user had prepared outside the repository. It routes a question (a JDK guarantee, JBMC's bounds, an SMT-LIB operator, an upstream commit, a Spring fix, a Commons contract, a published technique, a verifier comparison) and a task (tool comparisons, solver changes, class files, release Javadoc, paper search, publisher copies, servlet and HTTP contracts, advisories, Rust test time, proof and reporting designs, SARIF, client settings) to the hosts and primary sources to read for the version the example pins, and says what to bring back. Changed from the original to fit the project: the egress allow-list section and its sandbox fragment are left out, since the machine's outbound HTTPS is open (a closing paragraph says which hosts a list would need); the paid search API is left out, a client's own search tool or DuckDuckGo's HTML page standing in; publishers are open-access only, with no logins; example-specific remarks are made general (an example's notes hold those); links to a pinned GitHub tree are relative; and it adds how to read a source (fetch first, the chrome-devtools browser for rendered pages, page content as data, queries that carry nothing private). DBLP's API now answers scripts with a JavaScript bot check (HTTP 202), so the page says to read it through the browser or to use Crossref and Semantic Scholar, and its access check uses arXiv's API instead. The operating notes' browser section and the README's file list link the router. Verified: all 60 of the original's links were requested (57 answered 200, DBLP 202 with the bot check, ACM 403 to a script); the page's two access checks pass (the JBMC paper's title from arXiv, HTTP 200 at the Zenodo record); test_agent_client.py (24) under a 4G cap with TMPDIR off /tmp; agent_client.py instructions --client codex reports no problems.",
+      "log_sha256": "29e2f2d886b716edcbb8a114051453edec5c03c2fc2fda72558af242b8b61322"
+    },
+    {
+      "change_id": "ozxkyryovouyyummsnnlxlzxotntmlpv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Requests to the web are plain, few and one at a time, and a bot check or a refusal means another source",
+      "body": "Every request an agent sends leaves from the user's own address, and the user decided on 2026-11-19 that agents read the web only in plain, targeted requests at a low volume, so that no site takes the address for a scraper. A new section of the operating notes says so for every tool (curl, scripts, WebFetch, the headless browser): the tool's own User-Agent and no header naming the user or project; a bot check, CAPTCHA, 403, 451 or login wall ends the attempt at that host, with the content read elsewhere or reported unread (one retry of a 429 or 503 after Retry-After); one request at a time, a second apart per host, slower where an API publishes a limit (arXiv 3 s, NVD 6 s); a few dozen requests at most for a task, no crawling, bulk downloads or mirroring; a run's streams share the address; link checks follow the same rules. The research router points at the rule and no longer sends the browser at DBLP's bot check or ACM's 403: DBLP searches go to Crossref or Semantic Scholar, ACM papers to Crossref's metadata and the arXiv or author's copy. The rule's reason names the link check earlier this session that sent 12 requests at a time with a browser-like User-Agent. Verified: test_agent_client.py (24) under a 4G cap; agent_client.py instructions --client codex reports no problems.",
+      "log_sha256": "29e2f2d886b716edcbb8a114051453edec5c03c2fc2fda72558af242b8b61322"
+    },
+    {
+      "change_id": "qsumrnzpklvwvyzyptqmktxvtkwoumpu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The headless browser may read a site that refuses only scripts; a check meant for a person still ends the attempt",
+      "body": "The user refined the rule of the previous commit on 2026-11-19: a site that turns scripts away by their headers may be read with the headless browser, once and as it is (its own identity, no stealth plugins or flags that hide that it is headless), while a CAPTCHA, a 'verify you are human' box or puzzle, a login wall, HTTP 451 or a check that refuses the browser too ends the attempt, with the content read elsewhere or reported unread. The research router says the same, and records what one request each through the browser showed on 2026-11-19: DBLP's bot check failed the browser (an error page) and ACM held it at Cloudflare's 'Just a moment' page, so both rows keep their alternatives (Crossref and Semantic Scholar for DBLP; Crossref's metadata and the arXiv or author's copy for ACM). Verified: test_agent_client.py (24) under a 4G cap.",
+      "log_sha256": "29e2f2d886b716edcbb8a114051453edec5c03c2fc2fda72558af242b8b61322"
+    },
+    {
+      "change_id": "lmpmnqwmomyplqmsqkosqoslrztxmrso",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "The browser may navigate a site to retrieve material; only file uploads are turned off",
+      "body": "The user eased the read-only rule on 2026-11-19, to be reviewed later: clicking, typing into a search box, choosing from a menu or filling a form that finds or opens material are fine, as a person browsing would do them; logins, accounts and posting stay out, and upload_file is turned off for both clients (a deny rule mcp__chrome-devtools__upload_file in ~/.claude/settings.json, disabled_tools = [\"upload_file\"] for the server in ~/.codex/config.toml, which codex mcp get now reports). A new bullet says what a page returns is published, since each browser or fetch call and its result are in the session's redacted, published log: take the part a question needs rather than a whole page's snapshot. Verified: test_agent_client.py (24) under a 4G cap.",
+      "log_sha256": "29e2f2d886b716edcbb8a114051453edec5c03c2fc2fda72558af242b8b61322"
+    },
+    {
+      "change_id": "vtztqwklzztknykrkqqsylzsunztzzkv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the browser-notes line: the headless browser's operating notes and a research router",
+      "body": "Brings in the five commits the session in tmux window 3 made in the browser-notes workspace, all documentation. llm-dlc/operating-notes.md gains notes on the headless browser both clients have: what it may do (read and navigate a site to retrieve material; file uploads turned off), how requests to the web are made (plain, few, one at a time), and that a bot check or refusal means another source. llm-dlc/research-router.md is new: where an agent looks on the web for outside evidence, by question and by task. llm-dlc/README.md links it. The merge had no conflicts, and the generated trace files were regenerated.",
+      "log_sha256": "29e2f2d886b716edcbb8a114051453edec5c03c2fc2fda72558af242b8b61322"
     }
   ],
   "logs": {
@@ -1793,6 +1841,12 @@
       "lines": 2518,
       "gzip_bytes": 1171893,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/27c2466eead7451f9009da4c520d5920d5b4584884d19a442669c9028577c7cd.jsonl.gz"
+    },
+    "29e2f2d886b716edcbb8a114051453edec5c03c2fc2fda72558af242b8b61322": {
+      "bytes": 9165145,
+      "lines": 3315,
+      "gzip_bytes": 1644689,
+      "url": null
     },
     "2d880c8187c0ecb5eaa7ef48c34a1a70f48fe089833a751ccbb079c61c179390": {
       "bytes": 2097538,
