@@ -363,7 +363,15 @@ class A6ReceiptIntegrityOnTheReceipts(unittest.TestCase):
                     if c["status"] == "refuted":
                         self.assertTrue(e["counterexamples"])
                         if kind == "equivalence":
-                            self.assertEqual(e["replay"], {"by": "interpreter", "reproduced": True})
+                            # A claim with frozen observation descriptors or a bound environment is qualified
+                            # (workflow_ingest.verifier_outcome, qualification.check), which takes a JVM replay of the
+                            # witness: 197's paired array roots are replayed there by pairing.rs. Otherwise the
+                            # interpreter replays it.
+                            claimed = doc["claim"]["statement"]["claim"]
+                            qualified = claimed.get("boundEnvironment") or any(
+                                isinstance(o, dict) for o in claimed.get("observations") or [])
+                            self.assertEqual(e["replay"], {"by": "jvm" if qualified else "interpreter",
+                                                           "reproduced": True})
                 slices = {r for r, a in target["history"]["revisions"].items()
                           if (a.get("route") or target["preparation"]["route"]) == "source-slice"}
                 if target["preparation"]["route"] == "source-slice":

@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-19T21:06:29.663Z",
-  "duration_seconds": 358743,
+  "ended": "2026-11-19T21:12:49.712Z",
+  "duration_seconds": 359123,
   "stats": {
-    "turns": 307,
-    "api_calls": 1838,
-    "tool_calls": 1663,
+    "turns": 308,
+    "api_calls": 1862,
+    "tool_calls": 1687,
     "tool_errors": 29,
     "compactions": 8,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 4272,
-      "output_tokens": 1119748,
-      "cache_read_input_tokens": 445313699,
-      "cache_creation_input_tokens": 2842543
+      "input_tokens": 4322,
+      "output_tokens": 1127311,
+      "cache_read_input_tokens": 447592328,
+      "cache_creation_input_tokens": 2872603
     }
   },
   "tools": {
-    "Bash": 1577,
-    "Edit": 24,
+    "Bash": 1600,
+    "Edit": 25,
     "SendMessage": 17,
     "ToolSearch": 11,
     "Write": 8,
@@ -45,6 +45,7 @@
     "CLAUDE.md",
     "examples/schema/target.schema.json",
     "examples/tools/scaffold_example.py",
+    "examples/tools/targets/test_acceptance.py",
     "examples/tools/test_scaffold_example.py",
     "examples/tools/validate_example.py",
     "llm-dlc/prove-plan.schema.json",
@@ -172,24 +173,24 @@
     {
       "index": 8,
       "started": "2026-11-19T18:00:49.571Z",
-      "ended": "2026-11-19T21:06:29.663Z",
-      "turns": 4,
-      "api_calls": 13,
+      "ended": "2026-11-19T21:12:49.712Z",
+      "turns": 5,
+      "api_calls": 37,
       "usage": {
-        "input_tokens": 30,
-        "output_tokens": 5903,
-        "cache_read_input_tokens": 921227,
-        "cache_creation_input_tokens": 54267
+        "input_tokens": 80,
+        "output_tokens": 13466,
+        "cache_read_input_tokens": 3199856,
+        "cache_creation_input_tokens": 84327
       },
-      "peak_context_tokens": 81058
+      "peak_context_tokens": 111191
     }
   ],
   "log": {
-    "sha256": "eb0754e8c0d05b030b87b6043fb262865a97b5f4030dc5a527312b95bf5955a4",
-    "bytes": 36150626,
-    "lines": 15469,
-    "gzip_bytes": 6110077,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/eb0754e8c0d05b030b87b6043fb262865a97b5f4030dc5a527312b95bf5955a4.jsonl.gz"
+    "sha256": "e139ccec5bac4ea9270d98e4e112d1e457c27a798f3efd53fc8f01bc3c3dfb8c",
+    "bytes": 36548336,
+    "lines": 15670,
+    "gzip_bytes": 6163791,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/e139ccec5bac4ea9270d98e4e112d1e457c27a798f3efd53fc8f01bc3c3dfb8c.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3288,6 +3289,14 @@
       "summary": "VF-046: OpenAI's cybersecurity filter ended the Codex run's turn on the CVE examples",
       "body": "The single-agent Codex run foundation-domain-streams stopped with status 1 after 102 minutes of cycle 1, when Codex flagged the conversation for possible cybersecurity risk while the agent weighed example 289's authorization-bypass controls (I026). The finding records what happened, that any Codex turn deep in the CVE examples can be cut off the same way, that the failed turn reported no usage, and the choices for the user. The run's 18 commits were landed (ywptznkx) and the fast-follow run goes on in the same session.",
       "log_sha256": "eb0754e8c0d05b030b87b6043fb262865a97b5f4030dc5a527312b95bf5955a4"
+    },
+    {
+      "change_id": "zqpyvkxwqttvmvvpuqntsqmtyptkpwqo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Expect a JVM replay for qualified equivalence claims, and index 197's receipts",
+      "body": "The default run after landing the foundation-domain-streams run failed in examples/tools/targets/test_acceptance.py. The run's paired-array work (mpxnznrl) replays a witness on the JVM for claims with frozen observation descriptors, as qualification.check requires, so 197's two refuted equivalence receipts record replay.by jvm, where the test expected the interpreter for every native equivalence refutation; the test now expects the JVM for qualified claims (dict observations or a bound environment) and the interpreter otherwise. 197's three receipts, collected while the run went on, were not yet in examples/index.json; build.py --index-only brought it up to date (return-only established, right-root and both-roots refuted, as expected). targets.test_acceptance passes.",
+      "log_sha256": "e139ccec5bac4ea9270d98e4e112d1e457c27a798f3efd53fc8f01bc3c3dfb8c"
     }
   ],
   "logs": {
@@ -4154,6 +4163,12 @@
       "lines": 14436,
       "gzip_bytes": 5612717,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/e138f06191243098a8bcc553725a6ca45965865d2716d5d4b059ffcf9e479a42.jsonl.gz"
+    },
+    "e139ccec5bac4ea9270d98e4e112d1e457c27a798f3efd53fc8f01bc3c3dfb8c": {
+      "bytes": 36548336,
+      "lines": 15670,
+      "gzip_bytes": 6163791,
+      "url": null
     },
     "e1864145f1dc8677443d177f6faee417a7ff2d862c73da42977cfa69754c42a3": {
       "bytes": 32036484,

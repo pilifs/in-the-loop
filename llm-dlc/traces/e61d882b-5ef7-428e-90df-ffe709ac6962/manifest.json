@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-19T21:00:20.145Z",
-  "duration_seconds": 202957,
+  "ended": "2026-11-19T21:12:01.700Z",
+  "duration_seconds": 203658,
   "stats": {
-    "turns": 63,
-    "api_calls": 515,
-    "tool_calls": 514,
+    "turns": 64,
+    "api_calls": 517,
+    "tool_calls": 515,
     "tool_errors": 14,
     "compactions": 3,
     "peak_context_tokens": 565519,
     "usage": {
-      "input_tokens": 1156,
-      "output_tokens": 370844,
-      "cache_read_input_tokens": 136044183,
-      "cache_creation_input_tokens": 1783221
+      "input_tokens": 1162,
+      "output_tokens": 371725,
+      "cache_read_input_tokens": 136223027,
+      "cache_creation_input_tokens": 1783730
     }
   },
   "tools": {
-    "Bash": 451,
+    "Bash": 452,
     "Edit": 32,
     "Read": 16,
     "SendMessage": 5,
@@ -99,24 +99,24 @@
     {
       "index": 3,
       "started": "2026-11-19T17:21:27.141Z",
-      "ended": "2026-11-19T21:00:20.145Z",
-      "turns": 2,
-      "api_calls": 6,
+      "ended": "2026-11-19T21:12:01.700Z",
+      "turns": 3,
+      "api_calls": 8,
       "usage": {
-        "input_tokens": 12,
-        "output_tokens": 3679,
-        "cache_read_input_tokens": 418087,
-        "cache_creation_input_tokens": 62242
+        "input_tokens": 18,
+        "output_tokens": 4560,
+        "cache_read_input_tokens": 596931,
+        "cache_creation_input_tokens": 62751
       },
-      "peak_context_tokens": 88172
+      "peak_context_tokens": 89924
     }
   ],
   "log": {
-    "sha256": "329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da",
-    "bytes": 10907376,
-    "lines": 3881,
-    "gzip_bytes": 1979825,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da.jsonl.gz"
+    "sha256": "c985532ec2708e469f2dd9a9d422f25e330f995d7285d1ab8fdfacc7b5a9d9e5",
+    "bytes": 10926432,
+    "lines": 3893,
+    "gzip_bytes": 1982766,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/c985532ec2708e469f2dd9a9d422f25e330f995d7285d1ab8fdfacc7b5a9d9e5.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2007,6 +2007,14 @@
       "summary": "VF-046: OpenAI's cybersecurity filter ended the Codex run's turn on the CVE examples",
       "body": "The single-agent Codex run foundation-domain-streams stopped with status 1 after 102 minutes of cycle 1, when Codex flagged the conversation for possible cybersecurity risk while the agent weighed example 289's authorization-bypass controls (I026). The finding records what happened, that any Codex turn deep in the CVE examples can be cut off the same way, that the failed turn reported no usage, and the choices for the user. The run's 18 commits were landed (ywptznkx) and the fast-follow run goes on in the same session.",
       "log_sha256": "329d5a4c2a2813a398a901c9bd6b34497cf48a3b2a249fdd74075358003c54da"
+    },
+    {
+      "change_id": "zqpyvkxwqttvmvvpuqntsqmtyptkpwqo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Expect a JVM replay for qualified equivalence claims, and index 197's receipts",
+      "body": "The default run after landing the foundation-domain-streams run failed in examples/tools/targets/test_acceptance.py. The run's paired-array work (mpxnznrl) replays a witness on the JVM for claims with frozen observation descriptors, as qualification.check requires, so 197's two refuted equivalence receipts record replay.by jvm, where the test expected the interpreter for every native equivalence refutation; the test now expects the JVM for qualified claims (dict observations or a bound environment) and the interpreter otherwise. 197's three receipts, collected while the run went on, were not yet in examples/index.json; build.py --index-only brought it up to date (return-only established, right-root and both-roots refuted, as expected). targets.test_acceptance passes.",
+      "log_sha256": "c985532ec2708e469f2dd9a9d422f25e330f995d7285d1ab8fdfacc7b5a9d9e5"
     }
   ],
   "logs": {
@@ -2213,6 +2221,12 @@
       "lines": 962,
       "gzip_bytes": 572291,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/b5af6cc1f94e94095b8ebc94b74a0a2e59d82f678515beac1b1434da5afa9e76.jsonl.gz"
+    },
+    "c985532ec2708e469f2dd9a9d422f25e330f995d7285d1ab8fdfacc7b5a9d9e5": {
+      "bytes": 10926432,
+      "lines": 3893,
+      "gzip_bytes": 1982766,
+      "url": null
     },
     "c9efdb00aada87fc51825c6502430ffd95948d94f8ae9a6d4b71c1e58b3ad98f": {
       "bytes": 8778355,
