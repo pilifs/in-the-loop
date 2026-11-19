@@ -12,29 +12,30 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-19T23:16:56.267Z",
-  "duration_seconds": 5966,
+  "ended": "2026-11-19T23:20:20.101Z",
+  "duration_seconds": 6170,
   "stats": {
     "turns": 2,
-    "api_calls": 400,
-    "tool_calls": 1054,
+    "api_calls": 417,
+    "tool_calls": 1096,
     "tool_errors": 46,
     "compactions": 1,
     "peak_context_tokens": 410632,
     "usage": {
-      "input_tokens": 713698,
-      "output_tokens": 208327,
-      "cache_read_input_tokens": 104810496,
+      "input_tokens": 726370,
+      "output_tokens": 214852,
+      "cache_read_input_tokens": 110016256,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 642,
-    "exec": 394,
-    "apply_patch": 14,
-    "wait": 4
+    "Bash": 665,
+    "exec": 406,
+    "apply_patch": 16,
+    "wait": 9
   },
   "files_touched": [
+    "examples/310-threeten-complete-hours/README.md",
     "examples/310-threeten-complete-hours/controls/check_retries.py",
     "examples/310-threeten-complete-hours/records/midnight-witness.json",
     "examples/tools/build.py",
@@ -49,7 +50,10 @@
     "lib/tests/claims.rs",
     "lib/tests/fixtures/claims/claims/R.java",
     "lib/tests/fixtures/claims/claims/Samples.java",
-    "llm-dlc/tools/test_performance.py"
+    "llm-dlc/tools/test_performance.py",
+    "verification/README.md",
+    "verification/pipeline.py",
+    "verification/test_pipeline.py"
   ],
   "context_windows": [
     {
@@ -69,24 +73,24 @@
     {
       "index": 1,
       "started": "2026-11-19T22:50:27.520Z",
-      "ended": "2026-11-19T23:16:56.267Z",
+      "ended": "2026-11-19T23:20:20.101Z",
       "turns": 1,
-      "api_calls": 111,
+      "api_calls": 128,
       "usage": {
-        "input_tokens": 294874,
-        "output_tokens": 58114,
-        "cache_read_input_tokens": 22806656,
+        "input_tokens": 307546,
+        "output_tokens": 64639,
+        "cache_read_input_tokens": 28012416,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 300257
+      "peak_context_tokens": 311773
     }
   ],
   "log": {
-    "sha256": "494d38906766c5a7b4028b30b9b64e7116bc803dfa0b2f2c1de6d366c00549df",
-    "bytes": 10669183,
-    "lines": 3193,
-    "gzip_bytes": 3907088,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/494d38906766c5a7b4028b30b9b64e7116bc803dfa0b2f2c1de6d366c00549df.jsonl.gz"
+    "sha256": "a802a2f8c1d3c45b88ee0c9ab84f2b75d436bbb0e5833ba415b1f66cff238345",
+    "bytes": 10921003,
+    "lines": 3326,
+    "gzip_bytes": 4026124,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/a802a2f8c1d3c45b88ee0c9ab84f2b75d436bbb0e5833ba415b1f66cff238345.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -265,6 +269,22 @@
       "summary": "Pin the clock retry to the integrated checker (verification pending)",
       "body": "The previous job reached the numeric factory and then the duration regex because its polling runner picked up a temporary file-set-aside commit while a scoped commit was finishing. All original executions survive. Job 20261119-231539-retry-threetenbp-hours-after-exact-jdk-a explicitly selects a78b7348, whose library contains both changes, for the same five strict attempts and three JVM reviews.\n\nThe probe record preserves the checker outputs for each diagnostic, including two separate JVM initializer observations and their assumptions. The released probe binary and both JARs were checked by hash. The local development probe binary digests were not captured at launch. No tests read these two added files.",
       "log_sha256": "494d38906766c5a7b4028b30b9b64e7116bc803dfa0b2f2c1de6d366c00549df"
+    },
+    {
+      "change_id": "lkpyllkulpyssrpvwvxonwtxllwumrpx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "a802a2f8c1d3c45b88ee0c9ab84f2b75d436bbb0e5833ba415b1f66cff238345"
+    },
+    {
+      "change_id": "rrosmsokmqzztpowoqvlvulyszomsltl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Keep temporary jj file splits out of the verification queue",
+      "body": "A runner polling another workspace picked up a ThreeTenBP job while sync.py was setting aside files outside a scoped commit. The transient tree carried only the first checker change. For a runnable job the queue now checks which commit last touched its file, including jobs with explicit source revisions, and waits while that commit is the temporary set-aside.\n\nThe queue regression exercises two simultaneous views of the same job, both revision choices and a commit message with an adjacent metadata line. On the actual recorded history the queue skips 0c74dbf6 and finds a78b7348. All 24 selected test files passed, including the 40 pipeline tests.",
+      "log_sha256": "a802a2f8c1d3c45b88ee0c9ab84f2b75d436bbb0e5833ba415b1f66cff238345"
     }
   ],
   "logs": {
@@ -320,6 +340,12 @@
       "bytes": 10051541,
       "lines": 2927,
       "gzip_bytes": 3659669,
+      "url": null
+    },
+    "a802a2f8c1d3c45b88ee0c9ab84f2b75d436bbb0e5833ba415b1f66cff238345": {
+      "bytes": 10921003,
+      "lines": 3326,
+      "gzip_bytes": 4026124,
       "url": null
     },
     "de82592d43248306fb5aeec85c294457d2c2d4194def2e0b0bd2814462f66794": {

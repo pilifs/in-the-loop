@@ -12,19 +12,19 @@
     "codex-auto-review"
   ],
   "started": "2026-11-19T22:50:28.111Z",
-  "ended": "2026-11-19T23:16:44.673Z",
-  "duration_seconds": 1577,
+  "ended": "2026-11-19T23:17:55.255Z",
+  "duration_seconds": 1647,
   "stats": {
-    "turns": 5,
-    "api_calls": 8,
+    "turns": 7,
+    "api_calls": 10,
     "tool_calls": 0,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 79269,
+    "peak_context_tokens": 83278,
     "usage": {
-      "input_tokens": 80515,
-      "output_tokens": 970,
-      "cache_read_input_tokens": 312064,
+      "input_tokens": 84812,
+      "output_tokens": 1113,
+      "cache_read_input_tokens": 473344,
       "cache_creation_input_tokens": 0
     }
   },
@@ -34,24 +34,24 @@
     {
       "index": 0,
       "started": "2026-11-19T22:50:28.111Z",
-      "ended": "2026-11-19T23:16:44.673Z",
-      "turns": 5,
-      "api_calls": 8,
+      "ended": "2026-11-19T23:17:55.255Z",
+      "turns": 7,
+      "api_calls": 10,
       "usage": {
-        "input_tokens": 80515,
-        "output_tokens": 970,
-        "cache_read_input_tokens": 312064,
+        "input_tokens": 84812,
+        "output_tokens": 1113,
+        "cache_read_input_tokens": 473344,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 79269
+      "peak_context_tokens": 83278
     }
   ],
   "log": {
-    "sha256": "ffff2e43ec6a531d4ab53a2a08bf972b0f24bc54a635fcad51d95ca929915fc2",
-    "bytes": 670960,
-    "lines": 101,
-    "gzip_bytes": 223821,
-    "path": "llm-dlc/traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/logs/ffff2e43ec6a531d4ab53a2a08bf972b0f24bc54a635fcad51d95ca929915fc2.jsonl.gz"
+    "sha256": "2a6ffbd77941b59d811110c6f012b613a862597191e46597501f4215f56143c2",
+    "bytes": 728610,
+    "lines": 125,
+    "gzip_bytes": 233687,
+    "path": "llm-dlc/traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/logs/2a6ffbd77941b59d811110c6f012b613a862597191e46597501f4215f56143c2.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -86,9 +86,31 @@
       "summary": "Pin the clock retry to the integrated checker (verification pending)",
       "body": "The previous job reached the numeric factory and then the duration regex because its polling runner picked up a temporary file-set-aside commit while a scoped commit was finishing. All original executions survive. Job 20261119-231539-retry-threetenbp-hours-after-exact-jdk-a explicitly selects a78b7348, whose library contains both changes, for the same five strict attempts and three JVM reviews.\n\nThe probe record preserves the checker outputs for each diagnostic, including two separate JVM initializer observations and their assumptions. The released probe binary and both JARs were checked by hash. The local development probe binary digests were not captured at launch. No tests read these two added files.",
       "log_sha256": "ffff2e43ec6a531d4ab53a2a08bf972b0f24bc54a635fcad51d95ca929915fc2"
+    },
+    {
+      "change_id": "lkpyllkulpyssrpvwvxonwtxllwumrpx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "2a6ffbd77941b59d811110c6f012b613a862597191e46597501f4215f56143c2"
+    },
+    {
+      "change_id": "rrosmsokmqzztpowoqvlvulyszomsltl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Keep temporary jj file splits out of the verification queue",
+      "body": "A runner polling another workspace picked up a ThreeTenBP job while sync.py was setting aside files outside a scoped commit. The transient tree carried only the first checker change. For a runnable job the queue now checks which commit last touched its file, including jobs with explicit source revisions, and waits while that commit is the temporary set-aside.\n\nThe queue regression exercises two simultaneous views of the same job, both revision choices and a commit message with an adjacent metadata line. On the actual recorded history the queue skips 0c74dbf6 and finds a78b7348. All 24 selected test files passed, including the 40 pipeline tests.",
+      "log_sha256": "2a6ffbd77941b59d811110c6f012b613a862597191e46597501f4215f56143c2"
     }
   ],
   "logs": {
+    "2a6ffbd77941b59d811110c6f012b613a862597191e46597501f4215f56143c2": {
+      "bytes": 728610,
+      "lines": 125,
+      "gzip_bytes": 233687,
+      "url": null
+    },
     "6d8e8b8fecd69fd824b6442c09c186ac81a873bf1f416f61738ce9c0562dbfe1": {
       "bytes": 524579,
       "lines": 67,

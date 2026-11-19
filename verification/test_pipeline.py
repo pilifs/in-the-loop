@@ -537,6 +537,17 @@ class PipelineTest(unittest.TestCase):
             self.assertEqual([(j["id"], source) for j, _, source in jobs], [(job_id, None)], "no source looked up for a job that has run")
             self.assertEqual(pipeline.committed_jobs(head)[0][2], head)
 
+            queued = self.repo.submit("Written during the split", "--run", "true")
+            pinned = self.repo.submit("A pinned job during the split", "--run", "true", "--revision", head)
+            temporary = self.repo.commit("wip: another session's files\nmetadata after the first line")
+            (self.repo.dir / ".jj").mkdir()
+            self.assertEqual([job["id"] for job, _, _ in pipeline.committed_jobs(temporary)], [job_id])
+            # put_back() leaves those same files above the completed change for their author to commit.
+            self.repo.git("update-ref", "HEAD", head)
+            final = self.repo.commit("Commit both jobs")
+            sources = {job["id"]: source for job, _, source in pipeline.queued_jobs([temporary, final])}
+            self.assertEqual(sources, {job_id: head, queued: final, pinned: head})
+
     @cost("tool")
     def test_a_stopped_runner_cancels_its_job_and_the_next_run_takes_it_again(self):
         job_id = self.repo.submit("Interrupt me", "--run", "sleep 60")

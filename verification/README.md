@@ -186,6 +186,8 @@ for a longer one to end:
 
 - **The commit that queues a job announces it.** `sync.py commit` runs `pipeline.py nudge` when its commit changed
   `verification/jobs/` or `priorities.json`. A nudge only touches a file in the state directory.
+- A scoped commit temporarily sets other files aside in jj. The queue waits for a job in those files to receive
+  its own commit. This also applies to a job that names a source revision explicitly.
 - **A runner at work takes the job into its run.** `run` reads the queue at its start, at once after a nudge, and
   every `poll_seconds` (30) besides, and starts each new job beside the ones running, as the budget allows. It ends
   when nothing runs and nothing is queued, after one last look (`--watch` keeps it going).

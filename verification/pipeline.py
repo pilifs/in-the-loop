@@ -360,6 +360,7 @@ def committed_jobs(rev, needs_source=None):
     paths = sorted(p for p in listing if p.endswith(".json"))
     blobs = show_many(rev, paths)
     jobs = []
+    jj_workspace = (ROOT / ".jj").exists()
     for path in paths:
         try:
             job = json.loads(blobs[path])
@@ -369,8 +370,13 @@ def committed_jobs(rev, needs_source=None):
         if needs_source is not None and not needs_source(job.get("id") or Path(path).stem):
             jobs.append((job, path, None))
             continue
-        source = job.get("revision") or git("log", "-1", "--format=%H", rev, "--", path).stdout.strip()
-        jobs.append((job, path, resolve(source)))
+        change = git("log", "-1", "--format=%H%n%B", rev, "--", path).stdout
+        commit, _, message = change.partition("\n")
+        # sync.py set_aside() briefly places the files outside --only in an ancestor of @. They are still
+        # uncommitted work, even when some other workspace polls the queue during that split.
+        if jj_workspace and message.partition("\n")[0] == "wip: another session's files":
+            continue
+        jobs.append((job, path, resolve(job.get("revision") or commit)))
     return jobs
 
 
