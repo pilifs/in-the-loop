@@ -1,0 +1,285 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261119T222437Z-43ccb2eb",
+  "task": "powers-fix",
+  "claimKey": "837ceed6b2ee72a9",
+  "revisions": [
+    "fix"
+  ],
+  "startedAt": "2026-11-19T22:24:37.277707+00:00",
+  "retryOf": null,
+  "budget": {
+    "checkerSeconds": 1
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261119-221555-retain-a-measured-gcd-checker-timeout-an",
+  "sourceCommit": "f8b2e8d3eb3f63ae3281dbbf9a56a0cf146e8f16",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 1.8348
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 1.9015
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 1.9504
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 3.0277
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 3.163
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "fix": {
+      "revision": "dabf3a5beb9ab697d570154b9961078a8586c787",
+      "target": {
+        "class": "org.apache.commons.math.util.MathUtils",
+        "method": "gcd",
+        "descriptor": "(II)I",
+        "loadedFrom": "slice/fix.jar",
+        "classSha256": "a662836a91f75542df6394f05814c5d7974d426b584681d6273a9830d52b5d3d"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "1adbc9cf2977ba7b25c4dbee9c1a6a97274e0cbeafb9f1d23606db6de0ad286b",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "slice/fix.jar",
+          "sha256": "b6149ad671e272ad253356bcba4ae551b287a70a350b2bcae235d9d3aa8d3f14",
+          "role": "original",
+          "coordinates": null,
+          "origin": "an extracted source slice of dabf3a5beb9ab697d570154b9961078a8586c787: src/java/org/apache/commons/math/util/MathUtils.java, compiled by JDK 21 with --release 21 -parameters -g"
+        }
+      ]
+    }
+  },
+  "bindingId": "237e5e20a0e2f4b5c1be21f72bf9899adb803c694f629091210f3145f364ca71",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2caef2a40fd0685aad5fda14530705098cc4f91d/jvmcontract",
+    "prove",
+    "org.apache.commons.math.util.MathUtils#gcd(int, int)",
+    "--classes",
+    "prepare/fix/slice/fix.jar",
+    "--assume",
+    "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+    "--assert",
+    "result == (u < v ? u : v)",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "32",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "1",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "ba819f385f8446d28b2d4ca1d709649cf23329453daa7ae0570775b854765648",
+    "commit": "f8b2e8d3eb3f63ae3281dbbf9a56a0cf146e8f16",
+    "libTree": "2caef2a40fd0685aad5fda14530705098cc4f91d",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 32,
+      "maxArrayLength": 8
+    },
+    "timeout": 1,
+    "scope": {
+      "label": "extracted-source-slice",
+      "meaning": "an extracted source slice: the named files of the exact commit compiled alone against pinned published JARs, not the commit's own build; a claim about it is about those classes, and reaches the commit's build only through a recorded correspondence",
+      "method": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "revisions": {
+        "fix": {
+          "commit": "dabf3a5beb9ab697d570154b9961078a8586c787",
+          "loadedFrom": "slice/fix.jar",
+          "classSha256": "a662836a91f75542df6394f05814c5d7974d426b584681d6273a9830d52b5d3d",
+          "origin": "an extracted source slice of dabf3a5beb9ab697d570154b9961078a8586c787: src/java/org/apache/commons/math/util/MathUtils.java, compiled by JDK 21 with --release 21 -parameters -g",
+          "parameters": {
+            "names": [
+              "u",
+              "v"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "fix": [
+        {
+          "path": "slice/fix.jar",
+          "sha256": "b6149ad671e272ad253356bcba4ae551b287a70a350b2bcae235d9d3aa8d3f14",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "checkedEntry": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == (u < v ? u : v)"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "32"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "8"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "fix": "dabf3a5beb9ab697d570154b9961078a8586c787"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "4096",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2764m"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "fix": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2caef2a40fd0685aad5fda14530705098cc4f91d/jvmcontract",
+          "gaps",
+          "--target",
+          "org.apache.commons.math.util.MathUtils#gcd(int, int)",
+          "--classes",
+          "prepare/fix/slice/fix.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-fix.stdout",
+        "stderr": "verifier/probe-fix.stderr",
+        "gaps": []
+      }
+    },
+    "usage": {
+      "cpuSeconds": 1.0676,
+      "peakRssBytes": 120905728,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": true,
+  "usage": {
+    "cpuSeconds": 1.0676,
+    "peakRssBytes": 120905728,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 1.076,
+  "missing": [
+    "eligible conclusion"
+  ],
+  "receipt": "receipts/powers-fix/20261119T222437Z-43ccb2eb/result.json",
+  "preparedClaim": "b8cdf9222d34f16d",
+  "firstBlocker": "the engine did not finish within the time limit",
+  "endedAt": "2026-11-19T22:24:40.440755+00:00"
+}
