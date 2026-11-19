@@ -10,17 +10,17 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 
 | | |
 |---|---|
-| Sessions | 140, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-19 15:13 UTC |
-| Prompts | 3,533 |
-| Model calls | 35,651 |
-| Tool calls | 36,661 (647 failed) |
+| Sessions | 141, plus 2 empty |
+| Period | 2026-10-24 14:07 UTC to 2026-11-19 15:32 UTC |
+| Prompts | 3,534 |
+| Model calls | 35,693 |
+| Tool calls | 36,809 (652 failed) |
 | Compactions | 515 |
 | Subagents | 21 |
-| Tokens written | 34,655,980 |
-| Tokens read | 5,951,867,097 (98.1% from cache) |
-| Commits with a trace | 1,106 |
-| Log snapshots | 1,427 (3449.1 MB gzipped, 1,426 uploaded) |
+| Tokens written | 34,671,257 |
+| Tokens read | 5,956,888,680 (98.1% from cache) |
+| Commits with a trace | 1,107 |
+| Log snapshots | 1,428 (3449.7 MB gzipped, 1,426 uploaded) |
 
 ## Sessions
 
@@ -168,8 +168,9 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | open | 11 h 14 min | `claude-opus-5-5` | 151 | 1,400 | 1,362 | 14 | 23 | 273,336 | 28 |
 | 2026-11-17 12:56 UTC | [f28025bc-e46b-4a87-a943-bfb79dea5465](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | open | 14 h 21 min | `claude-opus-5-5` | 103 | 1,445 | 1,450 | 21 | 18 | 463,604 | 177 |
 | 2026-11-17 18:37 UTC | [Agent brief preservation work 287 308](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | ended | 2 h 45 min | `claude-fable-5-2` | 7 | 171 | 189 | 3 | 2 | 466,832 | 35 |
+| 2026-11-19 15:23 UTC | [01a1f467-856b-7d02-9458-ab076e5fef2f](01a1f467-856b-7d02-9458-ab076e5fef2f/summary.md) | open | 9 min | `gpt-6.2-astra` | 1 | 42 | 148 | 5 | 0 | 163,290 | 1 |
 
-Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
+Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md), [`01a1f467`](01a1f467-8590-7ff3-bcdd-e52e5af7e3bc/summary.md).
 
 ## Tokens
 
@@ -317,25 +318,28 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 1,054,331 | 2,888 | 3,460,090 | 172,015,121 | 98.0% | 166 |
 | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 1,190,991 | 2,936 | 3,543,419 | 217,152,324 | 98.4% | 185 |
 | [`88045564`](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | 267,328 | 348 | 615,072 | 43,806,783 | 98.6% | 166 |
+| [`01a1f467`](01a1f467-856b-7d02-9458-ab076e5fef2f/summary.md) | 15,277 | 152,591 | 0 | 4,868,992 | 97.0% | 329 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 32,694 | 89.2% | 140 |
+| `Bash` | 32,793 | 89.1% | 141 |
 | `Read` | 1,443 | 3.9% | 61 |
-| `Edit` | 1,159 | 3.2% | 59 |
+| `Edit` | 1,159 | 3.1% | 59 |
 | `Write` | 737 | 2.0% | 58 |
 | `ToolSearch` | 206 | 0.6% | 47 |
 | `Monitor` | 148 | 0.4% | 52 |
 | `AskUserQuestion` | 66 | 0.2% | 16 |
 | `TaskStop` | 52 | 0.1% | 22 |
 | `SendMessage` | 46 | 0.1% | 10 |
+| `exec` | 42 | 0.1% | 1 |
 | `WebFetch` | 39 | 0.1% | 9 |
 | `Agent` | 21 | 0.1% | 8 |
 | `ScheduleWakeup` | 18 | 0.0% | 5 |
 | `ListAgents` | 12 | 0.0% | 4 |
 | `Skill` | 12 | 0.0% | 9 |
+| `apply_patch` | 7 | 0.0% | 1 |
 | `bash` | 5 | 0.0% | 5 |
 | `WebSearch` | 3 | 0.0% | 2 |
 
@@ -1451,6 +1455,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 1104 | [`2129e2c9`](https://github.com/pilifs/in-the-loop/commit/2129e2c9c176b9eac93718b06f7a28788caccb9a) | Merge the browser-notes line: the headless browser's operating notes and a research router | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/e138f06191243098a8bcc553725a6ca45965865d2716d5d4b059ffcf9e479a42.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/29e2f2d886b716edcbb8a114051453edec5c03c2fc2fda72558af242b8b61322.jsonl.gz)) |
 | 1105 | [`2fd3369f`](https://github.com/pilifs/in-the-loop/commit/2fd3369fb9c884f6bdcbb6549426382d762b1c4f) | Record session traces | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/2da31700b18b229824139840a18a068fafa0ccdd00adcc52e232f6575df3be39.jsonl.gz)) |
 | 1106 | change `mwmkmrmr` | The foundation-first plan and its three domain workstreams, as a brief for one agent's run | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/cb3c7980cdcaab8bc9fa148730946cac36d46521600d7a94531489bece81f263.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/29e2f2d886b716edcbb8a114051453edec5c03c2fc2fda72558af242b8b61322.jsonl.gz)) |
+| 1107 | change `puyvvspt` | Pin the starting locale of the initializer mutation control | [`01a1f467`](01a1f467-856b-7d02-9458-ab076e5fef2f/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f467-856b-7d02-9458-ab076e5fef2f/82960a82bf46d902058b26ee569dd181d29caa7f14a4267b6696e5bbaf45b4dc.jsonl.gz)) |
 
 ## Logs
 
@@ -1598,6 +1603,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 27 | 27 | 82.8 MB | [`2a57c9145b73`](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/2a57c9145b731f5630b7d63c9e4dd9e494aa5d928201a4ec0c936f217b394fc0.jsonl.gz) |
 | [`f28025bc`](f28025bc-e46b-4a87-a943-bfb79dea5465/summary.md) | 26 | 26 | 78.1 MB | [`48bdfe2f2e27`](https://terminalvalue.net/raw-traces/f28025bc-e46b-4a87-a943-bfb79dea5465/48bdfe2f2e27f2231a6bd7232fa183b6eef68c82fa245ca023fc1922a666d3fa.jsonl.gz) |
 | [`88045564`](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | 15 | 15 | 9.0 MB | [`75a9c12a10b4`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/75a9c12a10b4d8479b8b8c76ac481f00672cf19f5b3cd00efc5aa00f2a9eef13.jsonl.gz) |
+| [`01a1f467`](01a1f467-856b-7d02-9458-ab076e5fef2f/summary.md) | 1 | 0 | 0.6 MB | `82960a82bf46`, not uploaded |
 
 ## Session notes
 

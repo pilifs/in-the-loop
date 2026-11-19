@@ -316,7 +316,7 @@ fn an_initializer_that_writes_beside_its_own_class_is_refused_or_carried() {
     let mut said = Vec::new();
     for (entry, assert, class) in [("bc.M#rehooked", "result == 1", "bc.Rehooked"), ("bc.M#boxed", "result == 0", "bc.Boxed"), ("bc.M#relocaled", "result == 105", "bc.Relocaled")] {
         let out = Command::new(env!("CARGO_BIN_EXE_jvmcontract"))
-            .env_remove("JAVA_TOOL_OPTIONS")
+            .env("JAVA_TOOL_OPTIONS", "-Duser.language=en -Duser.country=US")
             .args(["prove", entry, "--assert", assert, "--observed-initializer", class, "--engine", "native", "--jbmc", NO_JBMC, "--classes"])
             .arg(&classes)
             .arg("--work")

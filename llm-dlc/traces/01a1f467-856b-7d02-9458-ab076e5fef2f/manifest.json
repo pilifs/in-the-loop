@@ -1,0 +1,97 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "01a1f467-856b-7d02-9458-ab076e5fef2f",
+  "status": "open",
+  "title": null,
+  "first_prompt": "Here's a critical brief to move our project forward. It was written for multiple agents, but I'd like you to execute all of it.\n\nThe brief's primary objective is to close the gap between us and indust",
+  "client": {
+    "tool": "codex",
+    "version": "0.170.0"
+  },
+  "models": [
+    "gpt-6.2-astra"
+  ],
+  "started": "2026-11-19T15:23:07.880Z",
+  "ended": "2026-11-19T15:32:22.819Z",
+  "duration_seconds": 555,
+  "stats": {
+    "turns": 1,
+    "api_calls": 42,
+    "tool_calls": 148,
+    "tool_errors": 5,
+    "compactions": 0,
+    "peak_context_tokens": 163290,
+    "usage": {
+      "input_tokens": 152591,
+      "output_tokens": 15277,
+      "cache_read_input_tokens": 4868992,
+      "cache_creation_input_tokens": 0
+    }
+  },
+  "tools": {
+    "Bash": 99,
+    "exec": 42,
+    "apply_patch": 7
+  },
+  "files_touched": [
+    "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/history/2026-11-18-preservation-profile.json",
+    "examples/tools/targets/claim_history.py",
+    "examples/tools/targets/test_claim_history.py",
+    "examples/tools/targets/workflow_handoff.py",
+    "lib/benchmark/README.md",
+    "lib/benchmark/run.py",
+    "lib/tests/observed_countermodels.rs"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-19T15:23:07.880Z",
+      "ended": "2026-11-19T15:32:22.819Z",
+      "turns": 1,
+      "api_calls": 42,
+      "usage": {
+        "input_tokens": 152591,
+        "output_tokens": 15277,
+        "cache_read_input_tokens": 4868992,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 163290
+    }
+  ],
+  "log": {
+    "sha256": "82960a82bf46d902058b26ee569dd181d29caa7f14a4267b6696e5bbaf45b4dc",
+    "bytes": 1907908,
+    "lines": 357,
+    "gzip_bytes": 603333,
+    "path": "llm-dlc/traces/01a1f467-856b-7d02-9458-ab076e5fef2f/logs/82960a82bf46d902058b26ee569dd181d29caa7f14a4267b6696e5bbaf45b4dc.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "spxvulowpxlslnsspromxrxyvqumvsrx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "82960a82bf46d902058b26ee569dd181d29caa7f14a4267b6696e5bbaf45b4dc"
+    },
+    {
+      "change_id": "puyvvsptynuozmpnqkuyovlmyzmvowuz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Pin the starting locale of the initializer mutation control",
+      "body": "The JVM on this host starts in en. The control correctly refused the locale change, but its diagnostic check expected a transition from en-US. Set the fixture JVM's language and country so that both ends of the transition are reproducible. The targeted observed_countermodels test failed before the change and now passes.",
+      "log_sha256": "82960a82bf46d902058b26ee569dd181d29caa7f14a4267b6696e5bbaf45b4dc"
+    }
+  ],
+  "logs": {
+    "82960a82bf46d902058b26ee569dd181d29caa7f14a4267b6696e5bbaf45b4dc": {
+      "bytes": 1907908,
+      "lines": 357,
+      "gzip_bytes": 603333,
+      "url": null
+    }
+  },
+  "redaction_policy": 5,
+  "generator": "llm-dlc/tools/sync.py"
+}
