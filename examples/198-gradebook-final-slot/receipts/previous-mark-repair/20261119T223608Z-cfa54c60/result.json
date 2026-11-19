@@ -1,0 +1,532 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "206f2122dfc42968",
+    "format": 1,
+    "example": "198",
+    "statement": {
+      "approach": "target",
+      "task": "previous-mark-repair",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "gradebook.ScoreSheet#write([III)I",
+      "revisions": [
+        "repair"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "previous-mark-repair",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "gradebook.ScoreSheet#write([III)I",
+        "file": "claims/previous-mark.json",
+        "sha256": "08c70a356556659f7e4f33b54c797c7face0345b3c3f71cc536a2d5d878e16e7",
+        "property": "previous-mark",
+        "claimKind": "property",
+        "statement": "Return the value originally in the selected slot.",
+        "assume": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+        "assert": "result == \\old(scores[slot])",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 8,
+          "maxArrayLength": 3
+        },
+        "explicitBounds": {
+          "maxArrayLength": 3,
+          "unwind": 8
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "finite-driver",
+            "kind": "driver",
+            "path": "driver/gradebook/GradeCases.java",
+            "sha256": "f0da8c690cd70ebd2704f8d2f10b1638d53ee014bad75ab3bb2ca2ee91cd6e49"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "ae861a71a63724d7f66330f3a7e32f6a547b525e76768dc4d21641fd9c526b05"
+          }
+        ],
+        "key": "4f9c71d0170e13d0"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 3
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "d87797c62633f0820058290d2fb4a8dfd528dca8c35bcc90a2d447668096131a",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "previous-mark-repair",
+      "sidecar": "e3fa43576f6f33746542f2fe3267e4cea21f747ae5fb4cc32cb414aafedbf236",
+      "revisions": {
+        "repair": "320a63392aa19b680d933406ab4f2944076ab53a"
+      },
+      "dependencies": [
+        {
+          "revision": "repair",
+          "position": 0,
+          "role": "driver",
+          "sha256": "97c0611e1a082ccf43299fb8bd5707be7722e4456c3858f92b14f60d1e136f87"
+        },
+        {
+          "revision": "repair",
+          "position": 1,
+          "role": "original",
+          "sha256": "a173dc403a79ee406d1fe9bae6fc498e5ce7be89e05aec16761cee95da49b125"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/previous-mark.json": "08c70a356556659f7e4f33b54c797c7face0345b3c3f71cc536a2d5d878e16e7",
+        "controls/oracle.py": "ae861a71a63724d7f66330f3a7e32f6a547b525e76768dc4d21641fd9c526b05",
+        "driver/gradebook/GradeCases.java": "f0da8c690cd70ebd2704f8d2f10b1638d53ee014bad75ab3bb2ca2ee91cd6e49"
+      },
+      "claimKey": "4f9c71d0170e13d0"
+    }
+  },
+  "attempt": {
+    "id": "20261119T223608Z-cfa54c60",
+    "claim": "206f2122dfc42968",
+    "startedAt": "2026-11-19T22:36:08+00:00",
+    "seconds": 0.2,
+    "engine": "native",
+    "options": [
+      "prove",
+      "gradebook.ScoreSheet#write(int[], int, int)",
+      "--classes",
+      "prepare/repair/repair.jar",
+      "--assume",
+      "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+      "--assert",
+      "result == \\old(scores[slot])",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "8",
+      "--max-array-length",
+      "3",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "ba819f385f8446d28b2d4ca1d709649cf23329453daa7ae0570775b854765648"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "a8347afc0dd6d667979c40673c0cd34aeeeff742b78463ab784b2a558e235b2d",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261119-223013-gradebook-independent-previous-value-pos",
+      "sourceCommit": "0622a8bf64eda6106832dfb38efa4a712abcf419",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261119-223013-gradebook-independent-previous-value-pos"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control repair on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-repair-jdk21.stdout",
+        "stderr": "records/control-repair-jdk21.stderr"
+      },
+      {
+        "name": "verifier repair on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.041,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 8,
+      "maxArrayLength": 3,
+      "complete": true
+    }
+  },
+  "conclusion": {
+    "claim": "206f2122dfc42968",
+    "attempt": "20261119T223608Z-cfa54c60",
+    "status": "established",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == \\old(scores[slot])",
+        "status": "established",
+        "evidence": {
+          "harness": null,
+          "assert": "result == \\old(scores[slot])",
+          "assume": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+          "verdict": "verified",
+          "domain": "scores: int[] of length ≤ 3, not null × slot: int × score: int",
+          "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over scores: int[] of length ≤ 3, not null × slot: int × score: int in 0.0 s; loops unwound 8 times with unwinding assertions",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.005,
+            "properties": 1,
+            "unwind": 8,
+            "maxArrayLength": 3,
+            "stage": null,
+            "deadlineSeconds": 600.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 600.0,
+                "seconds": 0.004,
+                "ended": "verified",
+                "ending": "verified",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.003,
+                  "encoding": 0.001,
+                  "solving": 0.001,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 1576,
+                  "clauses": 4870
+                }
+              },
+              {
+                "checker": "native",
+                "purpose": "probe",
+                "stage": null,
+                "budgetSeconds": 599.995,
+                "seconds": 0.002,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.002,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 1148,
+                  "clauses": 3294
+                }
+              }
+            ],
+            "native": {
+              "paths": 17,
+              "merges": 0,
+              "solverCalls": 34,
+              "solvingSeconds": 0.00066633,
+              "gatesEvaluated": 2082,
+              "evaluatingSeconds": 3.6187e-05,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 1576,
+              "clauses": 4870,
+              "seconds": 0.004385139,
+              "loadingSeconds": 2.695e-05,
+              "decodingSeconds": 6.954e-05,
+              "encodingSeconds": 0.000662301,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict"
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "scores",
+                  "type": "int[]",
+                  "kind": "array",
+                  "null": false,
+                  "maxLength": 3
+                },
+                {
+                  "name": "slot",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "score",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "scores: int[] of length ≤ 3, not null × slot: int × score: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == \\old(scores[slot])",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 8,
+              "maxArrayLength": 3,
+              "complete": true
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+              "classes": 37,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null,
+            "vacuity": {
+              "status": "non-vacuous",
+              "basis": "probe",
+              "text": "Some input in the domain reaches the calls: the tool's own checker found write(scores=[0], slot=0, score=0).",
+              "witness": "write(scores=[0], slot=0, score=0)"
+            }
+          }
+        }
+      }
+    ],
+    "label": "✓ Verified",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 19,
+      "code": "\"repair\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over scores: int[] of length ≤ 3, not null × slot: int × score: int in 0.0 s; loops unwound 8 times with unwinding assertions",
+    "problem": null,
+    "domain": "scores: int[] of length ≤ 3, not null × slot: int × score: int",
+    "replay": null,
+    "property": {
+      "assert": "result == \\old(scores[slot])",
+      "assume": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))"
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "scores",
+            "type": "int[]",
+            "kind": "array",
+            "null": false,
+            "maxLength": 3
+          },
+          {
+            "name": "slot",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "score",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "scores: int[] of length ≤ 3, not null × slot: int × score: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == \\old(scores[slot])",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 3,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+        "classes": 37,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found write(scores=[0], slot=0, score=0).",
+        "witness": "write(scores=[0], slot=0, score=0)"
+      }
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "274d7798bf8e250fcef02f0e2a10c4466154dbf7bc39d41e8f3d97365f741da4",
+        "bytes": 89621
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "74285f456ba7db7900f2dba9468ea6a31cedfe6964a305891eb2492b448b7213",
+        "bytes": 637
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "918a03465dd6b3397657787fc8884deb6b48ebafc091a99b25272b13b77be30d",
+        "bytes": 1971
+      },
+      {
+        "path": "records/control-repair-jdk21.stdout",
+        "sha256": "dacabc1347e193ee842debf69e6a9a0610d6589ea20d9ed18d163d149201324c",
+        "bytes": 20682
+      },
+      {
+        "path": "records/control-repair-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "8408589b7bac204a7cbf385ee57b0e2961ffa84a9f85bb01e232a29fea844c32",
+        "bytes": 75105
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "0f9f367221af8563183ad4b4819f9854c8fefde3c71e623b43bdc4ae5e3980b7",
+        "bytes": 6664
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "96c1d391aa7160903b6cba93a19b4cdeb1ab212860e07ace17d616ca1f9ba27d",
+        "bytes": 14500
+      }
+    ]
+  }
+}
