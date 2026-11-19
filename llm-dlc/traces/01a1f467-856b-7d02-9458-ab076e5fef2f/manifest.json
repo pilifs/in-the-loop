@@ -12,30 +12,34 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T15:23:07.880Z",
-  "ended": "2026-11-19T15:49:19.256Z",
-  "duration_seconds": 1571,
+  "ended": "2026-11-19T15:58:47.438Z",
+  "duration_seconds": 2140,
   "stats": {
     "turns": 1,
-    "api_calls": 130,
-    "tool_calls": 340,
-    "tool_errors": 8,
+    "api_calls": 169,
+    "tool_calls": 420,
+    "tool_errors": 12,
     "compactions": 0,
-    "peak_context_tokens": 275789,
+    "peak_context_tokens": 317535,
     "usage": {
-      "input_tokens": 271808,
-      "output_tokens": 43439,
-      "cache_read_input_tokens": 24117632,
+      "input_tokens": 316020,
+      "output_tokens": 60255,
+      "cache_read_input_tokens": 35606656,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 187,
-    "exec": 129,
-    "apply_patch": 23,
-    "wait": 1
+    "Bash": 225,
+    "exec": 167,
+    "apply_patch": 26,
+    "wait": 2
   },
   "files_touched": [
     "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/history/2026-11-18-preservation-profile.json",
+    "examples/308-commons-text-longest-common-subsequence/pilot.py",
+    "examples/308-commons-text-longest-common-subsequence/score/LcsScore.java",
+    "examples/308-commons-text-longest-common-subsequence/score/ScoreOracle.java",
+    "examples/308-commons-text-longest-common-subsequence/sources.lock.json",
     "examples/README.md",
     "examples/tools/accept.py",
     "examples/tools/targets/claim_history.py",
@@ -51,30 +55,31 @@
     "lib/tests/record_countermodels.rs",
     "llm-dlc/tools/changes.py",
     "llm-dlc/tools/test_changes.py",
+    "verification/README.md",
     "verification/findings.md"
   ],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-19T15:23:07.880Z",
-      "ended": "2026-11-19T15:49:19.256Z",
+      "ended": "2026-11-19T15:58:47.438Z",
       "turns": 1,
-      "api_calls": 130,
+      "api_calls": 169,
       "usage": {
-        "input_tokens": 271808,
-        "output_tokens": 43439,
-        "cache_read_input_tokens": 24117632,
+        "input_tokens": 316020,
+        "output_tokens": 60255,
+        "cache_read_input_tokens": 35606656,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 275789
+      "peak_context_tokens": 317535
     }
   ],
   "log": {
-    "sha256": "c7d22a1d6a067b1a2d2a3b403bb0a6bb898b1b8a21aef6a574382c7920c21389",
-    "bytes": 3776841,
-    "lines": 993,
-    "gzip_bytes": 1291179,
-    "path": "llm-dlc/traces/01a1f467-856b-7d02-9458-ab076e5fef2f/logs/c7d22a1d6a067b1a2d2a3b403bb0a6bb898b1b8a21aef6a574382c7920c21389.jsonl.gz"
+    "sha256": "2a4b9f36967354a66ee690b2ecd802e2fc53c9159999f74a76634961fb295043",
+    "bytes": 4580066,
+    "lines": 1279,
+    "gzip_bytes": 1611084,
+    "path": "llm-dlc/traces/01a1f467-856b-7d02-9458-ab076e5fef2f/logs/2a4b9f36967354a66ee690b2ecd802e2fc53c9159999f74a76634961fb295043.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -103,23 +108,37 @@
       "log_sha256": "ea36573a25384850080ebdcb8aa9b252db55dd974920fa31a3a885dde7bd8b47"
     },
     {
-      "change_id": "rukzxzwwymvqwsusrvwqkqqpvpytuvqr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "c7d22a1d6a067b1a2d2a3b403bb0a6bb898b1b8a21aef6a574382c7920c21389"
-    },
-    {
       "change_id": "ttlvlsktmpsqlqqypuvqmnurvprwvzmw",
       "commit_id": null,
       "immutable": false,
       "summary": "Challenge shared call results at a heap merge (verification pending)",
       "body": "Run the actual absorb operation on two heaps whose string results are numbered in opposite orders. Compare branch-dependent strings and saved array results on the public checker and JVM. The three controls were refuted. The allocation and recursion cases gave named refusals. Replace the old challenge script's allocating positive with a scalar loop that actually uses the rule. A capped probe verified it with 88 related calls.\n\nVerification pending in job 20261119-154132-challenge-i028-and-i029-on-the-shared-ca for the full hand script. The changed Rust suite passed, with one encoding-time test passing on its automatic retry. The focused JVM, native, merge and test-inventory checks passed.",
       "log_sha256": "c7d22a1d6a067b1a2d2a3b403bb0a6bb898b1b8a21aef6a574382c7920c21389"
+    },
+    {
+      "change_id": "rsxplxmosswuuwknpqxxkqswymplmruw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "2a4b9f36967354a66ee690b2ecd802e2fc53c9159999f74a76634961fb295043"
+    },
+    {
+      "change_id": "ywllyqnwqxosmuwlzkrrsvkmyttvopvz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Recheck the frozen preservation tasks (verification pending)",
+      "body": "The native shared-callee challenge passed on revision 345f6fe4. Reuse that checker for the five original frozen comparisons. Each job retains the previous inputs, deadline and resource settings, with its own output path so the older results remain available. The five job schemas, commands and budgets were checked against their predecessors.\n\nVerification pending in jobs 20261119-155814-foundation-requalification-of-287-preser, 20261119-155814-foundation-requalification-of-289-preser, 20261119-155814-foundation-requalification-of-290-preser, 20261119-155814-foundation-requalification-of-307-preser and 20261119-155814-foundation-requalification-of-307-mutant.",
+      "log_sha256": "2a4b9f36967354a66ee690b2ecd802e2fc53c9159999f74a76634961fb295043"
     }
   ],
   "logs": {
+    "2a4b9f36967354a66ee690b2ecd802e2fc53c9159999f74a76634961fb295043": {
+      "bytes": 4580066,
+      "lines": 1279,
+      "gzip_bytes": 1611084,
+      "url": null
+    },
     "82960a82bf46d902058b26ee569dd181d29caa7f14a4267b6696e5bbaf45b4dc": {
       "bytes": 1907908,
       "lines": 357,

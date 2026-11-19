@@ -1,0 +1,55 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261119-155814-foundation-requalification-of-290-preser",
+  "title": "Foundation requalification of 290 preservation",
+  "description": "After the independent shared-callee challenge passed, repeat only the frozen preservation comparison for example 290 on the same checker revision. Use the predecessor job's semantic bounds, artifacts, deadline and machine budget. Collect under a fresh output path to preserve the earlier evidence.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "B11"
+  ],
+  "links": {
+    "jobs": [
+      "20261117-213024-examples-289-and-290-preservation-again"
+    ],
+    "examples": [
+      "290"
+    ],
+    "commits": [
+      "345f6fe4259dff4a7b940510d18f2d4c2e0defaa"
+    ]
+  },
+  "expected": "The releases agree on the frozen preservation domain, subject to every assumption in the collected outcome.",
+  "submitted": {
+    "at": "2026-11-19T15:58:14+00:00",
+    "session": "01a1f467-856b-7d02-9458-ab076e5fef2f"
+  },
+  "revision": "345f6fe4259dff4a7b940510d18f2d4c2e0defaa",
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "patch",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "10m",
+    "timeout": "1h",
+    "notes": "capped probes: 289 about 60 s, 290 seconds, under 4 GiB; plus the release build and the pinned JARs"
+  },
+  "steps": [
+    {
+      "name": "290 preservation at its frozen bounds",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py preservation --timeout 1800 --work verification/.work-290/foundation-i028",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-290/foundation-i028/preservation/outcome.json",
+    "verification/.work-290/foundation-i028/preservation/evidence.json",
+    "verification/.work-290/foundation-i028/preservation/work/pair/RegressionPair.java"
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261119-155814-foundation-requalification-of-287-preser",
+  "title": "Foundation requalification of 287 preservation",
+  "description": "After the independent shared-callee challenge passed, repeat only the frozen preservation comparison for example 287 on the same checker revision. Use the predecessor job's semantic bounds, artifacts, deadline and machine budget. Collect under a fresh output path to preserve the earlier evidence.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "B9",
+    "B11"
+  ],
+  "links": {
+    "jobs": [
+      "20261117-230459-example-287-preservation-at-the-frozen-b"
+    ],
+    "examples": [
+      "287"
+    ],
+    "commits": [
+      "345f6fe4259dff4a7b940510d18f2d4c2e0defaa"
+    ]
+  },
+  "expected": "The releases agree on the frozen preservation domain, subject to every assumption in the collected outcome.",
+  "submitted": {
+    "at": "2026-11-19T15:58:14+00:00",
+    "session": "01a1f467-856b-7d02-9458-ab076e5fef2f"
+  },
+  "revision": "345f6fe4259dff4a7b940510d18f2d4c2e0defaa",
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "6G",
+    "duration": "10m",
+    "timeout": "2h",
+    "notes": "a capped probe verified in 112 s under 4 GB; plus the release build and the fetch of the four pinned JARs"
+  },
+  "steps": [
+    {
+      "name": "287 preservation at its frozen bounds",
+      "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py preservation --timeout 3600 --work verification/.work-287/foundation-i028",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-287/foundation-i028/preservation/outcome.json",
+    "verification/.work-287/foundation-i028/preservation/evidence.json",
+    "verification/.work-287/foundation-i028/preservation/stderr.txt",
+    "verification/.work-287/foundation-i028/preservation/work/pair/RegressionPair.java"
+  ]
+}
