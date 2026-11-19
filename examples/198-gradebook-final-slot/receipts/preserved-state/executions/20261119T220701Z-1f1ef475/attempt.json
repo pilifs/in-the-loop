@@ -1,0 +1,364 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261119T220701Z-1f1ef475",
+  "task": "preserved-state",
+  "claimKey": "27e0599d2b2aaf74",
+  "revisions": [
+    "base",
+    "repair"
+  ],
+  "startedAt": "2026-11-19T22:07:01.127471+00:00",
+  "retryOf": null,
+  "budget": {
+    "checkerSeconds": 600
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261119-220147-gradebook-qualified-attempts-and-interru",
+  "sourceCommit": "12aa88a27c1c7aab3b8d1a9798ca697abb43947d",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "revision-prepared",
+      "elapsedSeconds": 0.0011
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 0.0021
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 0.2362
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 0.2784
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 1.2478
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 1.3493
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "base": {
+      "revision": "fixture:base",
+      "target": {
+        "class": "gradebook.ScoreSheet",
+        "method": "write",
+        "descriptor": "([III)I",
+        "loadedFrom": "base.jar",
+        "classSha256": "60eab1b782bacef8f291b0d373e130fcfc5383c2ba4ac0562703d4a10a32f9fb"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "97c0611e1a082ccf43299fb8bd5707be7722e4456c3858f92b14f60d1e136f87",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "base.jar",
+          "sha256": "b4e81ca54a65f9ba2f820e3c0c081cf56c1330bdc87ad19031db6b5d5da9dd10",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from base by the fixture recipe"
+        }
+      ]
+    },
+    "repair": {
+      "revision": "fixture:repair",
+      "target": {
+        "class": "gradebook.ScoreSheet",
+        "method": "write",
+        "descriptor": "([III)I",
+        "loadedFrom": "repair.jar",
+        "classSha256": "35d16a81048240ddc0589447beaac64e967bd1dd2c3b67522376e8651088481a"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "97c0611e1a082ccf43299fb8bd5707be7722e4456c3858f92b14f60d1e136f87",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "repair.jar",
+          "sha256": "a173dc403a79ee406d1fe9bae6fc498e5ce7be89e05aec16761cee95da49b125",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from repair by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "ca3641494a7f3d981757c4d32ceed3374ffbdd9b545cc72c245f60122c9189b9",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f0d04d56bbe9ef5b883e6425b233e4dcc9251c36/jvmcontract",
+    "equivalence",
+    "--before",
+    "verifier/classes/base",
+    "--after",
+    "verifier/classes/repair",
+    "--target",
+    "gradebook.ScoreSheet#write(int[], int, int)",
+    "--assume",
+    "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+    "--observe",
+    "{\"kind\": \"array-parameter\", \"parameter\": \"scores\"}",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "8",
+    "--max-array-length",
+    "3",
+    "--timeout",
+    "600",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "78d2b65af410c155a40fea6d7dce8a2fe52273ee272b5a44c1b4c0482d24ce93",
+    "commit": "12aa88a27c1c7aab3b8d1a9798ca697abb43947d",
+    "libTree": "f0d04d56bbe9ef5b883e6425b233e4dcc9251c36",
+    "command": "equivalence",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 8,
+      "maxArrayLength": 3
+    },
+    "timeout": 600,
+    "scope": {
+      "label": "constructed-fixture",
+      "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+      "method": "gradebook.ScoreSheet#write([III)I",
+      "revisions": {
+        "base": {
+          "commit": "fixture:base",
+          "loadedFrom": "base.jar",
+          "classSha256": "60eab1b782bacef8f291b0d373e130fcfc5383c2ba4ac0562703d4a10a32f9fb",
+          "origin": "built from base by the fixture recipe",
+          "parameters": {
+            "names": [
+              "scores",
+              "slot",
+              "score"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        },
+        "repair": {
+          "commit": "fixture:repair",
+          "loadedFrom": "repair.jar",
+          "classSha256": "35d16a81048240ddc0589447beaac64e967bd1dd2c3b67522376e8651088481a",
+          "origin": "built from repair by the fixture recipe",
+          "parameters": {
+            "names": [
+              "scores",
+              "slot",
+              "score"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "base": [
+        {
+          "path": "base.jar",
+          "sha256": "b4e81ca54a65f9ba2f820e3c0c081cf56c1330bdc87ad19031db6b5d5da9dd10",
+          "role": "original"
+        }
+      ],
+      "repair": [
+        {
+          "path": "repair.jar",
+          "sha256": "a173dc403a79ee406d1fe9bae6fc498e5ce7be89e05aec16761cee95da49b125",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "gradebook.ScoreSheet#write([III)I",
+    "recipe": {
+      "kind": "direct-method",
+      "command": "equivalence",
+      "subject": "gradebook.ScoreSheet#write([III)I",
+      "checkedEntry": "gradebook.ScoreSheet#write([III)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))"
+        },
+        {
+          "field": "observations",
+          "flag": "--observe",
+          "value": "{\"kind\": \"array-parameter\", \"parameter\": \"scores\"}"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "8"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "3"
+        }
+      ],
+      "checkerDefaults": {
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "base": "fixture:base",
+      "repair": "fixture:repair"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "4096",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2764m"
+    },
+    "cwd": "the attempt directory",
+    "classes": {
+      "base": {
+        "dir": "verifier/classes/base",
+        "from": "prepare/base/base.jar",
+        "sha256": "b4e81ca54a65f9ba2f820e3c0c081cf56c1330bdc87ad19031db6b5d5da9dd10",
+        "entries": 1
+      },
+      "repair": {
+        "dir": "verifier/classes/repair",
+        "from": "prepare/repair/repair.jar",
+        "sha256": "a173dc403a79ee406d1fe9bae6fc498e5ce7be89e05aec16761cee95da49b125",
+        "entries": 1
+      }
+    },
+    "probe": {
+      "base": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f0d04d56bbe9ef5b883e6425b233e4dcc9251c36/jvmcontract",
+          "gaps",
+          "--target",
+          "gradebook.ScoreSheet#write(int[], int, int)",
+          "--classes",
+          "prepare/base/base.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "stdout": "verifier/probe-base.stdout",
+        "stderr": "verifier/probe-base.stderr",
+        "gaps": []
+      },
+      "repair": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f0d04d56bbe9ef5b883e6425b233e4dcc9251c36/jvmcontract",
+          "gaps",
+          "--target",
+          "gradebook.ScoreSheet#write(int[], int, int)",
+          "--classes",
+          "prepare/repair/repair.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "stdout": "verifier/probe-repair.stdout",
+        "stderr": "verifier/probe-repair.stderr",
+        "gaps": []
+      }
+    }
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.967,
+  "missing": [],
+  "receipt": "receipts/preserved-state/20261119T220701Z-1f1ef475/result.json",
+  "preparedClaim": "535916f10933af97",
+  "endedAt": "2026-11-19T22:07:02.476813+00:00"
+}

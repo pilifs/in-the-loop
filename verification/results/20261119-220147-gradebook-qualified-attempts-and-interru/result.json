@@ -1,0 +1,987 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261119-220147-gradebook-qualified-attempts-and-interru",
+  "title": "Gradebook qualified attempts and interrupted replay recovery",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 20.0s, peak 227.5 MiB (estimated 2m00s, 3.0 GiB); 84 output file(s) changed; signals: example:task-as-expected×2; example:task-as-expected×3",
+  "attention": [
+    "step 1 (Recover candidate and qualify two simultaneous retries) was held back 13.6s by its 2-CPU quota in 12.0s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261119-220147-gradebook-qualified-attempts-and-interru.json",
+    "sha256": "0c0e909637eb20382d1a52979ed20dee628b5796dce9f2f2d33331fd6948c5ba",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261119-220147-gradebook-qualified-attempts-and-interru",
+      "title": "Gradebook qualified attempts and interrupted replay recovery",
+      "description": "Recover the original injected candidate in a clean checkout. Retry the exact full-state claim concurrently, redeliver a completion, check input membership and observation on the same concrete witness, and verify each remaining revision pair.",
+      "kind": "other",
+      "capabilities": [
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "198"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-19T22:01:47+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 10,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "2m",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Recover candidate and qualify two simultaneous retries",
+          "run": "python3 examples/198-gradebook-final-slot/controls/retry_drill.py 20261119T220012Z-d733295c",
+          "cwd": "."
+        },
+        {
+          "name": "Interior, repair and preserving refactor",
+          "run": "python3 examples/tools/build.py 198 --tasks interior-state,repair-state,preserved-state",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/198-gradebook-final-slot/receipts",
+        "examples/198-gradebook-final-slot/records/retry-drill.json"
+      ]
+    }
+  },
+  "sourceCommit": "12aa88a27c1c7aab3b8d1a9798ca697abb43947d",
+  "startedAt": "2026-11-19T22:04:04+00:00",
+  "finishedAt": "2026-11-19T22:07:02+00:00",
+  "wallSeconds": 178.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3892723,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 238530560,
+    "wallSeconds": 20.0,
+    "cpuSeconds": 36.4,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.17
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 156.204,
+      "cpuSeconds": 156.334,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2104979456,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "27556c89351db32f411dd959080829bc13c76c8079a7014384ae0e724ffbf74b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261119-220147-gradebook-qualified-attempts-and-interru/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 36s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Recover candidate and qualify two simultaneous retries",
+      "run": "python3 examples/198-gradebook-final-slot/controls/retry_drill.py 20261119T220012Z-d733295c",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 12.026,
+      "cpuSeconds": 23.005,
+      "cpuThrottledSeconds": 13.582,
+      "peakMemoryBytes": 238530560,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-recover-candidate-and-qualify.log",
+        "lines": 4,
+        "bytes": 416,
+        "sha256": "813ca7dc5505d3a54251ebf4817f343b2432788d6b253b3bdfcc964724c02f5b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 2
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 3,
+          "text": "198-gradebook-final-slot: task full-state: refuted (completed; as expected), receipt receipts/full-state/20261119T220642Z-e13a9969/result.json",
+          "groups": [
+            "198",
+            "full-state",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "198-gradebook-final-slot: task full-state: refuted (completed; as expected), receipt receipts/full-state/20261119T220642Z-e5c72483/result.json",
+          "groups": [
+            "198",
+            "full-state",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "198-gradebook-final-slot: running task full-state (target route)",
+        "198-gradebook-final-slot: running task full-state (target route)",
+        "198-gradebook-final-slot: task full-state: refuted (completed; as expected), receipt receipts/full-state/20261119T220642Z-e13a9969/result.json",
+        "198-gradebook-final-slot: task full-state: refuted (completed; as expected), receipt receipts/full-state/20261119T220642Z-e5c72483/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Interior, repair and preserving refactor",
+      "run": "python3 examples/tools/build.py 198 --tasks interior-state,repair-state,preserved-state",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 8.02,
+      "cpuSeconds": 13.38,
+      "cpuThrottledSeconds": 0.625,
+      "peakMemoryBytes": 121221120,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-interior-repair-and-preserving.log",
+        "lines": 6,
+        "bytes": 665,
+        "sha256": "9fc7030725f88f48c344b98f80623e5f83eb43e28b95e4de20297d153ddfefc5",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 3
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "198-gradebook-final-slot: task interior-state: established (completed; as expected), receipt receipts/interior-state/20261119T220654Z-b64d32ee/result.json",
+          "groups": [
+            "198",
+            "interior-state",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "198-gradebook-final-slot: task repair-state: refuted (completed; as expected), receipt receipts/repair-state/20261119T220658Z-05802dd8/result.json",
+          "groups": [
+            "198",
+            "repair-state",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "198-gradebook-final-slot: task preserved-state: established (completed; as expected), receipt receipts/preserved-state/20261119T220701Z-1f1ef475/result.json",
+          "groups": [
+            "198",
+            "preserved-state",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "198-gradebook-final-slot: running task interior-state (target route)",
+        "198-gradebook-final-slot: task interior-state: established (completed; as expected), receipt receipts/interior-state/20261119T220654Z-b64d32ee/result.json",
+        "198-gradebook-final-slot: running task repair-state (target route)",
+        "198-gradebook-final-slot: task repair-state: refuted (completed; as expected), receipt receipts/repair-state/20261119T220658Z-05802dd8/result.json",
+        "198-gradebook-final-slot: running task preserved-state (target route)",
+        "198-gradebook-final-slot: task preserved-state: established (completed; as expected), receipt receipts/preserved-state/20261119T220701Z-1f1ef475/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "637c4d821c3dc1cb998cade0f3fdd73b68bbf8f10fb62e0efbdbda69cf20ab6c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/plan.json",
+      "change": "added",
+      "bytes": 5620,
+      "sha256": "8f44f6705229e60dfa5dfa6adec62ce314fde4a333bbe4652931c8201e8a7f04",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/control-base-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/control-base-jdk21.stdout",
+      "change": "added",
+      "bytes": 20682,
+      "sha256": "dacabc1347e193ee842debf69e6a9a0610d6589ea20d9ed18d163d149201324c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/control-regression-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/control-regression-jdk21.stdout",
+      "change": "added",
+      "bytes": 20682,
+      "sha256": "ec53fb84f4a307828bd675d62da892ae48cf324c9100760f5955429b21896c24",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/controls.json",
+      "change": "added",
+      "bytes": 150118,
+      "sha256": "580e8b67b1c5388201b0cfd36215951b852a0880f28515170fe48167e62d2526",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/execution.json",
+      "change": "added",
+      "bytes": 183102,
+      "sha256": "d15deb112a249cb4c2b5027c6978f13293dd5a1a736799c7c4a06e0aeb5acbd1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/streams.json",
+      "change": "added",
+      "bytes": 2679,
+      "sha256": "ad5b0a377155d7010d288ff5f86d73c7e9e28eaeb6ff92238958a844594da526",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1336,
+      "sha256": "df4439383ffcc6715ab83548fd4683c2dd4b35d6cafa0cc052f27321fa83d591",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/verifier.json",
+      "change": "added",
+      "bytes": 28844,
+      "sha256": "aa37c61d798258afb1b080089fd76a6f897291b5e4c7f0bb94ad401bc2151fec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/verifier.stdout",
+      "change": "added",
+      "bytes": 17166,
+      "sha256": "634be48d4a2cb8651d937643a3a019abc4c59e710f372c7ecc1c9d06dda0ca3c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/result.json",
+      "change": "added",
+      "bytes": 16078,
+      "sha256": "7304fe2bd1a0634357f0e388aba07dae4d746d80638c3c9b9f05ab8af34c01ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "033ff5dda14675289489af930d0a01d3f9b4c6d71b77a7b4f127895ef2c4dceb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/plan.json",
+      "change": "added",
+      "bytes": 5620,
+      "sha256": "8f44f6705229e60dfa5dfa6adec62ce314fde4a333bbe4652931c8201e8a7f04",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/control-base-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/control-base-jdk21.stdout",
+      "change": "added",
+      "bytes": 20682,
+      "sha256": "dacabc1347e193ee842debf69e6a9a0610d6589ea20d9ed18d163d149201324c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/control-regression-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/control-regression-jdk21.stdout",
+      "change": "added",
+      "bytes": 20682,
+      "sha256": "ec53fb84f4a307828bd675d62da892ae48cf324c9100760f5955429b21896c24",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/controls.json",
+      "change": "added",
+      "bytes": 150118,
+      "sha256": "1495c633e5ace9b4c4b5d0dbb6503759d457ca2ac521090117fcf069e3e27c0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/execution.json",
+      "change": "added",
+      "bytes": 183102,
+      "sha256": "f2ca534317e07b25271f12122697c607c6b276cff275f114966d89c1d01a859e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/streams.json",
+      "change": "added",
+      "bytes": 2679,
+      "sha256": "a35948b3ef9fc9211d826664e88a9e721e794c59797e651a4cb06e4e7c46b431",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1336,
+      "sha256": "df4439383ffcc6715ab83548fd4683c2dd4b35d6cafa0cc052f27321fa83d591",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/verifier.json",
+      "change": "added",
+      "bytes": 28844,
+      "sha256": "8064afef021572f7f0b3cda8c97e79a98bd95b2de50cfc0ddb73b16c9a7f2d87",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/verifier.stdout",
+      "change": "added",
+      "bytes": 17166,
+      "sha256": "48b8a680e7be85c3d5e4e4bf88c8a9a1cbbf7190749ab3edf7a10b8e969d0bc4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/result.json",
+      "change": "added",
+      "bytes": 16078,
+      "sha256": "aa72874fa149beba3fd38e5fcb4af91a8880ce0b03a184d3a467f0b9224ef4a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/executions/20261119T220642Z-e13a9969/attempt.json",
+      "change": "added",
+      "bytes": 11436,
+      "sha256": "76c799f1e1aff9279dd35299219094c30c53099024937642a229e48d335bee7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/executions/20261119T220642Z-e13a9969/checker.json",
+      "change": "added",
+      "bytes": 20702,
+      "sha256": "be316dbab8504959004de03d8a7c3b3c006efdfd9638e5d84705e98c13deadb1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/executions/20261119T220642Z-e13a9969/replay.json",
+      "change": "added",
+      "bytes": 2979,
+      "sha256": "80ff3b3664b61401fdc60cde2d1ce17df3bb5ebd6a98732778fa2a1f7b8a2f67",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/executions/20261119T220642Z-e5c72483/attempt.json",
+      "change": "added",
+      "bytes": 11435,
+      "sha256": "3010987459141d57ace134c4372a0a2f43aa1c837d526967da5ae6c32797c4ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/executions/20261119T220642Z-e5c72483/checker.json",
+      "change": "added",
+      "bytes": 20702,
+      "sha256": "5bc3c9baea41468942b044a412378c288393b199296bd19773f167b6f468f76c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/full-state/executions/20261119T220642Z-e5c72483/replay.json",
+      "change": "added",
+      "bytes": 2979,
+      "sha256": "80ff3b3664b61401fdc60cde2d1ce17df3bb5ebd6a98732778fa2a1f7b8a2f67",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "cc3425736a1a1e3028553535fd2b94545f2f49b2a72d61a074464a7cc677a893",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/plan.json",
+      "change": "added",
+      "bytes": 5786,
+      "sha256": "fcbc1b71302bdba3c0b568ec59c99c9bbccf17698b86875b4fe195a792eec442",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/control-base-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/control-base-jdk21.stdout",
+      "change": "added",
+      "bytes": 20682,
+      "sha256": "dacabc1347e193ee842debf69e6a9a0610d6589ea20d9ed18d163d149201324c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/control-regression-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/control-regression-jdk21.stdout",
+      "change": "added",
+      "bytes": 20682,
+      "sha256": "ec53fb84f4a307828bd675d62da892ae48cf324c9100760f5955429b21896c24",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/controls.json",
+      "change": "added",
+      "bytes": 150138,
+      "sha256": "2ed80e83584116e77fd561ae16bf44d7fd6b1d941c332acab4d15f8ed68ac2ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/execution.json",
+      "change": "added",
+      "bytes": 175191,
+      "sha256": "764c4dc5d32b4131d896019442d0ab7392da7d7b59a117360e6b79f565bb816d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/streams.json",
+      "change": "added",
+      "bytes": 2679,
+      "sha256": "5e5405dd49022d67bda42ce7a4db39473192a5cbd40a6ab47f446b4abc84a80f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1291,
+      "sha256": "b04aa3e9f5daf05f4da8a0c45aaca3f8e2bc324a0e1d248fd317d97f27bf30cd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/verifier.json",
+      "change": "added",
+      "bytes": 24844,
+      "sha256": "b4dc4e201f5c676812750ded9dd26055573fd190fac0cf4cb505a9d408e3dd0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/verifier.stdout",
+      "change": "added",
+      "bytes": 14024,
+      "sha256": "a34bd3d690741086d0f3a7fc4f7f2dbd700c59cd9fa12ab2d826b61810a4da1b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/result.json",
+      "change": "added",
+      "bytes": 14022,
+      "sha256": "464af1163d3a8d79c6bc1cb9235a841c8482b40e2b14a2500fa39a12226e5ffd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/interior-state/executions/20261119T220654Z-b64d32ee/attempt.json",
+      "change": "added",
+      "bytes": 11354,
+      "sha256": "88ee6dacc5da0e7c017d66b4c534012fbaa90db9235af1b233f85e89b6b6352c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/interior-state/executions/20261119T220654Z-b64d32ee/checker.json",
+      "change": "added",
+      "bytes": 16972,
+      "sha256": "75c5bf9a596a75f07a5b652e72b2f6033c4abee5c6f02a70854ac9cf6bf7fc91",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "8b4aa2721a4e4c678ae3f1046deb9b4986e4672d2efe90af31443a12b8d8c6ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/plan.json",
+      "change": "added",
+      "bytes": 5634,
+      "sha256": "abaf3ad040db20149644fad1dc055a5e9adbfbd59376bb32688970347f1aa6b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/control-base-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/control-base-jdk21.stdout",
+      "change": "added",
+      "bytes": 20682,
+      "sha256": "dacabc1347e193ee842debf69e6a9a0610d6589ea20d9ed18d163d149201324c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/control-repair-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/control-repair-jdk21.stdout",
+      "change": "added",
+      "bytes": 20682,
+      "sha256": "dacabc1347e193ee842debf69e6a9a0610d6589ea20d9ed18d163d149201324c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/controls.json",
+      "change": "added",
+      "bytes": 150111,
+      "sha256": "ff792e3f783607a7998edfe521fd4d9a8a3921e167e4c4ce5c376fd5346b694c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/execution.json",
+      "change": "added",
+      "bytes": 174980,
+      "sha256": "07e778fcf5fe4de193141154c265daa005a2ef00c1920491a1151ae9238ac026",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/streams.json",
+      "change": "added",
+      "bytes": 2655,
+      "sha256": "ccee5ac85dadb0a12052e2b205da2e99c7bd747a2bf43a0eb97ed53ec3f5749d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1263,
+      "sha256": "1c9c998a201b29bc85de48048888ee79ab4314a7bad4dde61d24c7a65d4063b7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/verifier.json",
+      "change": "added",
+      "bytes": 24659,
+      "sha256": "626b48fa7d5150776cd9137c5417d6bdd7f227e96bb13745debe491d8ab8c8f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/verifier.stdout",
+      "change": "added",
+      "bytes": 13966,
+      "sha256": "fb77ddf49f01c42e10b1f27c79be58ffb15f260585dbb5c34f154877df8a28fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/result.json",
+      "change": "added",
+      "bytes": 13850,
+      "sha256": "965f160629280901bf957c8cc57105275624ebd41c59eab901fbf8ed3a129731",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/preserved-state/executions/20261119T220701Z-1f1ef475/attempt.json",
+      "change": "added",
+      "bytes": 11206,
+      "sha256": "86058ca249bd46b271a00f9097ecb81d3e2e7f5aa679bfe4e86c33b7a6c5552e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/preserved-state/executions/20261119T220701Z-1f1ef475/checker.json",
+      "change": "added",
+      "bytes": 16880,
+      "sha256": "9fbf425dd97d4e5fe7c5e2191499cb30c6c32f9e5e5704b6745292994434672e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "1af1415bf75b2311371eabf86f66f23c11a63e6637ef6450e901b75ff761f58f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/plan.json",
+      "change": "added",
+      "bytes": 5649,
+      "sha256": "9d6a235cb80653ffc0d157d343ab754617afd20f639276ce2b8759374ec5e6cd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/control-regression-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/control-regression-jdk21.stdout",
+      "change": "added",
+      "bytes": 20682,
+      "sha256": "ec53fb84f4a307828bd675d62da892ae48cf324c9100760f5955429b21896c24",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/control-repair-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/control-repair-jdk21.stdout",
+      "change": "added",
+      "bytes": 20682,
+      "sha256": "dacabc1347e193ee842debf69e6a9a0610d6589ea20d9ed18d163d149201324c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/controls.json",
+      "change": "added",
+      "bytes": 150144,
+      "sha256": "f1330d17cb3d83f75442cbcf1476fccfb04a5d2f89922eeaac291b74f5100802",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/execution.json",
+      "change": "added",
+      "bytes": 185151,
+      "sha256": "b8fbb5b505b849e19c6c8390767233e1f75e9b5e7a53ed48234530e1716455b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/streams.json",
+      "change": "added",
+      "bytes": 2691,
+      "sha256": "c0884b284511d2938fe5e27b36e780940e4f96359843b70848b3bc8e5691f30a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1452,
+      "sha256": "c84f78eb1b038a5de5df5b4fa15e006d06600a02ad8c9cd882a2ae192b6d05e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/verifier.json",
+      "change": "added",
+      "bytes": 30773,
+      "sha256": "61665f2627aaa1b2e2818b8a36b74e9a72480aa82d1cc11b0fa7ebec38293b48",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/verifier.stdout",
+      "change": "added",
+      "bytes": 18721,
+      "sha256": "d2c614e272143eca913c7ab1ac0b8c82fd504ea0cb068d146e615c8c1a9debc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/result.json",
+      "change": "added",
+      "bytes": 16763,
+      "sha256": "691143325213248f52b0ebfe3e537c0b628547f615fd668f7da9dcc0a2199d30",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/repair-state/executions/20261119T220658Z-05802dd8/attempt.json",
+      "change": "added",
+      "bytes": 11464,
+      "sha256": "564a1743e5ee7527650666a84e3335d98beed41d171815095497a1bf29139e83",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/repair-state/executions/20261119T220658Z-05802dd8/checker.json",
+      "change": "added",
+      "bytes": 22481,
+      "sha256": "d99e21fc20feb1da8d89b6f5fe5ac2f8d31744409e99785b1e897fb30b0b0425",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/receipts/repair-state/executions/20261119T220658Z-05802dd8/replay.json",
+      "change": "added",
+      "bytes": 2981,
+      "sha256": "4b114b2d63e117220533a242cebd63332635eb6f1bb8eee55b9a64893d2d7d73",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/198-gradebook-final-slot/records/retry-drill.json",
+      "change": "added",
+      "bytes": 11361,
+      "sha256": "952f381b24062135be62ff4054315323e4668d62ba5d47e44fc8f1366afce68a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-19T22:07:13+00:00",
+    "applied": [
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/completion.json",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/plan.json",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/control-base-jdk21.stderr",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/control-base-jdk21.stdout",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/control-regression-jdk21.stderr",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/control-regression-jdk21.stdout",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/controls.json",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/execution.json",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/streams.json",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/verifier-output.txt",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/verifier.json",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/verifier.stderr",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/records/verifier.stdout",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e13a9969/result.json",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/completion.json",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/plan.json",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/control-base-jdk21.stderr",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/control-base-jdk21.stdout",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/control-regression-jdk21.stderr",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/control-regression-jdk21.stdout",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/controls.json",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/execution.json",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/streams.json",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/verifier-output.txt",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/verifier.json",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/verifier.stderr",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/records/verifier.stdout",
+      "examples/198-gradebook-final-slot/receipts/full-state/20261119T220642Z-e5c72483/result.json",
+      "examples/198-gradebook-final-slot/receipts/full-state/executions/20261119T220642Z-e13a9969/attempt.json",
+      "examples/198-gradebook-final-slot/receipts/full-state/executions/20261119T220642Z-e13a9969/checker.json",
+      "examples/198-gradebook-final-slot/receipts/full-state/executions/20261119T220642Z-e13a9969/replay.json",
+      "examples/198-gradebook-final-slot/receipts/full-state/executions/20261119T220642Z-e5c72483/attempt.json",
+      "examples/198-gradebook-final-slot/receipts/full-state/executions/20261119T220642Z-e5c72483/checker.json",
+      "examples/198-gradebook-final-slot/receipts/full-state/executions/20261119T220642Z-e5c72483/replay.json",
+      "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/completion.json",
+      "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/plan.json",
+      "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/control-base-jdk21.stderr",
+      "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/control-base-jdk21.stdout",
+      "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/control-regression-jdk21.stderr",
+      "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/control-regression-jdk21.stdout",
+      "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/controls.json",
+      "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/execution.json",
+      "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/streams.json",
+      "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/verifier-output.txt",
+      "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/verifier.json",
+      "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/verifier.stderr",
+      "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/records/verifier.stdout",
+      "examples/198-gradebook-final-slot/receipts/interior-state/20261119T220654Z-b64d32ee/result.json",
+      "examples/198-gradebook-final-slot/receipts/interior-state/executions/20261119T220654Z-b64d32ee/attempt.json",
+      "examples/198-gradebook-final-slot/receipts/interior-state/executions/20261119T220654Z-b64d32ee/checker.json",
+      "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/completion.json",
+      "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/plan.json",
+      "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/control-base-jdk21.stderr",
+      "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/control-base-jdk21.stdout",
+      "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/control-repair-jdk21.stderr",
+      "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/control-repair-jdk21.stdout",
+      "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/controls.json",
+      "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/execution.json",
+      "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/streams.json",
+      "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/verifier-output.txt",
+      "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/verifier.json",
+      "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/verifier.stderr",
+      "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/records/verifier.stdout",
+      "examples/198-gradebook-final-slot/receipts/preserved-state/20261119T220701Z-1f1ef475/result.json",
+      "examples/198-gradebook-final-slot/receipts/preserved-state/executions/20261119T220701Z-1f1ef475/attempt.json",
+      "examples/198-gradebook-final-slot/receipts/preserved-state/executions/20261119T220701Z-1f1ef475/checker.json",
+      "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/completion.json",
+      "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/plan.json",
+      "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/control-regression-jdk21.stderr",
+      "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/control-regression-jdk21.stdout",
+      "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/control-repair-jdk21.stderr",
+      "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/control-repair-jdk21.stdout",
+      "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/controls.json",
+      "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/execution.json",
+      "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/streams.json",
+      "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/verifier-output.txt",
+      "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/verifier.json",
+      "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/verifier.stderr",
+      "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/records/verifier.stdout",
+      "examples/198-gradebook-final-slot/receipts/repair-state/20261119T220658Z-05802dd8/result.json",
+      "examples/198-gradebook-final-slot/receipts/repair-state/executions/20261119T220658Z-05802dd8/attempt.json",
+      "examples/198-gradebook-final-slot/receipts/repair-state/executions/20261119T220658Z-05802dd8/checker.json",
+      "examples/198-gradebook-final-slot/receipts/repair-state/executions/20261119T220658Z-05802dd8/replay.json",
+      "examples/198-gradebook-final-slot/records/retry-drill.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null,
+    "changesDiff": {
+      "bytes": 2501498,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "f0d04d56bbe9ef5b883e6425b233e4dcc9251c36",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f0d04d56bbe9ef5b883e6425b233e4dcc9251c36/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff.gz"
+}

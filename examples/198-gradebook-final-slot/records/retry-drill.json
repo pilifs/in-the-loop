@@ -1,0 +1,296 @@
+{
+  "interrupted": {
+    "id": "20261119T220012Z-d733295c",
+    "claimKey": "27e0599d2b2aaf74",
+    "revisions": [
+      "base",
+      "regression"
+    ],
+    "preparedClaim": null,
+    "bindingId": null,
+    "status": "interrupted",
+    "startedAt": "2026-11-19T22:00:12.881458+00:00",
+    "retryOf": null,
+    "lastCompletedStage": "candidate-recorded",
+    "missing": [
+      "independent witness qualification",
+      "receipt"
+    ],
+    "refusal": {
+      "interface": "ingest",
+      "owner": "example-targets-workflow",
+      "reason": "injected stop after the checker candidate and before independent qualification",
+      "stage": "candidate-recorded",
+      "diagnostic": "20261119T220012Z-d733295c"
+    },
+    "injected": true,
+    "job": null,
+    "budget": {
+      "checkerSeconds": 600
+    },
+    "strategy": {
+      "engine": "native",
+      "gaps": "strict"
+    },
+    "receipt": null,
+    "path": "receipts/full-state/executions/20261119T220012Z-d733295c/attempt.json"
+  },
+  "candidateInputs": [
+    {
+      "name": "scores",
+      "type": "int[]",
+      "value": [
+        0,
+        0,
+        1
+      ]
+    },
+    {
+      "name": "slot",
+      "type": "int",
+      "value": 2
+    },
+    {
+      "name": "score",
+      "type": "int",
+      "value": 0
+    }
+  ],
+  "retries": [
+    {
+      "id": "20261119T220642Z-e13a9969",
+      "claimKey": "27e0599d2b2aaf74",
+      "revisions": [
+        "base",
+        "regression"
+      ],
+      "preparedClaim": "29b84701846bc629",
+      "bindingId": "6b9723c2cfe91aa91c084c433ce7d225f18cb5172f96f89775010a1ca1fc22eb",
+      "status": "completed",
+      "startedAt": "2026-11-19T22:06:42.922537+00:00",
+      "retryOf": "20261119T220012Z-d733295c",
+      "lastCompletedStage": "receipt-published",
+      "missing": [],
+      "refusal": null,
+      "injected": null,
+      "job": "20261119-220147-gradebook-qualified-attempts-and-interru",
+      "budget": {
+        "checkerSeconds": 600
+      },
+      "strategy": {
+        "engine": "native",
+        "gaps": "strict"
+      },
+      "receipt": "receipts/full-state/20261119T220642Z-e13a9969/result.json",
+      "path": "receipts/full-state/executions/20261119T220642Z-e13a9969/attempt.json"
+    },
+    {
+      "id": "20261119T220642Z-e5c72483",
+      "claimKey": "27e0599d2b2aaf74",
+      "revisions": [
+        "base",
+        "regression"
+      ],
+      "preparedClaim": "29b84701846bc629",
+      "bindingId": "6b9723c2cfe91aa91c084c433ce7d225f18cb5172f96f89775010a1ca1fc22eb",
+      "status": "completed",
+      "startedAt": "2026-11-19T22:06:42.941170+00:00",
+      "retryOf": "20261119T220012Z-d733295c",
+      "lastCompletedStage": "receipt-published",
+      "missing": [],
+      "refusal": null,
+      "injected": null,
+      "job": "20261119-220147-gradebook-qualified-attempts-and-interru",
+      "budget": {
+        "checkerSeconds": 600
+      },
+      "strategy": {
+        "engine": "native",
+        "gaps": "strict"
+      },
+      "receipt": "receipts/full-state/20261119T220642Z-e5c72483/result.json",
+      "path": "receipts/full-state/executions/20261119T220642Z-e5c72483/attempt.json"
+    }
+  ],
+  "duplicateCompletionReceipt": "receipts/full-state/20261119T220642Z-e13a9969/result.json",
+  "siblingConclusion": "established",
+  "witnessReviews": {
+    "return-only": {
+      "claimKey": "5afa353b5d8bbe8a",
+      "entry": "gradebook.ScoreSheet#write([III)I",
+      "inputs": [
+        {
+          "name": "scores",
+          "type": "int[]",
+          "value": [
+            0
+          ]
+        },
+        {
+          "name": "slot",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "name": "score",
+          "type": "int",
+          "value": 1
+        }
+      ],
+      "observations": [
+        {
+          "kind": "result"
+        }
+      ],
+      "by": "jvm",
+      "reproduced": false,
+      "sides": {
+        "base": {
+          "entryClassSha256": "60eab1b782bacef8f291b0d373e130fcfc5383c2ba4ac0562703d4a10a32f9fb",
+          "classpath": [
+            "b4e81ca54a65f9ba2f820e3c0c081cf56c1330bdc87ad19031db6b5d5da9dd10"
+          ],
+          "program": "class CandidateReplay { public static void main(String[] args) {\nint[] scores = new int[]{0};\nint slot = 0;\nint score = 1;\nif (!(scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2)))) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = gradebook.ScoreSheet.write(scores, slot, score); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\n} }\n",
+          "admitted": true,
+          "values": [
+            0
+          ]
+        },
+        "regression": {
+          "entryClassSha256": "e39161e8c84a5d0cbac3e293dab90af6504235254a78048390496269d390da78",
+          "classpath": [
+            "df2da8b532935763701f1f910bebde040f5ef9cf8c8d42faf896cccbcc4dc5f4"
+          ],
+          "program": "class CandidateReplay { public static void main(String[] args) {\nint[] scores = new int[]{0};\nint slot = 0;\nint score = 1;\nif (!(scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2)))) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = gradebook.ScoreSheet.write(scores, slot, score); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\n} }\n",
+          "admitted": true,
+          "values": [
+            0
+          ]
+        }
+      },
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "reason": "the admitted input satisfies the property or agrees on every selected observation"
+    },
+    "full-state": {
+      "claimKey": "27e0599d2b2aaf74",
+      "entry": "gradebook.ScoreSheet#write([III)I",
+      "inputs": [
+        {
+          "name": "scores",
+          "type": "int[]",
+          "value": [
+            0
+          ]
+        },
+        {
+          "name": "slot",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "name": "score",
+          "type": "int",
+          "value": 1
+        }
+      ],
+      "observations": [
+        {
+          "kind": "array-parameter",
+          "parameter": "scores"
+        }
+      ],
+      "by": "jvm",
+      "reproduced": true,
+      "sides": {
+        "base": {
+          "entryClassSha256": "60eab1b782bacef8f291b0d373e130fcfc5383c2ba4ac0562703d4a10a32f9fb",
+          "classpath": [
+            "b4e81ca54a65f9ba2f820e3c0c081cf56c1330bdc87ad19031db6b5d5da9dd10"
+          ],
+          "program": "class CandidateReplay { public static void main(String[] args) {\nint[] scores = new int[]{0};\nint slot = 0;\nint score = 1;\nif (!(scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2)))) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = gradebook.ScoreSheet.write(scores, slot, score); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(java.util.Arrays.toString(scores));\n} }\n",
+          "admitted": true,
+          "values": [
+            [
+              1
+            ]
+          ]
+        },
+        "regression": {
+          "entryClassSha256": "e39161e8c84a5d0cbac3e293dab90af6504235254a78048390496269d390da78",
+          "classpath": [
+            "df2da8b532935763701f1f910bebde040f5ef9cf8c8d42faf896cccbcc4dc5f4"
+          ],
+          "program": "class CandidateReplay { public static void main(String[] args) {\nint[] scores = new int[]{0};\nint slot = 0;\nint score = 1;\nif (!(scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2)))) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = gradebook.ScoreSheet.write(scores, slot, score); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(java.util.Arrays.toString(scores));\n} }\n",
+          "admitted": true,
+          "values": [
+            [
+              0
+            ]
+          ]
+        }
+      },
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      }
+    },
+    "interior-state": {
+      "claimKey": "3afa0438edb8bf75",
+      "entry": "gradebook.ScoreSheet#write([III)I",
+      "inputs": [
+        {
+          "name": "scores",
+          "type": "int[]",
+          "value": [
+            0
+          ]
+        },
+        {
+          "name": "slot",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "name": "score",
+          "type": "int",
+          "value": 1
+        }
+      ],
+      "observations": [
+        {
+          "kind": "array-parameter",
+          "parameter": "scores"
+        }
+      ],
+      "by": "jvm",
+      "reproduced": false,
+      "sides": {
+        "base": {
+          "entryClassSha256": "60eab1b782bacef8f291b0d373e130fcfc5383c2ba4ac0562703d4a10a32f9fb",
+          "classpath": [
+            "b4e81ca54a65f9ba2f820e3c0c081cf56c1330bdc87ad19031db6b5d5da9dd10"
+          ],
+          "program": "class CandidateReplay { public static void main(String[] args) {\nint[] scores = new int[]{0};\nint slot = 0;\nint score = 1;\nif (!(scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2)) && slot < scores.length - 1)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = gradebook.ScoreSheet.write(scores, slot, score); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(java.util.Arrays.toString(scores));\n} }\n",
+          "admitted": false
+        }
+      },
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "reason": "domain mismatch: the frozen precondition rejects this input"
+    }
+  }
+}

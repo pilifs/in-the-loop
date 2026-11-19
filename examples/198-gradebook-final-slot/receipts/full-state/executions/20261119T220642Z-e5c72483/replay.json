@@ -1,0 +1,74 @@
+[
+  {
+    "claimKey": "27e0599d2b2aaf74",
+    "entry": "gradebook.ScoreSheet#write([III)I",
+    "inputs": [
+      {
+        "name": "scores",
+        "type": "int[]",
+        "value": [
+          0,
+          0,
+          1
+        ]
+      },
+      {
+        "name": "slot",
+        "type": "int",
+        "value": 2
+      },
+      {
+        "name": "score",
+        "type": "int",
+        "value": 0
+      }
+    ],
+    "observations": [
+      {
+        "kind": "array-parameter",
+        "parameter": "scores"
+      }
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "base": {
+        "entryClassSha256": "60eab1b782bacef8f291b0d373e130fcfc5383c2ba4ac0562703d4a10a32f9fb",
+        "classpath": [
+          "b4e81ca54a65f9ba2f820e3c0c081cf56c1330bdc87ad19031db6b5d5da9dd10"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint[] scores = new int[]{0,0,1};\nint slot = 2;\nint score = 0;\nif (!(scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2)))) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = gradebook.ScoreSheet.write(scores, slot, score); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(java.util.Arrays.toString(scores));\n} }\n",
+        "admitted": true,
+        "values": [
+          [
+            0,
+            0,
+            0
+          ]
+        ]
+      },
+      "regression": {
+        "entryClassSha256": "e39161e8c84a5d0cbac3e293dab90af6504235254a78048390496269d390da78",
+        "classpath": [
+          "df2da8b532935763701f1f910bebde040f5ef9cf8c8d42faf896cccbcc4dc5f4"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint[] scores = new int[]{0,0,1};\nint slot = 2;\nint score = 0;\nif (!(scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2)))) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = gradebook.ScoreSheet.write(scores, slot, score); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(java.util.Arrays.toString(scores));\n} }\n",
+        "admitted": true,
+        "values": [
+          [
+            0,
+            0,
+            1
+          ]
+        ]
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  }
+]

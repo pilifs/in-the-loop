@@ -1,0 +1,555 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "cd755a07fca67041",
+    "format": 1,
+    "example": "198",
+    "statement": {
+      "approach": "target",
+      "task": "repair-state",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "gradebook.ScoreSheet#write([III)I",
+      "revisions": [
+        "regression",
+        "repair"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "repair-state",
+        "kind": "equivalence",
+        "relation": "preservation",
+        "target": "gradebook.ScoreSheet#write([III)I",
+        "file": "claims/full-state.json",
+        "sha256": "b5e278b21fbe5e834874ea4a7b2211e0a33ef7d6cb0f5b6a9c4203589e3df683",
+        "property": "full-state",
+        "claimKind": "preservation",
+        "statement": "Both revisions leave identical scores in every cell.",
+        "assume": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          {
+            "kind": "array-parameter",
+            "parameter": "scores"
+          }
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 8,
+          "maxArrayLength": 3
+        },
+        "explicitBounds": {
+          "maxArrayLength": 3,
+          "unwind": 8
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "finite-driver",
+            "kind": "driver",
+            "path": "driver/gradebook/GradeCases.java",
+            "sha256": "f0da8c690cd70ebd2704f8d2f10b1638d53ee014bad75ab3bb2ca2ee91cd6e49"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "ae861a71a63724d7f66330f3a7e32f6a547b525e76768dc4d21641fd9c526b05"
+          }
+        ],
+        "key": "27e0599d2b2aaf74"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 3,
+      "intendedInputs": null
+    },
+    "inputs": {
+      "patch": null,
+      "before": {
+        "sha256": "f05b75deaee4b4ed8a3f67c5ae78f676989f7b9f061f393870bbe9ce98e3de5d",
+        "files": 1
+      },
+      "after": {
+        "sha256": "d87797c62633f0820058290d2fb4a8dfd528dca8c35bcc90a2d447668096131a",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "repair-state",
+      "sidecar": "abe862c4700424652206a974a63f0d03e73c2d7871578c7e0307bac820eb6ef1",
+      "revisions": {
+        "regression": "42cacde029c223af2e604f07699c78a0a7cd7022",
+        "repair": "320a63392aa19b680d933406ab4f2944076ab53a"
+      },
+      "dependencies": [
+        {
+          "revision": "regression",
+          "position": 0,
+          "role": "driver",
+          "sha256": "97c0611e1a082ccf43299fb8bd5707be7722e4456c3858f92b14f60d1e136f87"
+        },
+        {
+          "revision": "regression",
+          "position": 1,
+          "role": "original",
+          "sha256": "df2da8b532935763701f1f910bebde040f5ef9cf8c8d42faf896cccbcc4dc5f4"
+        },
+        {
+          "revision": "repair",
+          "position": 0,
+          "role": "driver",
+          "sha256": "97c0611e1a082ccf43299fb8bd5707be7722e4456c3858f92b14f60d1e136f87"
+        },
+        {
+          "revision": "repair",
+          "position": 1,
+          "role": "original",
+          "sha256": "a173dc403a79ee406d1fe9bae6fc498e5ce7be89e05aec16761cee95da49b125"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/full-state.json": "b5e278b21fbe5e834874ea4a7b2211e0a33ef7d6cb0f5b6a9c4203589e3df683",
+        "controls/oracle.py": "ae861a71a63724d7f66330f3a7e32f6a547b525e76768dc4d21641fd9c526b05",
+        "driver/gradebook/GradeCases.java": "f0da8c690cd70ebd2704f8d2f10b1638d53ee014bad75ab3bb2ca2ee91cd6e49"
+      },
+      "claimKey": "27e0599d2b2aaf74"
+    }
+  },
+  "attempt": {
+    "id": "20261119T220658Z-05802dd8",
+    "claim": "cd755a07fca67041",
+    "startedAt": "2026-11-19T22:06:58+00:00",
+    "seconds": 1.1,
+    "engine": "native",
+    "options": [
+      "equivalence",
+      "--before",
+      "verifier/classes/regression",
+      "--after",
+      "verifier/classes/repair",
+      "--target",
+      "gradebook.ScoreSheet#write(int[], int, int)",
+      "--assume",
+      "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+      "--observe",
+      "{\"kind\": \"array-parameter\", \"parameter\": \"scores\"}",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "8",
+      "--max-array-length",
+      "3",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "78d2b65af410c155a40fea6d7dce8a2fe52273ee272b5a44c1b4c0482d24ce93"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "54df86ca22fb213efea4a4cc06ec3f8e16c95b3329c6a3b3463944fffdf12e69",
+        "files": 1
+      },
+      "after": {
+        "sha256": "a8347afc0dd6d667979c40673c0cd34aeeeff742b78463ab784b2a558e235b2d",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261119-220147-gradebook-qualified-attempts-and-interru",
+      "sourceCommit": "12aa88a27c1c7aab3b8d1a9798ca697abb43947d",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261119-220147-gradebook-qualified-attempts-and-interru"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control regression on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-regression-jdk21.stdout",
+        "stderr": "records/control-regression-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control repair on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.115,
+        "stdout": "records/control-repair-jdk21.stdout",
+        "stderr": "records/control-repair-jdk21.stderr"
+      },
+      {
+        "name": "verifier pair on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.917,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 8,
+      "maxArrayLength": 3,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "cd755a07fca67041",
+    "attempt": "20261119T220658Z-05802dd8",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "✗ Violation",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"regression\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 19,
+      "code": "\"repair\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [
+      {
+        "input": "write(scores=[0,0,1], slot=2, score=0)",
+        "contract": "array:scores=[0,0,1]",
+        "actual": "array:scores=[0,0,0]",
+        "found": "agree(len0=3, cell0_0=0, cell0_1=0, cell0_2=2, arg1=2, arg2=0)",
+        "shrinkRuns": 12,
+        "witness": {
+          "inputs": [
+            {
+              "name": "scores",
+              "type": "int[]",
+              "value": [
+                0,
+                0,
+                1
+              ]
+            },
+            {
+              "name": "slot",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "score",
+              "type": "int",
+              "value": 0
+            }
+          ],
+          "foundInputs": [
+            {
+              "name": "scores",
+              "type": "int[]",
+              "value": [
+                0,
+                0,
+                2
+              ]
+            },
+            {
+              "name": "slot",
+              "type": "int",
+              "value": 2
+            },
+            {
+              "name": "score",
+              "type": "int",
+              "value": 0
+            }
+          ],
+          "replayObservations": [
+            {
+              "kind": "array-parameter",
+              "parameter": "scores"
+            }
+          ],
+          "call": {
+            "class": "gradebook.ScoreSheet",
+            "classFile": "gradebook/ScoreSheet.class",
+            "classFileSha256": null,
+            "classes": "after",
+            "method": "write",
+            "descriptor": "([III)I",
+            "static": true,
+            "arguments": [
+              {
+                "name": "scores",
+                "type": "int[]",
+                "value": [
+                  0,
+                  0,
+                  1
+                ]
+              },
+              {
+                "name": "slot",
+                "type": "int",
+                "value": 2
+              },
+              {
+                "name": "score",
+                "type": "int",
+                "value": 0
+              }
+            ],
+            "revision": "repair"
+          },
+          "previousCall": {
+            "class": "gradebook.ScoreSheet",
+            "classFile": "gradebook/ScoreSheet.class",
+            "classFileSha256": null,
+            "classes": "before",
+            "method": "write",
+            "descriptor": "([III)I",
+            "static": true,
+            "arguments": [
+              {
+                "name": "scores",
+                "type": "int[]",
+                "value": [
+                  0,
+                  0,
+                  1
+                ]
+              },
+              {
+                "name": "slot",
+                "type": "int",
+                "value": 2
+              },
+              {
+                "name": "score",
+                "type": "int",
+                "value": 0
+              }
+            ],
+            "revision": "regression"
+          }
+        }
+      }
+    ],
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as agree(len0=3, cell0_0=0, cell0_1=0, cell0_2=2, arg1=2, arg2=0), shrunk to the input above in 12 interpreter runs, replayed in the interpreter; domain len0: int × cell0_0: int × cell0_1: int × cell0_2: int × arg1: int × arg2: int",
+    "problem": null,
+    "domain": "scores: int[] of length ≤ 3, not null × slot: int × score: int",
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "stated": {
+      "kind": "regression",
+      "domain": {
+        "parameters": [
+          {
+            "name": "scores",
+            "type": "int[]",
+            "kind": "array",
+            "null": false,
+            "maxLength": 3
+          },
+          {
+            "name": "slot",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "score",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "scores: int[] of length ≤ 3, not null × slot: int × score: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "unselected",
+        "exceptions": "unselected",
+        "arrays": [
+          "scores"
+        ]
+      },
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 3,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+        "classes": 37,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null,
+      "spec": {
+        "contract": {
+          "subject": "gradebook.ScoreSheet#write(int[], int, int)",
+          "inputs": [
+            {
+              "name": "scores",
+              "type": "int[]",
+              "derivation": {
+                "kind": "identity"
+              }
+            },
+            {
+              "name": "slot",
+              "type": "int",
+              "derivation": {
+                "kind": "identity"
+              }
+            },
+            {
+              "name": "score",
+              "type": "int",
+              "derivation": {
+                "kind": "identity"
+              }
+            }
+          ],
+          "required": [
+            "array:scores"
+          ]
+        },
+        "observations": [
+          {
+            "kind": "array-parameter",
+            "parameter": "scores"
+          }
+        ]
+      }
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "b8fbb5b505b849e19c6c8390767233e1f75e9b5e7a53ed48234530e1716455b2",
+        "bytes": 185151
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "c84f78eb1b038a5de5df5b4fa15e006d06600a02ad8c9cd882a2ae192b6d05e5",
+        "bytes": 1452
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "c0884b284511d2938fe5e27b36e780940e4f96359843b70848b3bc8e5691f30a",
+        "bytes": 2691
+      },
+      {
+        "path": "records/control-regression-jdk21.stdout",
+        "sha256": "ec53fb84f4a307828bd675d62da892ae48cf324c9100760f5955429b21896c24",
+        "bytes": 20682
+      },
+      {
+        "path": "records/control-regression-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "f1330d17cb3d83f75442cbcf1476fccfb04a5d2f89922eeaac291b74f5100802",
+        "bytes": 150144
+      },
+      {
+        "path": "records/control-repair-jdk21.stdout",
+        "sha256": "dacabc1347e193ee842debf69e6a9a0610d6589ea20d9ed18d163d149201324c",
+        "bytes": 20682
+      },
+      {
+        "path": "records/control-repair-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "d2c614e272143eca913c7ab1ac0b8c82fd504ea0cb068d146e615c8c1a9debc8",
+        "bytes": 18721
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "61665f2627aaa1b2e2818b8a36b74e9a72480aa82d1cc11b0fa7ebec38293b48",
+        "bytes": 30773
+      }
+    ]
+  }
+}
