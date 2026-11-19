@@ -84,10 +84,12 @@ targeted requests at a low volume. This holds for every tool: `curl`, a script, 
 
 - **Plain.** The tool's own User-Agent, never one made to look like a person's browser, and no header that names
   the user or the project. No proxy, VPN or other address to send from.
-- **A refusal is an answer.** A bot check, a CAPTCHA, HTTP 403 or 451, or a login wall ends the attempt at that
-  host. Don't retry with another User-Agent, and don't send the browser to get past it: read the same content
-  from another source (an API, a mirror, the arXiv copy, the release on Maven Central), or report that it could
-  not be read. A 429 or 503 may be retried once, after its `Retry-After`; a second refusal ends it.
+- **A site that only refuses scripts** (a 403 to `curl`, a page that needs JavaScript) may be read with the
+  headless browser, once, as it is: its own identity, no stealth plugins, no flags that hide that it is headless.
+- **A check meant for a person ends the attempt**: a CAPTCHA, a "verify you are human" box or puzzle, a login
+  wall, HTTP 451, or a check that refuses the browser too. It is never solved or worked round: read the same
+  content from another source (an API, a mirror, the arXiv copy, the release on Maven Central), or report that
+  it could not be read. A 429 or 503 may be retried once, after its `Retry-After`; a second refusal ends it.
 - **One at a time.** No parallel requests (`xargs -P`, threads, several fetches to one host in one turn), at
   least a second between two requests to one host, and an API's own published limit where it is slower (arXiv's
   3 seconds, NVD's 6 without a key).
