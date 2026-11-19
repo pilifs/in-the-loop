@@ -1,0 +1,317 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "66927250dff9be78",
+    "format": 1,
+    "example": "198",
+    "statement": {
+      "approach": "target",
+      "task": "return-only",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "gradebook.ScoreSheet#write([III)I",
+      "revisions": [
+        "base",
+        "regression"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "return-only",
+        "kind": "equivalence",
+        "relation": "preservation",
+        "target": "gradebook.ScoreSheet#write([III)I",
+        "file": "claims/return-only.json",
+        "sha256": "745c98a6364e6694491fc33aeaade735d7c03b44f302ff5b402fab6741e8ab3f",
+        "property": "return-only",
+        "claimKind": "preservation",
+        "statement": "Both revisions return the same previous mark.",
+        "assume": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          {
+            "kind": "result"
+          }
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 8,
+          "maxArrayLength": 3
+        },
+        "explicitBounds": {
+          "maxArrayLength": 3,
+          "unwind": 8
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "finite-driver",
+            "kind": "driver",
+            "path": "driver/gradebook/GradeCases.java",
+            "sha256": "f0da8c690cd70ebd2704f8d2f10b1638d53ee014bad75ab3bb2ca2ee91cd6e49"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "ae861a71a63724d7f66330f3a7e32f6a547b525e76768dc4d21641fd9c526b05"
+          }
+        ],
+        "key": "5afa353b5d8bbe8a"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 3,
+      "intendedInputs": null
+    },
+    "inputs": {
+      "patch": null,
+      "before": {
+        "sha256": "8aefba8fcaf696250c0b2656c1047a505bcfec055e7ffab1713d6ab23466747f",
+        "files": 1
+      },
+      "after": {
+        "sha256": "f05b75deaee4b4ed8a3f67c5ae78f676989f7b9f061f393870bbe9ce98e3de5d",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "return-only",
+      "sidecar": "abe862c4700424652206a974a63f0d03e73c2d7871578c7e0307bac820eb6ef1",
+      "revisions": {
+        "base": "b18fe9f94adfb37a77b016e9a966caa23c7ccd9e",
+        "regression": "42cacde029c223af2e604f07699c78a0a7cd7022"
+      },
+      "dependencies": [
+        {
+          "revision": "base",
+          "position": 0,
+          "role": "driver",
+          "sha256": "97c0611e1a082ccf43299fb8bd5707be7722e4456c3858f92b14f60d1e136f87"
+        },
+        {
+          "revision": "base",
+          "position": 1,
+          "role": "original",
+          "sha256": "b4e81ca54a65f9ba2f820e3c0c081cf56c1330bdc87ad19031db6b5d5da9dd10"
+        },
+        {
+          "revision": "regression",
+          "position": 0,
+          "role": "driver",
+          "sha256": "97c0611e1a082ccf43299fb8bd5707be7722e4456c3858f92b14f60d1e136f87"
+        },
+        {
+          "revision": "regression",
+          "position": 1,
+          "role": "original",
+          "sha256": "df2da8b532935763701f1f910bebde040f5ef9cf8c8d42faf896cccbcc4dc5f4"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/return-only.json": "745c98a6364e6694491fc33aeaade735d7c03b44f302ff5b402fab6741e8ab3f",
+        "controls/oracle.py": "ae861a71a63724d7f66330f3a7e32f6a547b525e76768dc4d21641fd9c526b05",
+        "driver/gradebook/GradeCases.java": "f0da8c690cd70ebd2704f8d2f10b1638d53ee014bad75ab3bb2ca2ee91cd6e49"
+      },
+      "claimKey": "5afa353b5d8bbe8a"
+    }
+  },
+  "attempt": {
+    "id": "20261119T214856Z-a36b67bb",
+    "claim": "66927250dff9be78",
+    "startedAt": "2026-11-19T21:48:56+00:00",
+    "seconds": 0.3,
+    "engine": "native",
+    "options": [
+      "equivalence",
+      "--before",
+      "verifier/classes/base",
+      "--after",
+      "verifier/classes/regression",
+      "--target",
+      "gradebook.ScoreSheet#write(int[], int, int)",
+      "--assume",
+      "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+      "--observe",
+      "{\"kind\": \"result\"}",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "8",
+      "--max-array-length",
+      "3",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "7a6ad79f859c290d679a54adb71d74cb3f26672920789fe239382f11481d9021"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "e32dde7ced10d9a3729527af122fceabceedd1fc4c47bf5f7073594c627ae731",
+        "files": 1
+      },
+      "after": {
+        "sha256": "54df86ca22fb213efea4a4cc06ec3f8e16c95b3329c6a3b3463944fffdf12e69",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261119-214230-gradebook-frozen-claims-on-the-checkpoin",
+      "sourceCommit": "33b804ffe8d8767dc1e9d220f005abb4e5a1b527",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261119-214230-gradebook-frozen-claims-on-the-checkpoin"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control base on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-base-jdk21.stdout",
+        "stderr": "records/control-base-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control regression on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.215,
+        "stdout": "records/control-regression-jdk21.stdout",
+        "stderr": "records/control-regression-jdk21.stderr"
+      },
+      {
+        "name": "verifier pair on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.004,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": null,
+      "maxArrayLength": null,
+      "complete": null
+    }
+  },
+  "conclusion": {
+    "claim": "66927250dff9be78",
+    "attempt": "20261119T214856Z-a36b67bb",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"base\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"regression\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the selected-observation profile takes a static method with two int[] parameters and an int result",
+    "domain": null,
+    "replay": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "fa7d352ad0b21a28962e59c02ffe6efd2467e53fa381066ccc552e9df84edd44",
+        "bytes": 156619
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "77b8cd2e5bf67624449c5da1e0db5b7947b11ad5ccf65caf8c99d7f978a66cbf",
+        "bytes": 167
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "9ffdfb2eb80a675f51aa646b1d5cf1acb55da6ba24c8d48828b833eced8cb03a",
+        "bytes": 2673
+      },
+      {
+        "path": "records/control-base-jdk21.stdout",
+        "sha256": "dacabc1347e193ee842debf69e6a9a0610d6589ea20d9ed18d163d149201324c",
+        "bytes": 20682
+      },
+      {
+        "path": "records/control-base-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "ba6c36f9bccab0fb8bc51d873598a597dc1983975ba1f1d5f91f19b423ef0a15",
+        "bytes": 150019
+      },
+      {
+        "path": "records/control-regression-jdk21.stdout",
+        "sha256": "ec53fb84f4a307828bd675d62da892ae48cf324c9100760f5955429b21896c24",
+        "bytes": 20682
+      },
+      {
+        "path": "records/control-regression-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "d04ba66f8ef9ad2da663a9bf550907d2b578e8a0f31ffe97e630c951d148df8c",
+        "bytes": 783
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "69f438f079e86f480a1dc0a7641c871f5f460bad4a6dcc3a0c1f90da4439c6d0",
+        "bytes": 7419
+      }
+    ]
+  }
+}

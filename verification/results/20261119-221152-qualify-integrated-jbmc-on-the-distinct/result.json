@@ -1,0 +1,174 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261119-221152-qualify-integrated-jbmc-on-the-distinct",
+  "title": "Qualify integrated JBMC on the distinct single-cell array grid",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.4s, peak 73.0 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (Four concrete heaps, two actual JBMC comparisons) was held back 2.3s by its 1-CPU quota in 3.4s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261119-221152-qualify-integrated-jbmc-on-the-distinct.json",
+    "sha256": "5dc5fb0ed16aa3d63dfe22b1bc0ecd2643cf76633751960d9f9379a7f61c4c2a",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261119-221152-qualify-integrated-jbmc-on-the-distinct",
+      "title": "Qualify integrated JBMC on the distinct single-cell array grid",
+      "description": "Build each actual array method with a scalar entry whose low bits represent all four distinct, non-null one-cell heaps. Check the injective complete-root observer on the JVM, then establish the preserving pair and replay the skipped-write witness for the distinguishing pair with JBMC.",
+      "kind": "other",
+      "capabilities": [
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "197"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-19T22:11:52+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 8,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "6m"
+      },
+      "steps": [
+        {
+          "name": "Four concrete heaps, two actual JBMC comparisons",
+          "run": "python3 examples/197-shared-int-array-poststates/proofs/grid/check.py --output verification/restart-jbmc-grid.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/restart-jbmc-grid.json"
+      ]
+    }
+  },
+  "sourceCommit": "f8b2e8d3eb3f63ae3281dbbf9a56a0cf146e8f16",
+  "startedAt": "2026-11-19T22:21:56+00:00",
+  "finishedAt": "2026-11-19T22:24:40+00:00",
+  "wallSeconds": 164.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4127838,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 360.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 76570624,
+    "wallSeconds": 3.4,
+    "cpuSeconds": 3.1,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Four concrete heaps, two actual JBMC comparisons",
+      "run": "python3 examples/197-shared-int-array-poststates/proofs/grid/check.py --output verification/restart-jbmc-grid.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 360.0,
+      "cancelled": false,
+      "wallSeconds": 3.407,
+      "cpuSeconds": 3.082,
+      "cpuThrottledSeconds": 2.323,
+      "peakMemoryBytes": 76570624,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-four-concrete-heaps-two-actual.log",
+        "lines": 2,
+        "bytes": 61,
+        "sha256": "d11a41e9ae59aba6c338e4eac5551e6460184c8a82339527c6fbad91ebdd6293",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "controls/preserving verified True",
+        "alternative violation True"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/restart-jbmc-grid.json",
+      "change": "added",
+      "bytes": 14646,
+      "sha256": "0d50b6c078e124ffbe5177cec411206cd8a8f4dcae9771257802417d84d515bb",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-19T22:25:04+00:00",
+    "applied": [
+      "verification/restart-jbmc-grid.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "2caef2a40fd0685aad5fda14530705098cc4f91d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2caef2a40fd0685aad5fda14530705098cc4f91d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,220 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2caef2a40fd0685aad5fda14530705098cc4f91d/jvmcontract",
+    "prove",
+    "org.apache.commons.math.util.MathUtils#gcd(int, int)",
+    "--classes",
+    "prepare/fix/slice/fix.jar",
+    "--assume",
+    "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+    "--assert",
+    "result == (u < v ? u : v)",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "32",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "600",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 0,
+  "seconds": 202.756,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "verified",
+      "target": "org.apache.commons.math.util.MathUtils#gcd(int, int)",
+      "domain": "u: int × v: int",
+      "assume": "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+      "assert": "result == (u < v ? u : v)",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over u: int × v: int in 202.7 s; loops unwound 32 times with unwinding assertions",
+      "problem": null,
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [],
+      "output": "✓ org.apache.commons.math.util.MathUtils#gcd(int, int) satisfies `result == (u < v ? u : v)` on every input where (u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0) (jvmcontract's own checker (CaDiCaL): 1 properties proved over u: int × v: int in 202.7 s; loops unwound 32 times with unwinding assertions)\n  not vacuous: gcd(u=16, v=16) reaches the calls\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 202.695251022,
+        "properties": 1,
+        "unwind": 32,
+        "max_array_length": 8,
+        "stage": null,
+        "native": {
+          "paths": 447,
+          "merges": 0,
+          "solver_calls": 2546,
+          "solving_seconds": 188.991307606,
+          "gates_evaluated": 271341,
+          "evaluating_seconds": 0.041435756,
+          "divisions": 671,
+          "divisions_built": 207,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 1633894,
+          "clauses": 5557392,
+          "seconds": 202.494218418,
+          "loading_seconds": 8.512e-05,
+          "decoding_seconds": 6.2197e-05,
+          "encoding_seconds": 8.839025982999999,
+          "witness_seconds": 0.0
+        },
+        "gap_mode": "strict",
+        "deadline_seconds": 600.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 600.0,
+            "seconds": 202.494,
+            "ended": "verified",
+            "ending": "verified",
+            "phases": {
+              "loading": 0.0,
+              "lowering": 0.0,
+              "symbolic": 4.664,
+              "encoding": 8.839,
+              "solving": 188.991,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 1633894,
+              "clauses": 5557392
+            }
+          },
+          {
+            "checker": "native",
+            "purpose": "probe",
+            "stage": null,
+            "budget_seconds": 397.305,
+            "seconds": 0.005,
+            "ended": "violation",
+            "ending": "counterexample",
+            "phases": {
+              "loading": 0.0,
+              "lowering": 0.0,
+              "symbolic": 0.005,
+              "encoding": 0.0,
+              "solving": 0.0,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 626,
+              "clauses": 1864
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 202.711,
+          "setup": 0.001,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 202.499,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.211
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "u",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            },
+            {
+              "name": "v",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "u: int × v: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result == (u < v ? u : v)",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 32,
+          "max_array_length": null,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+          "classes": 37,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "probe",
+          "text": "Some input in the domain reaches the calls: the tool's own checker found gcd(u=16, v=16).",
+          "witness": "gcd(u=16, v=16)"
+        }
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 5772,
+    "sha256": "d238710d28c46b8a2cdd91755dd8d159ab45564081d835c971c7648a5a60e854"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

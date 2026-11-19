@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 144, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-19 22:37 UTC |
-| Prompts | 3,606 |
-| Model calls | 36,551 |
-| Tool calls | 38,244 (704 failed) |
+| Period | 2026-10-24 14:07 UTC to 2026-11-19 22:44 UTC |
+| Prompts | 3,622 |
+| Model calls | 36,663 |
+| Tool calls | 38,375 (707 failed) |
 | Compactions | 518 |
 | Subagents | 21 |
-| Tokens written | 35,093,195 |
-| Tokens read | 6,200,222,995 (98.2% from cache) |
-| Commits with a trace | 1,142 |
-| Log snapshots | 1,491 (3613.4 MB gzipped, 1,474 uploaded) |
+| Tokens written | 35,128,913 |
+| Tokens read | 6,225,349,221 (98.2% from cache) |
+| Commits with a trace | 1,152 |
+| Log snapshots | 1,503 (3674.9 MB gzipped, 1,474 uploaded) |
 
 ## Sessions
 
@@ -139,9 +139,9 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-15 12:23 UTC | [72d38e75-aae0-402e-9b8a-881beec53824](72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | ended | 3 h 33 min | `claude-opus-5-5` | 61 | 471 | 470 | 9 | 10 | 190,640 | 21 |
 | 2026-11-15 14:52 UTC | [Moonshot loop stats backfill](0c1ceb11-1913-4783-af0d-e3fa5724273b/summary.md) | ended | 1 h 21 min | `claude-fable-5-2` | 11 | 116 | 117 | 2 | 0 | 415,695 | 12 |
 | 2026-11-15 16:13 UTC | [a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) | ended | 1 d 8 h | `claude-fable-5-2` | 41 | 1,941 | 1,999 | 18 | 14 | 566,568 | 89 |
-| 2026-11-15 17:27 UTC | [Moonshot loop status](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | open | 4 d 4 h | `claude-opus-5-5` | 314 | 1,892 | 1,717 | 29 | 8 | 564,231 | 391 |
+| 2026-11-15 17:27 UTC | [Moonshot loop status](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | open | 4 d 5 h | `claude-opus-5-5` | 326 | 1,943 | 1,763 | 29 | 8 | 564,231 | 400 |
 | 2026-11-15 17:34 UTC | [48807e20-0bdb-4031-8ced-d21d16fc3816](48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) | ended | 1 h 25 min | `claude-sonnet-5-5` | 1 | 36 | 36 | 2 | 0 | 70,286 | 6 |
-| 2026-11-15 19:24 UTC | [Prove-java-change skill and in-the-loop runtime](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | ended | 3 d 19 h | `claude-fable-5-2` | 60 | 1,502 | 1,610 | 50 | 12 | 466,857 | 344 |
+| 2026-11-15 19:24 UTC | [Prove-java-change skill and in-the-loop runtime](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | ended | 3 d 19 h | `claude-fable-5-2` | 60 | 1,502 | 1,610 | 50 | 12 | 466,857 | 345 |
 | 2026-11-15 23:45 UTC | [5399f71b-f38b-4670-8fbe-9aa44d5cd46d](5399f71b-f38b-4670-8fbe-9aa44d5cd46d/summary.md) | ended | 1 h 35 min | `claude-sonnet-5-5` | 3 | 29 | 27 | 2 | 0 | 66,255 | 3 |
 | 2026-11-16 05:44 UTC | [55c8cba6-01ea-400f-bee3-52e9db3aaba0](55c8cba6-01ea-400f-bee3-52e9db3aaba0/summary.md) | ended | 1 h 24 min | `claude-sonnet-5-5` | 1 | 21 | 20 | 1 | 0 | 56,304 | 8 |
 | 2026-11-16 15:14 UTC | [0d14bf6f-8e0a-47cf-bce9-778897fc474e](0d14bf6f-8e0a-47cf-bce9-778897fc474e/summary.md) | ended | 13 min | `claude-sonnet-5-5` | 3 | 22 | 19 | 3 | 0 | 54,218 | 2 |
@@ -162,7 +162,7 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 02:13 UTC | [Window 11 verification loop](b74acbd8-95de-40d7-8793-79948e8c27ae/summary.md) | ended | 10 h 16 min | `claude-opus-5-5` | 11 | 87 | 83 | 1 | 0 | 194,540 | 14 |
 | 2026-11-17 02:26 UTC | [6da9b537-ecce-46cf-99fa-7cae16e7ce99](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | ended | 6 min | `claude-sonnet-5-5` | 1 | 6 | 6 | 0 | 0 | 40,446 | 2 |
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | ended | 3 min | `claude-sonnet-5-5` | 12 | 21 | 17 | 2 | 2 | 56,861 | 1 |
-| 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | ended | 2 d 8 h | `claude-opus-5-5` | 65 | 522 | 520 | 14 | 3 | 565,519 | 239 |
+| 2026-11-17 12:37 UTC | [/run-brief invocation options](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | ended | 2 d 9 h | `claude-opus-5-5` | 66 | 545 | 544 | 14 | 3 | 565,519 | 244 |
 | 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | open | 4 h 3 min | `claude-opus-5-5` | 84 | 681 | 678 | 13 | 15 | 186,120 | 22 |
 | 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | open | 13 h 7 min | `claude-opus-5-5` | 163 | 1,513 | 1,531 | 31 | 28 | 294,636 | 144 |
 | 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | open | 11 h 14 min | `claude-opus-5-5` | 151 | 1,400 | 1,362 | 14 | 23 | 273,336 | 28 |
@@ -170,8 +170,8 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 18:37 UTC | [Agent brief preservation work 287 308](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | ended | 2 h 45 min | `claude-fable-5-2` | 7 | 171 | 189 | 3 | 2 | 466,832 | 35 |
 | 2026-11-19 15:23 UTC | [01a1f467-856b-7d02-9458-ab076e5fef2f](01a1f467-856b-7d02-9458-ab076e5fef2f/summary.md) | ended | 5 h 54 min | `gpt-6.2-astra` | 2 | 396 | 878 | 32 | 0 | 524,832 | 18 |
 | 2026-11-19 15:26 UTC | [01a1f467-8590-7ff3-bcdd-e52e5af7e3bc](01a1f467-8590-7ff3-bcdd-e52e5af7e3bc/summary.md) | ended | 1 h 36 min | `codex-auto-review` | 7 | 15 | 0 | 0 | 0 | 137,838 | 18 |
-| 2026-11-19 21:37 UTC | [01a1f5be-43bd-7532-a80c-5b4f5c304590](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) | open | 1 h 0 min | `gpt-6.2-astra` | 1 | 237 | 498 | 22 | 0 | 382,570 | 9 |
-| 2026-11-19 21:41 UTC | [01a1f5be-43e3-71e0-ac11-7467f893af75](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) | open | 52 min | `codex-auto-review` | 3 | 8 | 0 | 0 | 0 | 81,935 | 9 |
+| 2026-11-19 21:37 UTC | [01a1f5be-43bd-7532-a80c-5b4f5c304590](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) | open | 1 h 6 min | `gpt-6.2-astra` | 1 | 271 | 559 | 25 | 0 | 403,975 | 18 |
+| 2026-11-19 21:41 UTC | [01a1f5be-43e3-71e0-ac11-7467f893af75](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) | open | 56 min | `codex-auto-review` | 6 | 12 | 0 | 0 | 0 | 92,508 | 17 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -292,7 +292,7 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`72d38e75`](72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | 411,604 | 958 | 1,358,682 | 49,825,605 | 97.3% | 124 |
 | [`0c1ceb11`](0c1ceb11-1913-4783-af0d-e3fa5724273b/summary.md) | 171,649 | 242 | 384,249 | 33,894,142 | 98.9% | 200 |
 | [`a4ac2b6c`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) | 2,378,425 | 3,882 | 5,726,751 | 507,097,667 | 98.9% | 216 |
-| [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 1,140,474 | 4,396 | 2,906,195 | 451,343,343 | 99.4% | 398 |
+| [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 1,154,139 | 4,528 | 2,948,146 | 460,199,997 | 99.4% | 401 |
 | [`48807e20`](48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) | 8,843 | 72 | 58,914 | 1,664,716 | 96.6% | 195 |
 | [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | 2,066,207 | 3,084 | 5,195,749 | 414,366,826 | 98.8% | 203 |
 | [`5399f71b`](5399f71b-f38b-4670-8fbe-9aa44d5cd46d/summary.md) | 7,824 | 60 | 54,883 | 1,238,636 | 95.8% | 165 |
@@ -315,7 +315,7 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`b74acbd8`](b74acbd8-95de-40d7-8793-79948e8c27ae/summary.md) | 56,948 | 186 | 325,707 | 10,416,121 | 97.0% | 189 |
 | [`6da9b537`](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 1,385 | 12 | 28,987 | 187,799 | 86.6% | 157 |
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 8,137 | 42 | 87,022 | 814,514 | 90.3% | 111 |
-| [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 374,643 | 1,174 | 1,790,073 | 136,687,534 | 98.7% | 370 |
+| [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 384,526 | 1,226 | 1,811,344 | 139,183,429 | 98.7% | 367 |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 469,172 | 1,388 | 1,808,399 | 65,588,806 | 97.3% | 144 |
 | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 1,230,494 | 3,090 | 4,350,899 | 181,097,638 | 97.7% | 151 |
 | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 1,054,331 | 2,888 | 3,460,090 | 172,015,121 | 98.0% | 166 |
@@ -323,29 +323,29 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`88045564`](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | 267,328 | 348 | 615,072 | 43,806,783 | 98.6% | 166 |
 | [`01a1f467`](01a1f467-856b-7d02-9458-ab076e5fef2f/summary.md) | 183,752 | 538,762 | 0 | 132,195,200 | 99.6% | 722 |
 | [`01a1f467`](01a1f467-8590-7ff3-bcdd-e52e5af7e3bc/summary.md) | 1,619 | 523,251 | 0 | 802,816 | 60.5% | 819 |
-| [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) | 132,907 | 387,400 | 0 | 61,357,312 | 99.4% | 465 |
-| [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) | 974 | 115,302 | 0 | 294,784 | 71.9% | 421 |
+| [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) | 144,619 | 411,110 | 0 | 74,680,704 | 99.5% | 519 |
+| [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) | 1,432 | 137,735 | 0 | 635,520 | 82.2% | 540 |
 
 ## Tool calls
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 33,563 | 87.8% | 142 |
-| `Read` | 1,445 | 3.8% | 61 |
-| `Edit` | 1,163 | 3.0% | 59 |
+| `Bash` | 33,649 | 87.7% | 142 |
+| `Read` | 1,447 | 3.8% | 61 |
+| `Edit` | 1,166 | 3.0% | 59 |
 | `Write` | 737 | 1.9% | 58 |
-| `exec` | 623 | 1.6% | 2 |
-| `ToolSearch` | 207 | 0.5% | 47 |
+| `exec` | 657 | 1.7% | 2 |
+| `ToolSearch` | 209 | 0.5% | 47 |
 | `Monitor` | 148 | 0.4% | 52 |
 | `apply_patch` | 71 | 0.2% | 2 |
 | `AskUserQuestion` | 66 | 0.2% | 16 |
 | `TaskStop` | 54 | 0.1% | 22 |
-| `SendMessage` | 46 | 0.1% | 10 |
+| `SendMessage` | 48 | 0.1% | 10 |
 | `WebFetch` | 39 | 0.1% | 9 |
 | `Agent` | 21 | 0.1% | 8 |
 | `ScheduleWakeup` | 18 | 0.0% | 5 |
-| `Skill` | 13 | 0.0% | 10 |
-| `ListAgents` | 12 | 0.0% | 4 |
+| `Skill` | 14 | 0.0% | 10 |
+| `ListAgents` | 13 | 0.0% | 4 |
 | `wait` | 10 | 0.0% | 1 |
 | `bash` | 5 | 0.0% | 5 |
 | `WebSearch` | 3 | 0.0% | 2 |
@@ -1488,16 +1488,26 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 1130 | [`39f0e378`](https://github.com/pilifs/in-the-loop/commit/39f0e378234d96f5b9d0ac7380487a970a9e788a) | VF-046: the cybersecurity flag stays with the Codex session | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/b741a22c8e51a97769f287189896b8485784ea412041af6ce17b1aeeaeecd63c.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/4762412586d7791a93372ea69d31fc1ce2c0686cd220b6f918612aa33066889a.jsonl.gz)) |
 | 1131 | [`a05b3b2b`](https://github.com/pilifs/in-the-loop/commit/a05b3b2ba86d979809e24722d782f71feed2fed2) | Allow list: Filip Stankovic approved fede9fa3 | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/58448a11007250098282c41b4e827858490ba8ce6b262734caf5aaabb58c5b3d.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7b2b7e07dd5b73769be7f9fe1c29c3b539d8ef9d08448601bcab917a7be9bba0.jsonl.gz)) |
 | 1132 | [`11413e85`](https://github.com/pilifs/in-the-loop/commit/11413e858e4019ce402b40687ce53e6e87aace54) | Record session traces | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/a8601cce1fa9b71e24c0d4843afca2749234a1c302a29ca47190fd87d5a1a650.jsonl.gz)) |
-| 1133 | change `ovlxrolo` | The foundation and Python-architecture restart brief, with its Java starter kit, for one agent's run | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/7355af47c81ceb19cf632bdcc7ad818f1da9ad895878c547b0cd104f2c9af4b0.jsonl.gz)) |
-| 1134 | change `oxzsrsuy` | Freeze Gradebook and MATH-238 claims on the checkpoint route (verification pending) | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/f39026fe470bb9b1a13abb28ea4b36a233fb61ad12bee7476880934526cbce11.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/1eef14f46e48e770257b140ae0f6a38d935bff04e7474be8796e1f98dfe24ff5.jsonl.gz)) |
-| 1135 | change `pswlzwuw` | Compare binary repository blobs as bytes in the tree lookup test | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/76a45a701c36edd4949aba85d9b5d1a0d8a171b1c63f7fe79f579bd769bf7740.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/c915284fac08fc7bae67662b987419620097f3104163b88c3b8aa120d15ee9ff.jsonl.gz)) |
-| 1136 | change `mnxuqxvm` | Bind direct and adapter proof recipes to recoverable executions (verification pending) | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/771fd74c3bca8cd1aaa58f6c6813130df3bc3670dab1b7d587e6e6a143a8bd2c.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/5a6e1d66d297c73fee4f9b3dfa961355b8a4e8700a892889cc61be554df1aee7.jsonl.gz)) |
-| 1137 | change `qkulzuuy` | Qualify independent framework observations and version checker evidence (verification pending) | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/07af14346a91a19ad4baaa64366ebade14dc980c888237d120c703e6959c5b16.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/91e0f14f2ef406ce031e5db54dde04faf826571b2e2ed8d8add993d22d1bd751.jsonl.gz)) |
-| 1138 | change `wmnqnlrm` | Apply the adapter recipe to Commons Lang UTF-16 search (verification pending) | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/18bd87b5a53dbd7c9b924a89100e17328fca36f977cbdbd5eb08ba109cbcf94c.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)) |
-| 1139 | change `lykzpopw` | Separate compile stubs from the shop application artifacts (verification pending) | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/de82592d43248306fb5aeec85c294457d2c2d4194def2e0b0bd2814462f66794.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)) |
-| 1140 | change `kurmqpxl` | Reconcile concrete JVM evidence and freeze Gradebook frame rules (verification pending) | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/5b85be3cc69199647c573000da6407ca97d2b62f495326a1e8205b69b1375ad3.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)) |
-| 1141 | change `qxmqxnks` | Keep duplicate completions stable when a sibling claim is added | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/f50362dd9df150b665afbb9d71c26af00b877af82be21310f67bc5f44f0563b0.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)) |
-| 1142 | change `kwxuypsu` | Expose claim-specific witness replay and keep late rejections in history | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/06c62a8ed209911b20366c322c62d051683ce29e05fe2b31c839564585ef83d3.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)) |
+| 1133 | change `ovlxrolo` | The foundation and Python-architecture restart brief, with its Java starter kit, for one agent's run | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/7355af47c81ceb19cf632bdcc7ad818f1da9ad895878c547b0cd104f2c9af4b0.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)) |
+| 1134 | change `pkyzwyvy` | VF-045: a second Codex session opened the run-brief skill before working alone | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/0d67eea2ee4397055dd6cca6b0c0a7be7067018f8bb9d2139bc3c36ea1da275a.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)), [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212.jsonl.gz)) |
+| 1135 | change `lxnwsprm` | Codex sessions start without the Pets, Hotline, Safety Settings and Sites apps | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/13bd63886d868f51ae0f6f9d1c133f3655f8e51f48f534ea89d36ed390acad6e.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)), [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)) |
+| 1136 | change `pzqqompz` | Record verification results for 1 job(s) | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/a31ecdde5ee995ef5db183066d7182f3ce39403283669816bd4efd05fdedfa02.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)), [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)) |
+| 1137 | change `wmswovok` | Record verification results for 1 job(s) | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/e1a611bd3594f5fbd87698ea9a94bb51ca0a2d9ccba766514808ad8d16a1b49d.jsonl.gz)), [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) ([log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)), [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) ([log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)), [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)) |
+| 1138 | change `wuttosxk` | Record verification results for 2 job(s) | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/5f3991446d14bb6a34a0de662d5b5d2fb4d870e6b65e6b0bbe864a725d5d1142.jsonl.gz)), [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)) |
+| 1139 | change `qtnnvmzu` | Record verification results for 1 job(s) | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/ef3b497445616be60bca3032d42811d4339251cb3b8a98742c9039b6fcbf5bc4.jsonl.gz)), [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)) |
+| 1140 | change `pqqonrvp` | Record verification results for 4 job(s) | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/9612575595815e2362b35b15777337376676cf485158289a3f76d8e6e99fcc44.jsonl.gz)), [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)) |
+| 1141 | change `owxqwqnr` | Record verification results for 2 job(s) | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/fa422ba7a3cb7636ae548459e52e237584569d610c1c343ee56841724fb25c42.jsonl.gz)), [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)) |
+| 1142 | change `yowmmxxm` | Record verification results for 1 job(s) | [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) ([log](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/0f73cff30ea47cf72e8cfcad9ac7e0b0f4eb97851081384b6fa02047d0329521.jsonl.gz)) |
+| 1143 | change `oxzsrsuy` | Freeze Gradebook and MATH-238 claims on the checkpoint route (verification pending) | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/f39026fe470bb9b1a13abb28ea4b36a233fb61ad12bee7476880934526cbce11.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/1eef14f46e48e770257b140ae0f6a38d935bff04e7474be8796e1f98dfe24ff5.jsonl.gz)) |
+| 1144 | change `pswlzwuw` | Compare binary repository blobs as bytes in the tree lookup test | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/76a45a701c36edd4949aba85d9b5d1a0d8a171b1c63f7fe79f579bd769bf7740.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/c915284fac08fc7bae67662b987419620097f3104163b88c3b8aa120d15ee9ff.jsonl.gz)) |
+| 1145 | change `mnxuqxvm` | Bind direct and adapter proof recipes to recoverable executions (verification pending) | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/771fd74c3bca8cd1aaa58f6c6813130df3bc3670dab1b7d587e6e6a143a8bd2c.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/5a6e1d66d297c73fee4f9b3dfa961355b8a4e8700a892889cc61be554df1aee7.jsonl.gz)) |
+| 1146 | change `qkulzuuy` | Qualify independent framework observations and version checker evidence (verification pending) | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/07af14346a91a19ad4baaa64366ebade14dc980c888237d120c703e6959c5b16.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/91e0f14f2ef406ce031e5db54dde04faf826571b2e2ed8d8add993d22d1bd751.jsonl.gz)) |
+| 1147 | change `wmnqnlrm` | Apply the adapter recipe to Commons Lang UTF-16 search (verification pending) | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/18bd87b5a53dbd7c9b924a89100e17328fca36f977cbdbd5eb08ba109cbcf94c.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)) |
+| 1148 | change `lykzpopw` | Separate compile stubs from the shop application artifacts (verification pending) | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/de82592d43248306fb5aeec85c294457d2c2d4194def2e0b0bd2814462f66794.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)) |
+| 1149 | change `kurmqpxl` | Reconcile concrete JVM evidence and freeze Gradebook frame rules (verification pending) | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/5b85be3cc69199647c573000da6407ca97d2b62f495326a1e8205b69b1375ad3.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)) |
+| 1150 | change `qxmqxnks` | Keep duplicate completions stable when a sibling claim is added | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/f50362dd9df150b665afbb9d71c26af00b877af82be21310f67bc5f44f0563b0.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)) |
+| 1151 | change `kwxuypsu` | Expose claim-specific witness replay and keep late rejections in history | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/06c62a8ed209911b20366c322c62d051683ce29e05fe2b31c839564585ef83d3.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)) |
+| 1152 | change `wuqvmopo` | Integrate all restart verification results and publish the claim handoff | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)) |
 
 ## Logs
 
@@ -1616,7 +1626,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`72d38e75`](72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | 19 | 19 | 30.8 MB | [`899d4403f2b2`](https://terminalvalue.net/raw-traces/72d38e75-aae0-402e-9b8a-881beec53824/899d4403f2b2a0909e5a6b90d70b75b6fdd06876f953c84931aeba6ed741b941.jsonl.gz) |
 | [`0c1ceb11`](0c1ceb11-1913-4783-af0d-e3fa5724273b/summary.md) | 6 | 6 | 2.5 MB | [`c1c42ffaf7db`](https://terminalvalue.net/raw-traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/c1c42ffaf7db4e4760ae1c502150d8043c016b95e69700ecace0c390f02645af.jsonl.gz) |
 | [`a4ac2b6c`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) | 37 | 37 | 175.9 MB | [`4742b15c6bca`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/4742b15c6bca1452a2ada08f549dd989d1da9947643134e5a5daf9359a05a89a.jsonl.gz) |
-| [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 162 | 161 | 596.1 MB | `7355af47c81c`, not uploaded |
+| [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 171 | 161 | 653.0 MB | `0f73cff30ea4`, not uploaded |
 | [`48807e20`](48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) | 4 | 4 | 0.4 MB | [`1d7e417218bd`](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/1d7e417218bd36687631cd85bea645246892db4a9d43376d150c17a490bf6a3c.jsonl.gz) |
 | [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | 58 | 58 | 206.3 MB | [`6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz) |
 | [`5399f71b`](5399f71b-f38b-4670-8fbe-9aa44d5cd46d/summary.md) | 3 | 3 | 0.3 MB | [`fdebcf4957a5`](https://terminalvalue.net/raw-traces/5399f71b-f38b-4670-8fbe-9aa44d5cd46d/fdebcf4957a593489f34ce5d5d240d8c0bc494c33a6c1c3efda1eb0013f0e7ad.jsonl.gz) |
@@ -1639,7 +1649,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`b74acbd8`](b74acbd8-95de-40d7-8793-79948e8c27ae/summary.md) | 7 | 7 | 1.9 MB | [`728f5d1c9588`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/728f5d1c9588b8ae8e3cffe6394cbaec4aea15cedce3a404b1811d7e89c710cb.jsonl.gz) |
 | [`6da9b537`](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 2 | 2 | 0.2 MB | [`d5b3ff93d2f4`](https://terminalvalue.net/raw-traces/6da9b537-ecce-46cf-99fa-7cae16e7ce99/d5b3ff93d2f464f79d4c2c3b63c435663917ad81d37a274a6519c9da315b7f3d.jsonl.gz) |
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 1 | 1 | 0.3 MB | [`965570933c02`](https://terminalvalue.net/raw-traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/965570933c0206c64a18c5652f4f74be1de3807449c6f9f9a26e20a3211055fc.jsonl.gz) |
-| [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 47 | 47 | 49.5 MB | [`7b2b7e07dd5b`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7b2b7e07dd5b73769be7f9fe1c29c3b539d8ef9d08448601bcab917a7be9bba0.jsonl.gz) |
+| [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 48 | 47 | 51.6 MB | `dfaf011093aa`, not uploaded |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 20 | 20 | 36.3 MB | [`b38cb00ee8e3`](https://terminalvalue.net/raw-traces/7ece8184-b148-4351-92d8-d634606b823e/b38cb00ee8e399df658a029f6c5f27883260d8a5bdaeb066de451cd7b1f2e2ba.jsonl.gz) |
 | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 31 | 31 | 119.0 MB | [`48d54253e884`](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/48d54253e8843aecedd54821ca07cb9abf899068117a636ea6bbe0bb7d6b2391.jsonl.gz) |
 | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 27 | 27 | 82.8 MB | [`2a57c9145b73`](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/2a57c9145b731f5630b7d63c9e4dd9e494aa5d928201a4ec0c936f217b394fc0.jsonl.gz) |
@@ -1647,8 +1657,8 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`88045564`](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | 15 | 15 | 9.0 MB | [`75a9c12a10b4`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/75a9c12a10b4d8479b8b8c76ac481f00672cf19f5b3cd00efc5aa00f2a9eef13.jsonl.gz) |
 | [`01a1f467`](01a1f467-856b-7d02-9458-ab076e5fef2f/summary.md) | 12 | 11 | 25.2 MB | `1c2c265597c3`, not uploaded |
 | [`01a1f467`](01a1f467-8590-7ff3-bcdd-e52e5af7e3bc/summary.md) | 10 | 9 | 1.6 MB | `6dff87bb46e6`, not uploaded |
-| [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) | 9 | 0 | 14.3 MB | `06c62a8ed209`, not uploaded |
-| [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) | 5 | 0 | 0.5 MB | `e2ca5a8b9485`, not uploaded |
+| [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) | 10 | 0 | 16.8 MB | `f0aa93061306`, not uploaded |
+| [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) | 6 | 0 | 0.7 MB | `58d80bd947f0`, not uploaded |
 
 ## Session notes
 

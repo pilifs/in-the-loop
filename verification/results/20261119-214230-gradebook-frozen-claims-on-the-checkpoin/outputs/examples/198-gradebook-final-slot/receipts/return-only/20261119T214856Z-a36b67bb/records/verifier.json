@@ -1,0 +1,209 @@
+{
+  "task": "return-only",
+  "record": {
+    "kind": "verifier",
+    "revision": null,
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/fdecc19c2d0090bec3c622eabdcb5702f5508c11/jvmcontract",
+      "equivalence",
+      "--before",
+      "verifier/classes/base",
+      "--after",
+      "verifier/classes/regression",
+      "--target",
+      "gradebook.ScoreSheet#write(int[], int, int)",
+      "--assume",
+      "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+      "--observe",
+      "{\"kind\": \"result\"}",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "8",
+      "--max-array-length",
+      "3",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 1,
+    "seconds": 0.004,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "7a6ad79f859c290d679a54adb71d74cb3f26672920789fe239382f11481d9021",
+      "commit": "33b804ffe8d8767dc1e9d220f005abb4e5a1b527",
+      "libTree": "fdecc19c2d0090bec3c622eabdcb5702f5508c11",
+      "command": "equivalence",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 3
+      },
+      "timeout": 600,
+      "scope": {
+        "label": "constructed-fixture",
+        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+        "method": "gradebook.ScoreSheet#write([III)I",
+        "revisions": {
+          "base": {
+            "commit": "fixture:base",
+            "loadedFrom": "base.jar",
+            "classSha256": "60eab1b782bacef8f291b0d373e130fcfc5383c2ba4ac0562703d4a10a32f9fb",
+            "origin": "built from base by the fixture recipe",
+            "parameters": {
+              "names": [
+                "scores",
+                "slot",
+                "score"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          },
+          "regression": {
+            "commit": "fixture:regression",
+            "loadedFrom": "regression.jar",
+            "classSha256": "e39161e8c84a5d0cbac3e293dab90af6504235254a78048390496269d390da78",
+            "origin": "built from regression by the fixture recipe",
+            "parameters": {
+              "names": [
+                "scores",
+                "slot",
+                "score"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "base": [
+          {
+            "path": "base.jar",
+            "sha256": "b4e81ca54a65f9ba2f820e3c0c081cf56c1330bdc87ad19031db6b5d5da9dd10",
+            "role": "original"
+          }
+        ],
+        "regression": [
+          {
+            "path": "regression.jar",
+            "sha256": "df2da8b532935763701f1f910bebde040f5ef9cf8c8d42faf896cccbcc4dc5f4",
+            "role": "original"
+          }
+        ]
+      },
+      "commits": {
+        "base": "fixture:base",
+        "regression": "fixture:regression"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m"
+      },
+      "cwd": "the attempt directory",
+      "classes": {
+        "base": {
+          "dir": "verifier/classes/base",
+          "from": "prepare/base/base.jar",
+          "sha256": "b4e81ca54a65f9ba2f820e3c0c081cf56c1330bdc87ad19031db6b5d5da9dd10",
+          "entries": 1
+        },
+        "regression": {
+          "dir": "verifier/classes/regression",
+          "from": "prepare/regression/regression.jar",
+          "sha256": "df2da8b532935763701f1f910bebde040f5ef9cf8c8d42faf896cccbcc4dc5f4",
+          "entries": 1
+        }
+      },
+      "probe": {
+        "base": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/fdecc19c2d0090bec3c622eabdcb5702f5508c11/jvmcontract",
+            "gaps",
+            "--target",
+            "gradebook.ScoreSheet#write(int[], int, int)",
+            "--classes",
+            "prepare/base/base.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.016,
+          "stdout": "verifier/probe-base.stdout",
+          "stderr": "verifier/probe-base.stderr",
+          "gaps": []
+        },
+        "regression": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/fdecc19c2d0090bec3c622eabdcb5702f5508c11/jvmcontract",
+            "gaps",
+            "--target",
+            "gradebook.ScoreSheet#write(int[], int, int)",
+            "--classes",
+            "prepare/regression/regression.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.016,
+          "stdout": "verifier/probe-regression.stdout",
+          "stderr": "verifier/probe-regression.stderr",
+          "gaps": []
+        }
+      }
+    },
+    "observations": [
+      {
+        "verdict": "unverifiable",
+        "target": "gradebook.ScoreSheet#write(int[], int, int)",
+        "domain": null,
+        "counterexample": null,
+        "proof": null,
+        "problem": "the selected-observation profile takes a static method with two int[] parameters and an int result",
+        "statement": null,
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "gradebook.ScoreSheet#write(int[], int, int) cannot be verified: the selected-observation profile takes a static method with two int[] parameters and an int result",
+            "uri": null,
+            "line": 5
+          }
+        ],
+        "output": "✗ gradebook.ScoreSheet#write(int[], int, int) cannot be verified: the selected-observation profile takes a static method with two int[] parameters and an int result\n",
+        "work": "verifier/work"
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261119-214230-gradebook-frozen-claims-on-the-checkpoin/.build-py/examples-v8a2ak7o/targets/198/return-only",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261119-214230-gradebook-frozen-claims-on-the-checkpoin/.build-py/examples-v8a2ak7o/targets/198/return-only"
+  }
+}

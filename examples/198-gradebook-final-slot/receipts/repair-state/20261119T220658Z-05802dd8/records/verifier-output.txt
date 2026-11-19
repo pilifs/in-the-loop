@@ -1,0 +1,11 @@
+Compared array:scores on two fresh heaps with the same length, cell, null and sharing choices (verifier/work/pair/RegressionPair.java)
+✗ gradebook.ScoreSheet#write(int[], int, int): the two versions differ on write(scores=[0,0,1], slot=2, score=0) (the pair's property, below, returns false on it)
+  JVM before: array:scores=[0,0,1]
+  JVM after: array:scores=[0,0,0]
+note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name "RegressionPair"; the names are len0, cell0_0, cell0_1, cell0_2, arg1, arg2); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target
+✗ Property of RegressionPair#agree violated: `result` where RegressionPair.admitted(len0, cell0_0, cell0_1, cell0_2, arg1, arg2):
+  agree(len0=3, cell0_0=0, cell0_1=0, cell0_2=1, arg1=2, arg2=0)
+    outcome: false
+  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as agree(len0=3, cell0_0=0, cell0_1=0, cell0_2=2, arg1=2, arg2=0), shrunk to the input above in 12 interpreter runs, replayed in the interpreter; domain len0: int × cell0_0: int × cell0_1: int × cell0_2: int × arg1: int × arg2: int)
+
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.

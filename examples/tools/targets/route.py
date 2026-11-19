@@ -1,10 +1,7 @@
-"""What build.py and the verification pipeline call for a task of a real-world example with a target sidecar: the
-interfaces (interfaces.py) chained, stopping at the first Unsupported. Coordinator-owned (Phase 0 of
-llm-dlc/loops/example-targets.md): the streams implement behind it, in workflow.py and runtime.py.
+"""Public target route shared by build.py and the verification pipeline.
 
-    plan(folder, example, target, task)  the task's plan as JSON, for `build.py --plan NNN --task T` and the pipeline
-    run(folder, example, target, task, workdir)  plan, prepare each revision, controls, verifier, ingest: a Receipt
-                                         or the first Unsupported
+Planning freezes a claim and explains its recipe. Execution binds the revisions, runs independent
+controls and the checker, qualifies candidates, and publishes each receipt under its execution ID.
 """
 
 from dataclasses import replace

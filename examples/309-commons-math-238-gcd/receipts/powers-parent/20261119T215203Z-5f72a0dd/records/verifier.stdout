@@ -1,0 +1,203 @@
+[
+  {
+    "verdict": "violation",
+    "target": "org.apache.commons.math.util.MathUtils#gcd(int, int)",
+    "domain": "u: int × v: int",
+    "assume": "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+    "assert": "result == (u < v ? u : v)",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": {
+      "input": "gcd(u=65536, v=65536)",
+      "outcome": "131072",
+      "values": [
+        "65536",
+        "65536"
+      ],
+      "shrink_runs": 51,
+      "inputs": [
+        {
+          "name": "u",
+          "type": "int",
+          "value": 65536
+        },
+        {
+          "name": "v",
+          "type": "int",
+          "value": 65536
+        }
+      ],
+      "call": {
+        "class": "org.apache.commons.math.util.MathUtils",
+        "class_file": "org/apache/commons/math/util/MathUtils.class",
+        "classes": "after",
+        "method": "gcd",
+        "descriptor": "(II)I",
+        "static": true,
+        "arguments": [
+          {
+            "name": "u",
+            "type": "int",
+            "value": 65536,
+            "from": "u"
+          },
+          {
+            "name": "v",
+            "type": "int",
+            "value": 65536,
+            "from": "v"
+          }
+        ]
+      }
+    },
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 184.3 s searching inputs in [-100000:100000], replayed in the interpreter; domain u: int × v: int",
+    "problem": null,
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "property-violated",
+        "message": "Property of org.apache.commons.math.util.MathUtils#gcd(int, int) violated: `result == (u < v ? u : v)` where (u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0):\n  gcd(u=65536, v=65536)\n    outcome: 131072",
+        "uri": null,
+        "line": 412
+      }
+    ],
+    "output": "✗ Property of org.apache.commons.math.util.MathUtils#gcd(int, int) violated: `result == (u < v ? u : v)` where (u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0):\n  gcd(u=65536, v=65536)\n    outcome: 131072\n  (found by jvmcontract's own checker (CaDiCaL) in 184.3 s searching inputs in [-100000:100000], replayed in the interpreter; domain u: int × v: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 184.255762904,
+      "properties": 1,
+      "unwind": 32,
+      "max_array_length": 8,
+      "stage": "[-100000:100000]",
+      "native": {
+        "paths": 404,
+        "merges": 0,
+        "solver_calls": 2276,
+        "solving_seconds": 172.989891711,
+        "gates_evaluated": 245538,
+        "evaluating_seconds": 0.033386927,
+        "divisions": 606,
+        "divisions_built": 191,
+        "multiplications": 1,
+        "multiplications_built": 0,
+        "variables": 1490031,
+        "clauses": 5070273,
+        "seconds": 184.066867388,
+        "loading_seconds": 0.001009732,
+        "decoding_seconds": 0.00009033,
+        "encoding_seconds": 7.361395511,
+        "witness_seconds": 0.020338002
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 600.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 600.0,
+          "seconds": 184.067,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.001,
+            "lowering": 0.0,
+            "symbolic": 3.694,
+            "encoding": 7.361,
+            "solving": 172.99,
+            "trace": 0.02,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 1490031,
+            "clauses": 5070273
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 184.275,
+        "setup": 0.002,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 184.067,
+        "replay": 0.008,
+        "jvm": 0.0,
+        "other": 0.198
+      }
+    },
+    "replay": {
+      "by": "interpreter",
+      "reproduced": true
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "u",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "v",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "u: int × v: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == (u < v ? u : v)",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 32,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+        "classes": 37,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

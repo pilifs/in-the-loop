@@ -15,7 +15,7 @@ reads files, imports the route's modules, and runs nothing.
       receipts; a replay concludes nothing; a proof is native, not vacuous, and a refutation carries its witness (an
       equivalence's with its interpreter replay; a property check's replay is stated only in its proof text);
       execution, conclusion, expectation, scope and replay are separate fields; each is its task's current receipt.
-      An unresolved receipt is allowed only at the refusal an observed gap packet recorded for its task, and is never
+      An unresolved receipt must carry a measured solver deadline or the refusal an observed gap packet recorded, and is never
       as expected; a proof task's controls may be not-started (its adapter doesn't call its target), a replay's never.
   A8  every task of the deep packets and the calibration has a collected pipeline job step, and its latest passed;
       the legacy reports 106-109 stay historical and not executable, and 105 keeps its historical label. A8's jobs
@@ -335,6 +335,18 @@ class A6ReceiptIntegrityOnTheReceipts(unittest.TestCase):
                     # refused, with the receipt that decided the claim since (285's, 2026-11-15).
                     self.assertNotEqual(kind, "replay")
                     self.assertEqual(c["expectation"], "no")
+                    journal = directory.parent / "executions" / doc["attempt"]["id"]
+                    if (journal / "attempt.json").is_file():
+                        run = json.loads((journal / "attempt.json").read_text())
+                        if run.get("budgetExhausted"):
+                            raw = json.loads((journal / "checker.json").read_text())
+                            [outcome] = raw["outcomes"]
+                            self.assertEqual(outcome["verdict"], "unverifiable")
+                            self.assertEqual(outcome["search"]["runs"][-1]["ending"], "timeout")
+                            self.assertEqual(outcome["search"]["deadline_seconds"], run["budget"]["checkerSeconds"])
+                            self.assertEqual(doc["claim"]["id"], run["preparedClaim"])
+                            self.assertGreater(run["usage"]["peakRssBytes"], 0)
+                            continue
                     predicted = workflow_refusal.predictions(folder, target, task)
                     if predicted:
                         [p] = predicted

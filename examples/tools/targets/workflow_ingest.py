@@ -772,6 +772,9 @@ def publish(plan, prepared, records, out):
         if (journal["claimKey"] != plan.claim.get("key") or journal["revisions"] != list(plan.revisions)
                 or journal["task"] != plan.task):
             return Unsupported("ingest", WORKFLOW, "the execution belongs to another frozen subject", stage="records")
+        problem = executions.completion_problem(journal_path.parent, journal, next((r for r in records if r.kind == "verifier"), None))
+        if problem:
+            return Unsupported("ingest", WORKFLOW, problem, stage="records")
         started = datetime.fromisoformat(journal["startedAt"])
         completion = {"executionId": attempt_id, "digest": workflow.canonical_digest({"claim": claim["id"], "records": entries})}
     else:

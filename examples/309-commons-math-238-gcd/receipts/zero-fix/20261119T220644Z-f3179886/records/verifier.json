@@ -1,0 +1,366 @@
+{
+  "task": "zero-fix",
+  "record": {
+    "kind": "verifier",
+    "revision": "fix",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f0d04d56bbe9ef5b883e6425b233e4dcc9251c36/jvmcontract",
+      "prove",
+      "org.apache.commons.math.util.MathUtils#gcd(int, int)",
+      "--classes",
+      "prepare/fix/slice/fix.jar",
+      "--assume",
+      "u == 0 && v >= 0 && v <= 255",
+      "--assert",
+      "result == v",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "32",
+      "--max-array-length",
+      "8",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 0,
+    "seconds": 0.032,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "78d2b65af410c155a40fea6d7dce8a2fe52273ee272b5a44c1b4c0482d24ce93",
+      "commit": "12aa88a27c1c7aab3b8d1a9798ca697abb43947d",
+      "libTree": "f0d04d56bbe9ef5b883e6425b233e4dcc9251c36",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 8
+      },
+      "timeout": 600,
+      "scope": {
+        "label": "extracted-source-slice",
+        "meaning": "an extracted source slice: the named files of the exact commit compiled alone against pinned published JARs, not the commit's own build; a claim about it is about those classes, and reaches the commit's build only through a recorded correspondence",
+        "method": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+        "revisions": {
+          "fix": {
+            "commit": "dabf3a5beb9ab697d570154b9961078a8586c787",
+            "loadedFrom": "slice/fix.jar",
+            "classSha256": "a662836a91f75542df6394f05814c5d7974d426b584681d6273a9830d52b5d3d",
+            "origin": "an extracted source slice of dabf3a5beb9ab697d570154b9961078a8586c787: src/java/org/apache/commons/math/util/MathUtils.java, compiled by JDK 21 with --release 21 -parameters -g",
+            "parameters": {
+              "names": [
+                "u",
+                "v"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "fix": [
+          {
+            "path": "slice/fix.jar",
+            "sha256": "b6149ad671e272ad253356bcba4ae551b287a70a350b2bcae235d9d3aa8d3f14",
+            "role": "original"
+          }
+        ]
+      },
+      "checkedEntry": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "recipe": {
+        "kind": "direct-method",
+        "command": "prove",
+        "subject": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+        "checkedEntry": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "u == 0 && v >= 0 && v <= 255"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == v"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "32"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "8"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+      },
+      "commits": {
+        "fix": "dabf3a5beb9ab697d570154b9961078a8586c787"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "5632",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx3686m"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "fix": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f0d04d56bbe9ef5b883e6425b233e4dcc9251c36/jvmcontract",
+            "gaps",
+            "--target",
+            "org.apache.commons.math.util.MathUtils#gcd(int, int)",
+            "--classes",
+            "prepare/fix/slice/fix.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.016,
+          "stdout": "verifier/probe-fix.stdout",
+          "stderr": "verifier/probe-fix.stderr",
+          "gaps": []
+        }
+      }
+    },
+    "observations": [
+      {
+        "verdict": "verified",
+        "target": "org.apache.commons.math.util.MathUtils#gcd(int, int)",
+        "domain": "u: int × v: int",
+        "assume": "u == 0 && v >= 0 && v <= 255",
+        "assert": "result == v",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over u: int × v: int in 0.0 s; loops unwound 32 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [],
+        "output": "✓ org.apache.commons.math.util.MathUtils#gcd(int, int) satisfies `result == v` on every input where u == 0 && v >= 0 && v <= 255 (jvmcontract's own checker (CaDiCaL): 1 properties proved over u: int × v: int in 0.0 s; loops unwound 32 times with unwinding assertions)\n  not vacuous: gcd(u=0, v=20) reaches the calls\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.003141637,
+          "properties": 1,
+          "unwind": 32,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 4,
+            "merges": 0,
+            "solver_calls": 4,
+            "solving_seconds": 0.000142307,
+            "gates_evaluated": 398,
+            "evaluating_seconds": 8.054e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 518,
+            "clauses": 1602,
+            "seconds": 0.002616142,
+            "loading_seconds": 0.000158077,
+            "decoding_seconds": 5.3491e-05,
+            "encoding_seconds": 0.000199034,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 600.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 600.0,
+              "seconds": 0.003,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.002,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 518,
+                "clauses": 1602
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 599.997,
+              "seconds": 0.002,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.002,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 275,
+                "clauses": 716
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.014,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.005,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.008
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "u",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "v",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "u: int × v: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "u == 0 && v >= 0 && v <= 255",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == v",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 32,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+            "classes": 37,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found gcd(u=0, v=20).",
+            "witness": "gcd(u=0, v=20)"
+          }
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261119-215949-math-238-direct-recipe-on-frozen-power-a/.build-py/examples-785zfjpn/targets/309/zero-fix/20261119T220644Z-f3179886",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261119-215949-math-238-direct-recipe-on-frozen-power-a/.build-py/examples-785zfjpn/targets/309/zero-fix/20261119T220644Z-f3179886"
+  }
+}

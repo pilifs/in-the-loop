@@ -1,0 +1,158 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "org.apache.commons.math.util.MathUtils#gcd(int, int)",
+    "domain": "u: int × v: int",
+    "assume": "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+    "assert": "result == (u < v ? u : v)",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the engine did not finish within the time limit",
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "org.apache.commons.math.util.MathUtils#gcd(int, int) cannot be verified: the engine did not finish within the time limit",
+        "uri": null,
+        "line": 412
+      }
+    ],
+    "output": "✗ org.apache.commons.math.util.MathUtils#gcd(int, int) cannot be verified: the engine did not finish within the time limit\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 1.051035879,
+      "properties": 1,
+      "unwind": 32,
+      "max_array_length": 8,
+      "stage": null,
+      "native": {
+        "paths": 23,
+        "merges": 0,
+        "solver_calls": 145,
+        "solving_seconds": 0.817511907,
+        "gates_evaluated": 13487,
+        "evaluating_seconds": 0.000778764,
+        "divisions": 45,
+        "divisions_built": 21,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 133692,
+        "clauses": 458096,
+        "seconds": 1.012948374,
+        "loading_seconds": 0.000090069,
+        "decoding_seconds": 0.00006392,
+        "encoding_seconds": 0.181593209,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 1.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 1.0,
+          "seconds": 1.013,
+          "ended": "out-of-time",
+          "ending": "timeout",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.014,
+            "encoding": 0.182,
+            "solving": 0.818,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 133692,
+            "clauses": 458096
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 1.06,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 1.013,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.046
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "u",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "v",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "u: int × v: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == (u < v ? u : v)",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 32,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+        "classes": 37,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

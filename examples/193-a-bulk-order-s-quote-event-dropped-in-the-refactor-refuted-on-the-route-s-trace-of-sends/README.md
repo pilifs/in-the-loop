@@ -199,6 +199,7 @@ Send the event for every positive total, as before.
 - What stays unresolved in every example of the set, by name: `POST /quotes/text` (its string concatenation isn't modeled), `Quote#cents` moved to `Money#cents` (a method of a class the old build doesn't have) and `Quote#quantity`, whose receiver is made differently in the two versions (`Quote(long, int)` before, `Quote(Money, int)` now), which the regression check doesn't relate yet. Before the application-core merge (2026-11-08) it was refused as an instance method instead; the merge's check takes a receiver made by its constructor, of the same construction in both versions.
 - Run inline on 2026-11-07 (JDK 25.0.5), `jvmcontract compare` on the app compiled unpatched and patched, as build.py compiles it, and on the fixture's builds, with the same verdicts (the times are the fixture's): `POST /quotes` refuted, replayed on a JVM under the recording stubs; the kernel's `total`, `withQuantity` and `discount` verified. 0.4 s cold, 0.2 s warm.
 - The app's tests pass on this version: none sends 100 items.
+- The independent framework result projection verifies the returned amount. The ordered-effect projection refutes preservation of the Kafka send and its payload, with a full JVM replay under recording stubs. At one cent per item both revisions return 90 for quantities 99 and 100. The 99-item order sends (90, 99) on both revisions. Only the older revision sends (90, 100) on the 100-item order. The per-claim receipts are in receipts/return-amount and receipts/ordered-events.
 
 ## Evidence
 

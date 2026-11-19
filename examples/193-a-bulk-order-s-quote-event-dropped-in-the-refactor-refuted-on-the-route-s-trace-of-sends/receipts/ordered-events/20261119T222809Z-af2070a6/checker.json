@@ -1,0 +1,55 @@
+[
+  {
+    "entry": "POST /quotes",
+    "handler": "shop.QuotesController#quote",
+    "source_line": 19,
+    "checked": {
+      "outcome": {
+        "verdict": "refuted",
+        "domain": "cents: long × quantity: int (the request's inputs, the same in both builds)",
+        "accounting": [
+          {
+            "observation": "effect:org/springframework/kafka/core/KafkaTemplate#send(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Object;",
+            "state": "refuted"
+          }
+        ],
+        "witness": "POST /quotes on cents=1, quantity=100: the old build returns 90 and attempts KafkaTemplate.send(topic=\"quotes\", data.total=90, data.quantity=100); the new one returns 90 and attempts no modeled call. Replayed on a JVM (JDK 21.0.13) under the modeled dependencies (generated stubs for KafkaTemplate.send, each returning normally), not against real infrastructure"
+      },
+      "reason": null,
+      "assumptions": [
+        "KafkaTemplate.send is a recording stub in both builds: a recorded attempt is the call attempted, with its payload snapshotted at the call, not a delivery or a commit",
+        "every modeled call returns normally, the environment model's only outcome: a failure of a store, broker or client is outside the claim",
+        "QuotesController is made by its constructor with every dependency null and every other argument zero, in both builds: its dependencies are reached only through the modeled calls, and configuration it would be given is the type's default",
+        "a payload string is snapshotted as the literal it is, among those of either build; any other string leaves the result unresolved",
+        "at most 4 attempts are recorded, exactly in order; one more leaves the result unresolved"
+      ],
+      "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as project(cents=100000, quantity=100000), shrunk to the input above in 65 interpreter runs, replayed in the interpreter; domain cents: long × quantity: int",
+      "before": {
+        "outcome": "returns 90",
+        "kind": 0,
+        "result": 90,
+        "attempts": [
+          [
+            0,
+            [
+              0,
+              2,
+              90,
+              100
+            ],
+            "KafkaTemplate.send(topic=\"quotes\", data.total=90, data.quantity=100)"
+          ]
+        ],
+        "unresolved": []
+      },
+      "after": {
+        "outcome": "returns 90",
+        "kind": 0,
+        "result": 90,
+        "attempts": [],
+        "unresolved": []
+      },
+      "key": "sha256:c59aac3e3b534fe4cc5d591ac731150ffef5d91a3c67d59198ea041d28328cb1"
+    }
+  }
+]

@@ -1,0 +1,186 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "verified",
+    "target": "gradebook.ScoreSheet#write(int[], int, int)",
+    "domain": "scores: int[] of length ≤ 3, not null × slot: int × score: int",
+    "assume": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+    "assert": "(scores.length <= 0 || scores[0] == (slot == 0 ? score : \\old(scores[0]))) && (scores.length <= 1 || scores[1] == (slot == 1 ? score : \\old(scores[1]))) && (scores.length <= 2 || scores[2] == (slot == 2 ? score : \\old(scores[2])))",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over scores: int[] of length ≤ 3, not null × slot: int × score: int in 0.0 s; loops unwound 8 times with unwinding assertions",
+    "problem": null,
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "✓ gradebook.ScoreSheet#write(int[], int, int) satisfies `(scores.length <= 0 || scores[0] == (slot == 0 ? score : \\old(scores[0]))) && (scores.length <= 1 || scores[1] == (slot == 1 ? score : \\old(scores[1]))) && (scores.length <= 2 || scores[2] == (slot == 2 ? score : \\old(scores[2])))` on every input where scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2)) (jvmcontract's own checker (CaDiCaL): 1 properties proved over scores: int[] of length ≤ 3, not null × slot: int × score: int in 0.0 s; loops unwound 8 times with unwinding assertions)\n  not vacuous: write(scores=[0], slot=0, score=0) reaches the calls\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.007409738,
+      "properties": 1,
+      "unwind": 8,
+      "max_array_length": 3,
+      "stage": null,
+      "native": {
+        "paths": 23,
+        "merges": 0,
+        "solver_calls": 63,
+        "solving_seconds": 0.001538383,
+        "gates_evaluated": 3475,
+        "evaluating_seconds": 0.000079541,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 1829,
+        "clauses": 5726,
+        "seconds": 0.006573982,
+        "loading_seconds": 0.000035807,
+        "decoding_seconds": 0.000156904,
+        "encoding_seconds": 0.001199255,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 600.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 600.0,
+          "seconds": 0.007,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.004,
+            "encoding": 0.001,
+            "solving": 0.002,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 1829,
+            "clauses": 5726
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budget_seconds": 599.993,
+          "seconds": 0.003,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.002,
+            "encoding": 0.001,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 1148,
+            "clauses": 3294
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.023,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.01,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.012
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "scores",
+            "type": "int[]",
+            "kind": "array",
+            "null": false,
+            "max_length": 3
+          },
+          {
+            "name": "slot",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "score",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "scores: int[] of length ≤ 3, not null × slot: int × score: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against (scores.length <= 0 || scores[0] == (slot == 0 ? score : \\old(scores[0]))) && (scores.length <= 1 || scores[1] == (slot == 1 ? score : \\old(scores[1]))) && (scores.length <= 2 || scores[2] == (slot == 2 ? score : \\old(scores[2])))",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 8,
+        "max_array_length": 3,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+        "classes": 37,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found write(scores=[0], slot=0, score=0).",
+        "witness": "write(scores=[0], slot=0, score=0)"
+      }
+    }
+  }
+]

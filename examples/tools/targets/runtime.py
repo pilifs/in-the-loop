@@ -63,10 +63,10 @@ output, by one convention for the runner (run_controls) and ingestion (workflow_
 A packet's own pair comparison (`compare` or `differences`, its preservation side) stays its developer tool:
 ingestion reads each revision's problems against what its pair's kind expects.
 
-The verifier (R3) runs jvmcontract on the prepared original artifacts only, never the adapter or driver, and records
-what its result is about: a scope label (original bytecode, original bytecode under models, a constructed mutation, a
-constructed fixture), the loaded class and its origin, the models and assumptions, and a capability probe (the static
-gap scan). Proofs run as pipeline jobs (runtime_calibrate.py on the fixture), never inline.
+The verifier binds the recipe's checked entry to the prepared artifacts and records the ordered classpaths,
+checker, JDK, options, static gap scan and raw outcome. A direct recipe enters the original class. An adapter
+recipe enters the named adapter class with the upstream artifact on its classpath. The controls establish
+the finite correspondence to the original method. Proofs run through the verification pipeline.
 """
 
 import dataclasses
@@ -635,9 +635,8 @@ class _Build:
 
 def _check_classpath(plan, workdir, classpath, original, adapter):
     """The loaded target's origin, after refusing shadowed classes and a missing target method; and the original
-    methods the adapter calls. A replay task's adapter must call the target (its controls are the task's evidence); a
-    proof task's verifier never goes through the adapter, so there it is recorded (`adapterCallsTarget`), and
-    run_controls doesn't run controls whose adapter doesn't call the task's target."""
+    methods the adapter calls. A replay task's adapter must reference the target. The prepared record carries this
+    reference check for the verifier and the JVM controls."""
     shadowed = runtime_jar.duplicates(classpath, workdir)
     if shadowed:
         listed = "; ".join(f"{name.replace('/', '.')} in {', '.join(holders)}" for name, holders in shadowed[:10])
@@ -1640,18 +1639,10 @@ def run_verifier(plan, prepared, workdir, *, before_launch=None, timeout=None):
     """The verifier on the prepared artifacts, with the plan's engine, gaps and bounds: one raw ExecutionRecord
     (kind `verifier`; revision None for a pair), or Unsupported.
 
-    A prove task runs `jvmcontract prove` on its revision's original artifact (`--classes`), its dependencies on the
-    classpath in order, with the claim's assume, assert, throws, nullable and may-alias; an equivalence task runs
-    `jvmcontract equivalence` between the pair's original artifacts (each JAR extracted into a directory of classes
-    under workdir/classes, as that command takes them, and recorded), `--unchanged-unless` the task's allowed change.
-    Both get the plan's `--engine` and `--gaps` (never a default), the claim's bounds, its construction plan and gap
-    contracts (each rechecked against the claim's sha256), `--json`, and a work and report directory here. The
-    adapter and driver are never on its classpath: they serve the controls, and the verifier calls the selected
-    original method itself. Its scope label and boundary (`identities.scope`), the capability probe (`jvmcontract
-    gaps` on each revision: static, it proves nothing), the jvmcontract digest and, for a pipeline job's own build, the
-    lib/ commit and tree it was built from (`_verifier_build`), the JDK and the environment are recorded. No claim key
-    names an adapter entry point: a receiver or argument only an adapter can build needs the claim's construction
-    `plan`, or stays a capability gap, since verifying through the adapter would put its code inside the proof.
+    recipes.translate() selects the checked entry and its semantic arguments. The recipe binds the prepared
+    JARs in order, with separate dependency closures when the revisions differ. Each invocation records the
+    checked entry and upstream identities. An adapter claim names the finite correspondence and its oracle.
+    before_launch persists the bound invocation before starting the solver. The timeout is operational.
 
     As for the controls, a revision with no preparation (one-sided), one not artifacts-ready, bytes changed since
     preparation, or no JDK gives a not-started record; a kill or a timeout gives no observations; output that isn't

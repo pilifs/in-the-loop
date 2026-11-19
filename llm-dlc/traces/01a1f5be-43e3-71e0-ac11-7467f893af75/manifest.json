@@ -12,19 +12,19 @@
     "codex-auto-review"
   ],
   "started": "2026-11-19T21:41:58.191Z",
-  "ended": "2026-11-19T22:34:26.127Z",
-  "duration_seconds": 3148,
+  "ended": "2026-11-19T22:38:51.466Z",
+  "duration_seconds": 3413,
   "stats": {
-    "turns": 3,
-    "api_calls": 8,
+    "turns": 6,
+    "api_calls": 12,
     "tool_calls": 0,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 81935,
+    "peak_context_tokens": 92508,
     "usage": {
-      "input_tokens": 115302,
-      "output_tokens": 974,
-      "cache_read_input_tokens": 294784,
+      "input_tokens": 137735,
+      "output_tokens": 1432,
+      "cache_read_input_tokens": 635520,
       "cache_creation_input_tokens": 0
     }
   },
@@ -34,24 +34,24 @@
     {
       "index": 0,
       "started": "2026-11-19T21:41:58.191Z",
-      "ended": "2026-11-19T22:34:26.127Z",
-      "turns": 3,
-      "api_calls": 8,
+      "ended": "2026-11-19T22:38:51.466Z",
+      "turns": 6,
+      "api_calls": 12,
       "usage": {
-        "input_tokens": 115302,
-        "output_tokens": 974,
-        "cache_read_input_tokens": 294784,
+        "input_tokens": 137735,
+        "output_tokens": 1432,
+        "cache_read_input_tokens": 635520,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 81935
+      "peak_context_tokens": 92508
     }
   ],
   "log": {
-    "sha256": "e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a",
-    "bytes": 547822,
-    "lines": 96,
-    "gzip_bytes": 145378,
-    "path": "llm-dlc/traces/01a1f5be-43e3-71e0-ac11-7467f893af75/logs/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz"
+    "sha256": "58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce",
+    "bytes": 656167,
+    "lines": 141,
+    "gzip_bytes": 166539,
+    "path": "llm-dlc/traces/01a1f5be-43e3-71e0-ac11-7467f893af75/logs/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -126,6 +126,70 @@
       "summary": "Expose claim-specific witness replay and keep late rejections in history",
       "body": "A reviewer can submit typed concrete inputs through build.py --task T --replay-witness FILE. Each review binds the selected artifacts, rechecks adapter correspondence where applicable, runs the frozen domain and observation on the JVM, and journals its evidence. The last-slot Gradebook input reproduced the complete array difference, agreed on the return and was rejected outside the interior domain. The return-only proof remained eligible after its later replay rejection. Ran the three public reviews and the build, route and recipe tests.",
       "log_sha256": "e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a"
+    },
+    {
+      "change_id": "lxnwsprmkwzvlluzpulzsqslymrvrpov",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Codex sessions start without the Pets, Hotline, Safety Settings and Sites apps",
+      "body": "The ChatGPT account gives every Codex session its apps as deferred tools (codex_apps). On the user's word (2026-11-19), four that no work in this repository has a use for are turned off: Pets, Hotline, Safety Settings and Sites. GitHub, ChatGPT Space, Codex Document Control and Plugin Management stay. The loops pass the settings on every turn (CODEX_CONFIG in agent_client.py, as apps.<connector id>.enabled=false), and .codex/config.toml carries the same for a person's own Codex in a trusted checkout. Run 1 of foundation-domain-streams called none of the eight apps. Verified with codex debug prompt-input (CLI 0.170) rendered with CODEX_CONFIG: only the four kept apps' namespaces remain, and CLAUDE.md is still read; the TOML parses; the changed tests pass (8 of 8 files).",
+      "log_sha256": "58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce"
+    },
+    {
+      "change_id": "pzqqompzkvnwxkvxqurownylmosunzmq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-214230-gradebook-frozen-claims-on-the-checkpoin: failed: 5 failed step(s) in 22.2s, peak 97.3 MiB (estimated 2m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce"
+    },
+    {
+      "change_id": "wmswovokuroqrrtlsxzslysvyolyknuv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261119-214238-math-238-direct-method-checkpoint-compar: passed: 4 passed step(s) in 6m57s, peak 940.3 MiB (estimated 5m00s, 4.0 GiB); 55 output file(s) changed; signals: example:task-as-expected×1 Applied 55 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce"
+    },
+    {
+      "change_id": "wuttosxkzuypsxpzwwmnqutvkotuwsns",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-215957-threetenbp-hours-adapter-on-the-qualifie: failed: 1 failed step(s) in 12.0s, peak 220.5 MiB (estimated 3m00s, 3.0 GiB); 77 output file(s) changed; signals: example:task-unexpected×5 20261119-220147-gradebook-qualified-attempts-and-interru: passed: 2 passed step(s) in 20.0s, peak 227.5 MiB (estimated 2m00s, 3.0 GiB); 84 output file(s) changed; signals: example:task-as-expected×2; example:task-as-expected×3 Applied 84 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce"
+    },
+    {
+      "change_id": "qtnnvmzuwxtrqykwqsmyovpwxzpmouwo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261119-215949-math-238-direct-recipe-on-frozen-power-a: passed: 1 passed step(s) in 6m23s, peak 994.5 MiB (estimated 9m00s, 4.0 GiB); 57 output file(s) changed; signals: example:task-as-expected×4 Applied 57 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce"
+    },
+    {
+      "change_id": "pqqonrvpsvuowwypuonyzzotyyytrpxp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 4 job(s)",
+      "body": "Outputs applied for 2 of the 4 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261119-221145-qualify-heap-merges-initialized-display: passed: 1 passed step(s) in 5.0s, peak 92.1 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261119-221152-qualify-integrated-jbmc-on-the-distinct: passed: 1 passed step(s) in 3.4s, peak 73.0 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261119-221200-separate-quote-amount-and-ordered-send-r: failed: 1 failed step(s) in 4.0s, peak 85.2 MiB (estimated 2m00s, 2.0 GiB); 6 output file(s) changed 20261119-222214-check-the-supplementary-character-search: failed: 1 failed step(s) in 15.2s, peak 306.0 MiB (estimated 3m00s, 3.0 GiB); 77 output file(s) changed; signals: example:task-unexpected×5 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce"
+    },
+    {
+      "change_id": "owxqwqnrkpokqrusullyoywpwmmkvlws",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 2 of the 2 job(s). 20261119-221555-retain-a-measured-gcd-checker-timeout-an: passed: 1 passed step(s) in 3m26s, peak 951.7 MiB (estimated 5m00s, 3.0 GiB); 29 output file(s) changed Applied 29 output(s). 20261119-222610-recheck-quote-projections-with-compile-s: passed: 1 passed step(s) in 5.4s, peak 85.6 MiB (estimated 1m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce"
+    },
+    {
+      "change_id": "wuqvmopopvzqqomtmqqxyrzwzwsrruwm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Integrate all restart verification results and publish the claim handoff",
+      "body": "All 17 Gradebook and four Apache GCD claim/subject pairs are decided. The independent shop projections establish the returned amount and refute ordered-send preservation. Native covers the 71 two-root heaps and JBMC qualifies its separate four-heap overlap. Checker qualification preserved the branch and initializer differences and classified handled and escaping division. The exception-message, wide JBMC preservation and strict ThreeTenBP and Commons Lang gaps remain discoverable in their original records.\n\nThe handoff links the three Gradebook proof plans and late witness reviews, concurrent retries, both GCD strategies and a genuine one-second deadline, two independent adapter grids and the wrong-unit control. Receipt ingestion also reconciles a delivered result with the original journal's bound invocation and raw checker candidate. Verified this on actual old and new completions, validated all six example packets, and confirmed all twelve jobs are collected on this line. The merged-tree default suite follows this commit.",
+      "log_sha256": "58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce"
     }
   ],
   "logs": {
@@ -133,6 +197,12 @@
       "bytes": 145257,
       "lines": 17,
       "gzip_bytes": 37568,
+      "url": null
+    },
+    "58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce": {
+      "bytes": 656167,
+      "lines": 141,
+      "gzip_bytes": 166539,
       "url": null
     },
     "5a6e1d66d297c73fee4f9b3dfa961355b8a4e8700a892889cc61be554df1aee7": {

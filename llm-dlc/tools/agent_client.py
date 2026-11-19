@@ -73,8 +73,15 @@ INSTRUCTIONS = "CLAUDE.md"
 NOTES = ("llm-dlc/operating-notes.md",)
 SHADOWS = ("AGENTS.override.md", "AGENTS.md")  # Codex reads these before any fallback name
 DOC_BUDGET = 32 * 1024  # Codex's default project_doc_max_bytes
+# ChatGPT apps that reach a Codex session from the account (its `codex_apps` tools) and that no work here has a use
+# for, turned off by the user on 2026-11-19: Pets, Hotline, Safety Settings and Sites. GitHub, ChatGPT Space,
+# Codex Document Control and Plugin Management stay. The ids are the connectors' own, as Codex's tool cache names
+# them; a turned-off app's tools are left out of the turn (`codex debug prompt-input`, CLI 0.170).
+CODEX_APPS_OFF = ("connector_openai_chatgpt_pets", "connector_openai_hotline", "connector_openai_safety_settings",
+                  "connector_20205bf7d4e99a89d7154bb849718324")  # the last is Sites
 # What every Codex turn is started with, whatever the machine's own config says.
-CODEX_CONFIG = (f'project_doc_fallback_filenames=["{INSTRUCTIONS}"]',)
+CODEX_CONFIG = (f'project_doc_fallback_filenames=["{INSTRUCTIONS}"]',
+                *(f"apps.{app}.enabled=false" for app in CODEX_APPS_OFF))
 # A parent session's identity, which a child of another client must not carry (see the docstring).
 PARENT_MARKERS = ("CLAUDECODE", "CLAUDE_CODE_SESSION_ID", "CLAUDE_CODE_ENTRYPOINT", "CODEX_THREAD_ID", "CODEX_SESSION_ID")
 

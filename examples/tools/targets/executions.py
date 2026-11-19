@@ -32,6 +32,28 @@ def save(path, value):
     os.replace(stream.name, path)
 
 
+def completion_problem(directory, journal, verifier):
+    """Check a delivered result against the invocation and raw candidate saved before qualification."""
+    if verifier is None:
+        return None
+    recorded = directory / "checker.json"
+    if not recorded.is_file():
+        return "the original execution has no checker record"
+    raw = json.loads(recorded.read_text())
+    if (raw.get("argv") != list(verifier.argv) or raw.get("status") != verifier.status
+            or raw.get("exitCode") != verifier.exitCode or raw.get("outcomes") != list(verifier.observations or [])):
+        return "the delivered result differs from the original checker record"
+    if verifier.status == "exited":
+        bound = journal.get("checker") or {}
+        if journal.get("argv") != list(verifier.argv) or not bound.get("jvmcontract") or any(
+                bound.get(k) != verifier.identities.get(k) for k in ("jvmcontract", "jdkRelease", "classpath", "recipe", "checkedEntry")):
+            return "the delivered verifier or classpath differs from the bound invocation"
+    review = directory / "replay.json"
+    if review.is_file() and json.loads(review.read_text()) != verifier.identities.get("independentReplay"):
+        return "the delivered replay differs from the recorded JVM qualification"
+    return None
+
+
 class Execution:
     def __init__(self, directory, state):
         self.directory = directory

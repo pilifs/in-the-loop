@@ -1,0 +1,389 @@
+{
+  "task": "interior-rule-base",
+  "record": {
+    "kind": "verifier",
+    "revision": "base",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/dd6b0bb402c2604561536b10fe894ecb9c7e96a8/jvmcontract",
+      "prove",
+      "gradebook.ScoreSheet#write(int[], int, int)",
+      "--classes",
+      "prepare/base/base.jar",
+      "--assume",
+      "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2)) && slot < scores.length - 1",
+      "--assert",
+      "(scores.length <= 0 || scores[0] == (slot == 0 ? score : \\old(scores[0]))) && (scores.length <= 1 || scores[1] == (slot == 1 ? score : \\old(scores[1]))) && (scores.length <= 2 || scores[2] == (slot == 2 ? score : \\old(scores[2])))",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "8",
+      "--max-array-length",
+      "3",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 0,
+    "seconds": 0.031,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "ba819f385f8446d28b2d4ca1d709649cf23329453daa7ae0570775b854765648",
+      "commit": "0622a8bf64eda6106832dfb38efa4a712abcf419",
+      "libTree": "dd6b0bb402c2604561536b10fe894ecb9c7e96a8",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 3
+      },
+      "timeout": 600,
+      "scope": {
+        "label": "constructed-fixture",
+        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+        "method": "gradebook.ScoreSheet#write([III)I",
+        "revisions": {
+          "base": {
+            "commit": "fixture:base",
+            "loadedFrom": "base.jar",
+            "classSha256": "60eab1b782bacef8f291b0d373e130fcfc5383c2ba4ac0562703d4a10a32f9fb",
+            "origin": "built from base by the fixture recipe",
+            "parameters": {
+              "names": [
+                "scores",
+                "slot",
+                "score"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "base": [
+          {
+            "path": "base.jar",
+            "sha256": "b4e81ca54a65f9ba2f820e3c0c081cf56c1330bdc87ad19031db6b5d5da9dd10",
+            "role": "original"
+          }
+        ]
+      },
+      "checkedEntry": "gradebook.ScoreSheet#write([III)I",
+      "entryBindings": {
+        "base": {
+          "entry": "gradebook.ScoreSheet#write([III)I",
+          "classSha256": "60eab1b782bacef8f291b0d373e130fcfc5383c2ba4ac0562703d4a10a32f9fb",
+          "loadedFrom": "base.jar",
+          "subject": "gradebook.ScoreSheet#write([III)I",
+          "subjectClassSha256": "60eab1b782bacef8f291b0d373e130fcfc5383c2ba4ac0562703d4a10a32f9fb"
+        }
+      },
+      "recipe": {
+        "kind": "direct-method",
+        "command": "prove",
+        "subject": "gradebook.ScoreSheet#write([III)I",
+        "checkedEntry": "gradebook.ScoreSheet#write([III)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2)) && slot < scores.length - 1"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "(scores.length <= 0 || scores[0] == (slot == 0 ? score : \\old(scores[0]))) && (scores.length <= 1 || scores[1] == (slot == 1 ? score : \\old(scores[1]))) && (scores.length <= 2 || scores[2] == (slot == 2 ? score : \\old(scores[2])))"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "8"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "3"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+      },
+      "commits": {
+        "base": "fixture:base"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "base": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/dd6b0bb402c2604561536b10fe894ecb9c7e96a8/jvmcontract",
+            "gaps",
+            "--target",
+            "gradebook.ScoreSheet#write(int[], int, int)",
+            "--classes",
+            "prepare/base/base.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.016,
+          "stdout": "verifier/probe-base.stdout",
+          "stderr": "verifier/probe-base.stderr",
+          "gaps": []
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0207,
+        "peakRssBytes": 80277504,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "gradebook.ScoreSheet#write(int[], int, int)",
+        "domain": "scores: int[] of length ≤ 3, not null × slot: int × score: int",
+        "assume": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2)) && slot < scores.length - 1",
+        "assert": "(scores.length <= 0 || scores[0] == (slot == 0 ? score : \\old(scores[0]))) && (scores.length <= 1 || scores[1] == (slot == 1 ? score : \\old(scores[1]))) && (scores.length <= 2 || scores[2] == (slot == 2 ? score : \\old(scores[2])))",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over scores: int[] of length ≤ 3, not null × slot: int × score: int in 0.0 s; loops unwound 8 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [],
+        "output": "✓ gradebook.ScoreSheet#write(int[], int, int) satisfies `(scores.length <= 0 || scores[0] == (slot == 0 ? score : \\old(scores[0]))) && (scores.length <= 1 || scores[1] == (slot == 1 ? score : \\old(scores[1]))) && (scores.length <= 2 || scores[2] == (slot == 2 ? score : \\old(scores[2])))` on every input where scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2)) && slot < scores.length - 1 (jvmcontract's own checker (CaDiCaL): 1 properties proved over scores: int[] of length ≤ 3, not null × slot: int × score: int in 0.0 s; loops unwound 8 times with unwinding assertions)\n  not vacuous: write(scores=[0, 0], slot=0, score=0) reaches the calls\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.004197647,
+          "properties": 1,
+          "unwind": 8,
+          "max_array_length": 3,
+          "stage": null,
+          "native": {
+            "paths": 17,
+            "merges": 0,
+            "solver_calls": 38,
+            "solving_seconds": 0.000669114,
+            "gates_evaluated": 2335,
+            "evaluating_seconds": 3.8093e-05,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 1672,
+            "clauses": 5157,
+            "seconds": 0.003635003,
+            "loading_seconds": 2.4797e-05,
+            "decoding_seconds": 0.000119063,
+            "encoding_seconds": 0.000665773,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 600.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 600.0,
+              "seconds": 0.004,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.002,
+                "encoding": 0.001,
+                "solving": 0.001,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 1672,
+                "clauses": 5157
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 599.996,
+              "seconds": 0.003,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.002,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 1369,
+                "clauses": 4049
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.017,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.007,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.009
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "scores",
+                "type": "int[]",
+                "kind": "array",
+                "null": false,
+                "max_length": 3
+              },
+              {
+                "name": "slot",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "score",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "scores: int[] of length ≤ 3, not null × slot: int × score: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2)) && slot < scores.length - 1",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against (scores.length <= 0 || scores[0] == (slot == 0 ? score : \\old(scores[0]))) && (scores.length <= 1 || scores[1] == (slot == 1 ? score : \\old(scores[1]))) && (scores.length <= 2 || scores[2] == (slot == 2 ? score : \\old(scores[2])))",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 8,
+            "max_array_length": 3,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+            "classes": 37,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found write(scores=[0, 0], slot=0, score=0).",
+            "witness": "write(scores=[0, 0], slot=0, score=0)"
+          }
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261119-223013-gradebook-independent-previous-value-pos/.build-py/examples-4t2rhlnn/targets/198/interior-rule-base/20261119T223604Z-b0e5946c",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261119-223013-gradebook-independent-previous-value-pos/.build-py/examples-4t2rhlnn/targets/198/interior-rule-base/20261119T223604Z-b0e5946c"
+  }
+}

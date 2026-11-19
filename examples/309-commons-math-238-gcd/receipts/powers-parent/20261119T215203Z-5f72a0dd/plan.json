@@ -1,0 +1,199 @@
+{
+  "plan": {
+    "example": "309",
+    "task": "powers-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "powers-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "file": "claims/powers.json",
+      "sha256": "0cec13c37763c5d3995b289b9797a1543d69df2c4342d89951543e496358f163",
+      "property": "powers",
+      "claimKind": "property",
+      "statement": "For two powers of two with exponents from zero through twenty the gcd is the smaller operand.",
+      "assume": "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+      "assert": "result == (u < v ? u : v)",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 32
+      },
+      "defaultBounds": [
+        "maxArrayLength"
+      ],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "finite-driver",
+          "kind": "driver",
+          "path": "driver/gcd/GcdCases.java",
+          "sha256": "d1a9b4c3afed1ff34f8efa9f7c5f1b7cd82159e4cb9e1dec04ce2c1a51928b7f"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "426a122917c4f7ad27839b3855dc5d614e386fd9a7b19a20841c55f57c6d7050"
+        }
+      ],
+      "key": "837ceed6b2ee72a9"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "source-slice",
+        "repository": "https://github.com/apache/commons-math",
+        "commit": "4564adbf19ebc6da19befcc7dbef310a00b4de13",
+        "published": [],
+        "slice": {
+          "files": [
+            "src/java/org/apache/commons/math/util/MathUtils.java"
+          ],
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "21",
+            "-parameters",
+            "-g"
+          ]
+        },
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/powers-parent"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261119-214238-math-238-direct-method-checkpoint-compar/examples/309-commons-math-238-gcd",
+    "network": true
+  },
+  "inputs": {
+    "example": "309",
+    "task": "powers-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "powers-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "file": "claims/powers.json",
+      "sha256": "0cec13c37763c5d3995b289b9797a1543d69df2c4342d89951543e496358f163",
+      "property": "powers",
+      "claimKind": "property",
+      "statement": "For two powers of two with exponents from zero through twenty the gcd is the smaller operand.",
+      "assume": "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+      "assert": "result == (u < v ? u : v)",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 32
+      },
+      "defaultBounds": [
+        "maxArrayLength"
+      ],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "finite-driver",
+          "kind": "driver",
+          "path": "driver/gcd/GcdCases.java",
+          "sha256": "d1a9b4c3afed1ff34f8efa9f7c5f1b7cd82159e4cb9e1dec04ce2c1a51928b7f"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "426a122917c4f7ad27839b3855dc5d614e386fd9a7b19a20841c55f57c6d7050"
+        }
+      ],
+      "key": "837ceed6b2ee72a9"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "source-slice",
+        "repository": "https://github.com/apache/commons-math",
+        "commit": "4564adbf19ebc6da19befcc7dbef310a00b4de13",
+        "published": [],
+        "slice": {
+          "files": [
+            "src/java/org/apache/commons/math/util/MathUtils.java"
+          ],
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "21",
+            "-parameters",
+            "-g"
+          ]
+        },
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "d172f5942e90fb44b09496036d3103c29064c472d20cc22750c765e1029db3f1"
+}

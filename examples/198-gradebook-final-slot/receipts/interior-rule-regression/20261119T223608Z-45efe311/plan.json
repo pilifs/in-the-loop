@@ -1,0 +1,170 @@
+{
+  "plan": {
+    "example": "198",
+    "task": "interior-rule-regression",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "gradebook.ScoreSheet#write([III)I",
+    "revisions": [
+      "regression"
+    ],
+    "claim": {
+      "task": "interior-rule-regression",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "gradebook.ScoreSheet#write([III)I",
+      "file": "claims/interior-rule.json",
+      "sha256": "6803c8ee5c7d7909a663e03c7092041e5eabee85833fbc9f94503f43a8611002",
+      "property": "interior-rule",
+      "claimKind": "property",
+      "statement": "Every valid interior update satisfies the per-cell replacement rule.",
+      "assume": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2)) && slot < scores.length - 1",
+      "assert": "(scores.length <= 0 || scores[0] == (slot == 0 ? score : \\old(scores[0]))) && (scores.length <= 1 || scores[1] == (slot == 1 ? score : \\old(scores[1]))) && (scores.length <= 2 || scores[2] == (slot == 2 ? score : \\old(scores[2])))",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 3
+      },
+      "explicitBounds": {
+        "maxArrayLength": 3,
+        "unwind": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "finite-driver",
+          "kind": "driver",
+          "path": "driver/gradebook/GradeCases.java",
+          "sha256": "f0da8c690cd70ebd2704f8d2f10b1638d53ee014bad75ab3bb2ca2ee91cd6e49"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "ae861a71a63724d7f66330f3a7e32f6a547b525e76768dc4d21641fd9c526b05"
+        }
+      ],
+      "key": "39fbb468146332f0"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "regression",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "regression",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/interior-rule-regression"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261119-223013-gradebook-independent-previous-value-pos/examples/198-gradebook-final-slot",
+    "network": false
+  },
+  "inputs": {
+    "example": "198",
+    "task": "interior-rule-regression",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "gradebook.ScoreSheet#write([III)I",
+    "revisions": [
+      "regression"
+    ],
+    "claim": {
+      "task": "interior-rule-regression",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "gradebook.ScoreSheet#write([III)I",
+      "file": "claims/interior-rule.json",
+      "sha256": "6803c8ee5c7d7909a663e03c7092041e5eabee85833fbc9f94503f43a8611002",
+      "property": "interior-rule",
+      "claimKind": "property",
+      "statement": "Every valid interior update satisfies the per-cell replacement rule.",
+      "assume": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2)) && slot < scores.length - 1",
+      "assert": "(scores.length <= 0 || scores[0] == (slot == 0 ? score : \\old(scores[0]))) && (scores.length <= 1 || scores[1] == (slot == 1 ? score : \\old(scores[1]))) && (scores.length <= 2 || scores[2] == (slot == 2 ? score : \\old(scores[2])))",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 3
+      },
+      "explicitBounds": {
+        "maxArrayLength": 3,
+        "unwind": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "finite-driver",
+          "kind": "driver",
+          "path": "driver/gradebook/GradeCases.java",
+          "sha256": "f0da8c690cd70ebd2704f8d2f10b1638d53ee014bad75ab3bb2ca2ee91cd6e49"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "ae861a71a63724d7f66330f3a7e32f6a547b525e76768dc4d21641fd9c526b05"
+        }
+      ],
+      "key": "39fbb468146332f0"
+    },
+    "artifacts": [
+      {
+        "revision": "regression",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "regression",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "9b8561fa37213c3633a942d83f905724e784557a3ba0ec4a1c49b0b93c1d4ded"
+}

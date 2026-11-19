@@ -439,7 +439,7 @@ def not_executable(example):
     """Why build.py cannot run this example, or None when it can."""
     if example.get("target"):
         return (f"a {example['origin']} example with a target sidecar: it is run one task at a time, with --task "
-                "(build.py --plan ID lists its tasks)")
+                "or in a batch with --tasks (build.py --plan ID lists its tasks)")
     if example["origin"] != "constructed":
         return ("a real-world example: its report is its README.md, and build.py has no adapter for its "
                 "project's build")

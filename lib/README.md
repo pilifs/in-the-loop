@@ -472,11 +472,11 @@ Three changes to the solver's side carry this ([`bmc::bits`](src/bmc/bits.rs)). 
 
 A paired check can select individual return, exception, array-content or root-identity observations with
 repeatable `--observe` JSON descriptors. For example, `--observe '{"kind":"array-parameter","parameter":"right"}'`
-compares the right array after each call. The first supported profile takes two `int[]` parameters and returns
-an `int` from static leaf methods operating on those arrays. `--nullable`, `--may-alias`, the length bound
+compares the right array after each call. The profile accepts static leaf methods returning an `int` with
+one or more `int[]` parameters and optional scalar `int` parameters. `--nullable`, `--may-alias`, the length bound
 and the root precondition define its input heaps. The compiled comparison reconstructs sharing from scalar
 choices separately for each version. A refutation carries the JVM's observed values, the chosen roots and
-their identity. [Example 197](../examples/197-shared-int-array-poststates/README.md)
+their identity. [Two array roots](../examples/197-shared-int-array-poststates/README.md) · [Gradebook](../examples/198-gradebook-final-slot/README.md)
 
 ## Library use
 

@@ -1,0 +1,170 @@
+{
+  "plan": {
+    "example": "198",
+    "task": "previous-mark-base",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "gradebook.ScoreSheet#write([III)I",
+    "revisions": [
+      "base"
+    ],
+    "claim": {
+      "task": "previous-mark-base",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "gradebook.ScoreSheet#write([III)I",
+      "file": "claims/previous-mark.json",
+      "sha256": "08c70a356556659f7e4f33b54c797c7face0345b3c3f71cc536a2d5d878e16e7",
+      "property": "previous-mark",
+      "claimKind": "property",
+      "statement": "Return the value originally in the selected slot.",
+      "assume": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+      "assert": "result == \\old(scores[slot])",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 3
+      },
+      "explicitBounds": {
+        "maxArrayLength": 3,
+        "unwind": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "finite-driver",
+          "kind": "driver",
+          "path": "driver/gradebook/GradeCases.java",
+          "sha256": "f0da8c690cd70ebd2704f8d2f10b1638d53ee014bad75ab3bb2ca2ee91cd6e49"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "ae861a71a63724d7f66330f3a7e32f6a547b525e76768dc4d21641fd9c526b05"
+        }
+      ],
+      "key": "4f9c71d0170e13d0"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "base",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "base",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/previous-mark-base"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261119-223013-gradebook-independent-previous-value-pos/examples/198-gradebook-final-slot",
+    "network": false
+  },
+  "inputs": {
+    "example": "198",
+    "task": "previous-mark-base",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "gradebook.ScoreSheet#write([III)I",
+    "revisions": [
+      "base"
+    ],
+    "claim": {
+      "task": "previous-mark-base",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "gradebook.ScoreSheet#write([III)I",
+      "file": "claims/previous-mark.json",
+      "sha256": "08c70a356556659f7e4f33b54c797c7face0345b3c3f71cc536a2d5d878e16e7",
+      "property": "previous-mark",
+      "claimKind": "property",
+      "statement": "Return the value originally in the selected slot.",
+      "assume": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+      "assert": "result == \\old(scores[slot])",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 3
+      },
+      "explicitBounds": {
+        "maxArrayLength": 3,
+        "unwind": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "finite-driver",
+          "kind": "driver",
+          "path": "driver/gradebook/GradeCases.java",
+          "sha256": "f0da8c690cd70ebd2704f8d2f10b1638d53ee014bad75ab3bb2ca2ee91cd6e49"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "ae861a71a63724d7f66330f3a7e32f6a547b525e76768dc4d21641fd9c526b05"
+        }
+      ],
+      "key": "4f9c71d0170e13d0"
+    },
+    "artifacts": [
+      {
+        "revision": "base",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "base",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "5bc83c37dbf5fa25a28e83d7057be6e2c669eee49af54478faee87be45394269"
+}

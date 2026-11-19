@@ -1,0 +1,1206 @@
+--- /dev/null
++++ b/verification/restart-checker-qualification.json
+@@ -0,0 +1,1203 @@
++{
++  "jdk": {
++    "feature": "21",
++    "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++    "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++    "release": {
++      "JAVA_VERSION": "21.0.13",
++      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++      "IMPLEMENTOR": "Eclipse Adoptium",
++      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++      "OS_ARCH": "x86_64"
++    }
++  },
++  "classes": {
++    "Controls$Day.class": "a9d272dd4f2d35c324953da027771a0c638438c06d52f199b5da8e69f230a1c5",
++    "Controls$Format.class": "f8576de7a94988deb4763e2e54c70d4561517fc3e808399166a330498d018e40",
++    "Controls.class": "af8f536a6a638887527f88fd90961289916c27c9746c0fea27e3c3381722847e"
++  },
++  "jvm": {
++    "short": [
++      "array 2 5 calendar 15 16 display 2",
++      "divisor -1 handled -6 marker 0 escaping none",
++      "divisor 0 handled 7 marker 1 escaping java.lang.ArithmeticException(/ by zero)",
++      "divisor 1 handled 6 marker 0 escaping none"
++    ],
++    "long": [
++      "array 2 5 calendar 15 16 display 4",
++      "divisor -1 handled -6 marker 0 escaping none",
++      "divisor 0 handled 7 marker 1 escaping java.lang.ArithmeticException(/ by zero)",
++      "divisor 1 handled 6 marker 0 escaping none"
++    ]
++  },
++  "checks": [
++    {
++      "claim": "array-join",
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2caef2a40fd0685aad5fda14530705098cc4f91d/jvmcontract",
++        "prove",
++        "Controls#arrayJoin",
++        "--classes",
++        "/tmp/tmpi6ntntiy",
++        "--classpath",
++        "/tmp/tmpi6ntntiy",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--assert",
++        "result == (first ? 2 : 5)",
++        "--timeout",
++        "35",
++        "--unwind",
++        "8",
++        "--max-array-length",
++        "2",
++        "--json",
++        "--work",
++        "/tmp/tmpi6ntntiy/array-join"
++      ],
++      "expected": "verified",
++      "observed": "verified",
++      "disposition": "matched",
++      "firstBlocker": null,
++      "stated": {
++        "kind": "property",
++        "domain": {
++          "parameters": [
++            {
++              "name": "first",
++              "type": "boolean",
++              "kind": "primitive",
++              "null": false
++            }
++          ],
++          "shared_arrays": false,
++          "text": "first: boolean"
++        },
++        "assumptions": [
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ],
++        "observations": {
++          "result": "the result and the parameters, against result == (first ? 2 : 5)",
++          "exceptions": "none may be thrown"
++        },
++        "bounds": {
++          "unwind": 8,
++          "max_array_length": null,
++          "complete": true
++        },
++        "models": {
++          "used": true,
++          "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
++          "classes": 37,
++          "jdk": "21.0.13"
++        },
++        "checker": {
++          "engine": "native",
++          "name": "jvmcontract's own checker (CaDiCaL)",
++          "solver": "CaDiCaL 1.9.5 (bundled)",
++          "fallback": null,
++          "sat": {
++            "solver": "CaDiCaL",
++            "version": "1.9.5",
++            "source": "bundled by the Rust crate cadical 0.1.16",
++            "configuration": [
++              "CaDiCaL's default options",
++              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++              "the run's deadline through CaDiCaL's terminate callback",
++              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++            ]
++          }
++        },
++        "gap_mode": "strict",
++        "confirmation": null,
++        "vacuity": {
++          "status": "non-vacuous",
++          "basis": "harness",
++          "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++        }
++      },
++      "counterexample": null,
++      "seconds": 0.025,
++      "setting": null,
++      "exitCode": 0
++    },
++    {
++      "claim": "collapsed-array",
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2caef2a40fd0685aad5fda14530705098cc4f91d/jvmcontract",
++        "prove",
++        "Controls#arrayJoin",
++        "--classes",
++        "/tmp/tmpi6ntntiy",
++        "--classpath",
++        "/tmp/tmpi6ntntiy",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--assert",
++        "result == 2",
++        "--timeout",
++        "35",
++        "--unwind",
++        "8",
++        "--max-array-length",
++        "2",
++        "--json",
++        "--work",
++        "/tmp/tmpi6ntntiy/collapsed-array"
++      ],
++      "expected": "violation",
++      "observed": "violation",
++      "disposition": "matched",
++      "firstBlocker": null,
++      "stated": {
++        "kind": "property",
++        "domain": {
++          "parameters": [
++            {
++              "name": "first",
++              "type": "boolean",
++              "kind": "primitive",
++              "null": false
++            }
++          ],
++          "shared_arrays": false,
++          "text": "first: boolean"
++        },
++        "assumptions": [
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ],
++        "observations": {
++          "result": "the result and the parameters, against result == 2",
++          "exceptions": "none may be thrown"
++        },
++        "bounds": {
++          "unwind": 8,
++          "max_array_length": null,
++          "complete": false
++        },
++        "models": {
++          "used": true,
++          "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
++          "classes": 37,
++          "jdk": "21.0.13"
++        },
++        "checker": {
++          "engine": "native",
++          "name": "jvmcontract's own checker (CaDiCaL)",
++          "solver": "CaDiCaL 1.9.5 (bundled)",
++          "fallback": null,
++          "sat": {
++            "solver": "CaDiCaL",
++            "version": "1.9.5",
++            "source": "bundled by the Rust crate cadical 0.1.16",
++            "configuration": [
++              "CaDiCaL's default options",
++              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++              "the run's deadline through CaDiCaL's terminate callback",
++              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++            ]
++          }
++        },
++        "gap_mode": "strict",
++        "confirmation": null
++      },
++      "counterexample": {
++        "input": "arrayJoin(first=false)",
++        "outcome": "5",
++        "values": [
++          "false"
++        ],
++        "shrink_runs": 0,
++        "inputs": [
++          {
++            "name": "first",
++            "type": "boolean",
++            "value": false
++          }
++        ],
++        "call": {
++          "class": "Controls",
++          "class_file": "Controls.class",
++          "classes": "after",
++          "method": "arrayJoin",
++          "descriptor": "(Z)I",
++          "static": true,
++          "arguments": [
++            {
++              "name": "first",
++              "type": "boolean",
++              "value": false,
++              "from": "first"
++            }
++          ]
++        }
++      },
++      "seconds": 0.043,
++      "setting": null,
++      "exitCode": 1
++    },
++    {
++      "claim": "calendar-join",
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2caef2a40fd0685aad5fda14530705098cc4f91d/jvmcontract",
++        "prove",
++        "Controls#calendarJoin",
++        "--classes",
++        "/tmp/tmpi6ntntiy",
++        "--classpath",
++        "/tmp/tmpi6ntntiy",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--assert",
++        "result == (first ? 15 : 16)",
++        "--timeout",
++        "35",
++        "--unwind",
++        "8",
++        "--max-array-length",
++        "2",
++        "--json",
++        "--work",
++        "/tmp/tmpi6ntntiy/calendar-join"
++      ],
++      "expected": "verified",
++      "observed": "verified",
++      "disposition": "matched",
++      "firstBlocker": null,
++      "stated": {
++        "kind": "property",
++        "domain": {
++          "parameters": [
++            {
++              "name": "first",
++              "type": "boolean",
++              "kind": "primitive",
++              "null": false
++            }
++          ],
++          "shared_arrays": false,
++          "text": "first: boolean"
++        },
++        "assumptions": [
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ],
++        "observations": {
++          "result": "the result and the parameters, against result == (first ? 15 : 16)",
++          "exceptions": "none may be thrown"
++        },
++        "bounds": {
++          "unwind": 8,
++          "max_array_length": null,
++          "complete": true
++        },
++        "models": {
++          "used": true,
++          "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
++          "classes": 37,
++          "jdk": "21.0.13"
++        },
++        "checker": {
++          "engine": "native",
++          "name": "jvmcontract's own checker (CaDiCaL)",
++          "solver": "CaDiCaL 1.9.5 (bundled)",
++          "fallback": null,
++          "sat": {
++            "solver": "CaDiCaL",
++            "version": "1.9.5",
++            "source": "bundled by the Rust crate cadical 0.1.16",
++            "configuration": [
++              "CaDiCaL's default options",
++              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++              "the run's deadline through CaDiCaL's terminate callback",
++              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++            ]
++          }
++        },
++        "gap_mode": "strict",
++        "confirmation": null,
++        "vacuity": {
++          "status": "non-vacuous",
++          "basis": "harness",
++          "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++        }
++      },
++      "counterexample": null,
++      "seconds": 0.026,
++      "setting": null,
++      "exitCode": 0
++    },
++    {
++      "claim": "collapsed-calendar",
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2caef2a40fd0685aad5fda14530705098cc4f91d/jvmcontract",
++        "prove",
++        "Controls#calendarJoin",
++        "--classes",
++        "/tmp/tmpi6ntntiy",
++        "--classpath",
++        "/tmp/tmpi6ntntiy",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--assert",
++        "result == 15",
++        "--timeout",
++        "35",
++        "--unwind",
++        "8",
++        "--max-array-length",
++        "2",
++        "--json",
++        "--work",
++        "/tmp/tmpi6ntntiy/collapsed-calendar"
++      ],
++      "expected": "violation",
++      "observed": "violation",
++      "disposition": "matched",
++      "firstBlocker": null,
++      "stated": {
++        "kind": "property",
++        "domain": {
++          "parameters": [
++            {
++              "name": "first",
++              "type": "boolean",
++              "kind": "primitive",
++              "null": false
++            }
++          ],
++          "shared_arrays": false,
++          "text": "first: boolean"
++        },
++        "assumptions": [
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ],
++        "observations": {
++          "result": "the result and the parameters, against result == 15",
++          "exceptions": "none may be thrown"
++        },
++        "bounds": {
++          "unwind": 8,
++          "max_array_length": null,
++          "complete": false
++        },
++        "models": {
++          "used": true,
++          "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
++          "classes": 37,
++          "jdk": "21.0.13"
++        },
++        "checker": {
++          "engine": "native",
++          "name": "jvmcontract's own checker (CaDiCaL)",
++          "solver": "CaDiCaL 1.9.5 (bundled)",
++          "fallback": null,
++          "sat": {
++            "solver": "CaDiCaL",
++            "version": "1.9.5",
++            "source": "bundled by the Rust crate cadical 0.1.16",
++            "configuration": [
++              "CaDiCaL's default options",
++              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++              "the run's deadline through CaDiCaL's terminate callback",
++              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++            ]
++          }
++        },
++        "gap_mode": "strict",
++        "confirmation": null
++      },
++      "counterexample": {
++        "input": "calendarJoin(first=false)",
++        "outcome": "16",
++        "values": [
++          "false"
++        ],
++        "shrink_runs": 0,
++        "inputs": [
++          {
++            "name": "first",
++            "type": "boolean",
++            "value": false
++          }
++        ],
++        "call": {
++          "class": "Controls",
++          "class_file": "Controls.class",
++          "classes": "after",
++          "method": "calendarJoin",
++          "descriptor": "(Z)I",
++          "static": true,
++          "arguments": [
++            {
++              "name": "first",
++              "type": "boolean",
++              "value": false,
++              "from": "first"
++            }
++          ]
++        }
++      },
++      "seconds": 0.021,
++      "setting": null,
++      "exitCode": 1
++    },
++    {
++      "claim": "format-short",
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2caef2a40fd0685aad5fda14530705098cc4f91d/jvmcontract",
++        "prove",
++        "Controls#display",
++        "--classes",
++        "/tmp/tmpi6ntntiy",
++        "--classpath",
++        "/tmp/tmpi6ntntiy",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--assert",
++        "result == 2",
++        "--timeout",
++        "35",
++        "--unwind",
++        "8",
++        "--max-array-length",
++        "2",
++        "--json",
++        "--work",
++        "/tmp/tmpi6ntntiy/format-short",
++        "--observed-initializer",
++        "Controls$Format"
++      ],
++      "expected": "verified",
++      "observed": "verified",
++      "disposition": "matched",
++      "firstBlocker": null,
++      "stated": {
++        "kind": "property",
++        "domain": {
++          "parameters": [],
++          "shared_arrays": false,
++          "text": ""
++        },
++        "assumptions": [
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          },
++          {
++            "kind": "library",
++            "text": "the class initializer of Controls$Format was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 f8576de7a949), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties foundation.display = \"short\", and the result holds where each is as it was; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
++            "basis": "engine"
++          }
++        ],
++        "observations": {
++          "result": "the result and the parameters, against result == 2",
++          "exceptions": "none may be thrown"
++        },
++        "bounds": {
++          "unwind": 8,
++          "max_array_length": null,
++          "complete": true
++        },
++        "models": {
++          "used": true,
++          "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
++          "classes": 37,
++          "jdk": "21.0.13"
++        },
++        "checker": {
++          "engine": "native",
++          "name": "jvmcontract's own checker (CaDiCaL)",
++          "solver": "CaDiCaL 1.9.5 (bundled)",
++          "fallback": null,
++          "sat": {
++            "solver": "CaDiCaL",
++            "version": "1.9.5",
++            "source": "bundled by the Rust crate cadical 0.1.16",
++            "configuration": [
++              "CaDiCaL's default options",
++              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++              "the run's deadline through CaDiCaL's terminate callback",
++              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++            ]
++          }
++        },
++        "gap_mode": "strict",
++        "confirmation": null,
++        "vacuity": {
++          "status": "non-vacuous",
++          "basis": "harness",
++          "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++        }
++      },
++      "counterexample": null,
++      "seconds": 1.704,
++      "setting": "-Dfoundation.display=short",
++      "exitCode": 0
++    },
++    {
++      "claim": "format-long",
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2caef2a40fd0685aad5fda14530705098cc4f91d/jvmcontract",
++        "prove",
++        "Controls#display",
++        "--classes",
++        "/tmp/tmpi6ntntiy",
++        "--classpath",
++        "/tmp/tmpi6ntntiy",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--assert",
++        "result == 4",
++        "--timeout",
++        "35",
++        "--unwind",
++        "8",
++        "--max-array-length",
++        "2",
++        "--json",
++        "--work",
++        "/tmp/tmpi6ntntiy/format-long",
++        "--observed-initializer",
++        "Controls$Format"
++      ],
++      "expected": "verified",
++      "observed": "verified",
++      "disposition": "matched",
++      "firstBlocker": null,
++      "stated": {
++        "kind": "property",
++        "domain": {
++          "parameters": [],
++          "shared_arrays": false,
++          "text": ""
++        },
++        "assumptions": [
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          },
++          {
++            "kind": "library",
++            "text": "the class initializer of Controls$Format was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 f8576de7a949), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties foundation.display = \"long\", and the result holds where each is as it was; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
++            "basis": "engine"
++          }
++        ],
++        "observations": {
++          "result": "the result and the parameters, against result == 4",
++          "exceptions": "none may be thrown"
++        },
++        "bounds": {
++          "unwind": 8,
++          "max_array_length": null,
++          "complete": true
++        },
++        "models": {
++          "used": true,
++          "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
++          "classes": 37,
++          "jdk": "21.0.13"
++        },
++        "checker": {
++          "engine": "native",
++          "name": "jvmcontract's own checker (CaDiCaL)",
++          "solver": "CaDiCaL 1.9.5 (bundled)",
++          "fallback": null,
++          "sat": {
++            "solver": "CaDiCaL",
++            "version": "1.9.5",
++            "source": "bundled by the Rust crate cadical 0.1.16",
++            "configuration": [
++              "CaDiCaL's default options",
++              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++              "the run's deadline through CaDiCaL's terminate callback",
++              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++            ]
++          }
++        },
++        "gap_mode": "strict",
++        "confirmation": null,
++        "vacuity": {
++          "status": "non-vacuous",
++          "basis": "harness",
++          "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++        }
++      },
++      "counterexample": null,
++      "seconds": 1.736,
++      "setting": "-Dfoundation.display=long",
++      "exitCode": 0
++    },
++    {
++      "claim": "divide-event",
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2caef2a40fd0685aad5fda14530705098cc4f91d/jvmcontract",
++        "prove",
++        "Controls#handler",
++        "--classes",
++        "/tmp/tmpi6ntntiy",
++        "--classpath",
++        "/tmp/tmpi6ntntiy",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--assert",
++        "result < 10",
++        "--timeout",
++        "35",
++        "--unwind",
++        "8",
++        "--max-array-length",
++        "2",
++        "--json",
++        "--work",
++        "/tmp/tmpi6ntntiy/divide-event",
++        "--assume",
++        "divisor >= -1 && divisor <= 1"
++      ],
++      "expected": "violation",
++      "observed": "violation",
++      "disposition": "matched",
++      "firstBlocker": null,
++      "stated": {
++        "kind": "property",
++        "domain": {
++          "parameters": [
++            {
++              "name": "divisor",
++              "type": "int",
++              "kind": "primitive",
++              "null": false
++            }
++          ],
++          "shared_arrays": false,
++          "text": "divisor: int"
++        },
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "divisor >= -1 && divisor <= 1",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ],
++        "observations": {
++          "result": "the result and the parameters, against result < 10",
++          "exceptions": "none may be thrown"
++        },
++        "bounds": {
++          "unwind": 8,
++          "max_array_length": null,
++          "complete": false
++        },
++        "models": {
++          "used": true,
++          "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
++          "classes": 37,
++          "jdk": "21.0.13"
++        },
++        "checker": {
++          "engine": "native",
++          "name": "jvmcontract's own checker (CaDiCaL)",
++          "solver": "CaDiCaL 1.9.5 (bundled)",
++          "fallback": null,
++          "sat": {
++            "solver": "CaDiCaL",
++            "version": "1.9.5",
++            "source": "bundled by the Rust crate cadical 0.1.16",
++            "configuration": [
++              "CaDiCaL's default options",
++              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++              "the run's deadline through CaDiCaL's terminate callback",
++              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++            ]
++          }
++        },
++        "gap_mode": "strict",
++        "confirmation": null
++      },
++      "counterexample": {
++        "input": "handler(divisor=0)",
++        "outcome": "17",
++        "values": [
++          "0"
++        ],
++        "shrink_runs": 0,
++        "inputs": [
++          {
++            "name": "divisor",
++            "type": "int",
++            "value": 0
++          }
++        ],
++        "call": {
++          "class": "Controls",
++          "class_file": "Controls.class",
++          "classes": "after",
++          "method": "handler",
++          "descriptor": "(I)I",
++          "static": true,
++          "arguments": [
++            {
++              "name": "divisor",
++              "type": "int",
++              "value": 0,
++              "from": "divisor"
++            }
++          ]
++        }
++      },
++      "seconds": 0.021,
++      "setting": null,
++      "exitCode": 1
++    },
++    {
++      "claim": "no-escape",
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2caef2a40fd0685aad5fda14530705098cc4f91d/jvmcontract",
++        "prove",
++        "Controls#checkedAverage",
++        "--classes",
++        "/tmp/tmpi6ntntiy",
++        "--classpath",
++        "/tmp/tmpi6ntntiy",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--assert",
++        "true",
++        "--timeout",
++        "35",
++        "--unwind",
++        "8",
++        "--max-array-length",
++        "2",
++        "--json",
++        "--work",
++        "/tmp/tmpi6ntntiy/no-escape",
++        "--assume",
++        "divisor >= -1 && divisor <= 1"
++      ],
++      "expected": "verified",
++      "observed": "verified",
++      "disposition": "matched",
++      "firstBlocker": null,
++      "stated": {
++        "kind": "property",
++        "domain": {
++          "parameters": [
++            {
++              "name": "divisor",
++              "type": "int",
++              "kind": "primitive",
++              "null": false
++            }
++          ],
++          "shared_arrays": false,
++          "text": "divisor: int"
++        },
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "divisor >= -1 && divisor <= 1",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ],
++        "observations": {
++          "result": "nothing beyond returning",
++          "exceptions": "none may be thrown"
++        },
++        "bounds": {
++          "unwind": 8,
++          "max_array_length": null,
++          "complete": true
++        },
++        "models": {
++          "used": true,
++          "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
++          "classes": 37,
++          "jdk": "21.0.13"
++        },
++        "checker": {
++          "engine": "native",
++          "name": "jvmcontract's own checker (CaDiCaL)",
++          "solver": "CaDiCaL 1.9.5 (bundled)",
++          "fallback": null,
++          "sat": {
++            "solver": "CaDiCaL",
++            "version": "1.9.5",
++            "source": "bundled by the Rust crate cadical 0.1.16",
++            "configuration": [
++              "CaDiCaL's default options",
++              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++              "the run's deadline through CaDiCaL's terminate callback",
++              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++            ]
++          }
++        },
++        "gap_mode": "strict",
++        "confirmation": null,
++        "vacuity": {
++          "status": "non-vacuous",
++          "basis": "probe",
++          "text": "Some input in the domain reaches the calls: the tool's own checker found checkedAverage(divisor=0).",
++          "witness": "checkedAverage(divisor=0)"
++        }
++      },
++      "counterexample": null,
++      "seconds": 0.019,
++      "setting": null,
++      "exitCode": 0
++    },
++    {
++      "claim": "handler-and-fallback",
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2caef2a40fd0685aad5fda14530705098cc4f91d/jvmcontract",
++        "prove",
++        "Controls#handler",
++        "--classes",
++        "/tmp/tmpi6ntntiy",
++        "--classpath",
++        "/tmp/tmpi6ntntiy",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--assert",
++        "result == 17",
++        "--timeout",
++        "35",
++        "--unwind",
++        "8",
++        "--max-array-length",
++        "2",
++        "--json",
++        "--work",
++        "/tmp/tmpi6ntntiy/handler-and-fallback",
++        "--assume",
++        "divisor == 0"
++      ],
++      "expected": "verified",
++      "observed": "verified",
++      "disposition": "matched",
++      "firstBlocker": null,
++      "stated": {
++        "kind": "property",
++        "domain": {
++          "parameters": [
++            {
++              "name": "divisor",
++              "type": "int",
++              "kind": "primitive",
++              "null": false
++            }
++          ],
++          "shared_arrays": false,
++          "text": "divisor: int"
++        },
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "divisor == 0",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ],
++        "observations": {
++          "result": "the result and the parameters, against result == 17",
++          "exceptions": "none may be thrown"
++        },
++        "bounds": {
++          "unwind": 8,
++          "max_array_length": null,
++          "complete": true
++        },
++        "models": {
++          "used": true,
++          "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
++          "classes": 37,
++          "jdk": "21.0.13"
++        },
++        "checker": {
++          "engine": "native",
++          "name": "jvmcontract's own checker (CaDiCaL)",
++          "solver": "CaDiCaL 1.9.5 (bundled)",
++          "fallback": null,
++          "sat": {
++            "solver": "CaDiCaL",
++            "version": "1.9.5",
++            "source": "bundled by the Rust crate cadical 0.1.16",
++            "configuration": [
++              "CaDiCaL's default options",
++              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++              "the run's deadline through CaDiCaL's terminate callback",
++              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++            ]
++          }
++        },
++        "gap_mode": "strict",
++        "confirmation": null,
++        "vacuity": {
++          "status": "non-vacuous",
++          "basis": "probe",
++          "text": "Some input in the domain reaches the calls: the tool's own checker found handler(divisor=0).",
++          "witness": "handler(divisor=0)"
++        }
++      },
++      "counterexample": null,
++      "seconds": 0.018,
++      "setting": null,
++      "exitCode": 0
++    },
++    {
++      "claim": "escaping-kernel",
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2caef2a40fd0685aad5fda14530705098cc4f91d/jvmcontract",
++        "prove",
++        "Controls#divide",
++        "--classes",
++        "/tmp/tmpi6ntntiy",
++        "--classpath",
++        "/tmp/tmpi6ntntiy",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--assert",
++        "result == 6 / divisor",
++        "--timeout",
++        "35",
++        "--unwind",
++        "8",
++        "--max-array-length",
++        "2",
++        "--json",
++        "--work",
++        "/tmp/tmpi6ntntiy/escaping-kernel",
++        "--assume",
++        "divisor >= -1 && divisor <= 1",
++        "--throws",
++        "java.lang.ArithmeticException when divisor == 0"
++      ],
++      "expected": "verified",
++      "observed": "verified",
++      "disposition": "matched",
++      "firstBlocker": null,
++      "stated": {
++        "kind": "property",
++        "domain": {
++          "parameters": [
++            {
++              "name": "divisor",
++              "type": "int",
++              "kind": "primitive",
++              "null": false
++            }
++          ],
++          "shared_arrays": false,
++          "text": "divisor: int"
++        },
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "divisor >= -1 && divisor <= 1",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ],
++        "observations": {
++          "result": "the result and the parameters, against result == 6 / divisor",
++          "exceptions": "none may be thrown but as a throws clause says: java.lang.ArithmeticException when divisor == 0"
++        },
++        "bounds": {
++          "unwind": 8,
++          "max_array_length": null,
++          "complete": true
++        },
++        "models": {
++          "used": true,
++          "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
++          "classes": 37,
++          "jdk": "21.0.13"
++        },
++        "checker": {
++          "engine": "native",
++          "name": "jvmcontract's own checker (CaDiCaL)",
++          "solver": "CaDiCaL 1.9.5 (bundled)",
++          "fallback": null,
++          "sat": {
++            "solver": "CaDiCaL",
++            "version": "1.9.5",
++            "source": "bundled by the Rust crate cadical 0.1.16",
++            "configuration": [
++              "CaDiCaL's default options",
++              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++              "the run's deadline through CaDiCaL's terminate callback",
++              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++            ]
++          }
++        },
++        "gap_mode": "strict",
++        "confirmation": null,
++        "vacuity": {
++          "status": "non-vacuous",
++          "basis": "probe",
++          "text": "Some input in the domain reaches the calls: the tool's own checker found divide(divisor=0).",
++          "witness": "divide(divisor=0)"
++        }
++      },
++      "counterexample": null,
++      "seconds": 0.02,
++      "setting": null,
++      "exitCode": 0
++    },
++    {
++      "claim": "exception-message",
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2caef2a40fd0685aad5fda14530705098cc4f91d/jvmcontract",
++        "prove",
++        "Controls#message",
++        "--classes",
++        "/tmp/tmpi6ntntiy",
++        "--classpath",
++        "/tmp/tmpi6ntntiy",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--assert",
++        "result == 1",
++        "--timeout",
++        "35",
++        "--unwind",
++        "8",
++        "--max-array-length",
++        "2",
++        "--json",
++        "--work",
++        "/tmp/tmpi6ntntiy/exception-message",
++        "--assume",
++        "divisor == 0"
++      ],
++      "expected": "verified",
++      "observed": "unverifiable",
++      "disposition": "open",
++      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.ArithmeticException.getMessage()Ljava/lang/String;@jdk-21.0.13 (java.lang.ArithmeticException.getMessage() at Controls.message:47). With --gaps assume it assumes instead that java.lang.ArithmeticException.getMessage() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++      "stated": {
++        "kind": "property",
++        "domain": {
++          "parameters": [
++            {
++              "name": "divisor",
++              "type": "int",
++              "kind": "primitive",
++              "null": false
++            }
++          ],
++          "shared_arrays": false,
++          "text": "divisor: int"
++        },
++        "assumptions": [
++          {
++            "kind": "precondition",
++            "text": "divisor == 0",
++            "basis": "stated"
++          },
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ],
++        "observations": {
++          "result": "the result and the parameters, against result == 1",
++          "exceptions": "none may be thrown"
++        },
++        "bounds": {
++          "unwind": 8,
++          "max_array_length": null,
++          "complete": false
++        },
++        "models": {
++          "used": true,
++          "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
++          "classes": 37,
++          "jdk": "21.0.13"
++        },
++        "checker": {
++          "engine": "native",
++          "name": "jvmcontract's own checker (CaDiCaL)",
++          "solver": "CaDiCaL 1.9.5 (bundled)",
++          "fallback": null,
++          "sat": {
++            "solver": "CaDiCaL",
++            "version": "1.9.5",
++            "source": "bundled by the Rust crate cadical 0.1.16",
++            "configuration": [
++              "CaDiCaL's default options",
++              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++              "the run's deadline through CaDiCaL's terminate callback",
++              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++            ]
++          }
++        },
++        "gap_mode": "strict",
++        "confirmation": null
++      },
++      "counterexample": null,
++      "seconds": 0.017,
++      "setting": null,
++      "exitCode": 1
++    }
++  ],
++  "checkerSha256": "ba819f385f8446d28b2d4ca1d709649cf23329453daa7ae0570775b854765648",
++  "checkerTree": "2caef2a40fd0685aad5fda14530705098cc4f91d"
++}

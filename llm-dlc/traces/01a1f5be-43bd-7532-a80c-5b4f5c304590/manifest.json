@@ -12,25 +12,25 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-19T22:37:38.919Z",
-  "duration_seconds": 3609,
+  "ended": "2026-11-19T22:44:02.282Z",
+  "duration_seconds": 3992,
   "stats": {
     "turns": 1,
-    "api_calls": 237,
-    "tool_calls": 498,
-    "tool_errors": 22,
+    "api_calls": 271,
+    "tool_calls": 559,
+    "tool_errors": 25,
     "compactions": 0,
-    "peak_context_tokens": 382570,
+    "peak_context_tokens": 403975,
     "usage": {
-      "input_tokens": 387400,
-      "output_tokens": 132907,
-      "cache_read_input_tokens": 61357312,
+      "input_tokens": 411110,
+      "output_tokens": 144619,
+      "cache_read_input_tokens": 74680704,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 260,
-    "exec": 237,
+    "Bash": 287,
+    "exec": 271,
     "apply_patch": 1
   },
   "files_touched": [
@@ -40,24 +40,24 @@
     {
       "index": 0,
       "started": "2026-11-19T21:37:29.873Z",
-      "ended": "2026-11-19T22:37:38.919Z",
+      "ended": "2026-11-19T22:44:02.282Z",
       "turns": 1,
-      "api_calls": 237,
+      "api_calls": 271,
       "usage": {
-        "input_tokens": 387400,
-        "output_tokens": 132907,
-        "cache_read_input_tokens": 61357312,
+        "input_tokens": 411110,
+        "output_tokens": 144619,
+        "cache_read_input_tokens": 74680704,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 382570
+      "peak_context_tokens": 403975
     }
   ],
   "log": {
-    "sha256": "06c62a8ed209911b20366c322c62d051683ce29e05fe2b31c839564585ef83d3",
-    "bytes": 6085576,
-    "lines": 1767,
-    "gzip_bytes": 2251251,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/06c62a8ed209911b20366c322c62d051683ce29e05fe2b31c839564585ef83d3.jsonl.gz"
+    "sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212",
+    "bytes": 6580659,
+    "lines": 2000,
+    "gzip_bytes": 2450163,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -132,6 +132,78 @@
       "summary": "Expose claim-specific witness replay and keep late rejections in history",
       "body": "A reviewer can submit typed concrete inputs through build.py --task T --replay-witness FILE. Each review binds the selected artifacts, rechecks adapter correspondence where applicable, runs the frozen domain and observation on the JVM, and journals its evidence. The last-slot Gradebook input reproduced the complete array difference, agreed on the return and was rejected outside the interior domain. The return-only proof remained eligible after its later replay rejection. Ran the three public reviews and the build, route and recipe tests.",
       "log_sha256": "06c62a8ed209911b20366c322c62d051683ce29e05fe2b31c839564585ef83d3"
+    },
+    {
+      "change_id": "pkyzwyvytnmyssqwmuzynrnknvukwszs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-045: a second Codex session opened the run-brief skill before working alone",
+      "body": "The single-agent run foundation-and-python-restart, a new Codex session given a prompt that calls the work 'written for multiple agents', read .agents/skills/run-brief/SKILL.md in its first minute, then decided the brief was for one agent and worked on it directly, starting nothing. The finding records this second occurrence.",
+      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
+    },
+    {
+      "change_id": "lxnwsprmkwzvlluzpulzsqslymrvrpov",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Codex sessions start without the Pets, Hotline, Safety Settings and Sites apps",
+      "body": "The ChatGPT account gives every Codex session its apps as deferred tools (codex_apps). On the user's word (2026-11-19), four that no work in this repository has a use for are turned off: Pets, Hotline, Safety Settings and Sites. GitHub, ChatGPT Space, Codex Document Control and Plugin Management stay. The loops pass the settings on every turn (CODEX_CONFIG in agent_client.py, as apps.<connector id>.enabled=false), and .codex/config.toml carries the same for a person's own Codex in a trusted checkout. Run 1 of foundation-domain-streams called none of the eight apps. Verified with codex debug prompt-input (CLI 0.170) rendered with CODEX_CONFIG: only the four kept apps' namespaces remain, and CLAUDE.md is still read; the TOML parses; the changed tests pass (8 of 8 files).",
+      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
+    },
+    {
+      "change_id": "pzqqompzkvnwxkvxqurownylmosunzmq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-214230-gradebook-frozen-claims-on-the-checkpoin: failed: 5 failed step(s) in 22.2s, peak 97.3 MiB (estimated 2m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
+    },
+    {
+      "change_id": "wmswovokuroqrrtlsxzslysvyolyknuv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261119-214238-math-238-direct-method-checkpoint-compar: passed: 4 passed step(s) in 6m57s, peak 940.3 MiB (estimated 5m00s, 4.0 GiB); 55 output file(s) changed; signals: example:task-as-expected×1 Applied 55 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
+    },
+    {
+      "change_id": "wuttosxkzuypsxpzwwmnqutvkotuwsns",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-215957-threetenbp-hours-adapter-on-the-qualifie: failed: 1 failed step(s) in 12.0s, peak 220.5 MiB (estimated 3m00s, 3.0 GiB); 77 output file(s) changed; signals: example:task-unexpected×5 20261119-220147-gradebook-qualified-attempts-and-interru: passed: 2 passed step(s) in 20.0s, peak 227.5 MiB (estimated 2m00s, 3.0 GiB); 84 output file(s) changed; signals: example:task-as-expected×2; example:task-as-expected×3 Applied 84 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
+    },
+    {
+      "change_id": "qtnnvmzuwxtrqykwqsmyovpwxzpmouwo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261119-215949-math-238-direct-recipe-on-frozen-power-a: passed: 1 passed step(s) in 6m23s, peak 994.5 MiB (estimated 9m00s, 4.0 GiB); 57 output file(s) changed; signals: example:task-as-expected×4 Applied 57 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
+    },
+    {
+      "change_id": "pqqonrvpsvuowwypuonyzzotyyytrpxp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 4 job(s)",
+      "body": "Outputs applied for 2 of the 4 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261119-221145-qualify-heap-merges-initialized-display: passed: 1 passed step(s) in 5.0s, peak 92.1 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261119-221152-qualify-integrated-jbmc-on-the-distinct: passed: 1 passed step(s) in 3.4s, peak 73.0 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261119-221200-separate-quote-amount-and-ordered-send-r: failed: 1 failed step(s) in 4.0s, peak 85.2 MiB (estimated 2m00s, 2.0 GiB); 6 output file(s) changed 20261119-222214-check-the-supplementary-character-search: failed: 1 failed step(s) in 15.2s, peak 306.0 MiB (estimated 3m00s, 3.0 GiB); 77 output file(s) changed; signals: example:task-unexpected×5 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
+    },
+    {
+      "change_id": "owxqwqnrkpokqrusullyoywpwmmkvlws",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 2 of the 2 job(s). 20261119-221555-retain-a-measured-gcd-checker-timeout-an: passed: 1 passed step(s) in 3m26s, peak 951.7 MiB (estimated 5m00s, 3.0 GiB); 29 output file(s) changed Applied 29 output(s). 20261119-222610-recheck-quote-projections-with-compile-s: passed: 1 passed step(s) in 5.4s, peak 85.6 MiB (estimated 1m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
+    },
+    {
+      "change_id": "wuqvmopopvzqqomtmqqxyrzwzwsrruwm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Integrate all restart verification results and publish the claim handoff",
+      "body": "All 17 Gradebook and four Apache GCD claim/subject pairs are decided. The independent shop projections establish the returned amount and refute ordered-send preservation. Native covers the 71 two-root heaps and JBMC qualifies its separate four-heap overlap. Checker qualification preserved the branch and initializer differences and classified handled and escaping division. The exception-message, wide JBMC preservation and strict ThreeTenBP and Commons Lang gaps remain discoverable in their original records.\n\nThe handoff links the three Gradebook proof plans and late witness reviews, concurrent retries, both GCD strategies and a genuine one-second deadline, two independent adapter grids and the wrong-unit control. Receipt ingestion also reconciles a delivered result with the original journal's bound invocation and raw checker candidate. Verified this on actual old and new completions, validated all six example packets, and confirmed all twelve jobs are collected on this line. The merged-tree default suite follows this commit.",
+      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
     }
   ],
   "logs": {
@@ -175,6 +247,12 @@
       "bytes": 5398259,
       "lines": 1493,
       "gzip_bytes": 1930722,
+      "url": null
+    },
+    "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212": {
+      "bytes": 6580659,
+      "lines": 2000,
+      "gzip_bytes": 2450163,
       "url": null
     },
     "f39026fe470bb9b1a13abb28ea4b36a233fb61ad12bee7476880934526cbce11": {

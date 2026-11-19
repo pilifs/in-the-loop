@@ -75,6 +75,11 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   (Codex). `run-brief`, `single-agent-run`, `prove-java-change` and `run-verification` carry neither. Their
   descriptions say "start it only when the user asks", which a work turn whose prompt names a brief can read
   past.
+  - It happened again in a new session. The run `foundation-and-python-restart` (Codex session `0cea9d0e…`) was
+    started at 21:37 UTC with a prompt that again called its document work "written for multiple agents". Within
+    a minute the agent said it would "use the repository's run-brief skill to check the implementation checkpoint
+    and recover prior work", and read `.agents/skills/run-brief/SKILL.md` twice. At 21:38:07 it decided the brief
+    was for one agent and worked on it directly. Again it started nothing.
 - **Needs**: a choice by the user, one or both of:
   - Mark `run-brief`, and likely `single-agent-run` and `prove-java-change` (which also start hours-long runs), as
     started by a person only: `disable-model-invocation: true` in each `SKILL.md`, and `agents/openai.yaml` with

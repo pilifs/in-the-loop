@@ -10,7 +10,7 @@ sequence, and told apart by their fields and tags:
   page claims a result the tool did not produce.
 - **Real-world** examples (`origin: real-world`) are pull requests and commits to published Java libraries, verified
   from their bytecode with `jvmcontract`, as they came. Each folder's README is the report. One with a target
-  sidecar (`target.json`) is run one task at a time and keeps a receipt for each attempt
+  sidecar (`target.json`) can run tasks individually or in a batch and keeps a receipt for each completed attempt
   ([Run an example](#run-an-example)).
 
 ## Find an example
