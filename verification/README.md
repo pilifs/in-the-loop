@@ -131,6 +131,10 @@ job and its result to the loop cycle that submitted it.
   `jvmcontract:equivalence`, `jvmcontract:tlc`, ...), and a feature if there is one (`tlc:liveness`,
   `tlc:coverage`, `jbmc:arrays`, `jbmc:strings`).
 - `--link` adds what the job is about: `example:104`, `path:lib/src/tla.rs`, `job:ID`.
+- For an example-specific proof driver that uses the ordinary planner's default input length, add
+  `--link claim:KEY` with the source claim key from `build.py --plan NNN --task T`. This binds the
+  default before the job runs. The acceptance check verifies the job hash and recomputes the key.
+  A driver with a different semantic bound needs that bound in the frozen claim.
 - `--task T`, with one `--example` of a real-world example with a target sidecar, queues one of its tasks: the job
   runs `build.py NNN --task T`, from the same plan `build.py --plan NNN --task T` prints, and a task whose plan is not
   executable is refused rather than queued.

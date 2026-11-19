@@ -12,74 +12,93 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T15:23:07.880Z",
-  "ended": "2026-11-19T15:58:47.438Z",
-  "duration_seconds": 2140,
+  "ended": "2026-11-19T16:22:19.865Z",
+  "duration_seconds": 3552,
   "stats": {
     "turns": 1,
-    "api_calls": 169,
-    "tool_calls": 420,
-    "tool_errors": 12,
+    "api_calls": 255,
+    "tool_calls": 602,
+    "tool_errors": 22,
     "compactions": 0,
-    "peak_context_tokens": 317535,
+    "peak_context_tokens": 403076,
     "usage": {
-      "input_tokens": 316020,
-      "output_tokens": 60255,
-      "cache_read_input_tokens": 35606656,
+      "input_tokens": 407899,
+      "output_tokens": 103389,
+      "cache_read_input_tokens": 66762624,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 225,
-    "exec": 167,
-    "apply_patch": 26,
-    "wait": 2
+    "Bash": 302,
+    "exec": 250,
+    "apply_patch": 45,
+    "wait": 5
   },
   "files_touched": [
     "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/history/2026-11-18-preservation-profile.json",
+    "examples/308-commons-text-longest-common-subsequence/README.md",
+    "examples/308-commons-text-longest-common-subsequence/claims/score.json",
+    "examples/308-commons-text-longest-common-subsequence/controls/oracle.py",
+    "examples/308-commons-text-longest-common-subsequence/driver/score/ScoreDriver.java",
+    "examples/308-commons-text-longest-common-subsequence/example.json",
     "examples/308-commons-text-longest-common-subsequence/pilot.py",
     "examples/308-commons-text-longest-common-subsequence/score/LcsScore.java",
     "examples/308-commons-text-longest-common-subsequence/score/ScoreOracle.java",
     "examples/308-commons-text-longest-common-subsequence/sources.lock.json",
+    "examples/308-commons-text-longest-common-subsequence/target.json",
     "examples/README.md",
     "examples/tools/accept.py",
     "examples/tools/targets/claim_history.py",
+    "examples/tools/targets/test_acceptance.py",
     "examples/tools/targets/test_claim_history.py",
+    "examples/tools/targets/test_packets.py",
     "examples/tools/targets/workflow_handoff.py",
     "examples/tools/test_accept.py",
     "lib/benchmark/README.md",
     "lib/benchmark/run.py",
     "lib/src/bmc/mod.rs",
+    "lib/src/bmc/throwables.rs",
+    "lib/src/equivalence.rs",
+    "lib/src/harness/mod.rs",
+    "lib/src/main.rs",
+    "lib/src/observed.rs",
+    "lib/src/pairing.rs",
+    "lib/src/pairing/array_roots.rs",
+    "lib/src/spec/mod.rs",
     "lib/tests/fixtures/callee-countermodels/README.md",
     "lib/tests/fixtures/callee-countermodels/check.py",
     "lib/tests/observed_countermodels.rs",
     "lib/tests/record_countermodels.rs",
+    "lib/tests/setting_countermodels.rs",
+    "lib/tests/throwable_countermodels.rs",
     "llm-dlc/tools/changes.py",
     "llm-dlc/tools/test_changes.py",
     "verification/README.md",
-    "verification/findings.md"
+    "verification/findings.md",
+    "verification/test_pipeline.py"
   ],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-19T15:23:07.880Z",
-      "ended": "2026-11-19T15:58:47.438Z",
+      "ended": "2026-11-19T16:22:19.865Z",
       "turns": 1,
-      "api_calls": 169,
+      "api_calls": 255,
       "usage": {
-        "input_tokens": 316020,
-        "output_tokens": 60255,
-        "cache_read_input_tokens": 35606656,
+        "input_tokens": 407899,
+        "output_tokens": 103389,
+        "cache_read_input_tokens": 66762624,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 317535
+      "peak_context_tokens": 403076
     }
   ],
   "log": {
-    "sha256": "2a4b9f36967354a66ee690b2ecd802e2fc53c9159999f74a76634961fb295043",
-    "bytes": 4580066,
-    "lines": 1279,
-    "gzip_bytes": 1611084,
-    "path": "llm-dlc/traces/01a1f467-856b-7d02-9458-ab076e5fef2f/logs/2a4b9f36967354a66ee690b2ecd802e2fc53c9159999f74a76634961fb295043.jsonl.gz"
+    "sha256": "7f9433063c358ee952b3e65bd04dbdebca6c9dcdd1668c524f5b89a51bd86465",
+    "bytes": 6268182,
+    "lines": 1917,
+    "gzip_bytes": 2308387,
+    "path": "llm-dlc/traces/01a1f467-856b-7d02-9458-ab076e5fef2f/logs/7f9433063c358ee952b3e65bd04dbdebca6c9dcdd1668c524f5b89a51bd86465.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -116,20 +135,28 @@
       "log_sha256": "c7d22a1d6a067b1a2d2a3b403bb0a6bb898b1b8a21aef6a574382c7920c21389"
     },
     {
-      "change_id": "rsxplxmosswuuwknpqxxkqswymplmruw",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "2a4b9f36967354a66ee690b2ecd802e2fc53c9159999f74a76634961fb295043"
-    },
-    {
       "change_id": "ywllyqnwqxosmuwlzkrrsvkmyttvopvz",
       "commit_id": null,
       "immutable": false,
       "summary": "Recheck the frozen preservation tasks (verification pending)",
       "body": "The native shared-callee challenge passed on revision 345f6fe4. Reuse that checker for the five original frozen comparisons. Each job retains the previous inputs, deadline and resource settings, with its own output path so the older results remain available. The five job schemas, commands and budgets were checked against their predecessors.\n\nVerification pending in jobs 20261119-155814-foundation-requalification-of-287-preser, 20261119-155814-foundation-requalification-of-289-preser, 20261119-155814-foundation-requalification-of-290-preser, 20261119-155814-foundation-requalification-of-307-preser and 20261119-155814-foundation-requalification-of-307-mutant.",
       "log_sha256": "2a4b9f36967354a66ee690b2ecd802e2fc53c9159999f74a76634961fb295043"
+    },
+    {
+      "change_id": "lqlzowuwqyupqmxopxlrrstzuoysrkmt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "7f9433063c358ee952b3e65bd04dbdebca6c9dcdd1668c524f5b89a51bd86465"
+    },
+    {
+      "change_id": "vlskszvymutrtpuznkxsqwnowkpoqmpn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind input lengths before accepting a proof and retain its assumptions",
+      "body": "Require a length-sensitive beside-route proof to use a bound declared by its frozen claim or task, or the versioned planner default committed in the job's source-claim link. A result cannot supply its own missing bound. Check witness values without counting the number of arguments as an array length. Report the provenance and carry evidence limits and checker assumptions independently into the JSON and text milestone views.\n\nAll 51 acceptance tests and all 22 milestone tests passed, including bound drift, replay membership, ordinary defaults and a compatibility check on an existing beside-route task. The human report for 287 now shows the termination assumption on its preservation evidence.",
+      "log_sha256": "7f9433063c358ee952b3e65bd04dbdebca6c9dcdd1668c524f5b89a51bd86465"
     }
   ],
   "logs": {
@@ -137,6 +164,12 @@
       "bytes": 4580066,
       "lines": 1279,
       "gzip_bytes": 1611084,
+      "url": null
+    },
+    "7f9433063c358ee952b3e65bd04dbdebca6c9dcdd1668c524f5b89a51bd86465": {
+      "bytes": 6268182,
+      "lines": 1917,
+      "gzip_bytes": 2308387,
       "url": null
     },
     "82960a82bf46d902058b26ee569dd181d29caa7f14a4267b6696e5bbaf45b4dc": {

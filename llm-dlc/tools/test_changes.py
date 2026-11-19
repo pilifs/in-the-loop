@@ -171,6 +171,12 @@ class StateTest(Checkout):
         self.assertNotIn("blocked", claim, "a claim with its answer stops nowhere")
         self.assertEqual(changes.listing(self.root, [])["pending"], [])
         self.assertIn("1 refuted beside the route", self.run_main()[1])
+        self.assertEqual(claim["beside"]["restsOn"], ["made up: what the checker assumed"])
+        self.assertTrue(claim["beside"]["limits"])
+        report = self.run_main()[1]
+        self.assertIn("regex-probe assumes made up: what the checker assumed", report)
+        for limit in claim["beside"]["limits"]:
+            self.assertIn(limit, report)
 
     def test_an_answer_beside_the_route_does_not_count_when_the_jobs_outcome_gives_another(self):
         """A passed job that names the example once supported either answer. Now the outcome decides."""
