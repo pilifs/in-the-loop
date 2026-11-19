@@ -1,0 +1,180 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "utfgrid.Search#last(int, int)",
+    "domain": "encoding: int × needle: int",
+    "assume": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4 && utfgrid.Search.expected(encoding, needle) == -1",
+    "assert": "result == -1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-reference-method:java.lang.StringBuilder.appendCodePoint(I)Ljava/lang/StringBuilder;@jdk-21.0.13 (java.lang.StringBuilder.appendCodePoint(int) at utfgrid.Search.last:12); jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-21.0.13 (java.util.regex.Pattern.compile(java.lang.String) at org.apache.commons.lang3.StringUtils.<clinit>:206). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption, except where a gap has no approximation",
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "utfgrid.Search#last(int, int) cannot be verified: the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-reference-method:java.lang.StringBuilder.appendCodePoint(I)Ljava/lang/StringBuilder;@jdk-21.0.13 (java.lang.StringBuilder.appendCodePoint(int) at utfgrid.Search.last:12); jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-21.0.13 (java.util.regex.Pattern.compile(java.lang.String) at org.apache.commons.lang3.StringUtils.<clinit>:206). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption, except where a gap has no approximation",
+        "uri": null,
+        "line": 11
+      }
+    ],
+    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"utfgrid\"; the names are encoding, needle); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✗ utfgrid.Search#last(int, int) cannot be verified: the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-reference-method:java.lang.StringBuilder.appendCodePoint(I)Ljava/lang/StringBuilder;@jdk-21.0.13 (java.lang.StringBuilder.appendCodePoint(int) at utfgrid.Search.last:12); jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-21.0.13 (java.util.regex.Pattern.compile(java.lang.String) at org.apache.commons.lang3.StringUtils.<clinit>:206). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption, except where a gap has no approximation\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.036935503,
+      "properties": 1,
+      "unwind": 12,
+      "max_array_length": 6,
+      "stage": null,
+      "native": {
+        "paths": 65,
+        "merges": 0,
+        "solver_calls": 139,
+        "solving_seconds": 0.020326621,
+        "gates_evaluated": 15875,
+        "evaluating_seconds": 0.00034187,
+        "divisions": 3,
+        "divisions_built": 2,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 12153,
+        "clauses": 41663,
+        "seconds": 0.034856386,
+        "loading_seconds": 0.000646653,
+        "decoding_seconds": 0.000056664,
+        "encoding_seconds": 0.006956796,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "jdk-reference-method:java.lang.StringBuilder.appendCodePoint(I)Ljava/lang/StringBuilder;@jdk-21.0.13",
+          "kind": "jdk-reference-method",
+          "call": "java.lang.StringBuilder.appendCodePoint(int)",
+          "sites": [
+            "utfgrid.Search.last:12"
+          ],
+          "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
+          "treatment": "refused"
+        },
+        {
+          "id": "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-21.0.13",
+          "kind": "jdk-static-method",
+          "call": "java.util.regex.Pattern.compile(java.lang.String)",
+          "sites": [
+            "org.apache.commons.lang3.StringUtils.<clinit>:206"
+          ],
+          "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 600.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 600.0,
+          "seconds": 0.035,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.001,
+            "lowering": 0.0,
+            "symbolic": 0.007,
+            "encoding": 0.007,
+            "solving": 0.02,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 12153,
+            "clauses": 41663
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.508,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.035,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.472
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "encoding",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "needle",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "encoding: int × needle: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4 && utfgrid.Search.expected(encoding, needle) == -1",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == -1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 12,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+        "classes": 37,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

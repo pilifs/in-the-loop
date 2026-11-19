@@ -1,0 +1,147 @@
+{
+  "schema": "framework-observation-receipt/v1",
+  "claimKey": "e5a3a4a9449d562588f069103855e9d85d6798e7ae05284d2f6bcc1f49df5914",
+  "binding": "d503c58eb1f52991238beba78402eccdf34eb3cef1492977a5f1965c50b56e31",
+  "claim": {
+    "subject": "POST /quotes",
+    "method": "shop.QuotesController#quote(JI)J",
+    "statement": "Both handlers return the same amount, or both fail to return.",
+    "observation": "result",
+    "bounds": {
+      "unwind": 16,
+      "maxArrayLength": 8,
+      "traceBound": 4
+    },
+    "environment": "The framework recording stubs return normally. Inputs are the long cents and int quantity of the public handler.",
+    "jvmControls": [
+      {
+        "cents": 1,
+        "quantity": 99
+      },
+      {
+        "cents": 1,
+        "quantity": 100
+      }
+    ]
+  },
+  "id": "20261119T222440Z-d7293fbb",
+  "startedAt": "2026-11-19T22:24:40.881299+00:00",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2caef2a40fd0685aad5fda14530705098cc4f91d/jvmcontract",
+    "effects",
+    "/tmp/tmpsfy77epi/before/classes",
+    "/tmp/tmpsfy77epi/after/classes",
+    "--entry",
+    "POST /quotes",
+    "--observe",
+    "result",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "8",
+    "--trace-bound",
+    "4",
+    "--cache",
+    "/tmp/tmpsfy77epi/return-amount-cache",
+    "--json"
+  ],
+  "artifacts": {
+    "before": {
+      "org/springframework/kafka/core/KafkaTemplate.class": "ccb62fb688f4034d6a6fea6bb2a6ceed76e567d30b9b8909159819b899df53d4",
+      "org/springframework/web/bind/annotation/PostMapping.class": "e12e13a3eb1ec98f24d71ab2a4f0bfb08a449b43b13d65d8af4527a3f082d265",
+      "org/springframework/web/bind/annotation/RequestParam.class": "3db6e91b8f3a3601197873887cc18e4e6d5283657f6cc3693b8883178cc5290d",
+      "org/springframework/web/bind/annotation/RestController.class": "f7cc1fc3b87a9abfa27b8c466a1ee3c4d28f5df8483bb824e3797861a931f9b2",
+      "shop/Pricing.class": "f770602a9b09c9562ceb23d8b766692fae71bc810bdc4cac0150c299740da666",
+      "shop/Quote.class": "aba9e38d5bc00b57d29b4a9051b6dcbd7c8c118ac2e3521db9ef8ca41a299c41",
+      "shop/QuoteEvent.class": "a0a487309c69ca38a418a7316e937e84a538c0256b896defe14265a4bb85c2b5",
+      "shop/QuotesController.class": "76d60792625ef41f8a6be87f2d73499bf50095887207bbf7293d464100cba834"
+    },
+    "after": {
+      "org/springframework/kafka/core/KafkaTemplate.class": "ccb62fb688f4034d6a6fea6bb2a6ceed76e567d30b9b8909159819b899df53d4",
+      "org/springframework/web/bind/annotation/PostMapping.class": "e12e13a3eb1ec98f24d71ab2a4f0bfb08a449b43b13d65d8af4527a3f082d265",
+      "org/springframework/web/bind/annotation/RequestParam.class": "3db6e91b8f3a3601197873887cc18e4e6d5283657f6cc3693b8883178cc5290d",
+      "org/springframework/web/bind/annotation/RestController.class": "f7cc1fc3b87a9abfa27b8c466a1ee3c4d28f5df8483bb824e3797861a931f9b2",
+      "shop/Money.class": "723423abc12a62f58667bef4bc9d6ccd234da0c7440bf2fbd1df5e40dfc3f1af",
+      "shop/Pricing.class": "7084320bab4515c56c534454f0bcab70ae098dbe384accdc1264f74e236d29c2",
+      "shop/Quote.class": "075547420125785d15b5a2788da55bef5dbc000753b4fd692ace6a474b306405",
+      "shop/QuoteEvent.class": "a0a487309c69ca38a418a7316e937e84a538c0256b896defe14265a4bb85c2b5",
+      "shop/QuotesController.class": "dbff5df8ef04a972e45df999cdc9590754a44470e1fd236de93783140065a20e"
+    }
+  },
+  "jdk": {
+    "feature": "21",
+    "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "release": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  },
+  "checkerSha256": "ba819f385f8446d28b2d4ca1d709649cf23329453daa7ae0570775b854765648",
+  "libTree": "2caef2a40fd0685aad5fda14530705098cc4f91d",
+  "job": "20261119-221200-separate-quote-amount-and-ordered-send-r",
+  "budgetSeconds": 300,
+  "jvmControls": {
+    "before": [
+      {
+        "cents": 1,
+        "quantity": 99,
+        "amount": 90,
+        "sends": [
+          {
+            "topic": "quotes",
+            "total": 90,
+            "quantity": 99
+          }
+        ]
+      },
+      {
+        "cents": 1,
+        "quantity": 100,
+        "amount": 90,
+        "sends": [
+          {
+            "topic": "quotes",
+            "total": 90,
+            "quantity": 100
+          }
+        ]
+      }
+    ],
+    "after": [
+      {
+        "cents": 1,
+        "quantity": 99,
+        "amount": 90,
+        "sends": [
+          {
+            "topic": "quotes",
+            "total": 90,
+            "quantity": 99
+          }
+        ]
+      },
+      {
+        "cents": 1,
+        "quantity": 100,
+        "amount": 90,
+        "sends": []
+      }
+    ]
+  },
+  "limits": [
+    "The framework recording stubs return normally. Inputs are the long cents and int quantity of the public handler."
+  ],
+  "cache": "empty at start",
+  "status": "completed",
+  "verdict": null,
+  "eligible": false,
+  "restsOn": [],
+  "seconds": 0.031,
+  "problem": "shop.QuotesController is given an application org.springframework.kafka.core.KafkaTemplate it would get null: a handler whose application dependencies must be made comes after the narrow case",
+  "checkerOutput": "checker.json",
+  "checkerOutputSha256": "3643ba4e1d86ab17d6f2a89de8851347bf339b606f149abe3dac1c082f599be9"
+}

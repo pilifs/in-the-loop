@@ -1,0 +1,215 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261119-221200-separate-quote-amount-and-ordered-send-r",
+  "title": "Separate quote amount and ordered send receipts on example 193",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 4.0s, peak 85.2 MiB (estimated 2m00s, 2.0 GiB); 6 output file(s) changed",
+  "attention": [
+    "step 1 (Independent amount and trace receipts) exited 1, expected 0",
+    "step 1 (Independent amount and trace receipts) was held back 4.1s by its 1-CPU quota in 4.0s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261119-221200-separate-quote-amount-and-ordered-send-r.json",
+    "sha256": "0ca11a80b490130ab076515c7d0b2bb0f240245be930c0a011b465cd959f9750",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261119-221200-separate-quote-amount-and-ordered-send-r",
+      "title": "Separate quote amount and ordered send receipts on example 193",
+      "description": "Compile the original shop and its checked-in patch. Compare the return-only and effect-only projections independently through the framework checker. Keep the actual full JVM traces under recording stubs and the positive-total controls at quantities 99 and 100 with both artifact identities.",
+      "kind": "other",
+      "capabilities": [
+        "jvmcontract:effects"
+      ],
+      "links": {
+        "examples": [
+          "193"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-19T22:12:00+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 9,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Independent amount and trace receipts",
+          "run": "python3 examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/controls/selected.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/receipts"
+      ]
+    }
+  },
+  "sourceCommit": "f8b2e8d3eb3f63ae3281dbbf9a56a0cf146e8f16",
+  "startedAt": "2026-11-19T22:21:56+00:00",
+  "finishedAt": "2026-11-19T22:24:41+00:00",
+  "wallSeconds": 165.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4127838,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 89346048,
+    "wallSeconds": 4.0,
+    "cpuSeconds": 3.9,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Independent amount and trace receipts",
+      "run": "python3 examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/controls/selected.py",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 4.009,
+      "cpuSeconds": 3.856,
+      "cpuThrottledSeconds": 4.125,
+      "peakMemoryBytes": 89346048,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-independent-amount-and-trace-r.log",
+        "lines": 2,
+        "bytes": 378,
+        "sha256": "a3b947ccd3856fb76044259fac21b35ccc696b742d7d13e2bb1ce7001705e0a0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "return-amount None open examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/receipts/return-amount/20261119T222440Z-d7293fbb/receipt.json",
+        "ordered-events None open examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/receipts/ordered-events/20261119T222440Z-e21be8fa/receipt.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/receipts/ordered-events/20261119T222440Z-e21be8fa/checker.json",
+      "change": "added",
+      "bytes": 323,
+      "sha256": "3643ba4e1d86ab17d6f2a89de8851347bf339b606f149abe3dac1c082f599be9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/receipts/ordered-events/20261119T222440Z-e21be8fa/receipt.json",
+      "change": "added",
+      "bytes": 5451,
+      "sha256": "adf111a6e553f8d7de31bd8f85eb84ba8330ec184bf3a6e4200db6165d503ff0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/receipts/ordered-events/20261119T222440Z-e21be8fa/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/receipts/return-amount/20261119T222440Z-d7293fbb/checker.json",
+      "change": "added",
+      "bytes": 323,
+      "sha256": "3643ba4e1d86ab17d6f2a89de8851347bf339b606f149abe3dac1c082f599be9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/receipts/return-amount/20261119T222440Z-d7293fbb/receipt.json",
+      "change": "added",
+      "bytes": 5427,
+      "sha256": "a7a1b1f9049eeb0a8f3b164a5cdac3eb30f8e9700dbefdd3bc396a405e8ca863",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/receipts/return-amount/20261119T222440Z-d7293fbb/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-19T22:25:04+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/receipts/ordered-events/20261119T222440Z-e21be8fa/checker.json",
+      "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/receipts/ordered-events/20261119T222440Z-e21be8fa/receipt.json",
+      "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/receipts/ordered-events/20261119T222440Z-e21be8fa/stderr.txt",
+      "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/receipts/return-amount/20261119T222440Z-d7293fbb/checker.json",
+      "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/receipts/return-amount/20261119T222440Z-d7293fbb/receipt.json",
+      "examples/193-a-bulk-order-s-quote-event-dropped-in-the-refactor-refuted-on-the-route-s-trace-of-sends/receipts/return-amount/20261119T222440Z-d7293fbb/stderr.txt"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "2caef2a40fd0685aad5fda14530705098cc4f91d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2caef2a40fd0685aad5fda14530705098cc4f91d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261119-221200-separate-quote-amount-and-ordered-send-r"
+}

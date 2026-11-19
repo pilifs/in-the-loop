@@ -1,0 +1,446 @@
+{
+  "semantics": {
+    "entry": "arrays.BinaryCells#observe(I)I",
+    "target": "arrays.Update#apply([I[I)I",
+    "roots": "two distinct non-null int arrays of length exactly one",
+    "cells": [
+      0,
+      1
+    ],
+    "observation": "2 * left[0] + right[0]",
+    "mapping": "left uses bit 0 and right uses bit 1",
+    "cases": 4
+  },
+  "jdk": {
+    "feature": "21",
+    "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "release": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  },
+  "revisions": {
+    "baseline": {
+      "outputs": [
+        2,
+        2,
+        3,
+        3
+      ],
+      "classSha256": {
+        "BinaryCells.class": "ac574449453dcf0eb5492999995d8f88475ec82477ae2e4d3e22c620f068b754",
+        "Update.class": "66c22776e4af997799366e0f023a5161af666867c8aee6e537fb56b13d5e2c6c"
+      }
+    },
+    "controls/preserving": {
+      "outputs": [
+        2,
+        2,
+        3,
+        3
+      ],
+      "classSha256": {
+        "BinaryCells.class": "ac574449453dcf0eb5492999995d8f88475ec82477ae2e4d3e22c620f068b754",
+        "Update.class": "270eb3d71b833ab3fa8d13a52d6338a4708c35310a00d771db8149f5afa35e54"
+      }
+    },
+    "alternative": {
+      "outputs": [
+        0,
+        2,
+        1,
+        3
+      ],
+      "classSha256": {
+        "BinaryCells.class": "ac574449453dcf0eb5492999995d8f88475ec82477ae2e4d3e22c620f068b754",
+        "Update.class": "5aabe777714b613293cd617c0eb987ee110189443534d2996444b81350c3b95e"
+      }
+    }
+  },
+  "checks": [
+    {
+      "revision": "controls/preserving",
+      "expected": "verified",
+      "qualified": true,
+      "argv": [
+        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2caef2a40fd0685aad5fda14530705098cc4f91d/jvmcontract",
+        "equivalence",
+        "--before",
+        "/tmp/tmpn6jj8th_/baseline",
+        "--after",
+        "/tmp/tmpn6jj8th_/controls/preserving",
+        "--target",
+        "arrays.BinaryCells#observe(int)",
+        "--engine",
+        "jbmc",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "8",
+        "--max-array-length",
+        "2",
+        "--timeout",
+        "90",
+        "--work",
+        "/tmp/tmpn6jj8th_/check/controls/preserving",
+        "--json"
+      ],
+      "outcome": {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "arrays.BinaryCells#observe(int)",
+        "domain": "bits: int",
+        "counterexample": null,
+        "proof": "JBMC 6.11.0: 2 properties proved over bits: int in 0.1 s; loops unwound 8 times with unwinding assertions",
+        "problem": null,
+        "statement": "/tmp/tmpn6jj8th_/check/controls/preserving/harness/EquivalenceHarness.java",
+        "findings": [],
+        "output": "\u2713 arrays.BinaryCells#observe(int) behaves as before on every input (JBMC 6.11.0: 2 properties proved over bits: int in 0.1 s; loops unwound 8 times with unwinding assertions)\n",
+        "work": "/tmp/tmpn6jj8th_/check/controls/preserving",
+        "search": {
+          "engine": "jbmc",
+          "checker": "JBMC 6.11.0",
+          "seconds": 0.112041506,
+          "properties": 2,
+          "unwind": 8,
+          "max_array_length": 2,
+          "stage": null,
+          "staging": "full-range",
+          "gap_mode": "strict",
+          "deadline_seconds": 90.0,
+          "runs": [
+            {
+              "checker": "jbmc",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 89.941,
+              "seconds": 0.05,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.015,
+                "lowering": 0.004,
+                "symbolic": 0.003,
+                "encoding": 0.001,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.028
+              },
+              "formula": {
+                "steps": 241,
+                "conditions": 1,
+                "variables": 2151,
+                "clauses": 588
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.139,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.058,
+            "contracts": 0.0,
+            "runs": 0.05,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.03
+          }
+        },
+        "stated": {
+          "kind": "regression",
+          "domain": {
+            "parameters": [
+              {
+                "name": "bits",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "bits: int"
+          },
+          "assumptions": [
+            {
+              "kind": "library",
+              "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result, equal in both versions",
+            "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
+          },
+          "bounds": {
+            "unwind": 8,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+            "classes": 37,
+            "jdk": "25.0.5"
+          },
+          "checker": {
+            "engine": "jbmc",
+            "name": "JBMC 6.11.0",
+            "solver": "cadical",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "3.0.0",
+              "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+              "configuration": [
+                "--trace",
+                "--throw-runtime-exceptions",
+                "--unwinding-assertions",
+                "--json-ui",
+                "--timestamp",
+                "monotonic",
+                "--no-refine-strings",
+                "--sat-solver",
+                "cadical"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "harness",
+            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+          }
+        }
+      },
+      "witnessJVM": null,
+      "seconds": 0.153,
+      "peakMiB": 39.9
+    },
+    {
+      "revision": "alternative",
+      "expected": "violation",
+      "qualified": true,
+      "argv": [
+        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/2caef2a40fd0685aad5fda14530705098cc4f91d/jvmcontract",
+        "equivalence",
+        "--before",
+        "/tmp/tmpn6jj8th_/baseline",
+        "--after",
+        "/tmp/tmpn6jj8th_/alternative",
+        "--target",
+        "arrays.BinaryCells#observe(int)",
+        "--engine",
+        "jbmc",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "8",
+        "--max-array-length",
+        "2",
+        "--timeout",
+        "90",
+        "--work",
+        "/tmp/tmpn6jj8th_/check/alternative",
+        "--json"
+      ],
+      "outcome": {
+        "wire_version": 1,
+        "verdict": "violation",
+        "target": "arrays.BinaryCells#observe(int)",
+        "domain": "bits: int",
+        "counterexample": {
+          "input": "observe(bits=0)",
+          "before": "2",
+          "after": "0",
+          "values": [
+            "0"
+          ],
+          "shrink_runs": 0,
+          "inputs": [
+            {
+              "name": "bits",
+              "type": "int",
+              "value": 0
+            }
+          ],
+          "call": {
+            "class": "arrays.BinaryCells",
+            "class_file": "arrays/BinaryCells.class",
+            "classes": "after",
+            "method": "observe",
+            "descriptor": "(I)I",
+            "static": true,
+            "arguments": [
+              {
+                "name": "bits",
+                "type": "int",
+                "value": 0,
+                "from": "bits"
+              }
+            ]
+          },
+          "previous_call": {
+            "class": "arrays.BinaryCells",
+            "class_file": "arrays/BinaryCells.class",
+            "classes": "before",
+            "method": "observe",
+            "descriptor": "(I)I",
+            "static": true,
+            "arguments": [
+              {
+                "name": "bits",
+                "type": "int",
+                "value": 0,
+                "from": "bits"
+              }
+            ]
+          },
+          "differs": [
+            "result"
+          ]
+        },
+        "proof": "found by JBMC 6.11.0 in 0.1 s, replayed in the interpreter; domain bits: int",
+        "problem": null,
+        "statement": "/tmp/tmpn6jj8th_/check/alternative/harness/EquivalenceHarness.java",
+        "findings": [
+          {
+            "rule_id": "behaviour-changed",
+            "message": "Behaviour of arrays.BinaryCells#observe(int) changed:\n  observe(bits=0)\n    before: 2\n    after:  0",
+            "uri": null,
+            "line": 6
+          }
+        ],
+        "output": "\u2717 Behaviour of arrays.BinaryCells#observe(int) changed:\n  observe(bits=0)\n    before: 2\n    after:  0\n  (found by JBMC 6.11.0 in 0.1 s, replayed in the interpreter; domain bits: int)\n\nIf the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.\n",
+        "work": "/tmp/tmpn6jj8th_/check/alternative",
+        "search": {
+          "engine": "jbmc",
+          "checker": "JBMC 6.11.0",
+          "seconds": 0.112342832,
+          "properties": 2,
+          "unwind": 8,
+          "max_array_length": 2,
+          "stage": null,
+          "staging": "full-range",
+          "gap_mode": "strict",
+          "deadline_seconds": 90.0,
+          "runs": [
+            {
+              "checker": "jbmc",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 89.944,
+              "seconds": 0.051,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.011,
+                "lowering": 0.003,
+                "symbolic": 0.003,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.002,
+                "other": 0.031
+              },
+              "formula": {
+                "steps": 230,
+                "conditions": 1,
+                "variables": 2153,
+                "clauses": 594
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.14,
+            "setup": 0.0,
+            "harness": 0.0,
+            "gaps": 0.056,
+            "contracts": 0.0,
+            "runs": 0.051,
+            "replay": 0.005,
+            "jvm": 0.0,
+            "other": 0.027
+          }
+        },
+        "replay": {
+          "by": "interpreter",
+          "reproduced": true
+        },
+        "stated": {
+          "kind": "regression",
+          "domain": {
+            "parameters": [
+              {
+                "name": "bits",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "bits: int"
+          },
+          "assumptions": [
+            {
+              "kind": "library",
+              "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result, equal in both versions",
+            "exceptions": "whether it throws, and which of 15 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
+          },
+          "bounds": {
+            "unwind": 8,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+            "classes": 37,
+            "jdk": "25.0.5"
+          },
+          "checker": {
+            "engine": "jbmc",
+            "name": "JBMC 6.11.0",
+            "solver": "cadical",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "3.0.0",
+              "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+              "configuration": [
+                "--trace",
+                "--throw-runtime-exceptions",
+                "--unwinding-assertions",
+                "--json-ui",
+                "--timestamp",
+                "monotonic",
+                "--no-refine-strings",
+                "--sat-solver",
+                "cadical"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      },
+      "witnessJVM": {
+        "baseline": 2,
+        "alternative": 0
+      },
+      "seconds": 0.152,
+      "peakMiB": 39.9
+    }
+  ],
+  "claimKey": "688b7167a2c4ceb6443bf236c5b4c8a39c94f90d53fc91ddaf56200f364a35d2",
+  "checker": "ba819f385f8446d28b2d4ca1d709649cf23329453daa7ae0570775b854765648",
+  "libTree": "2caef2a40fd0685aad5fda14530705098cc4f91d"
+}

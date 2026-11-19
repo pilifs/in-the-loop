@@ -1,0 +1,454 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "07e4329f99cea31e",
+    "format": 1,
+    "example": "311",
+    "statement": {
+      "approach": "target",
+      "task": "last-match-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.StringUtils#lastIndexOf(Ljava/lang/CharSequence;I)I",
+      "revisions": [
+        "fix"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "last-match-fix",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "org.apache.commons.lang3.StringUtils#lastIndexOf(Ljava/lang/CharSequence;I)I",
+        "file": "claims/last-match.json",
+        "sha256": "eaaa4d3c4d9a371deb3fab3ca1002aaef32b0fe9bcccc84dec04934508a2eaab",
+        "property": "last-match",
+        "claimKind": "property",
+        "statement": "Return the UTF-16 offset of the last matching token or minus one.",
+        "assume": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4",
+        "assert": "result == utfgrid.Search.expected(encoding, needle)",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 12,
+          "maxArrayLength": 6
+        },
+        "explicitBounds": {
+          "unwind": 12,
+          "maxArrayLength": 6
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "search-driver",
+            "kind": "driver",
+            "path": "driver/utfgrid/SearchCases.java",
+            "sha256": "042df6c984374cd3ce02f382a962dc066ae1838323e1639912050b12ee6ba503"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "439dbb62f69aa8b41dd22ff305fc17b821eacd65612ace0f2454c8260de78f26"
+          }
+        ],
+        "adapter": {
+          "entry": "utfgrid.Search#last(II)I",
+          "mapping": "Encoding 0 through 39 enumerates zero to three tokens from a, b and U+2070E in bijective base three, least significant token first. Needle 0, 1, 2 or 3 selects a, b, U+2070E or z. The runtime receiver argument is a StringBuilder.",
+          "correspondence": "finite-oracle",
+          "cases": 160
+        },
+        "key": "4fe4f53da8e3b3a8"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 6
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "last-match-fix",
+      "sidecar": "8038aff1f54c37a243b1ce3c49bdb12f4648028de23e6485f33c9a743394e6c2",
+      "revisions": {
+        "fix": "bdd674f7c64dbc2c8ff043ee995fcd9f6f59a13b"
+      },
+      "dependencies": [
+        {
+          "revision": "fix",
+          "position": 0,
+          "role": "driver",
+          "sha256": "f570f62a6703475646e7229e583ccfcbba3ff977eb86ba69e1fc97d4b69588db"
+        },
+        {
+          "revision": "fix",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "1a0e7b60e4a5fa25b0f4954702d0525a6d3e60913a3856745aab1f44a0c94a3a"
+        },
+        {
+          "revision": "fix",
+          "position": 2,
+          "role": "original",
+          "sha256": "7cb316f82a3948c50d82112e027f533d29e4528f09f4ea491424065c004ffa60"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/utfgrid/Search.java": "b11c25ac0bfaee78649397b682de6fb5c5a07d91905c1d5cff93dda8633c0d80",
+        "claims/last-match.json": "eaaa4d3c4d9a371deb3fab3ca1002aaef32b0fe9bcccc84dec04934508a2eaab",
+        "controls/oracle.py": "439dbb62f69aa8b41dd22ff305fc17b821eacd65612ace0f2454c8260de78f26",
+        "driver/utfgrid/SearchCases.java": "042df6c984374cd3ce02f382a962dc066ae1838323e1639912050b12ee6ba503"
+      },
+      "claimKey": "4fe4f53da8e3b3a8",
+      "scopes": {
+        "fix": "extracted-source-slice"
+      }
+    }
+  },
+  "attempt": {
+    "id": "20261119T222443Z-a1083c85",
+    "claim": "07e4329f99cea31e",
+    "startedAt": "2026-11-19T22:24:43+00:00",
+    "seconds": 0.5,
+    "engine": "native",
+    "options": [
+      "prove",
+      "utfgrid.Search#last(int, int)",
+      "--classes",
+      "prepare/fix/adapter-fix.jar",
+      "--classpath",
+      "prepare/fix/slice/fix.jar",
+      "--assume",
+      "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4",
+      "--assert",
+      "result == utfgrid.Search.expected(encoding, needle)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "12",
+      "--max-array-length",
+      "6",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "ba819f385f8446d28b2d4ca1d709649cf23329453daa7ae0570775b854765648"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "c290d6f656be0c17ac67a110c049ef589d8556e20476c295c84ac283ff333b0c",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261119-222214-check-the-supplementary-character-search",
+      "sourceCommit": "6883ac317c37226b61a67401280c69ad9ac03192",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261119-222214-check-the-supplementary-character-search"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control fix on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-fix-jdk21.stdout",
+        "stderr": "records/control-fix-jdk21.stderr"
+      },
+      {
+        "name": "verifier fix on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.479,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 12,
+      "maxArrayLength": 6,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "07e4329f99cea31e",
+    "attempt": "20261119T222443Z-a1083c85",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == utfgrid.Search.expected(encoding, needle)",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == utfgrid.Search.expected(encoding, needle)",
+          "assume": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4",
+          "verdict": "unverifiable",
+          "domain": "encoding: int × needle: int",
+          "proof": null,
+          "problem": "the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-reference-method:java.lang.StringBuilder.appendCodePoint(I)Ljava/lang/StringBuilder;@jdk-21.0.13 (java.lang.StringBuilder.appendCodePoint(int) at utfgrid.Search.last:12); jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-21.0.13 (java.util.regex.Pattern.compile(java.lang.String) at org.apache.commons.lang3.StringUtils.<clinit>:206). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption, except where a gap has no approximation",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.01,
+            "properties": 1,
+            "unwind": 12,
+            "maxArrayLength": 6,
+            "stage": null,
+            "deadlineSeconds": 600.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 600.0,
+                "seconds": 0.009,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.001,
+                  "lowering": 0.0,
+                  "symbolic": 0.004,
+                  "encoding": 0.003,
+                  "solving": 0.001,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 5551,
+                  "clauses": 18980
+                }
+              }
+            ],
+            "native": {
+              "paths": 11,
+              "merges": 0,
+              "solverCalls": 12,
+              "solvingSeconds": 0.000928631,
+              "gatesEvaluated": 573,
+              "evaluatingSeconds": 1.9777e-05,
+              "divisions": 1,
+              "divisionsBuilt": 1,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 5551,
+              "clauses": 18980,
+              "seconds": 0.008792173,
+              "loadingSeconds": 0.000654855,
+              "decodingSeconds": 5.1808e-05,
+              "encodingSeconds": 0.002810259,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-reference-method:java.lang.StringBuilder.appendCodePoint(I)Ljava/lang/StringBuilder;@jdk-21.0.13",
+                "kind": "jdk-reference-method",
+                "call": "java.lang.StringBuilder.appendCodePoint(int)",
+                "sites": [
+                  "utfgrid.Search.last:12"
+                ],
+                "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
+                "treatment": "refused"
+              },
+              {
+                "id": "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-21.0.13",
+                "kind": "jdk-static-method",
+                "call": "java.util.regex.Pattern.compile(java.lang.String)",
+                "sites": [
+                  "org.apache.commons.lang3.StringUtils.<clinit>:206"
+                ],
+                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+                "treatment": "refused"
+              }
+            ]
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "encoding",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "needle",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "encoding: int × needle: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == utfgrid.Search.expected(encoding, needle)",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 12,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+              "classes": 37,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"fix\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-reference-method:java.lang.StringBuilder.appendCodePoint(I)Ljava/lang/StringBuilder;@jdk-21.0.13 (java.lang.StringBuilder.appendCodePoint(int) at utfgrid.Search.last:12); jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern;@jdk-21.0.13 (java.util.regex.Pattern.compile(java.lang.String) at org.apache.commons.lang3.StringUtils.<clinit>:206). With --gaps assume it assumes instead what each gap's approximation states, and the verdict names the assumption, except where a gap has no approximation",
+    "domain": "encoding: int × needle: int",
+    "replay": null,
+    "property": {
+      "assert": "result == utfgrid.Search.expected(encoding, needle)",
+      "assume": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "6b7f99c3da4df9114165de811fb1b9d9c3c1c9540b5ee0e0224355dee9ec7b60",
+        "bytes": 61206
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "42f2884d029f840d8d28cf76316e5d26d4066de9bdb8ddb042ec2111fb2293b4",
+        "bytes": 989
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "0b0a5594e8bc94efd2611ec44bb514700807506f5cd1595439f07d3a75cdc83c",
+        "bytes": 1947
+      },
+      {
+        "path": "records/control-fix-jdk21.stdout",
+        "sha256": "4e4d1ea0051c8c2470a2bcae0f59fdaaf83f6ef4c5208b8f64cdcf4654443961",
+        "bytes": 10295
+      },
+      {
+        "path": "records/control-fix-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "014e3e920f44133d910e8162b5f7df5a5e76741f192a86ad90d7335f1aaa1f38",
+        "bytes": 25882
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "23c89816abe24f75de4d666702cce61513261d9b1d03f58b7c791f8f7cf7d6f1",
+        "bytes": 7947
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "4f67d548bcd1eb4788b8549c8cd41afdb413d38ead6cdfa7f003cdaf5d9fc854",
+        "bytes": 35177
+      }
+    ]
+  }
+}
