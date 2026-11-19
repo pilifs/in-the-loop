@@ -157,6 +157,8 @@ pub struct Options {
     /// Pairs of object parameters of one class that may be the same object (`--may-alias a,b`), closed under chains;
     /// every other is an object of its own.
     pub may_alias: Vec<(String, String)>,
+    /// Explicit post-call projections for the paired primitive-array profile.
+    pub selected_observations: Vec<crate::spec::Observation>,
     /// A claim's object domain (`spec::heap::check_with`'s): the check is refused, once its layout is built and
     /// before any proof or cache lookup, unless it makes its inputs with exactly the domain's constructors and
     /// classes (`spec::heap::made_with`).
@@ -216,6 +218,7 @@ impl Options {
             correspondence: None,
             nullable: Vec::new(),
             may_alias: Vec::new(),
+            selected_observations: Vec::new(),
             object_domain: None,
             plan: None,
             copied_from: None,
@@ -253,6 +256,9 @@ pub struct Counterexample {
     /// previous version's arguments are expressions.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub differs: Vec<String>,
+    /// Complete descriptors returned by the JVM observer on this input.
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub replay_observations: Vec<crate::spec::Observation>,
     /// The JDK a real JVM ran the harness on `input` on and found it failing too, where the witness is over objects
     /// or differs in a field or an identity relation (step H4 of `llm-dlc/loops/foundations-heap.md`), or where only
     /// a JVM could run it.
@@ -1111,7 +1117,12 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         return refuse(&mut out, line, "--observed-initializer and --model are for a regression check made as a property of the pair of versions (one with --assume or --lemmas, a String[] parameter or a nullable String), which this is not".to_string());
     }
     if crate::pairing::asked(options, &method, &names) {
-        let previous = before_cp.application(&class_internal)?.and_then(|c| crate::verifier::select_method(&c, &options.target).ok().cloned());
+        let previous_class = before_cp.application(&class_internal)?;
+        let previous = previous_class.as_ref().and_then(|c| crate::verifier::select_method(c, &options.target).ok().cloned());
+        if !options.selected_observations.is_empty() && (!crate::pairing::array_roots::closed(&class, &method)
+            || !previous_class.as_ref().zip(previous.as_ref()).is_some_and(|(c, m)| crate::pairing::array_roots::closed(c, m))) {
+            return refuse(&mut out, line, "the paired int-array profile requires two leaf methods with no class initialization, field access or external calls".into());
+        }
         let own_checker = options.engine != crate::Engine::Jbmc && !options.confirm;
         if let Some(problem) = crate::pairing::refusal(options, &method, previous.as_ref(), own_checker) {
             return refuse(&mut out, line, problem);
@@ -1157,15 +1168,22 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 let _ = writeln!(out, "✓ {}: the two versions agree{about} (the pair's property, below)", options.target);
             }
             Verdict::Violation => {
-                let input = p.counterexample.as_ref().map(|c| c.input.replacen(crate::pairing::METHOD, &method_name, 1)).unwrap_or_default();
+                let input = paired.target_witness.as_ref().map(|w| w.input.clone())
+                    .or_else(|| p.counterexample.as_ref().map(|c| c.input.replacen(crate::pairing::METHOD, &method_name, 1))).unwrap_or_default();
                 let _ = writeln!(out, "✗ {}: the two versions differ on {input} (the pair's property, below, returns false on it)", options.target);
+                if let Some(w) = &paired.target_witness {
+                    let _ = writeln!(out, "  JVM before: {}\n  JVM after: {}", w.before, w.after);
+                }
             }
             Verdict::Unverifiable => {
                 let _ = writeln!(out, "✗ {} cannot be verified as a property of the pair of versions (below)", options.target);
             }
         }
         out.push_str(&p.output);
-        return Ok(Outcome { verdict: p.verdict, target: options.target.clone(), domain: p.domain.clone(), counterexample: None, proof: p.proof.clone(), problem: p.problem.clone(), statement: Some(paired.statement), findings: p.findings.clone(), output: out, work, shared: Vec::new(), previous: None, relation: None, vacuous: p.vacuous.clone(), search: p.search.clone(), replay: None, stated: p.stated.clone(), advice: None, reuse: None, pair: Some(Box::new(p)) });
+        let domain = paired.target_statement.as_ref().map(|s| s.domain.text.clone()).or_else(|| p.domain.clone());
+        let replay = paired.target_statement.as_ref().and_then(|_| p.replay.clone());
+        let stated = paired.target_statement.or_else(|| p.stated.clone());
+        return Ok(Outcome { verdict: p.verdict, target: options.target.clone(), domain, counterexample: paired.target_witness, proof: p.proof.clone(), problem: p.problem.clone(), statement: Some(paired.statement), findings: p.findings.clone(), output: out, work, shared: Vec::new(), previous: None, relation: None, vacuous: p.vacuous.clone(), search: p.search.clone(), replay, stated, advice: None, reuse: None, pair: Some(Box::new(p)) });
     }
     // A record whose components are primitive stands in for a value of it: the receiver, a parameter or the result.
     // Any other receiver is an object made by its constructor, as a parameter is (O1 of
@@ -2407,7 +2425,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             Some(witness::typed_call(&before_target, &layout, &found, true, &[]))
         };
         let inputs = witness::typed_inputs(params, &found);
-        let counterexample = Some(Counterexample { input: rendered, before: replays.before, after: replays.after, values, found: None, shrink_runs: 0, inputs, found_inputs: None, call, previous_call, differs: replays.differs, jvm: None });
+        let counterexample = Some(Counterexample { input: rendered, before: replays.before, after: replays.after, values, found: None, shrink_runs: 0, inputs, found_inputs: None, call, previous_call, differs: replays.differs, replay_observations: Vec::new(), jvm: None });
         let replay = Some(Replay { by: "interpreter".into(), reproduced: reproduced == Some(true) });
         let stated = Some(stated(Some(&last), search.as_ref(), false));
         return Ok(Outcome { verdict: Verdict::Unverifiable, target: options.target.clone(), domain: Some(domain), counterexample, proof: None, problem: Some(p), statement: Some(statement), findings, output: out, work, shared: Vec::new(), previous: previous_display.clone(), relation: relation_shown.clone(), vacuous: None, search, replay, stated, advice: None, reuse: None, pair: None });
@@ -2660,7 +2678,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             };
             let inputs = witness::typed_inputs(params, &arguments);
             let found_inputs = shrunk.then(|| witness::typed_inputs(params, &found));
-            counterexample = Some(Counterexample { input: rendered, before: before_outcome, after: after_outcome, values: witnesses, found: shrunk.then_some(rendered_found), shrink_runs, inputs, found_inputs, call, previous_call, differs, jvm: on_jvm.clone().or(on_jvm_too) });
+            counterexample = Some(Counterexample { input: rendered, before: before_outcome, after: after_outcome, values: witnesses, found: shrunk.then_some(rendered_found), shrink_runs, inputs, found_inputs, call, previous_call, differs, replay_observations: Vec::new(), jvm: on_jvm.clone().or(on_jvm_too) });
         }
         Verdict::Unverifiable => {
             let p = last.problem.clone().unwrap_or_else(|| "no verdict".into());

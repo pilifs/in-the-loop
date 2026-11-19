@@ -464,6 +464,14 @@ Three changes to the solver's side carry this ([`bmc::bits`](src/bmc/bits.rs)). 
 
 **Merging paths whose heaps differ, and the order they are resumed in** (`bmc::Options::merge_heaps_after`). Paths at a join point are made one path, and two whose objects are of one shape are merged object by object. While the paths are few that is all: two paths that made different objects stay two, each reference a known object, and what both compute of it is one formula by the gate hashing. Past 1024 paths the engine merges eagerly. Two paths whose heaps differ (one made an object the other did not, as two ways out of a loop that makes one per element do) are merged into the union of their heaps, each object paired with its own copy on the other path where it has one, after each has dropped the locals no instruction reads again and the objects it no longer reaches. A path then waits at the first instruction after a loop as at any join, and the group resumed is the one earliest in the program: of two paths in a loop, the one that has gone round it less, wherever in the loop each is. A loop over an array of symbolic length is then explored once per iteration, not once per length. The count is a measured compromise: eager merging from the first path makes a check whose two sides are one formula on each path (the values sweep's list totals) a hard equivalence for the solver, over a minute at 6 lines where it took 0.07 s, and waiting for 1024 paths costs example 286's decision 1.7 times its time at 5 code units against 512.
 
+A paired check can select individual return, exception, array-content or root-identity observations with
+repeatable `--observe` JSON descriptors. For example, `--observe '{"kind":"array-parameter","parameter":"right"}'`
+compares the right array after each call. The first supported profile takes two `int[]` parameters and returns
+an `int` from static leaf methods operating on those arrays. `--nullable`, `--may-alias`, the length bound
+and the root precondition define its input heaps. The compiled comparison reconstructs sharing from scalar
+choices separately for each version. A refutation carries the JVM's observed values, the chosen roots and
+their identity. [Example 197](../examples/197-shared-int-array-poststates/README.md)
+
 ## Library use
 
 ```rust

@@ -164,7 +164,7 @@ pub enum Construction {
 
 /// One thing a comparison observes.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(rename_all = "kebab-case", tag = "kind")]
+#[serde(rename_all = "kebab-case", tag = "kind", deny_unknown_fields)]
 pub enum Observation {
     /// The value returned (by value for primitives; a reference result is observed through field paths).
     Result,

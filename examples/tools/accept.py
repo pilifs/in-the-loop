@@ -577,6 +577,10 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
         said("domain", OK, f"the claim's bound, {want}" + (f"; the witness's longest value is {longest}" if actual == "refuted" else ""))
 
     # mode
+    if claim.get("boundEnvironment") or any(isinstance(o, dict) for o in claim.get("observations", [])):
+        from targets import qualification
+        reason = qualification.check(claim, task, outcome, want)
+        said("qualification", FAIL if reason else OK, reason or "the executed statement and its evidence match the frozen claim")
     off = [f"{k} {has} where the task says {want_}" for k, has, want_ in (("engine", search.get("engine"), task.get("engine")), ("gap mode", search.get("gap_mode"), task.get("gaps")))
            if want_ not in (None, "auto") and has != want_]
     said("mode", FAIL if off else OK, "; ".join(off) or f"engine {search.get('engine')}, gaps {search.get('gap_mode')}, as the task says")

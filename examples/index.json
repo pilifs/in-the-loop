@@ -7143,6 +7143,96 @@
       "target": null
     },
     {
+      "id": "197",
+      "path": "examples/197-shared-int-array-poststates",
+      "title": "Mutating one of two possibly shared int arrays",
+      "summary": "The reference writes through the left root and the alternative skips that write. Three independent claims observe the return value, the right root, or both final arrays.",
+      "origin": "constructed",
+      "system": "Shared array fixture",
+      "symbol": "arrays.Update#apply",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "none",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "Three independent bounded preservation claims",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each root is null or an array of zero to two binary cells. Equal contents permit both shared and distinct identities."
+      ],
+      "source": null,
+      "target": {
+        "family": "paired-primitive-arrays",
+        "role": "control",
+        "case": "shared-array-poststate",
+        "tasks": [
+          "replay",
+          "return-only",
+          "right-root",
+          "both-roots"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "return-only": "scaffolded",
+          "right-root": "scaffolded",
+          "both-roots": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "return-only": "established",
+          "right-root": "refuted",
+          "both-roots": "refuted"
+        },
+        "claims": {
+          "return-only": null,
+          "right-root": null,
+          "both-roots": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261119T163530Z-85756a62/result.json",
+            "attempt": "20261119T163530Z-85756a62",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Three independent bounded preservation claims",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 197 TASK"
+      }
+    },
+    {
       "id": "285",
       "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels",
       "title": "CVE-2023-34055: Unbounded HTTP method labels in web metrics",

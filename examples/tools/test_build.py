@@ -1177,7 +1177,7 @@ class PlanTest(unittest.TestCase):
     def recorded(self):
         for folder in sorted(build.EXAMPLES.glob("[0-9][0-9][0-9]-*")):
             ex = json.loads((folder / "example.json").read_text())
-            if ex["origin"] == "constructed":
+            if ex["origin"] == "constructed" and not ex.get("target"):
                 yield folder, ex
 
     def test_planning_every_example_builds_copies_runs_and_makes_nothing(self):

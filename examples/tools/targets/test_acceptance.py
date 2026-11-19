@@ -39,7 +39,7 @@ ROOT = EXAMPLES.parent
 sys.path.insert(0, str(HERE.parent))
 import build  # noqa: E402
 import result_format  # noqa: E402
-from targets import interfaces, sidecar, workflow, workflow_discovery, workflow_refusal  # noqa: E402
+from targets import interfaces, sidecar, workflow, workflow_discovery, workflow_ingest, workflow_refusal  # noqa: E402
 from targets.interfaces import Unsupported  # noqa: E402
 
 SHA256 = re.compile(r"^[0-9a-f]{64}$")
@@ -96,7 +96,7 @@ def run_identity(target, revision):
     if "mutant" in r:
         base = target["history"]["revisions"][r["mutant"]["base"]]["commit"]
         return f"mutant:{base}+{r['mutant']['sha256']}"
-    return r["commit"]
+    return r["commit"] if "commit" in r else f"fixture:{r['fixture']}"
 
 
 class A1OfflinePlanningOnThePackets(unittest.TestCase):
@@ -192,7 +192,9 @@ class A2PreparationIntegrityOnTheReceipts(unittest.TestCase):
                 self.assertRegex(t["sidecar"], SHA256)
                 for revision, commit in t["revisions"].items():
                     self.assertRegex(commit, COMMIT)
-                    self.assertEqual(commit, target["history"]["revisions"][base_of(target, revision)]["commit"])
+                    base = target["history"]["revisions"][base_of(target, revision)]
+                    identity = base["commit"] if "commit" in base else workflow_ingest.git_tree_id(folder / base["fixture"])
+                    self.assertEqual(commit, identity)
                 self.assertTrue(t["jdks"] and all("version" in j for j in t["jdks"]))
                 for revision in t["revisions"]:
                     entries = sorted((d for d in t["dependencies"] if d["revision"] == revision),
@@ -227,8 +229,9 @@ class A2PreparationIntegrityOnTheReceipts(unittest.TestCase):
                 for r in started:
                     ids = r["identities"]
                     self.assertEqual(ids["commit"], run_identity(target, r["revision"]))
-                    self.assertTrue(ids["commit"].startswith(t["revisions"][r["revision"]]) or
-                                    ids["commit"].startswith(f"mutant:{t['revisions'][r['revision']]}+"))
+                    if "fixture" not in target["history"]["revisions"][base_of(target, r["revision"])]:
+                        self.assertTrue(ids["commit"].startswith(t["revisions"][r["revision"]]) or
+                                        ids["commit"].startswith(f"mutant:{t['revisions'][r['revision']]}+"))
                     self.assertTrue({"JAVA_VERSION", "IMPLEMENTOR"} <= set(ids["jdkRelease"]), ids["jdkRelease"])
                     self.assertIn(ids["jdk"], t["jdks"])
                     claimed = [(d["role"], d["sha256"]) for d in sorted(

@@ -12,31 +12,35 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T15:23:07.880Z",
-  "ended": "2026-11-19T16:39:26.803Z",
-  "duration_seconds": 4579,
+  "ended": "2026-11-19T16:56:16.483Z",
+  "duration_seconds": 5589,
   "stats": {
     "turns": 1,
-    "api_calls": 316,
-    "tool_calls": 722,
-    "tool_errors": 29,
+    "api_calls": 369,
+    "tool_calls": 826,
+    "tool_errors": 30,
     "compactions": 0,
-    "peak_context_tokens": 456646,
+    "peak_context_tokens": 502728,
     "usage": {
-      "input_tokens": 465113,
-      "output_tokens": 136216,
-      "cache_read_input_tokens": 92837120,
+      "input_tokens": 514979,
+      "output_tokens": 168426,
+      "cache_read_input_tokens": 118359296,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 349,
-    "exec": 309,
-    "apply_patch": 57,
-    "wait": 7
+    "Bash": 387,
+    "exec": 361,
+    "apply_patch": 70,
+    "wait": 8
   },
   "files_touched": [
+    "examples/197-shared-int-array-poststates/README.md",
+    "examples/197-shared-int-array-poststates/controls/CheckMapping.java",
     "examples/197-shared-int-array-poststates/controls/oracle.py",
+    "examples/197-shared-int-array-poststates/controls/preserving/arrays/Update.java",
     "examples/197-shared-int-array-poststates/driver/arrays/RootCases.java",
+    "examples/197-shared-int-array-poststates/proofs/overlap.py",
     "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/history/2026-11-18-preservation-profile.json",
     "examples/308-commons-text-longest-common-subsequence/README.md",
     "examples/308-commons-text-longest-common-subsequence/claims/score.json",
@@ -50,18 +54,28 @@
     "examples/308-commons-text-longest-common-subsequence/target.json",
     "examples/README.md",
     "examples/schema/example.schema.json",
+    "examples/schema/result.schema.json",
     "examples/schema/target-claim.schema.json",
     "examples/tools/accept.py",
     "examples/tools/build.py",
+    "examples/tools/economics.py",
     "examples/tools/targets/claim_history.py",
+    "examples/tools/targets/executions.py",
     "examples/tools/targets/qualification.py",
     "examples/tools/targets/runtime.py",
     "examples/tools/targets/sidecar.py",
     "examples/tools/targets/test_acceptance.py",
     "examples/tools/targets/test_claim_history.py",
     "examples/tools/targets/test_packets.py",
+    "examples/tools/targets/test_qualification.py",
+    "examples/tools/targets/test_workflow.py",
+    "examples/tools/targets/workflow.py",
     "examples/tools/targets/workflow_handoff.py",
+    "examples/tools/targets/workflow_ingest.py",
     "examples/tools/test_accept.py",
+    "examples/tools/test_build.py",
+    "examples/tools/test_targets_contract.py",
+    "lib/README.md",
     "lib/benchmark/README.md",
     "lib/benchmark/run.py",
     "lib/src/bmc/mod.rs",
@@ -94,24 +108,24 @@
     {
       "index": 0,
       "started": "2026-11-19T15:23:07.880Z",
-      "ended": "2026-11-19T16:39:26.803Z",
+      "ended": "2026-11-19T16:56:16.483Z",
       "turns": 1,
-      "api_calls": 316,
+      "api_calls": 369,
       "usage": {
-        "input_tokens": 465113,
-        "output_tokens": 136216,
-        "cache_read_input_tokens": 92837120,
+        "input_tokens": 514979,
+        "output_tokens": 168426,
+        "cache_read_input_tokens": 118359296,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 456646
+      "peak_context_tokens": 502728
     }
   ],
   "log": {
-    "sha256": "25b80fbd55cd9d8dbc6a78260b3c9aae448801f6a80b7c80782d21b584f9e6ef",
-    "bytes": 7395093,
-    "lines": 2363,
-    "gzip_bytes": 2796189,
-    "path": "llm-dlc/traces/01a1f467-856b-7d02-9458-ab076e5fef2f/logs/25b80fbd55cd9d8dbc6a78260b3c9aae448801f6a80b7c80782d21b584f9e6ef.jsonl.gz"
+    "sha256": "06c236cc19672cab07da601188e70bad913ef8380bd58c08f135d5f5e618a693",
+    "bytes": 8393102,
+    "lines": 2767,
+    "gzip_bytes": 3280152,
+    "path": "llm-dlc/traces/01a1f467-856b-7d02-9458-ab076e5fef2f/logs/06c236cc19672cab07da601188e70bad913ef8380bd58c08f135d5f5e618a693.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -180,23 +194,29 @@
       "log_sha256": "cf4b14076df434f57376f9e210412b089c767b031f5412ad7365361363d043bd"
     },
     {
-      "change_id": "usvpoxsoqmkzolklqrxzrlvzqvmwmxln",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "25b80fbd55cd9d8dbc6a78260b3c9aae448801f6a80b7c80782d21b584f9e6ef"
-    },
-    {
       "change_id": "tmokwlllqwryxoroqvmrknwxtuvxmtno",
       "commit_id": null,
       "immutable": false,
       "summary": "Qualify JVM settings and modeled error details (verification pending)",
       "body": "The native checker refuses to establish JVM messages and causes from exception details chosen by a JDK model. Class initialization observations refuse the known indirect property reads, dynamic member lookup and unbound CPU, filesystem or charset settings in the initialized classes. The four exception and six initializer countermodels now have named refusals on the checker and independent JVM controls. The changed Rust suite, focused JVM tests and inventory lint passed.\n\nVerification pending in job 20261119-163916-recheck-290-preservation-with-qualified. Of the five frozen comparisons on the challenged checker, 290 alone uses observed initializers. Its preceding outcome recorded eight of them.",
       "log_sha256": "25b80fbd55cd9d8dbc6a78260b3c9aae448801f6a80b7c80782d21b584f9e6ef"
+    },
+    {
+      "change_id": "mpxnznrlvprumrnulxnnrtmyxkktuxkz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Qualify paired int-array observations (verification pending)",
+      "body": "Example 197 freezes three obligations over two possibly shared nullable arrays. The public checker reconstructs fresh heaps from scalar choices, compares the selected projections and replays each distinguishing input on a JVM. The replay returns its own observation descriptors, actual values and root identities. The evidence routes compare complete descriptors, alias policy, input bounds and bound environment against the independent plan.\n\nThe independent JVM counted 0, 3 and 21 differences across all 71 heaps. Native established the return-only claim and both poststate witnesses reproduced on the JVM. Forced per-argument cloning, an omitted comparison and a swapped observer each failed the independent mapping check. All 47 changed-suite groups passed before the final evidence-telemetry adjustment, whose affected ingestion and qualification cases were rerun. The example validator and tier lint passed.\n\nVerification pending in jobs 20261119-164548-197-paired-array-observation-return-only, 20261119-164549-197-paired-array-observation-right-root, 20261119-164549-197-paired-array-observation-both-roots, and 20261119-164549-197-integrated-jbmc-preserving-and-discr. The new lowering is opt-in and leaves older generated proof-tier harnesses on their existing path.",
+      "log_sha256": "06c236cc19672cab07da601188e70bad913ef8380bd58c08f135d5f5e618a693"
     }
   ],
   "logs": {
+    "06c236cc19672cab07da601188e70bad913ef8380bd58c08f135d5f5e618a693": {
+      "bytes": 8393102,
+      "lines": 2767,
+      "gzip_bytes": 3280152,
+      "url": null
+    },
     "25b80fbd55cd9d8dbc6a78260b3c9aae448801f6a80b7c80782d21b584f9e6ef": {
       "bytes": 7395093,
       "lines": 2363,

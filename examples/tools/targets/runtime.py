@@ -1594,6 +1594,9 @@ def _verifier_argv(plan, exe, sides, work):
                 for r, (_, p, arts) in sides.items()}
     rel = lambda r, a: f"prepare/{r}/{a.path}"
     target = java_target(plan.target)
+    selected = [o for o in claim.get("observations", []) if isinstance(o, dict)]
+    if selected and command != "equivalence":
+        raise Refused("claim", "typed observation selection currently requires a paired equivalence task")
     if command == "prove":
         [r] = sides
         argv = [exe, "prove", target, "--classes", rel(r, original[r])]
@@ -1614,6 +1617,10 @@ def _verifier_argv(plan, exe, sides, work):
             argv += [x for a in deps[before] for x in ("--before-classpath", rel(before, a))] or ["--before-classpath", ""]
         if claim.get("allowedChange"):
             argv += ["--unchanged-unless", claim["allowedChange"]]
+        if claim.get("assume"):
+            argv += ["--assume", claim["assume"]]
+        for observation in selected:
+            argv += ["--observe", json.dumps(observation, sort_keys=True)]
     argv += [x for n in claim.get("nullable") or [] for x in ("--nullable", n)]
     argv += [x for pair in claim.get("mayAlias") or [] for x in ("--may-alias", pair)]
     for part, flag in (("plan", "--plan"), ("contracts", "--contracts")):

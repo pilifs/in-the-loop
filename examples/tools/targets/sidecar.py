@@ -35,8 +35,6 @@ def load(folder, example):
     path = path_of(folder, example)
     if path is None:
         return None
-    if example.get("origin") != "real-world":
-        raise SidecarError(f"{path}: only a real-world example has a target sidecar")
     if not path.is_file():
         raise SidecarError(f"{path}: example.json names it, and it does not exist")
     try:
@@ -44,6 +42,12 @@ def load(folder, example):
     except json.JSONDecodeError as e:
         raise SidecarError(f"{path}: not JSON: {e}") from None
     check(target, folder, path)
+    if example.get("origin") != "real-world":
+        revisions = target["history"]["revisions"]
+        if (example.get("origin") != "constructed" or target["identity"]["role"] != "control"
+                or target.get("preparation", {}).get("route") != "fixture"
+                or any("fixture" not in revisions[r.get("mutant", {}).get("base", n)] for n, r in revisions.items())):
+            raise SidecarError(f"{path}: a constructed target sidecar requires a control built from local fixture revisions")
     return target
 
 

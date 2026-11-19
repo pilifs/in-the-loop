@@ -1,0 +1,366 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "85f773e01fc36864",
+    "format": 1,
+    "example": "197",
+    "statement": {
+      "approach": "target",
+      "task": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "arrays.Update#apply([I[I)I",
+      "revisions": [
+        "reference",
+        "skipped-write"
+      ],
+      "expected": null,
+      "gaps": null,
+      "claim": {
+        "task": "replay",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "arrays.Update#apply([I[I)I",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "root-driver",
+            "kind": "driver",
+            "path": "driver/arrays/RootCases.java",
+            "sha256": "aa08a4dab75223b756d23790de1ad2db8f5422ff54690da47baa6b37436e33d4"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "1d51111027fe71a83ec413f8a23b63655dc33c0b35c2d8a23c38373aebd20b82"
+          }
+        ],
+        "key": "5edb94280c79eecd"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": {
+        "sha256": "64a18479433f652d1aab3961153791924f919d62e9fde43c8c18da871ce24683",
+        "files": 1
+      },
+      "after": {
+        "sha256": "2538d3c1dcdf7943d2bc5ad14bf23f63c302fc15f0ca0d7a5b504a9c1c25a16e",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay",
+      "sidecar": "2079167da1ad9240b1361d23a941dcd30c7cee127ee4241665978f04f4497b6a",
+      "revisions": {
+        "reference": "1f5b49504123c5d6728e376e9242173595eabc19",
+        "skipped-write": "c9d261dde1ce7d28386e02a064ea4c6157450a97"
+      },
+      "dependencies": [
+        {
+          "revision": "reference",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ee6e5c8a0aad68edf9a0a4e1a03b5325bf24c54fe879eafc1b5f82c7beee3a7e"
+        },
+        {
+          "revision": "reference",
+          "position": 1,
+          "role": "original",
+          "sha256": "00239502188785b9f40e7d3b0f30b5b7a13a1663e72fcffe06c4ad08ecf9a826"
+        },
+        {
+          "revision": "skipped-write",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ee6e5c8a0aad68edf9a0a4e1a03b5325bf24c54fe879eafc1b5f82c7beee3a7e"
+        },
+        {
+          "revision": "skipped-write",
+          "position": 1,
+          "role": "original",
+          "sha256": "0652189c24e51f6ef652ee82d935dfce6967443c5ebd6753c39f88a2e10706a3"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/oracle.py": "1d51111027fe71a83ec413f8a23b63655dc33c0b35c2d8a23c38373aebd20b82",
+        "driver/arrays/RootCases.java": "aa08a4dab75223b756d23790de1ad2db8f5422ff54690da47baa6b37436e33d4"
+      },
+      "claimKey": "5edb94280c79eecd"
+    }
+  },
+  "attempt": {
+    "id": "20261119T163530Z-85756a62",
+    "claim": "85f773e01fc36864",
+    "startedAt": "2026-11-19T16:35:30+00:00",
+    "seconds": 0.2,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "214534724a652800b8f1026493add7a1ecdd6966c5870624be62651c28b3f14b",
+        "files": 1
+      },
+      "after": {
+        "sha256": "615a34bbc4f6ae4f5e69a33ec8b8b6d9eff1e2057da7ba5151bb8a46378f66ce",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control reference on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.118,
+        "stdout": "records/control-reference-jdk21.stdout",
+        "stderr": "records/control-reference-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control skipped-write on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.115,
+        "stdout": "records/control-skipped-write-jdk21.stdout",
+        "stderr": "records/control-skipped-write-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "85f773e01fc36864",
+    "attempt": "20261119T163530Z-85756a62",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: reference holds the oracle; skipped-write violates the oracle at [1, 1, False], [1, 1, True], [1, 2, False], [1, 3, False], [1, 4, False], [1, 5, False], [1, 6, False], [3, 1, False], [3, 2, False], [3, 3, False], [3, 3, True], [3, 4, False], [3, 5, False], [3, 6, False], [4, 1, False], [4, 2, False], [4, 3, False], [4, 4, False], [4, 4, True], [4, 5, False], [4, 6, False], on every JDK named: as the mutation pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"reference\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"skipped-write\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [
+      {
+        "input": "[1, 1, True]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: right-root"
+      },
+      {
+        "input": "[3, 3, True]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: right-root"
+      },
+      {
+        "input": "[4, 4, True]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: right-root"
+      },
+      {
+        "input": "[1, 1, False]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      },
+      {
+        "input": "[1, 2, False]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      },
+      {
+        "input": "[1, 3, False]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      },
+      {
+        "input": "[1, 4, False]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      },
+      {
+        "input": "[1, 5, False]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      },
+      {
+        "input": "[1, 6, False]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      },
+      {
+        "input": "[1, 1, True]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      },
+      {
+        "input": "[3, 1, False]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      },
+      {
+        "input": "[3, 2, False]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      },
+      {
+        "input": "[3, 3, False]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      },
+      {
+        "input": "[3, 4, False]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      },
+      {
+        "input": "[3, 5, False]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      },
+      {
+        "input": "[3, 6, False]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      },
+      {
+        "input": "[3, 3, True]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      },
+      {
+        "input": "[4, 1, False]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      },
+      {
+        "input": "[4, 2, False]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      },
+      {
+        "input": "[4, 3, False]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      },
+      {
+        "input": "[4, 4, False]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      },
+      {
+        "input": "[4, 5, False]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      },
+      {
+        "input": "[4, 6, False]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      },
+      {
+        "input": "[4, 4, True]",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision skipped-write on JDK 21: both-roots"
+      }
+    ],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 2 concrete control runs of the driver on the oracle's inputs, read by controls/oracle.py",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "a380b986332b7b9d8798353fa8e3cc15cf2c47b9b6745383456520913392b592",
+        "bytes": 37225
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "5dc2719fbf6ea150f828b59ff939a3d357118347e658b54af89725c6f81575d3",
+        "bytes": 1373
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "62506a0797d8a72115525aec18cfc06a8e92748560ec8a542ed435129f71c915",
+        "bytes": 1785
+      },
+      {
+        "path": "records/control-reference-jdk21.stdout",
+        "sha256": "cc178142f43de06e80d0f2c9fb6193f8dcf70d8fe3f1d254b04ba3dd998d36b8",
+        "bytes": 4696
+      },
+      {
+        "path": "records/control-reference-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "acc7c50114b31a6dee0e162d5dd5bbe44f4e3f5b46a836a0f22a5118809c30c8",
+        "bytes": 34557
+      },
+      {
+        "path": "records/control-skipped-write-jdk21.stdout",
+        "sha256": "087d19a3bf89b8d693b9a0c8fda15ac9bfe505f6758ef21ac1b0a0143c69ecd3",
+        "bytes": 4696
+      },
+      {
+        "path": "records/control-skipped-write-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    ]
+  }
+}

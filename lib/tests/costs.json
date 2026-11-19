@@ -168,7 +168,8 @@
    "lib/src/stand_in.rs": {"unit": 1, "tool": 0, "proof": 0, "estimated": 1, "retier pending": 0},
    "lib/tests/stand_in.rs": {"unit": 0, "tool": 4, "proof": 0, "estimated": 0, "retier pending": 0},
    "lib/tests/allocation_countermodels.rs": {"unit": 0, "tool": 2, "proof": 0, "estimated": 0, "retier pending": 0},
-   "lib/tests/record_countermodels.rs": {"unit": 0, "tool": 2, "proof": 0, "estimated": 0, "retier pending": 0}
+   "lib/tests/record_countermodels.rs": {"unit": 0, "tool": 2, "proof": 0, "estimated": 0, "retier pending": 0},
+   "lib/tests/paired_array_roots.rs": {"unit": 0, "tool": 4, "proof": 0, "estimated": 4, "retier pending": 0}
   },
   "python": {
    "examples/tools/test_accept.py": {"unit": 50, "tool": 1, "proof": 0, "estimated": 0, "retier pending": 0},
@@ -228,7 +229,8 @@
    "llm-dlc/tools/test_verification_loop.py": {"unit": 0, "tool": 2, "proof": 0, "estimated": 2, "retier pending": 0},
    "llm-dlc/tools/test_watch.py": {"unit": 37, "tool": 3, "proof": 0, "estimated": 40, "retier pending": 0},
    "llm-dlc/tools/test_workspaces.py": {"unit": 14, "tool": 0, "proof": 0, "estimated": 14, "retier pending": 0},
-   "verification/test_pipeline.py": {"unit": 36, "tool": 4, "proof": 0, "estimated": 40, "retier pending": 0}
+   "verification/test_pipeline.py": {"unit": 36, "tool": 4, "proof": 0, "estimated": 40, "retier pending": 0},
+   "examples/tools/targets/test_qualification.py": {"unit": 3, "tool": 0, "proof": 0, "estimated": 3, "retier pending": 0}
   }
  },
  "rust": [
@@ -1047,7 +1049,11 @@
   {"file": "lib/tests/values.rs", "name": "a_tiny_sweep_over_the_string_and_list_bounds", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": 1.32, "kind": "run alone", "runs": 2, "max_seconds": 1.33, "sources": ["log:b967b344cdf221b3"]}, "why": "spawns java, javac, process"},
   {"file": "lib/tests/values.rs", "name": "a_change_of_value_model_or_bound_changes_exactly_the_claims_it_affects", "tier": "unit", "calls": [], "cost": {"seconds": 0.04, "kind": "run alone", "runs": 1, "max_seconds": 0.04, "sources": ["log:b967b344cdf221b3"]}, "why": "nothing outside the process"},
   {"file": "lib/tests/values.rs", "name": "confirm_takes_a_refutation_through_a_jbmc_stub_that_does_not_reproduce_for_no_verdict", "tier": "tool", "calls": ["java", "javac", "process", "stand-in"], "cost": {"seconds": 1.02, "kind": "run alone", "runs": 3, "max_seconds": 1.02, "sources": ["log:b967b344cdf221b3", "log:7fa887ec7a80e4ed"]}, "why": "spawns java, javac, process, stand-in"},
-  {"file": "lib/tests/values.rs", "name": "a_claims_value_domains_are_resolved_before_its_key_and_its_checks", "tier": "unit", "calls": [], "cost": {"seconds": 0.06, "kind": "run alone", "runs": 1, "max_seconds": 0.06, "sources": ["log:7fa887ec7a80e4ed"]}, "why": "nothing outside the process"}
+  {"file": "lib/tests/values.rs", "name": "a_claims_value_domains_are_resolved_before_its_key_and_its_checks", "tier": "unit", "calls": [], "cost": {"seconds": 0.06, "kind": "run alone", "runs": 1, "max_seconds": 0.06, "sources": ["log:7fa887ec7a80e4ed"]}, "why": "nothing outside the process"},
+  {"file": "lib/tests/paired_array_roots.rs", "name": "return_only_agrees_for_nullable_shared_or_distinct_arrays", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": null, "kind": "estimated", "sources": [], "estimated": "no past run names it: the tier is from what it calls"}, "why": "spawns java, javac, process"},
+  {"file": "lib/tests/paired_array_roots.rs", "name": "the_right_root_witness_replays_the_shared_array_and_reports_its_cells", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": null, "kind": "estimated", "sources": [], "estimated": "no past run names it: the tier is from what it calls"}, "why": "spawns java, javac, process"},
+  {"file": "lib/tests/paired_array_roots.rs", "name": "the_both_root_witness_observes_each_requested_projection_on_the_jvm", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": null, "kind": "estimated", "sources": [], "estimated": "no past run names it: the tier is from what it calls"}, "why": "spawns java, javac, process"},
+  {"file": "lib/tests/paired_array_roots.rs", "name": "a_cloned_alias_dropped_comparison_or_swapped_observer_fails_the_finite_check", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": null, "kind": "estimated", "sources": [], "estimated": "no past run names it: the tier is from what it calls"}, "why": "spawns java, javac, process"}
  ],
  "python": [
   {"file": "examples/tools/test_accept.py", "name": "Accepted.test_an_answer_its_evidence_gives_is_accepted_and_says_what_it_rests_on", "tier": "unit", "calls": [], "cost": {"seconds": 0.12, "kind": "at most", "sources": ["log:b38cb00ee8e399df"]}, "why": "nothing outside the process"},
@@ -2360,6 +2366,9 @@
   {"file": "verification/test_pipeline.py", "name": "SignalsTest.test_a_predicted_refusals_verdict_line_is_a_signal_and_build_pys_indented_lines_are_not", "tier": "unit", "calls": [], "cost": {"seconds": 30.83, "kind": "at most", "sources": ["log:c41e35f64d8f1650"], "estimated": "past runs bound it only at 30.83 s: the tier is from what it calls"}, "why": "nothing outside the process"},
   {"file": "verification/test_pipeline.py", "name": "MissingToolsTest.test_maven_is_the_install_runtime_builds_with_not_an_executable_named_maven", "tier": "unit", "calls": [], "cost": {"seconds": 30.83, "kind": "at most", "sources": ["log:c41e35f64d8f1650"], "estimated": "past runs bound it only at 30.83 s: the tier is from what it calls"}, "why": "nothing outside the process"},
   {"file": "verification/test_pipeline.py", "name": "SystemdTest.test_a_step_over_its_memory_limit_is_killed_and_measured", "tier": "unit", "calls": [], "cost": {"seconds": 30.83, "kind": "at most", "sources": ["log:c41e35f64d8f1650"], "estimated": "past runs bound it only at 30.83 s: the tier is from what it calls"}, "why": "nothing outside the process"},
-  {"file": "verification/test_pipeline.py", "name": "SystemdTest.test_a_step_in_a_scope_reports_its_cgroup_use", "tier": "unit", "calls": [], "cost": {"seconds": 30.83, "kind": "at most", "sources": ["log:c41e35f64d8f1650"], "estimated": "past runs bound it only at 30.83 s: the tier is from what it calls"}, "why": "nothing outside the process"}
+  {"file": "verification/test_pipeline.py", "name": "SystemdTest.test_a_step_in_a_scope_reports_its_cgroup_use", "tier": "unit", "calls": [], "cost": {"seconds": 30.83, "kind": "at most", "sources": ["log:c41e35f64d8f1650"], "estimated": "past runs bound it only at 30.83 s: the tier is from what it calls"}, "why": "nothing outside the process"},
+  {"file": "examples/tools/targets/test_qualification.py", "name": "QualificationTest.test_narrow_proof_and_in_domain_replayed_refutation", "tier": "unit", "calls": [], "cost": {"seconds": null, "kind": "estimated", "sources": [], "estimated": "no past run names it: the tier is from what it calls"}, "why": "nothing outside the process"},
+  {"file": "examples/tools/targets/test_qualification.py", "name": "QualificationTest.test_comparing_complete_descriptors_environment_and_alias_policy", "tier": "unit", "calls": [], "cost": {"seconds": null, "kind": "estimated", "sources": [], "estimated": "no past run names it: the tier is from what it calls"}, "why": "nothing outside the process"},
+  {"file": "examples/tools/targets/test_qualification.py", "name": "QualificationTest.test_an_incomplete_or_vacuous_proof_stays_open", "tier": "unit", "calls": [], "cost": {"seconds": null, "kind": "estimated", "sources": [], "estimated": "no past run names it: the tier is from what it calls"}, "why": "nothing outside the process"}
  ]
 }

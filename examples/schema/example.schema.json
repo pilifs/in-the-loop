@@ -84,7 +84,7 @@
         "sharedHelpers": { "description": "For a B9 example with the proof cache (approach.cache): the changed helpers, as Class.method, that the proof must take as one function in both versions after a proof of their own (the result's `helpers`), and no others; an empty list when every changed helper must stay as written. The generator fails if they differ; absent means not checked.", "type": "array", "items": { "type": "string" } }
       }
     },
-    "target": { "description": "For a real-world example scaffolded as an external target (llm-dlc/loops/example-targets.md): the file in its folder, always target.json, that holds its work manifest, validated against examples/schema/target.schema.json by examples/tools/targets/sidecar.py. Only an example with one can be planned and run task by task (build.py --plan NNN --task T); one without stays a handwritten report.", "const": "target.json" },
+    "target": { "description": "The work manifest of a real-world target or a constructed control with local fixture revisions. The target route plans and runs one task at a time.", "const": "target.json" },
     "verdictLabel": { "description": "For a real-world example, whose proofs give several verdicts: the verdicts in one line, as the table of contents shows them.", "type": "string" },
     "explanation": { "description": "Why the verdict is right, and how the verifier reached it.", "type": "string" },
     "resolution": { "description": "What the developer should do next.", "type": "string" },
@@ -103,15 +103,18 @@
   },
   "allOf": [
     {
-      "if": { "properties": { "origin": { "const": "constructed" } } },
+      "if": { "properties": { "origin": { "const": "constructed" } }, "not": { "required": ["target"] } },
       "then": {
         "required": ["risk", "expected", "explanation", "resolution"],
         "properties": {
           "subject": { "required": ["file"] },
-          "change": { "required": ["kind", "behaviourChangeIntended", "description", "patch"] },
-          "target": false
+          "change": { "required": ["kind", "behaviourChangeIntended", "description", "patch"] }
         }
       }
+    },
+    {
+      "if": {"properties": {"origin": {"const": "constructed"}}, "required": ["target"]},
+      "then": {"required": ["verdictLabel"], "properties": {"subject": {"required": ["file"]}}}
     },
     {
       "if": { "properties": { "origin": { "const": "real-world" } } },

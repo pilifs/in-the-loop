@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261119-164549-197-paired-array-observation-both-roots",
+  "title": "197 paired-array observation both-roots",
+  "description": "Run the frozen both-roots obligation on two nullable int-array roots with binary cells and length at most two. The public pairing route reconstructs both heaps from the same choices. Retain the typed statement, actual JVM replay for a refutation, and the receipt for this task alone.",
+  "kind": "example",
+  "capabilities": [
+    "native:array-alias",
+    "target:equivalence"
+  ],
+  "links": {
+    "claims": [
+      "e0e2ae3f2109f3bc"
+    ],
+    "examples": [
+      "197"
+    ]
+  },
+  "expected": "example 197 task both-roots gives its expected conclusion, refuted: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-19T16:45:49+00:00",
+    "session": "01a1f467-856b-7d02-9458-ab076e5fef2f"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "example 197 task both-roots (equivalence)",
+      "run": "python3 examples/tools/build.py 197 --task both-roots",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/197-shared-int-array-poststates/receipts/both-roots"
+  ]
+}

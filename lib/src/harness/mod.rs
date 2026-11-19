@@ -1025,6 +1025,15 @@ impl Layout {
     /// [`Layout::choose`] for a regression check, or for a property check (`property`), whose one version makes
     /// each object by its constructor and whose array parameters' choices are the own checker's, given apart.
     pub fn choose_in(&mut self, nullable: &[String], groups: &[Vec<String>], property: bool) -> Result<(), String> {
+        self.choose_roots(nullable, groups, property, false)
+    }
+
+    /// Choice slots for the paired array emitter, which reconstructs the arrays on each version's heap.
+    pub fn choose_arrays(&mut self, nullable: &[String], groups: &[Vec<String>]) -> Result<(), String> {
+        self.choose_roots(nullable, groups, false, true)
+    }
+
+    fn choose_roots(&mut self, nullable: &[String], groups: &[Vec<String>], property: bool, arrays: bool) -> Result<(), String> {
         let slots: Vec<&Slot> = self.receiver.iter().chain(self.args.iter()).collect();
         let names: Vec<String> = slots
             .iter()
@@ -1043,6 +1052,10 @@ impl Layout {
                 Slot::Record { record, before: None, .. } if record.is_made() => Err(format!("{flag} {name}: the previous version is given {name} by --before-arguments, which a choice of null or of the same object would not reach")),
                 Slot::Record { record, .. } => Err(format!("{flag} {name}: {name} is a {}, a record of primitive components, which a regression check compares as a value; only an object made by its constructor may be null or the same as another here", record.simple_name())),
                 Slot::List { .. } => Err(format!("{flag} {name}: {name} is a list, never null here, whose elements are the same object or not by its adapter's own choices; only an array parameter or an object made by its constructor may be null or the same as another")),
+                Slot::Plain(i) if arrays && matches!(self.params[*i].ty, Type::Array(_)) => {
+                    let class = self.params[*i].ty.java_name();
+                    Ok((class.clone(), class))
+                }
                 Slot::Plain(i) if property => Err(format!("{flag} {name}: {name} is a {}, and only an array parameter or an object made by its constructor may be null or the same as another", self.params[*i].ty.java_name())),
                 Slot::Plain(i) => {
                     let t = &self.params[*i].ty;
@@ -1132,9 +1145,17 @@ impl Layout {
     /// What the choices make of each object parameter on an input whose flat parameter `i` is `flag(i)`, by name, as
     /// the harness decides it: the parameters without a choice are their own objects.
     pub fn made(&self, flag: &dyn Fn(usize) -> bool) -> Vec<(String, Made)> {
+        self.made_roots(flag, false)
+    }
+
+    pub(crate) fn made_roots(&self, flag: &dyn Fn(usize) -> bool, arrays: bool) -> Vec<(String, Made)> {
         let mut out: Vec<(String, Made)> = Vec::new();
         for slot in self.receiver.iter().chain(self.args.iter()) {
-            let Slot::Record { name, .. } = slot else { continue };
+            let name = match slot {
+                Slot::Record { name, .. } => name,
+                Slot::Plain(i) if arrays && matches!(self.params[*i].ty, Type::Array(_)) => &self.params[*i].name,
+                _ => continue,
+            };
             let made = match self.choice(name) {
                 Some(Choice { always: Some(other), .. }) => Made::Same(other.clone()),
                 Some(c) if c.null.is_some_and(flag) => Made::Null,

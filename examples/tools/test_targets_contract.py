@@ -208,7 +208,7 @@ class A0SharedContract(Contract):
     def test_constructed_and_handwritten_examples_keep_their_route(self):
         for folder in sorted(HERE.parent.glob("[0-9][0-9][0-9]-*")):
             example = json.loads((folder / "example.json").read_text())
-            p = build.plan(example) if example["origin"] == "constructed" else None
+            p = build.plan(example) if example["origin"] == "constructed" and not example.get("target") else None
             if p is not None:
                 self.assertNotIn("route", p, folder.name)
             elif not example.get("target"):
