@@ -26,7 +26,7 @@ def witness_problem(inputs, parameters, nullable, aliases, bound):
         elif isinstance(data, dict):
             earlier = data.get("same")
             if (expected["type"] != "int[]" or set(data) != {"same"} or type(earlier) is not int or not 0 <= earlier < i
-                    or inputs[earlier]["value"] is None
+                    or inputs[earlier]["type"] != expected["type"] or inputs[earlier]["value"] is None
                     or not any(name in group and inputs[earlier]["name"] in group for group in aliases)):
                 return f"{name} has an alias outside its planned domain"
         elif expected["type"] == "int":
@@ -152,6 +152,7 @@ def statement_problem(plan, outcome, entry):
 
 def correspondence(plan, prepared, records):
     """Re-evaluate the pinned oracle on all the recorded JVM rows of both prepared classpaths."""
+    import hashlib
     import json
     import subprocess
     import sys
@@ -192,7 +193,7 @@ def correspondence(plan, prepared, records):
             except (ValueError, OSError, subprocess.TimeoutExpired) as error:
                 return rows, f"{rev} correspondence could not be checked: {error}"
             rows.append({"revision": rev, "entry": recipe["entry"], "adapterSha256": adapter.sha256,
-                         "subject": p.source["target"], "mapping": recipe["mapping"], "jdk": ids["jdkRelease"], **counts})
+                         "adapterClassSha256": hashlib.sha256(data).hexdigest(), "subject": p.source["target"], "mapping": recipe["mapping"], "jdk": ids["jdkRelease"], **counts})
             if counts != {"cases": recipe["cases"], "disagreements": 0}:
                 return rows, f"{rev} failed adapter correspondence on the declared {recipe['cases']} inputs"
     return rows, None

@@ -575,15 +575,8 @@ def verifier_outcome(plan, bound, records):
                 artifact_problem = "missing independent replay for a candidate"
             else:
                 for replay, candidate in zip(independent, candidates):
-                    if (replay.get("claimKey") != plan.claim.get("key") or replay.get("entry") != entry
-                            or replay.get("observations") != plan.claim.get("observations")
-                            or replay.get("inputs") != candidate.get("inputs")):
-                        artifact_problem = "the independent replay belongs to another claim or input"
-                    elif not replay.get("reproduced"):
-                        artifact_problem = replay.get("reason") or "the independent JVM replay rejected the candidate"
-                    elif set(replay.get("sides", {})) != set(classpaths) or any(
-                            replay["sides"][r].get("classpath") != [a["sha256"] for a in cp] for r, cp in classpaths.items()):
-                        artifact_problem = "the independent replay ran different artifacts"
+                    from targets import replay_candidate
+                    artifact_problem = artifact_problem or replay_candidate.evidence_problem(plan, bound, v.identities, replay, candidate)
                 if artifact_problem is None:
                     fields["replay"] = {"by": "jvm", "reproduced": True}
         for outcome in outcomes:
@@ -753,7 +746,10 @@ def publish(plan, prepared, records, out):
             fields, entries, text = replay_outcome(plan, target, bound, records, oracle)
             output = SUMMARY
         else:
-            fields, entries, text = verifier_outcome(plan, bound, records)
+            try:
+                fields, entries, text = verifier_outcome(plan, bound, records)
+            except (KeyError, TypeError, ValueError, IndexError, AttributeError) as error:
+                raise Refused(f"malformed checker evidence: {error}", stage="records") from None
             output = VERIFIER_OUTPUT
     except Refused as e:
         return Unsupported("ingest", WORKFLOW, e.reason, stage=e.stage, diagnostic=e.diagnostic)

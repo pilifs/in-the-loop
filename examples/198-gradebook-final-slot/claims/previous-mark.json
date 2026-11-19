@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "previous-mark",
+  "statement": "Return the value originally in the selected slot.",
+  "assume": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "maxArrayLength": 3,
+    "unwind": 8
+  },
+  "assert": "result == \\old(scores[slot])"
+}

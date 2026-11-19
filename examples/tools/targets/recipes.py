@@ -1,6 +1,7 @@
 """Compile a frozen target claim to checker arguments, then bind its ordered classpaths."""
 
 from dataclasses import dataclass
+import hashlib
 import json
 from typing import Optional
 
@@ -20,6 +21,7 @@ class Invocation:
     argv: tuple[str, ...]
     entry: str
     classpaths: dict
+    entries: dict
     timeout: int
 
 
@@ -44,9 +46,11 @@ class ProofRecipe:
     def bind(self, plan, exe, sides, work, timeout):
         from targets import runtime, runtime_jar
         entry = runtime.java_target(self.entry)
-        paths, originals, dependencies = {}, {}, {}
+        paths, entries, originals, dependencies = {}, {}, {}, {}
         for revision, (_, prepared, artifacts) in sides.items():
-            original = prepared.source["target"]["loadedFrom"]
+            upstream = prepared.source["target"]
+            original = upstream["loadedFrom"]
+            digest = upstream.get("classSha256")
             selected = [a for a in artifacts if a.path == original or a.role in ("dependency", "stub")]
             if self.correspondence:
                 adapter = next((a for a in artifacts if a.role == "adapter"), None)
@@ -56,8 +60,11 @@ class ProofRecipe:
                 data = runtime_jar.read_class(sides[revision][0] / adapter.path, runtime_jar.internal(owner))
                 if not data or (method, desc) not in runtime_jar.methods(data):
                     raise runtime.Refused("claim", "the prepared adapter has no declared checked entry")
+                digest = hashlib.sha256(data).hexdigest()
                 original = adapter.path
                 selected.insert(0, adapter)
+            entries[revision] = {"entry": self.entry, "classSha256": digest, "loadedFrom": original,
+                                 "subject": self.subject, "subjectClassSha256": upstream.get("classSha256")}
             originals[revision] = original
             dependencies[revision] = [a for a in selected if a.path != original]
             paths[revision] = [dict(path=a.path, sha256=a.sha256, role=a.role) for a in selected]
@@ -78,7 +85,7 @@ class ProofRecipe:
             value = str(runtime._claim_file(plan, arg.field)) if arg.file else arg.value
             argv.extend([arg.flag, value])
         argv.extend(["--timeout", str(timeout), "--work", f"{work}/work", "--report", f"{work}/report", "--json"])
-        return Invocation(tuple(argv), self.entry, paths, timeout)
+        return Invocation(tuple(argv), self.entry, paths, entries, timeout)
 
 
 def translate(plan: TaskPlan) -> ProofRecipe | Unsupported:

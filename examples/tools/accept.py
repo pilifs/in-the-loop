@@ -524,7 +524,7 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
         contract = spec.get("contract") or {}
         vacuity = stated.get("vacuity") or {}
         # Only selected-observation harnesses with an independently checked mapping report this contract.
-        if (outcome.get("wire_version") == 1 and spec.get("observations") == claim.get("observations")
+        if (outcome.get("wire_version") == 1 and spec.get("observations") and spec.get("observations") == claim.get("observations")
                 and contract.get("required") and contract.get("approved_changes") == [] and not allowed):
             said("expressions", OK, "the selected observation contract requires agreement and approves no changes")
         elif (outcome.get("wire_version") == 1 and allowed and vacuity.get("status") == "non-vacuous"

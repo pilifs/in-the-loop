@@ -41,6 +41,7 @@ class Execution:
     @classmethod
     def start(cls, out, plan, timeout, retry_of=None):
         history = out / "executions"
+        previous = {}
         if retry_of:
             if not ID.fullmatch(retry_of):
                 return Unsupported("run-verifier", RUNTIME, "invalid retry execution ID", stage="retry")
@@ -62,7 +63,7 @@ class Execution:
                 continue
         state = {"schema": "target-execution/v1", "id": execution, "task": plan.task, "claimKey": plan.claim.get("key"),
                  "revisions": list(plan.revisions), "startedAt": start.isoformat(), "retryOf": retry_of,
-                 "budget": {"checkerSeconds": timeout}, "strategy": {"engine": plan.engine, "gaps": plan.gaps},
+                 "retryBinding": previous.get("bindingId"), "budget": {"checkerSeconds": timeout}, "strategy": {"engine": plan.engine, "gaps": plan.gaps},
                  "host": {"machine": platform.machine(), "kernel": platform.release(), "node": platform.node()},
                  "job": os.getenv("VERIFY_JOB_ID"), "sourceCommit": os.getenv("VERIFY_SOURCE_COMMIT"),
                  "cache": "fresh verifier work directory", "stages": [], "status": "running"}
@@ -99,10 +100,11 @@ class Execution:
             for name in ("stdout", "stderr"):
                 path = Path(record.directory) / getattr(record, name)
                 if path.is_file():
-                    data = path.read_bytes()
-                    snapshot[name] = {"bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
-                    if name == "stderr" or not outcomes:
-                        snapshot[name]["excerpt"] = data[:4096].decode(errors="replace")
+                    with path.open("rb") as stream:
+                        snapshot[name] = {"bytes": path.stat().st_size, "sha256": hashlib.file_digest(stream, "sha256").hexdigest()}
+                        if name == "stderr" or not outcomes:
+                            stream.seek(0)
+                            snapshot[name]["excerpt"] = stream.read(4096).decode(errors="replace")
         save(self.directory / "checker.json", snapshot)
         candidate = any(o.get("counterexample") for o in outcomes)
         exhausted = record.status == "timed-out" or any(

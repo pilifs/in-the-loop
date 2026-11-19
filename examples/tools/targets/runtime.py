@@ -1708,7 +1708,8 @@ def run_verifier(plan, prepared, workdir, *, before_launch=None, timeout=None):
             "jdk": jdk["version"], "jdkFeature": jdk["feature"], "jdkHome": jdk["home"], "jdkRelease": jdk["release"],
             "engine": plan.engine, "gaps": plan.gaps, "bounds": dict(plan.claim.get("bounds") or {}),
             "timeout": timeout, "scope": _scope(plan, sides),
-            "classpath": invocation.classpaths, "checkedEntry": invocation.entry, "recipe": recipe.describe(),
+            "classpath": invocation.classpaths, "checkedEntry": invocation.entry, "entryBindings": invocation.entries,
+            "recipe": recipe.describe(),
             "commits": {r: p.commit for r, (_, p, _) in sides.items()},
             "environment": {k: v for k, v in env.items() if k != "PATH"}, "cwd": "the attempt directory"})
         if plan.kind == "equivalence":

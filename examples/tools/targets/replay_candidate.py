@@ -19,6 +19,28 @@ def supported(entry, claim):
     return params is not None and all(t in ("int", "int[]") for t in params)
 
 
+def snapshot_assertion(assertion, inputs, names):
+    """For the Java replay, snapshot primitive array cells that the property reads with JML's old operator."""
+    if not assertion or "\\old(" not in assertion:
+        return assertion, []
+    declarations = []
+    for index, arg in enumerate(inputs):
+        if arg["type"] != "int[]":
+            continue
+        name = arg["name"]
+        saved = f"originalArray{index}"
+        while saved in names:
+            saved += "_"
+        # The Rust property harness supports additional old expressions. A replay that cannot express them refuses.
+        pattern = r"\\old\(" + re.escape(name) + r"(\[(?:[0-9]+|[A-Za-z_$][A-Za-z0-9_$]*)\]|\.length)\)"
+        assertion, count = re.subn(pattern, lambda match: saved + match.group(1), assertion)
+        if count:
+            declarations.append(f"int[] {saved} = {name} == null ? null : {name}.clone();")
+    if "\\old(" in assertion:
+        raise ValueError("independent JVM replay cannot snapshot this old expression")
+    return assertion, declarations
+
+
 def source(entry, claim, inputs, names):
     """Render a replay of the selected public static entry. Inputs have already been type checked."""
     owner, method, descriptor = runtime_jar.parse_target(entry)
@@ -38,13 +60,15 @@ def source(entry, claim, inputs, names):
     if claim.get("allowedChange"):
         condition = f'({condition}) && !({claim["allowedChange"]})'
     statements.append(f'if (!({condition})) {{ System.out.println("outside"); return; }}')
+    assertion, snapshots = snapshot_assertion(claim.get("assert"), inputs, names)
+    statements.extend(snapshots)
     ret = "long" if descriptor.endswith("J") else "int"
     statements.extend([f"{ret} result = 0;", "Throwable failure = null;",
                        f'try {{ result = {owner}.{method}({", ".join(names)}); }} catch (Throwable t) {{ failure = t; }}',
                        'System.out.println("admitted");'])
     selected = claim.get("observations") or ["result", "exception"]
-    if claim.get("assert"):
-        statements.append(f'System.out.println(failure == null && ({claim["assert"]}));')
+    if assertion:
+        statements.append(f'System.out.println(failure == null && ({assertion}));')
     for o in selected:
         kind = o if isinstance(o, str) else o["kind"]
         if kind == "result":
@@ -121,3 +145,42 @@ def check(plan, prepared, inputs, work, entry=None):
     except (ValueError, KeyError, TypeError, StopIteration, OSError, subprocess.TimeoutExpired, runtime.Refused) as error:
         report["reason"] = str(error)
     return report
+
+
+def evidence_problem(plan, bound, checker, replay, candidate):
+    """Reconcile the independent JVM projections and their actual class bytes with this frozen claim."""
+    entry = checker["checkedEntry"]
+    selected = plan.claim.get("observations") or ["result", "exception"]
+    if (replay.get("claimKey") != plan.claim.get("key") or replay.get("entry") != entry
+            or replay.get("by") != "jvm" or replay.get("jdkRelease") != checker.get("jdkRelease")
+            or replay.get("observations") != selected or replay.get("inputs") != candidate.get("inputs")):
+        return "the independent JVM replay belongs to another claim, input or JDK"
+    if replay.get("reproduced") is not True:
+        return replay.get("reason") or "the independent JVM replay rejected the candidate"
+    sides = replay.get("sides") or {}
+    if set(sides) != set(bound):
+        return "the independent JVM replay lacks a revision"
+    owner, method, desc = runtime_jar.parse_target(entry)
+    inputs = replay["inputs"]
+    for rev, (_, prepared, _) in bound.items():
+        side = sides[rev]
+        classpath = checker["classpath"][rev]
+        if side.get("classpath") != [a["sha256"] for a in classpath]:
+            return "the independent replay ran different artifacts"
+        subject = runtime_jar.read_class(runtime._preparation_dir(prepared) / classpath[0]["path"], runtime_jar.internal(owner))
+        if not subject or side.get("entryClassSha256") != hashlib.sha256(subject).hexdigest():
+            return "the independently replayed class differs from the checked entry"
+        names, _ = runtime_jar.parameter_names(subject, method, desc)
+        params = [{"name": n, "type": t} for n, t in zip(names, descriptor_parameters(desc))]
+        aliases = qualification.alias_groups([p.split(",") for p in plan.claim.get("mayAlias", [])])
+        problem = qualification.witness_problem(inputs, params, set(plan.claim.get("nullable", [])), aliases,
+                                               plan.claim["bounds"]["maxArrayLength"])
+        if problem:
+            return "domain mismatch: " + problem
+        if side.get("admitted") is not True or side.get("program") != source(entry, plan.claim, inputs, names):
+            return "domain mismatch or a different frozen JVM replay program"
+        if not isinstance(side.get("values"), list) or len(side["values"]) != len(selected):
+            return "the independent JVM replay lacks selected values"
+    ordered = [sides[r] for r in plan.revisions]
+    refuted = ordered[0].get("satisfies") is False if plan.kind == "prove" else ordered[0]["values"] != ordered[1]["values"]
+    return None if refuted else "the admitted input satisfies the property or agrees on every selected observation"

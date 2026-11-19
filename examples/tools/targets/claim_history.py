@@ -1,6 +1,7 @@
 """A read-only view of source claims, their subjects, and the evidence each route recorded."""
 
 from collections import defaultdict
+import os
 from pathlib import Path
 
 import accept
@@ -30,20 +31,54 @@ def job_history(root, folder, number):
             command = spec.get("run", "")
             args = command.split()
             parsed = accept.driver_run(command)
-            if len(args) == 5 and args[:4] == ["python3", "examples/tools/build.py", number, "--task"]:
-                task, route = args[4], "ordinary"
+            if len(args) == 5 and args[:3] == ["python3", "examples/tools/build.py", number] and args[3] in ("--task", "--tasks"):
+                names, route = args[4].split(","), "ordinary"
             elif isinstance(parsed, dict) and parsed["folder"] == folder.relative_to(root).as_posix():
-                task, route = parsed["task"], "beside"
+                names, route = [parsed["task"]], "beside"
             else:
                 continue
             step = actual.get(index, {})
-            tasks[task].append({**job_ref, "route": route, "step": index,
-                                "status": step.get("status"), "seconds": step.get("wallSeconds"),
-                                "peakBytes": step.get("peakMemoryBytes"), "log": step.get("log")})
+            for name in names:
+                tasks[name].append({**job_ref, "route": route, "step": index, "sharedStep": len(names) > 1,
+                                    "status": step.get("status"), "seconds": step.get("wallSeconds"),
+                                    "peakBytes": step.get("peakMemoryBytes"), "log": step.get("log")})
             matched = True
         if not matched:
             others.append(job_ref)
     return tasks, others
+
+
+def evidence_folders(root, folder):
+    """A failed or mixed job can retain its receipts in its outputs instead of applying them to the example."""
+    yield folder, None
+    relative = folder.relative_to(root).as_posix()
+    for archive in sorted((root / "verification/results").glob(f"*/outputs/{relative}")):
+        result = read_json(archive.parents[2] / "result.json") or {}
+        manifest = {o["path"]: o.get("sha256") for o in result.get("outputs", [])}
+        yield archive, manifest
+
+
+def recorded_evidence(root, folder):
+    receipts, journals = {}, defaultdict(dict)
+    for directory, manifest in evidence_folders(root, folder):
+        def archived(path):
+            if manifest is None:
+                return True
+            name = (folder.relative_to(root) / path.relative_to(directory)).as_posix()
+            return path.is_file() and manifest.get(name) == workflow.file_sha256(path)
+
+        for record in workflow.attempts(directory):
+            path = directory / record["path"]
+            key = record["task"], record["attempt"]
+            if key not in receipts and archived(path) and archived(path.parent / workflow.PLAN_RECORD):
+                receipts[key] = {**record, "path": os.path.relpath(path, folder)}
+        for path in sorted((directory / "receipts").glob("*/executions/*/attempt.json")):
+            task, ident = path.parents[2].name, path.parent.name
+            if ident not in journals[task] and archived(path):
+                data = read_json(path)
+                if data and data.get("schema") == "target-execution/v1" and data.get("id") == ident and data.get("task") == task:
+                    journals[task][ident] = (data, os.path.relpath(path, folder))
+    return [receipts[k] for k in sorted(receipts)], journals
 
 
 def receipt_history(folder, plan, entries):
@@ -74,7 +109,8 @@ def receipt_history(folder, plan, entries):
         receipts.append({
             "firstBlocker": evidence.get("problem") or (attempt.get("execution") or {}).get("reason"),
             "restsOn": rests, "limits": limits, "id": a["attempt"], "path": a["path"], "claimKey": (claim.get("target") or {}).get("claimKey") or recorded_key,
-            "preparedClaim": claim.get("id"), "taskInputsCurrent": a["path"] in current,
+            "sourceFile": (claim.get("statement", {}).get("claim") or {}).get("file"),
+            "revisions": claim.get("statement", {}).get("revisions", []), "preparedClaim": claim.get("id"), "taskInputsCurrent": a["path"] in current,
             "problem": a["problem"], "execution": a["execution"], "conclusion": a["status"],
             "vacuous": conclusion.get("vacuous"), "engine": attempt.get("engine"),
             "ingestedAt": attempt.get("startedAt"), "seconds": attempt.get("seconds"),
@@ -83,40 +119,50 @@ def receipt_history(folder, plan, entries):
     return receipts
 
 
+def binding_groups(executions, evidence):
+    groups = {}
+    for run in executions:
+        identity = run.get("bindingId") or run.get("preparedClaim")
+        group = groups.setdefault(identity, {"binding": identity, "executions": [], "preparedClaims": [], "evidence": []})
+        group["executions"].append(run["id"])
+        claim = run.get("preparedClaim")
+        if claim and claim not in group["preparedClaims"]:
+            group["preparedClaims"].append(claim)
+        group["latestAttempt"] = run["id"]
+    for group in groups.values():
+        group["evidence"] = [e for e in evidence if e.get("preparedClaim") in group["preparedClaims"]]
+    return list(groups.values())
+
+
 def inventory(folder, example, target, claim_filter=None, revision=None):
     folder = Path(folder).resolve()
     root = folder.parent.parent
     claims, replays = {}, []
-    receipts = workflow.attempts(folder)
+    receipts, journals = recorded_evidence(root, folder)
     jobs, other_jobs = job_history(root, folder, example["id"])
     history = [read_json(path) for path in sorted((folder / "history").glob("*.json"))]
     source = accept.Source(root)
     if revision and revision not in target["history"]["revisions"]:
         raise ValueError(f"unknown revision {revision!r} for {example['id']}")
 
-    for task in target["tasks"]:
-        name = task["id"]
-        revisions = list(workflow.revisions_of(target, task))
-        if revision and revision not in revisions:
-            continue
-        plan = workflow.plan_task(folder, example, target, name)
+    declared = {task["id"]: task for task in target["tasks"]}
+    for name in dict.fromkeys([*declared, *(r["task"] for r in receipts), *journals]):
+        task = declared.get(name, {"id": name, "kind": "historical"})
+        revisions = list(workflow.revisions_of(target, task)) if name in declared else []
+        plan = workflow.plan_task(folder, example, target, name) if name in declared else Unsupported(
+            "task-plan", "history", "this task was removed from the sidecar")
         key = None if isinstance(plan, Unsupported) else plan.claim["key"]
         file = task.get("claim")
-        if claim_filter and claim_filter not in (file, key):
-            continue
         entries = receipt_history(folder, plan, [a for a in receipts if a["task"] == name])
         linked = jobs.get(name, [])
         dated_jobs = [j for j in linked if j["jobFinishedAt"]]
         previous = [entry for entry in history if entry and entry.get("task") == name
                     and entry.get("claimKey") == key and entry.get("revisions") == revisions]
         executions = []
-        for path in sorted((folder / "receipts" / name / "executions").glob("*/attempt.json")):
-            data = read_json(path)
-            if not data or data.get("schema") != "target-execution/v1" or data.get("id") != path.parent.name:
-                continue
+        for data, path in journals.get(name, {}).values():
             executions.append({**{k: data.get(k) for k in ("id", "claimKey", "revisions", "preparedClaim", "bindingId", "status",
                                "startedAt", "retryOf", "lastCompletedStage", "firstBlocker", "missing", "refusal", "injected",
-                               "job", "budget", "budgetExhausted", "usage", "strategy", "receipt")}, "path": path.relative_to(folder).as_posix()})
+                               "job", "budget", "budgetExhausted", "usage", "strategy", "receipt")}, "path": path})
         by_id = {r["id"]: r for r in entries}
         for e in executions:
             if not e.get("firstBlocker") and e["id"] in by_id:
@@ -124,16 +170,36 @@ def inventory(folder, example, target, claim_filter=None, revision=None):
         known = {e["id"] for e in executions}
         for r in entries:
             if r["id"] not in known:
-                executions.append({"id": r["id"], "claimKey": r["claimKey"], "revisions": revisions,
+                executions.append({"id": r["id"], "claimKey": r["claimKey"], "revisions": r["revisions"] or revisions,
                                    "preparedClaim": r["preparedClaim"], "status": r["execution"], "path": r["path"],
                                    "startedAt": r["ingestedAt"], "firstBlocker": r["firstBlocker"], "lastCompletedStage": "receipt-published"})
         executions.sort(key=lambda e: e["id"])
+        scopes = defaultdict(list)
+        for execution in executions:
+            scopes[execution["claimKey"], tuple(execution["revisions"])].append(execution)
+        for (old_key, old_revisions), runs in scopes.items():
+            if not old_key or (key, tuple(revisions)) == (old_key, old_revisions):
+                continue
+            historic = [r for r in entries if r["claimKey"] == old_key and tuple(r["revisions"]) == old_revisions]
+            old_file = next((r["sourceFile"] for r in historic if r["sourceFile"]), file)
+            if (claim_filter and claim_filter not in (old_key, old_file)) or (revision and revision not in old_revisions):
+                continue
+            group = claims.setdefault(old_key, {"claimKey": old_key, "file": old_file, "subjects": []})
+            group["subjects"].append({"task": name, "revisions": list(old_revisions), "historical": True,
+                                      "conclusion": "archived", "latestEligible": None, "evidence": [],
+                                      "receipts": historic, "executions": runs, "latestAttempt": runs[-1],
+                                      "bindings": binding_groups(runs, [])})
+        if (name not in declared or (revision and revision not in revisions)
+                or (claim_filter and claim_filter not in (file, key))):
+            continue
         row = {
             "task": name, "kind": task["kind"], "revisions": revisions,
             "expected": task.get("expected"), "parent": task.get("parent"), "requires": task.get("requires", []),
             "executions": executions,
             "latestAttempt": next((e for e in reversed(executions) if e["claimKey"] == key), None),
-            "receipts": entries, "jobs": linked, "historicalProbes": previous,
+            "receipts": [r for r in entries if not r["path"].startswith("../")],
+            "archivedReceipts": [r for r in entries if r["path"].startswith("../")],
+            "jobs": linked, "historicalProbes": previous,
             "latestReceipt": entries[-1]["id"] if entries else None,
             "latestCollectedStep": max(dated_jobs, key=lambda j: (j["jobFinishedAt"], j["step"])) if dated_jobs else None,
             "gapPackets": [b["packet"] for b in target.get("handoff", {}).get("blockers", [])
@@ -158,6 +224,7 @@ def inventory(folder, example, target, claim_filter=None, revision=None):
             if checked["accepted"]:
                 row["evidence"].append({"route": "beside", "answer": checked["actual"], "job": checked["job"],
                                         "restsOn": checked.get("restsOn", []), "limits": checked["limits"]})
+        row["bindings"] = binding_groups(scopes.get((key, tuple(revisions)), []), row["evidence"])
         row["latestEligible"] = row["evidence"][-1] if row["evidence"] else None
         answers = {e["answer"] for e in row["evidence"]}
         row["conclusion"] = "disputed" if len(answers) > 1 else next(iter(answers), "open")

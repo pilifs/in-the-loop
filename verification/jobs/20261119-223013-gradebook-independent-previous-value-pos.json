@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261119-223013-gradebook-independent-previous-value-pos",
+  "title": "Gradebook independent previous-value poststate and frame properties",
+  "description": "Check the four absolute rules on each of the three original fixture revisions. Freeze each source rule separately, share the prepared revision, and compare a counterexample with an independent array snapshot on the real JVM. These complement the five pairwise change claims.",
+  "kind": "other",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "198"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-19T22:30:13+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 8,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "2m",
+    "timeout": "9m"
+  },
+  "steps": [
+    {
+      "name": "Twelve absolute Gradebook obligations on three prepared revisions",
+      "run": "python3 examples/tools/build.py 198 --tasks previous-mark-base,poststate-rule-base,interior-rule-base,untargeted-cells-base,previous-mark-regression,poststate-rule-regression,interior-rule-regression,untargeted-cells-regression,previous-mark-repair,poststate-rule-repair,interior-rule-repair,untargeted-cells-repair",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/198-gradebook-final-slot/receipts"
+  ]
+}

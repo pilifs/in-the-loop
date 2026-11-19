@@ -1,0 +1,343 @@
+[
+  {
+    "task": "last-match-parent",
+    "revisions": [
+      "parent"
+    ],
+    "proofRecipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "org.apache.commons.lang3.StringUtils#lastIndexOf(Ljava/lang/CharSequence;I)I",
+      "checkedEntry": "utfgrid.Search#last(II)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == utfgrid.Search.expected(encoding, needle)"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "12"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "6"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "utfgrid.Search#last(II)I",
+        "mapping": "Encoding 0 through 39 enumerates zero to three tokens from a, b and U+2070E in bijective base three, least significant token first. Needle 0, 1, 2 or 3 selects a, b, U+2070E or z. The runtime receiver argument is a StringBuilder.",
+        "correspondence": "finite-oracle",
+        "cases": 160
+      }
+    },
+    "claimKey": "4fe4f53da8e3b3a8"
+  },
+  {
+    "task": "last-match-fix",
+    "revisions": [
+      "fix"
+    ],
+    "proofRecipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "org.apache.commons.lang3.StringUtils#lastIndexOf(Ljava/lang/CharSequence;I)I",
+      "checkedEntry": "utfgrid.Search#last(II)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == utfgrid.Search.expected(encoding, needle)"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "12"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "6"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "utfgrid.Search#last(II)I",
+        "mapping": "Encoding 0 through 39 enumerates zero to three tokens from a, b and U+2070E in bijective base three, least significant token first. Needle 0, 1, 2 or 3 selects a, b, U+2070E or z. The runtime receiver argument is a StringBuilder.",
+        "correspondence": "finite-oracle",
+        "cases": 160
+      }
+    },
+    "claimKey": "4fe4f53da8e3b3a8"
+  },
+  {
+    "task": "absent-parent",
+    "revisions": [
+      "parent"
+    ],
+    "proofRecipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "org.apache.commons.lang3.StringUtils#lastIndexOf(Ljava/lang/CharSequence;I)I",
+      "checkedEntry": "utfgrid.Search#last(II)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4 && utfgrid.Search.expected(encoding, needle) == -1"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == -1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "12"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "6"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "utfgrid.Search#last(II)I",
+        "mapping": "Encoding 0 through 39 enumerates zero to three tokens from a, b and U+2070E in bijective base three, least significant token first. Needle 0, 1, 2 or 3 selects a, b, U+2070E or z. The runtime receiver argument is a StringBuilder.",
+        "correspondence": "finite-oracle",
+        "cases": 160
+      }
+    },
+    "claimKey": "463c8d1ecf11b3c0"
+  },
+  {
+    "task": "absent-fix",
+    "revisions": [
+      "fix"
+    ],
+    "proofRecipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "org.apache.commons.lang3.StringUtils#lastIndexOf(Ljava/lang/CharSequence;I)I",
+      "checkedEntry": "utfgrid.Search#last(II)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4 && utfgrid.Search.expected(encoding, needle) == -1"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == -1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "12"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "6"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "utfgrid.Search#last(II)I",
+        "mapping": "Encoding 0 through 39 enumerates zero to three tokens from a, b and U+2070E in bijective base three, least significant token first. Needle 0, 1, 2 or 3 selects a, b, U+2070E or z. The runtime receiver argument is a StringBuilder.",
+        "correspondence": "finite-oracle",
+        "cases": 160
+      }
+    },
+    "claimKey": "463c8d1ecf11b3c0"
+  },
+  {
+    "task": "single-unit",
+    "revisions": [
+      "parent",
+      "fix"
+    ],
+    "proofRecipe": {
+      "kind": "adapter",
+      "command": "equivalence",
+      "subject": "org.apache.commons.lang3.StringUtils#lastIndexOf(Ljava/lang/CharSequence;I)I",
+      "checkedEntry": "utfgrid.Search#last(II)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4 && needle != 2"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "12"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "6"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "utfgrid.Search#last(II)I",
+        "mapping": "Encoding 0 through 39 enumerates zero to three tokens from a, b and U+2070E in bijective base three, least significant token first. Needle 0, 1, 2 or 3 selects a, b, U+2070E or z. The runtime receiver argument is a StringBuilder.",
+        "correspondence": "finite-oracle",
+        "cases": 160
+      }
+    },
+    "claimKey": "b8040405bad6d92d"
+  }
+]

@@ -1,0 +1,400 @@
+{
+  "domain": "Two frozen properties, independently bound to the parent and the fix.",
+  "runs": {
+    "checkpoint": {
+      "job": "20261119-214238-math-238-direct-method-checkpoint-compar",
+      "jobResult": "verification/results/20261119-214238-math-238-direct-method-checkpoint-compar/result.json",
+      "sourceCommit": "33b804ffe8d8767dc1e9d220f005abb4e5a1b527",
+      "libTree": "fdecc19c2d0090bec3c622eabdcb5702f5508c11",
+      "checkerBuiltInJob": true,
+      "limits": {
+        "cpus": 2.0,
+        "memoryLimitBytes": 6442450944,
+        "timeoutSeconds": 1680.0
+      },
+      "host": {
+        "host": "vm-1",
+        "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+        "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+        "cpuCount": 30,
+        "memoryTotalBytes": 112792424448
+      },
+      "usage": {
+        "peakMemoryBytes": 985964544,
+        "wallSeconds": 417.9,
+        "cpuSeconds": 420.3,
+        "memoryOfEstimate": 0.23,
+        "durationOfEstimate": 1.39
+      },
+      "stepMemoryMeasure": "cgroup memory.peak; the recipe job has one shared proof step for all four subjects"
+    },
+    "recipe": {
+      "job": "20261119-215949-math-238-direct-recipe-on-frozen-power-a",
+      "jobResult": "verification/results/20261119-215949-math-238-direct-recipe-on-frozen-power-a/result.json",
+      "sourceCommit": "12aa88a27c1c7aab3b8d1a9798ca697abb43947d",
+      "libTree": "f0d04d56bbe9ef5b883e6425b233e4dcc9251c36",
+      "checkerBuiltInJob": false,
+      "limits": {
+        "cpus": 2.0,
+        "memoryLimitBytes": 6442450944,
+        "timeoutSeconds": 1680.0
+      },
+      "host": {
+        "host": "vm-1",
+        "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+        "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+        "cpuCount": 30,
+        "memoryTotalBytes": 112792424448
+      },
+      "usage": {
+        "peakMemoryBytes": 1042771968,
+        "wallSeconds": 384.0,
+        "cpuSeconds": 385.7,
+        "memoryOfEstimate": 0.24,
+        "durationOfEstimate": 0.71
+      },
+      "stepMemoryMeasure": "cgroup memory.peak; the recipe job has one shared proof step for all four subjects"
+    }
+  },
+  "subjects": {
+    "powers-fix": {
+      "sourceClaim": "837ceed6b2ee72a9",
+      "family": "powers",
+      "revision": "fix",
+      "checkpoint": {
+        "receipt": "receipts/powers-fix/20261119T215550Z-2b96b808/result.json",
+        "boundClaim": "b8cdf9222d34f16d",
+        "sourceCommit": "dabf3a5beb9ab697d570154b9961078a8586c787",
+        "classSha256": "a662836a91f75542df6394f05814c5d7974d426b584681d6273a9830d52b5d3d",
+        "classpath": [
+          {
+            "path": "slice/fix.jar",
+            "sha256": "b6149ad671e272ad253356bcba4ae551b287a70a350b2bcae235d9d3aa8d3f14",
+            "role": "original"
+          }
+        ],
+        "checkerSha256": "7a6ad79f859c290d679a54adb71d74cb3f26672920789fe239382f11481d9021",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "entry": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+        "budgetSeconds": 600,
+        "checkerWallSeconds": 224.607,
+        "effective": {
+          "assume": "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+          "assert": "result == (u < v ? u : v)",
+          "bounds": {
+            "unwind": 32,
+            "max_array_length": null,
+            "complete": true
+          },
+          "engine": "native",
+          "gaps": "strict",
+          "modelDigest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c"
+        },
+        "verdict": "established",
+        "replay": null,
+        "stepWallSeconds": 226.649,
+        "stepPeakBytes": 982953984
+      },
+      "recipe": {
+        "receipt": "receipts/powers-fix/20261119T220954Z-969e5847/result.json",
+        "boundClaim": "b8cdf9222d34f16d",
+        "sourceCommit": "dabf3a5beb9ab697d570154b9961078a8586c787",
+        "classSha256": "a662836a91f75542df6394f05814c5d7974d426b584681d6273a9830d52b5d3d",
+        "classpath": [
+          {
+            "path": "slice/fix.jar",
+            "sha256": "b6149ad671e272ad253356bcba4ae551b287a70a350b2bcae235d9d3aa8d3f14",
+            "role": "original"
+          }
+        ],
+        "checkerSha256": "78d2b65af410c155a40fea6d7dce8a2fe52273ee272b5a44c1b4c0482d24ce93",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "entry": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+        "budgetSeconds": 600,
+        "checkerWallSeconds": 191.559,
+        "effective": {
+          "assume": "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+          "assert": "result == (u < v ? u : v)",
+          "bounds": {
+            "unwind": 32,
+            "max_array_length": null,
+            "complete": true
+          },
+          "engine": "native",
+          "gaps": "strict",
+          "modelDigest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c"
+        },
+        "verdict": "established",
+        "replay": null
+      }
+    },
+    "powers-parent": {
+      "sourceClaim": "837ceed6b2ee72a9",
+      "family": "powers",
+      "revision": "parent",
+      "checkpoint": {
+        "receipt": "receipts/powers-parent/20261119T215203Z-5f72a0dd/result.json",
+        "boundClaim": "d8adc1c650239da8",
+        "sourceCommit": "4564adbf19ebc6da19befcc7dbef310a00b4de13",
+        "classSha256": "19f135afe3e64aaf5410a520d4498eb3a9bf562ce352e1f991210074be767ab2",
+        "classpath": [
+          {
+            "path": "slice/parent.jar",
+            "sha256": "d2350ce730d3d898ebae3951fa20567694d62a4af10e8695c5c88e74a434cf52",
+            "role": "original"
+          }
+        ],
+        "checkerSha256": "7a6ad79f859c290d679a54adb71d74cb3f26672920789fe239382f11481d9021",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "entry": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+        "budgetSeconds": 600,
+        "checkerWallSeconds": 184.356,
+        "effective": {
+          "assume": "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+          "assert": "result == (u < v ? u : v)",
+          "bounds": {
+            "unwind": 32,
+            "max_array_length": null,
+            "complete": false
+          },
+          "engine": "native",
+          "gaps": "strict",
+          "modelDigest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c"
+        },
+        "verdict": "refuted",
+        "replay": {
+          "by": "interpreter",
+          "reproduced": true
+        },
+        "stepWallSeconds": 186.639,
+        "stepPeakBytes": 985964544
+      },
+      "recipe": {
+        "receipt": "receipts/powers-parent/20261119T220647Z-1af1ef80/result.json",
+        "boundClaim": "d8adc1c650239da8",
+        "sourceCommit": "4564adbf19ebc6da19befcc7dbef310a00b4de13",
+        "classSha256": "19f135afe3e64aaf5410a520d4498eb3a9bf562ce352e1f991210074be767ab2",
+        "classpath": [
+          {
+            "path": "slice/parent.jar",
+            "sha256": "d2350ce730d3d898ebae3951fa20567694d62a4af10e8695c5c88e74a434cf52",
+            "role": "original"
+          }
+        ],
+        "checkerSha256": "78d2b65af410c155a40fea6d7dce8a2fe52273ee272b5a44c1b4c0482d24ce93",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "entry": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+        "budgetSeconds": 600,
+        "checkerWallSeconds": 186.96,
+        "effective": {
+          "assume": "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+          "assert": "result == (u < v ? u : v)",
+          "bounds": {
+            "unwind": 32,
+            "max_array_length": null,
+            "complete": false
+          },
+          "engine": "native",
+          "gaps": "strict",
+          "modelDigest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c"
+        },
+        "verdict": "refuted",
+        "replay": {
+          "by": "jvm",
+          "reproduced": true
+        }
+      }
+    },
+    "zero-fix": {
+      "sourceClaim": "29ba8401a8e5653f",
+      "family": "zero",
+      "revision": "fix",
+      "checkpoint": {
+        "receipt": "receipts/zero-fix/20261119T214856Z-cd74e07f/result.json",
+        "boundClaim": "a68bb8fe30faed12",
+        "sourceCommit": "dabf3a5beb9ab697d570154b9961078a8586c787",
+        "classSha256": "a662836a91f75542df6394f05814c5d7974d426b584681d6273a9830d52b5d3d",
+        "classpath": [
+          {
+            "path": "slice/fix.jar",
+            "sha256": "b6149ad671e272ad253356bcba4ae551b287a70a350b2bcae235d9d3aa8d3f14",
+            "role": "original"
+          }
+        ],
+        "checkerSha256": "7a6ad79f859c290d679a54adb71d74cb3f26672920789fe239382f11481d9021",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "entry": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+        "budgetSeconds": 600,
+        "checkerWallSeconds": 0.016,
+        "effective": {
+          "assume": "u == 0 && v >= 0 && v <= 255",
+          "assert": "result == v",
+          "bounds": {
+            "unwind": 32,
+            "max_array_length": null,
+            "complete": true
+          },
+          "engine": "native",
+          "gaps": "strict",
+          "modelDigest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c"
+        },
+        "verdict": "established",
+        "replay": null,
+        "stepWallSeconds": 2.204,
+        "stepPeakBytes": 136605696
+      },
+      "recipe": {
+        "receipt": "receipts/zero-fix/20261119T220644Z-f3179886/result.json",
+        "boundClaim": "a68bb8fe30faed12",
+        "sourceCommit": "dabf3a5beb9ab697d570154b9961078a8586c787",
+        "classSha256": "a662836a91f75542df6394f05814c5d7974d426b584681d6273a9830d52b5d3d",
+        "classpath": [
+          {
+            "path": "slice/fix.jar",
+            "sha256": "b6149ad671e272ad253356bcba4ae551b287a70a350b2bcae235d9d3aa8d3f14",
+            "role": "original"
+          }
+        ],
+        "checkerSha256": "78d2b65af410c155a40fea6d7dce8a2fe52273ee272b5a44c1b4c0482d24ce93",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "entry": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+        "budgetSeconds": 600,
+        "checkerWallSeconds": 0.032,
+        "effective": {
+          "assume": "u == 0 && v >= 0 && v <= 255",
+          "assert": "result == v",
+          "bounds": {
+            "unwind": 32,
+            "max_array_length": null,
+            "complete": true
+          },
+          "engine": "native",
+          "gaps": "strict",
+          "modelDigest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c"
+        },
+        "verdict": "established",
+        "replay": null
+      }
+    },
+    "zero-parent": {
+      "sourceClaim": "29ba8401a8e5653f",
+      "family": "zero",
+      "revision": "parent",
+      "checkpoint": {
+        "receipt": "receipts/zero-parent/20261119T214854Z-750057e2/result.json",
+        "boundClaim": "0d1829313250761c",
+        "sourceCommit": "4564adbf19ebc6da19befcc7dbef310a00b4de13",
+        "classSha256": "19f135afe3e64aaf5410a520d4498eb3a9bf562ce352e1f991210074be767ab2",
+        "classpath": [
+          {
+            "path": "slice/parent.jar",
+            "sha256": "d2350ce730d3d898ebae3951fa20567694d62a4af10e8695c5c88e74a434cf52",
+            "role": "original"
+          }
+        ],
+        "checkerSha256": "7a6ad79f859c290d679a54adb71d74cb3f26672920789fe239382f11481d9021",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "entry": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+        "budgetSeconds": 600,
+        "checkerWallSeconds": 0.016,
+        "effective": {
+          "assume": "u == 0 && v >= 0 && v <= 255",
+          "assert": "result == v",
+          "bounds": {
+            "unwind": 32,
+            "max_array_length": null,
+            "complete": true
+          },
+          "engine": "native",
+          "gaps": "strict",
+          "modelDigest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c"
+        },
+        "verdict": "established",
+        "replay": null,
+        "stepWallSeconds": 2.406,
+        "stepPeakBytes": 138489856
+      },
+      "recipe": {
+        "receipt": "receipts/zero-parent/20261119T220642Z-cbf68e4e/result.json",
+        "boundClaim": "0d1829313250761c",
+        "sourceCommit": "4564adbf19ebc6da19befcc7dbef310a00b4de13",
+        "classSha256": "19f135afe3e64aaf5410a520d4498eb3a9bf562ce352e1f991210074be767ab2",
+        "classpath": [
+          {
+            "path": "slice/parent.jar",
+            "sha256": "d2350ce730d3d898ebae3951fa20567694d62a4af10e8695c5c88e74a434cf52",
+            "role": "original"
+          }
+        ],
+        "checkerSha256": "78d2b65af410c155a40fea6d7dce8a2fe52273ee272b5a44c1b4c0482d24ce93",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "entry": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+        "budgetSeconds": 600,
+        "checkerWallSeconds": 0.032,
+        "effective": {
+          "assume": "u == 0 && v >= 0 && v <= 255",
+          "assert": "result == v",
+          "bounds": {
+            "unwind": 32,
+            "max_array_length": null,
+            "complete": true
+          },
+          "engine": "native",
+          "gaps": "strict",
+          "modelDigest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c"
+        },
+        "verdict": "established",
+        "replay": null
+      }
+    }
+  },
+  "comparison": "For each obligation the prepared class, classpath, JDK, checker deadline and effective statement match. Checker builds differ. The checkpoint has one cgroup measurement per obligation; the recipe run batches four and shares two preparations. The cgroup peaks have different scopes."
+}

@@ -95,6 +95,9 @@ def run(folder, example, target, task, workdir, *, retry_of=None, interrupt_afte
                                stage=r.failedStage or r.stage, diagnostic=r.diagnostic))
         prepared[revision] = r
         execution.prepared(prepared, complete=len(prepared) == len(p.revisions))
+    if execution.state.get("retryBinding") and execution.state["bindingId"] != execution.state["retryBinding"]:
+        return execution.refuse(Unsupported("prepare", interfaces.RUNTIME, "retry prepared different artifacts or a different JDK",
+                                            stage="retry-binding"))
     records = []
     controls = runtime.run_controls(p, prepared, workdir / "controls")
     if isinstance(controls, Unsupported):
