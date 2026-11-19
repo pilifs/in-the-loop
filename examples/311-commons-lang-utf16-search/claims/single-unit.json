@@ -1,0 +1,22 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "preservation",
+  "property": "single-unit",
+  "statement": "Preserve the public result for a single-code-unit search character.",
+  "assume": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4 && needle != 2",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 12,
+    "maxArrayLength": 6
+  },
+  "adapter": {
+    "entry": "utfgrid.Search#last(II)I",
+    "mapping": "Encoding 0 through 39 enumerates zero to three tokens from a, b and U+2070E in bijective base three, least significant token first. Needle 0, 1, 2 or 3 selects a, b, U+2070E or z. The runtime receiver argument is a StringBuilder.",
+    "correspondence": "finite-oracle",
+    "cases": 160
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261119-222214-check-the-supplementary-character-search",
+  "title": "Check the supplementary-character search through the reusable adapter recipe",
+  "description": "Use unmodified Apache Commons Lang classes on both sides of the repair and a StringBuilder runtime argument. Separate last-match correctness, absent characters and single-code-unit preservation, keeping the checked entry, finite correspondence and any strict checker blocker.",
+  "kind": "other",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "311"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-19T22:22:14+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 5,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m",
+    "timeout": "12m"
+  },
+  "steps": [
+    {
+      "name": "Frozen interface search obligations",
+      "run": "python3 examples/tools/build.py 311 --tasks last-match-parent,last-match-fix,absent-parent,absent-fix,single-unit",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/311-commons-lang-utf16-search/receipts"
+  ]
+}

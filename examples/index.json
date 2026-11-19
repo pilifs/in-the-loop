@@ -9779,6 +9779,105 @@
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 310 TASK"
       }
+    },
+    {
+      "id": "311",
+      "path": "examples/311-commons-lang-utf16-search",
+      "title": "Apache Commons Lang searches for a supplementary character on a StringBuilder",
+      "summary": "A last-index search that starts at the end of a StringBuilder misses a supplementary character. The oracle computes the UTF-16 offset of the final matching token.",
+      "origin": "real-world",
+      "system": "Apache Commons Lang",
+      "symbol": "org.apache.commons.lang3.StringUtils#lastIndexOf(Ljava/lang/CharSequence;I)I",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "text-encoding"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Finite UTF-16 search calibration",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The adapter and the independent direct driver each construct a StringBuilder. The forty sequences contain at most three tokens. Both a and b, the supplementary character U+2070E, and the absent control z are searched."
+      ],
+      "source": "https://github.com/apache/commons-lang/commit/bdd674f7c64dbc2c8ff043ee995fcd9f6f59a13b",
+      "target": {
+        "family": "commons-lang-utf16-search",
+        "role": "calibration",
+        "case": "commons-lang-utf16-search",
+        "tasks": [
+          "replay",
+          "last-match-parent",
+          "last-match-fix",
+          "absent-parent",
+          "absent-fix",
+          "single-unit"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "last-match-parent": "scaffolded",
+          "last-match-fix": "scaffolded",
+          "absent-parent": "scaffolded",
+          "absent-fix": "scaffolded",
+          "single-unit": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "last-match-parent": "refuted",
+          "last-match-fix": "established",
+          "absent-parent": "established",
+          "absent-fix": "established",
+          "single-unit": "established"
+        },
+        "claims": {
+          "last-match-parent": null,
+          "last-match-fix": null,
+          "absent-parent": null,
+          "absent-fix": null,
+          "single-unit": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261119T222037Z-18b5cd66/result.json",
+            "attempt": "20261119T222037Z-18b5cd66",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Finite UTF-16 search calibration",
+          "source": "https://github.com/apache/commons-lang/commit/bdd674f7c64dbc2c8ff043ee995fcd9f6f59a13b",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 311 TASK"
+      }
     }
   ]
 }

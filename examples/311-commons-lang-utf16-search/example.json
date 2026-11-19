@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "311",
+  "title": "Apache Commons Lang searches for a supplementary character on a StringBuilder",
+  "summary": "A last-index search that starts at the end of a StringBuilder misses a supplementary character. The oracle computes the UTF-16 offset of the final matching token.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "text-encoding",
+    "off-by-one",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Commons Lang",
+    "file": "src/main/java/org/apache/commons/lang3/StringUtils.java",
+    "symbol": "org.apache.commons.lang3.StringUtils#lastIndexOf(Ljava/lang/CharSequence;I)I"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Clamp the search origin to the final possible high-surrogate offset."
+  },
+  "target": "target.json",
+  "notes": [
+    "The adapter and the independent direct driver each construct a StringBuilder. The forty sequences contain at most three tokens. Both a and b, the supplementary character U+2070E, and the absent control z are searched."
+  ],
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/apache/commons-lang",
+    "url": "https://github.com/apache/commons-lang/commit/bdd674f7c64dbc2c8ff043ee995fcd9f6f59a13b"
+  },
+  "verdictLabel": "Finite UTF-16 search calibration"
+}
