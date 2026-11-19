@@ -779,9 +779,20 @@ def publish(plan, prepared, records, out):
     final = out / attempt_id
     def existing():
         token = final / "completion.json"
-        if completion is None or not token.is_file() or json.loads(token.read_text()) != completion:
-            return Unsupported("ingest", WORKFLOW, "conflicting completion for this execution", stage="records")
+        conflict = Unsupported("ingest", WORKFLOW, "conflicting completion for this execution", stage="records")
+        if completion is None or not token.is_file():
+            return conflict
         saved = json.loads((final / "result.json").read_text())
+        original_token = json.loads(token.read_text())
+        if original_token != completion:
+            # A sibling task may have been added to target.json since publication. Its file digest
+            # is part of a historical bound claim, so compare the stored binding and the raw completion.
+            original = saved["claim"]
+            changeable = lambda c: {**c, "id": None, "target": {**c["target"], "sidecar": None}}
+            if (changeable(original) != changeable(claim)
+                    or original_token != {"executionId": attempt_id,
+                                          "digest": workflow.canonical_digest({"claim": original["id"], "records": entries})}):
+                return conflict
         return Receipt(path=(final / "result.json").relative_to(plan.folder).as_posix(), claim=saved["claim"]["id"],
                        attempt=attempt_id, status=saved["conclusion"]["status"], execution=saved["attempt"]["execution"]["status"])
     if final.exists():

@@ -84,6 +84,10 @@ def run(folder, example, target, task, workdir, *, retry_of=None, interrupt_afte
     execution = executions.Execution.start(out, p, timeout, retry_of)
     if isinstance(execution, Unsupported):
         return execution
+    if p.kind != "replay":
+        recipe = recipes.translate(p)
+        if isinstance(recipe, Unsupported):
+            return execution.refuse(recipe)
     workdir = Path(workdir) / execution.state["id"]
     prepared = {}
     for revision in p.revisions:
