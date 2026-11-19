@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (ended) |
+| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (open) |
 | When | 2026-11-17 12:37 UTC to 2026-11-19 21:46 UTC (3428 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.326 |
@@ -1878,6 +1878,12 @@ Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the j
 change `wmswovokuroq` · [log `dfaf011093aa`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261119-214238-math-238-direct-method-checkpoint-compar: passed: 4 passed step(s) in 6m57s, peak 940.3 MiB (estimated 5m00s, 4.0 GiB); 55 output file(s) changed; signals: example:task-as-expected×1 Applied 55 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
+
+### Record verification results for 1 job(s)
+
+change `utsnpupxotvq` · [log `dfaf011093aa`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/dfaf011093aa8e69f8363e63b138bfe45e48412b238687d643432feec8fb1620.jsonl.gz)
+
+Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-230939-retry-threetenbp-hours-after-exact-jdk-a: failed: 4 passed, 1 failed step(s) in 28.1s, peak 233.9 MiB (estimated 3m00s, 3.0 GiB); 89 output file(s) changed; signals: example:task-unexpected×5 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ## Conversation
 
