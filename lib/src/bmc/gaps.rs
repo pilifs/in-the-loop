@@ -1100,7 +1100,8 @@ impl<'a> Walker<'a> {
     }
 
     fn walk(&mut self, owner: &str, name: &str, descriptor: &str) -> Result<(), Error> {
-        let Some((cf, m)) = self.cp.checker_method(owner, name, descriptor) else { return Ok(()) };
+        let Some((cf, m)) = self.cp.checker_method(owner, name, descriptor)
+            .or_else(|| self.cp.integer_factory_method(owner, name, descriptor)) else { return Ok(()) };
         let label = format!("{}.{name}{descriptor}", cf.name.replace('/', "."));
         if !self.scan.methods.insert(label) {
             return Ok(());
@@ -1171,6 +1172,12 @@ impl<'a> Walker<'a> {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
                     } else if self.cp.model(&member.owner).is_some() && self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).is_some_and(|(_, m)| m.code.is_some()) {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
+                    } else if self.cp.integer_factory_method(&member.owner, &member.name, &member.descriptor).is_some() {
+                        // A class initializer can call the factory on an input for which it reads no cached
+                        // object. Execution checks the path it takes. The full scan lists all possible reads.
+                        if !self.deciding {
+                            self.enqueue(&member.owner, &member.name, &member.descriptor);
+                        }
                     } else if let Some((c, _)) = self.cp.checker_method(&member.owner, &member.name, &member.descriptor).filter(|(c, m)| self.cp.checker_runs(&member.owner) && self.cp.checker_runs(&c.name) && m.code.is_some() && !outside_the_list_records(&cf.name, &c.name, &member.name, &member.descriptor)) {
                         // A model the engine runs although it is only for JBMC's class path (`List.of`), as it does.
                         self.initialise(&c.name, &site);
@@ -1195,6 +1202,11 @@ impl<'a> Walker<'a> {
                 Insn::InvokeSpecial(index) | Insn::InvokeVirtual(index) | Insn::InvokeInterface(index) => {
                     let member = cf.pool.member(index).map_err(|e| Error::new(e.to_string()))?;
                     let special = matches!(insn, Insn::InvokeSpecial(_));
+                    if special && cf.name == "java/math/BigInteger" && member.name == "<init>"
+                        && self.cp.integer_factory_method(&member.owner, &member.name, &member.descriptor).is_some() {
+                        self.enqueue(&member.owner, &member.name, &member.descriptor);
+                        continue;
+                    }
                     // An array's `clone`, which the engine copies.
                     if !special && member.owner.starts_with('[') && member.name == "clone" && member.descriptor == "()Ljava/lang/Object;" {
                         *self.scan.exact.entry("array.clone()".into()).or_default() += 1;

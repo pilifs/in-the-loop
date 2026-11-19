@@ -62,6 +62,7 @@
 //! | `invokestatic` of `Math`/`StrictMath`/`Integer`/`Long`/`Boolean` operations ([`models_jdk_static`]) | modelled in [`Engine::call_jdk_static`], each as its Javadoc specifies, exceptions included |
 //! | `invokestatic` of `Objects.requireNonNull(Object)` and `(Object, String)`, and of `Pattern.compile(String)` ([`models_jdk_reference_static`]) | modelled in [`Engine::call_jdk_static`]: `requireNonNull` returns its argument or throws `NullPointerException`; `compile` throws it for null, returns a new `Pattern` with no content (its methods the JDK calls they name) for a constant regular expression of the plain form ([`crate::jdk_facts::plain_regex`]), which the JDK compiles whatever it is, and is the gap `jdk-static-method` for any other |
 //! | `invokestatic` of `String.valueOf(Object)` | the argument itself for a String, the interned `"null"` for null; for any other object the gap `jdk-static-method` (the object's `toString()`), which the scan names wherever the call is |
+//! | `invokestatic` of `BigInteger.valueOf(long)` with a JDK image | runs the selected JDK's factory and allocation bytecode, including the constructors and the magnitude array. A path reading an initialized JDK cache field stops at that field. Without the image the factory is a `jdk-static-method` gap |
 //! | `invokestatic` of any other JDK method over integers, booleans, arrays and objects ([`gaps::jdk_static_call`]) | gap: `jdk-static-method`, with no assume form |
 //! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
 //! | `invokespecial`/`invokevirtual` of `java.lang.Enum`'s constructor, `name()`, `ordinal()`, `toString()` and `equals` ([`ClassPath::checker_runs`]) | modelled: the model's bytecode (`lib/models/java/lang/Enum.java`, which JBMC runs too) sets and reads the enum's `name` and `ordinal` fields; the interpreter's natives do the same. `Enum`'s other methods (`compareTo`, `hashCode`, `valueOf` …) stay JDK gaps |
@@ -4635,18 +4636,21 @@ impl<'a> Engine<'a> {
                 }
             }
         }
-        match gaps::jdk_static_call(&member.owner, &member.name, &member.descriptor) {
-            JdkCall::Exact => return self.call_jdk_static(path, &member.owner, &member.name, &member.descriptor, &descriptor, args),
-            JdkCall::Refused => return unsupported(format!("{}.{}{}", member.owner.replace('/', "."), member.name, member.descriptor)),
-            JdkCall::Gap(kind) => {
-                let gap = Gap { kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() };
-                if let Some(Closure { how: Closing::Stub { method, descriptor: stub, .. }, .. }) = self.contracts.get(&gap).cloned() {
-                    self.apply(path, gap);
-                    return self.call(path, crate::gap_contracts::CLASS, &method, &stub, args);
-                }
-                // No approximation: the path ends here in every mode.
-                return Ok(self.meet(path, kind, &member.owner, &member.name, &member.descriptor));
+        let treatment = gaps::jdk_static_call(&member.owner, &member.name, &member.descriptor);
+        if let JdkCall::Gap(kind) = treatment {
+            let gap = Gap { kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() };
+            if let Some(Closure { how: Closing::Stub { method, descriptor: stub, .. }, .. }) = self.contracts.get(&gap).cloned() {
+                self.apply(path, gap);
+                return self.call(path, crate::gap_contracts::CLASS, &method, &stub, args);
             }
+        }
+        if self.cp.integer_factory_method(&member.owner, &member.name, &member.descriptor).is_some() {
+            return self.call(path, &member.owner, &member.name, &member.descriptor, args);
+        }
+        match treatment {
+            JdkCall::Exact => self.call_jdk_static(path, &member.owner, &member.name, &member.descriptor, &descriptor, args),
+            JdkCall::Refused => unsupported(format!("{}.{}{}", member.owner.replace('/', "."), member.name, member.descriptor)),
+            JdkCall::Gap(kind) => Ok(self.meet(path, kind, &member.owner, &member.name, &member.descriptor)),
         }
     }
 
@@ -4805,6 +4809,12 @@ impl<'a> Engine<'a> {
         let unmodelled = gaps::unmodelled_instance_call(self.cp, &member.owner, &member.name, &member.descriptor);
         let contracted = matches!(&unmodelled, JdkCall::Gap(kind) if self.contracts.contains_key(&Gap { kind: *kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() }));
         if !contracted {
+            if special && caller == "java/math/BigInteger" && member.name == "<init>"
+                && self.cp.integer_factory_method(&member.owner, &member.name, &member.descriptor).is_some() {
+                let mut full = vec![Val::R(Some(o))];
+                full.extend(args);
+                return self.call(path, &member.owner, &member.name, &member.descriptor, full);
+            }
             // A StringBuilder's constructors and methods on the content it holds ([`strings`]).
             if let Some(step) = self.builder_method(path, o, &member.name, &member.descriptor, &args) {
                 return step;
@@ -4956,9 +4966,11 @@ impl<'a> Engine<'a> {
         Ok(None)
     }
 
-    /// Calls an application method: a new frame with the arguments in its locals.
+    /// Enters a bytecode method with the arguments in its locals.
     fn call(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, args: Vec<Val>) -> Step {
-        let (cf, m) = self.cp.checker_method(owner, name, descriptor).ok_or_else(|| Stop::Unsupported(format!("method not found: {}.{name}{descriptor}", owner.replace('/', "."))))?;
+        let (cf, m) = self.cp.checker_method(owner, name, descriptor)
+            .or_else(|| self.cp.integer_factory_method(owner, name, descriptor))
+            .ok_or_else(|| Stop::Unsupported(format!("method not found: {}.{name}{descriptor}", owner.replace('/', "."))))?;
         if m.is_abstract() {
             return unsupported(format!("{}.{name} is abstract", cf.name.replace('/', ".")));
         }
@@ -5749,6 +5761,38 @@ mod tests {
 
     fn run(cp: &ClassPath) -> Outcome {
         check(cp, "Check", "check", &Options::default()).unwrap()
+    }
+
+    #[test]
+    fn big_integer_factory_allocations_and_cache_reads_follow_the_selected_jdk() {
+        let distinct = |n| harness("()V", |code, writer, fail| {
+            let value = writer.pool.long(n);
+            let factory = writer.pool.method_ref("java/math/BigInteger", "valueOf", "(J)Ljava/math/BigInteger;");
+            code.ldc2(value);
+            code.op_u16(0xb8, factory);
+            code.op(0x59); // dup
+            code.if_null(fail);
+            code.ldc2(value);
+            code.op_u16(0xb8, factory);
+            let different = code.label();
+            code.if_acmpne(different);
+            code.goto(fail);
+            code.bind(different);
+        });
+        let without_image = run(&distinct(1_000_000_000));
+        assert_eq!(without_image.verdict, Verdict::Unverifiable);
+        assert!(without_image.problem.unwrap().contains("BigInteger.valueOf"));
+        for n in [1_000_000_000, i64::MIN, 0, 1, -1] {
+            let cp = distinct(n).with_default_jdk();
+            if !cp.has_jdk() { return; }
+            let result = run(&cp);
+            if n == 1_000_000_000 || n == i64::MIN {
+                assert_eq!(result.verdict, Verdict::Verified, "{n}: {:?}", result.problem);
+            } else {
+                assert_eq!(result.verdict, Verdict::Unverifiable, "{n}: cached objects can be identical");
+                assert!(result.problem.as_deref().is_some_and(|p| p.contains("static field java.math.BigInteger.")), "{n}: {:?}", result.problem);
+            }
+        }
     }
 
     /// `a[0] = 1; b[0] = 2; a[0] == 1`, which holds unless `a` and `b` are one array, over arrays of length 1 at

@@ -506,6 +506,23 @@ impl ClassPath {
         })
     }
 
+    /// JDK image bytecode the native checker can enter for BigInteger.valueOf(long) and its allocation.
+    /// The factory decides which inputs use cached objects. A read of JDK cache state still needs its own evidence.
+    pub(crate) fn integer_factory_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
+        if !matches!((owner, name, descriptor),
+            ("java/math/BigInteger", "valueOf", "(J)Ljava/math/BigInteger;")
+            | ("java/math/BigInteger", "<init>", "(J)V")
+            | ("java/math/BigInteger", "toMagArray", "(J)[I")
+            | ("java/lang/Number", "<init>", "()V"))
+        {
+            return None;
+        }
+        let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
+        let method = class.method(name, descriptor)?.clone();
+        method.code.as_ref()?;
+        Some((class, method))
+    }
+
     /// Whether the tool's own checker runs the instance methods of the class as bytecode: an application class's,
     /// and those of the models it runs although they are only for JBMC's class path ([`crate::models::CHECKER_RUNS`],
     /// `java.lang.Enum`). The other models it runs for static calls alone.
