@@ -7313,7 +7313,7 @@
           "replay": "scaffolded",
           "replay-repair": "scaffolded",
           "replay-refactor": "scaffolded",
-          "return-only": "scaffolded",
+          "return-only": "executable",
           "full-state": "scaffolded",
           "interior-state": "scaffolded",
           "repair-state": "scaffolded",
@@ -7330,7 +7330,7 @@
           "preserved-state": "established"
         },
         "claims": {
-          "return-only": null,
+          "return-only": "established",
           "full-state": null,
           "interior-state": null,
           "repair-state": null,
@@ -7358,6 +7358,14 @@
             "attempt": "20261119T214303Z-6cd3e745",
             "execution": "completed",
             "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "return-only": {
+            "path": "receipts/return-only/20261119T215941Z-393759a5/result.json",
+            "attempt": "20261119T215941Z-393759a5",
+            "execution": "completed",
+            "status": "established",
             "expectation": "yes",
             "attempts": 1
           }
@@ -9672,6 +9680,104 @@
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 309 TASK"
+      }
+    },
+    {
+      "id": "310",
+      "path": "examples/310-threeten-complete-hours",
+      "title": "ThreeTenBP complete hours across midnight",
+      "summary": "Compare the complete-hours result on two dates against signed elapsed minutes. Qualify the adapter separately by constructing both endpoints independently on the JVM.",
+      "origin": "real-world",
+      "system": "ThreeTenBP",
+      "symbol": "org.threeten.bp.LocalDateTime#until(Lorg/threeten/bp/temporal/Temporal;Lorg/threeten/bp/temporal/TemporalUnit;)J",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "6,912 clock discrepancies before the fix on 36,864 ordered JVM calls",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Both revisions agree with direct JVM calls through the hours adapter. The pinned parent returns 1 hour from 23:30 to 00:15 the next day and -1 in reverse. The fix returns zero in both directions. Same-day and sign-reversal checks pass on both."
+      ],
+      "source": "https://github.com/ThreeTen/threetenbp/commit/f0b2eaf1856b7fb5fdf78de3cedc9781b6619b88",
+      "target": {
+        "family": "threeten-complete-hours",
+        "role": "calibration",
+        "case": "threeten-complete-hours",
+        "tasks": [
+          "replay",
+          "clock-parent",
+          "clock-fix",
+          "reversal-parent",
+          "reversal-fix",
+          "same-day"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "clock-parent": "scaffolded",
+          "clock-fix": "scaffolded",
+          "reversal-parent": "scaffolded",
+          "reversal-fix": "scaffolded",
+          "same-day": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "clock-parent": "refuted",
+          "clock-fix": "established",
+          "reversal-parent": "established",
+          "reversal-fix": "established",
+          "same-day": "established"
+        },
+        "claims": {
+          "clock-parent": null,
+          "clock-fix": null,
+          "reversal-parent": null,
+          "reversal-fix": null,
+          "same-day": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261119T215723Z-af2873a4/result.json",
+            "attempt": "20261119T215723Z-af2873a4",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "6,912 clock discrepancies before the fix on 36,864 ordered JVM calls",
+          "source": "https://github.com/ThreeTen/threetenbp/commit/f0b2eaf1856b7fb5fdf78de3cedc9781b6619b88",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 310 TASK"
       }
     }
   ]

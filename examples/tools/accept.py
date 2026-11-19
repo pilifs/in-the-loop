@@ -756,6 +756,8 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
                 print(f"✓ {r['example']} {r['task']}: {r['claimed']}, accepted (job {r['job']}; {len(r['checks'])} checks)")
             else:
                 print(f"✗ {r['example']} {r['task']}: {r.get('claimed')} is not accepted. {r.get('why', 'the evidence gives ' + str(r.get('actual')))}")
+        for assumption in dict.fromkeys(a for r in records for a in r.get("restsOn", []) if a):
+            print(f"rests on {assumption}")
         for limit in dict.fromkeys(limit for r in records for limit in r["limits"]):
             print(f"limit: {limit}")
     return 0 if records and all(r["accepted"] for r in records) else 1

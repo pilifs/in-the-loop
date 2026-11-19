@@ -58,11 +58,12 @@ import re
 import shutil
 import stat
 import subprocess
+import tempfile
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from targets import interfaces, workflow
+from targets import executions, interfaces, workflow
 from targets.interfaces import WORKFLOW, Receipt, Unsupported
 
 EXECUTION = "execution.json"  # the raw records, with what the oracle read in each
@@ -540,7 +541,7 @@ def verifier_outcome(plan, bound, records):
                 fields.update({"counterexamples": witnesses if verdict == "violation" else [], "domain": outcome.get("domain"),
                                "proof": outcome.get("proof"), "problem": outcome.get("problem"),
                                "replay": {"by": replay["by"], "reproduced": replay["reproduced"]} if replay else None})
-    if verdict in ("verified", "violation") and (plan.claim.get("boundEnvironment")
+    if verdict in ("verified", "violation") and (v.identities.get("recipe") or plan.claim.get("boundEnvironment")
             or any(isinstance(o, dict) for o in plan.claim.get("observations", []))):
         from targets import qualification
         classpaths = {}
@@ -549,15 +550,47 @@ def verifier_outcome(plan, bound, records):
             classpaths[revision] = [{"path": a.path, "sha256": a.sha256, "role": a.role}
                                     for a in (by_path[path] for path in prepared.classpath)
                                     if a.role in ("original", "dependency", "stub")]
+            if plan.claim.get("adapter"):
+                adapters = [{"path": a.path, "sha256": a.sha256, "role": a.role} for a in prepared.artifacts if a.role == "adapter"]
+                classpaths[revision] = adapters + classpaths[revision]
         artifact_problem = None
+        if plan.claim.get("adapter"):
+            _, artifact_problem = qualification.correspondence(plan, {r: p for r, (_, p, _) in bound.items()}, records)
         if v.identities.get("classpath") != classpaths:
             artifact_problem = "the verifier's ordered classpaths are not the prepared artifacts"
         elif not v.identities.get("jvmcontract") or not v.identities.get("jdkRelease"):
             artifact_problem = "the verifier did not identify its checker binary and JDK"
         elif verdict == "verified" and v.directory and (Path(v.directory) / v.stdout).is_file() and (Path(v.directory) / v.stdout).stat().st_size > STREAM_CAP:
             artifact_problem = "the verifier output needed for this establishment exceeds the archived evidence limit"
+        entry = v.identities.get("checkedEntry") or plan.target
+        independent = v.identities.get("independentReplay")
+        if verdict == "violation" and v.identities.get("recipe") and independent is None:
+            from targets import replay_candidate
+            if replay_candidate.supported(entry, plan.claim):
+                artifact_problem = "the candidate lacks independent JVM qualification"
+        if independent is not None:
+            candidates = [o["counterexample"] for o in outcomes if o.get("counterexample")]
+            if len(independent) != len(candidates) or not candidates:
+                artifact_problem = "missing independent replay for a candidate"
+            else:
+                for replay, candidate in zip(independent, candidates):
+                    if (replay.get("claimKey") != plan.claim.get("key") or replay.get("entry") != entry
+                            or replay.get("observations") != plan.claim.get("observations")
+                            or replay.get("inputs") != candidate.get("inputs")):
+                        artifact_problem = "the independent replay belongs to another claim or input"
+                    elif not replay.get("reproduced"):
+                        artifact_problem = replay.get("reason") or "the independent JVM replay rejected the candidate"
+                    elif set(replay.get("sides", {})) != set(classpaths) or any(
+                            replay["sides"][r].get("classpath") != [a["sha256"] for a in cp] for r, cp in classpaths.items()):
+                        artifact_problem = "the independent replay ran different artifacts"
+                if artifact_problem is None:
+                    fields["replay"] = {"by": "jvm", "reproduced": True}
         for outcome in outcomes:
-            reason = artifact_problem or qualification.check(plan.claim, {"target": plan.target}, outcome, plan.claim["bounds"].get("maxArrayLength"))
+            if v.identities.get("recipe"):
+                reason = artifact_problem or qualification.statement_problem(plan, outcome, entry)
+            else:
+                reason = artifact_problem or qualification.check(plan.claim, {"target": plan.target}, outcome,
+                                                                  plan.claim["bounds"].get("maxArrayLength"))
             if reason:
                 execution = {"status": "invalid-output", "exitCode": v.exitCode, "reason": reason}
                 verdict = None
@@ -726,13 +759,37 @@ def publish(plan, prepared, records, out):
 
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
+    ids = {r.identities.get("executionId") for r in records}
+    if len(ids) > 1:
+        return Unsupported("ingest", WORKFLOW, "mixed execution identities in the completion", stage="records")
+    attempt_id = next(iter(ids), None)
     started = datetime.now(timezone.utc)
-    # The attempt's id (stored-result.schema.json: YYYYMMDDTHHMMSSZ- and 8 hex digits) sorts in start order to the
-    # microsecond, which the suffix's first five hex digits carry (999999 is f423f), three random ones after them: path
-    # order is attempt order, and discovery reads a task's latest receipt as its last current one.
-    attempt_id = f"{started:%Y%m%dT%H%M%SZ}-{started.microsecond:05x}{os.urandom(2).hex()[:3]}"
-    staging = out / f".{attempt_id}.publishing"
-    staging.mkdir()
+    completion = None
+    if attempt_id is not None:
+        if not isinstance(attempt_id, str) or not executions.ID.fullmatch(attempt_id):
+            return Unsupported("ingest", WORKFLOW, "invalid execution identity", stage="records")
+        journal_path = out / "executions" / attempt_id / "attempt.json"
+        if not journal_path.is_file():
+            return Unsupported("ingest", WORKFLOW, "execution was never started for this task", stage="records")
+        journal = json.loads(journal_path.read_text())
+        if (journal["claimKey"] != plan.claim.get("key") or journal["revisions"] != list(plan.revisions)
+                or journal["task"] != plan.task):
+            return Unsupported("ingest", WORKFLOW, "the execution belongs to another frozen subject", stage="records")
+        started = datetime.fromisoformat(journal["startedAt"])
+        completion = {"executionId": attempt_id, "digest": workflow.canonical_digest({"claim": claim["id"], "records": entries})}
+    else:
+        attempt_id = executions.new_id(started)
+    final = out / attempt_id
+    def existing():
+        token = final / "completion.json"
+        if completion is None or not token.is_file() or json.loads(token.read_text()) != completion:
+            return Unsupported("ingest", WORKFLOW, "conflicting completion for this execution", stage="records")
+        saved = json.loads((final / "result.json").read_text())
+        return Receipt(path=(final / "result.json").relative_to(plan.folder).as_posix(), claim=saved["claim"]["id"],
+                       attempt=attempt_id, status=saved["conclusion"]["status"], execution=saved["attempt"]["execution"]["status"])
+    if final.exists():
+        return existing()
+    staging = Path(tempfile.mkdtemp(prefix=f".{attempt_id}.", dir=out))
     try:
         streams, listed, kept = raw_streams(records)
         bundle = write_bundle(staging, {EXECUTION: json.dumps({"task": plan.task, "records": entries}, indent=2,
@@ -779,8 +836,15 @@ def publish(plan, prepared, records, out):
             raise Refused(f"the receipt doesn't pass check_result: {e}", stage="check") from None
         (staging / workflow.PLAN_RECORD).write_text(json.dumps(workflow.plan_record(plan), indent=2, ensure_ascii=False) + "\n")
         (staging / "result.json").write_text(json.dumps(result_format().pack(result), indent=2, ensure_ascii=False) + "\n")
-        final = out / attempt_id
-        staging.rename(final)
+        if completion:
+            (staging / "completion.json").write_text(json.dumps(completion) + "\n")
+        try:
+            staging.rename(final)
+        except OSError:
+            if not final.is_dir():
+                raise
+            shutil.rmtree(staging)
+            return existing()
     except Refused as e:
         shutil.rmtree(staging, ignore_errors=True)
         return Unsupported("ingest", WORKFLOW, e.reason, stage=e.stage, diagnostic=e.diagnostic)

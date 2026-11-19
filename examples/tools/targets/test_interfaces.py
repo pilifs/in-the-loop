@@ -26,7 +26,7 @@ SIGNATURES = {
     (workflow, "handoff"): ["folder", "example", "target", "task"],
     (runtime, "prepare"): ["plan", "revision", "workdir"],
     (runtime, "run_controls"): ["plan", "prepared", "workdir"],
-    (runtime, "run_verifier"): ["plan", "prepared", "workdir"],
+    (runtime, "run_verifier"): ["plan", "prepared", "workdir", "before_launch"],
 }
 
 # The frozen fields of each type, in order: an owner may append a field with a default, never change these.
@@ -53,6 +53,8 @@ def plan():
 
 class InterfacesTest(unittest.TestCase):
     def test_signatures(self):
+        hook = inspect.signature(runtime.run_verifier).parameters["before_launch"]
+        self.assertEqual((hook.kind, hook.default), (inspect.Parameter.KEYWORD_ONLY, None))
         for (module, name), params in SIGNATURES.items():
             self.assertEqual(list(inspect.signature(getattr(module, name)).parameters), params, f"{module.__name__}.{name}")
 

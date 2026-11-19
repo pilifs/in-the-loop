@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261119-220147-gradebook-qualified-attempts-and-interru",
+  "title": "Gradebook qualified attempts and interrupted replay recovery",
+  "description": "Recover the original injected candidate in a clean checkout. Retry the exact full-state claim concurrently, redeliver a completion, check input membership and observation on the same concrete witness, and verify each remaining revision pair.",
+  "kind": "other",
+  "capabilities": [
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "198"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-19T22:01:47+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 10,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "2m",
+    "timeout": "8m"
+  },
+  "steps": [
+    {
+      "name": "Recover candidate and qualify two simultaneous retries",
+      "run": "python3 examples/198-gradebook-final-slot/controls/retry_drill.py 20261119T220012Z-d733295c",
+      "cwd": "."
+    },
+    {
+      "name": "Interior, repair and preserving refactor",
+      "run": "python3 examples/tools/build.py 198 --tasks interior-state,repair-state,preserved-state",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/198-gradebook-final-slot/receipts",
+    "examples/198-gradebook-final-slot/records/retry-drill.json"
+  ]
+}

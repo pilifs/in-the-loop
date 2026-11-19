@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261119-215957-threetenbp-hours-adapter-on-the-qualifie",
+  "title": "ThreeTenBP hours adapter on the qualified date grid",
+  "description": "Use the two compiled upstream revisions with a pinned adapter and independently reconstructed direct JVM calls on all 36,864 pairs. Preserve the first checker blocker or outcome separately for each of the five subject claims.",
+  "kind": "other",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "310"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-19T21:59:57+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 6,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m",
+    "timeout": "16m"
+  },
+  "steps": [
+    {
+      "name": "Clock, same-day and reversal checks",
+      "run": "python3 examples/tools/build.py 310 --tasks clock-parent,clock-fix,same-day,reversal-parent,reversal-fix",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/310-threeten-complete-hours/receipts"
+  ]
+}

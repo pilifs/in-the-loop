@@ -80,6 +80,7 @@ import subprocess
 import time
 from pathlib import Path
 
+from targets import recipes
 from targets import interfaces, runtime_jar, runtime_jdk, runtime_maven, runtime_upstream, sidecar
 from targets.interfaces import RUNTIME, Artifact, PreparedTarget, Unsupported
 
@@ -1552,13 +1553,14 @@ def _parameters(plan, where, prepared):
 CLASSES = "classes"  # under the verifier's work directory: each side's original JAR, extracted for equivalence
 
 
-def _class_dirs(sides, workdir, attempt):
+def _class_dirs(sides, workdir, attempt, paths=None):
     """Each side's original JAR extracted into workdir/classes/<revision> (jvmcontract equivalence takes directories
     of classes), every entry's bytes as the checked JAR holds them; the record of what was extracted, by revision."""
     import zipfile
     out = {}
     for r, (where, p, arts) in sides.items():
-        jar = next(a for a in arts if a.path == p.source["target"]["loadedFrom"])
+        original = paths[r][0]["path"] if paths else p.source["target"]["loadedFrom"]
+        jar = next(a for a in arts if a.path == original)
         into = workdir / CLASSES / r
         into.mkdir(parents=True)
         count = 0
@@ -1580,59 +1582,10 @@ def _class_dirs(sides, workdir, attempt):
 
 def _verifier_argv(plan, exe, sides, work):
     """jvmcontract's argv for the task, with paths relative to the attempt directory (the verifier's cwd)."""
-    claim, bounds = plan.claim, dict(plan.claim.get("bounds") or {})
-    command = VERIFIER_KINDS[plan.kind]
-    unknown = sorted(set(bounds) - {"unwind", "maxArrayLength"})
-    if unknown:
-        raise Refused("claim", f"the claim's bounds {', '.join(unknown)} have no jvmcontract option here")
-    if claim.get("models"):
-        raise Refused("claim", "the claim states models, and no route passes models to the verifier yet",
-                      needs="a way to give jvmcontract the claim's environment models",
-                      next="run the task without models, as a narrower linked claim, or add the models route")
-    deps = {r: [a for a in arts if a.role == "dependency"] for r, (_, _, arts) in sides.items()}
-    original = {r: next(a for a in arts if a.path == p.source["target"]["loadedFrom"])
-                for r, (_, p, arts) in sides.items()}
-    rel = lambda r, a: f"prepare/{r}/{a.path}"
-    target = java_target(plan.target)
-    selected = [o for o in claim.get("observations", []) if isinstance(o, dict)]
-    if selected and command != "equivalence":
-        raise Refused("claim", "typed observation selection currently requires a paired equivalence task")
-    if command == "prove":
-        [r] = sides
-        argv = [exe, "prove", target, "--classes", rel(r, original[r])]
-        argv += [x for a in deps[r] for x in ("--classpath", rel(r, a))]
-        for key, flag in (("assume", "--assume"), ("assert", "--assert")):
-            if claim.get(key):
-                argv += [flag, claim[key]]
-        argv += [x for t in claim.get("throws") or [] for x in ("--throws", t)]
-    else:
-        before, after = plan.revisions
-        argv = [exe, "equivalence", "--before", f"{work}/{CLASSES}/{before}", "--after", f"{work}/{CLASSES}/{after}",
-                "--target", target]
-        argv += [x for a in deps[after] for x in ("--classpath", rel(after, a))]
-        # A pair whose revisions have dependency closures of other bytes (a release pair, each against its own
-        # libraries): the previous revision runs on its own, in class path order. One with none is given the empty
-        # path, which names no entry.
-        if [a.sha256 for a in deps[before]] != [a.sha256 for a in deps[after]]:
-            argv += [x for a in deps[before] for x in ("--before-classpath", rel(before, a))] or ["--before-classpath", ""]
-        if claim.get("allowedChange"):
-            argv += ["--unchanged-unless", claim["allowedChange"]]
-        if claim.get("assume"):
-            argv += ["--assume", claim["assume"]]
-        for observation in selected:
-            argv += ["--observe", json.dumps(observation, sort_keys=True)]
-    argv += [x for n in claim.get("nullable") or [] for x in ("--nullable", n)]
-    argv += [x for pair in claim.get("mayAlias") or [] for x in ("--may-alias", pair)]
-    for part, flag in (("plan", "--plan"), ("contracts", "--contracts")):
-        path = _claim_file(plan, part)
-        if path is not None:
-            argv += [flag, str(path)]
-    argv += ["--engine", plan.engine, "--gaps", plan.gaps]
-    if "unwind" in bounds:
-        argv += ["--unwind", str(bounds["unwind"])]
-    if "maxArrayLength" in bounds:
-        argv += ["--max-array-length", str(bounds["maxArrayLength"])]
-    return argv + ["--timeout", str(VERIFIER_TIMEOUT), "--work", f"{work}/work", "--report", f"{work}/report", "--json"]
+    recipe = recipes.translate(plan)
+    if isinstance(recipe, Unsupported):
+        raise Refused("claim", recipe.reason)
+    return list(recipe.bind(plan, exe, sides, work, VERIFIER_TIMEOUT).argv)
 
 
 def _verifier_env(jdk):
@@ -1656,14 +1609,19 @@ def _outcomes(stdout, command):
     return tuple(outcomes), None
 
 
-def _probe(exe, sides, target, env, workdir, attempt):
+def _probe(exe, sides, target, env, workdir, attempt, paths=None):
     """The capability probe beside the proof: jvmcontract's static gap scan of the target in each revision (it proves
     nothing; a strict proof that reaches a gap is refused by name). Its argv, exit and the gaps it lists."""
     probes = {}
     for r, (_, p, arts) in sides.items():
-        original = next(a for a in arts if a.path == p.source["target"]["loadedFrom"])
-        argv = [exe, "gaps", "--target", target, "--classes", f"prepare/{r}/{original.path}"]
-        argv += [x for a in arts if a.role == "dependency" for x in ("--classpath", f"prepare/{r}/{a.path}")]
+        if paths:
+            paths_by_name = {a.path: a for a in arts}
+            classes, *dependencies = [paths_by_name[a["path"]] for a in paths[r]]
+        else:
+            classes = next(a for a in arts if a.path == p.source["target"]["loadedFrom"])
+            dependencies = [a for a in arts if a.role == "dependency"]
+        argv = [exe, "gaps", "--target", target, "--classes", f"prepare/{r}/{classes.path}"]
+        argv += [x for a in dependencies for x in ("--classpath", f"prepare/{r}/{a.path}")]
         argv.append("--json")
         out, err = workdir / f"probe-{r}.stdout", workdir / f"probe-{r}.stderr"
         status, code, seconds = _run_one(argv, attempt, out, err, CONTROL_TIMEOUT, env)
@@ -1678,7 +1636,7 @@ def _probe(exe, sides, target, env, workdir, attempt):
     return probes
 
 
-def run_verifier(plan, prepared, workdir):
+def run_verifier(plan, prepared, workdir, *, before_launch=None):
     """The verifier on the prepared artifacts, with the plan's engine, gaps and bounds: one raw ExecutionRecord
     (kind `verifier`; revision None for a pair), or Unsupported.
 
@@ -1739,19 +1697,25 @@ def run_verifier(plan, prepared, workdir):
                 raise Refused("verifier", f"revision {r}'s preparation records no loaded target")
             sides[r] = (where, p, arts)
         jdk = _verifier_jdk(plan, prepared)
-        argv = tuple(_verifier_argv(plan, exe, sides, rel(workdir)))
+        recipe = recipes.translate(plan)
+        if isinstance(recipe, Unsupported):
+            raise Refused("claim", recipe.reason)
+        invocation = recipe.bind(plan, exe, sides, rel(workdir), VERIFIER_TIMEOUT)
+        argv = invocation.argv
         env = _verifier_env(jdk)
         identities.update({
             "jdk": jdk["version"], "jdkFeature": jdk["feature"], "jdkHome": jdk["home"], "jdkRelease": jdk["release"],
             "engine": plan.engine, "gaps": plan.gaps, "bounds": dict(plan.claim.get("bounds") or {}),
             "timeout": VERIFIER_TIMEOUT, "scope": _scope(plan, sides),
-            "classpath": {r: [{"path": a.path, "sha256": a.sha256, "role": a.role} for a in arts
-                              if a.role in ("original", "dependency", "stub")] for r, (_, _, arts) in sides.items()},
+            "classpath": invocation.classpaths, "checkedEntry": invocation.entry, "recipe": recipe.describe(),
             "commits": {r: p.commit for r, (_, p, _) in sides.items()},
             "environment": {k: v for k, v in env.items() if k != "PATH"}, "cwd": "the attempt directory"})
         if plan.kind == "equivalence":
-            identities["classes"] = _class_dirs(sides, workdir, attempt)
-        identities["probe"] = _probe(exe, sides, java_target(plan.target), env, workdir, attempt)
+            identities["classes"] = _class_dirs(sides, workdir, attempt, invocation.classpaths)
+        if recipe.correspondence:
+            identities["scope"].update(label="adapter", adapter=recipe.correspondence)
+            identities["scope"]["meaning"] = recipe.correspondence["mapping"]
+        identities["probe"] = _probe(exe, sides, java_target(invocation.entry), env, workdir, attempt, invocation.classpaths)
     except Refused as e:
         if e.stage in CLAIM_STAGES:
             shutil.rmtree(workdir, ignore_errors=True)
@@ -1765,6 +1729,8 @@ def run_verifier(plan, prepared, workdir):
         (workdir / VERIFIER).write_text(json.dumps({"task": plan.task, "record": record.as_dict(),
                                                     "log": {"problem": e.diagnostic}}, indent=2) + "\n")
         return record
+    if before_launch is not None:
+        before_launch(argv, identities)
     status, code, seconds = _run_one(argv, attempt, out, err, VERIFIER_TIMEOUT + VERIFIER_GRACE, env)
     observations, problem = (None, f"the verifier {status}" + (f" (signal {-code})" if status == "killed" else "")) \
         if status != "exited" else _outcomes(out.read_text(errors="replace"), VERIFIER_KINDS[plan.kind])

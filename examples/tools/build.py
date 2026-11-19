@@ -211,7 +211,34 @@ def stages(out):
 
 def main(argv):
     folders = sorted(p for p in EXAMPLES.iterdir() if p.is_dir() and re.match(r"^\d{3}-", p.name))
+    if "--tasks" in argv:
+        if len(argv) != 3 or argv[1] != "--tasks" or "--task" in argv:
+            print("usage: build.py ID --tasks TASK,TASK", file=sys.stderr)
+            return 2
+        number, _, names = argv
+        folder = next((f for f in folders if f.name[:3] == number), None)
+        if not folder:
+            print(f"unknown example {number}", file=sys.stderr)
+            return 2
+        tasks = names.split(",")
+        for name in tasks:
+            problem = task_problem(None, [number], name, folders)
+            if problem:
+                print(problem, file=sys.stderr)
+                return 2
+        shared = {}
+        results = [run_task(folder, name, shared=shared) for name in tasks]
+        return max(results)
     argv, task = task_argument(argv)
+    retry_of = None
+    interrupt = task and "--interrupt-after-candidate" in argv
+    if interrupt:
+        argv = list(argv)
+        argv.remove("--interrupt-after-candidate")
+    if task and "--retry-of" in argv and argv.index("--retry-of") + 1 < len(argv):
+        i = argv.index("--retry-of")
+        retry_of = argv[i + 1]
+        argv = argv[:i] + argv[i + 2:]
     mode = argv[0] if argv[:1] in (["--index-only"], ["--render-only"], ["--plan"], ["--scan-gaps"]) else None
     ids = argv[1:] if mode else argv
     problem = selection_problem(mode, ids, folders) or task_problem(mode, ids, task, folders)
@@ -222,7 +249,7 @@ def main(argv):
         return 2  # nothing has run
     wanted = set(ids)
     if task:
-        return run_task(next(f for f in folders if f.name[:3] == ids[0]), task, plan_only=mode == "--plan")
+        return run_task(next(f for f in folders if f.name[:3] == ids[0]), task, plan_only=mode == "--plan", retry_of=retry_of, interrupt=interrupt)
     if mode == "--plan":
         # What each run would take, as JSON, running nothing: every constructed example's by default.
         plans = [plan(load_example(f)) for f in folders if (f.name[:3] in wanted if wanted else True)]
@@ -343,7 +370,7 @@ def task_problem(mode, ids, task, folders):
     return None
 
 
-def run_task(folder, task, plan_only=False):
+def run_task(folder, task, plan_only=False, *, retry_of=None, interrupt=False, shared=None):
     """`--plan ID --task T` prints the task's plan; `ID --task T` makes one attempt at it through the target route
     (examples/tools/targets/route.py). An attempt that stops at an Unsupported result prints a not-executed line
     naming it and exits 1, as an unexecuted example does; one that gives a receipt prints its conclusion and exits 0
@@ -354,8 +381,18 @@ def run_task(folder, task, plan_only=False):
         print(json.dumps([target_route.plan(folder, example, target, task)], indent=2, ensure_ascii=False))
         return 0
     print(f"{folder.name}: running task {task} (target route)", flush=True)
-    receipt = target_route.run(folder, example, target, task, scratch() / "targets" / folder.name[:3] / task)
+    policy = {}
+    if shared is not None:
+        policy["shared"] = shared
+    if retry_of:
+        policy["retry_of"] = retry_of
+    if interrupt:
+        policy["interrupt_after_candidate"] = True
+    receipt = target_route.run(folder, example, target, task, scratch() / "targets" / folder.name[:3] / task, **policy)
     if isinstance(receipt, Unsupported):
+        if receipt.interface == "ingest":
+            print(f"{folder.name}: task {task} stopped at {receipt.stage}: {receipt.reason} ({receipt.diagnostic or 'see execution history'})")
+            return 1
         print(f"{folder.name}: not-executed (task {task}: {receipt.describe()})")
         print(f"Not executed: {folder.name}")
         return 1

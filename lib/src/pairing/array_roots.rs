@@ -1,4 +1,4 @@
-//! A paired property with two bounded int-array roots and an explicit observation.
+//! A paired property with bounded int-array roots, scalar int arguments and an explicit observation.
 //! The entry to the checker and the JVM replay has only scalar arguments. Each target call gets a fresh
 //! heap reconstructed from those arguments, including the null and identity choices in the layout.
 
@@ -24,7 +24,7 @@ struct Projection {
     values: Vec<serde_json::Value>,
 }
 
-/// This overlap runs with both engines. All target state is in the two input arrays and the method locals.
+/// This overlap runs with both engines. All target state is in the input arrays and the method locals.
 pub(crate) fn closed(class: &ClassFile, method: &Method) -> bool {
     if class.super_class.as_deref() != Some("java/lang/Object") || !class.interfaces.is_empty() || class.method("<clinit>", "()V").is_some() {
         return false;
@@ -37,8 +37,10 @@ pub(crate) fn closed(class: &ClassFile, method: &Method) -> bool {
 
 impl ArrayRoots {
     pub(super) fn plan(options: &Options, names: &[String], types: &[Type], ret: &Type) -> Result<Self, String> {
-        if types.len() != 2 || !types.iter().all(|t| matches!(t, Type::Array(e) if **e == Type::Int)) || *ret != Type::Int {
-            return Err("the selected-observation profile takes a static method with two int[] parameters and an int result".into());
+        let is_array = |t: &Type| matches!(t, Type::Array(element) if **element == Type::Int);
+        let arrays = types.iter().filter(|t| is_array(t)).count();
+        if arrays == 0 || types.iter().any(|t| !is_array(t) && *t != Type::Int) || *ret != Type::Int {
+            return Err("the selected-observation profile takes int[] and int parameters, including at least one array, and an int result".into());
         }
         if options.cache.is_some() || options.object_domain.is_some() {
             return Err("the paired int-array profile has no cache identity or constructor-object domain".into());
@@ -53,26 +55,39 @@ impl ArrayRoots {
         let mut layout = Layout::plain(names, types);
         layout.choose_arrays(&options.nullable, &groups)?;
         let bound = options.max_array_length as usize;
-        if (bound as u64 + 1) * 2 + layout.flags().len() as u64 > 255 {
+        if bound as u64 * arrays as u64 + types.len() as u64 + layout.flags().len() as u64 > 255 {
             return Err("the array length and cell choices exceed the JVM limit of 255 parameter slots".into());
         }
+        let array_name = |name: &str| names.iter().zip(types).any(|(n, t)| n == name && is_array(t));
         for (index, observation) in options.selected_observations.iter().enumerate() {
             if options.selected_observations[..index].contains(observation) {
                 return Err(format!("duplicate selected observation {}", observation.id()));
             }
             match observation {
                 Observation::Result | Observation::Exception => {}
-                Observation::ArrayParameter { parameter } if names.contains(parameter) => {}
-                Observation::Identity { left, right } if names.contains(left) && names.contains(right) => {}
+                Observation::ArrayParameter { parameter } if array_name(parameter) => {}
+                Observation::Identity { left, right } if array_name(left) && array_name(right) => {}
                 other => return Err(format!("the paired int-array observer cannot examine {}", other.id())),
             }
         }
         Ok(Self { layout, names: names.to_vec(), groups, bound })
     }
 
+    fn inputs(&self) -> &[harness::Param] {
+        &self.layout.params[..self.names.len()]
+    }
+
+    fn arguments(&self, prefix: &str) -> String {
+        (0..self.names.len()).map(|i| format!("{prefix}{i}")).collect::<Vec<_>>().join(", ")
+    }
+
     fn parameters(&self) -> Vec<(String, &'static str)> {
         let mut flat = Vec::new();
-        for root in 0..2 {
+        for (root, parameter) in self.inputs().iter().enumerate() {
+            if parameter.ty == Type::Int {
+                flat.push((format!("arg{root}"), "int"));
+                continue;
+            }
             flat.push((format!("len{root}"), "int"));
             flat.extend((0..self.bound).map(|i| (format!("cell{root}_{i}"), "int")));
         }
@@ -94,7 +109,14 @@ impl ArrayRoots {
         }
         let roots = self.layout.made_roots(&|i| flags[&i], true);
         let mut inputs = Vec::new();
-        for (i, (name, made)) in roots.iter().enumerate() {
+        for (i, parameter) in self.inputs().iter().enumerate() {
+            let name = &parameter.name;
+            if parameter.ty == Type::Int {
+                let number = value(&format!("arg{i}")).and_then(|v| v.as_i64()).and_then(|n| i32::try_from(n).ok()).ok_or_else(missing)?;
+                inputs.push(crate::witness::Typed { name: name.clone(), ty: "int".into(), value: Some(number.into()), components: None, from: None });
+                continue;
+            }
+            let (_, made) = roots.iter().find(|(n, _)| n == name).ok_or_else(missing)?;
             let data = match made {
                 harness::Made::Null => serde_json::Value::Null,
                 harness::Made::Same(other) => serde_json::json!({ "same": self.names.iter().position(|n| n == other).ok_or_else(missing)? }),
@@ -111,7 +133,12 @@ impl ArrayRoots {
 
     fn roots(&self, prefix: &str) -> String {
         let mut out = String::new();
-        for (i, name) in self.names.iter().enumerate() {
+        for (i, parameter) in self.inputs().iter().enumerate() {
+            if parameter.ty == Type::Int {
+                writeln!(out, "        int {prefix}{i} = arg{i};").unwrap();
+                continue;
+            }
+            let name = &parameter.name;
             let mut values = vec![format!("len{i}")];
             values.extend((0..self.bound).map(|j| format!("cell{i}_{j}")));
             let mut value = format!("data({})", values.join(", "));
@@ -132,7 +159,8 @@ impl ArrayRoots {
     fn invocation(&self, prefix: &str, owner: &str, method: &str) -> String {
         let mut s = self.roots(prefix);
         writeln!(s, "        int {prefix}Result = 0; Throwable {prefix}Failure = null;").unwrap();
-        writeln!(s, "        try {{ {prefix}Result = {owner}.{method}({prefix}0, {prefix}1); }} catch (Throwable e) {{ {prefix}Failure = e; }}").unwrap();
+        let args = self.arguments(prefix);
+        writeln!(s, "        try {{ {prefix}Result = {owner}.{method}({args}); }} catch (Throwable e) {{ {prefix}Failure = e; }}").unwrap();
         s
     }
 
@@ -147,12 +175,14 @@ impl ArrayRoots {
             writeln!(s, "            case {n}: return new int[] {{ {} }};", fields[..n].join(", ")).unwrap();
         }
         s.push_str("            default: return new int[0];\n        }\n    }\n");
-        writeln!(s, "    static boolean accepts(int[] {}, int[] {}) {{ return {}; }}",
-                 self.names[0], self.names[1], options.assume.as_deref().unwrap_or("true")).unwrap();
+        let signature = self.inputs().iter().map(|p| format!("{} {}", p.ty.java_name(), p.name)).collect::<Vec<_>>().join(", ");
+        writeln!(s, "    static boolean accepts({signature}) {{ return {}; }}", options.assume.as_deref().unwrap_or("true")).unwrap();
         writeln!(s, "    public static boolean admitted({flat}) {{").unwrap();
-        writeln!(s, "        if (len0 < 0 || len0 > {0} || len1 < 0 || len1 > {0}) return false;", self.bound).unwrap();
+        let invalid = self.inputs().iter().enumerate().filter(|(_, p)| p.ty != Type::Int)
+            .map(|(i, _)| format!("len{i} < 0 || len{i} > {}", self.bound)).collect::<Vec<_>>().join(" || ");
+        writeln!(s, "        if ({invalid}) return false;").unwrap();
         s.push_str(&self.roots("d"));
-        s.push_str("        return accepts(d0, d1);\n    }\n");
+        writeln!(s, "        return accepts({});\n    }}", self.arguments("d")).unwrap();
         s.push_str("    static boolean sameCells(int[] x, int[] y) {\n        if (x == y) return true;\n        if (x == null || y == null || x.length != y.length) return false;\n        for (int i = 0; i < x.length; i++) if (x[i] != y[i]) return false;\n        return true;\n    }\n");
         writeln!(s, "    public static boolean agree({flat}) {{").unwrap();
         let before = self.invocation("a", &format!("before.{class}"), method);
@@ -251,7 +281,7 @@ impl ArrayRoots {
 
     pub(super) fn describe(&self, options: &Options, statement: &mut Statement) {
         let selected = &options.selected_observations;
-        let params = &self.layout.params[..2];
+        let params = self.inputs();
         statement.kind = "regression".into();
         statement.domain = crate::statement::plain_domain_of(params, options.max_array_length, &options.nullable, &self.groups);
         statement.bounds.max_array_length = Some(options.max_array_length);

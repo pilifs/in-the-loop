@@ -191,7 +191,7 @@ class RouteChainTest(unittest.TestCase):
             (workflow, "plan_task"): lambda *a: self.log("plan") or a_plan(),
             (runtime, "prepare"): lambda p, revision, w: self.log(f"prepare {revision}") or prepared(revision),
             (runtime, "run_controls"): lambda p, prep, w: self.log("controls " + ",".join(prep)) or (),
-            (runtime, "run_verifier"): lambda p, prep, w: self.log("verifier") or interfaces.ExecutionRecord(
+            (runtime, "run_verifier"): lambda p, prep, w, **kwargs: self.log("verifier") or interfaces.ExecutionRecord(
                 kind="verifier", revision=None, argv=("jvmcontract",), status="exited", exitCode=0, seconds=1.0,
                 stdout="o", stderr="e", identities={}),
             (workflow, "ingest"): lambda p, prep, records, out: self.log(f"ingest {len(records)}") or interfaces.Receipt(

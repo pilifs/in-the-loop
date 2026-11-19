@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261119-215949-math-238-direct-recipe-on-frozen-power-a",
+  "title": "MATH-238 direct recipe on frozen power and zero families",
+  "description": "Retry the four checkpoint obligations with a typed direct recipe. Share each compiled revision across its claims and bind the statement, verifier invocation, and independent concrete witness qualification to the execution.",
+  "kind": "other",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "309"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-19T21:59:49+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "9m",
+    "timeout": "28m"
+  },
+  "steps": [
+    {
+      "name": "Four property obligations sharing two preparations",
+      "run": "python3 examples/tools/build.py 309 --tasks zero-parent,zero-fix,powers-parent,powers-fix",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/309-commons-math-238-gcd/receipts"
+  ]
+}

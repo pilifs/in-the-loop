@@ -202,6 +202,7 @@ def mutant_problems(target):
 
 SLICE_FLAG = re.compile(r"^(-g|-g:none|-g:(source|lines|vars)(,(source|lines|vars))*|-parameters)$")
 SLICE_VALUED = {"-source": re.compile(r"^(1\.[5-8]|[0-9]{1,2})$"), "-target": re.compile(r"^(1\.[5-8]|[0-9]{1,2})$"),
+                "--add-exports": re.compile(r"^[a-zA-Z][A-Za-z0-9_.]*/[a-zA-Z][A-Za-z0-9_.]*=ALL-UNNAMED$"),
                 "--release": re.compile(r"^[0-9]{1,2}$"), "-encoding": re.compile(r"^[A-Za-z0-9_.-]+$")}
 
 

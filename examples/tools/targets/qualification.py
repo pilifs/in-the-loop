@@ -25,10 +25,13 @@ def witness_problem(inputs, parameters, nullable, aliases, bound):
                 return f"{name} is null outside its planned domain"
         elif isinstance(data, dict):
             earlier = data.get("same")
-            if (set(data) != {"same"} or type(earlier) is not int or not 0 <= earlier < i
+            if (expected["type"] != "int[]" or set(data) != {"same"} or type(earlier) is not int or not 0 <= earlier < i
                     or inputs[earlier]["value"] is None
                     or not any(name in group and inputs[earlier]["name"] in group for group in aliases)):
                 return f"{name} has an alias outside its planned domain"
+        elif expected["type"] == "int":
+            if type(data) is not int or not -(2**31) <= data < 2**31:
+                return f"{name} is outside the planned int domain"
         elif expected["type"] == "int[]":
             if not isinstance(data, list) or len(data) > bound or not all(type(n) is int and -(2**31) <= n < 2**31 for n in data):
                 return f"{name} is outside the planned int-array domain at bound {bound}"
@@ -107,3 +110,81 @@ def check(claim, task, outcome, length):
             return "the witness identifies no disagreement in the selected observations"
         return witness_problem(witness.get("inputs"), params, nullable, aliases, length)
     return None
+
+def statement_problem(plan, outcome, entry):
+    """Compare the raw Rust statement with the requested invocation before publishing an eligible result."""
+    from accept import descriptor_parameters, same_target
+    if not same_target(outcome.get("target") or "", entry):
+        return "the checker reported another method"
+    stated = outcome.get("stated") or {}
+    checker = (stated.get("checker") or {}).get("engine")
+    if checker not in ((plan.engine,) if plan.engine != "auto" else ("native", "jbmc")):
+        return "the actual engine differs from the selected strategy"
+    if checker == "native" and stated.get("gap_mode") != plan.gaps:
+        return "the native checker reported a different gap policy"
+    claim = plan.claim
+    bounds = claim.get("bounds") or {}
+    parameters = (stated.get("domain") or {}).get("parameters") or []
+    if "(" in entry and [p["type"] for p in parameters] != descriptor_parameters("(" + entry.partition("(")[2]):
+        return "the reported input types differ from the entry descriptor"
+    if outcome.get("verdict") == "verified":
+        actual = stated.get("bounds") or {}
+        if actual.get("complete") is not True or (stated.get("vacuity") or {}).get("status") != "non-vacuous":
+            return "the establishment lacks a complete, non-vacuous checked statement"
+        if actual.get("unwind") != bounds.get("unwind"):
+            return "the checked unwind differs from the claim"
+        if any(p.get("kind") == "array" for p in parameters) and actual.get("max_array_length") != bounds.get("maxArrayLength"):
+            return "the checked array domain differs from the claim"
+    if plan.kind == "prove":
+        if (outcome.get("assume") or None, outcome.get("assert"), outcome.get("throws_checked") or outcome.get("throws") or []) != (
+                claim.get("assume") or None, claim.get("assert"), claim.get("throws") or []):
+            return "the checker property expressions differ from the claim"
+    return check(claim, {"target": entry}, outcome, bounds.get("maxArrayLength"))
+
+
+def correspondence(plan, prepared, records):
+    """Re-evaluate the pinned oracle on all the recorded JVM rows of both prepared classpaths."""
+    import json
+    import subprocess
+    import sys
+    from targets import runtime, runtime_jar
+    recipe = plan.claim["adapter"]
+    oracle = next(c for c in plan.claim["controls"] if c["id"] == recipe["correspondence"] and c["kind"] == "oracle")
+    script = ("import importlib.util,json,sys; "
+              "s=importlib.util.spec_from_file_location('oracle',sys.argv[1]); m=importlib.util.module_from_spec(s); "
+              "s.loader.exec_module(m); print(json.dumps(m.correspondence(json.load(sys.stdin))))")
+    rows = []
+    for rev, p in prepared.items():
+        actual = [r for r in records if r.kind == "jvm-control" and r.revision == rev]
+        if not actual:
+            return rows, f"{rev} has no JVM correspondence control"
+        where = runtime._preparation_dir(p)
+        cp = runtime._checked(where, p)
+        ordered = [{"path": a.path, "sha256": a.sha256, "role": a.role} for a in cp]
+        adapter = next((a for a in cp if a.role == "adapter"), None)
+        if not adapter or not p.source["target"].get("adapterCallsTarget"):
+            return rows, f"{rev} lacks a prepared adapter calling the upstream target"
+        owner, method, desc = runtime_jar.parse_target(recipe["entry"])
+        data = runtime_jar.read_class(where / adapter.path, runtime_jar.internal(owner))
+        if not data or (method, desc) not in runtime_jar.methods(data):
+            return rows, f"{rev} lacks the declared adapter entry"
+        for record in actual:
+            ids = record.identities
+            if (record.status != "exited" or record.exitCode != 0 or not record.observations
+                    or ids.get("classpath") != ordered or ids.get("commit") != p.commit
+                    or ids.get("inputs", {}).get("oracleSha256") != oracle["sha256"]):
+                return rows, f"{rev} lacks complete correspondence observations on the prepared artifacts"
+            source = where / ids["inputs"]["oracle"]
+            if not source.resolve().is_relative_to(where.resolve()) or runtime.sha256(source) != oracle["sha256"]:
+                return rows, f"{rev} correspondence oracle bytes changed"
+            try:
+                result = subprocess.run([sys.executable, "-I", "-c", script, str(source)], capture_output=True,
+                                        input=json.dumps([json.dumps(o) for o in record.observations]), text=True, timeout=30)
+                counts = json.loads(result.stdout) if result.returncode == 0 else {}
+            except (ValueError, OSError, subprocess.TimeoutExpired) as error:
+                return rows, f"{rev} correspondence could not be checked: {error}"
+            rows.append({"revision": rev, "entry": recipe["entry"], "adapterSha256": adapter.sha256,
+                         "subject": p.source["target"], "mapping": recipe["mapping"], "jdk": ids["jdkRelease"], **counts})
+            if counts != {"cases": recipe["cases"], "disagreements": 0}:
+                return rows, f"{rev} failed adapter correspondence on the declared {recipe['cases']} inputs"
+    return rows, None

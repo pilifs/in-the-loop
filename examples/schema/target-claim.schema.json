@@ -38,6 +38,16 @@
         "properties": { "text": { "type": "string", "minLength": 1 }, "basis": { "type": "string", "minLength": 1 } }
       }
     },
+    "adapter": {
+      "description": "A checked static adapter entry and the finite correspondence to the subject method.",
+      "type": "object", "additionalProperties": false, "required": ["entry", "mapping", "correspondence", "cases"],
+      "properties": {
+        "entry": {"type": "string", "pattern": "^[A-Za-z_$][A-Za-z0-9_$.]*#[A-Za-z_$][A-Za-z0-9_$]*\\(.+\\).+$"},
+        "mapping": {"type": "string", "minLength": 1},
+        "correspondence": {"$ref": "#/$defs/name"},
+        "cases": {"type": "integer", "minimum": 1}
+      }
+    },
     "boundEnvironment": {
       "description": "Required values in the executed Statement's model evidence and assumptions.",
       "type": "object", "additionalProperties": false, "minProperties": 1,

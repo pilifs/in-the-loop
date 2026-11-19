@@ -752,6 +752,7 @@ def main(argv=None):
     h = sub.add_parser("handoff", help="the example's claim history, or one task's handoff packet")
     h.add_argument("example")
     h.add_argument("task", nargs="?")
+    h.add_argument("--markdown", action="store_true", help="render claim history for a reader")
     h.add_argument("--claim", help="show one source claim by key or by claim file")
     h.add_argument("--revision", help="show tasks involving this named revision")
     i = sub.add_parser("inventory", help="the gap inventory of every example with a target sidecar")
@@ -775,6 +776,9 @@ def main(argv=None):
             from targets import claim_history
             try:
                 value = claim_history.inventory(folder, example, target, args.claim, args.revision)
+                if args.markdown:
+                    sys.stdout.write(claim_history.markdown(value))
+                    return
             except ValueError as error:
                 parser.error(str(error))
         elif args.claim or args.revision:
