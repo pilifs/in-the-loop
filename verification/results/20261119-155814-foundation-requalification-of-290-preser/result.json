@@ -1,0 +1,231 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261119-155814-foundation-requalification-of-290-preser",
+  "title": "Foundation requalification of 290 preservation",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 16.4s, peak 263.6 MiB (estimated 10m00s, 4.0 GiB); 3 output file(s) changed; signals: jvmcontract:holds×2",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261119-155814-foundation-requalification-of-290-preser.json",
+    "sha256": "3827309df0f0e170d8f82be0379ecb9efc2713eaa9e3712ff02504422d461a98",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261119-155814-foundation-requalification-of-290-preser",
+      "title": "Foundation requalification of 290 preservation",
+      "description": "After the independent shared-callee challenge passed, repeat only the frozen preservation comparison for example 290 on the same checker revision. Use the predecessor job's semantic bounds, artifacts, deadline and machine budget. Collect under a fresh output path to preserve the earlier evidence.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "B11"
+      ],
+      "links": {
+        "jobs": [
+          "20261117-213024-examples-289-and-290-preservation-again"
+        ],
+        "examples": [
+          "290"
+        ],
+        "commits": [
+          "345f6fe4259dff4a7b940510d18f2d4c2e0defaa"
+        ]
+      },
+      "expected": "The releases agree on the frozen preservation domain, subject to every assumption in the collected outcome.",
+      "submitted": {
+        "at": "2026-11-19T15:58:14+00:00",
+        "session": "01a1f467-856b-7d02-9458-ab076e5fef2f"
+      },
+      "revision": "345f6fe4259dff4a7b940510d18f2d4c2e0defaa",
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "patch",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "10m",
+        "timeout": "1h",
+        "notes": "capped probes: 289 about 60 s, 290 seconds, under 4 GiB; plus the release build and the pinned JARs"
+      },
+      "steps": [
+        {
+          "name": "290 preservation at its frozen bounds",
+          "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py preservation --timeout 1800 --work verification/.work-290/foundation-i028",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/.work-290/foundation-i028/preservation/outcome.json",
+        "verification/.work-290/foundation-i028/preservation/evidence.json",
+        "verification/.work-290/foundation-i028/preservation/work/pair/RegressionPair.java"
+      ]
+    }
+  },
+  "sourceCommit": "345f6fe4259dff4a7b940510d18f2d4c2e0defaa",
+  "startedAt": "2026-11-19T15:59:14+00:00",
+  "finishedAt": "2026-11-19T15:59:33+00:00",
+  "wallSeconds": 19.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1348192,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 600.0,
+    "notes": "capped probes: 289 about 60 s, 290 seconds, under 4 GiB; plus the release build and the pinned JARs"
+  },
+  "usage": {
+    "peakMemoryBytes": 276430848,
+    "wallSeconds": 16.4,
+    "cpuSeconds": 22.3,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "290 preservation at its frozen bounds",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py preservation --timeout 1800 --work verification/.work-290/foundation-i028",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 16.431,
+      "cpuSeconds": 22.349,
+      "cpuThrottledSeconds": 2.109,
+      "peakMemoryBytes": 276430848,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-290-preservation-at-its-frozen.log",
+        "lines": 12,
+        "bytes": 3157,
+        "sha256": "bd50d65d989f8b4c0671db4209b3afb1412e97072da34ba2a90ffbbe1d14da78",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 2
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 6,
+          "text": "✓ example290.adapter.MatcherSelectionAdapter#select: the two versions agree on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8, outside `!(servlets.length == 1 && servlets[0] == 0)` (the pair's property, below)",
+          "groups": [
+            "example290.adapter.MatcherSelectionAdapter#select: the two versions agree on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8, outside `!(servlets.length == 1 && servlets[0] == 0)` (the pair's property, below)"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 8,
+          "text": "✓ RegressionPair#agree satisfies `result` on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8 (jvmcontract's own checker (CaDiCaL): 1 properties proved over servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of ",
+          "groups": [
+            "RegressionPair#agree satisfies `result` on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8 (jvmcontract's own checker (CaDiCaL): 1 properties proved over servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of length ≤ 8, not null, each element a String of ≤ 8 code units of its own or null; no two the same array in 5.3 s; loops unwound 64 times with unwinding assertions)"
+          ]
+        }
+      ],
+      "tail": [
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261119-155814-foundation-requalification-of-290-preser/examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/replay/adapter/example290/adapter/SelectionRegistry.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261119-155814-foundation-requalification-of-290-preser/examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/replay/adapter/example290/adapter/SelectionRegistry.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-290/foundation-i028/preservation/work/pair/RegressionPair.java) calls the previous version's example290.adapter.MatcherSelectionAdapter#select, relocated under `before`, and then the new one's on the same i",
+        "✓ example290.adapter.MatcherSelectionAdapter#select: the two versions agree on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8, outside `!(servlets.length == 1 && servlets[0] == 0)` (the pair's property, below)",
+        "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"java\"; the names are servlets, method, patterns); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target",
+        "✓ RegressionPair#agree satisfies `result` on every input where java.util.Arrays.stream(servlets).allMatch(s -> s == 0 || s == 1) && method >= -1 && method < 8 (jvmcontract's own checker (CaDiCaL): 1 properties proved over servlets: int[] of length ≤ 8, not null × method: int × patterns: String[] of ",
+        "  not vacuous: agree(servlets=[], method=4, patterns={null, null, null, null, null, null, null, null}) reaches the calls",
+        "  outside the allowed change: agree(servlets=[0], method=4, patterns={null, null, null, null, null, null, null, null}) lies outside `!(servlets.length == 1 && servlets[0] == 0)`, so both versions are called on it",
+        "",
+        "verdict: verified (expected verified); paths 573, solver calls 1087, variables 7907; outcome in verification/.work-290/foundation-i028/preservation/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-290/foundation-i028/preservation/outcome.json",
+      "change": "added",
+      "bytes": 57785,
+      "sha256": "b0d025bb3be35ece8d4987d572b709a6e34c2c825f4b9ce67f879963632bf895",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/foundation-i028/preservation/evidence.json",
+      "change": "added",
+      "bytes": 6070,
+      "sha256": "4608835f27ff2d5e5930737827f1bc701bf1351a059ffab98443f017eca10bdc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-290/foundation-i028/preservation/work/pair/RegressionPair.java",
+      "change": "added",
+      "bytes": 2874,
+      "sha256": "705be563d02de93457eb9c70ed71ff12883be7a680797ea24819f55ebbe9572c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-19T15:59:52+00:00",
+    "applied": [
+      "verification/.work-290/foundation-i028/preservation/outcome.json",
+      "verification/.work-290/foundation-i028/preservation/evidence.json",
+      "verification/.work-290/foundation-i028/preservation/work/pair/RegressionPair.java"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "a39e4ef324774be275faf38686ce66b7f145a6e8",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/a39e4ef324774be275faf38686ce66b7f145a6e8/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}
