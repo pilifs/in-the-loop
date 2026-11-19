@@ -76,6 +76,32 @@ headless shell (pinned at 158.0.8127.36), at `~/.cache/in-the-loop/browsers/curr
 **Why:** the project needs sources that research APIs do not serve, and a browser that follows links on the open
 web must not carry the user's logins or write anywhere in their name.
 
+## Requests to the web are plain, few and one at a time
+
+Every request an agent sends leaves from the user's own address, and a site that takes it for a scraper or a bot
+can block that address for the user too. The user decided on 2026-11-19 that agents read the web only in plain,
+targeted requests at a low volume. This holds for every tool: `curl`, a script, WebFetch, the headless browser.
+
+- **Plain.** The tool's own User-Agent, never one made to look like a person's browser, and no header that names
+  the user or the project. No proxy, VPN or other address to send from.
+- **A refusal is an answer.** A bot check, a CAPTCHA, HTTP 403 or 451, or a login wall ends the attempt at that
+  host. Don't retry with another User-Agent, and don't send the browser to get past it: read the same content
+  from another source (an API, a mirror, the arXiv copy, the release on Maven Central), or report that it could
+  not be read. A 429 or 503 may be retried once, after its `Retry-After`; a second refusal ends it.
+- **One at a time.** No parallel requests (`xargs -P`, threads, several fetches to one host in one turn), at
+  least a second between two requests to one host, and an API's own published limit where it is slower (arXiv's
+  3 seconds, NVD's 6 without a key).
+- **Few.** The requests the question needs, a few dozen at most for a task. No crawling, no following links
+  beyond the question, no bulk downloads, no mirroring: where many files are needed, one archive (a git clone, a
+  release JAR, a Zenodo record) rather than many pages. A page fetched once is read again from the saved copy.
+- **The streams of a run share the address**, with its watcher and helpers, so each keeps its research to what
+  its task needs.
+- **Checking links** (a page's sources, the research router) follows the same rules: one at a time, `HEAD` where
+  the server takes it.
+
+**Why:** the user's address is theirs, used for everything else they do. On 2026-11-19 a check of a page's 60 links
+sent 12 requests at a time with a browser-like User-Agent: the kind of traffic this rule is there to prevent.
+
 ## Check for a decision before fixing an infrastructure problem met mid-task
 
 Look in [`verification/findings.md`](../verification/findings.md) and the run's decisions
