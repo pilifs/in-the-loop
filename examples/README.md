@@ -543,6 +543,11 @@ observed capability gaps across these targets, by distinct families and blocked 
 reproducer, owner module and closure test, and keeps the predicted ones apart; `find.py --gap` takes its gap ids.
 `build.py --index-only` and `--render-only` rewrite it with the router.
 
+`python3 examples/tools/targets/workflow_handoff.py handoff NNN` groups an example's proof tasks by
+source claim and lists its replay tasks. Each subject has its revisions, expected answer, receipts,
+verification jobs and dated strategy notes. Use `--claim KEY` or `--claim claims/FILE.json` with
+`--revision NAME` to narrow the view. Adding a task ID after the example number prints its full handoff.
+
 Before it reads a verdict, `build.py` decides how the verifier's run ended, and records it in `result.json` as
 `execution`: `completed`, `timed-out`, `killed`, `invalid-output` or `tool-error`, with the exit code and the
 reason. Only a completed run has a verdict. A violation also needs what shows it, such as a counterexample, a

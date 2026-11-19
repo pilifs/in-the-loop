@@ -749,9 +749,11 @@ def main(argv=None):
     import argparse
     parser = argparse.ArgumentParser(description="The handoff packet of a target task, or the gap inventory.")
     sub = parser.add_subparsers(dest="command", required=True)
-    h = sub.add_parser("handoff", help="one task's handoff packet")
+    h = sub.add_parser("handoff", help="the example's claim history, or one task's handoff packet")
     h.add_argument("example")
-    h.add_argument("task")
+    h.add_argument("task", nargs="?")
+    h.add_argument("--claim", help="show one source claim by key or by claim file")
+    h.add_argument("--revision", help="show tasks involving this named revision")
     i = sub.add_parser("inventory", help="the gap inventory of every example with a target sidecar")
     i.add_argument("--markdown", action="store_true", help="as examples/gap-inventory.md, the page")
     args = parser.parse_args(argv)
@@ -769,9 +771,18 @@ def main(argv=None):
         folder, example, target = load(folders[0])
         if target is None:
             sys.exit(f"example {args.example} has no target sidecar")
-        if args.task not in [t["id"] for t in target["tasks"]]:
+        if args.task is None:
+            from targets import claim_history
+            try:
+                value = claim_history.inventory(folder, example, target, args.claim, args.revision)
+            except ValueError as error:
+                parser.error(str(error))
+        elif args.claim or args.revision:
+            parser.error("give a task or filter the example by --claim and --revision")
+        elif args.task not in [t["id"] for t in target["tasks"]]:
             sys.exit(f"example {args.example} has no task {args.task!r}")
-        value = workflow.handoff(folder, example, target, args.task)
+        else:
+            value = workflow.handoff(folder, example, target, args.task)
     else:
         rows = []
         for folder in sorted(p.parent for p in build.EXAMPLES.glob("*/example.json")):
