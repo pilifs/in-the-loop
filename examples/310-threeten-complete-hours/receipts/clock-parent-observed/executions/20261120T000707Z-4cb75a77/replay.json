@@ -1,0 +1,47 @@
+[
+  {
+    "claimKey": "28248e72756510a9",
+    "entry": "civil.Hours#completeHours(II)J",
+    "inputs": [
+      {
+        "name": "startTick",
+        "type": "int",
+        "value": 74
+      },
+      {
+        "name": "endTick",
+        "type": "int",
+        "value": 125
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "31c5b75569bdd8625b1f56fc9e2ff665634c78535bc42afd67d515ee49aa2ab4",
+        "classpath": [
+          "88043dcfead2a23100f82fd5054577ec6dbf887bbf3ccee2daf5bb07c2df0786",
+          "85a8dc921b282c09d82a1d62bdcf70ed894107331cce5329c33fe6f1fea5a3bf"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint startTick = 74;\nint endTick = 125;\nif (!(startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191)) { System.out.println(\"outside\"); return; }\nlong result = 0;\nThrowable failure = null;\ntry { result = civil.Hours.completeHours(startTick, endTick); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == ((endTick - startTick) * 15) / 60));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          13,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  }
+]
