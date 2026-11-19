@@ -20,11 +20,8 @@ It exits 1 when a verdict is one the fixtures forbid:
 
 - a pair a JVM tells apart is `verified` (a false proof);
 - a pair that agrees is `violation` (a false alarm; a witness that does not replay is to be dropped);
-- with --rule-landed, also when `same` is not `verified`: a rule that refuses everything passes the seven
-  countermodels and proves nothing. `copied` and `twice` are positive controls a rule may leave undecided (arguments
-  equal only by content; two calls on one side), and must never refute. `parsed` is `same` over a callee that calls
-  Integer.parseInt: it is not required either, but a rule that proves `same` and not `parsed` on JDK 25 will not
-  fire on example 307's hashpw(byte[], String) there (the README's section on JDK 25).
+- with --rule-landed, the scalar loop must be verified using related calls. The allocating digest methods in
+  `same`, `copied` and `parsed` must run as written. They may agree by another rule or give a named refusal.
 """
 import argparse
 import json
@@ -40,6 +37,7 @@ ASSUME = 'salt == null || salt.equals("") || salt.equals("a") || salt.equals("b"
 INPUTS = [("a", "b"), ("é", "b"), ("a", "empty"), ("a", "null"), ("null", "b"), ("empty", "a")]
 # name: (the versions agree on every input, the side condition a rule must hold for the pair not to be proved)
 PAIRS = {
+    "scalar": (True, "the unchanged scalar loop has no allocation or externally visible writes"),
     "same": (True, "none: the positive control, 307's shape (the same values, other instructions around the call)"),
     "copied": (True, "none: a harder positive control; the arguments are equal by content, through a copy a loop makes"),
     "twice": (True, "none: a positive control; two calls' results are two objects of the same content"),
@@ -50,7 +48,7 @@ PAIRS = {
     "counted": (False, "the static state the callee reads and writes is part of its arguments and outcome"),
     "caught": (False, "an exception is an outcome, shared like a result"),
     "aliased": (False, "arguments equal by content are not the same arguments when one side's are one array"),
-    "parsed": (True, "none: `same` with a callee that calls Integer.parseInt, which JDK 25 writes with String.format(String, Object[]); a control a rule keyed on the callee's code must still prove on JDK 25"),
+    "parsed": (True, "the allocating digest runs as written, including Integer.parseInt on the selected JDK"),
 }
 
 
@@ -99,11 +97,21 @@ def main():
             out = {"verdict": f"no outcome (exit {done.returncode})", "problem": done.stderr.strip()[-300:]}
         verdict, problem = out["verdict"], out.get("problem") or ""
         native = (out.get("search") or {}).get("native") or {}
-        wrong = (not agree and verdict == "verified") or (agree and verdict == "violation") or (args.rule_landed and name == "same" and verdict != "verified")
+        wrong = (verdict not in ("verified", "violation", "unverifiable")
+                 or (verdict == "unverifiable" and not problem)
+                 or (not agree and verdict == "verified") or (agree and verdict == "violation"))
+        if args.rule_landed:
+            if name == "scalar":
+                wrong |= verdict != "verified" or native.get("calls_related", 0) < 1
+            allocated = {"same": "Hash.digest", "copied": "Hash.digest", "parsed": "Parsing.digest"}.get(name)
+            assumptions = (out.get("stated") or {}).get("assumptions") or []
+            if allocated:
+                wrong |= any(f"app.{allocated} taken as one function" in a["text"] for a in assumptions)
         if wrong:
             bad.append(name)
         rows.append({"method": name, "jvmDiffersAt": differing, "condition": condition, "verdict": verdict, "problem": problem, "wrong": wrong,
                      "seconds": (out.get("search") or {}).get("seconds"), "tied": native.get("tied"), "loops": len(native.get("loops") or []),
+                     "callsRelated": native.get("calls_related", 0),
                      "output": out.get("output")})
         jvm_says = "agree" if agree else f"differ at {differing[0]['password']}/{differing[0]['salt']}: {differing[0]['old']} against {differing[0]['new']}".replace("java.lang.", "")
         print(f"{'WRONG ' if wrong else ''}{name:8} JVM: {jvm_says:58} checker: {verdict}" + (f" ({problem[:150]})" if problem else "")

@@ -87,6 +87,12 @@ public final class Entry {
         return digest;
     }
 
+    /** A shared loop over an integer, within the one-function rule. */
+    public static int scalar(String password, String salt) {
+        int length = password == null ? 0 : password.length();
+        return Hash.rounds(length);
+    }
+
     /** Each method on a few inputs, one line a method: `name password/salt=result ...`. An exception is its
      * class's name. Each call starts from a state no other call has touched only for the first input: the
      * differences shown are those of one call each, in a JVM of its own (the README's table, `check.py`). */
@@ -96,6 +102,7 @@ public final class Entry {
         String got;
         try {
             switch (args[0]) {
+                case "scalar": got = Integer.toString(scalar(password, salt)); break;
                 case "same": got = same(password, salt); break;
                 case "copied": got = copied(password, salt); break;
                 case "twice": got = twice(password, salt); break;

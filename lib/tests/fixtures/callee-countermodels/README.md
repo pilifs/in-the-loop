@@ -58,8 +58,10 @@ So today's ties are sound on all seven and prove 307's shape in the miniature. W
 307 itself: there the claim's unwinding (513) is within every loop's bound, so no loop is summarized and nothing is
 tied, and at the default unwinding the summaries cost what 287's do.
 
-`check.py --rule-landed` also requires `same` verified, so that a rule which refuses every call is not mistaken for
-a sound one. A rule should be tried with each of its side conditions switched off in turn: with the condition a row
+`check.py --rule-landed` now uses `scalar` for its admitted control. The two callers invoke the same
+600-round integer loop. Its proof must report a related call. The allocating callees of `same`, `copied`
+and `parsed` fall outside I029's rule and can give a named refusal. The table above records the earlier checker.
+A rule should be tried with each of its side conditions switched off in turn: with the condition a row
 names off, that row is the one that must turn **verified**, as the stream did for its `mix` countermodels
 (`lib/tests/pairing.rs`). If no row turns, the condition has no countermodel here and needs one.
 

@@ -111,7 +111,14 @@ public final class Entry {
         return (k % 2 == 0 ? second[0] : 0) + 2 + bits - bits;
     }
 
+    public static int branchText(int k) {
+        String first = Shared.text(0);
+        String second = Shared.text(1);
+        String selected = first;
+        return selected.equals(Shared.text(0)) ? 1 : 0;
+    }
+
     public static void main(String[] args) {
-        System.out.println("stale=" + stale(0) + " swapped=" + swapped(1));
+        System.out.println("stale=" + stale(0) + " swapped=" + swapped(1) + " text=" + branchText(0) + "," + branchText(1));
     }
 }

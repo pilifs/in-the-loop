@@ -9,6 +9,14 @@ public final class Hash {
         TABLE[i & 15] += 7;
     }
 
+    /** A loop with scalar state for the admitted control. */
+    public static int rounds(int value) {
+        for (int i = 0; i < 600; i++) {
+            value = 31 * value + i;
+        }
+        return value;
+    }
+
     private int[] state;
 
     private Hash() {}

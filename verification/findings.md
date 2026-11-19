@@ -81,6 +81,16 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Closes when**: the fixed rule has had an adversarial pass with its countermodels tested; 287, 289, 290 and 307
   are accepted on frozen-bound jobs that ran on the final checker; I026 is decided; and 288's closeout is recorded.
 
+**Foundation pass, 2026-11-19.** The two-predecessor unit test
+`absorb_preserves_each_predecessors_opaque_string_result` collects both heaps, swaps the numbering of two live
+String results on one branch and checks both guards after the actual merge. A call seen on only one path is dropped.
+The public native checker refuted `stale` at 0, `swapped` at 1 and `branchText` at 1. The independent JVM test in
+`lib/tests/record_countermodels.rs` distinguished each pair at those inputs. For `kept` the checker reported
+incomplete unwinding and for `around` it reached its call-depth limit. The two JVM controls in
+`lib/tests/allocation_countermodels.rs` distinguished both outcomes. The admitted scalar control in
+`callee-countermodels/check.py` verified with 88 related calls. The full comparison is queued in job
+`20261119-154132-challenge-i028-and-i029-on-the-shared-ca`.
+
 ### VF-043: one-value binding checks accept wrong binders in 286 and 288; claims should bind sequences of permitted and denied updates
 
 - **Status**: open (the user's decision on 2026-11-18, run-streams-domain-advances-D036: for later, with the coming

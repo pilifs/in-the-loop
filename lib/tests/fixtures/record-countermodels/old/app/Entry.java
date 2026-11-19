@@ -127,7 +127,14 @@ public final class Entry {
         return second[0] + a.length + b.length + bits - bits;
     }
 
+    public static int branchText(int k) {
+        String first = Shared.text(0);
+        String second = Shared.text(1);
+        String selected = (k & 1) == 0 ? first : second;
+        return selected.equals(Shared.text(0)) ? 1 : 0;
+    }
+
     public static void main(String[] args) {
-        System.out.println("stale=" + stale(0) + " swapped=" + swapped(1));
+        System.out.println("stale=" + stale(0) + " swapped=" + swapped(1) + " text=" + branchText(0) + "," + branchText(1));
     }
 }

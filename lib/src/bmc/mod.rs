@@ -2450,7 +2450,7 @@ impl<'a> Engine<'a> {
         for mut path in group {
             path.resumed = true;
             if let Some(into) = merged.iter_mut().find(|m| same_shape(m, &path)) {
-                self.absorb(into, &path);
+                Self::absorb(&mut self.b, into, &path);
                 self.merges += 1;
                 continue;
             }
@@ -2470,7 +2470,7 @@ impl<'a> Engine<'a> {
             }
             // An object only one path has is itself on both sides: nothing of it is chosen.
             path.objects = theirs.into_iter().zip(&into.objects).map(|(obj, own)| obj.unwrap_or_else(|| own.clone())).collect();
-            self.absorb(into, &path);
+            Self::absorb(&mut self.b, into, &path);
             self.merges += 1;
         }
         merged
@@ -2514,7 +2514,7 @@ impl<'a> Engine<'a> {
         }
     }
 
-    fn absorb(&mut self, into: &mut Path, other: &Path) {
+    fn absorb(b: &mut Blaster, into: &mut Path, other: &Path) {
         into.loose |= other.loose;
         if into.summarized != other.summarized {
             into.summarized = Rc::new(into.summarized.intersection(&other.summarized).cloned().collect());
@@ -2523,9 +2523,9 @@ impl<'a> Engine<'a> {
         let common: Vec<Lit> = into.cond[prefix..].iter().copied().filter(|l| other.cond[prefix..].contains(l)).collect();
         let rest_into: Vec<Lit> = into.cond[prefix..].iter().copied().filter(|l| !common.contains(l)).collect();
         let rest_other: Vec<Lit> = other.cond[prefix..].iter().copied().filter(|l| !common.contains(l)).collect();
-        let takes_into = self.b.all(&rest_into);
-        let takes_other = self.b.all(&rest_other);
-        let either = self.b.or(takes_into, takes_other);
+        let takes_into = b.all(&rest_into);
+        let takes_other = b.all(&rest_other);
+        let either = b.or(takes_into, takes_other);
         into.cond.truncate(prefix);
         into.cond.extend(common);
         if either != TRUE {
@@ -2541,7 +2541,7 @@ impl<'a> Engine<'a> {
                 let Some(d) = theirs.get(&c.id) else { continue };
                 let mut c = c.clone();
                 c.result = match (&c.result, &d.result) {
-                    (Some(x), Some(y)) => choose(&mut self.b, takes_into, x, y),
+                    (Some(x), Some(y)) => choose(b, takes_into, x, y),
                     _ => None,
                 };
                 calls.push(c);
@@ -2556,22 +2556,22 @@ impl<'a> Engine<'a> {
         for (f, g) in into.frames.iter_mut().zip(&other.frames) {
             for (x, y) in f.locals.iter_mut().zip(&g.locals) {
                 if let (Some(x), Some(y)) = (x, y) {
-                    choose(&mut self.b, x, y);
+                    choose(b, x, y);
                 }
             }
             for (x, y) in f.stack.iter_mut().zip(&g.stack) {
-                choose(&mut self.b, x, y);
+                choose(b, x, y);
             }
         }
         for (x, y) in into.statics.values_mut().zip(other.statics.values()) {
-            choose(&mut self.b, x, y);
+            choose(b, x, y);
         }
         for (o, q) in into.objects.iter_mut().zip(&other.objects) {
             // An object that was there before a summarized method was entered, on either path.
             o.given |= q.given;
             o.before |= q.before;
             for (name, x) in o.fields.iter_mut() {
-                choose(&mut self.b, x, &q.fields[name]);
+                choose(b, x, &q.fields[name]);
             }
             if o.same != q.same {
                 // One guard per object it may be: this path's where it is taken, the other's elsewhere.
@@ -2580,7 +2580,7 @@ impl<'a> Engine<'a> {
                 let mut same: Vec<(Lit, usize)> = Vec::new();
                 for t in targets {
                     let (mine, theirs) = (guard(&o.same, t), guard(&q.same, t));
-                    let g = if mine == theirs { mine } else { self.b.ite(takes_into, mine, theirs) };
+                    let g = if mine == theirs { mine } else { b.ite(takes_into, mine, theirs) };
                     if g != FALSE {
                         same.push((g, t));
                     }
@@ -2595,25 +2595,25 @@ impl<'a> Engine<'a> {
             let unknown = o.unknown;
             if let (Some(x), Some(y)) = (&mut o.array, &q.array) {
                 if x.length != y.length {
-                    x.length = self.b.ite_bits(takes_into, &x.length, &y.length);
+                    x.length = b.ite_bits(takes_into, &x.length, &y.length);
                 }
                 // Cells that hold any values on either path hold any on both.
                 if unknown {
                     continue;
                 }
                 // A text's cells past the other's are its own where it is taken, and nothing's elsewhere.
-                let blank = self.b.constant(0, 16);
+                let blank = b.constant(0, 16);
                 while x.cells.len() < y.cells.len() {
                     x.cells.push(blank.clone());
                 }
                 for (i, c) in x.cells.iter_mut().enumerate() {
                     let d = y.cells.get(i).unwrap_or(&blank);
                     if c != d {
-                        *c = self.b.ite_bits(takes_into, c, d);
+                        *c = b.ite_bits(takes_into, c, d);
                     }
                 }
                 for (c, d) in x.refs.iter_mut().zip(&y.refs) {
-                    choose(&mut self.b, c, d);
+                    choose(b, c, d);
                 }
             }
         }
@@ -5592,6 +5592,41 @@ mod tests {
         assert_eq!(path.objects.len(), 1);
         assert!(path.calls[0].result.is_none(), "a result let go of: {:?}", path.calls[0].result);
         assert!(matches!(path.calls[1].result, Some(Val::R(Some(0)))), "a result reached, by its new number: {:?}", path.calls[1].result);
+    }
+
+    #[test]
+    fn absorb_preserves_each_predecessors_opaque_string_result() {
+        let mut b = Blaster::new();
+        let guard = b.fresh(1)[0];
+        let predecessor = |condition, first, second, branch_call| {
+            let mut string = Obj::new(STRING);
+            string.limit = Some(ties::ONE_FUNCTION_RESULT.into());
+            let mut path = Path {
+                frames: Vec::new(), cond: vec![condition], models: Vec::new(), undecided: false,
+                resumed: false, objects: vec![string.clone(), string], literals: BTreeMap::new(),
+                classes: BTreeMap::new(), probing: None, loose: false, summarized: Default::default(),
+                statics: BTreeMap::from([
+                    (("app/Caller".into(), "a".into()), Val::R(Some(first))),
+                    (("app/Caller".into(), "b".into()), Val::R(Some(second))),
+                ]),
+                calls: Rc::new(vec![
+                    ties::Call::returning(1, Val::R(Some(0))), ties::Call::returning(2, Val::R(Some(1))),
+                    ties::Call::returning(branch_call, Val::R(Some(0))),
+                ]),
+            };
+            collect(&mut path);
+            path
+        };
+        // Both calls precede the fork. The caller swaps its two live roots on only one branch,
+        // so collection assigns opposite object numbers to the same two call results.
+        let mut left = predecessor(guard, 0, 1, 3);
+        let right = predecessor(-guard, 1, 0, 4);
+        assert!(same_shape(&left, &right));
+        Engine::absorb(&mut b, &mut left, &right);
+        assert_eq!(left.calls.iter().map(|c| c.id).collect::<Vec<_>>(), vec![1, 2]);
+        let choices = |i: usize| left.calls[i].result.as_ref().unwrap().options().unwrap();
+        assert_eq!(choices(0), vec![(guard, Some(0)), (-guard, Some(1))]);
+        assert_eq!(choices(1), vec![(-guard, Some(0)), (guard, Some(1))]);
     }
 
     /// The module's table says what the engine does with every instruction the decoder gives (each opcode decoded
