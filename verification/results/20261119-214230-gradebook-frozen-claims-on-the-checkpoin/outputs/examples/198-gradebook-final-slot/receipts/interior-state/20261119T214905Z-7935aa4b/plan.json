@@ -1,0 +1,196 @@
+{
+  "plan": {
+    "example": "198",
+    "task": "interior-state",
+    "kind": "equivalence",
+    "relation": "preservation",
+    "target": "gradebook.ScoreSheet#write([III)I",
+    "revisions": [
+      "base",
+      "regression"
+    ],
+    "claim": {
+      "task": "interior-state",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "gradebook.ScoreSheet#write([III)I",
+      "file": "claims/interior-state.json",
+      "sha256": "34559be52e21d2e22da8c712c9ee35661295e9937ed01009bec6a035b9531a6c",
+      "property": "interior-state",
+      "claimKind": "preservation",
+      "statement": "For slots preceding the last slot, both revisions leave identical scores in every cell.",
+      "assume": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2)) && slot < scores.length - 1",
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        {
+          "kind": "array-parameter",
+          "parameter": "scores"
+        }
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 3
+      },
+      "explicitBounds": {
+        "maxArrayLength": 3,
+        "unwind": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "finite-driver",
+          "kind": "driver",
+          "path": "driver/gradebook/GradeCases.java",
+          "sha256": "f0da8c690cd70ebd2704f8d2f10b1638d53ee014bad75ab3bb2ca2ee91cd6e49"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "ae861a71a63724d7f66330f3a7e32f6a547b525e76768dc4d21641fd9c526b05"
+        }
+      ],
+      "key": "3afa0438edb8bf75"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "base",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "base",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "regression",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "regression",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/interior-state"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261119-214230-gradebook-frozen-claims-on-the-checkpoin/examples/198-gradebook-final-slot",
+    "network": false
+  },
+  "inputs": {
+    "example": "198",
+    "task": "interior-state",
+    "kind": "equivalence",
+    "relation": "preservation",
+    "target": "gradebook.ScoreSheet#write([III)I",
+    "revisions": [
+      "base",
+      "regression"
+    ],
+    "claim": {
+      "task": "interior-state",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "gradebook.ScoreSheet#write([III)I",
+      "file": "claims/interior-state.json",
+      "sha256": "34559be52e21d2e22da8c712c9ee35661295e9937ed01009bec6a035b9531a6c",
+      "property": "interior-state",
+      "claimKind": "preservation",
+      "statement": "For slots preceding the last slot, both revisions leave identical scores in every cell.",
+      "assume": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2)) && slot < scores.length - 1",
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        {
+          "kind": "array-parameter",
+          "parameter": "scores"
+        }
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 3
+      },
+      "explicitBounds": {
+        "maxArrayLength": 3,
+        "unwind": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "finite-driver",
+          "kind": "driver",
+          "path": "driver/gradebook/GradeCases.java",
+          "sha256": "f0da8c690cd70ebd2704f8d2f10b1638d53ee014bad75ab3bb2ca2ee91cd6e49"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "ae861a71a63724d7f66330f3a7e32f6a547b525e76768dc4d21641fd9c526b05"
+        }
+      ],
+      "key": "3afa0438edb8bf75"
+    },
+    "artifacts": [
+      {
+        "revision": "base",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "base",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "regression",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "regression",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "20dbc8cd833be85af1ea95f711ccd827196385b81f34b4734b162f8249a9a395"
+}
