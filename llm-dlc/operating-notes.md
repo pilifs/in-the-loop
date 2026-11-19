@@ -57,6 +57,8 @@ headless shell (pinned at 158.0.8127.36), at `~/.cache/in-the-loop/browsers/curr
   user in `~/.claude.json` and `~/.codex/config.toml`). It runs headless, with a new empty profile for each
   session (`--isolated`), and with the package's usage statistics to Google turned off. From a shell:
   `chrome-headless-shell --headless --user-data-dir="$(mktemp -d)" --dump-dom URL`.
+- **Where to look** for a given question (a JDK guarantee, a solver's operator, a Spring fix, a published
+  technique, another tool) is in the [research router](research-router.md), host by host.
 - **Prefer an API or a plain fetch** where one serves the content (arXiv, OpenAlex, Semantic Scholar, the GitHub
   API, a raw file): the browser is for what they do not reach.
 - **Read only.** No logins, no accounts, no forms submitted, nothing posted. Never `--no-sandbox`: Chromium's
