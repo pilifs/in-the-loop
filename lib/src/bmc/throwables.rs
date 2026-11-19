@@ -23,6 +23,8 @@
 //!   of the two message methods is overridden.
 //! - `Object.getClass()` of an object of a JDK class below `Throwable` that no JDK call returned: its class is the
 //!   one `new` or the engine's own throw named ([`super::runtime`]).
+//! - An exception constructed while running a JDK bytecode model retains its class. Reading its detail message,
+//!   localized message, cause or text refuses the observation because the model supplied the constructor arguments.
 //! - `StringBuilder.append(Object)` of such an exception appends its `toString()` as above, of a String its units,
 //!   and of null `null`; of any other object it is the JDK call it was ([`super::strings`]).
 //!
@@ -40,6 +42,9 @@ const MESSAGE: &str = "java/lang/Throwable#detailMessage";
 
 /// Where it holds the cause: the object itself for none, as the JDK's `Throwable.cause` does.
 const CAUSE: &str = "java/lang/Throwable#cause";
+
+/// The calling JDK model chose the constructor arguments. The real JDK can supply different details.
+const MODEL_DETAILS: &str = "java/lang/Throwable#modelDetails";
 
 /// The descriptors of `Throwable`'s constructors whose effect the engine keeps.
 const KEPT: [&str; 3] = ["()V", "(Ljava/lang/String;)V", "(Ljava/lang/String;Ljava/lang/Throwable;)V"];
@@ -142,13 +147,22 @@ impl Engine<'_> {
                 [m, c] => (m.clone(), c.clone()),
                 _ => return None,
             };
-            path.objects[o].fields.insert(MESSAGE.to_string(), message);
-            path.objects[o].fields.insert(CAUSE.to_string(), cause);
+            if self.cp.has_models() && path.frames.iter().any(|frame| self.cp.runs_model(&frame.class.name)) {
+                path.objects[o].fields.insert(MODEL_DETAILS.to_string(), Val::R(None));
+            } else {
+                path.objects[o].fields.insert(MESSAGE.to_string(), message);
+                path.objects[o].fields.insert(CAUSE.to_string(), cause);
+            }
             self.advance(path);
             return Some(Ok(None));
         }
         let from = if special { member.owner.clone() } else { class.clone() };
         let method = (member.name.as_str(), member.descriptor.as_str());
+        if path.objects[o].fields.contains_key(MODEL_DETAILS)
+            && matches!(method, GET_MESSAGE | GET_LOCALIZED_MESSAGE | ("getCause", "()Ljava/lang/Throwable;") | ("toString", "()Ljava/lang/String;"))
+        {
+            return Some(unsupported(format!("{}.{} reads exception details supplied by a JDK model; the JDK's message and cause are unqualified", class.replace('/', "."), member.name)));
+        }
         if !path.objects[o].fields.contains_key(CAUSE) || !throwables_own(self.cp, &from, method) {
             return None;
         }
@@ -222,6 +236,9 @@ impl Engine<'_> {
     /// `None` where it is the JDK call, `Some(Err)` where reading the message ends the path.
     pub(super) fn throwable_text(&mut self, path: &mut Path, o: usize) -> Option<Result<Text, Step>> {
         let class = path.objects[o].class.clone();
+        if path.objects[o].fields.contains_key(MODEL_DETAILS) {
+            return Some(Err(unsupported(format!("{}.toString reads exception details supplied by a JDK model; the JDK's message is unqualified", class.replace('/', ".")))));
+        }
         if !path.objects[o].fields.contains_key(CAUSE) || ![("toString", "()Ljava/lang/String;"), GET_LOCALIZED_MESSAGE, GET_MESSAGE].iter().all(|m| throwables_own(self.cp, &class, *m)) {
             return None;
         }

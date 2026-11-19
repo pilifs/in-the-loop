@@ -145,6 +145,15 @@ incomplete unwinding and for `around` it reached its call-depth limit. The two J
 - **Tracked in**: run-streams-domain-advances-D036; the inbox items named.
 - **Closes when**: each is fixed with its checker-side test, or decided not to be.
 
+**Foundation pass, 2026-11-19.** The four I018 countermodels now receive a named refusal when they read
+exception details supplied by a JDK model. Their JVM controls still observe the real messages.
+`modeled_exception_details_do_not_establish_the_four_jdk_countermodels` exercises the public native checker.
+For I014, `indirect_setting_reads_refuse_the_observed_initializer` and
+`startup_setting_reads_refuse_the_observed_initializer` exercise all six known setting reads. Each refuses
+the observation before the setting can support a proof. The existing JVM test varies every setting independently.
+The scan covers the observed class and application classes initialized alongside it. A reference in a method
+that did not execute can also cause refusal.
+
 ### VF-041: 287's preservation is proved for terminating runs only, and changes.py drops the checker's assumptions from what it reports
 
 - **Reporting fix, 2026-11-19.** Both the JSON and text forms of `changes.py 287` now carry the accepted

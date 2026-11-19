@@ -9,9 +9,26 @@
 
 use std::path::PathBuf;
 use std::process::Command;
+use std::sync::OnceLock;
+
+use jvmcontract::{property, Engine, Verdict};
 
 fn has(tool: &str) -> bool {
     Command::new(tool).arg("-version").output().is_ok()
+}
+
+fn classes() -> Option<&'static PathBuf> {
+    static CLASSES: OnceLock<Option<PathBuf>> = OnceLock::new();
+    CLASSES.get_or_init(|| {
+        if !has("javac") || !has("java") {
+            return None;
+        }
+        let source = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/throwable-countermodels/tm/Thrown.java");
+        let out = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("throwable-countermodels-classes");
+        let status = Command::new("javac").args(["-g", "-parameters", "-proc:none", "-nowarn", "--release", "21", "-d"]).arg(&out).arg(source).status().unwrap();
+        assert!(status.success());
+        Some(out)
+    }).as_ref()
 }
 
 /// On a JVM each message is the JDK's, not none: `listed` 2, `listedText` the 53 units of
@@ -20,17 +37,29 @@ fn has(tool: &str) -> bool {
 #[test]
 fn each_jdk_message_is_there_on_a_jvm() {
     jvmcontract::tool_tier!();
-    if !has("javac") || !has("java") {
-        return;
-    }
-    let sources = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/throwable-countermodels/tm");
-    let out = PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("throwable-countermodels-classes");
-    let _ = std::fs::remove_dir_all(&out);
-    let mut files: Vec<PathBuf> = std::fs::read_dir(&sources).unwrap().map(|e| e.unwrap().path()).collect();
-    files.sort();
-    let status = Command::new("javac").args(["-g", "-parameters", "-proc:none", "-nowarn", "--release", "21", "-d"]).arg(&out).args(&files).status().expect("javac runs");
-    assert!(status.success(), "the fixture compiles");
-    let run = Command::new("java").env_remove("JAVA_TOOL_OPTIONS").arg("-cp").arg(&out).arg("tm.Thrown").output().expect("java runs");
+    let Some(out) = classes() else { return };
+    let run = Command::new("java").env_remove("JAVA_TOOL_OPTIONS").arg("-cp").arg(out).arg("tm.Thrown").output().expect("java runs");
     assert!(run.status.success(), "{}", String::from_utf8_lossy(&run.stderr));
     assert_eq!(String::from_utf8_lossy(&run.stdout).trim(), "listed=2 listedText=53 sized=2 sizedLocalized=28");
+}
+
+#[test]
+fn modeled_exception_details_do_not_establish_the_four_jdk_countermodels() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    for (name, assume, assertion) in [
+        ("listed", "k >= 1 && k < 3", "result != 2"),
+        ("listedText", "k == 2", "result == 35"),
+        ("sized", "k < 0", "result != 2"),
+        ("sizedLocalized", "k == -1", "result == -1"),
+    ] {
+        let mut options = property::Options::new(std::slice::from_ref(classes), &format!("tm.Thrown#{name}"));
+        options.engine = Engine::Native;
+        options.jbmc = "/nonexistent/jbmc".into();
+        options.assume = Some(assume.into());
+        options.assert = Some(assertion.into());
+        let outcome = property::run(&options).unwrap();
+        assert_eq!(outcome.verdict, Verdict::Unverifiable, "{name}: {}", outcome.output);
+        assert!(outcome.problem.as_deref().is_some_and(|p| p.contains("exception details supplied by a JDK model")), "{name}: {}", outcome.output);
+    }
 }

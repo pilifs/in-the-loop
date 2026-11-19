@@ -38,7 +38,8 @@
    "log:2a57c9145b731f56": "log:2a57c9145b731f5630b7d63c9e4dd9e494aa5d928201a4ec0c936f217b394fc0",
    "log:b38cb00ee8e399df": "log:b38cb00ee8e399df658a029f6c5f27883260d8a5bdaeb066de451cd7b1f2e2ba",
    "log:7ebf2c29fcceed1c": "log:7ebf2c29fcceed1cbbce8e9ec5d6c6d686f807ff996a2009d81e9158ee1f0271",
-   "log:b08ea89759d5649b": "log:b08ea89759d5649b7818b2275e6b734ae4ae7c55ac67d66fee6484ae9fb7230d"
+   "log:b08ea89759d5649b": "log:b08ea89759d5649b7818b2275e6b734ae4ae7c55ac67d66fee6484ae9fb7230d",
+   "log:48bdfe2f2e27f223": "log:48bdfe2f2e27f2231a6bd7232fa183b6eef68c82fa245ca023fc1922a666d3fa"
   }
  },
  "summary": {
@@ -156,11 +157,11 @@
    "lib/tests/model_countermodels.rs": {"unit": 0, "tool": 2, "proof": 0, "estimated": 0, "retier pending": 0},
    "lib/tests/reach_countermodels.rs": {"unit": 0, "tool": 2, "proof": 0, "estimated": 0, "retier pending": 0},
    "lib/tests/rule_countermodels.rs": {"unit": 0, "tool": 3, "proof": 0, "estimated": 0, "retier pending": 0},
-   "lib/tests/setting_countermodels.rs": {"unit": 0, "tool": 1, "proof": 0, "estimated": 0, "retier pending": 0},
+   "lib/tests/setting_countermodels.rs": {"unit": 0, "tool": 3, "proof": 0, "estimated": 0, "retier pending": 0},
    "lib/tests/stand_in_countermodels.rs": {"unit": 0, "tool": 1, "proof": 0, "estimated": 0, "retier pending": 0},
    "lib/tests/stub_countermodels.rs": {"unit": 0, "tool": 1, "proof": 0, "estimated": 0, "retier pending": 0},
    "lib/tests/supertype_countermodels.rs": {"unit": 0, "tool": 2, "proof": 0, "estimated": 0, "retier pending": 0},
-   "lib/tests/throwable_countermodels.rs": {"unit": 0, "tool": 1, "proof": 0, "estimated": 1, "retier pending": 0},
+   "lib/tests/throwable_countermodels.rs": {"unit": 0, "tool": 2, "proof": 0, "estimated": 2, "retier pending": 0},
    "lib/tests/thrown_pair_countermodels.rs": {"unit": 0, "tool": 2, "proof": 0, "estimated": 0, "retier pending": 0},
    "lib/tests/tie_countermodels.rs": {"unit": 0, "tool": 2, "proof": 0, "estimated": 0, "retier pending": 0},
    "lib/src/bmc/throwables.rs": {"unit": 1, "tool": 0, "proof": 0, "estimated": 1, "retier pending": 0},
@@ -959,6 +960,8 @@
   {"file": "lib/tests/rule_countermodels.rs", "name": "logging_a_record_is_not_taken_to_skip_what_its_formatting_runs", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": 0.95, "kind": "at most", "sources": ["log:7ebf2c29fcceed1c"]}, "why": "spawns java, javac, process"},
   {"file": "lib/tests/rule_countermodels.rs", "name": "an_assumed_objects_class_is_not_taken_to_be_its_declared_one", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": 0.76, "kind": "run alone", "runs": 1, "max_seconds": 0.76, "sources": ["log:2a57c9145b731f56"]}, "why": "spawns java, javac, process"},
   {"file": "lib/tests/setting_countermodels.rs", "name": "each_initializer_gives_what_its_setting_says_on_a_jvm", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": 1.0, "kind": "run alone", "runs": 2, "max_seconds": 1.01, "sources": ["log:b08ea89759d5649b"]}, "why": "spawns java, javac, process"},
+  {"file": "lib/tests/setting_countermodels.rs", "name": "indirect_setting_reads_refuse_the_observed_initializer", "tier": "tool", "calls": ["java", "javac", "jvmcontract", "process"], "cost": {"seconds": 1.51, "kind": "at most", "sources": ["log:48bdfe2f2e27f223"]}, "why": "spawns java, javac, jvmcontract, process"},
+  {"file": "lib/tests/setting_countermodels.rs", "name": "startup_setting_reads_refuse_the_observed_initializer", "tier": "tool", "calls": ["java", "javac", "jvmcontract", "process"], "cost": {"seconds": 1.51, "kind": "at most", "sources": ["log:48bdfe2f2e27f223"]}, "why": "spawns java, javac, jvmcontract, process"},
   {"file": "lib/tests/stand_in.rs", "name": "a_stand_in_decides_what_its_samples_bear_out_and_says_so", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": 1.8, "kind": "at most", "sources": ["log:2a57c9145b731f56"]}, "why": "spawns java, javac, process"},
   {"file": "lib/tests/stand_in.rs", "name": "a_stand_in_covers_only_a_receiver_of_exactly_its_class_and_what_it_does_not_hand_back", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": 1.8, "kind": "at most", "sources": ["log:2a57c9145b731f56"]}, "why": "spawns java, javac, process"},
   {"file": "lib/tests/stand_in.rs", "name": "a_stand_in_its_samples_do_not_bear_out_is_refused", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": 1.8, "kind": "at most", "sources": ["log:2a57c9145b731f56"]}, "why": "spawns java, javac, process"},
@@ -1010,6 +1013,7 @@
   {"file": "lib/tests/supertype_countermodels.rs", "name": "each_version_alone_differs_by_a_supertype_on_a_jvm", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": 1.56, "kind": "at most", "sources": ["log:7ebf2c29fcceed1c"]}, "why": "spawns java, javac, process"},
   {"file": "lib/tests/supertype_countermodels.rs", "name": "the_pair_does_not_take_as_the_same_code_what_a_supertype_changes", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": 1.56, "kind": "at most", "sources": ["log:7ebf2c29fcceed1c"]}, "why": "spawns java, javac, process"},
   {"file": "lib/tests/throwable_countermodels.rs", "name": "each_jdk_message_is_there_on_a_jvm", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": null, "kind": "estimated", "sources": [], "estimated": "no past run names it: the tier is from what it calls"}, "why": "spawns java, javac, process"},
+  {"file": "lib/tests/throwable_countermodels.rs", "name": "modeled_exception_details_do_not_establish_the_four_jdk_countermodels", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": null, "kind": "estimated", "sources": [], "estimated": "no past run names it: the tier is from what it calls"}, "why": "spawns java, javac, process"},
   {"file": "lib/tests/thrown_pair_countermodels.rs", "name": "each_handler_tells_the_versions_apart_on_a_jvm", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": 1.82, "kind": "at most", "sources": ["log:b08ea89759d5649b"]}, "why": "spawns java, javac, process"},
   {"file": "lib/tests/thrown_pair_countermodels.rs", "name": "the_pair_does_not_prove_two_versions_agree_whose_exceptions_a_handler_tells_apart", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": 1.82, "kind": "at most", "sources": ["log:b08ea89759d5649b"]}, "why": "spawns java, javac, process"},
   {"file": "lib/tests/tie_countermodels.rs", "name": "each_version_alone_differs_past_a_thousand_on_a_jvm", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": 1.94, "kind": "at most", "sources": ["log:b08ea89759d5649b"]}, "why": "spawns java, javac, process"},

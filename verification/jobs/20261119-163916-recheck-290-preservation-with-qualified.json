@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261119-163916-recheck-290-preservation-with-qualified",
+  "title": "Recheck 290 preservation with qualified initializer settings",
+  "description": "This is the frozen preservation comparison at the same bounds and budget. The predecessor recorded eight observed initializers. Verify them again on the checker that now refuses unbound startup and indirect settings. Retain the term, assumptions and full acceptance evidence or the first refusal.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "B11"
+  ],
+  "links": {
+    "jobs": [
+      "20261117-213024-examples-289-and-290-preservation-again",
+      "20261119-155814-foundation-requalification-of-290-preser"
+    ],
+    "examples": [
+      "290"
+    ]
+  },
+  "expected": "The releases agree on the frozen preservation domain, subject to every assumption in the collected outcome.",
+  "submitted": {
+    "at": "2026-11-19T16:39:16+00:00",
+    "session": "01a1f467-856b-7d02-9458-ab076e5fef2f"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "patch",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "10m",
+    "timeout": "1h",
+    "notes": "capped probes: 289 about 60 s, 290 seconds, under 4 GiB; plus the release build and the pinned JARs"
+  },
+  "steps": [
+    {
+      "name": "290 preservation at its frozen bounds",
+      "run": "python3 examples/290-spring-security-cve-2023-34035-multiple-servlet-authorization-rules/proofs/prove.py preservation --timeout 1800 --work verification/.work-290/foundation-vf042",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-290/foundation-vf042/preservation/outcome.json",
+    "verification/.work-290/foundation-vf042/preservation/evidence.json",
+    "verification/.work-290/foundation-vf042/preservation/work/pair/RegressionPair.java"
+  ]
+}

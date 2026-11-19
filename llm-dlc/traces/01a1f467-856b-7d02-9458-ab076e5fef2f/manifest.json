@@ -12,29 +12,31 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T15:23:07.880Z",
-  "ended": "2026-11-19T16:27:00.365Z",
-  "duration_seconds": 3832,
+  "ended": "2026-11-19T16:39:26.803Z",
+  "duration_seconds": 4579,
   "stats": {
     "turns": 1,
-    "api_calls": 276,
-    "tool_calls": 643,
-    "tool_errors": 25,
+    "api_calls": 316,
+    "tool_calls": 722,
+    "tool_errors": 29,
     "compactions": 0,
-    "peak_context_tokens": 416342,
+    "peak_context_tokens": 456646,
     "usage": {
-      "input_tokens": 421961,
-      "output_tokens": 110941,
-      "cache_read_input_tokens": 75355008,
+      "input_tokens": 465113,
+      "output_tokens": 136216,
+      "cache_read_input_tokens": 92837120,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 318,
-    "exec": 270,
-    "apply_patch": 49,
-    "wait": 6
+    "Bash": 349,
+    "exec": 309,
+    "apply_patch": 57,
+    "wait": 7
   },
   "files_touched": [
+    "examples/197-shared-int-array-poststates/controls/oracle.py",
+    "examples/197-shared-int-array-poststates/driver/arrays/RootCases.java",
     "examples/288-spring-framework-cve-2024-38820-locale-sensitive-disallowed-fields/history/2026-11-18-preservation-profile.json",
     "examples/308-commons-text-longest-common-subsequence/README.md",
     "examples/308-commons-text-longest-common-subsequence/claims/score.json",
@@ -47,8 +49,14 @@
     "examples/308-commons-text-longest-common-subsequence/sources.lock.json",
     "examples/308-commons-text-longest-common-subsequence/target.json",
     "examples/README.md",
+    "examples/schema/example.schema.json",
+    "examples/schema/target-claim.schema.json",
     "examples/tools/accept.py",
+    "examples/tools/build.py",
     "examples/tools/targets/claim_history.py",
+    "examples/tools/targets/qualification.py",
+    "examples/tools/targets/runtime.py",
+    "examples/tools/targets/sidecar.py",
     "examples/tools/targets/test_acceptance.py",
     "examples/tools/targets/test_claim_history.py",
     "examples/tools/targets/test_packets.py",
@@ -64,12 +72,14 @@
     "lib/src/observed.rs",
     "lib/src/pairing.rs",
     "lib/src/pairing/array_roots.rs",
+    "lib/src/proof_cache.rs",
     "lib/src/property.rs",
     "lib/src/reuse.rs",
     "lib/src/spec/mod.rs",
     "lib/tests/fixtures/callee-countermodels/README.md",
     "lib/tests/fixtures/callee-countermodels/check.py",
     "lib/tests/observed_countermodels.rs",
+    "lib/tests/paired_array_roots.rs",
     "lib/tests/record_countermodels.rs",
     "lib/tests/setting_countermodels.rs",
     "lib/tests/throwable_countermodels.rs",
@@ -77,30 +87,31 @@
     "llm-dlc/tools/test_changes.py",
     "verification/README.md",
     "verification/findings.md",
+    "verification/pipeline.py",
     "verification/test_pipeline.py"
   ],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-19T15:23:07.880Z",
-      "ended": "2026-11-19T16:27:00.365Z",
+      "ended": "2026-11-19T16:39:26.803Z",
       "turns": 1,
-      "api_calls": 276,
+      "api_calls": 316,
       "usage": {
-        "input_tokens": 421961,
-        "output_tokens": 110941,
-        "cache_read_input_tokens": 75355008,
+        "input_tokens": 465113,
+        "output_tokens": 136216,
+        "cache_read_input_tokens": 92837120,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 416342
+      "peak_context_tokens": 456646
     }
   ],
   "log": {
-    "sha256": "cf4b14076df434f57376f9e210412b089c767b031f5412ad7365361363d043bd",
-    "bytes": 6588514,
-    "lines": 2064,
-    "gzip_bytes": 2440488,
-    "path": "llm-dlc/traces/01a1f467-856b-7d02-9458-ab076e5fef2f/logs/cf4b14076df434f57376f9e210412b089c767b031f5412ad7365361363d043bd.jsonl.gz"
+    "sha256": "25b80fbd55cd9d8dbc6a78260b3c9aae448801f6a80b7c80782d21b584f9e6ef",
+    "bytes": 7395093,
+    "lines": 2363,
+    "gzip_bytes": 2796189,
+    "path": "llm-dlc/traces/01a1f467-856b-7d02-9458-ab076e5fef2f/logs/25b80fbd55cd9d8dbc6a78260b3c9aae448801f6a80b7c80782d21b584f9e6ef.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -161,23 +172,37 @@
       "log_sha256": "2612d2495e225099db3c788d1a9244e32247fb970863d6810664098482673ee4"
     },
     {
-      "change_id": "mwxuzouluzosnqrwxnvkquupstysnuno",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "cf4b14076df434f57376f9e210412b089c767b031f5412ad7365361363d043bd"
-    },
-    {
       "change_id": "ovmrqsvwylsskwtlsxmotumolwpxkypl",
       "commit_id": null,
       "immutable": false,
       "summary": "Isolate submission identity in the pipeline test",
       "body": "The test inherited the real Codex thread ID when exercising its synthetic Claude session, so it failed on this worker. Clear both identities in the fixture and cover the actual precedence when a Codex worker inherits a parent session. The formerly failing case and the affected pipeline test file passed.",
       "log_sha256": "cf4b14076df434f57376f9e210412b089c767b031f5412ad7365361363d043bd"
+    },
+    {
+      "change_id": "usvpoxsoqmkzolklqrxzrlvzqvmwmxln",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "25b80fbd55cd9d8dbc6a78260b3c9aae448801f6a80b7c80782d21b584f9e6ef"
+    },
+    {
+      "change_id": "tmokwlllqwryxoroqvmrknwxtuvxmtno",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Qualify JVM settings and modeled error details (verification pending)",
+      "body": "The native checker refuses to establish JVM messages and causes from exception details chosen by a JDK model. Class initialization observations refuse the known indirect property reads, dynamic member lookup and unbound CPU, filesystem or charset settings in the initialized classes. The four exception and six initializer countermodels now have named refusals on the checker and independent JVM controls. The changed Rust suite, focused JVM tests and inventory lint passed.\n\nVerification pending in job 20261119-163916-recheck-290-preservation-with-qualified. Of the five frozen comparisons on the challenged checker, 290 alone uses observed initializers. Its preceding outcome recorded eight of them.",
+      "log_sha256": "25b80fbd55cd9d8dbc6a78260b3c9aae448801f6a80b7c80782d21b584f9e6ef"
     }
   ],
   "logs": {
+    "25b80fbd55cd9d8dbc6a78260b3c9aae448801f6a80b7c80782d21b584f9e6ef": {
+      "bytes": 7395093,
+      "lines": 2363,
+      "gzip_bytes": 2796189,
+      "url": null
+    },
     "2612d2495e225099db3c788d1a9244e32247fb970863d6810664098482673ee4": {
       "bytes": 6456569,
       "lines": 2006,
