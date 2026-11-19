@@ -502,7 +502,19 @@ impl ClassPath {
     pub fn checker_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
         self.method_in(owner, name, descriptor, &|c| match self.application(c) {
             Ok(Some(class)) => Some(class),
-            _ => self.checker_model(c),
+            _ => {
+                let model = self.checker_model(c)?;
+                // Enum's model constructs the JDK's name and ordinal fields. For ordering, execute the
+                // selected image's own comparison, bridge cast and declaring-class check on those fields.
+                if c == "java/lang/Enum" && matches!((name, descriptor),
+                    ("compareTo", "(Ljava/lang/Enum;)I" | "(Ljava/lang/Object;)I")
+                    | ("getDeclaringClass", "()Ljava/lang/Class;")) {
+                    if let Ok(Some(Loaded { class, origin: Origin::Jdk })) = self.load(c) {
+                        return Some(class);
+                    }
+                }
+                Some(model)
+            }
         })
     }
 

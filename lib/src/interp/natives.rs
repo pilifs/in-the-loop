@@ -617,18 +617,17 @@ pub fn invoke_inherited(m: &mut Machine, r: Ref, owner: &str, name: &str, descri
             ("ordinal", _) => Ok(Some(Value::Int(ordinal))),
             // Enum.hashCode is identity-based on a JVM; here it is the name's hash, which is deterministic.
             ("hashCode", _) => Ok(Some(Value::Int(string_hash(&constant)))),
-            ("compareTo", _) => {
+            ("compareTo", "(Ljava/lang/Enum;)I" | "(Ljava/lang/Object;)I") => {
                 let Some(o) = args[0].as_ref() else { return Err(m.npe()) };
                 match m.heap.get(o) {
-                    Object::Instance { base: Base::Enum { ordinal: other, .. }, .. } => Ok(Some(Value::Int(ordinal - *other))),
+                    Object::Instance { class: other_class, base: Base::Enum { ordinal: other, .. }, .. }
+                        if class == *other_class || declaring_enum(m, &class)? == declaring_enum(m, other_class)? =>
+                        Ok(Some(Value::Int(ordinal.wrapping_sub(*other)))),
                     _ => Err(m.throw("java/lang/ClassCastException", None)),
                 }
             }
             ("getDeclaringClass", _) => {
-                let declaring = match m.cp.application(&class).ok().flatten() {
-                    Some(cf) if !cf.is_enum() => cf.super_class.clone().unwrap_or(class),
-                    _ => class,
-                };
+                let declaring = declaring_enum(m, &class)?;
                 Ok(Some(m.class_object(&Type::Object(declaring))))
             }
             _ => unsupported(format!("Enum.{name}{descriptor}")),
@@ -672,6 +671,15 @@ pub fn invoke_inherited(m: &mut Machine, r: Ref, owner: &str, name: &str, descri
             ("toString", _) => unsupported(format!("{}.toString is Object's identity-based default", class.replace('/', "."))),
             _ => unsupported(format!("{}.{name}{descriptor} (inherited from {})", class.replace('/', "."), owner.replace('/', "."))),
         },
+    }
+}
+
+/// Enum.getDeclaringClass uses the runtime class's direct superclass, including for a constant-specific body.
+fn declaring_enum(m: &Machine, class: &str) -> Exec<String> {
+    match m.cp.superclass(class) {
+        Some(parent) if parent == "java/lang/Enum" => Ok(class.to_string()),
+        Some(parent) => Ok(parent),
+        None => unsupported(format!("unknown superclass of enum {class}")),
     }
 }
 

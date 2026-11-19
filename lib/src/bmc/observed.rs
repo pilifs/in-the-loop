@@ -39,7 +39,9 @@ impl Engine<'_> {
                 }
             }
         }
-        self.assumed.insert(crate::observed::assumption(class, observed));
+        let text = crate::observed::assumption(class, observed);
+        self.assumption_ids.insert(text.clone(), format!("observed-initializer:{}:{}:{}", class.replace('/', "."), observed.on.sha256, observed.state_sha256));
+        self.assumed.insert(text);
         Ok(())
     }
 
@@ -80,6 +82,17 @@ impl Engine<'_> {
             Object::Str { units, interned: true } => self.literal(path, Literal::Str(units.clone()), STRING),
             Object::Str { units, interned: false } => self.string(path, units),
             Object::Class(name) => self.literal(path, Literal::Class(name.clone()), "java/lang/Class"),
+            Object::EmptyConcurrentMap => {
+                let class = crate::models::CONCURRENT_MAP;
+                if !self.cp.checker_runs(class) || !self.cp.checker_runs(MAP) {
+                    return Err("an empty java.util.concurrent.ConcurrentHashMap, which needs --model java.util.concurrent.ConcurrentHashMap".into());
+                }
+                self.assume_model(class);
+                let entries = self.alloc(path, MAP);
+                let map = self.alloc(path, class);
+                path.objects[map].fields.insert("entries".into(), Val::R(Some(entries)));
+                map
+            }
             Object::Map(entries) => {
                 if !self.cp.checker_runs(MAP) || !self.cp.checker_runs(NODE) {
                     return Err("a java.util.HashMap, which this check has no model of".to_string());

@@ -189,7 +189,7 @@ pub fn plain_constructor(owner: &str, descriptor: &str) -> bool {
     matches!((owner, descriptor), ("java/util/ArrayList" | CONCURRENT_MAP, "()V"))
 }
 
-const CONCURRENT_MAP: &str = "java/util/concurrent/ConcurrentHashMap";
+use crate::models::CONCURRENT_MAP;
 
 /// The JDK constructors that take an initial capacity and nothing else, and only set their object's own fields:
 /// `IllegalArgumentException` for a negative capacity, and otherwise the object made as one with no content.

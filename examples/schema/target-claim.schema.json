@@ -59,6 +59,12 @@
     },
     "bounds": { "description": "Explicit bounds, by the tool's option names; those not stated are the tool's defaults, resolved by planning before the claim is frozen.", "$ref": "#/$defs/bounds" },
     "models": { "description": "Model or environment files the claim rests on, in the example's folder.", "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/file" } },
+    "namedModels": { "description": "Built-in models the native checker must run and identify in its statement.", "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "#/$defs/javaClass" } },
+    "observedInitializers": {
+      "description": "Application classes whose initializer state must match the SHA-256 of the fresh JVM observer's canonical fields and objects. Each revision binds the class bytes at preparation.",
+      "type": "object", "minProperties": 1, "propertyNames": { "$ref": "#/$defs/javaClass" },
+      "additionalProperties": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+    },
     "plan": { "description": "A construction plan (`--plan`), in the example's folder.", "$ref": "#/$defs/file" },
     "contracts": { "description": "Gap contracts for `--gaps advised` (`--contracts`), in the example's folder.", "$ref": "#/$defs/file" },
     "notes": { "type": "array", "items": { "type": "string" } }
@@ -80,6 +86,7 @@
     },
     "name": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$", "maxLength": 80 },
     "identifier": { "type": "string", "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*$" },
+    "javaClass": { "type": "string", "pattern": "^[A-Za-z_$][A-Za-z0-9_$]*(?:\\.[A-Za-z_$][A-Za-z0-9_$]*)*$" },
     "bounds": { "type": "object", "propertyNames": { "pattern": "^[a-z][A-Za-z0-9]*$" }, "additionalProperties": { "type": "integer", "minimum": 0 } },
     "file": {
       "description": "A path relative to the example's folder, as target.schema.json's: workflow.py also checks that it resolves inside the folder.",

@@ -65,7 +65,7 @@
 //! | `invokestatic` of `BigInteger.valueOf(long)` with a JDK image | runs the selected JDK's factory and allocation bytecode, including the constructors and the magnitude array. A path reading an initialized JDK cache field stops at that field. Without the image the factory is a `jdk-static-method` gap |
 //! | `invokestatic` of any other JDK method over integers, booleans, arrays and objects ([`gaps::jdk_static_call`]) | gap: `jdk-static-method`, with no assume form |
 //! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
-//! | `invokespecial`/`invokevirtual` of `java.lang.Enum`'s constructor, `name()`, `ordinal()`, `toString()` and `equals` ([`ClassPath::checker_runs`]) | modelled: the model's bytecode (`lib/models/java/lang/Enum.java`, which JBMC runs too) sets and reads the enum's `name` and `ordinal` fields; the interpreter's natives do the same. `Enum`'s other methods (`compareTo`, `hashCode`, `valueOf` …) stay JDK gaps |
+//! | `java.lang.Enum` construction, accessors and ordering ([`ClassPath::checker_method`]) | The Enum model sets and reads the name and ordinal. The native checker runs the selected JDK image's `compareTo` and `getDeclaringClass` bytecode, including type checks for constants with their own class bodies. |
 //! | `invokestatic` of `List.of` (its fixed forms, up to ten elements) and `List.copyOf`, and `invokevirtual`/`invokeinterface` of the immutable lists' methods an evidence record of `values::OPERATIONS` samples (`size`, `isEmpty`, `get`, `iterator`, the iterator's `hasNext` and `next`, and the changes `add`, `set`, `remove(int)`, `clear` and the iterator's `remove`) ([`ClassPath::checker_runs`]); a call from outside the models of any other method they implement (`contains`, `indexOf`, `equals`, `hashCode`, `toArray`, `addAll`, `sort` …, and `List.of(E...)`) is the JDK call it names, a gap or a refusal as any JDK call is ([`gaps::outside_the_list_records`]) | modelled: the models' bytecode (`lib/models/java/util/`, which JBMC runs too: `List12` for one or two elements, `ListN` over an array of its own otherwise, one empty list), `ImmutableCollections`' initializer run as an application class's ([`ClassPath::checker_class`]); order, duplicates and aliases between elements are the elements' references, null rejected, every change `UnsupportedOperationException`, `get` out of range an `IndexOutOfBoundsException` from a `List12` and an `ArrayIndexOutOfBoundsException` from a `ListN`. The interpreter's natives do the same. `copyOf` of another implementation meets its methods as JDK calls |
 //! | `new HashMap()` and `new HashMap(int)`, and `invokevirtual`/`invokeinterface` of `put`, `get`, `containsKey`, `size` and `isEmpty` on the map ([`ClassPath::checker_runs`]) | modelled: the model's bytecode (`lib/models/java/util/HashMap.java`, which JBMC runs too), a map's entries one chain of objects, a key found by its `hashCode` and `equals` as the JDK finds one; each call has an evidence record of `values::OPERATIONS`. The model has no other method: any other (`remove`, `keySet`, `Map`'s default methods) is the JDK call it names |
 //! | `invokespecial` of `Object.<init>()`, `Record.<init>()`, and a JDK exception's `()`, `(String)` or `(String, Throwable)` constructor that only passes its arguments up to `Throwable`'s ([`gaps::exact_jdk_call`]) | modelled exactly: the first two change nothing a proof observes, and an exception's keeps its message and cause ([`throwables`]), refused on a class whose application override of `fillInStackTrace()` the constructor would run |
@@ -366,6 +366,8 @@ pub struct Outcome {
     /// What the models the run used take for granted about the JVM it stands for ([`strings::LOCALE_ASSUMPTION`],
     /// [`runtime::CLASS_PATH_ASSUMPTION`]): a verdict holds under them, and a statement lists them.
     pub assumed: Vec<String>,
+    /// Stable identities for the runtime assumptions that came from selected model or initializer bytes.
+    pub assumption_ids: BTreeMap<String, String>,
     /// The loops that go round more often than the bound and that an invariant covers ([`loops`]), each as
     /// `p.C.m at pc N`: a proof holds of all their iterations, and a witness past one is run before it is believed.
     pub loops: Vec<String>,
@@ -440,6 +442,7 @@ impl Outcome {
             encoding_seconds: self.encoding,
             witness_seconds: self.witness,
             assumed: self.assumed.clone(),
+            assumption_ids: self.assumption_ids.clone(),
             loops: self.loops.clone(),
             tied: self.tied,
             summaries_reused: self.summaries_reused,
@@ -502,6 +505,9 @@ pub struct Stats {
     /// What the models the run used take for granted ([`Outcome::assumed`]); absent when they take nothing.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub assumed: Vec<String>,
+    /// Attached to the corresponding assumptions in the public Statement.
+    #[serde(skip)]
+    pub assumption_ids: BTreeMap<String, String>,
     /// The loops beyond the bound that an invariant covers ([`Outcome::loops`]); absent when there is none.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub loops: Vec<String>,
@@ -1369,6 +1375,7 @@ struct Engine<'a> {
     /// What the models the run used take for granted beyond the bytecode (the default locale, under
     /// [`strings::LOCALE_ASSUMPTION`]), for the statement.
     assumed: std::collections::BTreeSet<String>,
+    assumption_ids: BTreeMap<String, String>,
     /// The loops an invariant covered past the bound ([`loops`]), for the outcome.
     loops: std::collections::BTreeSet<String>,
     /// While an iteration is run to find a loop's invariant: the arrays read or written at an index that is no
@@ -1504,6 +1511,7 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
         arrays: Vec::new(),
         string_arrays: Vec::new(),
         assumed: Default::default(),
+        assumption_ids: Default::default(),
         loops: Default::default(),
         known_loops: Default::default(),
         ties: Default::default(),
@@ -1574,6 +1582,7 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
         gaps: gaps::records(&engine.met, jdk.as_deref(), Some(if engine.gap_mode.refuses() { GapTreatment::Refused } else { GapTreatment::Assumed })).into_iter().chain(gaps::contract_records(&engine.applied, &engine.contracts, jdk.as_deref())).collect(),
         gap_mode: engine.gap_mode,
         assumed: engine.assumed.iter().map(|a| a.to_string()).collect(),
+        assumption_ids: engine.assumption_ids.clone(),
         loops: engine.loops.iter().cloned().collect(),
         tied: engine.ties.shared,
         summaries_reused: engine.ties.reused,
@@ -4485,6 +4494,13 @@ impl<'a> Engine<'a> {
     /// object's class declares the name again ([`ClassPath::field_key`]), as the interpreter keys it.
     fn field_key(&mut self, path: &Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Result<String, Stop> {
         let class = &path.objects[o].class;
+        // The active model's own bytecode can access representation fields absent from the JDK class.
+        // A subclass declaring the same name still has a distinct field.
+        if let Some(frame) = path.frames.last().filter(|f| f.class.name == owner && self.cp.runs_model(owner)) {
+            if frame.class.fields.iter().any(|f| !f.is_static() && f.name == name && f.descriptor == descriptor) {
+                return Ok(self.cp.field_key(class, owner, name));
+            }
+        }
         let hides = match self.hides.get(class) {
             Some(&h) => h,
             None => {
@@ -4832,7 +4848,7 @@ impl<'a> Engine<'a> {
                 return step;
             }
             // A constructor that takes a capacity alone ([`runtime::capacity_constructor`]).
-            if let (true, [Val::I(capacity)]) = (special && member.name == "<init>" && runtime::capacity_constructor(&member.owner, &member.descriptor), args.as_slice()) {
+            if let (true, [Val::I(capacity)]) = (special && member.name == "<init>" && runtime::capacity_constructor(&member.owner, &member.descriptor) && !self.cp.checker_runs(&member.owner), args.as_slice()) {
                 let negative = self.b.negative(capacity);
                 return self.branch_throw_or(path, negative, "java/lang/IllegalArgumentException", |engine, path| engine.advance(path));
             }
@@ -4974,6 +4990,12 @@ impl<'a> Engine<'a> {
         if m.is_abstract() {
             return unsupported(format!("{}.{name} is abstract", cf.name.replace('/', ".")));
         }
+        if cf.name == crate::models::CONCURRENT_MAP && matches!(name, "get" | "putIfAbsent") {
+            let keys = args.get(1).and_then(Val::options);
+            if !keys.is_some_and(|keys| keys.iter().all(|(_, key)| key.is_none_or(|o| path.objects[o].class == STRING))) {
+                return unsupported(format!("ConcurrentHashMap.{name} with a key outside the single-threaded String-key model"));
+            }
+        }
         if path.frames.len() >= 64 {
             return unsupported("calls nested deeper than 64 (unbounded recursion?)");
         }
@@ -5010,10 +5032,17 @@ impl<'a> Engine<'a> {
         }
         // A model run on request is what the result then rests on.
         if let Some(model) = crate::models::on_request(&cf.name).filter(|_| !self.cp.is_application(&cf.name)) {
-            self.assumed.insert(crate::models::requested_assumption(model));
+            self.assume_model(model);
         }
         path.frames.push(Frame::new(cf.clone(), name.to_string(), code, locals));
         Ok(None)
+    }
+
+    fn assume_model(&mut self, model: &str) {
+        let text = crate::models::requested_assumption(model);
+        if self.assumed.insert(text.clone()) {
+            self.assumption_ids.insert(text, format!("jdk-model:{}", model.replace('/', ".")));
+        }
     }
 
     /// Whether the path is inside the method the check proves a summary of ([`Options::pure`]), called by the

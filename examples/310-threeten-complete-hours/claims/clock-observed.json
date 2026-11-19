@@ -1,0 +1,31 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "property": "clock",
+  "kind": "property",
+  "statement": "The number of complete hours equals elapsed minutes divided by 60, truncating toward zero.",
+  "assume": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 32
+  },
+  "adapter": {
+    "entry": "civil.Hours#completeHours(II)J",
+    "mapping": "Independent ticks 0 through 191 denote quarter-hours from 2012-06-15 00:00, local civil time on June 15 and 16. The unit is ChronoUnit.HOURS. No zone conversion.",
+    "correspondence": "finite-oracle",
+    "cases": 36864
+  },
+  "assert": "result == ((endTick - startTick) * 15) / 60",
+  "namedModels": [
+    "java.util.concurrent.ConcurrentHashMap"
+  ],
+  "observedInitializers": {
+    "org.threeten.bp.chrono.Chronology": "111c7fb5b516548660320f01bbff6980bf0b7c69bd7fbe068970753268e312b6"
+  },
+  "boundEnvironment": {
+    "jdk": "21.0.13"
+  }
+}

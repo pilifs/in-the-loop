@@ -12,44 +12,63 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-19T23:34:53.824Z",
-  "duration_seconds": 7044,
+  "ended": "2026-11-20T00:02:50.447Z",
+  "duration_seconds": 8721,
   "stats": {
-    "turns": 2,
-    "api_calls": 495,
-    "tool_calls": 1307,
-    "tool_errors": 52,
-    "compactions": 1,
+    "turns": 3,
+    "api_calls": 600,
+    "tool_calls": 1662,
+    "tool_errors": 63,
+    "compactions": 2,
     "peak_context_tokens": 410632,
     "usage": {
-      "input_tokens": 788622,
-      "output_tokens": 237661,
-      "cache_read_input_tokens": 136790784,
+      "input_tokens": 1085404,
+      "output_tokens": 287971,
+      "cache_read_input_tokens": 161442176,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 794,
-    "exec": 479,
-    "apply_patch": 20,
-    "wait": 14
+    "Bash": 1034,
+    "exec": 577,
+    "apply_patch": 32,
+    "wait": 19
   },
   "files_touched": [
     "examples/310-threeten-complete-hours/README.md",
     "examples/310-threeten-complete-hours/controls/check_retries.py",
     "examples/310-threeten-complete-hours/records/midnight-witness.json",
+    "examples/schema/result.schema.json",
+    "examples/schema/target-claim.schema.json",
     "examples/tools/build.py",
     "examples/tools/targets/claim_history.py",
     "examples/tools/targets/executions.py",
+    "examples/tools/targets/qualification.py",
+    "examples/tools/targets/recipes.py",
     "examples/tools/targets/route.py",
+    "examples/tools/targets/runtime.py",
     "examples/tools/targets/test_gap_inventory.py",
     "examples/tools/targets/test_recipes.py",
+    "examples/tools/targets/workflow.py",
+    "examples/tools/targets/workflow_ingest.py",
+    "lib/models/README.md",
+    "lib/models/build.sh",
+    "lib/models/java/util/concurrent/ConcurrentHashMap.java",
     "lib/src/bmc/gaps.rs",
     "lib/src/bmc/mod.rs",
+    "lib/src/bmc/observed.rs",
     "lib/src/bmc/regex.rs",
+    "lib/src/bmc/runtime.rs",
     "lib/src/classpath.rs",
+    "lib/src/interp/natives.rs",
+    "lib/src/models.rs",
+    "lib/src/observed.rs",
+    "lib/src/observed/ObservedInitializer.java",
+    "lib/src/statement.rs",
     "lib/tests/claims.rs",
+    "lib/tests/fixtures/claims/claims/EnumOrder.java",
     "lib/tests/fixtures/claims/claims/R.java",
+    "lib/tests/fixtures/claims/claims/Registries.java",
     "lib/tests/fixtures/claims/claims/Samples.java",
     "llm-dlc/tools/test_performance.py",
     "verification/README.md",
@@ -74,24 +93,38 @@
     {
       "index": 1,
       "started": "2026-11-19T22:50:27.520Z",
-      "ended": "2026-11-19T23:34:53.824Z",
+      "ended": "2026-11-19T23:41:41.578Z",
       "turns": 1,
-      "api_calls": 206,
+      "api_calls": 224,
       "usage": {
-        "input_tokens": 369798,
-        "output_tokens": 87448,
-        "cache_read_input_tokens": 54786944,
+        "input_tokens": 377410,
+        "output_tokens": 93885,
+        "cache_read_input_tokens": 61476224,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 368620
+      "peak_context_tokens": 374884
+    },
+    {
+      "index": 2,
+      "started": "2026-11-19T23:41:41.585Z",
+      "ended": "2026-11-20T00:02:50.447Z",
+      "turns": 1,
+      "api_calls": 87,
+      "usage": {
+        "input_tokens": 289170,
+        "output_tokens": 43873,
+        "cache_read_input_tokens": 17962112,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 296829
     }
   ],
   "log": {
-    "sha256": "fada44c4a77bc0ea2f7f664ae596d9de213d61043ebc68d9290537658801e9d3",
-    "bytes": 12027108,
-    "lines": 3913,
-    "gzip_bytes": 4447426,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/fada44c4a77bc0ea2f7f664ae596d9de213d61043ebc68d9290537658801e9d3.jsonl.gz"
+    "sha256": "27f3e2c8cff696523eea71114d5387429ade654e0a7dd67468c3d9a7511c2622",
+    "bytes": 15699510,
+    "lines": 4817,
+    "gzip_bytes": 5731519,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/27f3e2c8cff696523eea71114d5387429ade654e0a7dd67468c3d9a7511c2622.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -310,6 +343,14 @@
       "summary": "Propose the restart watcher decision ID for trace review",
       "body": "Two archived collector logs contain the same long-token finding. Masked context and an independent digest check identify the value as the ID of the watcher’s recorded continue decision. The allow-list entry remains proposed for a person to review. All 11 test selections for the proposal passed.",
       "log_sha256": "fada44c4a77bc0ea2f7f664ae596d9de213d61043ebc68d9290537658801e9d3"
+    },
+    {
+      "change_id": "nwkovvmpuklpmvvloypwkkumnwqvwknk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Check ThreeTenBP with a JVM-bound single-threaded chronology registry (verification pending)",
+      "body": "Give the native checker a selected String-key ConcurrentHashMap, materialize empty registry objects observed on the pinned JVM, and check enum ordering with the selected JDK bytecode. The interpreter now distinguishes different enum declarations during replay. The public proof recipe binds the initializer class bytes and state separately for each revision and checks structured runtime assumptions. The five new tasks retain the original tick domains, cite their original tasks, and declare an unwind of 32. Tests cover aliasing, key equality, nulls and exceptions, model selection, and rejection of the wrong initializer or state. All 29 changed test groups and the example validator passed.\n\nVerification pending for 20261120-000226-threetenbp-clock-fix-with-observed-chron, 20261120-000226-threetenbp-clock-parent-with-observed-ch, 20261120-000226-threetenbp-reversal-fix-with-observed-ch, 20261120-000227-threetenbp-reversal-parent-with-observed and 20261120-000227-threetenbp-same-day-with-observed-chrono. A capped native probe found a parent counterexample that the JVM reproduced. The original strict receipts remain linked to their original statements.",
+      "log_sha256": "27f3e2c8cff696523eea71114d5387429ade654e0a7dd67468c3d9a7511c2622"
     }
   ],
   "logs": {
@@ -329,6 +370,12 @@
       "bytes": 5166915,
       "lines": 1407,
       "gzip_bytes": 1829944,
+      "url": null
+    },
+    "27f3e2c8cff696523eea71114d5387429ade654e0a7dd67468c3d9a7511c2622": {
+      "bytes": 15699510,
+      "lines": 4817,
+      "gzip_bytes": 5731519,
       "url": null
     },
     "494d38906766c5a7b4028b30b9b64e7116bc803dfa0b2f2c1de6d366c00549df": {

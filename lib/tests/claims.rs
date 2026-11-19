@@ -390,6 +390,53 @@ fn an_observed_initializer_is_observed_with_a_relative_work_folder() {
     assert!(here.join("work/observed/observed/claims.Tables.init.log").is_file(), "the log is in the work folder: {said}");
 }
 
+#[test]
+fn enum_order_checks_the_declaring_class_on_the_jvm_in_proof_and_in_replay() {
+    jvmcontract::tool_tier!();
+    use jvmcontract::interp::{Machine, Value};
+    let Some(classes) = classes() else { return };
+    assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.EnumOrder").status().unwrap().success());
+    proved(classes, "claims.EnumOrder#order", 3);
+    let cp = jvmcontract::witness::classpath([classes]).unwrap();
+    let mut interpreter = Machine::new(&cp);
+    for pick in [0, 1] {
+        assert_eq!(interpreter.call_static("claims/EnumOrder", "order", "(Z)Z", vec![Value::Int(pick)]).unwrap(), Some(Value::Int(1)));
+    }
+}
+
+#[test]
+fn a_single_threaded_registry_preserves_aliases_values_and_null_exceptions() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let model = "java.util.concurrent.ConcurrentHashMap";
+    for key in ["true", "false"] {
+        assert!(Command::new("java").arg("-cp").arg(classes).args(["claims.Registries", key]).status().unwrap().success());
+    }
+    let check = |method: &str, observe: bool, select: bool| {
+        let mut o = options(classes, &format!("claims.Registries#{method}"), 3, &format!("registry-{method}-{select}"));
+        if observe { o.observed_initializers.push("claims.Registries$State".into()); }
+        if select { o.requested_models.push(model.into()); }
+        run(&o)
+    };
+    let held = check("register", true, true);
+    assert_eq!(held.verdict, Verdict::Verified, "{}", held.output);
+    let assumptions = &held.stated.unwrap().assumptions;
+    for text in ["the class initializer of claims.Registries", "single-threaded ConcurrentHashMap"] {
+        assert!(assumptions.iter().any(|a| a.text.contains(text)), "{assumptions:?}");
+    }
+    let capacity = check("nullsAndCapacity", false, true);
+    assert_eq!(capacity.verdict, Verdict::Verified, "{}", capacity.output);
+    for (method, observed, selected, reason) in [
+        ("register", true, false, "needs --model"),
+        ("readPopulated", true, true, "an object of java.util.concurrent.ConcurrentHashMap"),
+        ("nonStringKey", false, true, "outside the single-threaded String-key model"),
+    ] {
+        let out = check(method, observed, selected);
+        assert_eq!(out.verdict, Verdict::Unverifiable, "{}", out.output);
+        assert!(out.output.contains(reason), "{}", out.output);
+    }
+}
+
 /// The lists a registry collects its matchers in (`claims.M`, example 290). `java.util.ArrayList` is the JDK's,
 /// each of its calls a gap, until a check asks for the model (`--model java.util.ArrayList`): then the model is
 /// its definition written out on every input of the bound, the result says what it rests on, and a method the

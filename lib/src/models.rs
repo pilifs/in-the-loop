@@ -78,6 +78,7 @@ pub const MODELS: &[Model] = &[
     model!(checker "java/util/ArrayList", "java/util/lists/ArrayList.java", "java/util/ArrayList.class", "an ArrayList as an array of its elements and their number: ArrayList() and ArrayList(int), size, isEmpty, get, add, addAll, remove(Object), toArray() and toArray(T[]), and iterator() with its fail-fast iterator; run only for a check that asks for it (--model java.util.ArrayList); the own checker only"),
     model!(checker "java/util/ArrayList$Itr", "java/util/lists/ArrayList.java", "java/util/ArrayList$Itr.class", "the iterator of the ArrayList model: hasNext and next, fail-fast; the own checker only"),
     model!(checker "java/util/HashSet", "java/util/lists/HashSet.java", "java/util/HashSet.class", "a HashSet as the keys of the HashMap model, as the JDK's: HashSet(), add, contains, size and isEmpty, an element found by hashCode and equals; run only for a check that asks for it (--model java.util.HashSet); the own checker only"),
+    model!(checker "java/util/concurrent/ConcurrentHashMap", "java/util/concurrent/ConcurrentHashMap.java", "java/util/concurrent/ConcurrentHashMap.class", "single-threaded ConcurrentHashMap() and ConcurrentHashMap(int), get, putIfAbsent, size and isEmpty with String keys, non-null values and the JDK exception classes for null inputs; the own checker only, on request"),
     model!(checker "java/util/LinkedHashSet", "java/util/lists/LinkedHashSet.java", "java/util/LinkedHashSet.class", "a LinkedHashSet as the HashSet model with its elements in the order first added: LinkedHashSet(), add, toArray() and toArray(T[]) in that order, and the HashSet model's contains, size and isEmpty; run only for a check that asks for it (--model java.util.LinkedHashSet), which runs the HashSet model too; the own checker only"),
     model!(checker "java/util/StringJoiner", "java/util/lists/StringJoiner.java", "java/util/StringJoiner.class", "a StringJoiner as its delimiter and the elements added: StringJoiner(CharSequence), add, and toString joining them with the delimiter into a new String (an empty one is the JDK's new String()); run only for a check that asks for it (--model java.util.StringJoiner); the own checker only"),
     model!(checker "java/util/ArrayDeque", "java/util/lists/ArrayDeque.java", "java/util/ArrayDeque.class", "an ArrayDeque used as a stack, its elements in an array: ArrayDeque(), push (NullPointerException for null), pop (NoSuchElementException when empty), peek, size, isEmpty and clear; run only for a check that asks for it (--model java.util.ArrayDeque); the own checker only"),
@@ -131,6 +132,9 @@ pub const CHECKER_RUNS: &[&str] = &[
     "java/util/stream/IntArrayStream",
 ];
 
+/// The single-threaded String-key registry model.
+pub const CONCURRENT_MAP: &str = "java/util/concurrent/ConcurrentHashMap";
+
 /// The models the own checker runs only for a check that asks for one (`prove --model CLASS`,
 /// [`ClassPath::runs_model`](crate::classpath::ClassPath::runs_model)), each with the classes nested in it:
 /// otherwise the class is the JDK's, whose constructors and methods are the JDK calls they were (gaps, with their
@@ -143,7 +147,7 @@ pub const CHECKER_RUNS: &[&str] = &[
 /// `HashSet` model above it ([`BRINGS`]), and `java.util.StringJoiner` for each code it joins. `java.beans.PropertyChangeEvent`
 /// is one for the event the bean wrapper makes for a value it cannot convert, and brings the model of the class above
 /// it, `java.util.EventObject` ([`COMPANIONS`]).
-pub const ON_REQUEST: &[&str] = &["java/util/ArrayList", "java/util/ArrayDeque", "java/util/HashSet", "java/util/LinkedHashSet", "java/util/StringJoiner", "java/beans/PropertyChangeEvent"];
+pub const ON_REQUEST: &[&str] = &["java/util/ArrayList", "java/util/ArrayDeque", "java/util/HashSet", "java/util/LinkedHashSet", "java/util/StringJoiner", "java/beans/PropertyChangeEvent", CONCURRENT_MAP];
 
 /// The models on request a check that asks for another also runs, as if it had asked for them too: the model above
 /// it that it extends and whose constructor and methods it calls, itself a model on request of its own
@@ -285,9 +289,9 @@ mod tests {
         let out = tempfile::tempdir().unwrap();
         // `util/lists` and `beans` are compiled against the JDK's `List`, as `build.sh` compiles them: with no source
         // path.
-        for package in ["lang", "nio/charset", "util", "util/stream", "util/lists", "beans"] {
+        for package in ["lang", "nio/charset", "util", "util/stream", "util/lists", "util/concurrent", "beans"] {
             let sources: Vec<_> = std::fs::read_dir(models.join("java").join(package)).unwrap().map(|e| e.unwrap().path()).filter(|p| p.extension().is_some_and(|e| e == "java")).collect();
-            let alone: &[&str] = if matches!(package, "util/lists" | "beans") { &["-sourcepath", ""] } else { &[] };
+            let alone: &[&str] = if matches!(package, "util/lists" | "util/concurrent" | "beans") { &["-sourcepath", ""] } else { &[] };
             let status = std::process::Command::new("javac").args(["--release", "8", "-Xlint:-options", "-g"]).args(alone).arg("-d").arg(out.path()).args(&sources).status().unwrap();
             assert!(status.success(), "the models compile");
         }

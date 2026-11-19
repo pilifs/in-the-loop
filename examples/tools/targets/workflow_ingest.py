@@ -555,8 +555,19 @@ def verifier_outcome(plan, bound, records):
                 adapters = [{"path": a.path, "sha256": a.sha256, "role": a.role} for a in prepared.artifacts if a.role == "adapter"]
                 classpaths[revision] = adapters + classpaths[revision]
         artifact_problem = None
+        initializers = {}
+        if plan.claim.get("observedInitializers"):
+            from targets import recipes, runtime
+            try:
+                for revision, (_, prepared, _) in bound.items():
+                    where = runtime._preparation_dir(prepared)
+                    runtime._checked(where, prepared)
+                    initializers[revision] = recipes.initializer_classes(plan.claim["observedInitializers"], where, classpaths[revision])
+            except (OSError, runtime.Refused) as error:
+                artifact_problem = str(error)
         if plan.claim.get("adapter"):
-            _, artifact_problem = qualification.correspondence(plan, {r: p for r, (_, p, _) in bound.items()}, records)
+            _, correspondence_problem = qualification.correspondence(plan, {r: p for r, (_, p, _) in bound.items()}, records)
+            artifact_problem = artifact_problem or correspondence_problem
         if v.identities.get("classpath") != classpaths:
             artifact_problem = "the verifier's ordered classpaths are not the prepared artifacts"
         elif not v.identities.get("jvmcontract") or not v.identities.get("jdkRelease"):
@@ -581,7 +592,7 @@ def verifier_outcome(plan, bound, records):
                     fields["replay"] = {"by": "jvm", "reproduced": True}
         for outcome in outcomes:
             if v.identities.get("recipe"):
-                reason = artifact_problem or qualification.statement_problem(plan, outcome, entry)
+                reason = artifact_problem or qualification.statement_problem(plan, outcome, entry, initializers)
             else:
                 reason = artifact_problem or qualification.check(plan.claim, {"target": plan.target}, outcome,
                                                                   plan.claim["bounds"].get("maxArrayLength"))

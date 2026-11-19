@@ -11,7 +11,8 @@
 //!
 //! **What is held** of a static field's value: null, an integral or boolean primitive, a String (its code units,
 //! and whether it is the pooled one a literal of that content is), a `Class`, a `java.util.HashMap` itself (no
-//! subclass) whose keys are Strings or null and whose values are held, and an array of integral primitives or of
+//! subclass) whose keys are Strings or null and whose values are held, an empty exact ConcurrentHashMap with
+//! its single-threaded registry model selected, and an array of integral primitives or of
 //! held references. Two fields that hold one object hold one object here. Any other value (a `float`, an
 //! `IdentityHashMap`, an object of a class of the application) is **not held**: the field has no value in the
 //! check, and a read of it before the check writes it is refused by name ([`Observed::fields`]), so nothing is
@@ -106,6 +107,8 @@ pub enum Object {
     Class(String),
     /// A `java.util.HashMap`: its entries, in the order the JVM iterated them.
     Map(Vec<(Slot, Slot)>),
+    /// An exact ConcurrentHashMap observed empty. Its references share the same object number.
+    EmptyConcurrentMap,
     /// An array: its element type's descriptor and its cells.
     Array { element: String, cells: Vec<Slot> },
 }
@@ -115,6 +118,8 @@ pub enum Object {
 pub struct Observed {
     /// The JVM's `java.version`.
     pub jdk: String,
+    /// Digest of the JVM's fields and object table before a previous version's class names are relocated.
+    pub state_sha256: String,
     /// Each static field the class declares, by name.
     pub fields: BTreeMap<String, Slot>,
     pub objects: Vec<Object>,
@@ -538,6 +543,7 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
                 Object::Str { units, interned: o.get("interned").and_then(|i| i.as_bool()).ok_or_else(|| bad("a string"))? }
             }
             Some("class") => Object::Class(o.get("name").and_then(|n| n.as_str()).ok_or_else(|| bad("a class"))?.to_string()),
+            Some("concurrentMap") if o.get("entries").and_then(|v| v.as_array()).is_some_and(Vec::is_empty) => Object::EmptyConcurrentMap,
             Some("map") => {
                 let flat = slots(o.get("entries"))?;
                 if flat.len() % 2 != 0 {
@@ -580,7 +586,9 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
             .map(|i| Ok(Initialized { name: text(i, "name")?, sha256: text(i, "sha256")?, state: serde_json::json!({ "fields": i.get("fields"), "objects": i.get("objects") }) }))
             .collect::<Result<_, Error>>()?,
     };
-    let observed = Observed { jdk: json.get("jdk").and_then(|j| j.as_str()).ok_or_else(|| bad("the JDK"))?.to_string(), fields, objects, previous: None, on };
+    let state = serde_json::json!({"fields": json.get("fields"), "objects": json.get("objects")});
+    let state_sha256 = crate::digest::sha256_hex(state.to_string().as_bytes());
+    let observed = Observed { jdk: json.get("jdk").and_then(|j| j.as_str()).ok_or_else(|| bad("the JDK"))?.to_string(), state_sha256, fields, objects, previous: None, on };
     let within = |s: &Slot| !matches!(s, Slot::Object(i) if *i >= observed.objects.len());
     let all = observed.fields.values().chain(observed.objects.iter().flat_map(|o| match o {
         Object::Map(entries) => entries.iter().flat_map(|(k, v)| [k, v]).collect::<Vec<_>>(),

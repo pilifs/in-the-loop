@@ -41,6 +41,30 @@ class RecipesTest(unittest.TestCase):
             self.assertIsNone(bad)
             self.assertIn("wire version", why)
 
+    def test_observed_states_bind_each_revision_and_the_executed_model(self):
+        plan = self.plan("310", "same-day-observed")
+        original = self.plan("310", "same-day")
+        self.assertNotEqual(original.claim["key"], plan.claim["key"])
+        self.assertEqual(original.artifacts, plan.artifacts)
+        recipe = recipes.translate(plan)
+        name, state = next(iter(plan.claim["observedInitializers"].items()))
+        model, = plan.claim["namedModels"]
+        flags = {(a.flag, a.value) for a in recipe.arguments}
+        self.assertTrue({("--model", model), ("--observed-initializer", name)} <= flags)
+        self.assertEqual(recipe.describe()["observedInitializerStates"], {name: state})
+        self.assertIsInstance(recipes.translate(replace(plan, engine="jbmc")), interfaces.Unsupported)
+        classes = {"parent": {name: "a" * 64}, "fix": {name: "b" * 64}}
+        ids = ["jdk-model:" + model, f"observed-initializer:before.{name}:{'a' * 64}:{state}",
+               f"observed-initializer:{name}:{'b' * 64}:{state}"]
+        def problem(actual):
+            outcome = {"stated": {"assumptions": [{"id": i, "kind": "library", "basis": "engine"} for i in actual]}}
+            return qualification.library_bindings_problem(plan, outcome, classes)
+        self.assertIsNone(problem(ids))
+        for changed in [ids[1:], ids[:-1], ids + ["jdk-model:other.Model"],
+                        [*ids[:2], ids[2].replace("b" * 64, "c" * 64)],
+                        [*ids[:2], ids[2].replace(state, "0" * 64)]]:
+            self.assertIsNotNone(problem(changed))
+
     def test_retry_links_budgets_and_refuses_another_source_claim(self):
         plan = self.plan("198", "full-state")
         with tempfile.TemporaryDirectory() as tmp:

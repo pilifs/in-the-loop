@@ -1432,7 +1432,7 @@ VERIFIER_KINDS = {"prove": "prove", "equivalence": "equivalence"}  # task kind: 
 ENGINES, GAP_MODES = ("native", "jbmc", "auto"), ("strict", "assume", "advised")
 # The verifier's environment is fixed and recorded as the controls' is, with its JDK on PATH and in JAVA_HOME (its
 # replay of a witness and the JDK it reads models for); only the runner's own memory settings pass through.
-VERIFIER_PASS = ("JVMCONTRACT_JBMC_MEMORY_MB", "JVMCONTRACT_JAVA_OPTS")
+VERIFIER_PASS = ("JVMCONTRACT_JBMC_MEMORY_MB", "JVMCONTRACT_JAVA_OPTS", "JVMCONTRACT_SOLVER", "JVMCONTRACT_BITWUZLA")
 DESCRIPTOR_TYPES = {"Z": "boolean", "B": "byte", "C": "char", "S": "short", "I": "int", "J": "long", "F": "float",
                     "D": "double"}
 # What a verifier run's result is about (the brief's R3 and scope labels), from what its preparation holds.

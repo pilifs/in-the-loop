@@ -511,6 +511,7 @@ public final class ObservedInitializer {
             }
             Class<?> type = v.getClass();
             boolean map = type == HashMap.class;
+            boolean emptyConcurrentMap = type == java.util.concurrent.ConcurrentHashMap.class && ((Map<?, ?>) v).isEmpty();
             if (map) {
                 for (Object key : ((Map<?, ?>) v).keySet()) {
                     if (key != null && !(key instanceof String)) {
@@ -521,7 +522,7 @@ public final class ObservedInitializer {
             if (type.isArray() && (type.getComponentType() == float.class || type.getComponentType() == double.class)) {
                 return unheld("an array of " + type.getComponentType().getName(), v);
             }
-            if (!(v instanceof String) && !(v instanceof Class) && !map && !type.isArray()) {
+            if (!(v instanceof String) && !(v instanceof Class) && !map && !emptyConcurrentMap && !type.isArray()) {
                 return unheld("an object of " + nameOf(type), v);
             }
             // Numbered before what it holds is, so that an object that reaches itself ends.
@@ -541,6 +542,9 @@ public final class ObservedInitializer {
             else if (v instanceof Class) {
                 Class<?> named = (Class<?>) v;
                 o.append("{\"k\":\"class\",\"name\":\"").append(named.isPrimitive() ? named.getName() : named.getName().replace('.', '/')).append("\"}");
+            }
+            else if (emptyConcurrentMap) {
+                o.append("{\"k\":\"concurrentMap\",\"entries\":[]}");
             }
             else if (map) {
                 o.append("{\"k\":\"map\",\"entries\":[");

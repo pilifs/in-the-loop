@@ -196,7 +196,7 @@ pub struct Assumption {
     /// What it says, in words.
     pub text: String,
     pub basis: Basis,
-    /// The gap's stable id, for a gap ([`crate::bmc::gaps::Gap::id`]).
+    /// Identifies a gap, a shared callee, or the model or observed initializer used by the native engine.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub id: Option<String>,
 }
@@ -453,10 +453,10 @@ impl Domain {
 pub fn checker_assumptions(last: Option<&JbmcResult>) -> Vec<Assumption> {
     let Some(last) = last else { return Vec::new() };
     let mut out = Vec::new();
-    if last.native.is_some() {
+    if let Some(native) = &last.native {
         out.push(Assumption { kind: AssumptionKind::Initialization, text: "every JDK class is initialized already, its static initializer having run and thrown nothing".into(), basis: Basis::Engine, id: None });
         // What a model of the own checker takes for granted about the JVM it stands for (a locale, a class loader).
-        out.extend(last.native.iter().flat_map(|n| &n.assumed).map(|a| Assumption { kind: AssumptionKind::Library, text: a.clone(), basis: Basis::Engine, id: None }));
+        out.extend(native.assumed.iter().map(|a| Assumption { kind: AssumptionKind::Library, text: a.clone(), basis: Basis::Engine, id: native.assumption_ids.get(a).cloned() }));
     } else {
         out.push(Assumption {
             kind: AssumptionKind::Library,

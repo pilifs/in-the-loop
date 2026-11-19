@@ -172,6 +172,13 @@ literal `""`, so an empty result is `new String()`, the JDK's constructor and a 
 and a suffix, `setEmptyValue`, `merge` and `length` are the JDK calls they name. Its conformance is
 `claims.Joiners`.
 
+`--model java.util.concurrent.ConcurrentHashMap` checks single-threaded registries with String keys. Its two
+constructors, `get`, `putIfAbsent`, `size` and `isEmpty` use the existing HashMap model. A second insertion at
+an equal key returns the original value. Null keys and null inserted values throw `NullPointerException`.
+With `--observed-initializer`, a fresh JVM can supply an empty registry, preserving aliases between static
+fields. A populated registry, a subclass observed as a registry, or a non-String key leaves the corresponding
+operation open. Example 310 uses the model for the chronology registries. [Model source](java/util/concurrent/ConcurrentHashMap.java)
+
 `java.beans.PropertyChangeEvent` ([`java/beans`](java/beans/)) is one too (`--model java.beans.PropertyChangeEvent`),
 and the check that asks for it also runs the model of the class above it, `java.util.EventObject` (beside it in
 `java/beans`, `models::COMPANIONS`): Spring's bean wrapper makes one for each value it cannot convert, the event a

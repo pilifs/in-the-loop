@@ -1,0 +1,521 @@
+{
+  "description": "Each single-claim probe used a local test-fast checker on the original prepared adapter and library JAR. The first build exposed a private model field resolution failure. The next build reached the hour-cache loop at unwind 16 and enum ordering at 32. The last build executed the selected JDK enum comparison. The wall cap was 300 seconds with 4 GiB RAM and no swap. Checker deadlines, solver, classpath, and file digests are per execution.",
+  "observedClass": "org.threeten.bp.chrono.Chronology",
+  "classSha256": "3bebd61b1251e62fd62a01f854e3654a5baf84bbd194e60eaba1706a4544898a",
+  "stateSha256": "111c7fb5b516548660320f01bbff6980bf0b7c69bd7fbe068970753268e312b6",
+  "state": {
+    "fields": [
+      {
+        "name": "CHRONOS_BY_ID",
+        "value": {
+          "o": 0
+        }
+      },
+      {
+        "name": "CHRONOS_BY_TYPE",
+        "value": {
+          "o": 1
+        }
+      }
+    ],
+    "objects": [
+      {
+        "k": "concurrentMap",
+        "entries": []
+      },
+      {
+        "k": "concurrentMap",
+        "entries": []
+      }
+    ]
+  },
+  "probes": [
+    {
+      "revision": "fix",
+      "argv": [
+        "/home/filip/code/in-the-loop-foundation-domain-streams/lib/target/test-fast/jvmcontract",
+        "prove",
+        "civil.Hours#completeHours(int, int)",
+        "--classes",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261119-215957-threetenbp-hours-adapter-on-the-qualifie/.build-py/examples-rycpgt_h/targets/310/clock-fix/20261119T220647Z-69a0d79d/prepare/fix/adapter-fix.jar",
+        "--classpath",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261119-215957-threetenbp-hours-adapter-on-the-qualifie/.build-py/examples-rycpgt_h/targets/310/clock-fix/20261119T220647Z-69a0d79d/prepare/fix/slice/fix.jar",
+        "--assume",
+        "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+        "--assert",
+        "result == ((endTick - startTick) * 15) / 60",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "16",
+        "--max-array-length",
+        "8",
+        "--timeout",
+        "60",
+        "--observed-initializer",
+        "org.threeten.bp.chrono.Chronology",
+        "--work",
+        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/clock-registry-model-v1/work",
+        "--json",
+        "--model",
+        "java.util.concurrent.ConcurrentHashMap"
+      ],
+      "checkedBinary": "d778550c76c147b916fdfb797c7fd363f6ee50e0aed15d286a1c00d9ce2eea0b",
+      "artifacts": {
+        "--classes": "88043dcfead2a23100f82fd5054577ec6dbf887bbf3ccee2daf5bb07c2df0786",
+        "--classpath": "66a46dda841cb03c4130ac6f4af0dfa35c661af85d0a7dab47a35dc7f31204d2"
+      },
+      "environment": {
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "PATH": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin:/usr/bin:/bin"
+      },
+      "exitCode": 1,
+      "seconds": 0.9868795410147868,
+      "stdoutSha256": "d1a10ad1859df3ca6321dcf110213f38d9185c404bddc6a723d11e83955bd106",
+      "verdict": "unverifiable",
+      "problem": "outside the fragment: no field java.util.concurrent.ConcurrentHashMap.entries",
+      "native": {
+        "paths": 1,
+        "merges": 0,
+        "solver_calls": 4,
+        "solving_seconds": 6.5802e-05,
+        "gates_evaluated": 104,
+        "evaluating_seconds": 4.849e-06,
+        "divisions": 3,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 3865,
+        "clauses": 12404,
+        "seconds": 0.01534024,
+        "loading_seconds": 0.003407569,
+        "decoding_seconds": 0.000463263,
+        "encoding_seconds": 0.002922143,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "java.util.concurrent.ConcurrentHashMap is the tool's model of the class wherever the check runs it (--model), not the JDK's code: single-threaded ConcurrentHashMap() and ConcurrentHashMap(int), get, putIfAbsent, size and isEmpty with String keys, non-null values and the JDK exception classes for null inputs (lib/models/java/util/concurrent/ConcurrentHashMap.java); a constructor or method the model does not keep is the JDK call it names",
+          "the class initializer of org.threeten.bp.chrono.Chronology was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 3bebd61b1251), in a JVM whose default locale was en (formatting en, display en) and default time zone Etc/UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+        ]
+      },
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "counterexample": null,
+      "replay": null
+    },
+    {
+      "revision": "fix",
+      "argv": [
+        "/home/filip/code/in-the-loop-foundation-domain-streams/lib/target/test-fast/jvmcontract",
+        "prove",
+        "civil.Hours#completeHours(int, int)",
+        "--classes",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261119-215957-threetenbp-hours-adapter-on-the-qualifie/.build-py/examples-rycpgt_h/targets/310/clock-fix/20261119T220647Z-69a0d79d/prepare/fix/adapter-fix.jar",
+        "--classpath",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261119-215957-threetenbp-hours-adapter-on-the-qualifie/.build-py/examples-rycpgt_h/targets/310/clock-fix/20261119T220647Z-69a0d79d/prepare/fix/slice/fix.jar",
+        "--assume",
+        "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+        "--assert",
+        "result == ((endTick - startTick) * 15) / 60",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "16",
+        "--max-array-length",
+        "8",
+        "--timeout",
+        "60",
+        "--observed-initializer",
+        "org.threeten.bp.chrono.Chronology",
+        "--work",
+        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/clock-registry-model-v2/work",
+        "--json",
+        "--model",
+        "java.util.concurrent.ConcurrentHashMap"
+      ],
+      "checkedBinary": "190555cb9fe352a0ff72a442873fedadd9a4bf0f8cec184461508e3a67cb4d2a",
+      "artifacts": {
+        "--classes": "88043dcfead2a23100f82fd5054577ec6dbf887bbf3ccee2daf5bb07c2df0786",
+        "--classpath": "66a46dda841cb03c4130ac6f4af0dfa35c661af85d0a7dab47a35dc7f31204d2"
+      },
+      "environment": {
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "PATH": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin:/usr/bin:/bin"
+      },
+      "exitCode": 1,
+      "seconds": 0.9012256619753316,
+      "stdoutSha256": "344dd07c2db050b8cad128ee3c0658822fc034db73cb0a876677a9161f0fd745",
+      "verdict": "unverifiable",
+      "problem": "a loop was not fully unwound with --unwind 16 (org.threeten.bp.LocalTime.<clinit> at pc 10; no invariant was found that covers its further iterations: an iteration changes a cell of a org.threeten.bp.LocalTime[], which holds a reference)",
+      "native": {
+        "paths": 2,
+        "merges": 0,
+        "solver_calls": 4,
+        "solving_seconds": 0.000100368,
+        "gates_evaluated": 104,
+        "evaluating_seconds": 6.331e-06,
+        "divisions": 3,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 3865,
+        "clauses": 12404,
+        "seconds": 0.023419507,
+        "loading_seconds": 0.005046981,
+        "decoding_seconds": 0.000787037,
+        "encoding_seconds": 0.0042396,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "java.util.concurrent.ConcurrentHashMap is the tool's model of the class wherever the check runs it (--model), not the JDK's code: single-threaded ConcurrentHashMap() and ConcurrentHashMap(int), get, putIfAbsent, size and isEmpty with String keys, non-null values and the JDK exception classes for null inputs (lib/models/java/util/concurrent/ConcurrentHashMap.java); a constructor or method the model does not keep is the JDK call it names",
+          "the class initializer of org.threeten.bp.chrono.Chronology was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 3bebd61b1251), in a JVM whose default locale was en (formatting en, display en) and default time zone Etc/UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+        ]
+      },
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "counterexample": null,
+      "replay": null
+    },
+    {
+      "revision": "fix",
+      "argv": [
+        "/home/filip/code/in-the-loop-foundation-domain-streams/lib/target/test-fast/jvmcontract",
+        "prove",
+        "civil.Hours#completeHours(int, int)",
+        "--classes",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261119-215957-threetenbp-hours-adapter-on-the-qualifie/.build-py/examples-rycpgt_h/targets/310/clock-fix/20261119T220647Z-69a0d79d/prepare/fix/adapter-fix.jar",
+        "--classpath",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261119-215957-threetenbp-hours-adapter-on-the-qualifie/.build-py/examples-rycpgt_h/targets/310/clock-fix/20261119T220647Z-69a0d79d/prepare/fix/slice/fix.jar",
+        "--assume",
+        "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+        "--assert",
+        "result == ((endTick - startTick) * 15) / 60",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "32",
+        "--max-array-length",
+        "8",
+        "--timeout",
+        "60",
+        "--observed-initializer",
+        "org.threeten.bp.chrono.Chronology",
+        "--work",
+        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/clock-registry-32-v2/work",
+        "--json",
+        "--model",
+        "java.util.concurrent.ConcurrentHashMap"
+      ],
+      "checkedBinary": "190555cb9fe352a0ff72a442873fedadd9a4bf0f8cec184461508e3a67cb4d2a",
+      "artifacts": {
+        "--classes": "88043dcfead2a23100f82fd5054577ec6dbf887bbf3ccee2daf5bb07c2df0786",
+        "--classpath": "66a46dda841cb03c4130ac6f4af0dfa35c661af85d0a7dab47a35dc7f31204d2"
+      },
+      "environment": {
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "PATH": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin:/usr/bin:/bin"
+      },
+      "exitCode": 1,
+      "seconds": 1.0208939110161737,
+      "stdoutSha256": "9d000edb081aa2083ca7077a6e6ec098a4551cc824901ddf48bb819c97a172a1",
+      "verdict": "unverifiable",
+      "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:org.threeten.bp.temporal.ChronoUnit.compareTo(Ljava/lang/Enum;)I@jdk-21.0.13 (org.threeten.bp.temporal.ChronoUnit.compareTo(java.lang.Enum) at org.threeten.bp.temporal.ChronoUnit.isTimeBased:222). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "native": {
+        "paths": 8,
+        "merges": 0,
+        "solver_calls": 37,
+        "solving_seconds": 0.009903848,
+        "gates_evaluated": 4605,
+        "evaluating_seconds": 0.000172442,
+        "divisions": 6,
+        "divisions_built": 4,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 24565,
+        "clauses": 83465,
+        "seconds": 0.049749452,
+        "loading_seconds": 0.004832864,
+        "decoding_seconds": 0.000896183,
+        "encoding_seconds": 0.018110186,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "java.util.concurrent.ConcurrentHashMap is the tool's model of the class wherever the check runs it (--model), not the JDK's code: single-threaded ConcurrentHashMap() and ConcurrentHashMap(int), get, putIfAbsent, size and isEmpty with String keys, non-null values and the JDK exception classes for null inputs (lib/models/java/util/concurrent/ConcurrentHashMap.java); a constructor or method the model does not keep is the JDK call it names",
+          "the class initializer of org.threeten.bp.chrono.Chronology was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 3bebd61b1251), in a JVM whose default locale was en (formatting en, display en) and default time zone Etc/UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+        ]
+      },
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "counterexample": null,
+      "replay": null
+    },
+    {
+      "revision": "fix",
+      "argv": [
+        "/home/filip/code/in-the-loop-foundation-domain-streams/lib/target/test-fast/jvmcontract",
+        "prove",
+        "civil.Hours#completeHours(int, int)",
+        "--classes",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261119-215957-threetenbp-hours-adapter-on-the-qualifie/.build-py/examples-rycpgt_h/targets/310/clock-fix/20261119T220647Z-69a0d79d/prepare/fix/adapter-fix.jar",
+        "--classpath",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261119-215957-threetenbp-hours-adapter-on-the-qualifie/.build-py/examples-rycpgt_h/targets/310/clock-fix/20261119T220647Z-69a0d79d/prepare/fix/slice/fix.jar",
+        "--assume",
+        "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+        "--assert",
+        "result == ((endTick - startTick) * 15) / 60",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "32",
+        "--max-array-length",
+        "8",
+        "--timeout",
+        "60",
+        "--observed-initializer",
+        "org.threeten.bp.chrono.Chronology",
+        "--work",
+        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/clock-registry-enum-32/work",
+        "--json",
+        "--model",
+        "java.util.concurrent.ConcurrentHashMap"
+      ],
+      "checkedBinary": "c1f057520bab8815c93decad15843043e134e16328ada0247f8be52965a69808",
+      "artifacts": {
+        "--classes": "88043dcfead2a23100f82fd5054577ec6dbf887bbf3ccee2daf5bb07c2df0786",
+        "--classpath": "66a46dda841cb03c4130ac6f4af0dfa35c661af85d0a7dab47a35dc7f31204d2"
+      },
+      "environment": {
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "PATH": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin:/usr/bin:/bin"
+      },
+      "exitCode": 1,
+      "seconds": 60.180863984976895,
+      "stdoutSha256": "542e26d7742cdc2507ad0c432db8f8bdb9d0bdbce361e1f1f0c890f0bf751753",
+      "verdict": "unverifiable",
+      "problem": "the engine did not finish within the time limit",
+      "native": {
+        "paths": 106,
+        "merges": 0,
+        "solver_calls": 475,
+        "solving_seconds": 57.901387732,
+        "gates_evaluated": 471629,
+        "evaluating_seconds": 0.013626154,
+        "divisions": 59,
+        "divisions_built": 57,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 478019,
+        "clauses": 1652821,
+        "seconds": 59.07599218,
+        "loading_seconds": 0.003733555,
+        "decoding_seconds": 0.000714563,
+        "encoding_seconds": 0.714322663,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "java.util.concurrent.ConcurrentHashMap is the tool's model of the class wherever the check runs it (--model), not the JDK's code: single-threaded ConcurrentHashMap() and ConcurrentHashMap(int), get, putIfAbsent, size and isEmpty with String keys, non-null values and the JDK exception classes for null inputs (lib/models/java/util/concurrent/ConcurrentHashMap.java); a constructor or method the model does not keep is the JDK call it names",
+          "the class initializer of org.threeten.bp.chrono.Chronology was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 3bebd61b1251), in a JVM whose default locale was en (formatting en, display en) and default time zone Etc/UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+        ]
+      },
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "counterexample": null,
+      "replay": null
+    },
+    {
+      "revision": "parent",
+      "argv": [
+        "/home/filip/code/in-the-loop-foundation-domain-streams/lib/target/test-fast/jvmcontract",
+        "prove",
+        "civil.Hours#completeHours(int, int)",
+        "--classes",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261119-215957-threetenbp-hours-adapter-on-the-qualifie/.build-py/examples-rycpgt_h/targets/310/clock-parent/20261119T220642Z-c6bf07ca/prepare/parent/adapter-parent.jar",
+        "--classpath",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261119-215957-threetenbp-hours-adapter-on-the-qualifie/.build-py/examples-rycpgt_h/targets/310/clock-parent/20261119T220642Z-c6bf07ca/prepare/parent/slice/parent.jar",
+        "--assume",
+        "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+        "--assert",
+        "result == ((endTick - startTick) * 15) / 60",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "32",
+        "--max-array-length",
+        "8",
+        "--timeout",
+        "60",
+        "--observed-initializer",
+        "org.threeten.bp.chrono.Chronology",
+        "--work",
+        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/clock-registry-parent-words/work",
+        "--json",
+        "--model",
+        "java.util.concurrent.ConcurrentHashMap"
+      ],
+      "checkedBinary": "c1f057520bab8815c93decad15843043e134e16328ada0247f8be52965a69808",
+      "artifacts": {
+        "--classes": "88043dcfead2a23100f82fd5054577ec6dbf887bbf3ccee2daf5bb07c2df0786",
+        "--classpath": "85a8dc921b282c09d82a1d62bdcf70ed894107331cce5329c33fe6f1fea5a3bf"
+      },
+      "environment": {
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "PATH": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin:/usr/bin:/bin",
+        "JVMCONTRACT_SOLVER": "bitwuzla-words"
+      },
+      "exitCode": 1,
+      "seconds": 2.298760389967356,
+      "stdoutSha256": "f2c4ad07daa341167119904d06dcc232a75ddbca70d0b716d06295e68f0d883a",
+      "verdict": "violation",
+      "problem": null,
+      "native": {
+        "paths": 30,
+        "merges": 0,
+        "solver_calls": 65,
+        "solving_seconds": 1.335611241,
+        "gates_evaluated": 408,
+        "evaluating_seconds": 0.000366564,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "word_operations": 200,
+        "variables": 4397,
+        "clauses": 1,
+        "seconds": 1.375415031,
+        "loading_seconds": 0.003609654,
+        "decoding_seconds": 0.000844421,
+        "encoding_seconds": 0.005143347,
+        "witness_seconds": 0.001310998,
+        "assumed": [
+          "java.util.concurrent.ConcurrentHashMap is the tool's model of the class wherever the check runs it (--model), not the JDK's code: single-threaded ConcurrentHashMap() and ConcurrentHashMap(int), get, putIfAbsent, size and isEmpty with String keys, non-null values and the JDK exception classes for null inputs (lib/models/java/util/concurrent/ConcurrentHashMap.java); a constructor or method the model does not keep is the JDK call it names",
+          "the class initializer of org.threeten.bp.chrono.Chronology was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 3bebd61b1251), in a JVM whose default locale was en (formatting en, display en) and default time zone Etc/UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+        ]
+      },
+      "checker": "jvmcontract's own checker (Bitwuzla)",
+      "counterexample": {
+        "input": "completeHours(startTick=74, endTick=125)",
+        "outcome": "13",
+        "values": [
+          "74",
+          "125"
+        ],
+        "shrink_runs": 0,
+        "inputs": [
+          {
+            "name": "startTick",
+            "type": "int",
+            "value": 74
+          },
+          {
+            "name": "endTick",
+            "type": "int",
+            "value": 125
+          }
+        ],
+        "call": {
+          "class": "civil.Hours",
+          "class_file": "civil/Hours.class",
+          "classes": "after",
+          "method": "completeHours",
+          "descriptor": "(II)J",
+          "static": true,
+          "arguments": [
+            {
+              "name": "startTick",
+              "type": "int",
+              "value": 74,
+              "from": "startTick"
+            },
+            {
+              "name": "endTick",
+              "type": "int",
+              "value": 125,
+              "from": "endTick"
+            }
+          ]
+        }
+      },
+      "replay": {
+        "by": "jvm",
+        "reproduced": true
+      }
+    },
+    {
+      "revision": "fix",
+      "argv": [
+        "/home/filip/code/in-the-loop-foundation-domain-streams/lib/target/test-fast/jvmcontract",
+        "prove",
+        "civil.Hours#completeHours(int, int)",
+        "--classes",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261119-215957-threetenbp-hours-adapter-on-the-qualifie/.build-py/examples-rycpgt_h/targets/310/clock-fix/20261119T220647Z-69a0d79d/prepare/fix/adapter-fix.jar",
+        "--classpath",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261119-215957-threetenbp-hours-adapter-on-the-qualifie/.build-py/examples-rycpgt_h/targets/310/clock-fix/20261119T220647Z-69a0d79d/prepare/fix/slice/fix.jar",
+        "--assume",
+        "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+        "--assert",
+        "result == ((endTick - startTick) * 15) / 60",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "32",
+        "--max-array-length",
+        "8",
+        "--timeout",
+        "60",
+        "--observed-initializer",
+        "org.threeten.bp.chrono.Chronology",
+        "--work",
+        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/clock-registry-fix-words/work",
+        "--json",
+        "--model",
+        "java.util.concurrent.ConcurrentHashMap"
+      ],
+      "checkedBinary": "c1f057520bab8815c93decad15843043e134e16328ada0247f8be52965a69808",
+      "artifacts": {
+        "--classes": "88043dcfead2a23100f82fd5054577ec6dbf887bbf3ccee2daf5bb07c2df0786",
+        "--classpath": "66a46dda841cb03c4130ac6f4af0dfa35c661af85d0a7dab47a35dc7f31204d2"
+      },
+      "environment": {
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "PATH": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin:/usr/bin:/bin",
+        "JVMCONTRACT_SOLVER": "bitwuzla-words"
+      },
+      "exitCode": 1,
+      "seconds": 60.30286532000173,
+      "stdoutSha256": "e82df2150e256f6c2b18ce853c4081da0b62b762f06d12274122581c87a04d8f",
+      "verdict": "unverifiable",
+      "problem": "the engine did not finish within the time limit",
+      "native": {
+        "paths": 100,
+        "merges": 0,
+        "solver_calls": 388,
+        "solving_seconds": 59.056648438,
+        "gates_evaluated": 4578,
+        "evaluating_seconds": 0.007542814,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "word_operations": 1100,
+        "variables": 28724,
+        "clauses": 1,
+        "seconds": 59.304091687,
+        "loading_seconds": 0.003325205,
+        "decoding_seconds": 0.000851002,
+        "encoding_seconds": 0.069627392,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "java.util.concurrent.ConcurrentHashMap is the tool's model of the class wherever the check runs it (--model), not the JDK's code: single-threaded ConcurrentHashMap() and ConcurrentHashMap(int), get, putIfAbsent, size and isEmpty with String keys, non-null values and the JDK exception classes for null inputs (lib/models/java/util/concurrent/ConcurrentHashMap.java); a constructor or method the model does not keep is the JDK call it names",
+          "the class initializer of org.threeten.bp.chrono.Chronology was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 3bebd61b1251), in a JVM whose default locale was en (formatting en, display en) and default time zone Etc/UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+        ]
+      },
+      "checker": "jvmcontract's own checker (Bitwuzla)",
+      "counterexample": null,
+      "replay": null
+    }
+  ]
+}

@@ -111,7 +111,25 @@ def check(claim, task, outcome, length):
         return witness_problem(witness.get("inputs"), params, nullable, aliases, length)
     return None
 
-def statement_problem(plan, outcome, entry):
+def library_bindings_problem(plan, outcome, initializer_classes):
+    """Match the native engine's actual library assumptions to the frozen states and the prepared classes."""
+    assumptions = (outcome.get("stated") or {}).get("assumptions") or []
+    ids = {a["id"] for a in assumptions if a.get("kind") == "library" and a.get("basis") == "engine"
+           and isinstance(a.get("id"), str) and a["id"].startswith(("observed-initializer:", "jdk-model:"))}
+    expected = {"jdk-model:" + name for name in plan.claim.get("namedModels", [])}
+    for revision in plan.revisions:
+        prefix = "before." if plan.kind == "equivalence" and revision == plan.revisions[0] else ""
+        for name, state in plan.claim.get("observedInitializers", {}).items():
+            digest = (initializer_classes or {}).get(revision, {}).get(name)
+            if not digest:
+                return f"{revision} has no prepared class digest for the observed initializer {name}"
+            expected.add(f"observed-initializer:{prefix}{name}:{digest}:{state}")
+    if ids != expected:
+        return "the executed library assumptions differ from the frozen named models, initializer states or prepared classes"
+    return None
+
+
+def statement_problem(plan, outcome, entry, initializer_classes=None):
     """Compare the raw Rust statement with the requested invocation before publishing an eligible result."""
     from accept import descriptor_parameters, same_target
     if not same_target(outcome.get("target") or "", entry):
@@ -123,6 +141,9 @@ def statement_problem(plan, outcome, entry):
     if checker == "native" and stated.get("gap_mode") != plan.gaps:
         return "the native checker reported a different gap policy"
     claim = plan.claim
+    problem = library_bindings_problem(plan, outcome, initializer_classes)
+    if problem:
+        return problem
     bounds = claim.get("bounds") or {}
     parameters = (stated.get("domain") or {}).get("parameters") or []
     if "(" in entry and [p["type"] for p in parameters] != descriptor_parameters("(" + entry.partition("(")[2]):

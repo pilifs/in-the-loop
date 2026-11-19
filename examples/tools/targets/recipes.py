@@ -34,6 +34,7 @@ class ProofRecipe:
     arguments: tuple[Argument, ...]
     defaults: dict
     correspondence: Optional[dict] = None
+    observed_initializers: Optional[dict] = None
 
     def describe(self):
         return {"kind": self.kind, "command": self.command, "subject": self.subject, "checkedEntry": self.entry,
@@ -41,6 +42,7 @@ class ProofRecipe:
                                    **({"bindSha256AtPreparation": True} if a.file else {})) for a in self.arguments],
                 "checkerDefaults": self.defaults,
                 "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+                **({"observedInitializerStates": self.observed_initializers} if self.observed_initializers else {}),
                 **({"correspondence": self.correspondence} if self.correspondence else {})}
 
     def bind(self, plan, exe, sides, work, timeout):
@@ -68,6 +70,8 @@ class ProofRecipe:
             originals[revision] = original
             dependencies[revision] = [a for a in selected if a.path != original]
             paths[revision] = [dict(path=a.path, sha256=a.sha256, role=a.role) for a in selected]
+            if self.observed_initializers:
+                entries[revision]["initializerClasses"] = initializer_classes(self.observed_initializers, sides[revision][0], paths[revision])
 
         def classpath(revision, flag):
             return [word for a in dependencies[revision] for word in (flag, f"prepare/{revision}/{a.path}")]
@@ -88,6 +92,21 @@ class ProofRecipe:
         return Invocation(tuple(argv), self.entry, paths, entries, timeout)
 
 
+def initializer_classes(names, root, classpath):
+    from targets import runtime, runtime_jar
+    hashes = {}
+    for name in names:
+        internal = runtime_jar.internal(name)
+        for artifact in classpath:
+            data = runtime_jar.read_class(root / artifact["path"], internal)
+            if data is not None:
+                hashes[name] = hashlib.sha256(data).hexdigest()
+                break
+        else:
+            raise runtime.Refused("claim", f"observed initializer {name} is absent from this revision's prepared classpath")
+    return hashes
+
+
 def translate(plan: TaskPlan) -> ProofRecipe | Unsupported:
     claim = plan.claim
     def refused(field, reason):
@@ -100,6 +119,8 @@ def translate(plan: TaskPlan) -> ProofRecipe | Unsupported:
         return refused("bounds", f"the claim's bounds {', '.join(unknown)} have no jvmcontract option here")
     if claim.get("models"):
         return refused("models", "the claim states models by file digest, and no route passes these files to the verifier")
+    if (claim.get("namedModels") or claim.get("observedInitializers")) and plan.engine != "native":
+        return refused("engine", "named models and JVM-observed initializer states require the native checker")
     arguments = []
     def add(field, flag, values):
         arguments.extend(Argument(field, flag, str(value)) for value in values)
@@ -137,6 +158,8 @@ def translate(plan: TaskPlan) -> ProofRecipe | Unsupported:
             arguments.append(Argument(field, flag, claim[field]["path"], file=True))
     add("engine", "--engine", [plan.engine])
     add("gaps", "--gaps", [plan.gaps])
+    add("namedModels", "--model", claim.get("namedModels") or [])
+    add("observedInitializers", "--observed-initializer", sorted(claim.get("observedInitializers") or {}))
     for field, flag in (("unwind", "--unwind"), ("maxArrayLength", "--max-array-length")):
         if field in bounds:
             add("bounds." + field, flag, [bounds[field]])
@@ -144,4 +167,4 @@ def translate(plan: TaskPlan) -> ProofRecipe | Unsupported:
     if adapter and not any(c["kind"] == "oracle" and c["id"] == adapter["correspondence"] for c in claim.get("controls", [])):
         return refused("adapter.correspondence", "the correspondence oracle is not frozen in the claim")
     return ProofRecipe("adapter" if adapter else "direct-method", plan.kind, plan.target,
-                       adapter["entry"] if adapter else plan.target, tuple(arguments), defaults, adapter)
+                       adapter["entry"] if adapter else plan.target, tuple(arguments), defaults, adapter, claim.get("observedInitializers"))
