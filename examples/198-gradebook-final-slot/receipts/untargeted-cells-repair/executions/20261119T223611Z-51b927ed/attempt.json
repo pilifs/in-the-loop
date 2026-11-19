@@ -1,0 +1,294 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261119T223611Z-51b927ed",
+  "task": "untargeted-cells-repair",
+  "claimKey": "a7a46b8edf80b6d4",
+  "revisions": [
+    "repair"
+  ],
+  "startedAt": "2026-11-19T22:36:11.334738+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 600
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261119-223013-gradebook-independent-previous-value-pos",
+  "sourceCommit": "0622a8bf64eda6106832dfb38efa4a712abcf419",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 0.001
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 0.1681
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 0.1931
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 0.2253
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 0.3119
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "repair": {
+      "revision": "fixture:repair",
+      "target": {
+        "class": "gradebook.ScoreSheet",
+        "method": "write",
+        "descriptor": "([III)I",
+        "loadedFrom": "repair.jar",
+        "classSha256": "35d16a81048240ddc0589447beaac64e967bd1dd2c3b67522376e8651088481a"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "97c0611e1a082ccf43299fb8bd5707be7722e4456c3858f92b14f60d1e136f87",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "repair.jar",
+          "sha256": "a173dc403a79ee406d1fe9bae6fc498e5ce7be89e05aec16761cee95da49b125",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from repair by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "96e32f3218291bd60c8909738dc7e9508ad2cc47bbf7ed24b12c39fd54d376db",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/dd6b0bb402c2604561536b10fe894ecb9c7e96a8/jvmcontract",
+    "prove",
+    "gradebook.ScoreSheet#write(int[], int, int)",
+    "--classes",
+    "prepare/repair/repair.jar",
+    "--assume",
+    "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+    "--assert",
+    "(scores.length <= 0 || slot == 0 || scores[0] == \\old(scores[0])) && (scores.length <= 1 || slot == 1 || scores[1] == \\old(scores[1])) && (scores.length <= 2 || slot == 2 || scores[2] == \\old(scores[2]))",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "8",
+    "--max-array-length",
+    "3",
+    "--timeout",
+    "600",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "ba819f385f8446d28b2d4ca1d709649cf23329453daa7ae0570775b854765648",
+    "commit": "0622a8bf64eda6106832dfb38efa4a712abcf419",
+    "libTree": "dd6b0bb402c2604561536b10fe894ecb9c7e96a8",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 8,
+      "maxArrayLength": 3
+    },
+    "timeout": 600,
+    "scope": {
+      "label": "constructed-fixture",
+      "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+      "method": "gradebook.ScoreSheet#write([III)I",
+      "revisions": {
+        "repair": {
+          "commit": "fixture:repair",
+          "loadedFrom": "repair.jar",
+          "classSha256": "35d16a81048240ddc0589447beaac64e967bd1dd2c3b67522376e8651088481a",
+          "origin": "built from repair by the fixture recipe",
+          "parameters": {
+            "names": [
+              "scores",
+              "slot",
+              "score"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "repair": [
+        {
+          "path": "repair.jar",
+          "sha256": "a173dc403a79ee406d1fe9bae6fc498e5ce7be89e05aec16761cee95da49b125",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "gradebook.ScoreSheet#write([III)I",
+    "entryBindings": {
+      "repair": {
+        "entry": "gradebook.ScoreSheet#write([III)I",
+        "classSha256": "35d16a81048240ddc0589447beaac64e967bd1dd2c3b67522376e8651088481a",
+        "loadedFrom": "repair.jar",
+        "subject": "gradebook.ScoreSheet#write([III)I",
+        "subjectClassSha256": "35d16a81048240ddc0589447beaac64e967bd1dd2c3b67522376e8651088481a"
+      }
+    },
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "gradebook.ScoreSheet#write([III)I",
+      "checkedEntry": "gradebook.ScoreSheet#write([III)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "(scores.length <= 0 || slot == 0 || scores[0] == \\old(scores[0])) && (scores.length <= 1 || slot == 1 || scores[1] == \\old(scores[1])) && (scores.length <= 2 || slot == 2 || scores[2] == \\old(scores[2]))"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "8"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "3"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "repair": "fixture:repair"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "repair": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/dd6b0bb402c2604561536b10fe894ecb9c7e96a8/jvmcontract",
+          "gaps",
+          "--target",
+          "gradebook.ScoreSheet#write(int[], int, int)",
+          "--classes",
+          "prepare/repair/repair.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "stdout": "verifier/probe-repair.stdout",
+        "stderr": "verifier/probe-repair.stderr",
+        "gaps": []
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0253,
+      "peakRssBytes": 80277504,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0253,
+    "peakRssBytes": 80277504,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.031,
+  "missing": [],
+  "receipt": "receipts/untargeted-cells-repair/20261119T223611Z-51b927ed/result.json",
+  "preparedClaim": "da08ac16d04074ab",
+  "firstBlocker": null,
+  "endedAt": "2026-11-19T22:36:11.646724+00:00"
+}

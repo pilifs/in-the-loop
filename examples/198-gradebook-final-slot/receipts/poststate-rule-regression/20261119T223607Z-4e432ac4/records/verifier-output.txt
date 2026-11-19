@@ -1,0 +1,6 @@
+✗ Property of gradebook.ScoreSheet#write(int[], int, int) violated: `(scores.length <= 0 || scores[0] == (slot == 0 ? score : \old(scores[0]))) && (scores.length <= 1 || scores[1] == (slot == 1 ? score : \old(scores[1]))) && (scores.length <= 2 || scores[2] == (slot == 2 ? score : \old(scores[2])))` where scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2)):
+  write(scores=[0], slot=0, score=1)
+    outcome: 0
+  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], replayed in the interpreter; domain scores: int[] of length ≤ 3, not null × slot: int × score: int)
+
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.
