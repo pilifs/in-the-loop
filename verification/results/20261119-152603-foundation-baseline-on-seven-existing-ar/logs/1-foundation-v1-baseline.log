@@ -1,0 +1,82 @@
+conformance/aliasedLocals/1                  native strict             verified     correct                   0.02 s    25.3 MB
+conformance/aliasedLocals/1                  jbmc   strict  full-range verified     correct                   0.14 s    35.6 MB
+conformance/aliasedLocals/2                  native strict             violation    correct                   0.02 s    25.6 MB
+conformance/aliasedLocals/2                  jbmc   strict  full-range violation    correct                   0.14 s    35.9 MB
+conformance/twoArrays/1                      native strict             verified     correct                   0.02 s    25.6 MB
+conformance/twoArrays/1                      jbmc   strict  full-range verified     correct                   0.14 s    37.3 MB
+conformance/divide/1                         native strict             verified     correct                   0.02 s    25.6 MB
+conformance/divide/1                         jbmc   strict  full-range verified     correct                   0.14 s    37.1 MB
+conformance/divide/2                         native strict             violation    correct                   0.03 s    25.6 MB
+conformance/divide/2                         jbmc   strict  full-range violation    correct                   0.14 s    36.2 MB
+held/reverse                                 native strict             verified     correct                   0.14 s    32.4 MB
+held/reverse                                 jbmc   strict  full-range unverifiable unsupported              10.90 s  3835.3 MB
+held/prefix-sums                             native strict             verified     correct                   0.03 s    25.6 MB
+held/prefix-sums                             jbmc   strict  full-range verified     correct                   4.10 s   396.5 MB
+# Benchmark results
+
+Written by `lib/benchmark/run.py` on 2026-11-19T15:36:49+0000, as pipeline job `20261119-152603-foundation-baseline-on-seven-existing-ar`, at commit `7ccabc6d9f0a`, on 30 × AMD RYZEN AI MAX+ 395 w/ Radeon 8060S (x86_64), with jvmcontract 0.1.0, JBMC 6.11.0 (cbmc-6.11.0) and openjdk version "25.0.5" 2026-10-20 LTS. Every run had a deadline of 30 s, loops unwound 16 times and arrays of up to 8 elements, on both engines. What the columns mean is in [README.md](README.md).
+
+SAT solvers: the own checker on CaDiCaL 1.9.5, bundled by the Rust crate cadical 0.1.16; JBMC on CaDiCaL 3.0.0, linked into JBMC (/usr/bin/jbmc), the version as its signature there reads. Their configuration is under `environment.sat` in `results.json`.
+
+## Correctness and coverage
+
+| group | engine | mode | cases | correct | of them assuming a gap | unsupported | false success | false alarm | total s | median s | max s | peak MB |
+|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 semantic conformance | native | strict | 5 | 5 | 0 | 0 | 0 | 0 | 0.1 | 0.02 | 0.03 | 25.6 |
+| 1 semantic conformance | jbmc | strict | 5 | 5 | 0 | 0 | 0 | 0 | 0.7 | 0.14 | 0.14 | 37.3 |
+| 3 held-out performance cases | native | strict | 2 | 2 | 0 | 0 | 0 | 0 | 0.2 | 0.09 | 0.14 | 32.4 |
+| 3 held-out performance cases | jbmc | strict | 2 | 1 | 0 | 1 | 0 | 0 | 15.0 | 7.5 | 10.9 | 3835.3 |
+
+Why the unsupported cases had no verdict:
+
+- group 3, jbmc, strict: 1 out of memory
+
+## By workload, under strict
+
+| workload | engine | cases | correct | unsupported | wrong | median s (decided) | max s | peak MB |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| array-mutation | native | 2 | 2 | 0 | 0 | 0.09 | 0.14 | 32.4 |
+| array-mutation | jbmc | 2 | 1 | 1 | 0 | 4.1 | 10.9 | 3835.3 |
+| semantics | native | 5 | 5 | 0 | 0 | 0.02 | 0.03 | 25.6 |
+| semantics | jbmc | 5 | 5 | 0 | 0 | 0.14 | 0.14 | 37.3 |
+
+## Where the time goes, by workload, under strict
+
+Each engine's seconds over every run of the workload, decided or not, as shares of the phases of `lib/src/phases.rs`: the checker's own (`loading` to `trace`, and `checker-other`, JBMC starting and printing), then the driver's (`gaps` and JBMC's preflight, `contracts`, `replay` and shrinking, the `jvm` witness run, the `harness`, the `setup` of the work directory with the JDK's classes and the models, and the rest of the process as `driver`). Step 5b of the sound-verdicts brief.
+
+| workload | engine | runs | s | loading | lowering | symbolic | encoding | solving | trace | checker-other | gaps | contracts | replay | jvm | harness | setup | driver | dominant | largest formula (clauses) |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---:|
+| array-mutation | native | 2 | 0.17 | · | · | 3% | 9% | 55% | · | · | · | · | · | · | · | 1% | 32% | **solving** 55% | 59707 |
+| array-mutation | jbmc | 2 (1 undecided) | 15.01 | 0% | 0% | 2% | 26% | 59% | · | 12% | 1% | · | · | · | · | 0% | 0% | **solving** 59% | 17233885 |
+| semantics | native | 5 | 0.12 | · | · | 17% | 3% | · | · | · | · | · | 6% | · | · | 5% | 70% | **driver** 70% | 6812 |
+| semantics | jbmc | 5 | 0.71 | 13% | 3% | 3% | 1% | 1% | 0% | 16% | 41% | · | 2% | · | · | 1% | 20% | **gaps** 41% | 13959 |
+
+## Group 1: semantic conformance, case by case
+
+The JVM's answer is the conformance test's (`lib/tests/conformance.rs`), on the calls the corpus lists.
+
+<details><summary>All 5 claims</summary>
+
+| case | expected | the JVM | native strict | jbmc strict |
+|---|---|---|---|---|
+| `conformance/aliasedLocals/1` | verified | conformance test | ✓ verified 0.02 s | ✓ verified 0.14 s |
+| `conformance/aliasedLocals/2` | violation | conformance test | ✓ violation 0.02 s | ✓ violation 0.14 s |
+| `conformance/twoArrays/1` | verified | conformance test | ✓ verified 0.02 s | ✓ verified 0.14 s |
+| `conformance/divide/1` | verified | conformance test | ✓ verified 0.02 s | ✓ verified 0.14 s |
+| `conformance/divide/2` | violation | conformance test | ✓ violation 0.03 s | ✓ violation 0.14 s |
+
+</details>
+
+## Group 3: held-out performance cases, case by case
+
+| case | expected | the JVM | native strict | jbmc strict |
+|---|---|---|---|---|
+| `held/reverse` | verified | held 2000 | ✓ verified 0.14 s | – out of memory 10.9 s |
+| `held/prefix-sums` | verified | held 2000 | ✓ verified 0.03 s | ✓ verified 4.10 s |
+
+## The JVM against the corpus
+
+Every expected answer of groups 2 and 3 is borne out on the JVM.
+
+Every witness an engine reported reproduces on the JVM.
+
