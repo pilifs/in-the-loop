@@ -1,0 +1,354 @@
+--- /dev/null
++++ b/verification/foundation-jbmc-array-overlap.json
+@@ -0,0 +1,351 @@
++{
++  "checkerCommit": "0a9020d87ff032b3ce278be015e5f7f2c2d0a101",
++  "checkerLibTree": "e338c9d33e461cf29db2b7a58b612bb12d075ac6",
++  "classSha256": {
++    "baseline": "885c57ba5616612a4690cf1ad262b206c1450c932e02fa7069428795569ae907",
++    "alternative": "e7c7163fc629cea47d6055912b66a6e9c9791456c010c06b7a7b162295f928f4",
++    "controls/preserving": "ded55e6e564c5d3433973bd408f5a7280212aa49fc8428bb2efbc2d96e974463"
++  },
++  "rows": [
++    {
++      "profile": "nullable-shared-binary-length-2",
++      "domainAndObservationSha256": "a826d8e25327f41a836593e6122c711aed2ada9621bce403703c8eacc2be9dcf",
++      "semantics": {
++        "assume": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
++        "nullable": [
++          "left",
++          "right"
++        ],
++        "mayAlias": [
++          "left,right"
++        ],
++        "bounds": {
++          "maxArrayLength": 2,
++          "unwind": 8
++        },
++        "observations": [
++          {
++            "kind": "array-parameter",
++            "parameter": "left"
++          },
++          {
++            "kind": "array-parameter",
++            "parameter": "right"
++          }
++        ]
++      },
++      "pair": "controls/preserving",
++      "engine": "jbmc",
++      "expected": "verified",
++      "verdict": "unverifiable",
++      "qualified": false,
++      "problem": "JBMC proved it, but runs 2 constructs otherwise than the JVM (stubbed-handler at RegressionPair.agree:26, stubbed-handler at RegressionPair.agree:30), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
++      "replay": null,
++      "witness": null,
++      "seconds": 1.101,
++      "peakMiB": 86.7
++    },
++    {
++      "profile": "nullable-shared-binary-length-2",
++      "domainAndObservationSha256": "a826d8e25327f41a836593e6122c711aed2ada9621bce403703c8eacc2be9dcf",
++      "semantics": {
++        "assume": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
++        "nullable": [
++          "left",
++          "right"
++        ],
++        "mayAlias": [
++          "left,right"
++        ],
++        "bounds": {
++          "maxArrayLength": 2,
++          "unwind": 8
++        },
++        "observations": [
++          {
++            "kind": "array-parameter",
++            "parameter": "left"
++          },
++          {
++            "kind": "array-parameter",
++            "parameter": "right"
++          }
++        ]
++      },
++      "pair": "alternative",
++      "engine": "jbmc",
++      "expected": "violation",
++      "verdict": "violation",
++      "qualified": true,
++      "problem": null,
++      "replay": {
++        "by": "jvm",
++        "reproduced": true
++      },
++      "witness": {
++        "input": "apply(left=[0], right=[0])",
++        "before": "array:left=[1], array:right=[0]",
++        "after": "array:left=[0], array:right=[0]",
++        "values": [
++          "left=[0]",
++          "right=[0]"
++        ],
++        "found": "agree(len0=1, cell0_0=0, cell0_1=-2147483648, len1=1, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=false)",
++        "shrink_runs": 5,
++        "inputs": [
++          {
++            "name": "left",
++            "type": "int[]",
++            "value": [
++              0
++            ]
++          },
++          {
++            "name": "right",
++            "type": "int[]",
++            "value": [
++              0
++            ]
++          }
++        ],
++        "found_inputs": [
++          {
++            "name": "left",
++            "type": "int[]",
++            "value": [
++              0
++            ]
++          },
++          {
++            "name": "right",
++            "type": "int[]",
++            "value": [
++              0
++            ]
++          }
++        ],
++        "call": {
++          "class": "arrays.Update",
++          "class_file": "arrays/Update.class",
++          "classes": "after",
++          "method": "apply",
++          "descriptor": "([I[I)I",
++          "static": true,
++          "arguments": [
++            {
++              "name": "left",
++              "type": "int[]",
++              "value": [
++                0
++              ]
++            },
++            {
++              "name": "right",
++              "type": "int[]",
++              "value": [
++                0
++              ]
++            }
++          ]
++        },
++        "previous_call": {
++          "class": "arrays.Update",
++          "class_file": "arrays/Update.class",
++          "classes": "before",
++          "method": "apply",
++          "descriptor": "([I[I)I",
++          "static": true,
++          "arguments": [
++            {
++              "name": "left",
++              "type": "int[]",
++              "value": [
++                0
++              ]
++            },
++            {
++              "name": "right",
++              "type": "int[]",
++              "value": [
++                0
++              ]
++            }
++          ]
++        },
++        "differs": [
++          "array:left"
++        ],
++        "replay_observations": [
++          {
++            "kind": "array-parameter",
++            "parameter": "left"
++          },
++          {
++            "kind": "array-parameter",
++            "parameter": "right"
++          }
++        ],
++        "jvm": "25.0.5"
++      },
++      "seconds": 1.139,
++      "peakMiB": 90.1
++    },
++    {
++      "profile": "distinct-binary-length-1",
++      "domainAndObservationSha256": "dca5a0e1887c7fd92d0a31e98088fe2e5503e058628e3f75c69f5c8a2e9cddbc",
++      "semantics": {
++        "assume": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
++        "nullable": [],
++        "mayAlias": [],
++        "bounds": {
++          "maxArrayLength": 1,
++          "unwind": 8
++        },
++        "observations": [
++          {
++            "kind": "array-parameter",
++            "parameter": "left"
++          },
++          {
++            "kind": "array-parameter",
++            "parameter": "right"
++          }
++        ]
++      },
++      "pair": "controls/preserving",
++      "engine": "jbmc",
++      "expected": "verified",
++      "verdict": "unverifiable",
++      "qualified": false,
++      "problem": "JBMC proved it, but runs 2 constructs otherwise than the JVM (stubbed-handler at RegressionPair.agree:25, stubbed-handler at RegressionPair.agree:29), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
++      "replay": null,
++      "witness": null,
++      "seconds": 0.911,
++      "peakMiB": 86.9
++    },
++    {
++      "profile": "distinct-binary-length-1",
++      "domainAndObservationSha256": "dca5a0e1887c7fd92d0a31e98088fe2e5503e058628e3f75c69f5c8a2e9cddbc",
++      "semantics": {
++        "assume": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
++        "nullable": [],
++        "mayAlias": [],
++        "bounds": {
++          "maxArrayLength": 1,
++          "unwind": 8
++        },
++        "observations": [
++          {
++            "kind": "array-parameter",
++            "parameter": "left"
++          },
++          {
++            "kind": "array-parameter",
++            "parameter": "right"
++          }
++        ]
++      },
++      "pair": "alternative",
++      "engine": "jbmc",
++      "expected": "violation",
++      "verdict": "violation",
++      "qualified": true,
++      "problem": null,
++      "replay": {
++        "by": "jvm",
++        "reproduced": true
++      },
++      "witness": {
++        "input": "apply(left=[0], right=[0])",
++        "before": "array:left=[1], array:right=[0]",
++        "after": "array:left=[0], array:right=[0]",
++        "values": [
++          "left=[0]",
++          "right=[0]"
++        ],
++        "shrink_runs": 3,
++        "inputs": [
++          {
++            "name": "left",
++            "type": "int[]",
++            "value": [
++              0
++            ]
++          },
++          {
++            "name": "right",
++            "type": "int[]",
++            "value": [
++              0
++            ]
++          }
++        ],
++        "call": {
++          "class": "arrays.Update",
++          "class_file": "arrays/Update.class",
++          "classes": "after",
++          "method": "apply",
++          "descriptor": "([I[I)I",
++          "static": true,
++          "arguments": [
++            {
++              "name": "left",
++              "type": "int[]",
++              "value": [
++                0
++              ]
++            },
++            {
++              "name": "right",
++              "type": "int[]",
++              "value": [
++                0
++              ]
++            }
++          ]
++        },
++        "previous_call": {
++          "class": "arrays.Update",
++          "class_file": "arrays/Update.class",
++          "classes": "before",
++          "method": "apply",
++          "descriptor": "([I[I)I",
++          "static": true,
++          "arguments": [
++            {
++              "name": "left",
++              "type": "int[]",
++              "value": [
++                0
++              ]
++            },
++            {
++              "name": "right",
++              "type": "int[]",
++              "value": [
++                0
++              ]
++            }
++          ]
++        },
++        "differs": [
++          "array:left"
++        ],
++        "replay_observations": [
++          {
++            "kind": "array-parameter",
++            "parameter": "left"
++          },
++          {
++            "kind": "array-parameter",
++            "parameter": "right"
++          }
++        ],
++        "jvm": "25.0.5"
++      },
++      "seconds": 0.95,
++      "peakMiB": 88.2
++    }
++  ],
++  "overlapQualified": false
++}

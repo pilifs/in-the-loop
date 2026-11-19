@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (ended) |
+| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (open) |
 | When | 2026-11-15 19:24 UTC to 2026-11-19 15:15 UTC (5511 min) |
 | Models | `claude-fable-5-2` |
 | Client | claude-code 2.1.325 |
@@ -2693,6 +2693,12 @@ Outputs applied for 1 of the 1 job(s). 20261119-155814-foundation-requalificatio
 change `klvxszvvstpz` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Outputs applied for 4 of the 4 job(s). 20261119-155814-foundation-requalification-of-287-preser: passed: 1 passed step(s) in 2m01s, peak 2.1 GiB (estimated 10m00s, 6.0 GiB); 4 output file(s) changed; signals: jvmcontract:holds×2 Applied 4 output(s). 20261119-155814-foundation-requalification-of-289-preser: passed: 1 passed step(s) in 1m00s, peak 551.7 MiB (estimated 10m00s, 4.0 GiB); 3 output file(s) changed; signals: jvmcontract:holds×2 Applied 3 output(s). 20261119-155814-foundation-requalification-of-307-mutant: passed: 1 passed step(s) in 1m34s, peak 1.2 GiB (estimated 10m00s, 6.0 GiB); 5 output file(s) changed; signals: jvmcontract:fails×2 Applied 5 output(s). 20261119-155814-foundation-requalification-of-307-preser: passed: 1 passed step(s) in 1m37s, peak 992.6 MiB (estimated 10m00s, 6.0 GiB); 5 output file(s) changed; signals: jvmcontract:holds×2 Applied 5 output(s). Collected by the watcher of the foundation-domain-streams run, which keeps the queue while the run is under way.
+
+### Record verification results for 4 job(s)
+
+change `tylkwuzvmupp` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 3 of the 4 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-164548-197-paired-array-observation-return-only: passed: 1 passed step(s) in 3.8s, peak 107.9 MiB (estimated 2m00s, 2.0 GiB); 13 output file(s) changed; signals: example:task-as-expected×1 Applied 13 output(s). 20261119-164549-197-integrated-jbmc-preserving-and-discr: failed: 1 failed step(s) in 5.6s, peak 87.3 MiB (estimated 5m00s, 3.0 GiB); 1 output file(s) changed 20261119-164549-197-paired-array-observation-both-roots: passed: 1 passed step(s) in 3.6s, peak 107.7 MiB (estimated 2m00s, 2.0 GiB); 13 output file(s) changed; signals: example:task-as-expected×1 Applied 13 output(s). 20261119-164549-197-paired-array-observation-right-root: passed: 1 passed step(s) in 3.8s, peak 110.2 MiB (estimated 2m00s, 2.0 GiB); 13 output file(s) changed; signals: example:task-as-expected×1 Applied 13 output(s). Collected by the watcher of the foundation-domain-streams run, which keeps the queue while the run is under way.
 
 ## Conversation
 

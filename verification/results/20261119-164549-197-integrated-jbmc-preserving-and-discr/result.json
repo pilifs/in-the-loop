@@ -1,0 +1,172 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261119-164549-197-integrated-jbmc-preserving-and-discr",
+  "title": "197 integrated JBMC preserving and discriminating array pairs",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 5.6s, peak 87.3 MiB (estimated 5m00s, 3.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (paired roots on integrated JBMC) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261119-164549-197-integrated-jbmc-preserving-and-discr.json",
+    "sha256": "99dd987306e2d919dabd715ddeb52e5c44fa910cc7c7940d64eeb074859d0294",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261119-164549-197-integrated-jbmc-preserving-and-discr",
+      "title": "197 integrated JBMC preserving and discriminating array pairs",
+      "description": "Try the full shared nullable profile first on equivalent implementations and on a skipped write, using the two-root poststate. Require a complete non-vacuous proof and a refutation with a JVM replay of both requested descriptors. If the full profile does not qualify, try a separately identified distinct-array domain with a one-cell bound, preserving every full-profile refusal.",
+      "kind": "library",
+      "capabilities": [
+        "jbmc:arrays",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "197"
+        ]
+      },
+      "expected": "At least one declared profile qualifies both pairs at identical settings.",
+      "submitted": {
+        "at": "2026-11-19T16:45:49+00:00",
+        "session": "01a1f467-856b-7d02-9458-ab076e5fef2f"
+      },
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "javac",
+        "java"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m"
+      },
+      "steps": [
+        {
+          "name": "paired roots on integrated JBMC",
+          "run": "python3 -I examples/197-shared-int-array-poststates/proofs/overlap.py > verification/foundation-jbmc-array-overlap.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/foundation-jbmc-array-overlap.json"
+      ]
+    }
+  },
+  "sourceCommit": "0a9020d87ff032b3ce278be015e5f7f2c2d0a101",
+  "startedAt": "2026-11-19T16:56:44+00:00",
+  "finishedAt": "2026-11-19T16:59:27+00:00",
+  "wallSeconds": 163.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1922747,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 91500544,
+    "wallSeconds": 5.6,
+    "cpuSeconds": 9.3,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "paired roots on integrated JBMC",
+      "run": "python3 -I examples/197-shared-int-array-poststates/proofs/overlap.py > verification/foundation-jbmc-array-overlap.json",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 5.613,
+      "cpuSeconds": 9.341,
+      "cpuThrottledSeconds": 0.474,
+      "peakMemoryBytes": 91500544,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-paired-roots-on-integrated-jbm.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/foundation-jbmc-array-overlap.json",
+      "change": "added",
+      "bytes": 10109,
+      "sha256": "469456bbd7cfac40dd2c11d6e0b4cc79749153d7720c0be9d40ac5be40375bd6",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-19T16:59:53+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/foundation-jbmc-array-overlap.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "e338c9d33e461cf29db2b7a58b612bb12d075ac6",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e338c9d33e461cf29db2b7a58b612bb12d075ac6/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261119-164549-197-integrated-jbmc-preserving-and-discr"
+}

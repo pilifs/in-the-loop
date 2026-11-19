@@ -1,0 +1,285 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261119-164549-197-paired-array-observation-right-root",
+  "title": "197 paired-array observation right-root",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.8s, peak 110.2 MiB (estimated 2m00s, 2.0 GiB); 13 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261119-164549-197-paired-array-observation-right-root.json",
+    "sha256": "9abd3de00bda20ed67d9e165df92ccd2ba7adf2919b82690f48167de179982a2",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261119-164549-197-paired-array-observation-right-root",
+      "title": "197 paired-array observation right-root",
+      "description": "Run the frozen right-root obligation on two nullable int-array roots with binary cells and length at most two. The public pairing route reconstructs both heaps from the same choices. Retain the typed statement, actual JVM replay for a refutation, and the receipt for this task alone.",
+      "kind": "example",
+      "capabilities": [
+        "native:array-alias",
+        "target:equivalence"
+      ],
+      "links": {
+        "claims": [
+          "e67571d87352995c"
+        ],
+        "examples": [
+          "197"
+        ]
+      },
+      "expected": "example 197 task right-root gives its expected conclusion, refuted: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-19T16:45:49+00:00",
+        "session": "01a1f467-856b-7d02-9458-ab076e5fef2f"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "example 197 task right-root (equivalence)",
+          "run": "python3 examples/tools/build.py 197 --task right-root",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/197-shared-int-array-poststates/receipts/right-root"
+      ]
+    }
+  },
+  "sourceCommit": "0a9020d87ff032b3ce278be015e5f7f2c2d0a101",
+  "startedAt": "2026-11-19T16:56:44+00:00",
+  "finishedAt": "2026-11-19T16:59:25+00:00",
+  "wallSeconds": 161.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1922747,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 115585024,
+    "wallSeconds": 3.8,
+    "cpuSeconds": 6.3,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 197 task right-root (equivalence)",
+      "run": "python3 examples/tools/build.py 197 --task right-root",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 3.807,
+      "cpuSeconds": 6.274,
+      "cpuThrottledSeconds": 0.343,
+      "peakMemoryBytes": 115585024,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-197-task-right-root-eq.log",
+        "lines": 2,
+        "bytes": 222,
+        "sha256": "8fd78af702d97aad80ef7432afbc8356b0768716e9d796986899f8f30f80d424",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "197-shared-int-array-poststates: task right-root: refuted (completed; as expected), receipt receipts/right-root/20261119T165925Z-4ec1a415/result.json",
+          "groups": [
+            "197",
+            "right-root",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "197-shared-int-array-poststates: running task right-root (target route)",
+        "197-shared-int-array-poststates: task right-root: refuted (completed; as expected), receipt receipts/right-root/20261119T165925Z-4ec1a415/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/plan.json",
+      "change": "added",
+      "bytes": 5824,
+      "sha256": "039d4f4b03cff13ba6512bec9b4c22d7152cb44adc7d7e832e279a4abe54b63f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/control-reference-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/control-reference-jdk21.stdout",
+      "change": "added",
+      "bytes": 4696,
+      "sha256": "cc178142f43de06e80d0f2c9fb6193f8dcf70d8fe3f1d254b04ba3dd998d36b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/control-skipped-write-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/control-skipped-write-jdk21.stdout",
+      "change": "added",
+      "bytes": 4696,
+      "sha256": "087d19a3bf89b8d693b9a0c8fda15ac9bfe505f6758ef21ac1b0a0143c69ecd3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/controls.json",
+      "change": "added",
+      "bytes": 34745,
+      "sha256": "f6d65c5e21ebe97a39c64c958dc7f0aff80d1c3609e807745602c5d8589b8ccd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/execution.json",
+      "change": "added",
+      "bytes": 66631,
+      "sha256": "b5bcfff25eb3fb57bae2b042f002ce3b0f241203bc391b56f9a36d703aab66af",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/streams.json",
+      "change": "added",
+      "bytes": 2721,
+      "sha256": "b9504df37e20e7d3243b955e5f42c5972c38e4389f0b546fed9b431ff20b7b59",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1614,
+      "sha256": "31205eae5a8ff628050f57f463b2d6d93fe39f28bff1375b5627c07a50da8c3e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/verifier.json",
+      "change": "added",
+      "bytes": 31408,
+      "sha256": "b38fa1e6c77aedefcd0af255c96ac4078f4cf5437e979e68b739292284278b1c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/verifier.stdout",
+      "change": "added",
+      "bytes": 20744,
+      "sha256": "902d2b97ce59b24c96627438e6dacce0a99d7a94f90f34320053194721fc69a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/result.json",
+      "change": "added",
+      "bytes": 16551,
+      "sha256": "2ddae0edeefeb57e6aec0ca6e762093333fecbfa4e8d2591dc97b4f3ea750ee0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-19T16:59:53+00:00",
+    "applied": [
+      "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/plan.json",
+      "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/control-reference-jdk21.stderr",
+      "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/control-reference-jdk21.stdout",
+      "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/control-skipped-write-jdk21.stderr",
+      "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/control-skipped-write-jdk21.stdout",
+      "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/controls.json",
+      "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/execution.json",
+      "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/streams.json",
+      "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/verifier-output.txt",
+      "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/verifier.json",
+      "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/verifier.stderr",
+      "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/records/verifier.stdout",
+      "examples/197-shared-int-array-poststates/receipts/right-root/20261119T165925Z-4ec1a415/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "e338c9d33e461cf29db2b7a58b612bb12d075ac6",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e338c9d33e461cf29db2b7a58b612bb12d075ac6/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

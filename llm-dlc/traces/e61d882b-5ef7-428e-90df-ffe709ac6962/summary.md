@@ -1712,10 +1712,6 @@ change `nqxqrnuslyyk` · [log `307b4d511a86`](https://terminalvalue.net/raw-trac
 
 Copied unchanged from the user's planning folder (in-the-loop-python-proof-architecture-review.md, reviewing 2fd3369f). It recommends keeping Python for planning, preparation, controls and evidence, and refactoring where a declared claim becomes a jvmcontract invocation. It names a concrete gap: the ordinary equivalence command drops a claim's input assumption, shown on 307, where three distinct claim keys produced one identical command. Its implementation order: fix the gap with two benign fixtures and a field audit; a typed invocation model, with 307 migrated in shadow runs; the adapter boundary on 289; and result decoding extracted, with comparable attempts. It is meant to follow the foundation work now under way. Its links are pinned to commit 2fd3369f on GitHub.
 
-### (in progress)
-
-change `mlwpxnrmtxpr`, not yet described
-
 ### Record verification results for 1 job(s)
 
 change `tsnplpuzyvls` · [log `64e0bf5112d6`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/64e0bf5112d6764e7ac0d87ec1f62aaac18abee62d21f5c7a4f23e6ec7a313c5.jsonl.gz)

@@ -1,0 +1,6283 @@
+--- /dev/null
++++ b/examples/197-shared-int-array-poststates/receipts/return-only/20261119T165925Z-51e59724/plan.json
+@@ -0,0 +1,204 @@
++{
++  "plan": {
++    "example": "197",
++    "task": "return-only",
++    "kind": "equivalence",
++    "relation": "preservation",
++    "target": "arrays.Update#apply([I[I)I",
++    "revisions": [
++      "reference",
++      "skipped-write"
++    ],
++    "claim": {
++      "task": "return-only",
++      "kind": "equivalence",
++      "relation": "preservation",
++      "target": "arrays.Update#apply([I[I)I",
++      "file": "claims/return-only.json",
++      "sha256": "5b559494356137133800b090a311dda87165a8c8407420692ec372c8631105fd",
++      "property": "return-only",
++      "claimKind": "preservation",
++      "statement": "Both versions agree on the return value for every admitted input heap.",
++      "assume": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
++      "assert": null,
++      "throws": [],
++      "nullable": [
++        "left",
++        "right"
++      ],
++      "mayAlias": [
++        "left,right"
++      ],
++      "observations": [
++        {
++          "kind": "result"
++        }
++      ],
++      "assumptions": [],
++      "allowedChange": null,
++      "bounds": {
++        "unwind": 8,
++        "maxArrayLength": 2
++      },
++      "explicitBounds": {
++        "maxArrayLength": 2,
++        "unwind": 8
++      },
++      "defaultBounds": [],
++      "models": [],
++      "plan": null,
++      "contracts": null,
++      "gaps": "strict",
++      "parent": null,
++      "controls": [
++        {
++          "id": "root-driver",
++          "kind": "driver",
++          "path": "driver/arrays/RootCases.java",
++          "sha256": "aa08a4dab75223b756d23790de1ad2db8f5422ff54690da47baa6b37436e33d4"
++        },
++        {
++          "id": "finite-oracle",
++          "kind": "oracle",
++          "path": "controls/oracle.py",
++          "sha256": "1d51111027fe71a83ec413f8a23b63655dc33c0b35c2d8a23c38373aebd20b82"
++        }
++      ],
++      "key": "bb7a6542bb91c33a"
++    },
++    "prerequisites": [
++      "replay"
++    ],
++    "artifacts": [
++      {
++        "revision": "reference",
++        "route": "fixture",
++        "repository": "https://github.com/pilifs/in-the-loop",
++        "fixture": "baseline",
++        "adapters": [],
++        "jdks": [
++          "21"
++        ]
++      },
++      {
++        "revision": "skipped-write",
++        "route": "fixture",
++        "repository": "https://github.com/pilifs/in-the-loop",
++        "fixture": "alternative",
++        "adapters": [],
++        "jdks": [
++          "21"
++        ]
++      }
++    ],
++    "tools": {
++      "required": [
++        "java",
++        "javac",
++        "python3",
++        "jvmcontract"
++      ],
++      "optional": []
++    },
++    "engine": "native",
++    "gaps": "strict",
++    "expected": "established",
++    "outputs": {
++      "receipts": "receipts/return-only"
++    },
++    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261119-164548-197-paired-array-observation-return-only/examples/197-shared-int-array-poststates",
++    "network": false
++  },
++  "inputs": {
++    "example": "197",
++    "task": "return-only",
++    "kind": "equivalence",
++    "relation": "preservation",
++    "target": "arrays.Update#apply([I[I)I",
++    "revisions": [
++      "reference",
++      "skipped-write"
++    ],
++    "claim": {
++      "task": "return-only",
++      "kind": "equivalence",
++      "relation": "preservation",
++      "target": "arrays.Update#apply([I[I)I",
++      "file": "claims/return-only.json",
++      "sha256": "5b559494356137133800b090a311dda87165a8c8407420692ec372c8631105fd",
++      "property": "return-only",
++      "claimKind": "preservation",
++      "statement": "Both versions agree on the return value for every admitted input heap.",
++      "assume": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
++      "assert": null,
++      "throws": [],
++      "nullable": [
++        "left",
++        "right"
++      ],
++      "mayAlias": [
++        "left,right"
++      ],
++      "observations": [
++        {
++          "kind": "result"
++        }
++      ],
++      "assumptions": [],
++      "allowedChange": null,
++      "bounds": {
++        "unwind": 8,
++        "maxArrayLength": 2
++      },
++      "explicitBounds": {
++        "maxArrayLength": 2,
++        "unwind": 8
++      },
++      "defaultBounds": [],
++      "models": [],
++      "plan": null,
++      "contracts": null,
++      "gaps": "strict",
++      "parent": null,
++      "controls": [
++        {
++          "id": "root-driver",
++          "kind": "driver",
++          "path": "driver/arrays/RootCases.java",
++          "sha256": "aa08a4dab75223b756d23790de1ad2db8f5422ff54690da47baa6b37436e33d4"
++        },
++        {
++          "id": "finite-oracle",
++          "kind": "oracle",
++          "path": "controls/oracle.py",
++          "sha256": "1d51111027fe71a83ec413f8a23b63655dc33c0b35c2d8a23c38373aebd20b82"
++        }
++      ],
++      "key": "bb7a6542bb91c33a"
++    },
++    "artifacts": [
++      {
++        "revision": "reference",
++        "route": "fixture",
++        "repository": "https://github.com/pilifs/in-the-loop",
++        "fixture": "baseline",
++        "adapters": [],
++        "jdks": [
++          "21"
++        ]
++      },
++      {
++        "revision": "skipped-write",
++        "route": "fixture",
++        "repository": "https://github.com/pilifs/in-the-loop",
++        "fixture": "alternative",
++        "adapters": [],
++        "jdks": [
++          "21"
++        ]
++      }
++    ],
++    "adapters": []
++  },
++  "key": "bdce189ea2224c137fe3dbc39ea71aa2084b157110be50cb1f7b3cefc69b87e8"
++}
+--- /dev/null
++++ b/examples/197-shared-int-array-poststates/receipts/return-only/20261119T165925Z-51e59724/records/control-reference-jdk21.stdout
+@@ -0,0 +1,71 @@
++{"l":-1,"r":-1,"shared":false,"result":0,"left":null,"right":null}
++{"l":-1,"r":0,"shared":false,"result":0,"left":null,"right":[]}
++{"l":-1,"r":1,"shared":false,"result":0,"left":null,"right":[0]}
++{"l":-1,"r":2,"shared":false,"result":0,"left":null,"right":[1]}
++{"l":-1,"r":3,"shared":false,"result":0,"left":null,"right":[0, 0]}
++{"l":-1,"r":4,"shared":false,"result":0,"left":null,"right":[0, 1]}
++{"l":-1,"r":5,"shared":false,"result":0,"left":null,"right":[1, 0]}
++{"l":-1,"r":6,"shared":false,"result":0,"left":null,"right":[1, 1]}
++{"l":0,"r":-1,"shared":false,"result":0,"left":[],"right":null}
++{"l":0,"r":0,"shared":false,"result":0,"left":[],"right":[]}
++{"l":0,"r":1,"shared":false,"result":0,"left":[],"right":[0]}
++{"l":0,"r":2,"shared":false,"result":0,"left":[],"right":[1]}
++{"l":0,"r":3,"shared":false,"result":0,"left":[],"right":[0, 0]}
++{"l":0,"r":4,"shared":false,"result":0,"left":[],"right":[0, 1]}
++{"l":0,"r":5,"shared":false,"result":0,"left":[],"right":[1, 0]}
++{"l":0,"r":6,"shared":false,"result":0,"left":[],"right":[1, 1]}
++{"l":0,"r":0,"shared":true,"result":0,"left":[],"right":[]}
++{"l":1,"r":-1,"shared":false,"result":0,"left":[0],"right":null}
++{"l":1,"r":0,"shared":false,"result":0,"left":[0],"right":[]}
++{"l":1,"r":1,"shared":false,"result":0,"left":[1],"right":[0]}
++{"l":1,"r":2,"shared":false,"result":0,"left":[1],"right":[1]}
++{"l":1,"r":3,"shared":false,"result":0,"left":[1],"right":[0, 0]}
++{"l":1,"r":4,"shared":false,"result":0,"left":[1],"right":[0, 1]}
++{"l":1,"r":5,"shared":false,"result":0,"left":[1],"right":[1, 0]}
++{"l":1,"r":6,"shared":false,"result":0,"left":[1],"right":[1, 1]}
++{"l":1,"r":1,"shared":true,"result":0,"left":[1],"right":[1]}
++{"l":2,"r":-1,"shared":false,"result":0,"left":[1],"right":null}
++{"l":2,"r":0,"shared":false,"result":0,"left":[1],"right":[]}
++{"l":2,"r":1,"shared":false,"result":0,"left":[1],"right":[0]}
++{"l":2,"r":2,"shared":false,"result":0,"left":[1],"right":[1]}
++{"l":2,"r":3,"shared":false,"result":0,"left":[1],"right":[0, 0]}
++{"l":2,"r":4,"shared":false,"result":0,"left":[1],"right":[0, 1]}
++{"l":2,"r":5,"shared":false,"result":0,"left":[1],"right":[1, 0]}
++{"l":2,"r":6,"shared":false,"result":0,"left":[1],"right":[1, 1]}
++{"l":2,"r":2,"shared":true,"result":0,"left":[1],"right":[1]}
++{"l":3,"r":-1,"shared":false,"result":0,"left":[0, 0],"right":null}
++{"l":3,"r":0,"shared":false,"result":0,"left":[0, 0],"right":[]}
++{"l":3,"r":1,"shared":false,"result":0,"left":[1, 0],"right":[0]}
++{"l":3,"r":2,"shared":false,"result":0,"left":[1, 0],"right":[1]}
++{"l":3,"r":3,"shared":false,"result":0,"left":[1, 0],"right":[0, 0]}
++{"l":3,"r":4,"shared":false,"result":0,"left":[1, 0],"right":[0, 1]}
++{"l":3,"r":5,"shared":false,"result":0,"left":[1, 0],"right":[1, 0]}
++{"l":3,"r":6,"shared":false,"result":0,"left":[1, 0],"right":[1, 1]}
++{"l":3,"r":3,"shared":true,"result":0,"left":[1, 0],"right":[1, 0]}
++{"l":4,"r":-1,"shared":false,"result":0,"left":[0, 1],"right":null}
++{"l":4,"r":0,"shared":false,"result":0,"left":[0, 1],"right":[]}
++{"l":4,"r":1,"shared":false,"result":0,"left":[1, 1],"right":[0]}
++{"l":4,"r":2,"shared":false,"result":0,"left":[1, 1],"right":[1]}
++{"l":4,"r":3,"shared":false,"result":0,"left":[1, 1],"right":[0, 0]}
++{"l":4,"r":4,"shared":false,"result":0,"left":[1, 1],"right":[0, 1]}
++{"l":4,"r":5,"shared":false,"result":0,"left":[1, 1],"right":[1, 0]}
++{"l":4,"r":6,"shared":false,"result":0,"left":[1, 1],"right":[1, 1]}
++{"l":4,"r":4,"shared":true,"result":0,"left":[1, 1],"right":[1, 1]}
++{"l":5,"r":-1,"shared":false,"result":0,"left":[1, 0],"right":null}
++{"l":5,"r":0,"shared":false,"result":0,"left":[1, 0],"right":[]}
++{"l":5,"r":1,"shared":false,"result":0,"left":[1, 0],"right":[0]}
++{"l":5,"r":2,"shared":false,"result":0,"left":[1, 0],"right":[1]}
++{"l":5,"r":3,"shared":false,"result":0,"left":[1, 0],"right":[0, 0]}
++{"l":5,"r":4,"shared":false,"result":0,"left":[1, 0],"right":[0, 1]}
++{"l":5,"r":5,"shared":false,"result":0,"left":[1, 0],"right":[1, 0]}
++{"l":5,"r":6,"shared":false,"result":0,"left":[1, 0],"right":[1, 1]}
++{"l":5,"r":5,"shared":true,"result":0,"left":[1, 0],"right":[1, 0]}
++{"l":6,"r":-1,"shared":false,"result":0,"left":[1, 1],"right":null}
++{"l":6,"r":0,"shared":false,"result":0,"left":[1, 1],"right":[]}
++{"l":6,"r":1,"shared":false,"result":0,"left":[1, 1],"right":[0]}
++{"l":6,"r":2,"shared":false,"result":0,"left":[1, 1],"right":[1]}
++{"l":6,"r":3,"shared":false,"result":0,"left":[1, 1],"right":[0, 0]}
++{"l":6,"r":4,"shared":false,"result":0,"left":[1, 1],"right":[0, 1]}
++{"l":6,"r":5,"shared":false,"result":0,"left":[1, 1],"right":[1, 0]}
++{"l":6,"r":6,"shared":false,"result":0,"left":[1, 1],"right":[1, 1]}
++{"l":6,"r":6,"shared":true,"result":0,"left":[1, 1],"right":[1, 1]}
+--- /dev/null
++++ b/examples/197-shared-int-array-poststates/receipts/return-only/20261119T165925Z-51e59724/records/control-skipped-write-jdk21.stdout
+@@ -0,0 +1,71 @@
++{"l":-1,"r":-1,"shared":false,"result":0,"left":null,"right":null}
++{"l":-1,"r":0,"shared":false,"result":0,"left":null,"right":[]}
++{"l":-1,"r":1,"shared":false,"result":0,"left":null,"right":[0]}
++{"l":-1,"r":2,"shared":false,"result":0,"left":null,"right":[1]}
++{"l":-1,"r":3,"shared":false,"result":0,"left":null,"right":[0, 0]}
++{"l":-1,"r":4,"shared":false,"result":0,"left":null,"right":[0, 1]}
++{"l":-1,"r":5,"shared":false,"result":0,"left":null,"right":[1, 0]}
++{"l":-1,"r":6,"shared":false,"result":0,"left":null,"right":[1, 1]}
++{"l":0,"r":-1,"shared":false,"result":0,"left":[],"right":null}
++{"l":0,"r":0,"shared":false,"result":0,"left":[],"right":[]}
++{"l":0,"r":1,"shared":false,"result":0,"left":[],"right":[0]}
++{"l":0,"r":2,"shared":false,"result":0,"left":[],"right":[1]}
++{"l":0,"r":3,"shared":false,"result":0,"left":[],"right":[0, 0]}
++{"l":0,"r":4,"shared":false,"result":0,"left":[],"right":[0, 1]}
++{"l":0,"r":5,"shared":false,"result":0,"left":[],"right":[1, 0]}
++{"l":0,"r":6,"shared":false,"result":0,"left":[],"right":[1, 1]}
++{"l":0,"r":0,"shared":true,"result":0,"left":[],"right":[]}
++{"l":1,"r":-1,"shared":false,"result":0,"left":[0],"right":null}
++{"l":1,"r":0,"shared":false,"result":0,"left":[0],"right":[]}
++{"l":1,"r":1,"shared":false,"result":0,"left":[0],"right":[0]}
++{"l":1,"r":2,"shared":false,"result":0,"left":[0],"right":[1]}
++{"l":1,"r":3,"shared":false,"result":0,"left":[0],"right":[0, 0]}
++{"l":1,"r":4,"shared":false,"result":0,"left":[0],"right":[0, 1]}
++{"l":1,"r":5,"shared":false,"result":0,"left":[0],"right":[1, 0]}
++{"l":1,"r":6,"shared":false,"result":0,"left":[0],"right":[1, 1]}
++{"l":1,"r":1,"shared":true,"result":0,"left":[0],"right":[0]}
++{"l":2,"r":-1,"shared":false,"result":0,"left":[1],"right":null}
++{"l":2,"r":0,"shared":false,"result":0,"left":[1],"right":[]}
++{"l":2,"r":1,"shared":false,"result":0,"left":[1],"right":[0]}
++{"l":2,"r":2,"shared":false,"result":0,"left":[1],"right":[1]}
++{"l":2,"r":3,"shared":false,"result":0,"left":[1],"right":[0, 0]}
++{"l":2,"r":4,"shared":false,"result":0,"left":[1],"right":[0, 1]}
++{"l":2,"r":5,"shared":false,"result":0,"left":[1],"right":[1, 0]}
++{"l":2,"r":6,"shared":false,"result":0,"left":[1],"right":[1, 1]}
++{"l":2,"r":2,"shared":true,"result":0,"left":[1],"right":[1]}
++{"l":3,"r":-1,"shared":false,"result":0,"left":[0, 0],"right":null}
++{"l":3,"r":0,"shared":false,"result":0,"left":[0, 0],"right":[]}
++{"l":3,"r":1,"shared":false,"result":0,"left":[0, 0],"right":[0]}
++{"l":3,"r":2,"shared":false,"result":0,"left":[0, 0],"right":[1]}
++{"l":3,"r":3,"shared":false,"result":0,"left":[0, 0],"right":[0, 0]}
++{"l":3,"r":4,"shared":false,"result":0,"left":[0, 0],"right":[0, 1]}
++{"l":3,"r":5,"shared":false,"result":0,"left":[0, 0],"right":[1, 0]}
++{"l":3,"r":6,"shared":false,"result":0,"left":[0, 0],"right":[1, 1]}
++{"l":3,"r":3,"shared":true,"result":0,"left":[0, 0],"right":[0, 0]}
++{"l":4,"r":-1,"shared":false,"result":0,"left":[0, 1],"right":null}
++{"l":4,"r":0,"shared":false,"result":0,"left":[0, 1],"right":[]}
++{"l":4,"r":1,"shared":false,"result":0,"left":[0, 1],"right":[0]}
++{"l":4,"r":2,"shared":false,"result":0,"left":[0, 1],"right":[1]}
++{"l":4,"r":3,"shared":false,"result":0,"left":[0, 1],"right":[0, 0]}
++{"l":4,"r":4,"shared":false,"result":0,"left":[0, 1],"right":[0, 1]}
++{"l":4,"r":5,"shared":false,"result":0,"left":[0, 1],"right":[1, 0]}
++{"l":4,"r":6,"shared":false,"result":0,"left":[0, 1],"right":[1, 1]}
++{"l":4,"r":4,"shared":true,"result":0,"left":[0, 1],"right":[0, 1]}
++{"l":5,"r":-1,"shared":false,"result":0,"left":[1, 0],"right":null}
++{"l":5,"r":0,"shared":false,"result":0,"left":[1, 0],"right":[]}
++{"l":5,"r":1,"shared":false,"result":0,"left":[1, 0],"right":[0]}
++{"l":5,"r":2,"shared":false,"result":0,"left":[1, 0],"right":[1]}
++{"l":5,"r":3,"shared":false,"result":0,"left":[1, 0],"right":[0, 0]}
++{"l":5,"r":4,"shared":false,"result":0,"left":[1, 0],"right":[0, 1]}
++{"l":5,"r":5,"shared":false,"result":0,"left":[1, 0],"right":[1, 0]}
++{"l":5,"r":6,"shared":false,"result":0,"left":[1, 0],"right":[1, 1]}
++{"l":5,"r":5,"shared":true,"result":0,"left":[1, 0],"right":[1, 0]}
++{"l":6,"r":-1,"shared":false,"result":0,"left":[1, 1],"right":null}
++{"l":6,"r":0,"shared":false,"result":0,"left":[1, 1],"right":[]}
++{"l":6,"r":1,"shared":false,"result":0,"left":[1, 1],"right":[0]}
++{"l":6,"r":2,"shared":false,"result":0,"left":[1, 1],"right":[1]}
++{"l":6,"r":3,"shared":false,"result":0,"left":[1, 1],"right":[0, 0]}
++{"l":6,"r":4,"shared":false,"result":0,"left":[1, 1],"right":[0, 1]}
++{"l":6,"r":5,"shared":false,"result":0,"left":[1, 1],"right":[1, 0]}
++{"l":6,"r":6,"shared":false,"result":0,"left":[1, 1],"right":[1, 1]}
++{"l":6,"r":6,"shared":true,"result":0,"left":[1, 1],"right":[1, 1]}
+--- /dev/null
++++ b/examples/197-shared-int-array-poststates/receipts/return-only/20261119T165925Z-51e59724/records/controls.json
+@@ -0,0 +1,1879 @@
++{
++  "task": "return-only",
++  "records": [
++    {
++      "kind": "jvm-control",
++      "revision": "reference",
++      "argv": [
++        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-cp",
++        "driver.jar:reference.jar",
++        "arrays.RootCases",
++        "--observations"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.064,
++      "stdout": "controls/control-reference-jdk21.stdout",
++      "stderr": "controls/control-reference-jdk21.stderr",
++      "identities": {
++        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "jdkFeature": "21",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        },
++        "commit": "fixture:baseline",
++        "classpath": [
++          {
++            "path": "driver.jar",
++            "sha256": "ee6e5c8a0aad68edf9a0a4e1a03b5325bf24c54fe879eafc1b5f82c7beee3a7e",
++            "role": "driver"
++          },
++          {
++            "path": "reference.jar",
++            "sha256": "00239502188785b9f40e7d3b0f30b5b7a13a1663e72fcffe06c4ad08ecf9a826",
++            "role": "original"
++          }
++        ],
++        "driver": {
++          "control": "root-driver",
++          "main": "arrays.RootCases"
++        },
++        "inputs": {
++          "from": "driver_args",
++          "oracle": "controls/oracle.py",
++          "oracleSha256": "1d51111027fe71a83ec413f8a23b63655dc33c0b35c2d8a23c38373aebd20b82"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC"
++        },
++        "flags": [
++          "-Xmx512m",
++          "-Dfile.encoding=UTF-8",
++          "-Dstdout.encoding=UTF-8",
++          "-Dstderr.encoding=UTF-8",
++          "-Duser.language=en",
++          "-Duser.country=US",
++          "-Duser.timezone=UTC"
++        ],
++        "replay": "original-jvm"
++      },
++      "observations": [
++        {
++          "l": -1,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": null
++        },
++        {
++          "l": -1,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": []
++        },
++        {
++          "l": -1,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": -1,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": -1,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": -1,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": -1,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": -1,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 0,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": null
++        },
++        {
++          "l": 0,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": []
++        },
++        {
++          "l": 0,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 0,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 0,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 0,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 0,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 0,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 0,
++          "r": 0,
++          "shared": true,
++          "result": 0,
++          "left": [],
++          "right": []
++        },
++        {
++          "l": 1,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": null
++        },
++        {
++          "l": 1,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": []
++        },
++        {
++          "l": 1,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 1,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 1,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 1,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 1,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 1,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 1,
++          "r": 1,
++          "shared": true,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 2,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": null
++        },
++        {
++          "l": 2,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": []
++        },
++        {
++          "l": 2,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 2,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 2,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 2,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 2,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 2,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 2,
++          "r": 2,
++          "shared": true,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 3,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": null
++        },
++        {
++          "l": 3,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": []
++        },
++        {
++          "l": 3,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 3,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 3,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 3,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 3,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 3,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 3,
++          "r": 3,
++          "shared": true,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 4,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": null
++        },
++        {
++          "l": 4,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": []
++        },
++        {
++          "l": 4,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 4,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 4,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 4,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 4,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 4,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 4,
++          "r": 4,
++          "shared": true,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 5,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": null
++        },
++        {
++          "l": 5,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": []
++        },
++        {
++          "l": 5,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 5,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 5,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 5,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 5,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 5,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 5,
++          "r": 5,
++          "shared": true,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 6,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": null
++        },
++        {
++          "l": 6,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": []
++        },
++        {
++          "l": 6,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 6,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 6,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 6,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 6,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 6,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 6,
++          "r": 6,
++          "shared": true,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1,
++            1
++          ]
++        }
++      ],
++      "control": "root-driver",
++      "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261119-164548-197-paired-array-observation-return-only/.build-py/examples-vqbde9ot/targets/197/return-only",
++      "record": "controls/controls.json",
++      "reason": null,
++      "log": {
++        "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261119-164548-197-paired-array-observation-return-only/.build-py/examples-vqbde9ot/targets/197/return-only/prepare/reference"
++      }
++    },
++    {
++      "kind": "jvm-control",
++      "revision": "skipped-write",
++      "argv": [
++        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-cp",
++        "driver.jar:skipped-write.jar",
++        "arrays.RootCases",
++        "--observations"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.064,
++      "stdout": "controls/control-skipped-write-jdk21.stdout",
++      "stderr": "controls/control-skipped-write-jdk21.stderr",
++      "identities": {
++        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "jdkFeature": "21",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        },
++        "commit": "fixture:alternative",
++        "classpath": [
++          {
++            "path": "driver.jar",
++            "sha256": "ee6e5c8a0aad68edf9a0a4e1a03b5325bf24c54fe879eafc1b5f82c7beee3a7e",
++            "role": "driver"
++          },
++          {
++            "path": "skipped-write.jar",
++            "sha256": "0652189c24e51f6ef652ee82d935dfce6967443c5ebd6753c39f88a2e10706a3",
++            "role": "original"
++          }
++        ],
++        "driver": {
++          "control": "root-driver",
++          "main": "arrays.RootCases"
++        },
++        "inputs": {
++          "from": "driver_args",
++          "oracle": "controls/oracle.py",
++          "oracleSha256": "1d51111027fe71a83ec413f8a23b63655dc33c0b35c2d8a23c38373aebd20b82"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC"
++        },
++        "flags": [
++          "-Xmx512m",
++          "-Dfile.encoding=UTF-8",
++          "-Dstdout.encoding=UTF-8",
++          "-Dstderr.encoding=UTF-8",
++          "-Duser.language=en",
++          "-Duser.country=US",
++          "-Duser.timezone=UTC"
++        ],
++        "replay": "original-jvm"
++      },
++      "observations": [
++        {
++          "l": -1,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": null
++        },
++        {
++          "l": -1,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": []
++        },
++        {
++          "l": -1,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": -1,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": -1,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": -1,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": -1,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": -1,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 0,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": null
++        },
++        {
++          "l": 0,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": []
++        },
++        {
++          "l": 0,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 0,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 0,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 0,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 0,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 0,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 0,
++          "r": 0,
++          "shared": true,
++          "result": 0,
++          "left": [],
++          "right": []
++        },
++        {
++          "l": 1,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": null
++        },
++        {
++          "l": 1,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": []
++        },
++        {
++          "l": 1,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 1,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 1,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 1,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 1,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 1,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 1,
++          "r": 1,
++          "shared": true,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 2,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": null
++        },
++        {
++          "l": 2,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": []
++        },
++        {
++          "l": 2,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 2,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 2,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 2,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 2,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 2,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 2,
++          "r": 2,
++          "shared": true,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 3,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": null
++        },
++        {
++          "l": 3,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": []
++        },
++        {
++          "l": 3,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 3,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 3,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 3,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 3,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 3,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 3,
++          "r": 3,
++          "shared": true,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 4,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": null
++        },
++        {
++          "l": 4,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": []
++        },
++        {
++          "l": 4,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 4,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 4,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 4,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 4,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 4,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 4,
++          "r": 4,
++          "shared": true,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 5,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": null
++        },
++        {
++          "l": 5,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": []
++        },
++        {
++          "l": 5,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 5,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 5,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 5,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 5,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 5,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 5,
++          "r": 5,
++          "shared": true,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 6,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": null
++        },
++        {
++          "l": 6,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": []
++        },
++        {
++          "l": 6,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 6,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 6,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 6,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 6,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 6,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 6,
++          "r": 6,
++          "shared": true,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1,
++            1
++          ]
++        }
++      ],
++      "control": "root-driver",
++      "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261119-164548-197-paired-array-observation-return-only/.build-py/examples-vqbde9ot/targets/197/return-only",
++      "record": "controls/controls.json",
++      "reason": null,
++      "log": {
++        "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261119-164548-197-paired-array-observation-return-only/.build-py/examples-vqbde9ot/targets/197/return-only/prepare/skipped-write"
++      }
++    }
++  ]
++}
+--- /dev/null
++++ b/examples/197-shared-int-array-poststates/receipts/return-only/20261119T165925Z-51e59724/records/execution.json
+@@ -0,0 +1,2474 @@
++{
++  "task": "return-only",
++  "records": [
++    {
++      "kind": "jvm-control",
++      "revision": "reference",
++      "argv": [
++        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-cp",
++        "driver.jar:reference.jar",
++        "arrays.RootCases",
++        "--observations"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.064,
++      "stdout": "controls/control-reference-jdk21.stdout",
++      "stderr": "controls/control-reference-jdk21.stderr",
++      "identities": {
++        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "jdkFeature": "21",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        },
++        "commit": "fixture:baseline",
++        "classpath": [
++          {
++            "path": "driver.jar",
++            "sha256": "ee6e5c8a0aad68edf9a0a4e1a03b5325bf24c54fe879eafc1b5f82c7beee3a7e",
++            "role": "driver"
++          },
++          {
++            "path": "reference.jar",
++            "sha256": "00239502188785b9f40e7d3b0f30b5b7a13a1663e72fcffe06c4ad08ecf9a826",
++            "role": "original"
++          }
++        ],
++        "driver": {
++          "control": "root-driver",
++          "main": "arrays.RootCases"
++        },
++        "inputs": {
++          "from": "driver_args",
++          "oracle": "controls/oracle.py",
++          "oracleSha256": "1d51111027fe71a83ec413f8a23b63655dc33c0b35c2d8a23c38373aebd20b82"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC"
++        },
++        "flags": [
++          "-Xmx512m",
++          "-Dfile.encoding=UTF-8",
++          "-Dstdout.encoding=UTF-8",
++          "-Dstderr.encoding=UTF-8",
++          "-Duser.language=en",
++          "-Duser.country=US",
++          "-Duser.timezone=UTC"
++        ],
++        "replay": "original-jvm"
++      },
++      "observations": [
++        {
++          "l": -1,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": null
++        },
++        {
++          "l": -1,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": []
++        },
++        {
++          "l": -1,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": -1,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": -1,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": -1,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": -1,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": -1,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 0,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": null
++        },
++        {
++          "l": 0,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": []
++        },
++        {
++          "l": 0,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 0,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 0,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 0,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 0,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 0,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 0,
++          "r": 0,
++          "shared": true,
++          "result": 0,
++          "left": [],
++          "right": []
++        },
++        {
++          "l": 1,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": null
++        },
++        {
++          "l": 1,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": []
++        },
++        {
++          "l": 1,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 1,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 1,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 1,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 1,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 1,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 1,
++          "r": 1,
++          "shared": true,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 2,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": null
++        },
++        {
++          "l": 2,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": []
++        },
++        {
++          "l": 2,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 2,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 2,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 2,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 2,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 2,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 2,
++          "r": 2,
++          "shared": true,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 3,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": null
++        },
++        {
++          "l": 3,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": []
++        },
++        {
++          "l": 3,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 3,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 3,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 3,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 3,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 3,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 3,
++          "r": 3,
++          "shared": true,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 4,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": null
++        },
++        {
++          "l": 4,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": []
++        },
++        {
++          "l": 4,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 4,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 4,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 4,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 4,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 4,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 4,
++          "r": 4,
++          "shared": true,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 5,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": null
++        },
++        {
++          "l": 5,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": []
++        },
++        {
++          "l": 5,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 5,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 5,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 5,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 5,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 5,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 5,
++          "r": 5,
++          "shared": true,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 6,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": null
++        },
++        {
++          "l": 6,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": []
++        },
++        {
++          "l": 6,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 6,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 6,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 6,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 6,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 6,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 6,
++          "r": 6,
++          "shared": true,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1,
++            1
++          ]
++        }
++      ],
++      "control": "root-driver",
++      "record": "controls/controls.json",
++      "reason": null
++    },
++    {
++      "kind": "jvm-control",
++      "revision": "skipped-write",
++      "argv": [
++        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC",
++        "-cp",
++        "driver.jar:skipped-write.jar",
++        "arrays.RootCases",
++        "--observations"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.064,
++      "stdout": "controls/control-skipped-write-jdk21.stdout",
++      "stderr": "controls/control-skipped-write-jdk21.stderr",
++      "identities": {
++        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "jdkFeature": "21",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        },
++        "commit": "fixture:alternative",
++        "classpath": [
++          {
++            "path": "driver.jar",
++            "sha256": "ee6e5c8a0aad68edf9a0a4e1a03b5325bf24c54fe879eafc1b5f82c7beee3a7e",
++            "role": "driver"
++          },
++          {
++            "path": "skipped-write.jar",
++            "sha256": "0652189c24e51f6ef652ee82d935dfce6967443c5ebd6753c39f88a2e10706a3",
++            "role": "original"
++          }
++        ],
++        "driver": {
++          "control": "root-driver",
++          "main": "arrays.RootCases"
++        },
++        "inputs": {
++          "from": "driver_args",
++          "oracle": "controls/oracle.py",
++          "oracleSha256": "1d51111027fe71a83ec413f8a23b63655dc33c0b35c2d8a23c38373aebd20b82"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC"
++        },
++        "flags": [
++          "-Xmx512m",
++          "-Dfile.encoding=UTF-8",
++          "-Dstdout.encoding=UTF-8",
++          "-Dstderr.encoding=UTF-8",
++          "-Duser.language=en",
++          "-Duser.country=US",
++          "-Duser.timezone=UTC"
++        ],
++        "replay": "original-jvm"
++      },
++      "observations": [
++        {
++          "l": -1,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": null
++        },
++        {
++          "l": -1,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": []
++        },
++        {
++          "l": -1,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": -1,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": -1,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": -1,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": -1,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": -1,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": null,
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 0,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": null
++        },
++        {
++          "l": 0,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": []
++        },
++        {
++          "l": 0,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 0,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 0,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 0,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 0,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 0,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 0,
++          "r": 0,
++          "shared": true,
++          "result": 0,
++          "left": [],
++          "right": []
++        },
++        {
++          "l": 1,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": null
++        },
++        {
++          "l": 1,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": []
++        },
++        {
++          "l": 1,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 1,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 1,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 1,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 1,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 1,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 1,
++          "r": 1,
++          "shared": true,
++          "result": 0,
++          "left": [
++            0
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 2,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": null
++        },
++        {
++          "l": 2,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": []
++        },
++        {
++          "l": 2,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 2,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 2,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 2,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 2,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 2,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 2,
++          "r": 2,
++          "shared": true,
++          "result": 0,
++          "left": [
++            1
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 3,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": null
++        },
++        {
++          "l": 3,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": []
++        },
++        {
++          "l": 3,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 3,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 3,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 3,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 3,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 3,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 3,
++          "r": 3,
++          "shared": true,
++          "result": 0,
++          "left": [
++            0,
++            0
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 4,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": null
++        },
++        {
++          "l": 4,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": []
++        },
++        {
++          "l": 4,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 4,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 4,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 4,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 4,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 4,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 4,
++          "r": 4,
++          "shared": true,
++          "result": 0,
++          "left": [
++            0,
++            1
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 5,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": null
++        },
++        {
++          "l": 5,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": []
++        },
++        {
++          "l": 5,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 5,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 5,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 5,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 5,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 5,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 5,
++          "r": 5,
++          "shared": true,
++          "result": 0,
++          "left": [
++            1,
++            0
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 6,
++          "r": -1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": null
++        },
++        {
++          "l": 6,
++          "r": 0,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": []
++        },
++        {
++          "l": 6,
++          "r": 1,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            0
++          ]
++        },
++        {
++          "l": 6,
++          "r": 2,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1
++          ]
++        },
++        {
++          "l": 6,
++          "r": 3,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            0,
++            0
++          ]
++        },
++        {
++          "l": 6,
++          "r": 4,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            0,
++            1
++          ]
++        },
++        {
++          "l": 6,
++          "r": 5,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1,
++            0
++          ]
++        },
++        {
++          "l": 6,
++          "r": 6,
++          "shared": false,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1,
++            1
++          ]
++        },
++        {
++          "l": 6,
++          "r": 6,
++          "shared": true,
++          "result": 0,
++          "left": [
++            1,
++            1
++          ],
++          "right": [
++            1,
++            1
++          ]
++        }
++      ],
++      "control": "root-driver",
++      "record": "controls/controls.json",
++      "reason": null
++    },
++    {
++      "kind": "verifier",
++      "revision": null,
++      "argv": [
++        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e338c9d33e461cf29db2b7a58b612bb12d075ac6/jvmcontract",
++        "equivalence",
++        "--before",
++        "verifier/classes/reference",
++        "--after",
++        "verifier/classes/skipped-write",
++        "--target",
++        "arrays.Update#apply(int[], int[])",
++        "--assume",
++        "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
++        "--observe",
++        "{\"kind\": \"result\"}",
++        "--nullable",
++        "left",
++        "--nullable",
++        "right",
++        "--may-alias",
++        "left,right",
++        "--engine",
++        "native",
++        "--gaps",
++        "strict",
++        "--unwind",
++        "8",
++        "--max-array-length",
++        "2",
++        "--timeout",
++        "600",
++        "--work",
++        "verifier/work",
++        "--report",
++        "verifier/report",
++        "--json"
++      ],
++      "status": "exited",
++      "exitCode": 0,
++      "seconds": 0.866,
++      "stdout": "verifier/verifier.stdout",
++      "stderr": "verifier/verifier.stderr",
++      "identities": {
++        "jvmcontract": "7a6ad79f859c290d679a54adb71d74cb3f26672920789fe239382f11481d9021",
++        "commit": "0a9020d87ff032b3ce278be015e5f7f2c2d0a101",
++        "libTree": "e338c9d33e461cf29db2b7a58b612bb12d075ac6",
++        "command": "equivalence",
++        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "jdkFeature": "21",
++        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "jdkRelease": {
++          "JAVA_VERSION": "21.0.13",
++          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++          "IMPLEMENTOR": "Eclipse Adoptium",
++          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++          "OS_ARCH": "x86_64"
++        },
++        "engine": "native",
++        "gaps": "strict",
++        "bounds": {
++          "unwind": 8,
++          "maxArrayLength": 2
++        },
++        "timeout": 600,
++        "scope": {
++          "label": "constructed-fixture",
++          "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
++          "method": "arrays.Update#apply([I[I)I",
++          "revisions": {
++            "reference": {
++              "commit": "fixture:baseline",
++              "loadedFrom": "reference.jar",
++              "classSha256": "66c22776e4af997799366e0f023a5161af666867c8aee6e537fb56b13d5e2c6c",
++              "origin": "built from baseline by the fixture recipe",
++              "parameters": {
++                "names": [
++                  "left",
++                  "right"
++                ],
++                "recordedIn": "MethodParameters"
++              }
++            },
++            "skipped-write": {
++              "commit": "fixture:alternative",
++              "loadedFrom": "skipped-write.jar",
++              "classSha256": "5aabe777714b613293cd617c0eb987ee110189443534d2996444b81350c3b95e",
++              "origin": "built from alternative by the fixture recipe",
++              "parameters": {
++                "names": [
++                  "left",
++                  "right"
++                ],
++                "recordedIn": "MethodParameters"
++              }
++            }
++          },
++          "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
++          "models": [],
++          "assumptions": []
++        },
++        "classpath": {
++          "reference": [
++            {
++              "path": "reference.jar",
++              "sha256": "00239502188785b9f40e7d3b0f30b5b7a13a1663e72fcffe06c4ad08ecf9a826",
++              "role": "original"
++            }
++          ],
++          "skipped-write": [
++            {
++              "path": "skipped-write.jar",
++              "sha256": "0652189c24e51f6ef652ee82d935dfce6967443c5ebd6753c39f88a2e10706a3",
++              "role": "original"
++            }
++          ]
++        },
++        "commits": {
++          "reference": "fixture:baseline",
++          "skipped-write": "fixture:alternative"
++        },
++        "environment": {
++          "LANG": "C.UTF-8",
++          "LC_ALL": "C.UTF-8",
++          "TZ": "UTC",
++          "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++          "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
++          "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m"
++        },
++        "cwd": "the attempt directory",
++        "classes": {
++          "reference": {
++            "dir": "verifier/classes/reference",
++            "from": "prepare/reference/reference.jar",
++            "sha256": "00239502188785b9f40e7d3b0f30b5b7a13a1663e72fcffe06c4ad08ecf9a826",
++            "entries": 1
++          },
++          "skipped-write": {
++            "dir": "verifier/classes/skipped-write",
++            "from": "prepare/skipped-write/skipped-write.jar",
++            "sha256": "0652189c24e51f6ef652ee82d935dfce6967443c5ebd6753c39f88a2e10706a3",
++            "entries": 1
++          }
++        },
++        "probe": {
++          "reference": {
++            "argv": [
++              "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e338c9d33e461cf29db2b7a58b612bb12d075ac6/jvmcontract",
++              "gaps",
++              "--target",
++              "arrays.Update#apply(int[], int[])",
++              "--classes",
++              "prepare/reference/reference.jar",
++              "--json"
++            ],
++            "status": "exited",
++            "exitCode": 0,
++            "seconds": 0.016,
++            "stdout": "verifier/probe-reference.stdout",
++            "stderr": "verifier/probe-reference.stderr",
++            "gaps": []
++          },
++          "skipped-write": {
++            "argv": [
++              "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e338c9d33e461cf29db2b7a58b612bb12d075ac6/jvmcontract",
++              "gaps",
++              "--target",
++              "arrays.Update#apply(int[], int[])",
++              "--classes",
++              "prepare/skipped-write/skipped-write.jar",
++              "--json"
++            ],
++            "status": "exited",
++            "exitCode": 0,
++            "seconds": 0.016,
++            "stdout": "verifier/probe-skipped-write.stdout",
++            "stderr": "verifier/probe-skipped-write.stderr",
++            "gaps": []
++          }
++        }
++      },
++      "observations": [
++        {
++          "verdict": "verified",
++          "target": "arrays.Update#apply(int[], int[])",
++          "domain": "left: int[] of length ≤ 2, or null × right: int[] of length ≤ 2, or null; left and right may be the same array",
++          "counterexample": null,
++          "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean in 0.0 s; loops unwound 8 times with unwinding assertions",
++          "problem": null,
++          "statement": "verifier/work/pair/RegressionPair.java",
++          "findings": [],
++          "output": "Compared result on two fresh heaps with the same length, cell, null and sharing choices (verifier/work/pair/RegressionPair.java)\n✓ arrays.Update#apply(int[], int[]): the two versions agree on every input where (left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1)))) (the pair's property, below)\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"RegressionPair\"; the names are len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ RegressionPair#agree satisfies `result` on every input where RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4) (jvmcontract's own checker (CaDiCaL): 1 properties proved over len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean in 0.0 s; loops unwound 8 times with unwinding assertions)\n  not vacuous: agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false) reaches the calls\n",
++          "work": "verifier/work",
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 0.007432478,
++            "properties": 1,
++            "unwind": 8,
++            "max_array_length": 2,
++            "stage": null,
++            "native": {
++              "paths": 86,
++              "merges": 0,
++              "solver_calls": 85,
++              "solving_seconds": 0.001031976,
++              "gates_evaluated": 1097,
++              "evaluating_seconds": 2.8289e-05,
++              "divisions": 0,
++              "divisions_built": 0,
++              "multiplications": 0,
++              "multiplications_built": 0,
++              "variables": 690,
++              "clauses": 1665,
++              "seconds": 0.006845008,
++              "loading_seconds": 0.000103604,
++              "decoding_seconds": 7.4329e-05,
++              "encoding_seconds": 0.000450742,
++              "witness_seconds": 0.0
++            },
++            "gap_mode": "strict",
++            "deadline_seconds": 600.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budget_seconds": 600.0,
++                "seconds": 0.007,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.0,
++                  "lowering": 0.0,
++                  "symbolic": 0.005,
++                  "encoding": 0.0,
++                  "solving": 0.001,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 690,
++                  "clauses": 1665
++                }
++              },
++              {
++                "checker": "native",
++                "purpose": "probe",
++                "stage": null,
++                "budget_seconds": 599.993,
++                "seconds": 0.003,
++                "ended": "violation",
++                "ending": "counterexample",
++                "phases": {
++                  "loading": 0.0,
++                  "lowering": 0.0,
++                  "symbolic": 0.002,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 845,
++                  "clauses": 2194
++                }
++              }
++            ]
++          },
++          "stated": {
++            "kind": "regression",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "left",
++                  "type": "int[]",
++                  "kind": "array",
++                  "null": true,
++                  "max_length": 2
++                },
++                {
++                  "name": "right",
++                  "type": "int[]",
++                  "kind": "array",
++                  "null": true,
++                  "max_length": 2
++                }
++              ],
++              "shared_arrays": true,
++              "may_alias": [
++                [
++                  "left",
++                  "right"
++                ]
++              ],
++              "text": "left: int[] of length ≤ 2, or null × right: int[] of length ≤ 2, or null; left and right may be the same array"
++            },
++            "assumptions": [
++              {
++                "kind": "precondition",
++                "text": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
++                "basis": "stated"
++              },
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "return value and whether one was returned",
++              "exceptions": "unselected"
++            },
++            "bounds": {
++              "unwind": 8,
++              "max_array_length": 2,
++              "complete": true
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
++              "classes": 37,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null,
++            "vacuity": {
++              "status": "non-vacuous",
++              "basis": "probe",
++              "text": "Some input in the domain reaches the calls: the tool's own checker found agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false).",
++              "witness": "agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false)"
++            },
++            "spec": {
++              "contract": {
++                "subject": "arrays.Update#apply(int[], int[])",
++                "inputs": [
++                  {
++                    "name": "left",
++                    "type": "int[]",
++                    "derivation": {
++                      "kind": "identity"
++                    }
++                  },
++                  {
++                    "name": "right",
++                    "type": "int[]",
++                    "derivation": {
++                      "kind": "identity"
++                    }
++                  }
++                ],
++                "required": [
++                  "result"
++                ]
++              },
++              "observations": [
++                {
++                  "kind": "result"
++                }
++              ]
++            }
++          },
++          "pair": {
++            "verdict": "verified",
++            "target": "RegressionPair#agree",
++            "domain": "len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean",
++            "assume": "RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4)",
++            "assert": "result",
++            "throws": [],
++            "throws_checked": [],
++            "counterexample": null,
++            "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean in 0.0 s; loops unwound 8 times with unwinding assertions",
++            "problem": null,
++            "statement": "verifier/work/pair-work/harness/PropertyHarness.java",
++            "findings": [],
++            "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"RegressionPair\"; the names are len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ RegressionPair#agree satisfies `result` on every input where RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4) (jvmcontract's own checker (CaDiCaL): 1 properties proved over len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean in 0.0 s; loops unwound 8 times with unwinding assertions)\n  not vacuous: agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false) reaches the calls\n",
++            "work": "verifier/work/pair-work",
++            "search": {
++              "engine": "native",
++              "checker": "jvmcontract's own checker (CaDiCaL)",
++              "seconds": 0.007432478,
++              "properties": 1,
++              "unwind": 8,
++              "max_array_length": 2,
++              "stage": null,
++              "native": {
++                "paths": 86,
++                "merges": 0,
++                "solver_calls": 85,
++                "solving_seconds": 0.001031976,
++                "gates_evaluated": 1097,
++                "evaluating_seconds": 2.8289e-05,
++                "divisions": 0,
++                "divisions_built": 0,
++                "multiplications": 0,
++                "multiplications_built": 0,
++                "variables": 690,
++                "clauses": 1665,
++                "seconds": 0.006845008,
++                "loading_seconds": 0.000103604,
++                "decoding_seconds": 7.4329e-05,
++                "encoding_seconds": 0.000450742,
++                "witness_seconds": 0.0
++              },
++              "gap_mode": "strict",
++              "deadline_seconds": 600.0,
++              "runs": [
++                {
++                  "checker": "native",
++                  "purpose": "proof",
++                  "stage": null,
++                  "budget_seconds": 600.0,
++                  "seconds": 0.007,
++                  "ended": "verified",
++                  "ending": "verified",
++                  "phases": {
++                    "loading": 0.0,
++                    "lowering": 0.0,
++                    "symbolic": 0.005,
++                    "encoding": 0.0,
++                    "solving": 0.001,
++                    "trace": 0.0,
++                    "other": 0.0
++                  },
++                  "formula": {
++                    "variables": 690,
++                    "clauses": 1665
++                  }
++                },
++                {
++                  "checker": "native",
++                  "purpose": "probe",
++                  "stage": null,
++                  "budget_seconds": 599.993,
++                  "seconds": 0.003,
++                  "ended": "violation",
++                  "ending": "counterexample",
++                  "phases": {
++                    "loading": 0.0,
++                    "lowering": 0.0,
++                    "symbolic": 0.002,
++                    "encoding": 0.0,
++                    "solving": 0.0,
++                    "trace": 0.0,
++                    "other": 0.0
++                  },
++                  "formula": {
++                    "variables": 845,
++                    "clauses": 2194
++                  }
++                }
++              ],
++              "phases": {
++                "seconds": 0.409,
++                "setup": 0.001,
++                "harness": 0.0,
++                "gaps": 0.0,
++                "contracts": 0.0,
++                "runs": 0.01,
++                "replay": 0.0,
++                "jvm": 0.0,
++                "other": 0.397
++              }
++            },
++            "stated": {
++              "kind": "property",
++              "domain": {
++                "parameters": [
++                  {
++                    "name": "len0",
++                    "type": "int",
++                    "kind": "primitive",
++                    "null": false
++                  },
++                  {
++                    "name": "cell0_0",
++                    "type": "int",
++                    "kind": "primitive",
++                    "null": false
++                  },
++                  {
++                    "name": "cell0_1",
++                    "type": "int",
++                    "kind": "primitive",
++                    "null": false
++                  },
++                  {
++                    "name": "len1",
++                    "type": "int",
++                    "kind": "primitive",
++                    "null": false
++                  },
++                  {
++                    "name": "cell1_0",
++                    "type": "int",
++                    "kind": "primitive",
++                    "null": false
++                  },
++                  {
++                    "name": "cell1_1",
++                    "type": "int",
++                    "kind": "primitive",
++                    "null": false
++                  },
++                  {
++                    "name": "flag2",
++                    "type": "boolean",
++                    "kind": "primitive",
++                    "null": false
++                  },
++                  {
++                    "name": "flag3",
++                    "type": "boolean",
++                    "kind": "primitive",
++                    "null": false
++                  },
++                  {
++                    "name": "flag4",
++                    "type": "boolean",
++                    "kind": "primitive",
++                    "null": false
++                  }
++                ],
++                "shared_arrays": false,
++                "text": "len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean"
++              },
++              "assumptions": [
++                {
++                  "kind": "precondition",
++                  "text": "RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4)",
++                  "basis": "stated"
++                },
++                {
++                  "kind": "initialization",
++                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                  "basis": "engine"
++                }
++              ],
++              "observations": {
++                "result": "the result and the parameters, against result",
++                "exceptions": "none may be thrown"
++              },
++              "bounds": {
++                "unwind": 8,
++                "max_array_length": null,
++                "complete": true
++              },
++              "models": {
++                "used": true,
++                "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
++                "classes": 37,
++                "jdk": "21.0.13"
++              },
++              "checker": {
++                "engine": "native",
++                "name": "jvmcontract's own checker (CaDiCaL)",
++                "solver": "CaDiCaL 1.9.5 (bundled)",
++                "fallback": null,
++                "sat": {
++                  "solver": "CaDiCaL",
++                  "version": "1.9.5",
++                  "source": "bundled by the Rust crate cadical 0.1.16",
++                  "configuration": [
++                    "CaDiCaL's default options",
++                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                    "the run's deadline through CaDiCaL's terminate callback",
++                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                  ]
++                }
++              },
++              "gap_mode": "strict",
++              "confirmation": null,
++              "vacuity": {
++                "status": "non-vacuous",
++                "basis": "probe",
++                "text": "Some input in the domain reaches the calls: the tool's own checker found agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false).",
++                "witness": "agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false)"
++              }
++            }
++          }
++        }
++      ],
++      "control": null,
++      "record": "verifier/verifier.json",
++      "reason": null
++    }
++  ]
++}
+--- /dev/null
++++ b/examples/197-shared-int-array-poststates/receipts/return-only/20261119T165925Z-51e59724/records/streams.json
+@@ -0,0 +1,85 @@
++{
++  "cap": 524288,
++  "streams": [
++    {
++      "stage": "jvm-control reference on JDK 21",
++      "stream": "stdout",
++      "source": "controls/control-reference-jdk21.stdout",
++      "kept": "records/control-reference-jdk21.stdout",
++      "bytes": 4696,
++      "sha256": "cc178142f43de06e80d0f2c9fb6193f8dcf70d8fe3f1d254b04ba3dd998d36b8",
++      "keptBytes": 4696,
++      "truncated": false
++    },
++    {
++      "stage": "jvm-control reference on JDK 21",
++      "stream": "stderr",
++      "source": "controls/control-reference-jdk21.stderr",
++      "kept": "records/control-reference-jdk21.stderr",
++      "bytes": 0,
++      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "keptBytes": 0,
++      "truncated": false
++    },
++    {
++      "stage": null,
++      "stream": "record",
++      "source": "controls/controls.json",
++      "kept": "records/controls.json",
++      "bytes": 34754,
++      "sha256": "f220868f27a5a652bc03ac2d82b3657947b2fef2e15f1283ef97936961da4731",
++      "keptBytes": 34754,
++      "truncated": false
++    },
++    {
++      "stage": "jvm-control skipped-write on JDK 21",
++      "stream": "stdout",
++      "source": "controls/control-skipped-write-jdk21.stdout",
++      "kept": "records/control-skipped-write-jdk21.stdout",
++      "bytes": 4696,
++      "sha256": "087d19a3bf89b8d693b9a0c8fda15ac9bfe505f6758ef21ac1b0a0143c69ecd3",
++      "keptBytes": 4696,
++      "truncated": false
++    },
++    {
++      "stage": "jvm-control skipped-write on JDK 21",
++      "stream": "stderr",
++      "source": "controls/control-skipped-write-jdk21.stderr",
++      "kept": "records/control-skipped-write-jdk21.stderr",
++      "bytes": 0,
++      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "keptBytes": 0,
++      "truncated": false
++    },
++    {
++      "stage": "verifier pair on JDK 21",
++      "stream": "stdout",
++      "source": "verifier/verifier.stdout",
++      "kept": "records/verifier.stdout",
++      "bytes": 14966,
++      "sha256": "a4666efcc24ae6bda62f025223755b4d3f9964a164cf8b66d362c94140afaea6",
++      "keptBytes": 14966,
++      "truncated": false
++    },
++    {
++      "stage": "verifier pair on JDK 21",
++      "stream": "stderr",
++      "source": "verifier/verifier.stderr",
++      "kept": "records/verifier.stderr",
++      "bytes": 0,
++      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++      "keptBytes": 0,
++      "truncated": false
++    },
++    {
++      "stage": null,
++      "stream": "record",
++      "source": "verifier/verifier.json",
++      "kept": "records/verifier.json",
++      "bytes": 24130,
++      "sha256": "175aa0ccda660c18f59a661592f4ae74248da1e5afe165bad9e34e22c8efc0f8",
++      "keptBytes": 24130,
++      "truncated": false
++    }
++  ]
++}
+--- /dev/null
++++ b/examples/197-shared-int-array-poststates/receipts/return-only/20261119T165925Z-51e59724/records/verifier-output.txt
+@@ -0,0 +1,5 @@
++Compared result on two fresh heaps with the same length, cell, null and sharing choices (verifier/work/pair/RegressionPair.java)
++✓ arrays.Update#apply(int[], int[]): the two versions agree on every input where (left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1)))) (the pair's property, below)
++note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name "RegressionPair"; the names are len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target
++✓ RegressionPair#agree satisfies `result` on every input where RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4) (jvmcontract's own checker (CaDiCaL): 1 properties proved over len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean in 0.0 s; loops unwound 8 times with unwinding assertions)
++  not vacuous: agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false) reaches the calls
+--- /dev/null
++++ b/examples/197-shared-int-array-poststates/receipts/return-only/20261119T165925Z-51e59724/records/verifier.json
+@@ -0,0 +1,610 @@
++{
++  "task": "return-only",
++  "record": {
++    "kind": "verifier",
++    "revision": null,
++    "argv": [
++      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e338c9d33e461cf29db2b7a58b612bb12d075ac6/jvmcontract",
++      "equivalence",
++      "--before",
++      "verifier/classes/reference",
++      "--after",
++      "verifier/classes/skipped-write",
++      "--target",
++      "arrays.Update#apply(int[], int[])",
++      "--assume",
++      "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
++      "--observe",
++      "{\"kind\": \"result\"}",
++      "--nullable",
++      "left",
++      "--nullable",
++      "right",
++      "--may-alias",
++      "left,right",
++      "--engine",
++      "native",
++      "--gaps",
++      "strict",
++      "--unwind",
++      "8",
++      "--max-array-length",
++      "2",
++      "--timeout",
++      "600",
++      "--work",
++      "verifier/work",
++      "--report",
++      "verifier/report",
++      "--json"
++    ],
++    "status": "exited",
++    "exitCode": 0,
++    "seconds": 0.866,
++    "stdout": "verifier/verifier.stdout",
++    "stderr": "verifier/verifier.stderr",
++    "identities": {
++      "jvmcontract": "7a6ad79f859c290d679a54adb71d74cb3f26672920789fe239382f11481d9021",
++      "commit": "0a9020d87ff032b3ce278be015e5f7f2c2d0a101",
++      "libTree": "e338c9d33e461cf29db2b7a58b612bb12d075ac6",
++      "command": "equivalence",
++      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++      "jdkFeature": "21",
++      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++      "jdkRelease": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "engine": "native",
++      "gaps": "strict",
++      "bounds": {
++        "unwind": 8,
++        "maxArrayLength": 2
++      },
++      "timeout": 600,
++      "scope": {
++        "label": "constructed-fixture",
++        "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
++        "method": "arrays.Update#apply([I[I)I",
++        "revisions": {
++          "reference": {
++            "commit": "fixture:baseline",
++            "loadedFrom": "reference.jar",
++            "classSha256": "66c22776e4af997799366e0f023a5161af666867c8aee6e537fb56b13d5e2c6c",
++            "origin": "built from baseline by the fixture recipe",
++            "parameters": {
++              "names": [
++                "left",
++                "right"
++              ],
++              "recordedIn": "MethodParameters"
++            }
++          },
++          "skipped-write": {
++            "commit": "fixture:alternative",
++            "loadedFrom": "skipped-write.jar",
++            "classSha256": "5aabe777714b613293cd617c0eb987ee110189443534d2996444b81350c3b95e",
++            "origin": "built from alternative by the fixture recipe",
++            "parameters": {
++              "names": [
++                "left",
++                "right"
++              ],
++              "recordedIn": "MethodParameters"
++            }
++          }
++        },
++        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
++        "models": [],
++        "assumptions": []
++      },
++      "classpath": {
++        "reference": [
++          {
++            "path": "reference.jar",
++            "sha256": "00239502188785b9f40e7d3b0f30b5b7a13a1663e72fcffe06c4ad08ecf9a826",
++            "role": "original"
++          }
++        ],
++        "skipped-write": [
++          {
++            "path": "skipped-write.jar",
++            "sha256": "0652189c24e51f6ef652ee82d935dfce6967443c5ebd6753c39f88a2e10706a3",
++            "role": "original"
++          }
++        ]
++      },
++      "commits": {
++        "reference": "fixture:baseline",
++        "skipped-write": "fixture:alternative"
++      },
++      "environment": {
++        "LANG": "C.UTF-8",
++        "LC_ALL": "C.UTF-8",
++        "TZ": "UTC",
++        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++        "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
++        "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m"
++      },
++      "cwd": "the attempt directory",
++      "classes": {
++        "reference": {
++          "dir": "verifier/classes/reference",
++          "from": "prepare/reference/reference.jar",
++          "sha256": "00239502188785b9f40e7d3b0f30b5b7a13a1663e72fcffe06c4ad08ecf9a826",
++          "entries": 1
++        },
++        "skipped-write": {
++          "dir": "verifier/classes/skipped-write",
++          "from": "prepare/skipped-write/skipped-write.jar",
++          "sha256": "0652189c24e51f6ef652ee82d935dfce6967443c5ebd6753c39f88a2e10706a3",
++          "entries": 1
++        }
++      },
++      "probe": {
++        "reference": {
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e338c9d33e461cf29db2b7a58b612bb12d075ac6/jvmcontract",
++            "gaps",
++            "--target",
++            "arrays.Update#apply(int[], int[])",
++            "--classes",
++            "prepare/reference/reference.jar",
++            "--json"
++          ],
++          "status": "exited",
++          "exitCode": 0,
++          "seconds": 0.016,
++          "stdout": "verifier/probe-reference.stdout",
++          "stderr": "verifier/probe-reference.stderr",
++          "gaps": []
++        },
++        "skipped-write": {
++          "argv": [
++            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e338c9d33e461cf29db2b7a58b612bb12d075ac6/jvmcontract",
++            "gaps",
++            "--target",
++            "arrays.Update#apply(int[], int[])",
++            "--classes",
++            "prepare/skipped-write/skipped-write.jar",
++            "--json"
++          ],
++          "status": "exited",
++          "exitCode": 0,
++          "seconds": 0.016,
++          "stdout": "verifier/probe-skipped-write.stdout",
++          "stderr": "verifier/probe-skipped-write.stderr",
++          "gaps": []
++        }
++      }
++    },
++    "observations": [
++      {
++        "verdict": "verified",
++        "target": "arrays.Update#apply(int[], int[])",
++        "domain": "left: int[] of length ≤ 2, or null × right: int[] of length ≤ 2, or null; left and right may be the same array",
++        "counterexample": null,
++        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean in 0.0 s; loops unwound 8 times with unwinding assertions",
++        "problem": null,
++        "statement": "verifier/work/pair/RegressionPair.java",
++        "findings": [],
++        "output": "Compared result on two fresh heaps with the same length, cell, null and sharing choices (verifier/work/pair/RegressionPair.java)\n✓ arrays.Update#apply(int[], int[]): the two versions agree on every input where (left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1)))) (the pair's property, below)\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"RegressionPair\"; the names are len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ RegressionPair#agree satisfies `result` on every input where RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4) (jvmcontract's own checker (CaDiCaL): 1 properties proved over len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean in 0.0 s; loops unwound 8 times with unwinding assertions)\n  not vacuous: agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false) reaches the calls\n",
++        "work": "verifier/work",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 0.007432478,
++          "properties": 1,
++          "unwind": 8,
++          "max_array_length": 2,
++          "stage": null,
++          "native": {
++            "paths": 86,
++            "merges": 0,
++            "solver_calls": 85,
++            "solving_seconds": 0.001031976,
++            "gates_evaluated": 1097,
++            "evaluating_seconds": 2.8289e-05,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 690,
++            "clauses": 1665,
++            "seconds": 0.006845008,
++            "loading_seconds": 0.000103604,
++            "decoding_seconds": 7.4329e-05,
++            "encoding_seconds": 0.000450742,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "deadline_seconds": 600.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 600.0,
++              "seconds": 0.007,
++              "ended": "verified",
++              "ending": "verified",
++              "phases": {
++                "loading": 0.0,
++                "lowering": 0.0,
++                "symbolic": 0.005,
++                "encoding": 0.0,
++                "solving": 0.001,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 690,
++                "clauses": 1665
++              }
++            },
++            {
++              "checker": "native",
++              "purpose": "probe",
++              "stage": null,
++              "budget_seconds": 599.993,
++              "seconds": 0.003,
++              "ended": "violation",
++              "ending": "counterexample",
++              "phases": {
++                "loading": 0.0,
++                "lowering": 0.0,
++                "symbolic": 0.002,
++                "encoding": 0.0,
++                "solving": 0.0,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 845,
++                "clauses": 2194
++              }
++            }
++          ]
++        },
++        "stated": {
++          "kind": "regression",
++          "domain": {
++            "parameters": [
++              {
++                "name": "left",
++                "type": "int[]",
++                "kind": "array",
++                "null": true,
++                "max_length": 2
++              },
++              {
++                "name": "right",
++                "type": "int[]",
++                "kind": "array",
++                "null": true,
++                "max_length": 2
++              }
++            ],
++            "shared_arrays": true,
++            "may_alias": [
++              [
++                "left",
++                "right"
++              ]
++            ],
++            "text": "left: int[] of length ≤ 2, or null × right: int[] of length ≤ 2, or null; left and right may be the same array"
++          },
++          "assumptions": [
++            {
++              "kind": "precondition",
++              "text": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
++              "basis": "stated"
++            },
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "return value and whether one was returned",
++            "exceptions": "unselected"
++          },
++          "bounds": {
++            "unwind": 8,
++            "max_array_length": 2,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
++            "classes": 37,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "probe",
++            "text": "Some input in the domain reaches the calls: the tool's own checker found agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false).",
++            "witness": "agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false)"
++          },
++          "spec": {
++            "contract": {
++              "subject": "arrays.Update#apply(int[], int[])",
++              "inputs": [
++                {
++                  "name": "left",
++                  "type": "int[]",
++                  "derivation": {
++                    "kind": "identity"
++                  }
++                },
++                {
++                  "name": "right",
++                  "type": "int[]",
++                  "derivation": {
++                    "kind": "identity"
++                  }
++                }
++              ],
++              "required": [
++                "result"
++              ]
++            },
++            "observations": [
++              {
++                "kind": "result"
++              }
++            ]
++          }
++        },
++        "pair": {
++          "verdict": "verified",
++          "target": "RegressionPair#agree",
++          "domain": "len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean",
++          "assume": "RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4)",
++          "assert": "result",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": null,
++          "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean in 0.0 s; loops unwound 8 times with unwinding assertions",
++          "problem": null,
++          "statement": "verifier/work/pair-work/harness/PropertyHarness.java",
++          "findings": [],
++          "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"RegressionPair\"; the names are len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ RegressionPair#agree satisfies `result` on every input where RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4) (jvmcontract's own checker (CaDiCaL): 1 properties proved over len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean in 0.0 s; loops unwound 8 times with unwinding assertions)\n  not vacuous: agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false) reaches the calls\n",
++          "work": "verifier/work/pair-work",
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 0.007432478,
++            "properties": 1,
++            "unwind": 8,
++            "max_array_length": 2,
++            "stage": null,
++            "native": {
++              "paths": 86,
++              "merges": 0,
++              "solver_calls": 85,
++              "solving_seconds": 0.001031976,
++              "gates_evaluated": 1097,
++              "evaluating_seconds": 2.8289e-05,
++              "divisions": 0,
++              "divisions_built": 0,
++              "multiplications": 0,
++              "multiplications_built": 0,
++              "variables": 690,
++              "clauses": 1665,
++              "seconds": 0.006845008,
++              "loading_seconds": 0.000103604,
++              "decoding_seconds": 7.4329e-05,
++              "encoding_seconds": 0.000450742,
++              "witness_seconds": 0.0
++            },
++            "gap_mode": "strict",
++            "deadline_seconds": 600.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budget_seconds": 600.0,
++                "seconds": 0.007,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.0,
++                  "lowering": 0.0,
++                  "symbolic": 0.005,
++                  "encoding": 0.0,
++                  "solving": 0.001,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 690,
++                  "clauses": 1665
++                }
++              },
++              {
++                "checker": "native",
++                "purpose": "probe",
++                "stage": null,
++                "budget_seconds": 599.993,
++                "seconds": 0.003,
++                "ended": "violation",
++                "ending": "counterexample",
++                "phases": {
++                  "loading": 0.0,
++                  "lowering": 0.0,
++                  "symbolic": 0.002,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 845,
++                  "clauses": 2194
++                }
++              }
++            ],
++            "phases": {
++              "seconds": 0.409,
++              "setup": 0.001,
++              "harness": 0.0,
++              "gaps": 0.0,
++              "contracts": 0.0,
++              "runs": 0.01,
++              "replay": 0.0,
++              "jvm": 0.0,
++              "other": 0.397
++            }
++          },
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "len0",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "cell0_0",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "cell0_1",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "len1",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "cell1_0",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "cell1_1",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "flag2",
++                  "type": "boolean",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "flag3",
++                  "type": "boolean",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "flag4",
++                  "type": "boolean",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "shared_arrays": false,
++              "text": "len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean"
++            },
++            "assumptions": [
++              {
++                "kind": "precondition",
++                "text": "RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4)",
++                "basis": "stated"
++              },
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 8,
++              "max_array_length": null,
++              "complete": true
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
++              "classes": 37,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null,
++            "vacuity": {
++              "status": "non-vacuous",
++              "basis": "probe",
++              "text": "Some input in the domain reaches the calls: the tool's own checker found agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false).",
++              "witness": "agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false)"
++            }
++          }
++        }
++      }
++    ],
++    "control": null,
++    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261119-164548-197-paired-array-observation-return-only/.build-py/examples-vqbde9ot/targets/197/return-only",
++    "record": "verifier/verifier.json",
++    "reason": null
++  },
++  "log": {
++    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261119-164548-197-paired-array-observation-return-only/.build-py/examples-vqbde9ot/targets/197/return-only"
++  }
++}
+--- /dev/null
++++ b/examples/197-shared-int-array-poststates/receipts/return-only/20261119T165925Z-51e59724/records/verifier.stdout
+@@ -0,0 +1,416 @@
++{
++  "verdict": "verified",
++  "target": "arrays.Update#apply(int[], int[])",
++  "domain": "left: int[] of length ≤ 2, or null × right: int[] of length ≤ 2, or null; left and right may be the same array",
++  "counterexample": null,
++  "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean in 0.0 s; loops unwound 8 times with unwinding assertions",
++  "problem": null,
++  "statement": "verifier/work/pair/RegressionPair.java",
++  "findings": [],
++  "output": "Compared result on two fresh heaps with the same length, cell, null and sharing choices (verifier/work/pair/RegressionPair.java)\n✓ arrays.Update#apply(int[], int[]): the two versions agree on every input where (left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1)))) (the pair's property, below)\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"RegressionPair\"; the names are len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ RegressionPair#agree satisfies `result` on every input where RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4) (jvmcontract's own checker (CaDiCaL): 1 properties proved over len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean in 0.0 s; loops unwound 8 times with unwinding assertions)\n  not vacuous: agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false) reaches the calls\n",
++  "work": "verifier/work",
++  "search": {
++    "engine": "native",
++    "checker": "jvmcontract's own checker (CaDiCaL)",
++    "seconds": 0.007432478,
++    "properties": 1,
++    "unwind": 8,
++    "max_array_length": 2,
++    "stage": null,
++    "native": {
++      "paths": 86,
++      "merges": 0,
++      "solver_calls": 85,
++      "solving_seconds": 0.001031976,
++      "gates_evaluated": 1097,
++      "evaluating_seconds": 0.000028289,
++      "divisions": 0,
++      "divisions_built": 0,
++      "multiplications": 0,
++      "multiplications_built": 0,
++      "variables": 690,
++      "clauses": 1665,
++      "seconds": 0.006845008,
++      "loading_seconds": 0.000103604,
++      "decoding_seconds": 0.000074329,
++      "encoding_seconds": 0.000450742,
++      "witness_seconds": 0.0
++    },
++    "gap_mode": "strict",
++    "deadline_seconds": 600.0,
++    "runs": [
++      {
++        "checker": "native",
++        "purpose": "proof",
++        "stage": null,
++        "budget_seconds": 600.0,
++        "seconds": 0.007,
++        "ended": "verified",
++        "ending": "verified",
++        "phases": {
++          "loading": 0.0,
++          "lowering": 0.0,
++          "symbolic": 0.005,
++          "encoding": 0.0,
++          "solving": 0.001,
++          "trace": 0.0,
++          "other": 0.0
++        },
++        "formula": {
++          "variables": 690,
++          "clauses": 1665
++        }
++      },
++      {
++        "checker": "native",
++        "purpose": "probe",
++        "stage": null,
++        "budget_seconds": 599.993,
++        "seconds": 0.003,
++        "ended": "violation",
++        "ending": "counterexample",
++        "phases": {
++          "loading": 0.0,
++          "lowering": 0.0,
++          "symbolic": 0.002,
++          "encoding": 0.0,
++          "solving": 0.0,
++          "trace": 0.0,
++          "other": 0.0
++        },
++        "formula": {
++          "variables": 845,
++          "clauses": 2194
++        }
++      }
++    ]
++  },
++  "stated": {
++    "kind": "regression",
++    "domain": {
++      "parameters": [
++        {
++          "name": "left",
++          "type": "int[]",
++          "kind": "array",
++          "null": true,
++          "max_length": 2
++        },
++        {
++          "name": "right",
++          "type": "int[]",
++          "kind": "array",
++          "null": true,
++          "max_length": 2
++        }
++      ],
++      "shared_arrays": true,
++      "may_alias": [
++        [
++          "left",
++          "right"
++        ]
++      ],
++      "text": "left: int[] of length ≤ 2, or null × right: int[] of length ≤ 2, or null; left and right may be the same array"
++    },
++    "assumptions": [
++      {
++        "kind": "precondition",
++        "text": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
++        "basis": "stated"
++      },
++      {
++        "kind": "initialization",
++        "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++        "basis": "engine"
++      }
++    ],
++    "observations": {
++      "result": "return value and whether one was returned",
++      "exceptions": "unselected"
++    },
++    "bounds": {
++      "unwind": 8,
++      "max_array_length": 2,
++      "complete": true
++    },
++    "models": {
++      "used": true,
++      "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
++      "classes": 37,
++      "jdk": "21.0.13"
++    },
++    "checker": {
++      "engine": "native",
++      "name": "jvmcontract's own checker (CaDiCaL)",
++      "solver": "CaDiCaL 1.9.5 (bundled)",
++      "fallback": null,
++      "sat": {
++        "solver": "CaDiCaL",
++        "version": "1.9.5",
++        "source": "bundled by the Rust crate cadical 0.1.16",
++        "configuration": [
++          "CaDiCaL's default options",
++          "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++          "the run's deadline through CaDiCaL's terminate callback",
++          "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++        ]
++      }
++    },
++    "gap_mode": "strict",
++    "confirmation": null,
++    "vacuity": {
++      "status": "non-vacuous",
++      "basis": "probe",
++      "text": "Some input in the domain reaches the calls: the tool's own checker found agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false).",
++      "witness": "agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false)"
++    },
++    "spec": {
++      "contract": {
++        "subject": "arrays.Update#apply(int[], int[])",
++        "inputs": [
++          {
++            "name": "left",
++            "type": "int[]",
++            "derivation": {
++              "kind": "identity"
++            }
++          },
++          {
++            "name": "right",
++            "type": "int[]",
++            "derivation": {
++              "kind": "identity"
++            }
++          }
++        ],
++        "required": [
++          "result"
++        ]
++      },
++      "observations": [
++        {
++          "kind": "result"
++        }
++      ]
++    }
++  },
++  "pair": {
++    "verdict": "verified",
++    "target": "RegressionPair#agree",
++    "domain": "len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean",
++    "assume": "RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4)",
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean in 0.0 s; loops unwound 8 times with unwinding assertions",
++    "problem": null,
++    "statement": "verifier/work/pair-work/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"RegressionPair\"; the names are len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ RegressionPair#agree satisfies `result` on every input where RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4) (jvmcontract's own checker (CaDiCaL): 1 properties proved over len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean in 0.0 s; loops unwound 8 times with unwinding assertions)\n  not vacuous: agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false) reaches the calls\n",
++    "work": "verifier/work/pair-work",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.007432478,
++      "properties": 1,
++      "unwind": 8,
++      "max_array_length": 2,
++      "stage": null,
++      "native": {
++        "paths": 86,
++        "merges": 0,
++        "solver_calls": 85,
++        "solving_seconds": 0.001031976,
++        "gates_evaluated": 1097,
++        "evaluating_seconds": 0.000028289,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 690,
++        "clauses": 1665,
++        "seconds": 0.006845008,
++        "loading_seconds": 0.000103604,
++        "decoding_seconds": 0.000074329,
++        "encoding_seconds": 0.000450742,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 600.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 600.0,
++          "seconds": 0.007,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.005,
++            "encoding": 0.0,
++            "solving": 0.001,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 690,
++            "clauses": 1665
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 599.993,
++          "seconds": 0.003,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.002,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 845,
++            "clauses": 2194
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.409,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.01,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.397
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "len0",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "cell0_0",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "cell0_1",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "len1",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "cell1_0",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "cell1_1",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "flag2",
++            "type": "boolean",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "flag3",
++            "type": "boolean",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "flag4",
++            "type": "boolean",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4)",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 8,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
++        "classes": 37,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false).",
++        "witness": "agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false)"
++      }
++    }
++  }
++}
+--- /dev/null
++++ b/examples/197-shared-int-array-poststates/receipts/return-only/20261119T165925Z-51e59724/result.json
+@@ -0,0 +1,438 @@
++{
++  "format": 2,
++  "claim": {
++    "id": "9ff6c97d2aae8061",
++    "format": 1,
++    "example": "197",
++    "statement": {
++      "approach": "target",
++      "task": "return-only",
++      "kind": "equivalence",
++      "relation": "preservation",
++      "target": "arrays.Update#apply([I[I)I",
++      "revisions": [
++        "reference",
++        "skipped-write"
++      ],
++      "expected": "established",
++      "gaps": "strict",
++      "claim": {
++        "task": "return-only",
++        "kind": "equivalence",
++        "relation": "preservation",
++        "target": "arrays.Update#apply([I[I)I",
++        "file": "claims/return-only.json",
++        "sha256": "5b559494356137133800b090a311dda87165a8c8407420692ec372c8631105fd",
++        "property": "return-only",
++        "claimKind": "preservation",
++        "statement": "Both versions agree on the return value for every admitted input heap.",
++        "assume": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
++        "assert": null,
++        "throws": [],
++        "nullable": [
++          "left",
++          "right"
++        ],
++        "mayAlias": [
++          "left,right"
++        ],
++        "observations": [
++          {
++            "kind": "result"
++          }
++        ],
++        "assumptions": [],
++        "allowedChange": null,
++        "bounds": {
++          "unwind": 8,
++          "maxArrayLength": 2
++        },
++        "explicitBounds": {
++          "maxArrayLength": 2,
++          "unwind": 8
++        },
++        "defaultBounds": [],
++        "models": [],
++        "plan": null,
++        "contracts": null,
++        "gaps": "strict",
++        "parent": null,
++        "controls": [
++          {
++            "id": "root-driver",
++            "kind": "driver",
++            "path": "driver/arrays/RootCases.java",
++            "sha256": "aa08a4dab75223b756d23790de1ad2db8f5422ff54690da47baa6b37436e33d4"
++          },
++          {
++            "id": "finite-oracle",
++            "kind": "oracle",
++            "path": "controls/oracle.py",
++            "sha256": "1d51111027fe71a83ec413f8a23b63655dc33c0b35c2d8a23c38373aebd20b82"
++          }
++        ],
++        "key": "bb7a6542bb91c33a"
++      }
++    },
++    "scope": {
++      "maxArrayLength": 2,
++      "intendedInputs": null
++    },
++    "inputs": {
++      "patch": null,
++      "before": {
++        "sha256": "64a18479433f652d1aab3961153791924f919d62e9fde43c8c18da871ce24683",
++        "files": 1
++      },
++      "after": {
++        "sha256": "2538d3c1dcdf7943d2bc5ad14bf23f63c302fc15f0ca0d7a5b504a9c1c25a16e",
++        "files": 1
++      },
++      "dependencies": "pinned in target.dependencies"
++    },
++    "target": {
++      "task": "return-only",
++      "sidecar": "2079167da1ad9240b1361d23a941dcd30c7cee127ee4241665978f04f4497b6a",
++      "revisions": {
++        "reference": "1f5b49504123c5d6728e376e9242173595eabc19",
++        "skipped-write": "c9d261dde1ce7d28386e02a064ea4c6157450a97"
++      },
++      "dependencies": [
++        {
++          "revision": "reference",
++          "position": 0,
++          "role": "driver",
++          "sha256": "ee6e5c8a0aad68edf9a0a4e1a03b5325bf24c54fe879eafc1b5f82c7beee3a7e"
++        },
++        {
++          "revision": "reference",
++          "position": 1,
++          "role": "original",
++          "sha256": "00239502188785b9f40e7d3b0f30b5b7a13a1663e72fcffe06c4ad08ecf9a826"
++        },
++        {
++          "revision": "skipped-write",
++          "position": 0,
++          "role": "driver",
++          "sha256": "ee6e5c8a0aad68edf9a0a4e1a03b5325bf24c54fe879eafc1b5f82c7beee3a7e"
++        },
++        {
++          "revision": "skipped-write",
++          "position": 1,
++          "role": "original",
++          "sha256": "0652189c24e51f6ef652ee82d935dfce6967443c5ebd6753c39f88a2e10706a3"
++        }
++      ],
++      "jdks": [
++        "openjdk version \"21.0.13\" 2026-10-20 LTS",
++        "openjdk version \"25.0.5\" 2026-10-20 LTS"
++      ],
++      "files": {
++        "claims/return-only.json": "5b559494356137133800b090a311dda87165a8c8407420692ec372c8631105fd",
++        "controls/oracle.py": "1d51111027fe71a83ec413f8a23b63655dc33c0b35c2d8a23c38373aebd20b82",
++        "driver/arrays/RootCases.java": "aa08a4dab75223b756d23790de1ad2db8f5422ff54690da47baa6b37436e33d4"
++      },
++      "claimKey": "bb7a6542bb91c33a"
++    }
++  },
++  "attempt": {
++    "id": "20261119T165925Z-51e59724",
++    "claim": "9ff6c97d2aae8061",
++    "startedAt": "2026-11-19T16:59:25+00:00",
++    "seconds": 1.0,
++    "engine": "native",
++    "options": [
++      "equivalence",
++      "--before",
++      "verifier/classes/reference",
++      "--after",
++      "verifier/classes/skipped-write",
++      "--target",
++      "arrays.Update#apply(int[], int[])",
++      "--assume",
++      "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
++      "--observe",
++      "{\"kind\": \"result\"}",
++      "--nullable",
++      "left",
++      "--nullable",
++      "right",
++      "--may-alias",
++      "left,right",
++      "--engine",
++      "native",
++      "--gaps",
++      "strict",
++      "--unwind",
++      "8",
++      "--max-array-length",
++      "2",
++      "--timeout",
++      "600",
++      "--work",
++      "verifier/work",
++      "--report",
++      "verifier/report",
++      "--json"
++    ],
++    "tools": {
++      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
++      "jvmcontract": "7a6ad79f859c290d679a54adb71d74cb3f26672920789fe239382f11481d9021"
++    },
++    "bytecode": {
++      "before": {
++        "sha256": "214534724a652800b8f1026493add7a1ecdd6966c5870624be62651c28b3f14b",
++        "files": 1
++      },
++      "after": {
++        "sha256": "615a34bbc4f6ae4f5e69a33ec8b8b6d9eff1e2057da7ba5151bb8a46378f66ce",
++        "files": 1
++      }
++    },
++    "pipeline": {
++      "jobId": "20261119-164548-197-paired-array-observation-return-only",
++      "sourceCommit": "0a9020d87ff032b3ce278be015e5f7f2c2d0a101",
++      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261119-164548-197-paired-array-observation-return-only"
++    },
++    "execution": {
++      "status": "completed",
++      "exitCode": 0,
++      "reason": null
++    },
++    "stages": [
++      {
++        "name": "jvm-control reference on JDK 21",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.064,
++        "stdout": "records/control-reference-jdk21.stdout",
++        "stderr": "records/control-reference-jdk21.stderr"
++      },
++      {
++        "name": "jvm-control skipped-write on JDK 21",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.064,
++        "stdout": "records/control-skipped-write-jdk21.stdout",
++        "stderr": "records/control-skipped-write-jdk21.stderr"
++      },
++      {
++        "name": "verifier pair on JDK 21",
++        "status": "exited",
++        "exitCode": 0,
++        "seconds": 0.866,
++        "stdout": "records/verifier.stdout",
++        "stderr": "records/verifier.stderr"
++      }
++    ],
++    "workspace": null,
++    "exploration": {
++      "unwind": 8,
++      "maxArrayLength": 2,
++      "complete": true
++    }
++  },
++  "conclusion": {
++    "claim": "9ff6c97d2aae8061",
++    "attempt": "20261119T165925Z-51e59724",
++    "status": "established",
++    "vacuous": false,
++    "expectation": "yes",
++    "obligations": [],
++    "label": "✓ Verified",
++    "obligationKeys": {}
++  },
++  "evidence": {
++    "existingTests": null,
++    "before": {
++      "file": "target.json",
++      "startLine": 13,
++      "code": "\"reference\": {"
++    },
++    "after": {
++      "file": "target.json",
++      "startLine": 16,
++      "code": "\"skipped-write\": {"
++    },
++    "casesTotal": null,
++    "purityViolations": [],
++    "trustedCalls": [],
++    "sarif": null,
++    "output": "records/verifier-output.txt",
++    "statement": null,
++    "counterexamples": [],
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean in 0.0 s; loops unwound 8 times with unwinding assertions",
++    "problem": null,
++    "domain": "left: int[] of length ≤ 2, or null × right: int[] of length ≤ 2, or null; left and right may be the same array",
++    "replay": null,
++    "stated": {
++      "kind": "regression",
++      "domain": {
++        "parameters": [
++          {
++            "name": "left",
++            "type": "int[]",
++            "kind": "array",
++            "null": true,
++            "maxLength": 2
++          },
++          {
++            "name": "right",
++            "type": "int[]",
++            "kind": "array",
++            "null": true,
++            "maxLength": 2
++          }
++        ],
++        "sharedArrays": true,
++        "mayAlias": [
++          [
++            "left",
++            "right"
++          ]
++        ],
++        "text": "left: int[] of length ≤ 2, or null × right: int[] of length ≤ 2, or null; left and right may be the same array"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "return value and whether one was returned",
++        "exceptions": "unselected"
++      },
++      "bounds": {
++        "unwind": 8,
++        "maxArrayLength": 2,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
++        "classes": 37,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gapMode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false).",
++        "witness": "agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false)"
++      },
++      "spec": {
++        "contract": {
++          "subject": "arrays.Update#apply(int[], int[])",
++          "inputs": [
++            {
++              "name": "left",
++              "type": "int[]",
++              "derivation": {
++                "kind": "identity"
++              }
++            },
++            {
++              "name": "right",
++              "type": "int[]",
++              "derivation": {
++                "kind": "identity"
++              }
++            }
++          ],
++          "required": [
++            "result"
++          ]
++        },
++        "observations": [
++          {
++            "kind": "result"
++          }
++        ]
++      }
++    }
++  },
++  "bundle": {
++    "artifacts": [
++      {
++        "path": "records/execution.json",
++        "sha256": "0c0aa9bd8ff9e69e7aa8e2c68c297030e28b6eb2d6eb58b28c016582cca1c873",
++        "bytes": 58859
++      },
++      {
++        "path": "records/verifier-output.txt",
++        "sha256": "eef4f2624ec07a5019fe723905076103c35541890786aa5b83ddb0232a7f455d",
++        "bytes": 1392
++      },
++      {
++        "path": "records/streams.json",
++        "sha256": "1217d98162b2afcc87870ff5620eb67816f52c904b52a0f5c893056db12713fc",
++        "bytes": 2721
++      },
++      {
++        "path": "records/control-reference-jdk21.stdout",
++        "sha256": "cc178142f43de06e80d0f2c9fb6193f8dcf70d8fe3f1d254b04ba3dd998d36b8",
++        "bytes": 4696
++      },
++      {
++        "path": "records/control-reference-jdk21.stderr",
++        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++        "bytes": 0
++      },
++      {
++        "path": "records/controls.json",
++        "sha256": "f220868f27a5a652bc03ac2d82b3657947b2fef2e15f1283ef97936961da4731",
++        "bytes": 34754
++      },
++      {
++        "path": "records/control-skipped-write-jdk21.stdout",
++        "sha256": "087d19a3bf89b8d693b9a0c8fda15ac9bfe505f6758ef21ac1b0a0143c69ecd3",
++        "bytes": 4696
++      },
++      {
++        "path": "records/control-skipped-write-jdk21.stderr",
++        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++        "bytes": 0
++      },
++      {
++        "path": "records/verifier.stdout",
++        "sha256": "a4666efcc24ae6bda62f025223755b4d3f9964a164cf8b66d362c94140afaea6",
++        "bytes": 14966
++      },
++      {
++        "path": "records/verifier.stderr",
++        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++        "bytes": 0
++      },
++      {
++        "path": "records/verifier.json",
++        "sha256": "175aa0ccda660c18f59a661592f4ae74248da1e5afe165bad9e34e22c8efc0f8",
++        "bytes": 24130
++      }
++    ]
++  }
++}

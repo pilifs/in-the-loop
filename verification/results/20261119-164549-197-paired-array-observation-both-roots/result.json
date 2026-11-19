@@ -1,0 +1,285 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261119-164549-197-paired-array-observation-both-roots",
+  "title": "197 paired-array observation both-roots",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.6s, peak 107.7 MiB (estimated 2m00s, 2.0 GiB); 13 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261119-164549-197-paired-array-observation-both-roots.json",
+    "sha256": "b86c7a2333447264c317db1c84e5dd00bc3d0b62e2b4223974336a31d8eddc03",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261119-164549-197-paired-array-observation-both-roots",
+      "title": "197 paired-array observation both-roots",
+      "description": "Run the frozen both-roots obligation on two nullable int-array roots with binary cells and length at most two. The public pairing route reconstructs both heaps from the same choices. Retain the typed statement, actual JVM replay for a refutation, and the receipt for this task alone.",
+      "kind": "example",
+      "capabilities": [
+        "native:array-alias",
+        "target:equivalence"
+      ],
+      "links": {
+        "claims": [
+          "e0e2ae3f2109f3bc"
+        ],
+        "examples": [
+          "197"
+        ]
+      },
+      "expected": "example 197 task both-roots gives its expected conclusion, refuted: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-19T16:45:49+00:00",
+        "session": "01a1f467-856b-7d02-9458-ab076e5fef2f"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "example 197 task both-roots (equivalence)",
+          "run": "python3 examples/tools/build.py 197 --task both-roots",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/197-shared-int-array-poststates/receipts/both-roots"
+      ]
+    }
+  },
+  "sourceCommit": "0a9020d87ff032b3ce278be015e5f7f2c2d0a101",
+  "startedAt": "2026-11-19T16:56:44+00:00",
+  "finishedAt": "2026-11-19T16:59:25+00:00",
+  "wallSeconds": 161.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1922747,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 112967680,
+    "wallSeconds": 3.6,
+    "cpuSeconds": 6.1,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 197 task both-roots (equivalence)",
+      "run": "python3 examples/tools/build.py 197 --task both-roots",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 3.606,
+      "cpuSeconds": 6.087,
+      "cpuThrottledSeconds": 0.181,
+      "peakMemoryBytes": 112967680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-197-task-both-roots-eq.log",
+        "lines": 2,
+        "bytes": 222,
+        "sha256": "55c8de14098e09b4bfa637ce7c6f5123db871236c98dd52b6bcb21867859c600",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "197-shared-int-array-poststates: task both-roots: refuted (completed; as expected), receipt receipts/both-roots/20261119T165925Z-3871d8ea/result.json",
+          "groups": [
+            "197",
+            "both-roots",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "197-shared-int-array-poststates: running task both-roots (target route)",
+        "197-shared-int-array-poststates: task both-roots: refuted (completed; as expected), receipt receipts/both-roots/20261119T165925Z-3871d8ea/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/plan.json",
+      "change": "added",
+      "bytes": 5992,
+      "sha256": "902181ae0d3d4b5ea1468a0b4fd35dc01507b5b6c20073e3ea56d36c1d56c76c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/control-reference-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/control-reference-jdk21.stdout",
+      "change": "added",
+      "bytes": 4696,
+      "sha256": "cc178142f43de06e80d0f2c9fb6193f8dcf70d8fe3f1d254b04ba3dd998d36b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/control-skipped-write-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/control-skipped-write-jdk21.stdout",
+      "change": "added",
+      "bytes": 4696,
+      "sha256": "087d19a3bf89b8d693b9a0c8fda15ac9bfe505f6758ef21ac1b0a0143c69ecd3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/controls.json",
+      "change": "added",
+      "bytes": 34745,
+      "sha256": "81c7125280904d98baf5a51e026e0b33e91f1d157d900e78672e1b6e272a016c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/execution.json",
+      "change": "added",
+      "bytes": 67042,
+      "sha256": "c9767488259d8c364664d77d3d54e19bba5a235fa478812e9c72d8bae4ba00f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/streams.json",
+      "change": "added",
+      "bytes": 2721,
+      "sha256": "b0a5e1e18fd18f749074f56b3166ff79378f0bd8255898ec6908c0ff96a2755f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1651,
+      "sha256": "795704c60fdcadd2a1b40aa4c8de8ed36039125f4759072089614e61832907cc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/verifier.json",
+      "change": "added",
+      "bytes": 31793,
+      "sha256": "b3e96114b59fdf76b726de47b0eeae943d15aab2d245b5e16e1dfaeb079ad8b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/verifier.stdout",
+      "change": "added",
+      "bytes": 20978,
+      "sha256": "bd10e3c11b59b631458f39fe206f19be4672502a795bd5aba48638a52fe7b570",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/result.json",
+      "change": "added",
+      "bytes": 16980,
+      "sha256": "166a0f6b0dca2c45b5ba53c0096f8bb91f2df1b6ec5cb88d4ca411b4f2f5f921",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-19T16:59:53+00:00",
+    "applied": [
+      "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/plan.json",
+      "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/control-reference-jdk21.stderr",
+      "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/control-reference-jdk21.stdout",
+      "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/control-skipped-write-jdk21.stderr",
+      "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/control-skipped-write-jdk21.stdout",
+      "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/controls.json",
+      "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/execution.json",
+      "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/streams.json",
+      "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/verifier-output.txt",
+      "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/verifier.json",
+      "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/verifier.stderr",
+      "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/records/verifier.stdout",
+      "examples/197-shared-int-array-poststates/receipts/both-roots/20261119T165925Z-3871d8ea/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "e338c9d33e461cf29db2b7a58b612bb12d075ac6",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e338c9d33e461cf29db2b7a58b612bb12d075ac6/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}
