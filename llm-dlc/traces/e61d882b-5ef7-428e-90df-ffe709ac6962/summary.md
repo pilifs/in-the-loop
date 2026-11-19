@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (ended) |
+| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (open) |
 | When | 2026-11-17 12:37 UTC to 2026-11-19 15:01 UTC (3023 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.326 |
@@ -1669,6 +1669,12 @@ The user eased the read-only rule on 2026-11-19, to be reviewed later: clicking,
 [`2129e2c9c176`](https://github.com/pilifs/in-the-loop/commit/2129e2c9c176b9eac93718b06f7a28788caccb9a) · [log `29e2f2d886b7`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/29e2f2d886b716edcbb8a114051453edec5c03c2fc2fda72558af242b8b61322.jsonl.gz)
 
 Brings in the five commits the session in tmux window 3 made in the browser-notes workspace, all documentation. llm-dlc/operating-notes.md gains notes on the headless browser both clients have: what it may do (read and navigate a site to retrieve material; file uploads turned off), how requests to the web are made (plain, few, one at a time), and that a bot check or refusal means another source. llm-dlc/research-router.md is new: where an agent looks on the web for outside evidence, by question and by task. llm-dlc/README.md links it. The merge had no conflicts, and the generated trace files were regenerated.
+
+### The foundation-first plan and its three domain workstreams, as a brief for one agent's run
+
+change `mwmkmrmroqvk` · [log `29e2f2d886b7`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/29e2f2d886b716edcbb8a114051453edec5c03c2fc2fda72558af242b8b61322.jsonl.gz)
+
+Copied unchanged from the user's planning folder (overall-plan-foundation-domain-streams-in-the-loop.md, dated 2026-11-19, baseline 65df5fe7). Part 1 is a foundation milestone: qualify the checker (VF-044's ordered pass, VF-042, I026, VF-041), bind executed claims to planned ones and keep attempt history discoverable, a shared 71-input array domain with its observer, and transfer and cost checks. Part 2 is the Spring binding and authorization, Java data processing and runtime safety workstreams that resume after Part 1's exit checks. Its links are pinned to commit 65df5fe7 on GitHub and to upstream sources. It is the brief for a single-agent run with Codex.
 
 ## Conversation
 
