@@ -78,6 +78,12 @@ change `qxmqxnksslls` · [log `e2ca5a8b9485`](https://terminalvalue.net/raw-trac
 
 A repeated delivery must match the original raw records and prepared binding even if target.json has since gained an unrelated task. Preserve the receipt's historical sidecar identity and reject conflicting content. The ordinary route now journals an unsupported translation before spending work on preparation. The route and recipe tests pass.
 
+### Expose claim-specific witness replay and keep late rejections in history
+
+change `kwxuypsuymsl` · [log `e2ca5a8b9485`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz)
+
+A reviewer can submit typed concrete inputs through build.py --task T --replay-witness FILE. Each review binds the selected artifacts, rechecks adapter correspondence where applicable, runs the frozen domain and observation on the JVM, and journals its evidence. The last-slot Gradebook input reproduced the complete array difference, agreed on the return and was rejected outside the interior domain. The return-only proof remained eligible after its later replay rejection. Ran the three public reviews and the build, route and recipe tests.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/e2ca5a8b9485b8055dbadbf6991bc59a8be25013a51342f2a776906c8076543a.jsonl.gz) has every step in between: reasoning, tool calls and their results.

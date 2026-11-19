@@ -229,6 +229,14 @@ def main(argv):
         results = [run_task(folder, name, shared=shared) for name in tasks]
         return max(results)
     argv, task = task_argument(argv)
+    witness = None
+    if task and "--replay-witness" in argv:
+        i = argv.index("--replay-witness")
+        if i + 1 == len(argv):
+            print("--replay-witness takes a JSON file containing typed inputs", file=sys.stderr)
+            return 2
+        witness = argv[i + 1]
+        argv = argv[:i] + argv[i + 2:]
     checker_seconds = None
     if task and "--checker-seconds" in argv:
         i = argv.index("--checker-seconds")
@@ -256,7 +264,7 @@ def main(argv):
         return 2  # nothing has run
     wanted = set(ids)
     if task:
-        return run_task(next(f for f in folders if f.name[:3] == ids[0]), task, plan_only=mode == "--plan", retry_of=retry_of, interrupt=interrupt, checker_seconds=checker_seconds)
+        return run_task(next(f for f in folders if f.name[:3] == ids[0]), task, plan_only=mode == "--plan", retry_of=retry_of, interrupt=interrupt, checker_seconds=checker_seconds, witness=witness)
     if mode == "--plan":
         # What each run would take, as JSON, running nothing: every constructed example's by default.
         plans = [plan(load_example(f)) for f in folders if (f.name[:3] in wanted if wanted else True)]
@@ -377,7 +385,7 @@ def task_problem(mode, ids, task, folders):
     return None
 
 
-def run_task(folder, task, plan_only=False, *, retry_of=None, interrupt=False, shared=None, checker_seconds=None):
+def run_task(folder, task, plan_only=False, *, retry_of=None, interrupt=False, shared=None, checker_seconds=None, witness=None):
     """`--plan ID --task T` prints the task's plan; `ID --task T` makes one attempt at it through the target route
     (examples/tools/targets/route.py). An attempt that stops at an Unsupported result prints a not-executed line
     naming it and exits 1, as an unexecuted example does; one that gives a receipt prints its conclusion and exits 0
@@ -387,6 +395,16 @@ def run_task(folder, task, plan_only=False, *, retry_of=None, interrupt=False, s
     if plan_only:
         print(json.dumps([target_route.plan(folder, example, target, task)], indent=2, ensure_ascii=False))
         return 0
+    if witness is not None:
+        if retry_of or interrupt or checker_seconds is not None:
+            print("a standalone JVM witness review takes no checker or retry policy", file=sys.stderr)
+            return 2
+        review = target_route.review_witness(folder, example, target, task, witness, scratch())
+        if isinstance(review, Unsupported):
+            print(review.describe(), file=sys.stderr)
+            return 1
+        print(json.dumps(review, indent=2))
+        return 0 if review["status"] == "witness-reproduced" else 1
     print(f"{folder.name}: running task {task} (target route)", flush=True)
     policy = {}
     if checker_seconds is not None:

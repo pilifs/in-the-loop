@@ -144,3 +144,54 @@ def run(folder, example, target, task, workdir, *, retry_of=None, interrupt_afte
         return execution.refuse(receipt)
     execution.finish(receipt)
     return receipt
+
+
+def review_witness(folder, example, target, task, witness, workdir):
+    """Replay a supplied concrete input on a frozen proof claim and retain even a late rejection."""
+    import json
+    from targets import replay_candidate
+    plan = resolve(folder, example, target, task)
+    if isinstance(plan, Unsupported):
+        return plan
+    recipe = recipes.translate(plan)
+    if isinstance(recipe, Unsupported):
+        return recipe
+    try:
+        supplied = json.loads(Path(witness).read_text())
+        inputs = supplied["inputs"]
+        if not isinstance(inputs, list):
+            raise ValueError("inputs must be a list of typed arguments")
+    except (KeyError, TypeError, ValueError, OSError) as error:
+        return Unsupported("replay-witness", interfaces.RUNTIME, str(error), stage="read-witness")
+    out = Path(folder) / plan.outputs["receipts"]
+    run = executions.Execution.start(out, plan, None)
+    run.stage("witness-supplied", strategy={"engine": "jvm", "operation": "review-witness"},
+              budget={"jvmSecondsPerRevision": 30}, witnessFile=Path(witness).name,
+              witnessSha256=workflow.file_sha256(witness))
+    executions.save(run.directory / "candidate.json", supplied)
+    work = Path(workdir) / run.state["id"]
+    prepared = {}
+    for revision in plan.revisions:
+        p = runtime.prepare(plan, revision, work / "prepare" / revision)
+        if isinstance(p, Unsupported):
+            return run.refuse(p)
+        if p.stage != "artifacts-ready":
+            return run.refuse(Unsupported("prepare", interfaces.RUNTIME, p.diagnostic or p.stage, stage=p.failedStage))
+        prepared[revision] = p
+        run.prepared(prepared, complete=len(prepared) == len(plan.revisions))
+    if recipe.correspondence:
+        from targets import qualification
+        controls = runtime.run_controls(plan, prepared, work / "controls")
+        if isinstance(controls, Unsupported):
+            return run.refuse(controls)
+        comparisons, problem = qualification.correspondence(plan, prepared, controls)
+        executions.save(run.directory / "correspondence.json", comparisons)
+        if problem:
+            return run.refuse(Unsupported("replay-witness", interfaces.RUNTIME, problem, stage="adapter-correspondence"))
+    report = replay_candidate.check(plan, prepared, inputs, work / "replay", recipe.entry)
+    executions.save(run.directory / "replay.json", report)
+    run.stage("witness-replayed", status="witness-reproduced" if report["reproduced"] else "replay-rejected",
+              firstBlocker=report.get("reason"), replayEvidence="replay.json", endedAt=executions.now().isoformat(),
+              missing=[] if report["reproduced"] else ["an admitted witness differing on a selected observation"])
+    return {"execution": run.state["id"], "claimKey": plan.claim["key"], "status": run.state["status"],
+            "reason": report.get("reason"), "path": (run.directory / "replay.json").relative_to(folder).as_posix()}
