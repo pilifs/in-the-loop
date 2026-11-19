@@ -79,6 +79,8 @@ Commands:
   sync.py allow add VALUE --kind KIND --reason TEXT [--no-commit]
                                 allow a value before it is found; a person at a terminal only
   sync.py allow drop ID...      remove entries, proposed or approved
+  sync.py allow vouch           say that the decisions `check` finds no record of were a person's;
+                                a person at a terminal only
   sync.py stamp [--full]        after a change to redaction_rules.py: rescan everything, then
                                 record the rules as applied, so older files aren't scanned again;
                                 open warnings become allow-list proposals, open errors refuse it
@@ -2754,6 +2756,99 @@ def in_agent_session() -> bool:
     return bool(os.environ.get("CLAUDECODE") or os.environ.get("CODEX_THREAD_ID") or os.environ.get("CODEX_SESSION_ID"))
 
 
+# --------------------------------------------------------------------------- a person's decisions, and a record of them
+#
+# Two files hold decisions only a person takes: the allow list's approved entries and the reviewed findings. The
+# commands that write them refuse an agent's shell (person_at_terminal), and Claude Code is denied the files by
+# .claude/settings.json. Codex has no such bar that works (probed 2026-11-19, CLI 0.169: a file marked `read` in a
+# permission profile is patched all the same once the automatic reviewer lets the request through, and one marked
+# `deny` cannot be read by sync.py either), so the bar is here, for every client: the person's commands leave a
+# record on this machine of each decision they wrote, and `check` reports as an error a decision in either file
+# that is neither in a commit already published nor in that record. An agent that patched the file is found at its
+# next commit; a person who did decide (on an earlier version of this tool, say) runs `sync.py allow vouch`.
+
+def _decided_path() -> Path:
+    return STATE / "person-decisions.json"
+
+
+def load_decided() -> dict:
+    try:
+        doc = json.loads(_decided_path().read_text())
+    except (OSError, ValueError):
+        doc = {}
+    return doc if isinstance(doc, dict) else {}
+
+
+def _decision_digest(entry: dict) -> str:
+    return sha256(json.dumps(entry, sort_keys=True, ensure_ascii=False).encode())
+
+
+def record_decisions(name: str, entries: dict[str, dict]) -> None:
+    """Called by the commands a person runs at their terminal, for the entries they just wrote."""
+    doc = load_decided()
+    doc.setdefault(name, {}).update({fid: _decision_digest(e) for fid, e in entries.items()})
+    STATE.mkdir(parents=True, exist_ok=True)
+    _decided_path().write_text(json.dumps(doc, indent=1, sort_keys=True) + "\n")
+
+
+def _decisions(name: str, doc: dict) -> dict[str, dict]:
+    """The decisions a file's document holds: the allow list's approved entries, every reviewed finding."""
+    if name == ALLOWLIST.name:
+        return {fid: e for fid, e in (doc.get("entries") or {}).items() if isinstance(e, dict) and e.get("status") == "approved"}
+    return {fid: e for fid, e in (doc.get("findings") or {}).items() if isinstance(e, dict)}
+
+
+def unrecorded_decisions() -> dict[str, dict[str, dict]]:
+    """{file name: {id: entry}} of the decisions in the two files that are neither in a published commit (the file
+    as it is at the newest immutable ancestors of @) nor recorded here as a person's. The commits are asked only
+    when the two files changed since they were last found in order."""
+    if not has_jj():
+        return {}
+    current, state = {}, hashlib.sha256()
+    for path in (ALLOWLIST, REVIEWED):
+        data = path.read_bytes() if path.exists() else b""
+        state.update(data + b"\0")
+        try:
+            current[path] = _decisions(path.name, json.loads(data)) if data else {}
+        except ValueError:
+            current[path] = {}  # allowlist_problems and reviewed_problems say what is wrong with the file
+    doc = load_decided()
+    if state.hexdigest() in doc.get("in order", []):
+        return {}
+    bases = [c["commit_id"] for c in jj_commits("heads(immutable() & ::@)")] if any(current.values()) else []
+    open_ = {}
+    for path, decisions in current.items():
+        published = []
+        for base in bases if decisions else []:
+            r = jj("file", "show", "-r", base, str(path.relative_to(REPO)))
+            try:
+                published.append(_decisions(path.name, json.loads(r.stdout)) if r.returncode == 0 else {})
+            except ValueError:
+                published.append({})
+        recorded = doc.get(path.name) or {}
+        missing = {fid: e for fid, e in decisions.items()
+                   if not any(known.get(fid) == e for known in published) and recorded.get(fid) != _decision_digest(e)}
+        if missing:
+            open_[path.name] = missing
+    if not open_:
+        doc["in order"] = (doc.get("in order", []) + [state.hexdigest()])[-20:]
+        STATE.mkdir(parents=True, exist_ok=True)
+        _decided_path().write_text(json.dumps(doc, indent=1, sort_keys=True) + "\n")
+    return open_
+
+
+def decision_problems() -> list[str]:
+    errors = []
+    for name, missing in unrecorded_decisions().items():
+        how = "sync.py allow approve" if name == ALLOWLIST.name else "sync.py review accept"
+        for fid, e in sorted(missing.items()):
+            errors.append(f"{name}: {fid[:8]} ({e.get('kind')}) is a decision in the file that no person is recorded as having "
+                          f"taken here, and it is in no published commit: only `{how}`, run by a person at their terminal, "
+                          f"writes one. If a person did decide it, they run `python3 llm-dlc/tools/sync.py allow vouch`; "
+                          f"otherwise take it out of the file and propose it (`sync.py allow propose`)")
+    return errors
+
+
 def save_reviewed(findings: dict[str, dict]) -> None:
     REVIEWED.write_text(json.dumps({"schema": REVIEWED_SCHEMA, "findings": dict(sorted(findings.items()))},
                                    indent=2, ensure_ascii=False) + "\n")
@@ -3029,6 +3124,7 @@ def cmd_review(args: list[str]) -> int:
         reviewed[fid] = {"kind": f["kind"], "masked": _mask(f["value"]), "reason": reason, "authorized_by": who,
                          "date": time.strftime("%Y-%m-%d")}
     save_reviewed(reviewed)
+    record_decisions(REVIEWED.name, {fid: reviewed[fid] for fid in chosen})
     print(f"recorded {len(chosen)} finding(s) in {REVIEWED.relative_to(REPO)}; commit it to publish the decision")
     return 0
 
@@ -3145,7 +3241,7 @@ def cmd_allow(args: list[str]) -> int:
         save_allowlist(entries)
         print(f"dropped {len(done)} entr{'y' if len(done) == 1 else 'ies'}")
         return 0
-    if cmd not in ("approve", "add"):
+    if cmd not in ("approve", "add", "vouch"):
         print(__doc__)
         return 2
     no_commit = "--no-commit" in rest
@@ -3154,6 +3250,24 @@ def cmd_allow(args: list[str]) -> int:
         print("refused: a person must approve the allow list, from their own terminal. Ask them to run this command.",
               file=sys.stderr)
         return 1
+    if cmd == "vouch":
+        # A decision that is in a file with no record of who took it (see unrecorded_decisions): a person who did
+        # take it says so here, and nothing in the files changes.
+        missing = unrecorded_decisions()
+        if not missing:
+            print("every decision in the allow list and the reviewed findings is published or recorded as a person's")
+            return 0
+        for name, found in missing.items():
+            for fid, e in sorted(found.items()):
+                print(f"{name}  {fid[:8]}  {e.get('kind')}  {e.get('masked') or ''}  ({e.get('reason')}; {e.get('authorized_by')})")
+        count = sum(len(found) for found in missing.values())
+        if input(f"Type \"{CONFIRMATION}\" to say that a person took these {count} decision(s): ").strip() != CONFIRMATION:
+            print("nothing recorded")
+            return 1
+        for name, found in missing.items():
+            record_decisions(name, found)
+        print(f"recorded {count} decision(s) as a person's, on this machine")
+        return 0
     redact, today, who = Redactor(), time.strftime("%Y-%m-%d"), _cmd("git", "config", "--get", "user.name") or "maintainer"
     if cmd == "add":
         values, reason = _split_reason(rest)
@@ -3205,6 +3319,7 @@ def cmd_allow(args: list[str]) -> int:
     for fid, e in chosen.items():
         entries[fid] = {**e, "status": "approved", "authorized_by": who, "approved_on": today}
     save_allowlist(entries)
+    record_decisions(ALLOWLIST.name, {fid: entries[fid] for fid in chosen})
     print(f"allowed {len(chosen)} value(s) in {ALLOWLIST.relative_to(REPO)}. "
           f"Nothing needs rescanning: the next check leaves these values out.")
     if no_commit or not has_jj():
@@ -3914,7 +4029,7 @@ def cmd_check(args: list[str] = (), redact: Redactor | None = None, notes_listed
     scans, checks = ScanCache(redact, trusted=not full), CheckCache(redact, trusted=not full)
     errors += reviewed_problems()
     found_errors, found_warnings = allowlist_problems(redact)
-    errors += found_errors
+    errors += found_errors + decision_problems()
     warnings += found_warnings
     manifests = all_manifests()
     with perf.phase("sessions"):

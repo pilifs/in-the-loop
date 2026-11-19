@@ -78,8 +78,31 @@ class Resolving(unittest.TestCase):
         self.assertEqual(t({"type": "item.completed", "item": {"id": "i1", "type": "command_execution", "command": "ls"}}, "s"), [])
         patched = t({"type": "item.completed", "item": {"type": "file_change", "changes": [{"path": "a.py"}, {"path": "b.py"}]}}, "s")
         self.assertEqual(patched[0]["message"]["content"][0]["input"]["file_path"], "a.py, b.py")
-        compacted = t({"type": "item.completed", "item": {"type": "context_compaction"}}, "s")
-        self.assertEqual((compacted[0]["subtype"], compacted[0]["compact_metadata"]["trigger"]), ("compact_boundary", "auto"))
+        # a compaction is no event of the stream (CLI 0.169 prints none): it is read from the thread's log
+        self.assertEqual(t({"type": "item.completed", "item": {"type": "context_compaction"}}, "s"), [])
+
+    def test_a_compaction_is_read_from_the_threads_log_once_and_only_if_it_is_this_turns(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            log = Path(tmp) / "rollout-x.jsonl"
+            line = lambda stamp, size: json.dumps({"timestamp": stamp, "type": "compacted", "payload": {
+                "latest_token_usage_record": {"usage": {"total_tokens": size}}}}) + "\n"
+            log.write_text(line("2000-01-01T00:00:00.000Z", 1))  # an earlier turn's, already in the log
+            with mock.patch.object(agent_client, "rollout_of", return_value=log):
+                seen = agent_client.Compactions("made-up-thread")
+                self.assertEqual(seen.new("s"), [])
+                with open(log, "a") as f:
+                    f.write(json.dumps({"timestamp": "2999-01-01T00:00:00.000Z", "type": "response_item",
+                                        "payload": {"text": 'a tool printed "compacted"'}}) + "\n")
+                    f.write(line("2999-01-01T00:00:01.000Z", 500000) + line("2999-01-01T00:00:02.000Z", 2)[:40])  # the last half written
+                self.assertEqual([(e["subtype"], e["session_id"], e["compact_metadata"]) for e in seen.new("s")],
+                                 [("compact_boundary", "s", {"trigger": "auto", "pre_tokens": 500000})])
+                self.assertEqual(seen.new("s"), [])
+                with open(log, "a") as f:
+                    f.write(line("2999-01-01T00:00:02.000Z", 2)[40:])
+                self.assertEqual([e["compact_metadata"]["pre_tokens"] for e in seen.new("s")], [2])
+            # a thread with no log yet (a new one's first moments, or a client that keeps none here): nothing, and no error
+            with mock.patch.object(agent_client, "rollout_of", return_value=None):
+                self.assertEqual(agent_client.Compactions(None).new("s"), [])
 
 
 class Fixture(unittest.TestCase):
@@ -232,10 +255,18 @@ class ATurn(Fixture):
 
     @cost("tool")
     def test_a_thread_that_compacts_itself_in_a_turn_is_told_as_claude_codes_is(self):
-        code, events, _ = self.turn(CODEX_STANDIN_MODES="compacts")
+        # Codex prints nothing for it: the adapter reads it from the thread's log, with the context's size
+        home = str(self.base / "codex-home")
+        code, events, _ = self.turn(CODEX_STANDIN_MODES="compacts", CODEX_HOME=home, AGENT_CLIENT_HOOKS="off")
         self.assertEqual(code, 0)
         boundary = [e for e in events if e.get("subtype") == "compact_boundary"]
-        self.assertEqual([b["compact_metadata"]["trigger"] for b in boundary], ["auto"])
+        self.assertEqual([(b["compact_metadata"]["trigger"], b["compact_metadata"]["pre_tokens"]) for b in boundary], [("auto", 123456)])
+        self.assertLess(events.index(boundary[0]), len(events) - 1)  # in the turn, before its result
+        # the next turn of the thread does not tell of that one again, and tells of its own
+        code, events, _ = self.turn("Go on.", CODEX_HOME=home, AGENT_CLIENT_HOOKS="off")
+        self.assertEqual((code, [e for e in events if e.get("subtype") == "compact_boundary"]), (0, []))
+        code, events, _ = self.turn("Go on.", CODEX_STANDIN_MODES="compacts", CODEX_HOME=home, AGENT_CLIENT_HOOKS="off")
+        self.assertEqual(len([e for e in events if e.get("subtype") == "compact_boundary"]), 1)
 
     @cost("tool")
     def test_a_session_keeps_its_client_and_a_turn_needs_a_text_and_a_session_id(self):

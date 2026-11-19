@@ -206,11 +206,6 @@ def translate(event: dict, session: str) -> list[dict]:
     def says(block: dict) -> dict:
         return {"type": "assistant", "session_id": session, "message": {"role": "assistant", "content": [block]}}
 
-    if "compact" in what.lower() or "compact" in (kind or "").lower():
-        if kind in ("item.completed", "thread.compacted", "context.compacted"):
-            return [{"type": "system", "subtype": "compact_boundary", "session_id": session,
-                     "compact_metadata": {"trigger": "auto", "pre_tokens": item.get("pre_tokens")}}]
-        return []
     if kind == "item.completed" and what == "agent_message" and (item.get("text") or "").strip():
         return [says({"type": "text", "text": item["text"]})]
     if kind == "item.started" and what == "command_execution":
@@ -287,6 +282,52 @@ def rollout_of(thread: str) -> Path | None:
     return found[-1] if found else None
 
 
+class Compactions:
+    """The compactions Codex makes by itself in the middle of a turn. `exec --json` prints nothing for one (probed
+    2026-11-19, CLI 0.169: five in one turn, and the stream held only the turn's items), but the thread's log gets
+    a `compacted` line each time, with the size of the context it replaced. So the log is read as the turn goes:
+    what was appended since the turn began, at each event of the stream and once more at its end. The loops read
+    the boundary as they read Claude Code's (a moonshot's compaction with no commit is put to its watcher)."""
+
+    def __init__(self, thread: str | None):
+        self.thread, self.path, self.offset = thread, None, 0
+        self.since = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime())  # a resumed thread's log holds earlier ones
+        self.find()
+        if self.path is not None:
+            self.offset = self.path.stat().st_size
+
+    def find(self) -> None:
+        if self.path is None and self.thread:
+            self.path = rollout_of(self.thread)
+
+    def new(self, session: str) -> list[dict]:
+        self.find()
+        if self.path is None:
+            return []
+        try:
+            with open(self.path, "rb") as f:
+                f.seek(self.offset)
+                data = f.read()
+        except OSError:
+            return []
+        whole = data[:data.rfind(b"\n") + 1]  # a line still being written is read next time
+        self.offset += len(whole)
+        out = []
+        for line in whole.splitlines():
+            if b'"compacted"' not in line:
+                continue
+            try:
+                entry = json.loads(line)
+            except ValueError:
+                continue
+            if entry.get("type") != "compacted" or str(entry.get("timestamp") or "") < self.since:
+                continue
+            usage = (((entry.get("payload") or {}).get("latest_token_usage_record") or {}).get("usage") or {})
+            out.append({"type": "system", "subtype": "compact_boundary", "session_id": session,
+                        "compact_metadata": {"trigger": "auto", "pre_tokens": usage.get("total_tokens")}})
+        return out
+
+
 def after_turn(cwd: Path, thread: str, model: str, committed: list[str], log: Path) -> None:
     """What this checkout's hooks do for a session, done here for a turn this ran. The hooks are Claude Code's in
     .claude/settings.json and Codex's in .codex/hooks.json, but Codex loads a project's hooks only where a person
@@ -331,6 +372,7 @@ def cmd_run(session: str, model: str, effort: str, cwd: Path, sandbox: str, prom
     last = attempt.with_suffix(".last.md")
     turn = Turn(session, cwd, attempt)
     committed: list[str] = []  # the commands of this turn that made a commit without sync.py
+    compactions = Compactions((before or {}).get("thread"))
     tokens: dict | None = None  # the thread's totals, once the turn has ended
     env, parent = child_env(session)
     argv = codex_argv(model, effort, last, (before or {}).get("thread"), cwd, sandbox, prompt)
@@ -396,9 +438,12 @@ def cmd_run(session: str, model: str, effort: str, cwd: Path, sandbox: str, prom
                 err = event.get("error") if isinstance(event.get("error"), dict) else event
                 turn.error = str(err.get("message") or err)[:2000]
                 turn.ended = turn.ended or kind == "turn.failed"
-            for out in translate(event, session):
+            compactions.thread = compactions.thread or turn.thread
+            for out in compactions.new(session) + translate(event, session):
                 emit(out)
     code = child.wait()
+    for out in compactions.new(session):
+        emit(out)
     if before or turn.thread:
         bind(session, cwd, attempts=n, attempt=str(attempt), last={"ended": now(), "exit": code, "result": turn.ended and not turn.error},
              **({"tokens": tokens} if tokens else {}))

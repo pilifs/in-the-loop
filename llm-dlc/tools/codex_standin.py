@@ -13,7 +13,7 @@ what Codex CLI 0.169 spoke on 2026-11-18 (`exec --json` events, `exec resume`, `
                           truncated broken lines, then the stream ends with no result
                           hang      starts a turn and waits to be stopped
                           mismatch  on a resume, reports another thread than the one asked for
-                          compacts  the thread compacts itself in the middle of the turn
+                          compacts  the thread compacts itself in the middle of the turn (with CODEX_HOME: a line in its log)
     CODEX_STANDIN_COMPACT `fail` makes the app server refuse a compaction
     CODEX_HOME            with it, a thread's log is started there as Codex names one (sessions/Y/M/D/rollout-*-THREAD.jsonl)
     CODEX_STANDIN_PROMPT  a file whose text `debug prompt-input` renders (the folder's CLAUDE.md without one)
@@ -95,7 +95,8 @@ def run_exec(argv):
     if os.environ.get("CODEX_HOME"):  # the log Codex keeps of a thread, as far as a hook's payload needs one
         day = Path(os.environ["CODEX_HOME"]) / "sessions" / "2026" / "01" / "01"
         day.mkdir(parents=True, exist_ok=True)
-        with open(day / f"rollout-2026-01-01T00-00-00-{thread}.jsonl", "a") as f:
+        rollout = day / f"rollout-2026-01-01T00-00-00-{thread}.jsonl"
+        with open(rollout, "a") as f:
             f.write(json.dumps({"timestamp": "2026-01-01T00:00:00.000Z", "type": "session_meta",
                                 "payload": {"id": thread, "cwd": os.getcwd(), "cli_version": "stand-in"}}) + "\n")
     say({"type": "thread.started", "thread_id": thread})
@@ -112,8 +113,11 @@ def run_exec(argv):
         say({"type": "turn.failed", "error": {"message": "You've hit your usage limit. Try again later."}})
         return 1
     say({"type": "item.completed", "item": {"id": "item_0", "type": "agent_message", "text": f"Starting turn {n}."}})
-    if mode == "compacts":
-        say({"type": "item.completed", "item": {"id": "item_c", "type": "context_compaction"}})
+    if mode == "compacts" and os.environ.get("CODEX_HOME"):
+        # as Codex does it: nothing in the stream, and a line in the thread's log
+        with open(rollout, "a") as f:
+            f.write(json.dumps({"timestamp": time.strftime("%Y-%m-%dT%H:%M:%S.999Z", time.gmtime()), "type": "compacted", "payload": {
+                "window_number": n, "latest_token_usage_record": {"usage": {"input_tokens": 123000, "total_tokens": 123456}}}}) + "\n")
     command = "jj commit" if mode == "commit" else "true"
     say({"type": "item.started", "item": {"id": "item_1", "type": "command_execution", "command": f"/bin/bash -lc '{command}'",
                                            "aggregated_output": "", "exit_code": None, "status": "in_progress"}})

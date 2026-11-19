@@ -19,6 +19,20 @@ sync.R2_CREDENTIALS = Path(tempfile.gettempdir()) / "llm-traces-tests-no-r2-cred
 
 HOME_A, HOME_B = "/ho" + "me/alpha", "/ho" + "me/bravo"
 
+_STATE = None
+
+
+def setUpModule():
+    """No test writes this machine's state: a person's command records its decision there (sync.record_decisions),
+    and a made-up decision recorded for real would vouch for nothing but would not belong there either."""
+    global _STATE
+    _STATE = tempfile.TemporaryDirectory(prefix="llm-traces-tests-state-")
+    sync.STATE = Path(_STATE.name)
+
+
+def tearDownModule():
+    _STATE.cleanup()
+
 
 def line(text):
     return json.dumps({"text": text})
@@ -216,6 +230,110 @@ class Allowlist(unittest.TestCase):
         errors, _ = sync.allowlist_problems(sync.Redactor())
         self.assertTrue(any("nobody has judged" in e for e in errors))
         self.assertTrue(any("does not match" in e for e in errors))
+
+
+class Decisions(unittest.TestCase):
+    """A decision in the allow list or the reviewed findings is a person's: published already, or recorded on this
+    machine by the command the person ran. One written into the file any other way is an error of `check`."""
+    IP = "203.0." + "113.9"
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        tmp = Path(self.tmp.name)
+        self.fid = sync.finding_id("public-ip", self.IP)
+        self.published = {}  # {file name: document} at the newest published commit
+        self.asked = []
+
+        def jj(*args):
+            self.asked.append(args)
+            doc = self.published.get(Path(args[-1]).name)
+            return mock.Mock(returncode=0 if doc is not None else 1, stdout=json.dumps(doc) if doc is not None else "")
+        (tmp / "cache.json").write_text(json.dumps({self.fid: {"level": "warn", "kind": "public-ip", "value": self.IP, "count": 1, "where": ["s"]}}))
+        self.patches = [mock.patch.object(sync, "ALLOWLIST", tmp / "allowlist.json"), mock.patch.object(sync, "REPO", tmp),
+                        mock.patch.object(sync, "REVIEWED", tmp / "reviewed-findings.json"),
+                        mock.patch.object(sync, "STATE", tmp / "state"), mock.patch.object(sync, "FINDINGS_CACHE", tmp / "cache.json"),
+                        mock.patch.object(sync, "has_jj", return_value=True), mock.patch.object(sync, "jj", side_effect=jj),
+                        mock.patch.object(sync, "jj_commits", side_effect=lambda revset: self.asked.append(revset) or [{"commit_id": "base"}]),
+                        mock.patch.object(sync, "commit_allowlist", return_value=0),
+                        mock.patch("sys.stdout", io.StringIO()), mock.patch("sys.stderr", io.StringIO())]
+        for p in self.patches:
+            p.start()
+
+    def tearDown(self):
+        for p in reversed(self.patches):
+            p.stop()
+        self.tmp.cleanup()
+
+    def as_person(self, answer=sync.CONFIRMATION):
+        return mock.patch.object(sync, "person_at_terminal", return_value=True), mock.patch("builtins.input", return_value=answer)
+
+    def by_hand(self):
+        """What a patch to the file would write: an entry that looks approved."""
+        entry = {"kind": "public-ip", "masked": sync._mask(self.IP), "status": "approved", "reason": "made up", "proposed_by": "agent",
+                 "proposed_on": "2000-01-01", "value": self.IP, "authorized_by": "Made Up", "approved_on": "2000-01-01"}
+        sync.save_allowlist({self.fid: entry})
+        return entry
+
+    def test_an_approval_a_person_made_is_recorded_and_one_written_by_hand_is_an_error(self):
+        sync.cmd_allow(["propose", self.fid[:8], "--reason", "a version"])
+        self.assertEqual(sync.decision_problems(), [])  # a proposal is nobody's decision yet
+        terminal, answer = self.as_person()
+        with terminal, answer:
+            self.assertEqual(sync.cmd_allow(["approve"]), 0)
+        self.assertEqual(sync.decision_problems(), [])
+        self.assertNotIn(self.IP, sync._decided_path().read_text())  # the record holds a digest, not the value
+        # the same entry with another reason, or any entry nobody approved here: not a person's
+        entry = sync.load_allowlist()[self.fid]
+        sync.save_allowlist({self.fid: {**entry, "reason": "changed afterwards"}})
+        (problem,) = sync.decision_problems()
+        self.assertIn(f"allowlist.json: {self.fid[:8]} (public-ip)", problem)
+        self.assertIn("allow vouch", problem)
+        self.assertNotIn(self.IP, problem)
+        sync.save_allowlist({self.fid: entry})
+        self.assertEqual(sync.decision_problems(), [])
+
+    def test_a_published_decision_needs_no_record_and_the_commits_are_asked_only_when_the_files_change(self):
+        entry = self.by_hand()
+        self.assertEqual(len(sync.decision_problems()), 1)
+        self.published["allowlist.json"] = {"schema": sync.ALLOWLIST_SCHEMA, "entries": {self.fid: entry}}
+        self.assertEqual(sync.decision_problems(), [])
+        self.assertIn("heads(immutable() & ::@)", self.asked)
+        self.asked.clear()
+        self.assertEqual(sync.decision_problems(), [])  # found in order once: not asked again
+        self.assertEqual(self.asked, [])
+        sync.save_allowlist({self.fid: {**entry, "value": self.IP + "0"}})  # the published entry, altered
+        self.assertEqual(len(sync.decision_problems()), 1)
+        with mock.patch.object(sync, "has_jj", return_value=False):  # a copy with no history to ask
+            self.assertEqual(sync.decision_problems(), [])
+
+    def test_a_person_vouches_and_an_agent_cannot(self):
+        self.by_hand()
+        with mock.patch.dict("os.environ", {"CODEX_THREAD_ID": "made-up"}):
+            self.assertEqual(sync.cmd_allow(["vouch"]), 1)
+        self.assertEqual(len(sync.decision_problems()), 1)
+        terminal, answer = self.as_person("no")
+        with terminal, answer:
+            self.assertEqual(sync.cmd_allow(["vouch"]), 1)
+        self.assertEqual(len(sync.decision_problems()), 1)
+        terminal, answer = self.as_person()
+        with terminal, answer:
+            self.assertEqual(sync.cmd_allow(["vouch"]), 0)
+            self.assertEqual(sync.decision_problems(), [])
+            self.assertEqual(sync.cmd_allow(["vouch"]), 0)  # nothing left to vouch for
+
+    def test_an_accepted_finding_is_a_decision_too(self):
+        fid = sync.finding_id("other-home-dir", HOME_A)
+        open_now = {fid: {"level": "warn", "kind": "other-home-dir", "masked": sync._mask(HOME_A), "value": HOME_A, "count": 1, "where": {"s"}}}
+        terminal, answer = self.as_person()
+        with terminal, answer, mock.patch.object(sync, "open_findings", return_value=open_now):
+            self.assertEqual(sync.cmd_review(["accept", fid[:8], "--reason", "test"]), 0)
+        self.assertEqual(sync.decision_problems(), [])
+        other = sync.finding_id("other-home-dir", HOME_B)
+        sync.save_reviewed({**sync.load_reviewed(), other: {"kind": "other-home-dir", "masked": "x", "reason": "by hand",
+                                                            "authorized_by": "Made Up", "date": "2000-01-01"}})
+        (problem,) = sync.decision_problems()
+        self.assertIn(f"reviewed-findings.json: {other[:8]}", problem)
+        self.assertIn("sync.py review accept", problem)
 
 
 class Problems(unittest.TestCase):

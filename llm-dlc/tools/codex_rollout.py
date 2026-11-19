@@ -202,7 +202,9 @@ def claude_view(entries: list[dict]) -> list[dict]:
             out.append(filler)
         elif kind == "compacted":
             asked = ts
-            out.append({"type": "system", "subtype": "compact_boundary", "timestamp": ts, "compactMetadata": {}})
+            size = ((p.get("latest_token_usage_record") or {}).get("usage") or {}).get("total_tokens")
+            out.append({"type": "system", "subtype": "compact_boundary", "timestamp": ts,
+                        "compactMetadata": {"preTokens": size} if size else {}})
         elif kind == "token_usage_record":
             last_response = ids[i]
             out.append(assistant([]))
