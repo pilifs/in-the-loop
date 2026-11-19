@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 
 import accept
-from targets import workflow
+from targets import route, workflow
 from targets.interfaces import Unsupported
 from targets.workflow_handoff import read_json
 
@@ -31,15 +31,21 @@ def job_history(root, folder, number):
             command = spec.get("run", "")
             args = command.split()
             parsed = accept.driver_run(command)
-            if len(args) == 5 and args[:3] == ["python3", "examples/tools/build.py", number] and args[3] in ("--task", "--tasks"):
-                names, route = args[4].split(","), "ordinary"
+            if args[:4] == ["python3", "examples/tools/build.py", number, "--tasks"]:
+                try:
+                    names = [name for name, _ in route.batch_tasks(args[2:])]
+                except ValueError:
+                    continue
+                source_route = "ordinary"
+            elif len(args) == 5 and args[:4] == ["python3", "examples/tools/build.py", number, "--task"]:
+                names, source_route = [args[4]], "ordinary"
             elif isinstance(parsed, dict) and parsed["folder"] == folder.relative_to(root).as_posix():
-                names, route = [parsed["task"]], "beside"
+                names, source_route = [parsed["task"]], "beside"
             else:
                 continue
             step = actual.get(index, {})
             for name in names:
-                tasks[name].append({**job_ref, "route": route, "step": index, "sharedStep": len(names) > 1,
+                tasks[name].append({**job_ref, "route": source_route, "step": index, "sharedStep": len(names) > 1,
                                     "status": step.get("status"), "seconds": step.get("wallSeconds"),
                                     "peakBytes": step.get("peakMemoryBytes"), "log": step.get("log")})
             matched = True
@@ -58,25 +64,49 @@ def evidence_folders(root, folder):
         yield archive, manifest
 
 
+def has_evidence(directory, manifest, relative, path):
+    """Live receipts use their existing reader. Archived files must match the collector's manifest."""
+    if manifest is None:
+        return True
+    name = (relative / path.relative_to(directory)).as_posix()
+    return path.is_file() and manifest.get(name) == workflow.file_sha256(path)
+
+
+def read_execution(path, task, ident):
+    data = read_json(path)
+    if isinstance(data, dict) and data.get("schema") == "target-execution/v1" and data.get("id") == ident and data.get("task") == task:
+        return data
+    return None
+
+
+def archived_execution(folder, task, ident):
+    """Look up the collector's journal for one execution on a fresh checkout."""
+    root = folder.parent.parent
+    relative = folder.relative_to(root)
+    for directory, manifest in evidence_folders(root, folder):
+        path = directory / "receipts" / task / "executions" / ident / "attempt.json"
+        if manifest is not None and has_evidence(directory, manifest, relative, path):
+            record = read_execution(path, task, ident)
+            if record is not None:
+                return record
+    return None
+
+
 def recorded_evidence(root, folder):
     receipts, journals = {}, defaultdict(dict)
+    relative = folder.relative_to(root)
     for directory, manifest in evidence_folders(root, folder):
-        def archived(path):
-            if manifest is None:
-                return True
-            name = (folder.relative_to(root) / path.relative_to(directory)).as_posix()
-            return path.is_file() and manifest.get(name) == workflow.file_sha256(path)
-
         for record in workflow.attempts(directory):
             path = directory / record["path"]
             key = record["task"], record["attempt"]
-            if key not in receipts and archived(path) and archived(path.parent / workflow.PLAN_RECORD):
+            if key not in receipts and all(has_evidence(directory, manifest, relative, p)
+                                           for p in (path, path.parent / workflow.PLAN_RECORD)):
                 receipts[key] = {**record, "path": os.path.relpath(path, folder)}
         for path in sorted((directory / "receipts").glob("*/executions/*/attempt.json")):
             task, ident = path.parents[2].name, path.parent.name
-            if ident not in journals[task] and archived(path):
-                data = read_json(path)
-                if data and data.get("schema") == "target-execution/v1" and data.get("id") == ident and data.get("task") == task:
+            if ident not in journals[task] and has_evidence(directory, manifest, relative, path):
+                data = read_execution(path, task, ident)
+                if data is not None:
                     journals[task][ident] = (data, os.path.relpath(path, folder))
     return [receipts[k] for k in sorted(receipts)], journals
 
@@ -260,6 +290,16 @@ def markdown(value):
                     lines.append("First blocker: " + last["firstBlocker"])
                 if last.get("missing"):
                     lines.append("Missing evidence: " + ", ".join(last["missing"]) + ".")
+                earlier = [e for e in subject["executions"] if e["id"] != last["id"]
+                           and e["claimKey"] == group["claimKey"] and e["revisions"] == subject["revisions"]]
+                if earlier:
+                    lines.extend(["", "Earlier executions", ""])
+                    for e in reversed(earlier):
+                        flags = [label for key, label in (("injected", "injected stop"), ("budgetExhausted", "budget exhausted")) if e.get(key)]
+                        if e["id"] == last.get("retryOf"):
+                            flags.append("retried by the latest execution")
+                        detail = ", ".join([e["status"] or "recorded", *flags])
+                        lines.append(f"- [{e['id']}]({e['path']}) reached {e['lastCompletedStage']} ({detail}).")
             lines.append("")
             for record in subject["evidence"]:
                 link = record.get("receipt") or record.get("job")

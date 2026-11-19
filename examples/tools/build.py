@@ -211,22 +211,23 @@ def stages(out):
 def main(argv):
     folders = sorted(p for p in EXAMPLES.iterdir() if p.is_dir() and re.match(r"^\d{3}-", p.name))
     if "--tasks" in argv:
-        if len(argv) != 3 or argv[1] != "--tasks" or "--task" in argv:
-            print("usage: build.py ID --tasks TASK,TASK", file=sys.stderr)
+        try:
+            tasks = target_route.batch_tasks(argv)
+        except ValueError as error:
+            print(error, file=sys.stderr)
             return 2
-        number, _, names = argv
+        number = argv[0]
         folder = next((f for f in folders if f.name[:3] == number), None)
         if not folder:
             print(f"unknown example {number}", file=sys.stderr)
             return 2
-        tasks = names.split(",")
-        for name in tasks:
+        for name, _ in tasks:
             problem = task_problem(None, [number], name, folders)
             if problem:
                 print(problem, file=sys.stderr)
                 return 2
         shared = {}
-        results = [run_task(folder, name, shared=shared) for name in tasks]
+        results = [run_task(folder, name, shared=shared, retry_of=retry) for name, retry in tasks]
         return max(results)
     argv, task = task_argument(argv)
     witness = None

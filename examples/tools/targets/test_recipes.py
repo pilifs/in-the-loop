@@ -10,7 +10,7 @@ import unittest
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
 import checker_output
-from targets import executions, interfaces, qualification, recipes, replay_candidate, workflow
+from targets import executions, interfaces, qualification, recipes, replay_candidate, route, workflow
 
 
 class RecipesTest(unittest.TestCase):
@@ -53,6 +53,29 @@ class RecipesTest(unittest.TestCase):
             self.assertEqual((first.state["budget"]["checkerSeconds"], retry.state["budget"]["checkerSeconds"]), (1, 600))
             other = executions.Execution.start(out, self.plan("198", "interior-state"), 600, first.state["id"])
             self.assertIsInstance(other, interfaces.Unsupported)
+
+            # A collector on another checkout can leave the only copy in its job's outputs.
+            folder = out / "examples/198-gradebook"
+            fresh = replace(plan, folder=str(folder))
+            receipt_dir = Path(fresh.outputs["receipts"])
+            first.stage("artifacts-ready", bindingId="same-original-bytes")
+            journal = Path("examples") / folder.name / receipt_dir / "executions" / first.state["id"] / "attempt.json"
+            job = out / "verification/results/failed-job"
+            archive = job / "outputs" / journal
+            archive.parent.mkdir(parents=True)
+            archive.write_bytes((first.directory / "attempt.json").read_bytes())
+            (job / "result.json").write_text(json.dumps({"outputs": [{"path": journal.as_posix(), "sha256": workflow.file_sha256(archive)}]}))
+            linked = executions.Execution.start(folder / receipt_dir, fresh, 90, first.state["id"])
+            self.assertEqual((linked.state["retryOf"], linked.state["retryBinding"]), (first.state["id"], "same-original-bytes"))
+            self.assertFalse((out / journal).exists())
+            archive.write_bytes(archive.read_bytes() + b" ")
+            self.assertIsInstance(executions.Execution.start(folder / receipt_dir, fresh, 90, first.state["id"]), interfaces.Unsupported)
+
+            ids = [first.state["id"], retry.state["id"]]
+            self.assertEqual(route.batch_tasks(["198", "--tasks", "a,b", "--retry-of", ",".join(ids)]), list(zip(["a", "b"], ids)))
+            for invalid in [ids[0], ids[0] + ",bad"]:
+                with self.assertRaises(ValueError):
+                    route.batch_tasks(["198", "--tasks", "a,b", "--retry-of", invalid])
 
     def test_scalar_inputs_cannot_claim_the_identity_of_an_array(self):
         params = [{"name": "scores", "type": "int[]"}, {"name": "slot", "type": "int"}]

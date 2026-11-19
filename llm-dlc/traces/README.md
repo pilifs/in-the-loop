@@ -11,16 +11,16 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | | |
 |---|---|
 | Sessions | 145, plus 1 empty |
-| Period | 2026-10-24 14:07 UTC to 2026-11-19 23:10 UTC |
+| Period | 2026-10-24 14:07 UTC to 2026-11-19 23:11 UTC |
 | Prompts | 3,629 |
-| Model calls | 36,772 |
-| Tool calls | 38,761 (727 failed) |
+| Model calls | 36,774 |
+| Tool calls | 38,768 (727 failed) |
 | Compactions | 519 |
 | Subagents | 21 |
-| Tokens written | 35,180,614 |
-| Tokens read | 6,248,136,115 (98.2% from cache) |
-| Commits with a trace | 1,154 |
-| Log snapshots | 1,508 (3682.6 MB gzipped, 1,474 uploaded) |
+| Tokens written | 35,181,493 |
+| Tokens read | 6,248,665,923 (98.2% from cache) |
+| Commits with a trace | 1,155 |
+| Log snapshots | 1,509 (3686.3 MB gzipped, 1,474 uploaded) |
 
 ## Sessions
 
@@ -170,9 +170,9 @@ Oldest first. *Elapsed* is the time from first to last message, so it includes p
 | 2026-11-17 18:37 UTC | [Agent brief preservation work 287 308](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | ended | 2 h 45 min | `claude-fable-5-2` | 7 | 171 | 189 | 3 | 2 | 466,832 | 35 |
 | 2026-11-19 15:23 UTC | [01a1f467-856b-7d02-9458-ab076e5fef2f](01a1f467-856b-7d02-9458-ab076e5fef2f/summary.md) | ended | 5 h 54 min | `gpt-6.2-astra` | 2 | 396 | 878 | 32 | 0 | 524,832 | 18 |
 | 2026-11-19 15:26 UTC | [01a1f467-8590-7ff3-bcdd-e52e5af7e3bc](01a1f467-8590-7ff3-bcdd-e52e5af7e3bc/summary.md) | ended | 1 h 36 min | `codex-auto-review` | 7 | 15 | 0 | 0 | 0 | 137,838 | 18 |
-| 2026-11-19 21:37 UTC | [01a1f5be-43bd-7532-a80c-5b4f5c304590](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) | open | 1 h 33 min | `gpt-6.2-astra` | 2 | 371 | 945 | 45 | 1 | 410,632 | 20 |
+| 2026-11-19 21:37 UTC | [01a1f5be-43bd-7532-a80c-5b4f5c304590](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) | open | 1 h 33 min | `gpt-6.2-astra` | 2 | 373 | 952 | 45 | 1 | 410,632 | 21 |
 | 2026-11-19 21:41 UTC | [01a1f5be-43e3-71e0-ac11-7467f893af75](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) | ended | 1 h 6 min | `codex-auto-review` | 7 | 14 | 0 | 0 | 0 | 105,739 | 17 |
-| 2026-11-19 22:50 UTC | [01a1f601-137a-72b2-a3ab-0227452fd2f5](01a1f601-137a-72b2-a3ab-0227452fd2f5/summary.md) | open | 16 min | `codex-auto-review` | 5 | 7 | 0 | 0 | 0 | 66,719 | 2 |
+| 2026-11-19 22:50 UTC | [01a1f601-137a-72b2-a3ab-0227452fd2f5](01a1f601-137a-72b2-a3ab-0227452fd2f5/summary.md) | open | 16 min | `codex-auto-review` | 5 | 7 | 0 | 0 | 0 | 66,719 | 3 |
 
 Empty sessions, with no prompts: [`3048539b`](3048539b-c311-5e68-b776-b0f94623d4ac/summary.md).
 
@@ -324,7 +324,7 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 | [`88045564`](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | 267,328 | 348 | 615,072 | 43,806,783 | 98.6% | 166 |
 | [`01a1f467`](01a1f467-856b-7d02-9458-ab076e5fef2f/summary.md) | 183,752 | 538,762 | 0 | 132,195,200 | 99.6% | 722 |
 | [`01a1f467`](01a1f467-8590-7ff3-bcdd-e52e5af7e3bc/summary.md) | 1,619 | 523,251 | 0 | 802,816 | 60.5% | 819 |
-| [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) | 195,260 | 674,814 | 0 | 96,682,112 | 99.3% | 499 |
+| [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) | 196,139 | 677,390 | 0 | 97,209,344 | 99.3% | 499 |
 | [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) | 1,613 | 151,391 | 0 | 830,336 | 84.6% | 609 |
 | [`01a1f601`](01a1f601-137a-72b2-a3ab-0227452fd2f5/summary.md) | 879 | 67,806 | 0 | 245,504 | 78.4% | 356 |
 
@@ -332,10 +332,10 @@ Each model call re-reads its context, so tokens read far outnumber tokens writte
 
 | Tool | Calls | Share | Sessions |
 | --- | ---: | ---: | ---: |
-| `Bash` | 33,924 | 87.5% | 142 |
+| `Bash` | 33,929 | 87.5% | 142 |
 | `Read` | 1,447 | 3.7% | 61 |
 | `Edit` | 1,166 | 3.0% | 59 |
-| `exec` | 751 | 1.9% | 2 |
+| `exec` | 753 | 1.9% | 2 |
 | `Write` | 737 | 1.9% | 58 |
 | `ToolSearch` | 209 | 0.5% | 47 |
 | `Monitor` | 148 | 0.4% | 52 |
@@ -1512,6 +1512,7 @@ Every commit with a trace, oldest first, with the sessions it carries a trace fo
 | 1152 | change `wuqvmopo` | Integrate all restart verification results and publish the claim handoff | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212.jsonl.gz)), [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/58d80bd947f0be655edd3ec799f04b2ccc4f4c1681b26d8d4c71c54fc95095ce.jsonl.gz)) |
 | 1153 | change `nrnxuuxr` | Execute BigInteger factory allocations from the selected JDK | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/e4f0401fa2103736a82c561c6bbd0720b8455bf1e5db6bda99b47fd4bcebd4df.jsonl.gz)), [`01a1f601`](01a1f601-137a-72b2-a3ab-0227452fd2f5/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/6d8e8b8fecd69fd824b6442c09c186ac81a873bf1f416f61738ce9c0562dbfe1.jsonl.gz)) |
 | 1154 | change `pqplpwpw` | Check ASCII case-insensitive regex classes and alternatives | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/94308245cb3b6bfb1d7d110de20df0888371c62e56987ade685382ba0a7c1368.jsonl.gz)), [`01a1f601`](01a1f601-137a-72b2-a3ab-0227452fd2f5/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/f7ddc0c2362ab4ed79d6f448b2a43030dbe2ff8e99cf5cda8a02ffb89848e1dc.jsonl.gz)) |
+| 1155 | change `vksqzqsu` | Retry archived proof executions in a batch (verification pending) | [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/7611b18a2e0d3254811ac5761b6c1bc22f1601e4b96eaf1e2564bc871cec8747.jsonl.gz)), [`01a1f601`](01a1f601-137a-72b2-a3ab-0227452fd2f5/summary.md) ([log](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/f7ddc0c2362ab4ed79d6f448b2a43030dbe2ff8e99cf5cda8a02ffb89848e1dc.jsonl.gz)) |
 
 ## Logs
 
@@ -1661,7 +1662,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`88045564`](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | 15 | 15 | 9.0 MB | [`75a9c12a10b4`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/75a9c12a10b4d8479b8b8c76ac481f00672cf19f5b3cd00efc5aa00f2a9eef13.jsonl.gz) |
 | [`01a1f467`](01a1f467-856b-7d02-9458-ab076e5fef2f/summary.md) | 12 | 11 | 25.2 MB | `1c2c265597c3`, not uploaded |
 | [`01a1f467`](01a1f467-8590-7ff3-bcdd-e52e5af7e3bc/summary.md) | 10 | 9 | 1.6 MB | `6dff87bb46e6`, not uploaded |
-| [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) | 12 | 0 | 24.0 MB | `94308245cb3b`, not uploaded |
+| [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) | 13 | 0 | 27.6 MB | `7611b18a2e0d`, not uploaded |
 | [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) | 7 | 0 | 0.9 MB | `101081c3cd1e`, not uploaded |
 | [`01a1f601`](01a1f601-137a-72b2-a3ab-0227452fd2f5/summary.md) | 2 | 0 | 0.4 MB | `f7ddc0c2362a`, not uploaded |
 

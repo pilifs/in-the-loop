@@ -65,13 +65,17 @@ class Execution:
         history = out / "executions"
         previous = {}
         if retry_of:
+            from targets.claim_history import archived_execution, read_execution
             if not ID.fullmatch(retry_of):
                 return Unsupported("run-verifier", RUNTIME, "invalid retry execution ID", stage="retry")
             prior = history / retry_of / "attempt.json"
-            if not prior.is_file():
-                return Unsupported("run-verifier", RUNTIME, "retry execution is absent from this task", stage="retry")
-            previous = json.loads(prior.read_text())
-            if previous["claimKey"] != plan.claim.get("key") or previous["revisions"] != list(plan.revisions):
+            folder = Path(plan.folder).resolve()
+            previous = read_execution(prior, plan.task, retry_of)
+            if not prior.exists() and out.resolve() == folder / plan.outputs["receipts"]:
+                previous = archived_execution(folder, plan.task, retry_of)
+            if previous is None:
+                return Unsupported("run-verifier", RUNTIME, "retry execution is absent from this task or its journal is invalid", stage="retry")
+            if previous.get("claimKey") != plan.claim.get("key") or previous.get("revisions") != list(plan.revisions):
                 return Unsupported("run-verifier", RUNTIME, "retry execution belongs to a different claim or revision", stage="retry")
         history.mkdir(parents=True, exist_ok=True)
         while True:

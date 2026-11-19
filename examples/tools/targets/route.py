@@ -19,6 +19,19 @@ def task_ids(target):
     return [t["id"] for t in target["tasks"]]
 
 
+def batch_tasks(args):
+    """Read the ordered tasks and optional per-task execution IDs from the public batch command."""
+    if len(args) not in (3, 5) or args[1] != "--tasks" or len(args) == 5 and args[3] != "--retry-of":
+        raise ValueError("usage: build.py ID --tasks TASK,TASK [--retry-of EXECUTION,EXECUTION]")
+    tasks = args[2].split(",")
+    if len(args) == 3:
+        return [(task, None) for task in tasks]
+    retries = args[4].split(",")
+    if len(retries) != len(tasks) or not all(executions.ID.fullmatch(value) for value in retries):
+        raise ValueError("--retry-of needs one execution ID for each task, in the same order")
+    return list(zip(tasks, retries))
+
+
 def resolve(folder, example, target, task):
     """The TaskPlan, or Unsupported. Raises UnknownTask for an id the sidecar doesn't define."""
     if task not in task_ids(target):

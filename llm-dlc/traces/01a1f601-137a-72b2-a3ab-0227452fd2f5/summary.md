@@ -26,10 +26,6 @@ ThreeTenBP initializes a nanoseconds constant with BigInteger.valueOf(long). The
 
 The changed suite passed all four selections, including 58 Rust binaries. The new unit exercised fresh allocations and cache reads on JDKs 21 and 25. A capped run on the original ThreeTenBP fix passed the factory and reached Pattern.compile in Duration initialization. No ignored test covers this factory, and its emitted application harness is unchanged.
 
-### (in progress)
-
-change `nrzmmkqrrrow`, not yet described
-
 ### Check ASCII case-insensitive regex classes and alternatives
 
 change `pqplpwpwtlls` · [log `f7ddc0c2362a`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/f7ddc0c2362ab4ed79d6f448b2a43030dbe2ff8e99cf5cda8a02ffb89848e1dc.jsonl.gz)
@@ -37,6 +33,14 @@ change `pqplpwpwtlls` · [log `f7ddc0c2362a`](https://terminalvalue.net/raw-trac
 ThreeTenBP constructs a duration parser using optional groups, digits and punctuation under Pattern.CASE_INSENSITIVE. The native matcher now tests the opposite case of each ASCII letter against a bracket range when that flag is set, and applies negation afterward. This also handles alternatives and symbolic flag selection.
 
 The changed suite passed 30 of 30 selections. Tests compare bracket ranges and alternatives to explicit character rules on both flag settings, with a JVM sweep over ASCII and boundary cases. A capped native check on the original ThreeTenBP clock fix reached ServiceLoader.load after Duration initialization. The affected pattern regressions run in the default tier.
+
+### Retry archived proof executions in a batch (verification pending)
+
+change `vksqzqsusnpq` · [log `f7ddc0c2362a`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/f7ddc0c2362ab4ed79d6f448b2a43030dbe2ff8e99cf5cda8a02ffb89848e1dc.jsonl.gz)
+
+The public proof command can follow a retry ID into a collected job and recheck its source claim, revisions and prepared byte binding. A batch accepts one ID per task while sharing preparations. Both handoff formats keep the prior executions discoverable. The regression test covers altered archive bytes, a different claim and an invalid batch.
+
+Verification job 20261119-230939-retry-threetenbp-hours-after-exact-jdk-a retries the five ThreeTenBP obligations on their original artifacts, and separately replays the midnight witness on the parent clock, fixed clock and same-day claims. Its last step checks each structured refusal, predecessor binding and concrete replay. The changed tests passed 30 of 30 selections and example 310 validated.
 
 ## Conversation
 

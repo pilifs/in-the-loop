@@ -12,25 +12,25 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-19T23:10:50.993Z",
-  "duration_seconds": 5601,
+  "ended": "2026-11-19T23:11:16.096Z",
+  "duration_seconds": 5626,
   "stats": {
     "turns": 2,
-    "api_calls": 371,
-    "tool_calls": 945,
+    "api_calls": 373,
+    "tool_calls": 952,
     "tool_errors": 45,
     "compactions": 1,
     "peak_context_tokens": 410632,
     "usage": {
-      "input_tokens": 674814,
-      "output_tokens": 195260,
-      "cache_read_input_tokens": 96682112,
+      "input_tokens": 677390,
+      "output_tokens": 196139,
+      "cache_read_input_tokens": 97209344,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 562,
-    "exec": 365,
+    "Bash": 567,
+    "exec": 367,
     "apply_patch": 14,
     "wait": 4
   },
@@ -69,24 +69,24 @@
     {
       "index": 1,
       "started": "2026-11-19T22:50:27.520Z",
-      "ended": "2026-11-19T23:10:50.993Z",
+      "ended": "2026-11-19T23:11:16.096Z",
       "turns": 1,
-      "api_calls": 82,
+      "api_calls": 84,
       "usage": {
-        "input_tokens": 255990,
-        "output_tokens": 45047,
-        "cache_read_input_tokens": 14678272,
+        "input_tokens": 258566,
+        "output_tokens": 45926,
+        "cache_read_input_tokens": 15205504,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 263534
+      "peak_context_tokens": 265923
     }
   ],
   "log": {
-    "sha256": "94308245cb3b6bfb1d7d110de20df0888371c62e56987ade685382ba0a7c1368",
-    "bytes": 10051541,
-    "lines": 2927,
-    "gzip_bytes": 3659669,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/94308245cb3b6bfb1d7d110de20df0888371c62e56987ade685382ba0a7c1368.jsonl.gz"
+    "sha256": "7611b18a2e0d3254811ac5761b6c1bc22f1601e4b96eaf1e2564bc871cec8747",
+    "bytes": 10092189,
+    "lines": 2944,
+    "gzip_bytes": 3676089,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/7611b18a2e0d3254811ac5761b6c1bc22f1601e4b96eaf1e2564bc871cec8747.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -243,20 +243,20 @@
       "log_sha256": "e4f0401fa2103736a82c561c6bbd0720b8455bf1e5db6bda99b47fd4bcebd4df"
     },
     {
-      "change_id": "nrzmmkqrrrowvotlnvrsmqpopttxpwtr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "94308245cb3b6bfb1d7d110de20df0888371c62e56987ade685382ba0a7c1368"
-    },
-    {
       "change_id": "pqplpwpwtllsounnwylvxkltsuqnkzmv",
       "commit_id": null,
       "immutable": false,
       "summary": "Check ASCII case-insensitive regex classes and alternatives",
       "body": "ThreeTenBP constructs a duration parser using optional groups, digits and punctuation under Pattern.CASE_INSENSITIVE. The native matcher now tests the opposite case of each ASCII letter against a bracket range when that flag is set, and applies negation afterward. This also handles alternatives and symbolic flag selection.\n\nThe changed suite passed 30 of 30 selections. Tests compare bracket ranges and alternatives to explicit character rules on both flag settings, with a JVM sweep over ASCII and boundary cases. A capped native check on the original ThreeTenBP clock fix reached ServiceLoader.load after Duration initialization. The affected pattern regressions run in the default tier.",
       "log_sha256": "94308245cb3b6bfb1d7d110de20df0888371c62e56987ade685382ba0a7c1368"
+    },
+    {
+      "change_id": "vksqzqsusnpqzynosonkotpmmussnlpr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Retry archived proof executions in a batch (verification pending)",
+      "body": "The public proof command can follow a retry ID into a collected job and recheck its source claim, revisions and prepared byte binding. A batch accepts one ID per task while sharing preparations. Both handoff formats keep the prior executions discoverable. The regression test covers altered archive bytes, a different claim and an invalid batch.\n\nVerification job 20261119-230939-retry-threetenbp-hours-after-exact-jdk-a retries the five ThreeTenBP obligations on their original artifacts, and separately replays the midnight witness on the parent clock, fixed clock and same-day claims. Its last step checks each structured refusal, predecessor binding and concrete replay. The changed tests passed 30 of 30 selections and example 310 validated.",
+      "log_sha256": "7611b18a2e0d3254811ac5761b6c1bc22f1601e4b96eaf1e2564bc871cec8747"
     }
   ],
   "logs": {
@@ -282,6 +282,12 @@
       "bytes": 5759696,
       "lines": 1625,
       "gzip_bytes": 2092336,
+      "url": null
+    },
+    "7611b18a2e0d3254811ac5761b6c1bc22f1601e4b96eaf1e2564bc871cec8747": {
+      "bytes": 10092189,
+      "lines": 2944,
+      "gzip_bytes": 3676089,
       "url": null
     },
     "76a45a701c36edd4949aba85d9b5d1a0d8a171b1c63f7fe79f579bd769bf7740": {

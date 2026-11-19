@@ -64,19 +64,19 @@
       "log_sha256": "6d8e8b8fecd69fd824b6442c09c186ac81a873bf1f416f61738ce9c0562dbfe1"
     },
     {
-      "change_id": "nrzmmkqrrrowvotlnvrsmqpopttxpwtr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "f7ddc0c2362ab4ed79d6f448b2a43030dbe2ff8e99cf5cda8a02ffb89848e1dc"
-    },
-    {
       "change_id": "pqplpwpwtllsounnwylvxkltsuqnkzmv",
       "commit_id": null,
       "immutable": false,
       "summary": "Check ASCII case-insensitive regex classes and alternatives",
       "body": "ThreeTenBP constructs a duration parser using optional groups, digits and punctuation under Pattern.CASE_INSENSITIVE. The native matcher now tests the opposite case of each ASCII letter against a bracket range when that flag is set, and applies negation afterward. This also handles alternatives and symbolic flag selection.\n\nThe changed suite passed 30 of 30 selections. Tests compare bracket ranges and alternatives to explicit character rules on both flag settings, with a JVM sweep over ASCII and boundary cases. A capped native check on the original ThreeTenBP clock fix reached ServiceLoader.load after Duration initialization. The affected pattern regressions run in the default tier.",
+      "log_sha256": "f7ddc0c2362ab4ed79d6f448b2a43030dbe2ff8e99cf5cda8a02ffb89848e1dc"
+    },
+    {
+      "change_id": "vksqzqsusnpqzynosonkotpmmussnlpr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Retry archived proof executions in a batch (verification pending)",
+      "body": "The public proof command can follow a retry ID into a collected job and recheck its source claim, revisions and prepared byte binding. A batch accepts one ID per task while sharing preparations. Both handoff formats keep the prior executions discoverable. The regression test covers altered archive bytes, a different claim and an invalid batch.\n\nVerification job 20261119-230939-retry-threetenbp-hours-after-exact-jdk-a retries the five ThreeTenBP obligations on their original artifacts, and separately replays the midnight witness on the parent clock, fixed clock and same-day claims. Its last step checks each structured refusal, predecessor binding and concrete replay. The changed tests passed 30 of 30 selections and example 310 validated.",
       "log_sha256": "f7ddc0c2362ab4ed79d6f448b2a43030dbe2ff8e99cf5cda8a02ffb89848e1dc"
     }
   ],
