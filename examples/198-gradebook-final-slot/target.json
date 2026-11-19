@@ -1,0 +1,155 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "gradebook-final-slot",
+    "family": "gradebook-final-slot",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "base": {
+        "fixture": "base"
+      },
+      "regression": {
+        "fixture": "regression"
+      },
+      "repair": {
+        "fixture": "repair"
+      }
+    },
+    "pairs": [
+      {
+        "name": "introduced",
+        "kind": "introduction",
+        "before": "base",
+        "after": "regression"
+      },
+      {
+        "name": "repaired",
+        "kind": "exact-fix",
+        "before": "regression",
+        "after": "repair"
+      },
+      {
+        "name": "refactored",
+        "kind": "positive",
+        "before": "base",
+        "after": "repair"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "introduced",
+      "target": "gradebook.ScoreSheet#write([III)I"
+    },
+    {
+      "id": "replay-repair",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "repaired",
+      "target": "gradebook.ScoreSheet#write([III)I"
+    },
+    {
+      "id": "replay-refactor",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "refactored",
+      "target": "gradebook.ScoreSheet#write([III)I"
+    },
+    {
+      "id": "return-only",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "gradebook.ScoreSheet#write([III)I",
+      "pair": "introduced",
+      "claim": "claims/return-only.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "full-state",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "gradebook.ScoreSheet#write([III)I",
+      "pair": "introduced",
+      "claim": "claims/full-state.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "interior-state",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "gradebook.ScoreSheet#write([III)I",
+      "pair": "introduced",
+      "claim": "claims/interior-state.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "repair-state",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "gradebook.ScoreSheet#write([III)I",
+      "pair": "repaired",
+      "claim": "claims/full-state.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-repair"
+      ]
+    },
+    {
+      "id": "preserved-state",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "gradebook.ScoreSheet#write([III)I",
+      "pair": "refactored",
+      "claim": "claims/full-state.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-refactor"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "finite-driver",
+      "kind": "driver",
+      "path": "driver/gradebook/GradeCases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/oracle.py"
+    }
+  ]
+}

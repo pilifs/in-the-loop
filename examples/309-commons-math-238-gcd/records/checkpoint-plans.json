@@ -1,0 +1,99 @@
+{
+  "plannerCommit": "f9693c472a71",
+  "command": [
+    "python3",
+    "examples/tools/build.py",
+    "--plan",
+    "309"
+  ],
+  "tasks": [
+    {
+      "task": "zero-parent",
+      "revisions": [
+        "parent"
+      ],
+      "entry": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "claimKey": "29ba8401a8e5653f",
+      "assume": "u == 0 && v >= 0 && v <= 255",
+      "assert": "result == v",
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 8
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "executable": true,
+      "notExecuted": null
+    },
+    {
+      "task": "zero-fix",
+      "revisions": [
+        "fix"
+      ],
+      "entry": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "claimKey": "29ba8401a8e5653f",
+      "assume": "u == 0 && v >= 0 && v <= 255",
+      "assert": "result == v",
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 8
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "executable": true,
+      "notExecuted": null
+    },
+    {
+      "task": "powers-parent",
+      "revisions": [
+        "parent"
+      ],
+      "entry": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "claimKey": "837ceed6b2ee72a9",
+      "assume": "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+      "assert": "result == (u < v ? u : v)",
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 8
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "executable": true,
+      "notExecuted": null
+    },
+    {
+      "task": "powers-fix",
+      "revisions": [
+        "fix"
+      ],
+      "entry": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "claimKey": "837ceed6b2ee72a9",
+      "assume": "(u >= 1 && u <= 1048576 && (u & (u - 1)) == 0) && (v >= 1 && v <= 1048576 && (v & (v - 1)) == 0)",
+      "assert": "result == (u < v ? u : v)",
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "bounds": {
+        "unwind": 32,
+        "maxArrayLength": 8
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "executable": true,
+      "notExecuted": null
+    }
+  ]
+}

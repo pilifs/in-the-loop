@@ -7257,6 +7257,126 @@
       }
     },
     {
+      "id": "198",
+      "path": "examples/198-gradebook-final-slot",
+      "title": "Gradebook loses a last-slot write",
+      "summary": "The regression returns the previous mark but omits the final-slot write. The repair skips only redundant writes.",
+      "origin": "constructed",
+      "system": "Gradebook",
+      "symbol": "gradebook.ScoreSheet#write",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Regression disagrees with 78 of 306 full poststates on the JVM",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The JVM checks all 306 inputs against a previous-value and per-cell oracle. Only the regression disagrees, on 78 full poststates. All versions agree on the 189 interior poststates and every untargeted cell."
+      ],
+      "source": null,
+      "target": {
+        "family": "gradebook-final-slot",
+        "role": "control",
+        "case": "gradebook-final-slot",
+        "tasks": [
+          "replay",
+          "replay-repair",
+          "replay-refactor",
+          "return-only",
+          "full-state",
+          "interior-state",
+          "repair-state",
+          "preserved-state"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "replay-repair": "scaffolded",
+          "replay-refactor": "scaffolded",
+          "return-only": "scaffolded",
+          "full-state": "scaffolded",
+          "interior-state": "scaffolded",
+          "repair-state": "scaffolded",
+          "preserved-state": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "replay-repair": null,
+          "replay-refactor": null,
+          "return-only": "established",
+          "full-state": "refuted",
+          "interior-state": "established",
+          "repair-state": "refuted",
+          "preserved-state": "established"
+        },
+        "claims": {
+          "return-only": null,
+          "full-state": null,
+          "interior-state": null,
+          "repair-state": null,
+          "preserved-state": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261119T214157Z-53ed14bf/result.json",
+            "attempt": "20261119T214157Z-53ed14bf",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "replay-repair": {
+            "path": "receipts/replay-repair/20261119T214300Z-afbf6c55/result.json",
+            "attempt": "20261119T214300Z-afbf6c55",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "replay-refactor": {
+            "path": "receipts/replay-refactor/20261119T214303Z-6cd3e745/result.json",
+            "attempt": "20261119T214303Z-6cd3e745",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Regression disagrees with 78 of 306 full poststates on the JVM",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 198 TASK"
+      }
+    },
+    {
       "id": "285",
       "path": "examples/285-spring-boot-cve-2023-34055-unbounded-http-method-labels",
       "title": "CVE-2023-34055: Unbounded HTTP method labels in web metrics",
@@ -9458,6 +9578,100 @@
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 308 TASK"
+      }
+    },
+    {
+      "id": "309",
+      "path": "examples/309-commons-math-238-gcd",
+      "title": "Apache Commons Math GCD on nonzero factors with a zero product",
+      "summary": "The old zero-input test multiplies its operands in Java int arithmetic. Large powers of two expose the overflow.",
+      "origin": "real-world",
+      "system": "Apache Commons Math",
+      "symbol": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "integer-overflow"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "45 power-pair discrepancies before the repair, zero after on the JVM",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The complete unchanged MathUtils.java files have Git blob IDs c5342aeb30d48fbb54356d2541fae0cb6b8ddc44 and df714052fb47f5b29002de29cf590c97121c322c. The artifact for each claim is its compiled upstream class. The defect introduction is unknown."
+      ],
+      "source": "https://github.com/apache/commons-math/commit/dabf3a5beb9ab697d570154b9961078a8586c787",
+      "target": {
+        "family": "commons-math-238",
+        "role": "calibration",
+        "case": "commons-math-238",
+        "tasks": [
+          "replay",
+          "zero-parent",
+          "zero-fix",
+          "powers-parent",
+          "powers-fix"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "zero-parent": "scaffolded",
+          "zero-fix": "scaffolded",
+          "powers-parent": "scaffolded",
+          "powers-fix": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "zero-parent": "established",
+          "zero-fix": "established",
+          "powers-parent": "refuted",
+          "powers-fix": "established"
+        },
+        "claims": {
+          "zero-parent": null,
+          "zero-fix": null,
+          "powers-parent": null,
+          "powers-fix": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261119T214201Z-38883bc0/result.json",
+            "attempt": "20261119T214201Z-38883bc0",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "45 power-pair discrepancies before the repair, zero after on the JVM",
+          "source": "https://github.com/apache/commons-math/commit/dabf3a5beb9ab697d570154b9961078a8586c787",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 309 TASK"
       }
     }
   ]

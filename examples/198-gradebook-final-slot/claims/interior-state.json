@@ -1,0 +1,18 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "preservation",
+  "property": "interior-state",
+  "statement": "For slots preceding the last slot, both revisions leave identical scores in every cell.",
+  "assume": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2)) && slot < scores.length - 1",
+  "observations": [
+    {
+      "kind": "array-parameter",
+      "parameter": "scores"
+    }
+  ],
+  "bounds": {
+    "maxArrayLength": 3,
+    "unwind": 8
+  }
+}

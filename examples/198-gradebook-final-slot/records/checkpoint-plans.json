@@ -1,0 +1,135 @@
+{
+  "plannerCommit": "f9693c472a71",
+  "command": [
+    "python3",
+    "examples/tools/build.py",
+    "--plan",
+    "198"
+  ],
+  "tasks": [
+    {
+      "task": "return-only",
+      "revisions": [
+        "base",
+        "regression"
+      ],
+      "entry": "gradebook.ScoreSheet#write([III)I",
+      "claimKey": "5afa353b5d8bbe8a",
+      "assume": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+      "assert": null,
+      "observations": [
+        {
+          "kind": "result"
+        }
+      ],
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 3
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "executable": true,
+      "notExecuted": null
+    },
+    {
+      "task": "full-state",
+      "revisions": [
+        "base",
+        "regression"
+      ],
+      "entry": "gradebook.ScoreSheet#write([III)I",
+      "claimKey": "27e0599d2b2aaf74",
+      "assume": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+      "assert": null,
+      "observations": [
+        {
+          "kind": "array-parameter",
+          "parameter": "scores"
+        }
+      ],
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 3
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "executable": true,
+      "notExecuted": null
+    },
+    {
+      "task": "interior-state",
+      "revisions": [
+        "base",
+        "regression"
+      ],
+      "entry": "gradebook.ScoreSheet#write([III)I",
+      "claimKey": "3afa0438edb8bf75",
+      "assume": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2)) && slot < scores.length - 1",
+      "assert": null,
+      "observations": [
+        {
+          "kind": "array-parameter",
+          "parameter": "scores"
+        }
+      ],
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 3
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "executable": true,
+      "notExecuted": null
+    },
+    {
+      "task": "repair-state",
+      "revisions": [
+        "regression",
+        "repair"
+      ],
+      "entry": "gradebook.ScoreSheet#write([III)I",
+      "claimKey": "27e0599d2b2aaf74",
+      "assume": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+      "assert": null,
+      "observations": [
+        {
+          "kind": "array-parameter",
+          "parameter": "scores"
+        }
+      ],
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 3
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "executable": true,
+      "notExecuted": null
+    },
+    {
+      "task": "preserved-state",
+      "revisions": [
+        "base",
+        "repair"
+      ],
+      "entry": "gradebook.ScoreSheet#write([III)I",
+      "claimKey": "27e0599d2b2aaf74",
+      "assume": "scores.length >= 1 && slot >= 0 && slot < scores.length && score >= 0 && score <= 2 && (scores.length <= 0 || (scores[0] >= 0 && scores[0] <= 2)) && (scores.length <= 1 || (scores[1] >= 0 && scores[1] <= 2)) && (scores.length <= 2 || (scores[2] >= 0 && scores[2] <= 2))",
+      "assert": null,
+      "observations": [
+        {
+          "kind": "array-parameter",
+          "parameter": "scores"
+        }
+      ],
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 3
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "executable": true,
+      "notExecuted": null
+    }
+  ]
+}

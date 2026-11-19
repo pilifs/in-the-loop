@@ -1,0 +1,63 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261119-214238-math-238-direct-method-checkpoint-compar",
+  "title": "MATH-238 direct method checkpoint comparison",
+  "description": "Measure the unrevised property route for each of two frozen claims on both complete MathUtils classes. Retain the actual statements, invocations, qualified witness or first blocker, and resources per step for comparison with the typed recipe.",
+  "kind": "example",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:prove"
+  ],
+  "links": {
+    "examples": [
+      "309"
+    ]
+  },
+  "expected": "example 309 task zero-parent gives its expected conclusion, established: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-19T21:42:38+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "5m",
+    "timeout": "28m"
+  },
+  "steps": [
+    {
+      "name": "example 309 task zero-parent (prove)",
+      "run": "python3 examples/tools/build.py 309 --task zero-parent",
+      "cwd": "."
+    },
+    {
+      "name": "Zero law after the fix",
+      "run": "python3 examples/tools/build.py 309 --task zero-fix",
+      "cwd": "."
+    },
+    {
+      "name": "Power family before the fix",
+      "run": "python3 examples/tools/build.py 309 --task powers-parent",
+      "cwd": "."
+    },
+    {
+      "name": "Power family after the fix",
+      "run": "python3 examples/tools/build.py 309 --task powers-fix",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/309-commons-math-238-gcd/receipts/zero-parent",
+    "examples/309-commons-math-238-gcd/receipts"
+  ]
+}

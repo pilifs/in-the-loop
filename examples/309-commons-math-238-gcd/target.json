@@ -1,0 +1,133 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "commons-math-238",
+    "family": "commons-math-238",
+    "role": "calibration",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/apache/commons-math",
+    "revisions": {
+      "parent": {
+        "commit": "4564adbf19ebc6da19befcc7dbef310a00b4de13"
+      },
+      "fix": {
+        "commit": "dabf3a5beb9ab697d570154b9961078a8586c787",
+        "parent": "4564adbf19ebc6da19befcc7dbef310a00b4de13"
+      }
+    },
+    "pairs": [
+      {
+        "name": "fixed",
+        "kind": "exact-fix",
+        "before": "parent",
+        "after": "fix"
+      }
+    ],
+    "introduction": {
+      "status": "unknown"
+    }
+  },
+  "preparation": {
+    "route": "source-slice",
+    "jdks": [
+      "21"
+    ],
+    "slice": {
+      "jdk": "21",
+      "flags": [
+        "--release",
+        "21",
+        "-parameters",
+        "-g"
+      ],
+      "files": {
+        "parent": [
+          "src/java/org/apache/commons/math/util/MathUtils.java"
+        ],
+        "fix": [
+          "src/java/org/apache/commons/math/util/MathUtils.java"
+        ]
+      }
+    }
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "fixed",
+      "target": "org.apache.commons.math.util.MathUtils#gcd(II)I"
+    },
+    {
+      "id": "zero-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "revision": "parent",
+      "claim": "claims/zero.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "zero-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "revision": "fix",
+      "claim": "claims/zero.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "powers-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "revision": "parent",
+      "claim": "claims/powers.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "powers-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.math.util.MathUtils#gcd(II)I",
+      "revision": "fix",
+      "claim": "claims/powers.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "finite-driver",
+      "kind": "driver",
+      "path": "driver/gcd/GcdCases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/oracle.py"
+    }
+  ]
+}

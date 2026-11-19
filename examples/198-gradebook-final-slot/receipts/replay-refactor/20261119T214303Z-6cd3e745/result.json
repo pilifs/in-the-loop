@@ -1,0 +1,245 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "e31db301a1c5466a",
+    "format": 1,
+    "example": "198",
+    "statement": {
+      "approach": "target",
+      "task": "replay-refactor",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "gradebook.ScoreSheet#write([III)I",
+      "revisions": [
+        "base",
+        "repair"
+      ],
+      "expected": null,
+      "gaps": null,
+      "claim": {
+        "task": "replay-refactor",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "gradebook.ScoreSheet#write([III)I",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "finite-driver",
+            "kind": "driver",
+            "path": "driver/gradebook/GradeCases.java",
+            "sha256": "f0da8c690cd70ebd2704f8d2f10b1638d53ee014bad75ab3bb2ca2ee91cd6e49"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "ae861a71a63724d7f66330f3a7e32f6a547b525e76768dc4d21641fd9c526b05"
+          }
+        ],
+        "key": "46c4a6bfa11d1a6c"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": {
+        "sha256": "8aefba8fcaf696250c0b2656c1047a505bcfec055e7ffab1713d6ab23466747f",
+        "files": 1
+      },
+      "after": {
+        "sha256": "d87797c62633f0820058290d2fb4a8dfd528dca8c35bcc90a2d447668096131a",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay-refactor",
+      "sidecar": "abe862c4700424652206a974a63f0d03e73c2d7871578c7e0307bac820eb6ef1",
+      "revisions": {
+        "base": "b18fe9f94adfb37a77b016e9a966caa23c7ccd9e",
+        "repair": "320a63392aa19b680d933406ab4f2944076ab53a"
+      },
+      "dependencies": [
+        {
+          "revision": "base",
+          "position": 0,
+          "role": "driver",
+          "sha256": "97c0611e1a082ccf43299fb8bd5707be7722e4456c3858f92b14f60d1e136f87"
+        },
+        {
+          "revision": "base",
+          "position": 1,
+          "role": "original",
+          "sha256": "b4e81ca54a65f9ba2f820e3c0c081cf56c1330bdc87ad19031db6b5d5da9dd10"
+        },
+        {
+          "revision": "repair",
+          "position": 0,
+          "role": "driver",
+          "sha256": "97c0611e1a082ccf43299fb8bd5707be7722e4456c3858f92b14f60d1e136f87"
+        },
+        {
+          "revision": "repair",
+          "position": 1,
+          "role": "original",
+          "sha256": "a173dc403a79ee406d1fe9bae6fc498e5ce7be89e05aec16761cee95da49b125"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/oracle.py": "ae861a71a63724d7f66330f3a7e32f6a547b525e76768dc4d21641fd9c526b05",
+        "driver/gradebook/GradeCases.java": "f0da8c690cd70ebd2704f8d2f10b1638d53ee014bad75ab3bb2ca2ee91cd6e49"
+      },
+      "claimKey": "46c4a6bfa11d1a6c"
+    }
+  },
+  "attempt": {
+    "id": "20261119T214303Z-6cd3e745",
+    "claim": "e31db301a1c5466a",
+    "startedAt": "2026-11-19T21:43:03+00:00",
+    "seconds": 0.2,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "e32dde7ced10d9a3729527af122fceabceedd1fc4c47bf5f7073594c627ae731",
+        "files": 1
+      },
+      "after": {
+        "sha256": "a8347afc0dd6d667979c40673c0cd34aeeeff742b78463ab784b2a558e235b2d",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control base on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-base-jdk21.stdout",
+        "stderr": "records/control-base-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control repair on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-repair-jdk21.stdout",
+        "stderr": "records/control-repair-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "e31db301a1c5466a",
+    "attempt": "20261119T214303Z-6cd3e745",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: base holds the oracle; repair holds the oracle, on every JDK named: as the refactored pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"base\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 19,
+      "code": "\"repair\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 2 concrete control runs of the driver on the oracle's inputs, read by controls/oracle.py",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "a89970f36561cd577e6ee79bdb11245250e0307a61ca0751840f0fc57347e3c4",
+        "bytes": 149289
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "2ca3c438a5b5177b5ee4d1bffeca1c2a90c234e572d8e63dd7c8a0dc58d34ffe",
+        "bytes": 298
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "b753a99e927132ddbaa6b9f4c8cd12b1701aaeb49868a88b3751cc5e7ba2eda6",
+        "bytes": 1719
+      },
+      {
+        "path": "records/control-base-jdk21.stdout",
+        "sha256": "dacabc1347e193ee842debf69e6a9a0610d6589ea20d9ed18d163d149201324c",
+        "bytes": 20682
+      },
+      {
+        "path": "records/control-base-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "18f91e9a4d3378b4a448eeabae0243acea4a09f802a536a85a14085816bd3c48",
+        "bytes": 149839
+      },
+      {
+        "path": "records/control-repair-jdk21.stdout",
+        "sha256": "dacabc1347e193ee842debf69e6a9a0610d6589ea20d9ed18d163d149201324c",
+        "bytes": 20682
+      },
+      {
+        "path": "records/control-repair-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    ]
+  }
+}

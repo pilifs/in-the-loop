@@ -1,0 +1,66 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261119-214230-gradebook-frozen-claims-on-the-checkpoin",
+  "title": "Gradebook frozen claims on the checkpoint checker",
+  "description": "Record the original ordinary route and first blocker for each fixed Gradebook claim before extending its selected observation profile. The independent JVM checks cover all 306 inputs, including 189 interior cases.",
+  "kind": "example",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "target:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "198"
+    ]
+  },
+  "expected": "example 198 task return-only gives its expected conclusion, established: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-19T21:42:30+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 8,
+  "requires": [
+    "java",
+    "javac",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "example 198 task return-only (equivalence)",
+      "run": "python3 examples/tools/build.py 198 --task return-only",
+      "cwd": "."
+    },
+    {
+      "name": "Full poststate before translation changes",
+      "run": "python3 examples/tools/build.py 198 --task full-state",
+      "cwd": "."
+    },
+    {
+      "name": "Interior poststate before translation changes",
+      "run": "python3 examples/tools/build.py 198 --task interior-state",
+      "cwd": "."
+    },
+    {
+      "name": "Repaired pair",
+      "run": "python3 examples/tools/build.py 198 --task repair-state",
+      "cwd": "."
+    },
+    {
+      "name": "Preserved refactor",
+      "run": "python3 examples/tools/build.py 198 --task preserved-state",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/198-gradebook-final-slot/receipts/return-only",
+    "examples/198-gradebook-final-slot/receipts"
+  ]
+}

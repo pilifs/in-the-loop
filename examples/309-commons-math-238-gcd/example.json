@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "309",
+  "title": "Apache Commons Math GCD on nonzero factors with a zero product",
+  "summary": "The old zero-input test multiplies its operands in Java int arithmetic. Large powers of two expose the overflow.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "integer-overflow",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Commons Math",
+    "file": "src/java/org/apache/commons/math/util/MathUtils.java",
+    "symbol": "org.apache.commons.math.util.MathUtils#gcd(II)I"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The old zero-input test multiplies its operands in Java int arithmetic. Large powers of two expose the overflow."
+  },
+  "target": "target.json",
+  "notes": [
+    "The complete unchanged MathUtils.java files have Git blob IDs c5342aeb30d48fbb54356d2541fae0cb6b8ddc44 and df714052fb47f5b29002de29cf590c97121c322c. The artifact for each claim is its compiled upstream class. The defect introduction is unknown."
+  ],
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/apache/commons-math",
+    "url": "https://github.com/apache/commons-math/commit/dabf3a5beb9ab697d570154b9961078a8586c787"
+  },
+  "verdictLabel": "45 power-pair discrepancies before the repair, zero after on the JVM"
+}

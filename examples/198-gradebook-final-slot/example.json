@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "198",
+  "title": "Gradebook loses a last-slot write",
+  "summary": "The regression returns the previous mark but omits the final-slot write. The repair skips only redundant writes.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "jvm-internals",
+    "off-by-one",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Gradebook",
+    "file": "base/gradebook/ScoreSheet.java",
+    "symbol": "gradebook.ScoreSheet#write"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The regression returns the previous mark but omits the final-slot write. The repair skips only redundant writes."
+  },
+  "target": "target.json",
+  "notes": [
+    "The JVM checks all 306 inputs against a previous-value and per-cell oracle. Only the regression disagrees, on 78 full poststates. All versions agree on the 189 interior poststates and every untargeted cell."
+  ],
+  "verdictLabel": "Regression disagrees with 78 of 306 full poststates on the JVM"
+}
