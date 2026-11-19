@@ -1,0 +1,215 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261119-154132-challenge-i028-and-i029-on-the-shared-ca",
+  "title": "Challenge I028 and I029 on the shared-callee controls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 15.4s, peak 91.2 MiB (estimated 6m00s, 3.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261119-154132-challenge-i028-and-i029-on-the-shared-ca.json",
+    "sha256": "2d8438f0cb3d8dc2fdd008799c5900d670678ffe4b67eeec3247e51f308cf099",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261119-154132-challenge-i028-and-i029-on-the-shared-ca",
+      "title": "Challenge I028 and I029 on the shared-callee controls",
+      "description": "Run every synthetic callee pair independently on the JVM and the native checker. The scalar loop must verify using related calls. Check allocating digest calls, saved state, static state and exceptions against each fixture's JVM observations before requalifying frozen preservation tasks.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "native:shared-callees"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/fixtures/callee-countermodels"
+        ]
+      },
+      "expected": "Every case has a verdict or an explicit refusal. The scalar loop is proved with related calls. No JVM-distinguishable control is proved equivalent.",
+      "submitted": {
+        "at": "2026-11-19T15:41:32+00:00",
+        "session": "01a1f467-856b-7d02-9458-ab076e5fef2f"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "6m"
+      },
+      "steps": [
+        {
+          "name": "JVM controls and native disposition",
+          "run": "python3 -I lib/tests/fixtures/callee-countermodels/check.py --jvmcontract \"$JVMCONTRACT\" --rule-landed --json verification/foundation-callee-controls.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/foundation-callee-controls.json"
+      ]
+    }
+  },
+  "sourceCommit": "345f6fe4259dff4a7b940510d18f2d4c2e0defaa",
+  "startedAt": "2026-11-19T15:49:57+00:00",
+  "finishedAt": "2026-11-19T15:52:59+00:00",
+  "wallSeconds": 182.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1212178,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1440.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 95657984,
+    "wallSeconds": 15.4,
+    "cpuSeconds": 26.5,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 165.154,
+      "cpuSeconds": 165.38,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2072911872,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "03eddad8c168add3df34c188d0abdc0f8fec39ec1baf6f344f15a8c2ad10ba4f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261119-154132-challenge-i028-and-i029-on-the-shared-ca/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 44s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "JVM controls and native disposition",
+      "run": "python3 -I lib/tests/fixtures/callee-countermodels/check.py --jvmcontract \"$JVMCONTRACT\" --rule-landed --json verification/foundation-callee-controls.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1440.0,
+      "cancelled": false,
+      "wallSeconds": 15.427,
+      "cpuSeconds": 26.53,
+      "cpuThrottledSeconds": 1.321,
+      "peakMemoryBytes": 95657984,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-jvm-controls-and-native-dispos.log",
+        "lines": 12,
+        "bytes": 1519,
+        "sha256": "a096e2ab74e610c0be5207043b096befc034a19c1dddcda8a791f02f357428bb",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "scalar   JVM: agree                                                      checker: verified [tied 282]",
+        "same     JVM: agree                                                      checker: verified [tied 255]",
+        "copied   JVM: agree                                                      checker: unverifiable (the tool's own checker's counterexample agree(password=\"\", salt=\"a\") is no reproduction in the interpreter, which cannot run the method on it (unsuppo)",
+        "twice    JVM: agree                                                      checker: unverifiable (the tool's own checker's counterexample agree(password=\"\", salt=\"a\") is no reproduction in the interpreter, which cannot run the method on it (unsuppo) [tied 204]",
+        "table    JVM: differ at a/b: bkeo against fomk                           checker: violation [tied 34]",
+        "seeded   JVM: differ at a/b: bkeo against fomk                           checker: violation [tied 34]",
+        "helped   JVM: differ at a/b: bkeo against jeoa                           checker: violation [tied 34]",
+        "wiped    JVM: differ at a/b: wiped against bkeo                          checker: violation [tied 221]",
+        "counted  JVM: differ at a/b: bkeo against ngmc                           checker: violation [tied 204]",
+        "caught   JVM: differ at a/empty: bad against IllegalArgumentException    checker: violation",
+        "aliased  JVM: differ at a/b: bjgk against nfoo                           checker: violation [tied 85]",
+        "parsed   JVM: agree                                                      checker: verified [tied 170]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/foundation-callee-controls.json",
+      "change": "added",
+      "bytes": 29582,
+      "sha256": "4119ba033bc25e8f164615fafd9cdbb880ba075b1f0f1d8c28daa23e10de65c7",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-19T15:53:05+00:00",
+    "applied": [
+      "verification/foundation-callee-controls.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "a39e4ef324774be275faf38686ce66b7f145a6e8",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/a39e4ef324774be275faf38686ce66b7f145a6e8/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

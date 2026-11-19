@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (ended) |
+| Session | `3e8cabab-4a28-4a79-8207-69568d9e8162` (open) |
 | When | 2026-11-15 19:24 UTC to 2026-11-19 15:15 UTC (5511 min) |
 | Models | `claude-fable-5-2` |
 | Client | claude-code 2.1.325 |
@@ -2675,6 +2675,12 @@ Since 2026-11-19 the machine has Google's Chrome for Testing headless shell (158
 change `mwmkmrmroqvk` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
 
 Copied unchanged from the user's planning folder (overall-plan-foundation-domain-streams-in-the-loop.md, dated 2026-11-19, baseline 65df5fe7). Part 1 is a foundation milestone: qualify the checker (VF-044's ordered pass, VF-042, I026, VF-041), bind executed claims to planned ones and keep attempt history discoverable, a shared 71-input array domain with its observer, and transfer and cost checks. Part 2 is the Spring binding and authorization, Java data processing and runtime safety workstreams that resume after Part 1's exit checks. Its links are pinned to commit 65df5fe7 on GitHub and to upstream sources. It is the brief for a single-agent run with Codex.
+
+### Record verification results for 1 job(s)
+
+change `vmttywvmzuts` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261119-154132-challenge-i028-and-i029-on-the-shared-ca: passed: 1 passed step(s) in 15.4s, peak 91.2 MiB (estimated 6m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the foundation-domain-streams run, which keeps the queue while the run is under way.
 
 ## Conversation
 
