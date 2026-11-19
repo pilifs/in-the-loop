@@ -18,6 +18,41 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-046: OpenAI's cybersecurity filter ended a Codex run's turn on this repository's CVE examples
+
+- **Status**: open (the user chose on 2026-11-19 to land the run's work and go on with the fast-follow run on the
+  same session, which tests how far Codex gets on work that is less about security).
+- **Raised**: 2026-11-19 by the watcher of the single-agent run `foundation-domain-streams` (Codex, `gpt-6.2-astra`
+  at max effort, session `d5915903-1b7e-4ced-97d0-04b700f48cd3`), from the end of the loop's output
+  (`llm-dlc/loop-summaries/single-foundation-domain-streams/loop.log`). The run's work was landed as `ywptznkx`.
+- **Found**: cycle 1 ran 102 minutes and 492 steps and made 18 commits on the brief
+  `llm-dlc/loops/foundation-domain-streams.md`. Then, at 17:05:23 UTC, Codex ended the turn with
+  `error_during_execution`: "This content was flagged for possible cybersecurity risk. If this seems wrong, try
+  rephrasing your request. If you're doing authorized security work that requires more cyber permissive safeguards,
+  apply for Daybreak access via https://platform.openai.com/settings/organization/status-and-access before
+  retrying." The loop stopped with status 1, as it should for a failed turn. Nothing was lost, and the last commit
+  (`myzoozzw`) left the workspace clean.
+  - The minute before, the agent was weighing I026, the wrong-matcher controls of example 289 (Spring Security's
+    regex-matcher authorization bypass, CVE-2022-22978). Its last message said it would document the boundary of
+    what the frozen pattern family covers, and check ordinary query handling with harmless inputs, but that
+    "reproducing the historical authorization bypass is outside the work I can perform."
+  - The filter acts on the conversation, not on any one command. So any Codex turn that reads deeply into the CVE
+    examples (286, 288, 289, 290, and the briefs that describe them) can be cut off the same way, at any point in
+    a long turn.
+  - The failed turn reported no token usage (`codex: 0 tokens in, 0 out`), so the cost of its 102 minutes is unknown.
+- **Needs**: a choice by the user, one or more of:
+  - Apply for Daybreak access for the OpenAI organization. That is an account matter, and the user's alone.
+  - Send CVE-centred work (reproducing or controlling for a historical vulnerability's behaviour) to Claude Code
+    runs, and keep Codex runs on the checker, the pipeline and examples that are not about a vulnerability.
+  - Word briefs and prompts for Codex so that a CVE example's work is described by the property being proved (an
+    equivalence or preservation claim), not by the exploit it once allowed. This may be enough, but there is no
+    evidence of that yet.
+  - Separately: find out whether a Codex turn that fails still reports usage, so that the spend of an interrupted
+    cycle is not lost.
+- **Tracked in**: this entry; the run's loop output; I026 in the brief.
+- **Closes when**: the user has decided how Codex runs meet the CVE examples, and a Codex run that touches one
+  either completes its turns or is kept away from that work by design.
+
 ### VF-045: a Codex worker can pick up the run-brief skill by itself, since nothing marks it as one only a person starts
 
 - **Status**: open, minor (the user's decision on 2026-11-19: note it and address it later, by a skill change or by
