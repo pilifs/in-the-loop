@@ -1,0 +1,71 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261119-231539-retry-threetenbp-hours-after-exact-jdk-a",
+  "title": "Retry ThreeTenBP hours after exact JDK allocation and regex checks",
+  "description": "Reuse the five frozen adapter obligations and the original compiled adapter and upstream class on each revision. Link each retry to its archived strict attempt. Exercise the same 23:30 to 00:15 input through the two clock claims and the same-day claim. Check the real structured outcomes and the complete correspondence grid for each witness review.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "310"
+    ],
+    "jobs": [
+      "20261119-215957-threetenbp-hours-adapter-on-the-qualifie"
+    ]
+  },
+  "expected": "Five completed strict refusals at Chronology's ServiceLoader.load, past Duration initialization. The midnight witness refutes the parent clock, satisfies the fixed clock and is outside the same-day domain.",
+  "submitted": {
+    "at": "2026-11-19T23:15:39+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2,
+    "memory": "3G",
+    "duration": "3m",
+    "timeout": "15m",
+    "notes": "The previous five-claim job used two CPUs and 3 GB. The shared checker build is accounted separately."
+  },
+  "steps": [
+    {
+      "name": "Review the midnight witness on clock-parent",
+      "run": "python3 examples/tools/build.py 310 --task clock-parent --replay-witness examples/310-threeten-complete-hours/records/midnight-witness.json",
+      "expectExit": 0
+    },
+    {
+      "name": "Review the midnight witness on clock-fix",
+      "run": "python3 examples/tools/build.py 310 --task clock-fix --replay-witness examples/310-threeten-complete-hours/records/midnight-witness.json",
+      "expectExit": 1
+    },
+    {
+      "name": "Review the midnight witness on same-day",
+      "run": "python3 examples/tools/build.py 310 --task same-day --replay-witness examples/310-threeten-complete-hours/records/midnight-witness.json",
+      "expectExit": 1
+    },
+    {
+      "name": "Retry the five strict claims on the original byte bindings",
+      "run": "python3 examples/tools/build.py 310 --tasks clock-parent,clock-fix,same-day,reversal-parent,reversal-fix --retry-of 20261119T220642Z-c6bf07ca,20261119T220647Z-69a0d79d,20261119T220651Z-c5e50cd8,20261119T220652Z-d2497946,20261119T220653Z-b7c57bb2",
+      "expectExit": 1
+    },
+    {
+      "name": "Verify each structured refusal, linked binding and witness disposition",
+      "run": "python3 examples/310-threeten-complete-hours/controls/check_retries.py"
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/310-threeten-complete-hours/receipts"
+  ],
+  "supersedes": "20261119-230939-retry-threetenbp-hours-after-exact-jdk-a",
+  "revision": "a78b7348a842915985827118844fa68fced87cc7"
+}

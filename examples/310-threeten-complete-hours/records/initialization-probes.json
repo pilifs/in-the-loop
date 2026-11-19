@@ -1,0 +1,862 @@
+{
+  "task": "clock-fix",
+  "sourceClaim": "0cab770b1b39f331",
+  "bindingId": "5cad1bc6f1f8eb4fe9ae7861684f73c9598ee3ffceb11549c245c9e705fa5f03",
+  "originalExecution": "20261119T220647Z-69a0d79d",
+  "originalJob": "20261119-215957-threetenbp-hours-adapter-on-the-qualifie",
+  "checkedEntry": "civil.Hours#completeHours(II)J",
+  "subject": "org.threeten.bp.LocalDateTime#until(Lorg/threeten/bp/temporal/Temporal;Lorg/threeten/bp/temporal/TemporalUnit;)J",
+  "entryClassSha256": "31c5b75569bdd8625b1f56fc9e2ff665634c78535bc42afd67d515ee49aa2ab4",
+  "subjectClassSha256": "17ff61f44577467e739fba14c1eb95fbcb338adb8a6dcefe4ec48ae83862da17",
+  "classpath": [
+    {
+      "path": "adapter-fix.jar",
+      "sha256": "88043dcfead2a23100f82fd5054577ec6dbf887bbf3ccee2daf5bb07c2df0786",
+      "role": "adapter"
+    },
+    {
+      "path": "slice/fix.jar",
+      "sha256": "66a46dda841cb03c4130ac6f4af0dfa35c661af85d0a7dab47a35dc7f31204d2",
+      "role": "original"
+    }
+  ],
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "environment": {
+    "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "PATH": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin:/usr/bin:/bin"
+  },
+  "limits": {
+    "checkerSeconds": 60,
+    "wallSeconds": 300,
+    "memoryBytes": 4294967296,
+    "swapBytes": 0
+  },
+  "provenance": "The first two probes use the previous job's release binary. The last two use local test-fast builds during development. Their individual binary digests were not captured at launch. The queued retries identify their released checker separately.",
+  "probes": [
+    {
+      "experiment": "Observe Duration on the pinned JVM",
+      "observedInitializers": [
+        "org.threeten.bp.Duration"
+      ],
+      "argv": [
+        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f0d04d56bbe9ef5b883e6425b233e4dcc9251c36/jvmcontract",
+        "prove",
+        "civil.Hours#completeHours(int, int)",
+        "--classes",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261119-215957-threetenbp-hours-adapter-on-the-qualifie/.build-py/examples-rycpgt_h/targets/310/clock-fix/20261119T220647Z-69a0d79d/prepare/fix/adapter-fix.jar",
+        "--classpath",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261119-215957-threetenbp-hours-adapter-on-the-qualifie/.build-py/examples-rycpgt_h/targets/310/clock-fix/20261119T220647Z-69a0d79d/prepare/fix/slice/fix.jar",
+        "--assume",
+        "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+        "--assert",
+        "result == ((endTick - startTick) * 15) / 60",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "16",
+        "--max-array-length",
+        "8",
+        "--timeout",
+        "60",
+        "--observed-initializer",
+        "org.threeten.bp.Duration",
+        "--work",
+        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/clock-duration-probe",
+        "--json"
+      ],
+      "binarySha256": "78d2b65af410c155a40fea6d7dce8a2fe52273ee272b5a44c1b4c0482d24ce93",
+      "rawStdoutSha256": "77c7fd86197718546ea4e17a274f2fc23d163ed44a4166f68381055b877f415b",
+      "checkerOutcome": {
+        "verdict": "unverifiable",
+        "target": "civil.Hours#completeHours(int, int)",
+        "domain": "startTick: int × endTick: int",
+        "assume": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+        "assert": "result == ((endTick - startTick) * 15) / 60",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "statement": "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/clock-duration-probe/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "civil.Hours#completeHours(int, int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "uri": null,
+            "line": 13
+          }
+        ],
+        "output": "✗ civil.Hours#completeHours(int, int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+        "work": "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/clock-duration-probe",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.974709146,
+          "properties": 1,
+          "unwind": 16,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 5,
+            "merges": 0,
+            "solver_calls": 4,
+            "solving_seconds": 8.8606e-05,
+            "gates_evaluated": 104,
+            "evaluating_seconds": 6.312e-06,
+            "divisions": 3,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 3865,
+            "clauses": 12404,
+            "seconds": 0.016075433,
+            "loading_seconds": 0.003335878,
+            "decoding_seconds": 0.000466154,
+            "encoding_seconds": 0.003392906,
+            "witness_seconds": 0.0,
+            "assumed": [
+              "the class initializer of org.threeten.bp.Duration was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 18dfac6ef199), in a JVM whose default locale was en (formatting en, display en) and default time zone Etc/UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+            ]
+          },
+          "gap_mode": "strict",
+          "gaps": [
+            {
+              "id": "jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.ServiceLoader.load(java.lang.Class)",
+              "sites": [
+                "org.threeten.bp.chrono.Chronology.<clinit>:148"
+              ],
+              "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+              "treatment": "refused"
+            }
+          ],
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 59.043,
+              "seconds": 0.016,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.003,
+                "lowering": 0.0,
+                "symbolic": 0.009,
+                "encoding": 0.003,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 3865,
+                "clauses": 12404
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.986,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.016,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.968
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "startTick",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "endTick",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "startTick: int × endTick: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            },
+            {
+              "kind": "library",
+              "text": "the class initializer of org.threeten.bp.Duration was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 18dfac6ef199), in a JVM whose default locale was en (formatting en, display en) and default time zone Etc/UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == ((endTick - startTick) * 15) / 60",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 16,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+            "classes": 37,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      }
+    },
+    {
+      "experiment": "Observe Duration and Chronology on the pinned JVM",
+      "observedInitializers": [
+        "org.threeten.bp.Duration",
+        "org.threeten.bp.chrono.Chronology"
+      ],
+      "argv": [
+        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f0d04d56bbe9ef5b883e6425b233e4dcc9251c36/jvmcontract",
+        "prove",
+        "civil.Hours#completeHours(int, int)",
+        "--classes",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261119-215957-threetenbp-hours-adapter-on-the-qualifie/.build-py/examples-rycpgt_h/targets/310/clock-fix/20261119T220647Z-69a0d79d/prepare/fix/adapter-fix.jar",
+        "--classpath",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261119-215957-threetenbp-hours-adapter-on-the-qualifie/.build-py/examples-rycpgt_h/targets/310/clock-fix/20261119T220647Z-69a0d79d/prepare/fix/slice/fix.jar",
+        "--assume",
+        "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+        "--assert",
+        "result == ((endTick - startTick) * 15) / 60",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "16",
+        "--max-array-length",
+        "8",
+        "--timeout",
+        "60",
+        "--observed-initializer",
+        "org.threeten.bp.Duration",
+        "--observed-initializer",
+        "org.threeten.bp.chrono.Chronology",
+        "--work",
+        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/clock-chronology-probe",
+        "--json"
+      ],
+      "binarySha256": "78d2b65af410c155a40fea6d7dce8a2fe52273ee272b5a44c1b4c0482d24ce93",
+      "rawStdoutSha256": "4b4b4de7818928ff50866a464acdf6d5616a829ef55f77b8309b6d242fa4b9a2",
+      "checkerOutcome": {
+        "verdict": "unverifiable",
+        "target": "civil.Hours#completeHours(int, int)",
+        "domain": "startTick: int × endTick: int",
+        "assume": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+        "assert": "result == ((endTick - startTick) * 15) / 60",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "outside the fragment: reads the static field org.threeten.bp.chrono.Chronology.CHRONOS_BY_ID, which the class's observed initializer left as an object of java.util.concurrent.ConcurrentHashMap: the observation holds no value of it (--observed-initializer, lib/src/observed.rs)",
+        "statement": "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/clock-chronology-probe/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "civil.Hours#completeHours(int, int) cannot be verified: outside the fragment: reads the static field org.threeten.bp.chrono.Chronology.CHRONOS_BY_ID, which the class's observed initializer left as an object of java.util.concurrent.ConcurrentHashMap: the observation holds no value of it (--observed-initializer, lib/src/observed.rs)",
+            "uri": null,
+            "line": 13
+          }
+        ],
+        "output": "✗ civil.Hours#completeHours(int, int) cannot be verified: outside the fragment: reads the static field org.threeten.bp.chrono.Chronology.CHRONOS_BY_ID, which the class's observed initializer left as an object of java.util.concurrent.ConcurrentHashMap: the observation holds no value of it (--observed-initializer, lib/src/observed.rs)\n",
+        "work": "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/clock-chronology-probe",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 1.073875017,
+          "properties": 1,
+          "unwind": 16,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 1,
+            "merges": 0,
+            "solver_calls": 4,
+            "solving_seconds": 5.5033e-05,
+            "gates_evaluated": 104,
+            "evaluating_seconds": 3.687e-06,
+            "divisions": 3,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 3865,
+            "clauses": 12404,
+            "seconds": 0.011274073,
+            "loading_seconds": 0.002375022,
+            "decoding_seconds": 0.000328363,
+            "encoding_seconds": 0.002396342,
+            "witness_seconds": 0.0,
+            "assumed": [
+              "the class initializer of org.threeten.bp.Duration was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 18dfac6ef199), in a JVM whose default locale was en (formatting en, display en) and default time zone Etc/UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+              "the class initializer of org.threeten.bp.chrono.Chronology was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 3bebd61b1251), in a JVM whose default locale was en (formatting en, display en) and default time zone Etc/UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+            ]
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 58.939,
+              "seconds": 0.011,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.002,
+                "lowering": 0.0,
+                "symbolic": 0.006,
+                "encoding": 0.002,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 3865,
+                "clauses": 12404
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 1.086,
+            "setup": 0.002,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.011,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 1.073
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "startTick",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "endTick",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "startTick: int × endTick: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            },
+            {
+              "kind": "library",
+              "text": "the class initializer of org.threeten.bp.Duration was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 18dfac6ef199), in a JVM whose default locale was en (formatting en, display en) and default time zone Etc/UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+              "basis": "engine"
+            },
+            {
+              "kind": "library",
+              "text": "the class initializer of org.threeten.bp.chrono.Chronology was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 3bebd61b1251), in a JVM whose default locale was en (formatting en, display en) and default time zone Etc/UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == ((endTick - startTick) * 15) / 60",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 16,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+            "classes": 37,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      }
+    },
+    {
+      "experiment": "Enter the JDK allocation bytecode",
+      "observedInitializers": [],
+      "argv": [
+        "lib/target/test-fast/jvmcontract",
+        "prove",
+        "civil.Hours#completeHours(int, int)",
+        "--classes",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261119-215957-threetenbp-hours-adapter-on-the-qualifie/.build-py/examples-rycpgt_h/targets/310/clock-fix/20261119T220647Z-69a0d79d/prepare/fix/adapter-fix.jar",
+        "--classpath",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261119-215957-threetenbp-hours-adapter-on-the-qualifie/.build-py/examples-rycpgt_h/targets/310/clock-fix/20261119T220647Z-69a0d79d/prepare/fix/slice/fix.jar",
+        "--assume",
+        "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+        "--assert",
+        "result == ((endTick - startTick) * 15) / 60",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "16",
+        "--max-array-length",
+        "8",
+        "--timeout",
+        "60",
+        "--work",
+        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/clock-factory-probe",
+        "--json"
+      ],
+      "binarySha256": null,
+      "rawStdoutSha256": "0000576ab4accb362e9e95e9d41f0d7a87fd684f9105fa755e73475d55ae279c",
+      "checkerOutcome": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "civil.Hours#completeHours(int, int)",
+        "domain": "startTick: int × endTick: int",
+        "assume": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+        "assert": "result == ((endTick - startTick) * 15) / 60",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;I)Ljava/util/regex/Pattern;@jdk-21.0.13 (java.util.regex.Pattern.compile(java.lang.String, int) at org.threeten.bp.Duration.<clinit>:116). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "statement": "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/clock-factory-probe/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "civil.Hours#completeHours(int, int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;I)Ljava/util/regex/Pattern;@jdk-21.0.13 (java.util.regex.Pattern.compile(java.lang.String, int) at org.threeten.bp.Duration.<clinit>:116). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "uri": null,
+            "line": 13
+          }
+        ],
+        "output": "✗ civil.Hours#completeHours(int, int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;I)Ljava/util/regex/Pattern;@jdk-21.0.13 (java.util.regex.Pattern.compile(java.lang.String, int) at org.threeten.bp.Duration.<clinit>:116). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+        "work": "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/clock-factory-probe",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.016678528,
+          "properties": 1,
+          "unwind": 16,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 5,
+            "merges": 0,
+            "solver_calls": 4,
+            "solving_seconds": 0.000121098,
+            "gates_evaluated": 104,
+            "evaluating_seconds": 6.803e-06,
+            "divisions": 3,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 3865,
+            "clauses": 12404,
+            "seconds": 0.014676162,
+            "loading_seconds": 0.004934744,
+            "decoding_seconds": 0.000341842,
+            "encoding_seconds": 0.003477322,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "gaps": [
+            {
+              "id": "jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;I)Ljava/util/regex/Pattern;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.regex.Pattern.compile(java.lang.String, int)",
+              "sites": [
+                "org.threeten.bp.Duration.<clinit>:116"
+              ],
+              "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+              "treatment": "refused"
+            }
+          ],
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.015,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.005,
+                "lowering": 0.0,
+                "symbolic": 0.006,
+                "encoding": 0.003,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 3865,
+                "clauses": 12404
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.031,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.015,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.014
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "startTick",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "endTick",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "startTick: int × endTick: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == ((endTick - startTick) * 15) / 60",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 16,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+            "classes": 37,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      }
+    },
+    {
+      "experiment": "Enter the JDK allocation and check the duration pattern",
+      "observedInitializers": [],
+      "argv": [
+        "lib/target/test-fast/jvmcontract",
+        "prove",
+        "civil.Hours#completeHours(int, int)",
+        "--classes",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261119-215957-threetenbp-hours-adapter-on-the-qualifie/.build-py/examples-rycpgt_h/targets/310/clock-fix/20261119T220647Z-69a0d79d/prepare/fix/adapter-fix.jar",
+        "--classpath",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261119-215957-threetenbp-hours-adapter-on-the-qualifie/.build-py/examples-rycpgt_h/targets/310/clock-fix/20261119T220647Z-69a0d79d/prepare/fix/slice/fix.jar",
+        "--assume",
+        "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+        "--assert",
+        "result == ((endTick - startTick) * 15) / 60",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "16",
+        "--max-array-length",
+        "8",
+        "--timeout",
+        "60",
+        "--work",
+        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/clock-factory-regex-probe",
+        "--json"
+      ],
+      "binarySha256": null,
+      "rawStdoutSha256": "151210e6f9e05c4399083a7622569028ef053bafc3e9bf4b501f5fd53f802afc",
+      "checkerOutcome": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "civil.Hours#completeHours(int, int)",
+        "domain": "startTick: int × endTick: int",
+        "assume": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+        "assert": "result == ((endTick - startTick) * 15) / 60",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "statement": "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/clock-factory-regex-probe/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "civil.Hours#completeHours(int, int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "uri": null,
+            "line": 13
+          }
+        ],
+        "output": "✗ civil.Hours#completeHours(int, int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13 (java.util.ServiceLoader.load(java.lang.Class) at org.threeten.bp.chrono.Chronology.<clinit>:148). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+        "work": "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/clock-factory-regex-probe",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.017034628,
+          "properties": 1,
+          "unwind": 16,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 5,
+            "merges": 0,
+            "solver_calls": 4,
+            "solving_seconds": 6.5464e-05,
+            "gates_evaluated": 104,
+            "evaluating_seconds": 4.378e-06,
+            "divisions": 3,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 3865,
+            "clauses": 12404,
+            "seconds": 0.014917448,
+            "loading_seconds": 0.003623698,
+            "decoding_seconds": 0.000592158,
+            "encoding_seconds": 0.003529116,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "gaps": [
+            {
+              "id": "jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.ServiceLoader.load(java.lang.Class)",
+              "sites": [
+                "org.threeten.bp.chrono.Chronology.<clinit>:148"
+              ],
+              "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+              "treatment": "refused"
+            }
+          ],
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.015,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.004,
+                "lowering": 0.001,
+                "symbolic": 0.007,
+                "encoding": 0.004,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 3865,
+                "clauses": 12404
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.029,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.015,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.013
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "startTick",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "endTick",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "startTick: int × endTick: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "startTick >= 0 && startTick <= 191 && endTick >= 0 && endTick <= 191",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == ((endTick - startTick) * 15) / 60",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 16,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:645ea4c6760a0a21c3d1fa1dea6487b0cac00c1625e2aba16fcbfa63ac015d1c",
+            "classes": 37,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      }
+    }
+  ]
+}
