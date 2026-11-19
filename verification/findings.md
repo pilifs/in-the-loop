@@ -40,6 +40,11 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
     examples (286, 288, 289, 290, and the briefs that describe them) can be cut off the same way, at any point in
     a long turn.
   - The failed turn reported no token usage (`codex: 0 tokens in, 0 out`), so the cost of its 102 minutes is unknown.
+  - The flag stays with the session. The fast-follow run `python-proof-architecture` continued the same session at
+    21:17:36 UTC, with a starting prompt about Python plumbing (`llm-dlc/loops/python-proof-architecture.md`), and
+    was refused with the same message after 20 seconds and 0 steps. So a session that has been flagged cannot be
+    continued, and neither can a fork of it, which carries the same history. A run that is to go on from it needs a
+    new session.
 - **Needs**: a choice by the user, one or more of:
   - Apply for Daybreak access for the OpenAI organization. That is an account matter, and the user's alone.
   - Send CVE-centred work (reproducing or controlling for a historical vulnerability's behaviour) to Claude Code
