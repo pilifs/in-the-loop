@@ -1,0 +1,245 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261119-152603-foundation-baseline-on-seven-existing-ar",
+  "title": "Foundation baseline on seven existing array and division claims",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 20.0s, peak 3.8 GiB (estimated 5m00s, 3.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261119-152603-foundation-baseline-on-seven-existing-ar.json",
+    "sha256": "c3b3c52e005289c664bf411aa6f9676fd065a4139a1c9afe2e1a3f809be8e81c",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261119-152603-foundation-baseline-on-seven-existing-ar",
+      "title": "Foundation baseline on seven existing array and division claims",
+      "description": "Measure the original checker on a fixed selection before changing its semantics. The same seven specifications, input bounds, strict profile and JVM oracles will be rerun on the integrated checker. Record verdicts, replay, phase time and peak RSS alongside artifact digests and job budgets.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "benchmark"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/run.py"
+        ]
+      },
+      "expected": "Fourteen native and JBMC rows, one per engine and claim. Refusals retain their reason. A contradicted establishment or failed replay is a finding.",
+      "submitted": {
+        "at": "2026-11-19T15:26:03+00:00",
+        "session": "01a1f467-856b-7d02-9458-ab076e5fef2f"
+      },
+      "requires": [
+        "jvmcontract",
+        "javac",
+        "java",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m"
+      },
+      "steps": [
+        {
+          "name": "foundation-v1 baseline",
+          "run": "python3 lib/benchmark/run.py --selection foundation-v1 --groups 1,3 --engines native,jbmc --modes strict --timeout 30 --search 2000 --out lib/benchmark/foundation-baseline.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/foundation-baseline.json"
+      ]
+    }
+  },
+  "sourceCommit": "7ccabc6d9f0ae15eab7cb0112c451dbbc3bf8bcd",
+  "startedAt": "2026-11-19T15:33:46+00:00",
+  "finishedAt": "2026-11-19T15:36:50+00:00",
+  "wallSeconds": 184.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1002405,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 4093423616,
+    "wallSeconds": 20.0,
+    "cpuSeconds": 23.2,
+    "memoryOfEstimate": 1.27,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 162.78,
+      "cpuSeconds": 162.957,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2128252928,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "91a8e72fa11ee53e31f17ad5b76279763c08ba0edd23bf416c176459fe3f213c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261119-152603-foundation-baseline-on-seven-existing-ar/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 42s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "foundation-v1 baseline",
+      "run": "python3 lib/benchmark/run.py --selection foundation-v1 --groups 1,3 --engines native,jbmc --modes strict --timeout 30 --search 2000 --out lib/benchmark/foundation-baseline.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 20.034,
+      "cpuSeconds": 23.231,
+      "cpuThrottledSeconds": 1.032,
+      "peakMemoryBytes": 4093423616,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-foundation-v1-baseline.log",
+        "lines": 82,
+        "bytes": 6379,
+        "sha256": "ee18c0390f36ef4352272720b471f6297ff3a06908c13be603b3defd6c50a0a1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "## Where the time goes, by workload, under strict",
+        "",
+        "Each engine's seconds over every run of the workload, decided or not, as shares of the phases of `lib/src/phases.rs`: the checker's own (`loading` to `trace`, and `checker-other`, JBMC starting and printing), then the driver's (`gaps` and JBMC's preflight, `contracts`, `replay` and shrinking, the `j",
+        "",
+        "| workload | engine | runs | s | loading | lowering | symbolic | encoding | solving | trace | checker-other | gaps | contracts | replay | jvm | harness | setup | driver | dominant | largest formula (clauses) |",
+        "|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---|---:|",
+        "| array-mutation | native | 2 | 0.17 | · | · | 3% | 9% | 55% | · | · | · | · | · | · | · | 1% | 32% | **solving** 55% | 59707 |",
+        "| array-mutation | jbmc | 2 (1 undecided) | 15.01 | 0% | 0% | 2% | 26% | 59% | · | 12% | 1% | · | · | · | · | 0% | 0% | **solving** 59% | 17233885 |",
+        "| semantics | native | 5 | 0.12 | · | · | 17% | 3% | · | · | · | · | · | 6% | · | · | 5% | 70% | **driver** 70% | 6812 |",
+        "| semantics | jbmc | 5 | 0.71 | 13% | 3% | 3% | 1% | 1% | 0% | 16% | 41% | · | 2% | · | · | 1% | 20% | **gaps** 41% | 13959 |",
+        "",
+        "## Group 1: semantic conformance, case by case",
+        "",
+        "The JVM's answer is the conformance test's (`lib/tests/conformance.rs`), on the calls the corpus lists.",
+        "",
+        "<details><summary>All 5 claims</summary>",
+        "",
+        "| case | expected | the JVM | native strict | jbmc strict |",
+        "|---|---|---|---|---|",
+        "| `conformance/aliasedLocals/1` | verified | conformance test | ✓ verified 0.02 s | ✓ verified 0.14 s |",
+        "| `conformance/aliasedLocals/2` | violation | conformance test | ✓ violation 0.02 s | ✓ violation 0.14 s |",
+        "| `conformance/twoArrays/1` | verified | conformance test | ✓ verified 0.02 s | ✓ verified 0.14 s |",
+        "| `conformance/divide/1` | verified | conformance test | ✓ verified 0.02 s | ✓ verified 0.14 s |",
+        "| `conformance/divide/2` | violation | conformance test | ✓ violation 0.03 s | ✓ violation 0.14 s |",
+        "",
+        "</details>",
+        "",
+        "## Group 3: held-out performance cases, case by case",
+        "",
+        "| case | expected | the JVM | native strict | jbmc strict |",
+        "|---|---|---|---|---|",
+        "| `held/reverse` | verified | held 2000 | ✓ verified 0.14 s | – out of memory 10.9 s |",
+        "| `held/prefix-sums` | verified | held 2000 | ✓ verified 0.03 s | ✓ verified 4.10 s |",
+        "",
+        "## The JVM against the corpus",
+        "",
+        "Every expected answer of groups 2 and 3 is borne out on the JVM.",
+        "",
+        "Every witness an engine reported reproduces on the JVM.",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/foundation-baseline.json",
+      "change": "added",
+      "bytes": 36756,
+      "sha256": "0d9f8a1f6d6e77e758e9229567d2285da295166723f184b05018be850e8127ed",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-19T15:36:55+00:00",
+    "applied": [
+      "lib/benchmark/foundation-baseline.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "3754e7f642090c5b5d486c9b40850e7654db4c8b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3754e7f642090c5b5d486c9b40850e7654db4c8b/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

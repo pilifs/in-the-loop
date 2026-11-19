@@ -1,0 +1,278 @@
+{
+ "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+ "assume": "salt == null || salt.equals(\"\") || salt.equals(\"a\") || salt.equals(\"b\")",
+ "extra": [],
+ "rows": [
+  {
+   "method": "scalar",
+   "jvmDiffersAt": [],
+   "condition": "the unchanged scalar loop has no allocation or externally visible writes",
+   "verdict": "verified",
+   "problem": "",
+   "wrong": false,
+   "seconds": 0.083289198,
+   "tied": 282,
+   "loops": 0,
+   "callsRelated": 88,
+   "output": "note: checked as a property of the pair of versions: RegressionPair.agree (/tmp/callee-countermodels-nebaqvqk/pairs/scalar/pair/RegressionPair.java) calls the previous version's app.Entry#scalar, relocated under `before`, and then the new one's on the same inputs, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n\u2713 app.Entry#scalar: the two versions agree on every input where salt == null || salt.equals(\"\") || salt.equals(\"a\") || salt.equals(\"b\") (the pair's property, below)\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter salt has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n\u2713 RegressionPair#agree satisfies `result` on every input where salt == null || salt.equals(\"\") || salt.equals(\"a\") || salt.equals(\"b\") (jvmcontract's own checker (CaDiCaL): 1 properties proved over password: String of \u2264 2 code units, or null \u00d7 salt: String of \u2264 2 code units, or null in 0.1 s; loops unwound 16 times with unwinding assertions; 96 calls of methods both versions share taken as one function of both, 88 of them related to an earlier call by their inputs)\n  not vacuous: agree(password=null, salt=null) reaches the calls\n"
+  },
+  {
+   "method": "same",
+   "jvmDiffersAt": [],
+   "condition": "none: the positive control, 307's shape (the same values, other instructions around the call)",
+   "verdict": "verified",
+   "problem": "",
+   "wrong": false,
+   "seconds": 0.06112577,
+   "tied": 255,
+   "loops": 2,
+   "callsRelated": 0,
+   "output": "note: checked as a property of the pair of versions: RegressionPair.agree (/tmp/callee-countermodels-nebaqvqk/pairs/same/pair/RegressionPair.java) calls the previous version's app.Entry#same, relocated under `before`, and then the new one's on the same inputs, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n\u2713 app.Entry#same: the two versions agree on every input where salt == null || salt.equals(\"\") || salt.equals(\"a\") || salt.equals(\"b\") (the pair's property, below)\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter salt has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n\u2713 RegressionPair#agree satisfies `result` on every input where salt == null || salt.equals(\"\") || salt.equals(\"a\") || salt.equals(\"b\") (jvmcontract's own checker (CaDiCaL): 1 properties proved over password: String of \u2264 2 code units, or null \u00d7 salt: String of \u2264 2 code units, or null in 0.1 s; loops unwound 16 times with unwinding assertions; 2 loops beyond the bound covered by invariants the checker found and proved (app.Hash.digest at pc 68, before.app.Hash.digest at pc 68))\n  not vacuous: agree(password=null, salt=null) reaches the calls\n"
+  },
+  {
+   "method": "copied",
+   "jvmDiffersAt": [],
+   "condition": "none: a harder positive control; the arguments are equal by content, through a copy a loop makes",
+   "verdict": "unverifiable",
+   "problem": "the tool's own checker's counterexample agree(password=\"\", salt=\"a\") is no reproduction in the interpreter, which cannot run the method on it (unsupported: String.getBytes(Ljava/nio/charset/Charset;)[B); on a JVM (JDK 25.0.5), the method returns true there and the property holds on it, so it is no counterexample. The path to it goes past a loop the tool's own checker covers by an invariant (app.Hash.digest at pc 68, before.app.Hash.digest at pc 68): the invariant says less of the loop than its iterations do, so a state past it may be one no run reaches, and nothing is proved or refuted. A larger --unwind follows more iterations exactly",
+   "wrong": false,
+   "seconds": 0.071347655,
+   "tied": null,
+   "loops": 2,
+   "callsRelated": 0,
+   "output": "note: checked as a property of the pair of versions: RegressionPair.agree (/tmp/callee-countermodels-nebaqvqk/pairs/copied/pair/RegressionPair.java) calls the previous version's app.Entry#copied, relocated under `before`, and then the new one's on the same inputs, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n\u2717 app.Entry#copied cannot be verified as a property of the pair of versions (below)\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter salt has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n\u2717 RegressionPair#agree cannot be verified: the tool's own checker's counterexample agree(password=\"\", salt=\"a\") is no reproduction in the interpreter, which cannot run the method on it (unsupported: String.getBytes(Ljava/nio/charset/Charset;)[B); on a JVM (JDK 25.0.5), the method returns true there and the property holds on it, so it is no counterexample. The path to it goes past a loop the tool's own checker covers by an invariant (app.Hash.digest at pc 68, before.app.Hash.digest at pc 68): the invariant says less of the loop than its iterations do, so a state past it may be one no run reaches, and nothing is proved or refuted. A larger --unwind follows more iterations exactly\n"
+  },
+  {
+   "method": "twice",
+   "jvmDiffersAt": [],
+   "condition": "none: a positive control; two calls' results are two objects of the same content",
+   "verdict": "unverifiable",
+   "problem": "the tool's own checker's counterexample agree(password=\"\", salt=\"a\") is no reproduction in the interpreter, which cannot run the method on it (unsupported: String.getBytes(Ljava/nio/charset/Charset;)[B); on a JVM (JDK 25.0.5), the method returns true there and the property holds on it, so it is no counterexample. The path to it goes past a loop the tool's own checker covers by an invariant (app.Hash.digest at pc 68, before.app.Hash.digest at pc 68): the invariant says less of the loop than its iterations do, so a state past it may be one no run reaches, and nothing is proved or refuted. A larger --unwind follows more iterations exactly",
+   "wrong": false,
+   "seconds": 0.060874255,
+   "tied": 204,
+   "loops": 2,
+   "callsRelated": 0,
+   "output": "note: checked as a property of the pair of versions: RegressionPair.agree (/tmp/callee-countermodels-nebaqvqk/pairs/twice/pair/RegressionPair.java) calls the previous version's app.Entry#twice, relocated under `before`, and then the new one's on the same inputs, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n\u2717 app.Entry#twice cannot be verified as a property of the pair of versions (below)\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter salt has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n\u2717 RegressionPair#agree cannot be verified: the tool's own checker's counterexample agree(password=\"\", salt=\"a\") is no reproduction in the interpreter, which cannot run the method on it (unsupported: String.getBytes(Ljava/nio/charset/Charset;)[B); on a JVM (JDK 25.0.5), the method returns true there and the property holds on it, so it is no counterexample. The path to it goes past a loop the tool's own checker covers by an invariant (app.Hash.digest at pc 68, before.app.Hash.digest at pc 68): the invariant says less of the loop than its iterations do, so a state past it may be one no run reaches, and nothing is proved or refuted. A larger --unwind follows more iterations exactly\n"
+  },
+  {
+   "method": "table",
+   "jvmDiffersAt": [
+    {
+     "password": "a",
+     "salt": "b",
+     "old": "bkeo",
+     "new": "fomk"
+    },
+    {
+     "password": "\u00e9",
+     "salt": "b",
+     "old": "nimo",
+     "new": "bmek"
+    },
+    {
+     "password": "empty",
+     "salt": "a",
+     "old": "flkc",
+     "new": "jpco"
+    }
+   ],
+   "condition": "the static state the callee reads is the same at both calls",
+   "verdict": "violation",
+   "problem": "",
+   "wrong": false,
+   "seconds": 0.068907524,
+   "tied": 34,
+   "loops": 2,
+   "callsRelated": 0,
+   "output": "note: checked as a property of the pair of versions: RegressionPair.agree (/tmp/callee-countermodels-nebaqvqk/pairs/table/pair/RegressionPair.java) calls the previous version's app.Entry#table, relocated under `before`, and then the new one's on the same inputs, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n\u2717 app.Entry#table: the two versions differ on table(password=\"\", salt=\"a\") (the pair's property, below, returns false on it)\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter salt has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n\u2717 Property of RegressionPair#agree violated: `result` where salt == null || salt.equals(\"\") || salt.equals(\"a\") || salt.equals(\"b\"):\n  agree(password=\"\", salt=\"a\")\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain password: String of \u2264 2 code units, or null \u00d7 salt: String of \u2264 2 code units, or null)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n"
+  },
+  {
+   "method": "seeded",
+   "jvmDiffersAt": [
+    {
+     "password": "a",
+     "salt": "b",
+     "old": "bkeo",
+     "new": "fomk"
+    },
+    {
+     "password": "\u00e9",
+     "salt": "b",
+     "old": "nimo",
+     "new": "bmek"
+    },
+    {
+     "password": "empty",
+     "salt": "a",
+     "old": "flkc",
+     "new": "jpco"
+    }
+   ],
+   "condition": "the code compared includes what the callee's initializer reaches",
+   "verdict": "violation",
+   "problem": "",
+   "wrong": false,
+   "seconds": 0.063153061,
+   "tied": 34,
+   "loops": 2,
+   "callsRelated": 0,
+   "output": "note: checked as a property of the pair of versions: RegressionPair.agree (/tmp/callee-countermodels-nebaqvqk/pairs/seeded/pair/RegressionPair.java) calls the previous version's app.Entry#seeded, relocated under `before`, and then the new one's on the same inputs, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n\u2717 app.Entry#seeded: the two versions differ on seeded(password=\"\", salt=\"a\") (the pair's property, below, returns false on it)\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter salt has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n\u2717 Property of RegressionPair#agree violated: `result` where salt == null || salt.equals(\"\") || salt.equals(\"a\") || salt.equals(\"b\"):\n  agree(password=\"\", salt=\"a\")\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain password: String of \u2264 2 code units, or null \u00d7 salt: String of \u2264 2 code units, or null)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n"
+  },
+  {
+   "method": "helped",
+   "jvmDiffersAt": [
+    {
+     "password": "a",
+     "salt": "b",
+     "old": "bkeo",
+     "new": "jeoa"
+    },
+    {
+     "password": "\u00e9",
+     "salt": "b",
+     "old": "nimo",
+     "new": "fkka"
+    },
+    {
+     "password": "empty",
+     "salt": "a",
+     "old": "flkc",
+     "new": "fnki"
+    }
+   ],
+   "condition": "the code compared includes the callee's private helpers",
+   "verdict": "violation",
+   "problem": "",
+   "wrong": false,
+   "seconds": 0.070319827,
+   "tied": 34,
+   "loops": 2,
+   "callsRelated": 0,
+   "output": "note: checked as a property of the pair of versions: RegressionPair.agree (/tmp/callee-countermodels-nebaqvqk/pairs/helped/pair/RegressionPair.java) calls the previous version's app.Entry#helped, relocated under `before`, and then the new one's on the same inputs, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n\u2717 app.Entry#helped: the two versions differ on helped(password=\"\", salt=\"a\") (the pair's property, below, returns false on it)\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter salt has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n\u2717 Property of RegressionPair#agree violated: `result` where salt == null || salt.equals(\"\") || salt.equals(\"a\") || salt.equals(\"b\"):\n  agree(password=\"\", salt=\"a\")\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain password: String of \u2264 2 code units, or null \u00d7 salt: String of \u2264 2 code units, or null)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n"
+  },
+  {
+   "method": "wiped",
+   "jvmDiffersAt": [
+    {
+     "password": "a",
+     "salt": "b",
+     "old": "wiped",
+     "new": "bkeo"
+    },
+    {
+     "password": "\u00e9",
+     "salt": "b",
+     "old": "wiped",
+     "new": "nimo"
+    }
+   ],
+   "condition": "what the callee writes to its arguments is part of its outcome",
+   "verdict": "violation",
+   "problem": "",
+   "wrong": false,
+   "seconds": 0.069122385,
+   "tied": 221,
+   "loops": 2,
+   "callsRelated": 0,
+   "output": "note: checked as a property of the pair of versions: RegressionPair.agree (/tmp/callee-countermodels-nebaqvqk/pairs/wiped/pair/RegressionPair.java) calls the previous version's app.Entry#wiped, relocated under `before`, and then the new one's on the same inputs, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n\u2717 app.Entry#wiped: the two versions differ on wiped(password=\"\\u0001\", salt=\"a\") (the pair's property, below, returns false on it)\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter salt has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n\u2717 Property of RegressionPair#agree violated: `result` where salt == null || salt.equals(\"\") || salt.equals(\"a\") || salt.equals(\"b\"):\n  agree(password=\"\\u0001\", salt=\"a\")\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain password: String of \u2264 2 code units, or null \u00d7 salt: String of \u2264 2 code units, or null)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n"
+  },
+  {
+   "method": "counted",
+   "jvmDiffersAt": [
+    {
+     "password": "a",
+     "salt": "b",
+     "old": "bkeo",
+     "new": "ngmc"
+    },
+    {
+     "password": "\u00e9",
+     "salt": "b",
+     "old": "nimo",
+     "new": "jeec"
+    },
+    {
+     "password": "empty",
+     "salt": "a",
+     "old": "flkc",
+     "new": "bhcg"
+    }
+   ],
+   "condition": "the static state the callee reads and writes is part of its arguments and outcome",
+   "verdict": "violation",
+   "problem": "",
+   "wrong": false,
+   "seconds": 0.067772064,
+   "tied": 204,
+   "loops": 2,
+   "callsRelated": 0,
+   "output": "note: checked as a property of the pair of versions: RegressionPair.agree (/tmp/callee-countermodels-nebaqvqk/pairs/counted/pair/RegressionPair.java) calls the previous version's app.Entry#counted, relocated under `before`, and then the new one's on the same inputs, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n\u2717 app.Entry#counted: the two versions differ on counted(password=\"\", salt=\"a\") (the pair's property, below, returns false on it)\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter salt has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n\u2717 Property of RegressionPair#agree violated: `result` where salt == null || salt.equals(\"\") || salt.equals(\"a\") || salt.equals(\"b\"):\n  agree(password=\"\", salt=\"a\")\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain password: String of \u2264 2 code units, or null \u00d7 salt: String of \u2264 2 code units, or null)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n"
+  },
+  {
+   "method": "caught",
+   "jvmDiffersAt": [
+    {
+     "password": "a",
+     "salt": "empty",
+     "old": "bad",
+     "new": "java.lang.IllegalArgumentException"
+    },
+    {
+     "password": "a",
+     "salt": "null",
+     "old": "bad",
+     "new": "java.lang.IllegalArgumentException"
+    }
+   ],
+   "condition": "an exception is an outcome, shared like a result",
+   "verdict": "violation",
+   "problem": "",
+   "wrong": false,
+   "seconds": 0.007002881,
+   "tied": null,
+   "loops": 0,
+   "callsRelated": 0,
+   "output": "note: checked as a property of the pair of versions: RegressionPair.agree (/tmp/callee-countermodels-nebaqvqk/pairs/caught/pair/RegressionPair.java) calls the previous version's app.Entry#caught, relocated under `before`, and then the new one's on the same inputs, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n\u2717 app.Entry#caught: the two versions differ on caught(password=\"\\u0014\", salt=null) (the pair's property, below, returns false on it)\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter salt has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n\u2717 Property of RegressionPair#agree violated: `result` where salt == null || salt.equals(\"\") || salt.equals(\"a\") || salt.equals(\"b\"):\n  agree(password=\"\\u0014\", salt=null)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain password: String of \u2264 2 code units, or null \u00d7 salt: String of \u2264 2 code units, or null)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n"
+  },
+  {
+   "method": "aliased",
+   "jvmDiffersAt": [
+    {
+     "password": "a",
+     "salt": "b",
+     "old": "bjgk",
+     "new": "nfoo"
+    },
+    {
+     "password": "\u00e9",
+     "salt": "b",
+     "old": "fpoc",
+     "new": "blgg"
+    }
+   ],
+   "condition": "arguments equal by content are not the same arguments when one side's are one array",
+   "verdict": "violation",
+   "problem": "",
+   "wrong": false,
+   "seconds": 0.069058031,
+   "tied": 85,
+   "loops": 2,
+   "callsRelated": 0,
+   "output": "note: checked as a property of the pair of versions: RegressionPair.agree (/tmp/callee-countermodels-nebaqvqk/pairs/aliased/pair/RegressionPair.java) calls the previous version's app.Entry#aliased, relocated under `before`, and then the new one's on the same inputs, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n\u2717 app.Entry#aliased: the two versions differ on aliased(password=\"\\u0000\", salt=\"a\") (the pair's property, below, returns false on it)\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter salt has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n\u2717 Property of RegressionPair#agree violated: `result` where salt == null || salt.equals(\"\") || salt.equals(\"a\") || salt.equals(\"b\"):\n  agree(password=\"\\u0000\", salt=\"a\")\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000], run on a JVM (JDK 25.0.5), since the interpreter cannot run it; domain password: String of \u2264 2 code units, or null \u00d7 salt: String of \u2264 2 code units, or null)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n"
+  },
+  {
+   "method": "parsed",
+   "jvmDiffersAt": [],
+   "condition": "the allocating digest runs as written, including Integer.parseInt on the selected JDK",
+   "verdict": "verified",
+   "problem": "",
+   "wrong": false,
+   "seconds": 0.057791721,
+   "tied": 170,
+   "loops": 2,
+   "callsRelated": 0,
+   "output": "note: checked as a property of the pair of versions: RegressionPair.agree (/tmp/callee-countermodels-nebaqvqk/pairs/parsed/pair/RegressionPair.java) calls the previous version's app.Entry#parsed, relocated under `before`, and then the new one's on the same inputs, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n\u2713 app.Entry#parsed: the two versions agree on every input where salt == null || salt.equals(\"\") || salt.equals(\"a\") || salt.equals(\"b\") (the pair's property, below)\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter salt has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n\u2713 RegressionPair#agree satisfies `result` on every input where salt == null || salt.equals(\"\") || salt.equals(\"a\") || salt.equals(\"b\") (jvmcontract's own checker (CaDiCaL): 1 properties proved over password: String of \u2264 2 code units, or null \u00d7 salt: String of \u2264 2 code units, or null in 0.1 s; loops unwound 16 times with unwinding assertions; 2 loops beyond the bound covered by invariants the checker found and proved (app.Parsing.digest at pc 81, before.app.Parsing.digest at pc 81))\n  not vacuous: agree(password=null, salt=null) reaches the calls\n"
+  }
+ ]
+}

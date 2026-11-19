@@ -1,0 +1,234 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261119-155814-foundation-requalification-of-287-preser",
+  "title": "Foundation requalification of 287 preservation",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m01s, peak 2.1 GiB (estimated 10m00s, 6.0 GiB); 4 output file(s) changed; signals: jvmcontract:holds×2",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261119-155814-foundation-requalification-of-287-preser.json",
+    "sha256": "f1b520cf6abc8866357566373ca1388df3712080ce615b5005af254bd7eebf07",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261119-155814-foundation-requalification-of-287-preser",
+      "title": "Foundation requalification of 287 preservation",
+      "description": "After the independent shared-callee challenge passed, repeat only the frozen preservation comparison for example 287 on the same checker revision. Use the predecessor job's semantic bounds, artifacts, deadline and machine budget. Collect under a fresh output path to preserve the earlier evidence.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "B9",
+        "B11"
+      ],
+      "links": {
+        "jobs": [
+          "20261117-230459-example-287-preservation-at-the-frozen-b"
+        ],
+        "examples": [
+          "287"
+        ],
+        "commits": [
+          "345f6fe4259dff4a7b940510d18f2d4c2e0defaa"
+        ]
+      },
+      "expected": "The releases agree on the frozen preservation domain, subject to every assumption in the collected outcome.",
+      "submitted": {
+        "at": "2026-11-19T15:58:14+00:00",
+        "session": "01a1f467-856b-7d02-9458-ab076e5fef2f"
+      },
+      "revision": "345f6fe4259dff4a7b940510d18f2d4c2e0defaa",
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "6G",
+        "duration": "10m",
+        "timeout": "2h",
+        "notes": "a capped probe verified in 112 s under 4 GB; plus the release build and the fetch of the four pinned JARs"
+      },
+      "steps": [
+        {
+          "name": "287 preservation at its frozen bounds",
+          "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py preservation --timeout 3600 --work verification/.work-287/foundation-i028",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/.work-287/foundation-i028/preservation/outcome.json",
+        "verification/.work-287/foundation-i028/preservation/evidence.json",
+        "verification/.work-287/foundation-i028/preservation/stderr.txt",
+        "verification/.work-287/foundation-i028/preservation/work/pair/RegressionPair.java"
+      ]
+    }
+  },
+  "sourceCommit": "345f6fe4259dff4a7b940510d18f2d4c2e0defaa",
+  "startedAt": "2026-11-19T15:59:14+00:00",
+  "finishedAt": "2026-11-19T16:01:18+00:00",
+  "wallSeconds": 124.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1348192,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 600.0,
+    "notes": "a capped probe verified in 112 s under 4 GB; plus the release build and the fetch of the four pinned JARs"
+  },
+  "usage": {
+    "peakMemoryBytes": 2287370240,
+    "wallSeconds": 121.9,
+    "cpuSeconds": 122.7,
+    "memoryOfEstimate": 0.36,
+    "durationOfEstimate": 0.2
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "287 preservation at its frozen bounds",
+      "run": "python3 examples/287-spring-security-cve-2025-22228-bcrypt-ignores-bytes-past-72/proofs/prove.py preservation --timeout 3600 --work verification/.work-287/foundation-i028",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 121.9,
+      "cpuSeconds": 122.704,
+      "cpuThrottledSeconds": 0.094,
+      "peakMemoryBytes": 2287370240,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-287-preservation-at-its-frozen.log",
+        "lines": 6,
+        "bytes": 2034,
+        "sha256": "94e76329d888e1d8507c5c48baeb379976e460949811dc9812b2161c15ab6e5e",
+        "truncated": false
+      },
+      "signalCounts": {
+        "jvmcontract:holds": 2
+      },
+      "signals": [
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 2,
+          "text": "✓ example287.adapter.PasswordMatchAdapter#matches: the two versions agree on every input outside `candidate != null && candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72` (the pair's property, below)",
+          "groups": [
+            "example287.adapter.PasswordMatchAdapter#matches: the two versions agree on every input outside `candidate != null && candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72` (the pair's property, below)"
+          ]
+        },
+        {
+          "tool": "jvmcontract",
+          "kind": "holds",
+          "line": 3,
+          "text": "✓ RegressionPair#agree satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null in 120.0 s; loops unwound 16 times with unwinding assertions; 52 calls of methods bot",
+          "groups": [
+            "RegressionPair#agree satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null in 120.0 s; loops unwound 16 times with unwinding assertions; 52 calls of methods both versions share taken as one function of both, 48 of them related to an earlier call by their inputs)"
+          ]
+        }
+      ],
+      "tail": [
+        "note: checked as a property of the pair of versions: RegressionPair.agree (verification/.work-287/foundation-i028/preservation/work/pair/RegressionPair.java) calls the previous version's example287.adapter.PasswordMatchAdapter#matches, relocated under `before`, and then the new one's on the same inp",
+        "✓ example287.adapter.PasswordMatchAdapter#matches: the two versions agree on every input outside `candidate != null && candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72` (the pair's property, below)",
+        "✓ RegressionPair#agree satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over candidate: String of ≤ 80 code units, or null × storedHash: String of ≤ 80 code units, or null in 120.0 s; loops unwound 16 times with unwinding assertions; 52 calls of methods bot",
+        "  outside the allowed change: agree(candidate=null, storedHash=null) lies outside `candidate != null && candidate.getBytes(java.nio.charset.StandardCharsets.UTF_8).length > 72`, so both versions are called on it",
+        "",
+        "verdict: verified (expected verified); paths 53, solver calls 329, variables 3471863, loops covered by invariants 0; outcome in verification/.work-287/foundation-i028/preservation/outcome.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/.work-287/foundation-i028/preservation/outcome.json",
+      "change": "added",
+      "bytes": 22815,
+      "sha256": "9f5e0647d171beb3be45a3709ec50cf252bfcd4c1e3569651ef006718125d1c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/foundation-i028/preservation/evidence.json",
+      "change": "added",
+      "bytes": 1914,
+      "sha256": "625531023b777341fb4983f467b08ce550bf18729aaff59bd5bf2ffca9d520a4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/foundation-i028/preservation/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/.work-287/foundation-i028/preservation/work/pair/RegressionPair.java",
+      "change": "added",
+      "bytes": 2716,
+      "sha256": "4bfaf6c430949b00e81c30d6470f6bb56af3812d3cae44ca0281bb7fdfe6a089",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-19T16:02:12+00:00",
+    "applied": [
+      "verification/.work-287/foundation-i028/preservation/outcome.json",
+      "verification/.work-287/foundation-i028/preservation/evidence.json",
+      "verification/.work-287/foundation-i028/preservation/stderr.txt",
+      "verification/.work-287/foundation-i028/preservation/work/pair/RegressionPair.java"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "a39e4ef324774be275faf38686ce66b7f145a6e8",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/a39e4ef324774be275faf38686ce66b7f145a6e8/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

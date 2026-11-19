@@ -18,6 +18,34 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-045: a Codex worker can pick up the run-brief skill by itself, since nothing marks it as one only a person starts
+
+- **Status**: open, minor (the user's decision on 2026-11-19: note it and address it later, by a skill change or by
+  rewording how a run is invoked).
+- **Raised**: 2026-11-19 by the watcher of the single-agent run `foundation-domain-streams` (Codex, `gpt-6.2-astra`
+  at max effort, workspace `foundation-domain-streams`), from the first minutes of the loop's output
+  (`llm-dlc/loop-summaries/single-foundation-domain-streams/loop.log`).
+- **Found**: given a starting prompt that calls `llm-dlc/loops/foundation-domain-streams.md` a brief "written for
+  multiple agents" and asks it to execute all of it, the agent's first words were "I'll use the run-brief skill". It
+  read `.agents/skills/run-brief/SKILL.md` and ran `brief_run.py status foundation-domain-streams`, which is
+  read-only. Eighteen seconds later it decided the brief was for one agent and worked on it directly. It started
+  nothing: no foundation, no streams, no other loop. The run-brief skill is meant to be started by a person only, but
+  nothing says so to Codex. Of the skills under `.agents/skills/`, only `publish` and `review-findings` carry
+  `disable-model-invocation: true` (Claude Code) and `agents/openai.yaml` with `allow_implicit_invocation: false`
+  (Codex). `run-brief`, `single-agent-run`, `prove-java-change` and `run-verification` carry neither. Their
+  descriptions say "start it only when the user asks", which a work turn whose prompt names a brief can read
+  past.
+- **Needs**: a choice by the user, one or both of:
+  - Mark `run-brief`, and likely `single-agent-run` and `prove-java-change` (which also start hours-long runs), as
+    started by a person only: `disable-model-invocation: true` in each `SKILL.md`, and `agents/openai.yaml` with
+    `allow_implicit_invocation: false` beside it, as `publish` has. Then check parity with
+    `agent_client.py instructions --client codex`. A person typing `/run-brief` still starts it for a watcher.
+  - Word a single agent's starting prompt or brief pointer so that it does not read as a request for a
+    multi-agent run, e.g. by naming the document a plan rather than a brief.
+- **Tracked in**: this entry; the run's loop output above.
+- **Closes when**: a Codex work turn given a prompt like this one does not open or run the run-brief skill, and the
+  skills' invocation policy agrees between the two clients.
+
 ### VF-044: what the domain-advances run left when the user stopped it, for a stronger agent to take on
 
 - **Status**: open (the user's decision on 2026-11-18: the run was stopped after preservation's cycle under way, and
