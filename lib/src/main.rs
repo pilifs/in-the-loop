@@ -530,6 +530,10 @@ struct EquivalenceArgs {
     /// parameter is an object of its own.
     #[arg(long = "may-alias")]
     may_alias: Vec<String>,
+    /// An explicit observation descriptor as JSON, repeatable. The paired int-array profile supports result,
+    /// exception, array-parameter and root identity observations.
+    #[arg(long = "observe")]
+    observe: Vec<String>,
     /// A construction plan for each version, as JSON (`{"before": PLAN, "after": PLAN}`, `construction::Plans`):
     /// the receiver, parameters, shared objects, bounded arrays, adapted lists, a node's adapted String (bounded as
     /// --max-array-length bounds every String) and setup calls the check makes its inputs by. What a check can't make
@@ -951,6 +955,8 @@ fn run(cli: Cli) -> Result<i32, Error> {
             options.before_target = args.before_target;
             options.before_arguments = args.before_arguments;
             options.results_agree_when = args.results_agree_when;
+            options.selected_observations = args.observe.iter().map(|s| serde_json::from_str(s)
+                .map_err(|e| Error::new(format!("--observe requires an observation descriptor: {e}")))).collect::<Result<_, _>>()?;
             if let Some(file) = &args.correspondence {
                 let text = std::fs::read_to_string(file).map_err(|e| Error::new(format!("--correspondence {}: {e}", file.display())))?;
                 options.correspondence = Some(serde_json::from_str(&text).map_err(|e| Error::new(format!("--correspondence {}: not a correspondence ({{\"inputs\": [...], \"outputs\": [...]}}): {e}", file.display())))?);

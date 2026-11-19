@@ -1,0 +1,57 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261119-155814-foundation-requalification-of-307-preser",
+  "title": "Foundation requalification of 307 preservation",
+  "description": "After the independent shared-callee challenge passed, repeat only the frozen preservation comparison for example 307 on the same checker revision. Use the predecessor job's semantic bounds, artifacts, deadline and machine budget. Collect under a fresh output path to preserve the earlier evidence.",
+  "kind": "example",
+  "capabilities": [
+    "B9",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "jobs": [
+      "20261117-210114-example-307-preservation-at-the-frozen-b"
+    ],
+    "examples": [
+      "307"
+    ],
+    "commits": [
+      "345f6fe4259dff4a7b940510d18f2d4c2e0defaa"
+    ]
+  },
+  "expected": "The releases agree on the frozen preservation domain, subject to every assumption in the collected outcome.",
+  "submitted": {
+    "at": "2026-11-19T15:58:14+00:00",
+    "session": "01a1f467-856b-7d02-9458-ab076e5fef2f"
+  },
+  "revision": "345f6fe4259dff4a7b940510d18f2d4c2e0defaa",
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "python3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "6G",
+    "duration": "10m",
+    "timeout": "1h",
+    "notes": "capped probes: about 100 s (preservation) and 50 s (mutant), under 4 GB; plus the slice compile with JDK 8, the github.com fetch of the commit, the 5.2.0.M4 reference JAR and the release build"
+  },
+  "steps": [
+    {
+      "name": "307 preservation at its frozen bounds",
+      "run": "python3 examples/307-spring-security-fe9e4549-bcrypt-standard-charset-utf8/proofs/prove.py preservation --timeout 1800 --work verification/.work-307/foundation-i028",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/.work-307/foundation-i028/preservation/outcome.json",
+    "verification/.work-307/foundation-i028/preservation/evidence.json",
+    "verification/.work-307/foundation-i028/preservation/stderr.txt",
+    "verification/.work-307/foundation-i028/preservation/work/pair/RegressionPair.java",
+    "verification/.work-307/foundation-i028/preservation/work/pair-work/harness/PropertyHarness.java"
+  ]
+}

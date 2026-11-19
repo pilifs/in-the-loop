@@ -18,6 +18,7 @@ import unittest
 from pathlib import Path
 
 import accept
+from targets import workflow
 
 REPO = Path(__file__).resolve().parents[2]
 FIXTURES = REPO / "examples/tools/targets/fixtures"
@@ -82,7 +83,12 @@ def beside(root: Path, folder: Path, task_id: str, answer: str, job: str, status
     claim = json.loads((root / claim_rel).read_text())
     work = f"verification/.work-{number}"
     run = f"python3 {rel}/proofs/prove.py {task_id}" + (f" --max-array-length {trial}" if trial else "") + f" --timeout 60 --work {work}"
-    spec = {"id": job, "links": {"examples": [number] if names is None else names}, "steps": [{"name": "the claim", "run": run}]}
+    try:
+        planned = workflow.source_claim(folder, target, task, [])
+    except workflow.ClaimError:  # a deliberately inconsistent driver run has no independently frozen plan
+        planned = {}
+    spec = {"id": job, "links": {"examples": [number] if names is None else names, "claims": [planned["key"]] if planned else []},
+            "steps": [{"name": "the claim", "run": run}]}
     jobs = root / "verification/jobs"
     jobs.mkdir(parents=True, exist_ok=True)
     (jobs / f"{job}.json").write_text(json.dumps(spec))
@@ -96,7 +102,8 @@ def beside(root: Path, folder: Path, task_id: str, answer: str, job: str, status
     if not status:
         return paths
     (root / paths["outcome"]).parent.mkdir(parents=True, exist_ok=True)
-    bound = trial or {**(claim.get("bounds") or {}), **(task.get("bounds") or {})}.get("maxArrayLength")
+    bounds = {**planned.get("bounds", {}), **(claim.get("bounds") or {}), **(task.get("bounds") or {})}
+    bound = trial if trial is not None else bounds.get("maxArrayLength")
     (root / paths["outcome"]).write_text(json.dumps(outcome_of(task, claim, outcome or answer, bound)))
     outputs = [{"path": paths["outcome"], "change": "added", "sha256": sha(root / paths["outcome"])}]
     if harness is not None:
@@ -240,9 +247,11 @@ class WrongConclusion(Checkout):
 
     def test_one_job_of_several_tasks_gives_each_task_its_own_steps_outcome(self):
         a = self.beside("regex-probe", "refuted")
+        first_key = json.loads((self.root / a["job"]).read_text())["links"]["claims"][0]
         self.beside("fixed-security", "established")
         # One job ran both: its result has both steps and both outcomes.
         spec = json.loads((self.root / a["job"]).read_text())
+        spec["links"]["claims"].append(first_key)
         both = json.loads((self.root / a["result"]).read_text())
         first_run = f"python3 examples/900-made-up-change/proofs/prove.py regex-probe --timeout 60 --work verification/.work-900"
         spec["steps"].insert(0, {"name": "the probe", "run": first_run})
@@ -436,6 +445,24 @@ class ChangedArtifact(Checkout):
 
 
 class TrialBound(Checkout):
+    def test_a_run_cannot_supply_an_unplanned_length_bound(self):
+        paths = self.beside("regex-probe", "established")
+        report = self.check("regex-probe")
+        self.assertTrue(report["accepted"], report.get("why"))
+        self.assertEqual((report["bound"]["claim"], report["bound"]["provenance"]), (8, "planner-default"))
+        rewrite(self.root, paths, lambda o: o["search"].update(max_array_length=2))
+        self.refused("regex-probe", "domain", "proof at bound 2")
+        spec = json.loads((self.root / paths["job"]).read_text())
+        spec["links"].pop("claims")
+        (self.root / paths["job"]).write_text(json.dumps(spec))
+        result = json.loads((self.root / paths["result"]).read_text())
+        result["job"]["sha256"] = hashlib.sha256(json.dumps(spec, sort_keys=True).encode()).hexdigest()
+        (self.root / paths["result"]).write_text(json.dumps(result))
+        self.assertEqual(self.refused("regex-probe", "domain", "not recorded")["bound"]["provenance"], "missing")
+        task = {"target": "fixture.Gate#allowed(I)Z"}
+        domain = {"domain": {"parameters": [{"type": "int", "kind": "primitive"}]}}
+        self.assertEqual(accept.length_bound(self.folder, {}, task, {}, {}, domain), (None, "irrelevant"))
+
     def test_a_proof_at_a_smaller_bound_does_not_establish_the_claim(self):
         self.bound("fixed-security", 8)
         self.beside("fixed-security", "established")
@@ -474,7 +501,7 @@ class TrialBound(Checkout):
         self.beside("fixed-security", "established")
         self.assertTrue(self.check("fixed-security")["accepted"])
         self.beside("fixed-security", "established", trial=4)
-        self.refused("fixed-security", "domain", "the step overrides one (--max-array-length)")
+        self.refused("fixed-security", "domain", "a proof at bound 4 establishes nothing about the claim's bound 8")
 
     def test_the_parameters_that_may_be_null_are_the_claims(self):
         paths = self.beside("regex-probe", "refuted")
@@ -594,8 +621,8 @@ class Countermodels(Checkout):
         names as the adapter entry is: 286's and 287's tasks have no invocation entry and name theirs so."""
         paths = self.beside("regex-probe", "refuted")
         self.edit("claims/regex-probe.json", lambda c: c.update(assumptions=[
-            {"text": "the field is read by fixture.RegexGate#field from the request, made up"},
-            {"text": "the parameters are those of the adapter entry fixture.adapter.GateAdapter#allowed(Ljava/lang/String;)Z: made up"}]))
+            {"text": "the field is read by fixture.RegexGate#field from the request, made up", "basis": "stated"},
+            {"text": "the parameters are those of the adapter entry fixture.adapter.GateAdapter#allowed(Ljava/lang/String;)Z: made up", "basis": "stated"}]))
         self.beside("regex-probe", "refuted")  # the ledger freezes the edited claim
         rewrite(self.root, paths, lambda o: o.update(target="fixture.RegexGate#field"))
         self.refused("regex-probe", "entry", "fixture.RegexGate#field")

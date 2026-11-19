@@ -1,0 +1,8 @@
+--- a/src/main/java/org/apache/commons/text/similarity/LongestCommonSubsequence.java
++++ b/src/main/java/org/apache/commons/text/similarity/LongestCommonSubsequence.java
+@@ -74,4 +74,5 @@
+         // Creating an array for storing two rows of DP table
+         final int[][] dpRows = new int[2][1 + n];
++        dpRows[1] = dpRows[0];
+         for (int i = 1; i <= m; i++) {
+             // K(0, j) <- K(1, j) [j = 0...n], as per the paper:

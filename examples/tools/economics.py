@@ -98,7 +98,9 @@ def recorded():
         if example["approach"]["id"] not in ("B9", "B11"):
             continue
         app = build.app_of(example)
-        if example["origin"] != "constructed":
+        if example.get("target") and example["origin"] == "constructed":
+            excluded.append({"id": example["id"], "why": "a fixture with per-task target receipts"})
+        elif example["origin"] != "constructed":
             excluded.append({"id": example["id"], "why": "a real-world example: its classes are not in the repository"})
         elif app not in build.TOOL_APPS:
             excluded.append({"id": example["id"], "why": "a Box Office example, built with Gradle"})

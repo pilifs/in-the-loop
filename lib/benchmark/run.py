@@ -11,6 +11,7 @@ JBMC runs are proofs: the full run is a pipeline job, not something to run inlin
 """
 
 import argparse
+import hashlib
 import json
 import os
 import platform
@@ -48,6 +49,12 @@ PHASE_TOLERANCE = (0.01, 0.005)
 # The configuration both engines are given: the same harness, bounds, models and deadline.
 UNWIND = 16
 MAX_ARRAY_LENGTH = 8
+
+# Existing claims with independent JVM controls, fixed for the before/after comparison.
+FOUNDATION_V1 = (
+    "conformance/aliasedLocals/1", "conformance/aliasedLocals/2", "conformance/twoArrays/1",
+    "conformance/divide/1", "conformance/divide/2", "held/reverse", "held/prefix-sums",
+)
 
 
 def load_cases(groups, pattern=None):
@@ -478,10 +485,35 @@ def run(options):
     if unknown:
         raise SystemExit(f"unknown JBMC staging policy {', '.join(unknown)}: {', '.join(STAGING)}")
     cases = load_cases(groups, options.cases)
+    selection = getattr(options, "selection", None)
+    if selection == "foundation-v1":
+        by_id = {c["id"]: c for c in cases}
+        missing = [key for key in FOUNDATION_V1 if key not in by_id]
+        if missing:
+            raise SystemExit("missing cases in foundation-v1: " + ", ".join(missing))
+        cases = [by_id[key] for key in FOUNDATION_V1]
     cases_by_id = {c["id"]: c for c in cases}
     build = Path(options.build).resolve()
     build.mkdir(parents=True, exist_ok=True)
     classes = {**compile_sources(build), **compile_examples(build, cases)}
+    provenance = {}
+    if selection:
+        versions_used = {v for c in cases for v in (
+            [c["before"], c["after"]] if c["kind"] == "regression" else [c.get("classes", "conformance")])}
+        provenance = {
+            "selection": selection,
+            "caseSpecificationsSha256": hashlib.sha256(json.dumps(cases, sort_keys=True).encode()).hexdigest(),
+            "classesSha256": {
+                f"{v}/{p.relative_to(classes[v]).as_posix()}": hashlib.sha256(p.read_bytes()).hexdigest()
+                for v in sorted(versions_used) for p in sorted(classes[v].rglob("*.class"))
+            },
+            "oraclesSha256": {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
+                              for p in (RUNNER_SOURCE, HERE / "Reference.java")},
+            "checkerLibTree": os.environ.get("JVMCONTRACT_LIB_TREE"),
+            "cpuBudget": os.environ.get("VERIFY_CPUS"),
+            "memoryBudgetMiB": os.environ.get("VERIFY_MEMORY_LIMIT_MB"),
+            "proofCache": "disabled", "hostPageCache": "unmeasured",
+        }
     answers = reference(cases, build, classes, options.search)
     runs = []
     for case in cases:
@@ -507,7 +539,7 @@ def run(options):
         "about": "Results of lib/benchmark/run.py: see lib/benchmark/README.md.",
         "environment": {**environment(options), "sat": sat_solvers(runs)},
         "settings": {"timeout": options.timeout, "unwind": UNWIND, "maxArrayLength": MAX_ARRAY_LENGTH, "referenceSearch": options.search,
-                     "engines": engines, "modes": modes, "groups": sorted(groups), "jbmcStaging": stagings},
+                     "engines": engines, "modes": modes, "groups": sorted(groups), "jbmcStaging": stagings, **provenance},
         "cases": [{k: c[k] for k in ("id", "group", "workload", "kind", "expected")} for c in cases],
         "reference": answers,
         "runs": runs,
@@ -903,6 +935,7 @@ def main(argv=None):
                              "the corpus's tables are over the first, and the others are compared with it. By default the "
                              "tool's own default, full-range, since job 20261106-201041")
     parser.add_argument("--cases", help="only the cases whose id contains this")
+    parser.add_argument("--selection", choices=["foundation-v1"], help="require every case of a versioned selection")
     parser.add_argument("--timeout", type=int, default=120, help="seconds each run may take, on either engine")
     parser.add_argument("--search", type=int, default=200000, help="random inputs the JVM tries on each expected proof")
     parser.add_argument("--jvmcontract", default=os.environ.get("JVMCONTRACT") or str(LIB / "target/release/jvmcontract"))

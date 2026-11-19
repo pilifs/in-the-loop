@@ -18,4 +18,10 @@ public final class Shared {
         cells[0] = k + rounds - 3;
         return cells;
     }
+    public static String text(int k) {
+        for (int i = 0; i < 3; i++) {
+            k += i;
+        }
+        return k == 3 ? "first" : "second";
+    }
 }

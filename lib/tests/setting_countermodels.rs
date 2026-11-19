@@ -66,3 +66,35 @@ fn each_initializer_gives_what_its_setting_says_on_a_jvm() {
         }
     }
 }
+
+fn check_refusal(entry: &str, class: &str, value: i32, options: &str, env: &[(&str, &str)], setting: &str) {
+    let Some(classes) = classes() else { return };
+    let mut cli = Command::new(env!("CARGO_BIN_EXE_jvmcontract"));
+    cli.env_remove("SC_VALUE").env("JAVA_TOOL_OPTIONS", options);
+    for (k, v) in env {
+        cli.env(k, v);
+    }
+    let out = cli.args(["prove", &format!("sc.M#{entry}"), "--assert", &format!("result == {value}"),
+                        "--observed-initializer", class, "--engine", "native", "--jbmc", "/nonexistent/jbmc", "--classes"])
+        .arg(classes).arg("--classpath").arg(classes)
+        .arg("--work").arg(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("setting-countermodels").join(entry))
+        .output().expect("jvmcontract runs");
+    let report = String::from_utf8_lossy(&out.stderr).to_string() + &String::from_utf8_lossy(&out.stdout);
+    assert!(!out.status.success() && report.contains(setting) && report.contains("the observation cannot bind"), "{entry}: {report}");
+}
+
+#[test]
+fn indirect_setting_reads_refuse_the_observed_initializer() {
+    jvmcontract::tool_tier!();
+    check_refusal("mapped", "sc.Mapped", 3, "-Dsc.value=xyz", &[], "system property through a method handle");
+    check_refusal("kept", "sc.Kept", 3, "-Dsc.value=xyz", &[], "system property through a map update");
+    check_refusal("looked", "sc.Looked", 3, "", &[("SC_VALUE", "xyz")], "dynamically looked-up member");
+}
+
+#[test]
+fn startup_setting_reads_refuse_the_observed_initializer() {
+    jvmcontract::tool_tier!();
+    check_refusal("counted", "sc.Counted", 3, "-XX:ActiveProcessorCount=3", &[], "JVM resource configuration");
+    check_refusal("rooted", "sc.Rooted", 4, "-Duser.dir=/abc", &[], "JVM working directory");
+    check_refusal("encoded", "sc.Encoded", 1, "-Dfile.encoding=COMPAT", &[("LC_ALL", "C")], "default charset");
+}

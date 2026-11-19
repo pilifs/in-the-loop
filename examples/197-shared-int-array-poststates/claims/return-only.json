@@ -1,0 +1,24 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "preservation",
+  "property": "return-only",
+  "statement": "Both versions agree on the return value for every admitted input heap.",
+  "nullable": [
+    "left",
+    "right"
+  ],
+  "mayAlias": [
+    "left,right"
+  ],
+  "bounds": {
+    "maxArrayLength": 2,
+    "unwind": 8
+  },
+  "assume": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
+  "observations": [
+    {
+      "kind": "result"
+    }
+  ]
+}

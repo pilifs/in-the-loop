@@ -1,0 +1,482 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "13d7a1cff5662de0",
+    "format": 1,
+    "example": "308",
+    "statement": {
+      "approach": "target",
+      "task": "mutant-replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "org.apache.commons.text.similarity.LongestCommonSubsequence#apply(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/Integer;",
+      "revisions": [
+        "release",
+        "mutant"
+      ],
+      "expected": null,
+      "gaps": null,
+      "claim": {
+        "task": "mutant-replay",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "org.apache.commons.text.similarity.LongestCommonSubsequence#apply(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/Integer;",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "public-score-driver",
+            "kind": "driver",
+            "path": "driver/score/ScoreDriver.java",
+            "sha256": "5c8a920653742e7a89b43801ecfdcb58d0bd0064009a9fc2918c527b6924ac0c"
+          },
+          {
+            "id": "subsequence-enumeration",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "285ce62562b246a72b715ee5b27a310494cb2374647e0c75549d23dcd2e6985a"
+          },
+          {
+            "id": "shared-row",
+            "kind": "mutation",
+            "path": "controls/shared-row.patch",
+            "sha256": "5d550a0bb5c9fee49468bca13d7502eb90adc16ddc121f3e3248a4f89082b11f"
+          }
+        ],
+        "key": "79761d46c232ff55"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "mutant-replay",
+      "sidecar": "06e5810cb6eb32ecee390ca3f6b728a4dab35d873509a93f52b1ad7f7d19baac",
+      "revisions": {
+        "release": "a70c34e028ab279bb89565606e1ab09011a41bc2",
+        "mutant": "a70c34e028ab279bb89565606e1ab09011a41bc2"
+      },
+      "dependencies": [
+        {
+          "revision": "release",
+          "position": 0,
+          "role": "driver",
+          "sha256": "c50cf502d4461de8eec69683254d2b0b1a1eb1439437b832e86831dc5795bf4e"
+        },
+        {
+          "revision": "release",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "783b62cfd46decf12296662b3e45d1961728f596f9dace0110ed4855c8f51ca5"
+        },
+        {
+          "revision": "release",
+          "position": 2,
+          "role": "original",
+          "sha256": "76434bd2dd778ab140d84b3c6ffa40c40fe6219909f5ed1d8b8977c5ae8e50c8",
+          "coordinates": "org.apache.commons:commons-text:1.13.1"
+        },
+        {
+          "revision": "mutant",
+          "position": 0,
+          "role": "driver",
+          "sha256": "c50cf502d4461de8eec69683254d2b0b1a1eb1439437b832e86831dc5795bf4e"
+        },
+        {
+          "revision": "mutant",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "783b62cfd46decf12296662b3e45d1961728f596f9dace0110ed4855c8f51ca5"
+        },
+        {
+          "revision": "mutant",
+          "position": 2,
+          "role": "original",
+          "sha256": "47219ca2d45e653ccc7d2f4b7017bcacc680b51a25036885a44c3c9fb4cbd03f"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/score/LcsScore.java": "e965acae118f3fafb9d46a7af08a3a3e64444d4fb13c0c493b42962afb9f31c3",
+        "adapter/score/ScoreOracle.java": "a44fa50ced5f4c82ad11be98628f8172e6d080bb1f5a349f9dde7f4a10942dad",
+        "controls/oracle.py": "285ce62562b246a72b715ee5b27a310494cb2374647e0c75549d23dcd2e6985a",
+        "controls/shared-row.patch": "5d550a0bb5c9fee49468bca13d7502eb90adc16ddc121f3e3248a4f89082b11f",
+        "driver/score/ScoreDriver.java": "5c8a920653742e7a89b43801ecfdcb58d0bd0064009a9fc2918c527b6924ac0c"
+      },
+      "claimKey": "79761d46c232ff55"
+    }
+  },
+  "attempt": {
+    "id": "20261119T160613Z-27c423d8",
+    "claim": "13d7a1cff5662de0",
+    "startedAt": "2026-11-19T16:06:13+00:00",
+    "seconds": 0.1,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "ab4545110bd8a295c20966d0bcc1013442cbdb510f8b9cc8927835e27011ed04",
+        "files": 1
+      },
+      "after": {
+        "sha256": "a6b233cc0ee2f35fcf0bc9dcc9e1c7a583ca9a00598b3827d68cb6e4c2380577",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control release on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-release-jdk21.stdout",
+        "stderr": "records/control-release-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control mutant on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-mutant-jdk21.stdout",
+        "stderr": "records/control-mutant-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "13d7a1cff5662de0",
+    "attempt": "20261119T160613Z-27c423d8",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: release holds the oracle; mutant violates the oracle at ['aa', 'abb'], ['aa', 'bab'], ['aa', 'bba'], ['aab', 'aaa'], ['aab', 'abb'], ['aab', 'bb'], ['aab', 'bba'], ['aab', 'bbb'], ['ab', 'aa'], ['ab', 'bb'], ['aba', 'aaa'], ['aba', 'aab'], ['aba', 'abb'], ['aba', 'baa'], ['aba', 'bb'], ['aba', 'bba'], ['aba', 'bbb'], ['abb', 'aa'], ['abb', 'aaa'], ['abb', 'aab'], ['abb', 'baa'], ['abb', 'bbb'], ['ba', 'aa'], ['ba', 'bb'], ['baa', 'aaa'], ['baa', 'abb'], ['baa', 'bb'], ['baa', 'bba'], ['baa', 'bbb'], ['bab', 'aa'], ['bab', 'aaa'], ['bab', 'aab'], ['bab', 'abb'], ['bab', 'baa'], ['bab', 'bba'], ['bab', 'bbb'], ['bb', 'aab'], ['bb', 'aba'], ['bb', 'baa'], ['bba', 'aa'], ['bba', 'aaa'], ['bba', 'aab'], ['bba', 'baa'], ['bba', 'bbb'], on every JDK named: as the mutation pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 8,
+      "code": "\"release\": {\"commit\": \"a70c34e028ab279bb89565606e1ab09011a41bc2\", \"release\": \"1.13.1\", \"checked\": \"The release source JAR and the pinned git blob of LongestCommonSubsequence.java agree.\"},"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 9,
+      "code": "\"mutant\": {\"mutant\": {\"base\": \"release\", \"patch\": \"controls/shared-row.patch\", \"sha256\": \"5d550a0bb5c9fee49468bca13d7502eb90adc16ddc121f3e3248a4f89082b11f\", \"description\": \"Both rows of the score matrix refer to the first row.\"}}"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [
+      {
+        "input": "['aa', 'abb']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 2, expected 1"
+      },
+      {
+        "input": "['aa', 'bab']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 2, expected 1"
+      },
+      {
+        "input": "['aa', 'bba']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 2, expected 1"
+      },
+      {
+        "input": "['ab', 'aa']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 2, expected 1"
+      },
+      {
+        "input": "['ab', 'bb']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 2, expected 1"
+      },
+      {
+        "input": "['ba', 'aa']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 2, expected 1"
+      },
+      {
+        "input": "['ba', 'bb']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 2, expected 1"
+      },
+      {
+        "input": "['bb', 'aab']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 2, expected 1"
+      },
+      {
+        "input": "['bb', 'aba']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 2, expected 1"
+      },
+      {
+        "input": "['bb', 'baa']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 2, expected 1"
+      },
+      {
+        "input": "['aab', 'bb']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 2, expected 1"
+      },
+      {
+        "input": "['aab', 'aaa']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 2"
+      },
+      {
+        "input": "['aab', 'abb']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 2"
+      },
+      {
+        "input": "['aab', 'bba']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 2, expected 1"
+      },
+      {
+        "input": "['aab', 'bbb']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 1"
+      },
+      {
+        "input": "['aba', 'bb']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 2, expected 1"
+      },
+      {
+        "input": "['aba', 'aaa']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 2"
+      },
+      {
+        "input": "['aba', 'aab']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 2"
+      },
+      {
+        "input": "['aba', 'abb']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 2"
+      },
+      {
+        "input": "['aba', 'baa']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 2"
+      },
+      {
+        "input": "['aba', 'bba']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 2"
+      },
+      {
+        "input": "['aba', 'bbb']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 1"
+      },
+      {
+        "input": "['abb', 'aa']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 2, expected 1"
+      },
+      {
+        "input": "['abb', 'aaa']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 1"
+      },
+      {
+        "input": "['abb', 'aab']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 2"
+      },
+      {
+        "input": "['abb', 'baa']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 2, expected 1"
+      },
+      {
+        "input": "['abb', 'bbb']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 2"
+      },
+      {
+        "input": "['baa', 'bb']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 2, expected 1"
+      },
+      {
+        "input": "['baa', 'aaa']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 2"
+      },
+      {
+        "input": "['baa', 'abb']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 2, expected 1"
+      },
+      {
+        "input": "['baa', 'bba']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 2"
+      },
+      {
+        "input": "['baa', 'bbb']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 1"
+      },
+      {
+        "input": "['bab', 'aa']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 2, expected 1"
+      },
+      {
+        "input": "['bab', 'aaa']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 1"
+      },
+      {
+        "input": "['bab', 'aab']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 2"
+      },
+      {
+        "input": "['bab', 'abb']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 2"
+      },
+      {
+        "input": "['bab', 'baa']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 2"
+      },
+      {
+        "input": "['bab', 'bba']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 2"
+      },
+      {
+        "input": "['bab', 'bbb']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 2"
+      },
+      {
+        "input": "['bba', 'aa']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 2, expected 1"
+      },
+      {
+        "input": "['bba', 'aaa']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 1"
+      },
+      {
+        "input": "['bba', 'aab']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 2, expected 1"
+      },
+      {
+        "input": "['bba', 'baa']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 2"
+      },
+      {
+        "input": "['bba', 'bbb']",
+        "contract": "the oracle (controls/oracle.py)",
+        "actual": "revision mutant on JDK 21: score 3, expected 2"
+      }
+    ],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 2 concrete control runs of the driver on the oracle's inputs, read by controls/oracle.py",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "8955da5b3e8f9667ead52b9612f352046eba010be6fee15ba52e31fed0bd738e",
+        "bytes": 52440
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "df2143305977d22d55a8470c0bf22f3898289c75dd859629f1cb815b32176e4a",
+        "bytes": 2773
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "8eb9e33b8badffca676deba725507125b4ca2312181b1251251e7bad5ee5aa35",
+        "bytes": 1731
+      },
+      {
+        "path": "records/control-release-jdk21.stdout",
+        "sha256": "3f3c694ff0d3ca3fd6479ffba56617a2c682146eeeefced96e0c435887debc54",
+        "bytes": 8445
+      },
+      {
+        "path": "records/control-release-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "eba1f7d76b069e7f71598f8ad05ba6811c4bac54583b0ac63eb2f9728eae3ccf",
+        "bytes": 47321
+      },
+      {
+        "path": "records/control-mutant-jdk21.stdout",
+        "sha256": "24c56fdf12460f75ff993233927a78b5fff2939cfee76f908b626055606ddb67",
+        "bytes": 8445
+      },
+      {
+        "path": "records/control-mutant-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      }
+    ]
+  }
+}

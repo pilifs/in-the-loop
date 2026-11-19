@@ -276,6 +276,7 @@ impl From<StoredCounterexample> for Counterexample {
             call: c.call.into(),
             previous_call: c.previous_call.map(Into::into),
             differs: c.differs,
+            replay_observations: Vec::new(),
             jvm: c.jvm,
         }
     }

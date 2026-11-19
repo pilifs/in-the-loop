@@ -54,8 +54,8 @@ fn each_version_alone_differs_past_the_second_call_on_a_jvm() {
         assert!(out.status.success(), "{}", String::from_utf8_lossy(&out.stderr));
         String::from_utf8_lossy(&out.stdout).trim().to_string()
     };
-    assert_eq!(alone(old), "stale=0 swapped=3");
-    assert_eq!(alone(new), "stale=99 swapped=2");
+    assert_eq!(alone(old), "stale=0 swapped=3 text=1,0");
+    assert_eq!(alone(new), "stale=99 swapped=2 text=1,1");
 }
 
 /// The checker's side: each version alone tells both methods apart (the test above), so a proof that they agree is
@@ -66,7 +66,7 @@ fn a_calls_record_does_not_prove_what_its_result_held_before() {
     jvmcontract::tool_tier!();
     let Some((old, new)) = classes() else { return };
     let mut wrong = Vec::new();
-    for name in ["stale", "swapped"] {
+    for name in ["stale", "swapped", "branchText"] {
         let mut o = equivalence::Options::new(old, new, &format!("app.Entry#{name}"));
         o.engine = Engine::Native;
         o.jbmc = "/nonexistent/jbmc".into();

@@ -240,7 +240,7 @@ def main(argv):
             if wanted and folder.name[:3] not in wanted:
                 continue
             example = load_example(folder)
-            if example["origin"] != "constructed":
+            if example["origin"] != "constructed" or example.get("target"):
                 if wanted:
                     print(f"{folder.name}: not rendered (a real-world example: its page is written by hand)")
                     unrendered.append(folder.name)
@@ -267,7 +267,7 @@ def main(argv):
         if wanted and folder.name[:3] not in wanted:
             continue
         example = load_example(folder)
-        if example["origin"] != "constructed" and not wanted:
+        if (example["origin"] != "constructed" or example.get("target")) and not wanted:
             continue  # running every example means every constructed one
         reason = not_executable(example)
         if reason:
@@ -373,10 +373,10 @@ def run_task(folder, task, plan_only=False):
 
 def not_executable(example):
     """Why build.py cannot run this example, or None when it can."""
+    if example.get("target"):
+        return (f"a {example['origin']} example with a target sidecar: it is run one task at a time, with --task "
+                "(build.py --plan ID lists its tasks)")
     if example["origin"] != "constructed":
-        if example.get("target"):
-            return ("a real-world example with a target sidecar: it is run one task at a time, with --task "
-                    "(build.py --plan ID lists its tasks)")
         return ("a real-world example: its report is its README.md, and build.py has no adapter for its "
                 "project's build")
     app = app_of(example)
@@ -1728,6 +1728,7 @@ def witness_record(c, classes):
     if not c.get("call") or "inputs" not in c:
         return None
     return {"inputs": c["inputs"], **({"foundInputs": c["found_inputs"]} if c.get("found_inputs") else {}),
+            **({"replayObservations": c["replay_observations"]} if c.get("replay_observations") else {}),
             "call": typed_call(c["call"], classes),
             **({"previousCall": typed_call(c["previous_call"], classes)} if c.get("previous_call") else {})}
 
@@ -4553,7 +4554,7 @@ def render_index(folders):
     rows, index = [], []
     for folder, ex, res in examples:
         snap = snapshot(folder, ex, res) if res else None
-        if ex["origin"] == "constructed":
+        if ex["origin"] == "constructed" and not ex.get("target"):
             verdict = (res.get("verdictLabel") or VERDICT_LABEL.get(res["verdict"], "no verdict")) if res else "not run"
             if snap and (snap["state"] == "stale" or snap["evidence"]):
                 verdict += " (⚠ stale)" if snap["state"] == "stale" else " (⚠ evidence not the run's)"

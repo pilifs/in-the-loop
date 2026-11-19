@@ -84,6 +84,8 @@ use std::path::{Path, PathBuf};
 use crate::classfile::{ClassFile, Method, Type};
 use crate::equivalence::Options;
 
+pub(super) mod array_roots;
+
 /// The generated class and its method.
 pub const CLASS: &str = "RegressionPair";
 pub const METHOD: &str = "agree";
@@ -91,7 +93,8 @@ pub const METHOD: &str = "agree";
 /// Whether a check with these options and this target is one this module takes: see the module's notes.
 pub fn asked(options: &Options, method: &Method, names: &[String]) -> bool {
     let Ok(descriptor) = method.parsed_descriptor() else { return false };
-    options.assume.is_some()
+    !options.selected_observations.is_empty()
+        || options.assume.is_some()
         || options.lemmas.is_some()
         || descriptor.params.iter().any(crate::harness::is_string_array)
         || names.iter().zip(&descriptor.params).any(|(n, t)| crate::values::is_string(t) && options.nullable.contains(n))
@@ -109,7 +112,8 @@ fn parameter(t: &Type) -> bool {
 /// the check is the tool's own checker's alone (`--engine native` or `auto`, without `--confirm`).
 pub fn refusal(options: &Options, method: &Method, before: Option<&Method>, own_checker: bool) -> Option<String> {
     let descriptor = method.parsed_descriptor().ok()?;
-    if options.plan.is_some() || options.correspondence.is_some() || options.before_target.is_some() || options.before_arguments.is_some() || options.results_agree_when.is_some() || !options.may_alias.is_empty() {
+    let arrays = !options.selected_observations.is_empty();
+    if options.plan.is_some() || options.correspondence.is_some() || options.before_target.is_some() || options.before_arguments.is_some() || options.results_agree_when.is_some() || (!arrays && !options.may_alias.is_empty()) {
         return Some("a regression check with an assumption, lemmas, a String[] or a nullable String is checked as a property of the pair of versions (lib/src/pairing.rs), which takes no plan, correspondence, --before-target, --before-arguments, --results-agree-when or --may-alias yet".into());
     }
     if !method.is_static() {
@@ -128,7 +132,7 @@ pub fn refusal(options: &Options, method: &Method, before: Option<&Method>, own_
     if [method, before].iter().any(|m| m.attributes.iter().any(|a| a.name == "Exceptions")) {
         return Some("the method declares checked exceptions, which a regression check as a property of the pair of versions (lib/src/pairing.rs) does not take yet".into());
     }
-    if !own_checker {
+    if !own_checker && !arrays {
         return Some("a regression check with an assumption, lemmas, a String[] or a nullable String is the tool's own checker's (--engine native or auto, without --confirm): JBMC is given none of them".into());
     }
     None
@@ -198,6 +202,9 @@ pub struct Paired {
     pub statement: PathBuf,
     /// The header the report begins with.
     pub note: String,
+    /// The original target's statement when its array roots were lowered to scalar inputs.
+    pub target_statement: Option<crate::statement::Statement>,
+    pub target_witness: Option<crate::equivalence::Counterexample>,
 }
 
 /// Writes and compiles the pair's class and proves `agree` of it: see the module's notes. `relocated_dir` holds the
@@ -206,8 +213,18 @@ pub fn run(options: &Options, work: &Path, relocated_dir: &Path, class: &ClassFi
     let descriptor = method.parsed_descriptor()?;
     let dir = work.join("pair");
     std::fs::create_dir_all(&dir)?;
-    let apart = differing(options, relocated_dir, &previous)?;
-    let java = source(&class.name.replace('/', "."), &method.name, names, &descriptor.params, &descriptor.ret, options.unchanged_unless.as_deref(), &apart);
+    let roots = if options.selected_observations.is_empty() { None } else {
+        match array_roots::ArrayRoots::plan(options, names, &descriptor.params, &descriptor.ret) {
+            Ok(roots) => Some(roots),
+            Err(reason) => return Ok(Err(reason)),
+        }
+    };
+    let owner = class.name.replace('/', ".");
+    let java = if let Some(profile) = &roots {
+        profile.source(options, &owner, &method.name)
+    } else {
+        source(&owner, &method.name, names, &descriptor.params, &descriptor.ret, options.unchanged_unless.as_deref(), &differing(options, relocated_dir, &previous)?)
+    };
     let statement = dir.join(format!("{CLASS}.java"));
     std::fs::write(&statement, &java)?;
     let home = match &options.java_home {
@@ -229,8 +246,15 @@ pub fn run(options: &Options, work: &Path, relocated_dir: &Path, class: &ClassFi
     }
     let mut property = crate::property::Options::new(&[dir.clone(), options.after.clone(), relocated_dir.to_path_buf()], &format!("{CLASS}#{METHOD}"));
     property.classpath = options.classpath.clone();
-    property.assume = options.assume.clone();
-    property.nullable = options.nullable.clone();
+    if let Some(profile) = &roots {
+        property.assume = Some(profile.precondition());
+        property.models = options.models;
+        property.jbmc_staging = options.jbmc_staging;
+        property.sat_solver = options.sat_solver.clone();
+    } else {
+        property.assume = options.assume.clone();
+        property.nullable = options.nullable.clone();
+    }
     property.lemmas = options.lemmas.clone();
     property.work = Some(work.join("pair-work"));
     property.sources = options.sources.clone();
@@ -253,6 +277,34 @@ pub fn run(options: &Options, work: &Path, relocated_dir: &Path, class: &ClassFi
     property.observed_initializers = observed.0;
     property.previous = Some((previous, observed.1));
     let mut outcome = crate::property::run(&property)?;
+    if let Some(profile) = roots {
+        let mut target_statement = outcome.stated.clone();
+        if let Some(stated) = &mut target_statement {
+            profile.describe(options, stated);
+        }
+        let mut target_witness = None;
+        if outcome.verdict == crate::Verdict::Violation {
+            let mut entries = vec![work.join("pair-work/harness")];
+            entries.extend(property.classes.iter().chain(&property.classpath).cloned());
+            let replay = outcome.counterexample.as_ref().ok_or_else(|| "the solver returned no candidate".to_string())
+                .and_then(|w| profile.replay(options, w, work, &class.name, method, &entries));
+            outcome.replay = Some(crate::equivalence::Replay { by: "jvm".into(), reproduced: replay.is_ok() });
+            match replay {
+                Ok(witness) => target_witness = Some(witness),
+                Err(reason) => {
+                    outcome.verdict = crate::Verdict::Unverifiable;
+                    outcome.proof = None;
+                    outcome.problem = Some(reason.clone());
+                    outcome.output = format!("Solver candidate retained. JVM replay left the selected comparison unresolved: {reason}\n");
+                    outcome.findings.clear();
+                    outcome.findings.push(crate::sarif::Finding::new("unverifiable", reason, None, 1));
+                }
+            }
+        }
+        let selected = options.selected_observations.iter().map(crate::spec::Observation::id).collect::<Vec<_>>().join(", ");
+        let note = format!("Compared {selected} on two fresh heaps with the same length, cell, null and sharing choices ({})", statement.display());
+        return Ok(Ok(Paired { outcome, statement, note, target_statement, target_witness }));
+    }
     if let (crate::Verdict::Verified, Some(change)) = (outcome.verdict, options.unchanged_unless.as_deref()) {
         compared(&mut outcome, &property, change, work)?;
     }
@@ -266,7 +318,7 @@ pub fn run(options: &Options, work: &Path, relocated_dir: &Path, class: &ClassFi
         statement.display(),
         target = options.target,
     );
-    Ok(Ok(Paired { outcome, statement, note }))
+    Ok(Ok(Paired { outcome, statement, note, target_statement: None, target_witness: None }))
 }
 
 /// The binary names of the classes the previous version holds as copies whose every interface, through their

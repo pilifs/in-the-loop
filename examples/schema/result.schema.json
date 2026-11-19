@@ -161,7 +161,8 @@
         "inputs": { "type": "array", "items": { "$ref": "#/$defs/typedValue" }, "description": "The symbolic inputs the checker chose, typed, in the harness's order: `input` is their rendering." },
         "foundInputs": { "type": "array", "items": { "$ref": "#/$defs/typedValue" }, "description": "The inputs as the checker found them, when `inputs` are the shrunk ones." },
         "call": { "$ref": "#/$defs/typedCall", "description": "The patched version's call on the inputs." },
-        "previousCall": { "$ref": "#/$defs/typedCall", "description": "For a regression proof: the previous version's call, on the same arguments or those `previousArguments` computes from the inputs. Absent when they could not be computed." }
+        "previousCall": { "$ref": "#/$defs/typedCall", "description": "For a regression proof: the previous version's call, on the same arguments or those `previousArguments` computes from the inputs. Absent when they could not be computed." },
+        "replayObservations": {"type": "array", "items": {"type": "object", "required": ["kind"]}}
       }
     },
     "statement": {
@@ -514,6 +515,7 @@
             null
           ]
         },
+        "spec": {"type": "object", "required": ["contract", "observations"]},
         "confirmation": {
           "description": "What JBMC made of the own checker's proof under --confirm; null when not asked for.",
           "enum": [

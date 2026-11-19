@@ -1,0 +1,209 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "e02a96e26457bf09",
+    "format": 1,
+    "example": "308",
+    "statement": {
+      "approach": "target",
+      "task": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "org.apache.commons.text.similarity.LongestCommonSubsequence#apply(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/Integer;",
+      "revisions": [
+        "release"
+      ],
+      "expected": null,
+      "gaps": null,
+      "claim": {
+        "task": "replay",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "org.apache.commons.text.similarity.LongestCommonSubsequence#apply(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/Integer;",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "public-score-driver",
+            "kind": "driver",
+            "path": "driver/score/ScoreDriver.java",
+            "sha256": "5c8a920653742e7a89b43801ecfdcb58d0bd0064009a9fc2918c527b6924ac0c"
+          },
+          {
+            "id": "subsequence-enumeration",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "285ce62562b246a72b715ee5b27a310494cb2374647e0c75549d23dcd2e6985a"
+          }
+        ],
+        "key": "f24392f33bd69be4"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay",
+      "sidecar": "06e5810cb6eb32ecee390ca3f6b728a4dab35d873509a93f52b1ad7f7d19baac",
+      "revisions": {
+        "release": "a70c34e028ab279bb89565606e1ab09011a41bc2"
+      },
+      "dependencies": [
+        {
+          "revision": "release",
+          "position": 0,
+          "role": "driver",
+          "sha256": "c50cf502d4461de8eec69683254d2b0b1a1eb1439437b832e86831dc5795bf4e"
+        },
+        {
+          "revision": "release",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "783b62cfd46decf12296662b3e45d1961728f596f9dace0110ed4855c8f51ca5"
+        },
+        {
+          "revision": "release",
+          "position": 2,
+          "role": "original",
+          "sha256": "76434bd2dd778ab140d84b3c6ffa40c40fe6219909f5ed1d8b8977c5ae8e50c8",
+          "coordinates": "org.apache.commons:commons-text:1.13.1"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/score/LcsScore.java": "e965acae118f3fafb9d46a7af08a3a3e64444d4fb13c0c493b42962afb9f31c3",
+        "adapter/score/ScoreOracle.java": "a44fa50ced5f4c82ad11be98628f8172e6d080bb1f5a349f9dde7f4a10942dad",
+        "controls/oracle.py": "285ce62562b246a72b715ee5b27a310494cb2374647e0c75549d23dcd2e6985a",
+        "driver/score/ScoreDriver.java": "5c8a920653742e7a89b43801ecfdcb58d0bd0064009a9fc2918c527b6924ac0c"
+      },
+      "claimKey": "f24392f33bd69be4"
+    }
+  },
+  "attempt": {
+    "id": "20261119T160609Z-4f66cd3b",
+    "claim": "e02a96e26457bf09",
+    "startedAt": "2026-11-19T16:06:09+00:00",
+    "seconds": 0.1,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "ab4545110bd8a295c20966d0bcc1013442cbdb510f8b9cc8927835e27011ed04",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control release on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-release-jdk21.stdout",
+        "stderr": "records/control-release-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "e02a96e26457bf09",
+    "attempt": "20261119T160609Z-4f66cd3b",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: release holds the oracle, on every JDK named: as the None pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 8,
+      "code": "\"release\": {\"commit\": \"a70c34e028ab279bb89565606e1ab09011a41bc2\", \"release\": \"1.13.1\", \"checked\": \"The release source JAR and the pinned git blob of LongestCommonSubsequence.java agree.\"},"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 1 concrete control runs of the driver on the oracle's inputs, read by controls/oracle.py",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "c6f02a1159d3b9933c4b82e5adc2218fae3ffa7d05609f2b2c355a92490eef2b",
+        "bytes": 23388
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "30eb2a4e4fb13dfa972b16bf36bafdf3bc18709e4c9cbb982192e62bc9c5c491",
+        "bytes": 180
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "fc7051b99cb392da56059e063a7238a5b26925431de4be46b80ccd2817aaed54",
+        "bytes": 1037
+      },
+      {
+        "path": "records/control-release-jdk21.stdout",
+        "sha256": "3f3c694ff0d3ca3fd6479ffba56617a2c682146eeeefced96e0c435887debc54",
+        "bytes": 8445
+      },
+      {
+        "path": "records/control-release-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "bc885b1abfe4c5cb1bac76c30bf9a169a16bfef4a2f3775873d70f2a26df8712",
+        "bytes": 23647
+      }
+    ]
+  }
+}

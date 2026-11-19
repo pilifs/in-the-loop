@@ -1858,7 +1858,7 @@ def example_job_parts(example_id, task=None):
     example = json.loads((folder / "example.json").read_text())
     if task is not None:
         return example_task_job_parts(example_id, folder, task)
-    if example.get("origin") != "constructed" and example.get("target"):
+    if example.get("target"):
         sys.exit(f"example {example_id} has a target sidecar: name one of its tasks with --task "
                  "(python3 examples/tools/build.py --plan ID lists them)")
     if example.get("origin") != "constructed":

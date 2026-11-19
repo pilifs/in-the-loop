@@ -1,0 +1,28 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "308",
+  "title": "Apache Commons Text longest common subsequence on two distinct score rows",
+  "summary": "Compare the public score in Commons Text 1.13.1 with exhaustive subsequence enumeration. An altered build makes the two working rows share storage.",
+  "origin": "real-world",
+  "categories": ["functional"],
+  "tags": ["open-source-libraries", "aliasing", "external-target", "own-checker"],
+  "severity": "none",
+  "subject": {
+    "system": "Apache Commons Text",
+    "file": "src/main/java/org/apache/commons/text/similarity/LongestCommonSubsequence.java",
+    "symbol": "org.apache.commons.text.similarity.LongestCommonSubsequence#apply"
+  },
+  "approach": {"id": "B11", "name": "Property proofs", "tool": "lib", "engine": "native"},
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/apache/commons-text",
+    "url": "https://github.com/apache/commons-text/blob/a70c34e028ab279bb89565606e1ab09011a41bc2/src/main/java/org/apache/commons/text/similarity/LongestCommonSubsequence.java"
+  },
+  "change": {"kind": "refactor", "description": "The row-sharing change is a constructed negative control."},
+  "verdictLabel": "JVM oracle agrees on 225 release inputs and disagrees on 44 control inputs",
+  "target": "target.json",
+  "notes": [
+    "Each CharSequence operand is an actual String of length zero to three over a and b. The original and altered source builds use the same compiler and flags. The release JAR is a third, independently checked artifact.",
+    "The release and source rebuild each matched 225 expected scores. The shared-row control differed on 44. The public native probe at unwind 18 and array bound 4 reached the multidimensional allocation and reported it outside the fragment. See the probe intention in history and the matching execution in records."
+  ]
+}

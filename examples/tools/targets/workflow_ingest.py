@@ -540,6 +540,31 @@ def verifier_outcome(plan, bound, records):
                 fields.update({"counterexamples": witnesses if verdict == "violation" else [], "domain": outcome.get("domain"),
                                "proof": outcome.get("proof"), "problem": outcome.get("problem"),
                                "replay": {"by": replay["by"], "reproduced": replay["reproduced"]} if replay else None})
+    if verdict in ("verified", "violation") and (plan.claim.get("boundEnvironment")
+            or any(isinstance(o, dict) for o in plan.claim.get("observations", []))):
+        from targets import qualification
+        classpaths = {}
+        for revision, (_, prepared, _) in bound.items():
+            by_path = {a.path: a for a in prepared.artifacts}
+            classpaths[revision] = [{"path": a.path, "sha256": a.sha256, "role": a.role}
+                                    for a in (by_path[path] for path in prepared.classpath)
+                                    if a.role in ("original", "dependency", "stub")]
+        artifact_problem = None
+        if v.identities.get("classpath") != classpaths:
+            artifact_problem = "the verifier's ordered classpaths are not the prepared artifacts"
+        elif not v.identities.get("jvmcontract") or not v.identities.get("jdkRelease"):
+            artifact_problem = "the verifier did not identify its checker binary and JDK"
+        elif verdict == "verified" and v.directory and (Path(v.directory) / v.stdout).is_file() and (Path(v.directory) / v.stdout).stat().st_size > STREAM_CAP:
+            artifact_problem = "the verifier output needed for this establishment exceeds the archived evidence limit"
+        for outcome in outcomes:
+            reason = artifact_problem or qualification.check(plan.claim, {"target": plan.target}, outcome, plan.claim["bounds"].get("maxArrayLength"))
+            if reason:
+                execution = {"status": "invalid-output", "exitCode": v.exitCode, "reason": reason}
+                verdict = None
+                fields.update(proof=None, problem=reason)
+                break
+        if len(outcomes) == 1:
+            fields["stated"] = build.stated_record(outcomes[0])
     name_revisions(plan, fields["counterexamples"])
     vacuous = verdict == "verified" and any((r or {}).get("vacuous") for r in (fields["properties"] or []))
     if vacuous:
@@ -729,10 +754,14 @@ def publish(plan, prepared, records, out):
                    "pipeline": job if any(job.values()) else None, "execution": fields["execution"],
                    "stages": [stage_of(r, k) for r, k in zip(records, kept)], "workspace": None}
         if not replay:
-            bounds = plan.claim.get("bounds") or {}
-            attempt["exploration"] = {"unwind": bounds.get("unwind"), "maxArrayLength": bounds.get("maxArrayLength"),
-                                      "complete": True if fields["verdict"] == "verified" and fields["proof"]
-                                      and "with unwinding assertions" in fields["proof"] else None}
+            actual = next(iter(verifier.observations or []), {}) if verifier else {}
+            search = actual.get("search") or {}
+            stated = actual.get("stated") or {}
+            bounds = stated.get("bounds") or {}
+            attempt["engine"] = (stated.get("checker") or {}).get("engine") or search.get("engine") or plan.engine
+            attempt["exploration"] = {"unwind": bounds.get("unwind", search.get("unwind")),
+                                      "maxArrayLength": search.get("max_array_length", bounds.get("max_array_length")),
+                                      "complete": bounds.get("complete")}
         # A target task's attempt runs no module tests (its concrete controls are its records), so existingTests is
         # null, never a run that didn't pass; one revision has no before (result.schema.json allows both with a target).
         result = {"existingTests": None,

@@ -1,0 +1,113 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "shared-array-poststate",
+    "family": "paired-primitive-arrays",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "reference": {
+        "fixture": "baseline"
+      },
+      "skipped-write": {
+        "fixture": "alternative"
+      }
+    },
+    "pairs": [
+      {
+        "name": "mutation",
+        "kind": "mutation",
+        "before": "reference",
+        "after": "skipped-write"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "mutation",
+      "target": "arrays.Update#apply([I[I)I"
+    },
+    {
+      "id": "return-only",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "pair": "mutation",
+      "target": "arrays.Update#apply([I[I)I",
+      "claim": "claims/return-only.json",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "engine": "native",
+      "gaps": "strict",
+      "invocation": {
+        "how": "route",
+        "checked": "2026-11-19",
+        "evidence": "The public equivalence task selects the frozen root observations and the same primitive choices for both versions."
+      }
+    },
+    {
+      "id": "right-root",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "pair": "mutation",
+      "target": "arrays.Update#apply([I[I)I",
+      "claim": "claims/right-root.json",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "engine": "native",
+      "gaps": "strict",
+      "invocation": {
+        "how": "route",
+        "checked": "2026-11-19",
+        "evidence": "The public equivalence task selects the frozen root observations and the same primitive choices for both versions."
+      }
+    },
+    {
+      "id": "both-roots",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "pair": "mutation",
+      "target": "arrays.Update#apply([I[I)I",
+      "claim": "claims/both-roots.json",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "engine": "native",
+      "gaps": "strict",
+      "invocation": {
+        "how": "route",
+        "checked": "2026-11-19",
+        "evidence": "The public equivalence task selects the frozen root observations and the same primitive choices for both versions."
+      }
+    }
+  ],
+  "controls": [
+    {
+      "id": "root-driver",
+      "kind": "driver",
+      "path": "driver/arrays/RootCases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/oracle.py"
+    }
+  ]
+}

@@ -80,7 +80,7 @@ def beside(root: Path, number: str, task: str, record: dict, source=None) -> dic
     out = {"answer": record.get("answer"), "job": record.get("job"), "by": record.get("by"), "confirmed": checked["accepted"]}
     if not checked["accepted"]:
         return {**out, "actual": checked.get("actual"), "why": checked.get("why") or f"the evidence gives {checked.get('actual')}"}
-    return {**out, "limits": checked["limits"]} if checked["limits"] else out
+    return {**out, "limits": checked["limits"], "restsOn": checked.get("restsOn", [])}
 
 
 def answer(claim: dict) -> str | None:
@@ -213,6 +213,13 @@ def main(argv: list[str] | None = None) -> int:
     else:
         for r in found["examples"]:
             print(f"{r['id']}  {r['state']:<10}  {claims_line(r)}")
+            for task, claim in r.get("claims", {}).items():
+                evidence = claim.get("beside") or {}
+                if evidence.get("confirmed"):
+                    for assumption in evidence["restsOn"]:
+                        print(f"     {task} assumes {assumption}")
+                    for limit in evidence["limits"]:
+                        print(f"     {task} evidence limit — {limit}")
             for label in ("title", "source", "provenance", "verdict"):
                 if r.get(label):
                     print(f"     {label}: {r[label]}")

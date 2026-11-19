@@ -771,7 +771,8 @@ class IngestTest(Fixture):
         document = self.receipt(vulnerable)
         self.assertEqual((vulnerable.status, document["conclusion"]["expectation"]), ("established", "no"),
                          "an unexpected verdict is kept, never rewritten")
-        self.assertEqual(self.receipt(fixed)["attempt"]["exploration"]["complete"], True)
+        self.assertIsNone(self.receipt(fixed)["attempt"]["exploration"]["complete"],
+                          "a legacy proof line does not record its executed bounds")
         refusal = self.ingest("regex-probe", (self.verifier([outcome("unverifiable", problem="java.util.regex.Pattern#compile is outside the checker")], 1, revision="after"),))
         self.assertEqual((refusal.execution, refusal.status), ("completed", "unresolved"))
         self.assertEqual(self.receipt(refusal)["conclusion"]["expectation"], "yes", "a refusal is unresolved, as expected")

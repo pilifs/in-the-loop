@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261119-164549-197-integrated-jbmc-preserving-and-discr",
+  "title": "197 integrated JBMC preserving and discriminating array pairs",
+  "description": "Try the full shared nullable profile first on equivalent implementations and on a skipped write, using the two-root poststate. Require a complete non-vacuous proof and a refutation with a JVM replay of both requested descriptors. If the full profile does not qualify, try a separately identified distinct-array domain with a one-cell bound, preserving every full-profile refusal.",
+  "kind": "library",
+  "capabilities": [
+    "jbmc:arrays",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "197"
+    ]
+  },
+  "expected": "At least one declared profile qualifies both pairs at identical settings.",
+  "submitted": {
+    "at": "2026-11-19T16:45:49+00:00",
+    "session": "01a1f467-856b-7d02-9458-ab076e5fef2f"
+  },
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "javac",
+    "java"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m"
+  },
+  "steps": [
+    {
+      "name": "paired roots on integrated JBMC",
+      "run": "python3 -I examples/197-shared-int-array-poststates/proofs/overlap.py > verification/foundation-jbmc-array-overlap.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/foundation-jbmc-array-overlap.json"
+  ]
+}

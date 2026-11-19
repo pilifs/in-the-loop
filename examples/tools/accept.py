@@ -54,7 +54,7 @@ when every one of these holds; one that fails, or that the evidence has nothing 
 A driver writes evidence.json with `record` below. llm-dlc/tools/changes.py counts an answer beside the route only
 when this accepts it.
 
-It only reads. Standard library only.
+It only reads. A job that links a source claim key uses the ordinary planner to resolve its defaults.
 """
 from __future__ import annotations
 
@@ -259,6 +259,35 @@ def sizes(value) -> list[int]:
     if isinstance(value, list):
         return [len(value)] + [n for v in value for n in sizes(v)]
     return []
+
+
+def length_bound(folder, target, task, claim, job, stated):
+    """Resolve the planned input length independently of the checker's search settings."""
+    for record, origin in ((claim, "claim"), (task, "task")):
+        value = (record.get("bounds") or {}).get("maxArrayLength")
+        if value is not None:
+            return value, origin
+    # A job can opt into the ordinary planner's defaults by committing its source claim key
+    # before execution. A later planner with different semantics cannot match that key.
+    keys = (job.get("links") or {}).get("claims", [])
+    if keys:
+        from targets import workflow
+        try:
+            planned = workflow.source_claim(folder, target, task, [])
+        except workflow.ClaimError:
+            planned = {}
+        if planned.get("key") in keys:
+            return planned["bounds"]["maxArrayLength"], "planner-default"
+    descriptor = task.get("target", "").partition("(")[2]
+    types = descriptor_parameters("(" + descriptor) if descriptor else None
+    parameters = (stated.get("domain") or {}).get("parameters")
+    if (types is not None and all(t in PRIMITIVES.values() for t in types)
+            and not task.get("invocation") and not claim.get("plan")
+            and not any(ADAPTER_ENTRY.search(a["text"]) for a in claim.get("assumptions", []))
+            and isinstance(parameters, list) and [p.get("type") for p in parameters] == types
+            and all(p.get("kind") == "primitive" for p in parameters)):
+        return None, "irrelevant"
+    return None, "missing"
 
 
 def replayed_mutant(folder: Path) -> str | None:
@@ -521,11 +550,11 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
         said("entry", FAIL if entry else UNBOUND, f"the outcome is about {entry or 'no target'}, which is neither the task's target nor the entry its invocation or the claim's assumptions name")
 
     # domain
-    want = (claim.get("bounds") or {}).get("maxArrayLength")
+    want, provenance = length_bound(folder, target, task, claim, job if recorded else {}, stated)
     ran_at = search.get("max_array_length")
-    bound = {"claim": want, "ran": ran_at, "unwind": search.get("unwind"), "trialFlags": chosen["trial"]}
+    bound = {"claim": want, "provenance": provenance, "ran": ran_at, "unwind": search.get("unwind"), "trialFlags": chosen["trial"]}
     witness = (outcome.get("counterexample") or inner.get("counterexample") or {})
-    longest = max(sizes([i.get("value") for i in witness.get("inputs") or []]), default=0)
+    longest = max((n for i in witness.get("inputs") or [] for n in sizes(i.get("value"))), default=0)
     nullable = sorted(p.get("name") for p in ((stated.get("domain") or {}).get("parameters") or []) if p.get("null"))
     parameters = {a.get("name") for a in ((witness.get("call") or {}).get("arguments") or [])} or None
     null_where_not = [i.get("name") for i in witness.get("inputs") or [] if i.get("value") is None
@@ -534,8 +563,8 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
         said("domain", FAIL, f"the parameters that may be null ({', '.join(nullable) or 'none'}) are not the claim's ({', '.join(sorted(claim.get('nullable') or [])) or 'none'})")
     elif actual == "refuted" and null_where_not:
         said("domain", FAIL, f"the witness's {', '.join(null_where_not)} is null, which the claim does not let it be (nullable: {', '.join(sorted(claim.get('nullable') or [])) or 'none'}): it lies outside the claim's domain")
-    elif want is None and not chosen["trial"]:
-        said("domain", OK, "the claim states no bound on lengths, and the step overrides none")
+    elif provenance == "irrelevant":
+        said("domain", OK, "the frozen entry and the executed domain take only primitive scalar inputs")
     elif want is None or ran_at is None:
         said("domain", UNBOUND, f"the claim's bound ({want}) or the outcome's ({ran_at}) is not recorded" + (f", and the step overrides one ({' '.join(chosen['trial'])})" if chosen["trial"] else ""))
     elif actual == "established" and ran_at < want:
@@ -548,6 +577,10 @@ def check(root: Path, number: str, task_id: str, source=None) -> dict:
         said("domain", OK, f"the claim's bound, {want}" + (f"; the witness's longest value is {longest}" if actual == "refuted" else ""))
 
     # mode
+    if claim.get("boundEnvironment") or any(isinstance(o, dict) for o in claim.get("observations", [])):
+        from targets import qualification
+        reason = qualification.check(claim, task, outcome, want)
+        said("qualification", FAIL if reason else OK, reason or "the executed statement and its evidence match the frozen claim")
     off = [f"{k} {has} where the task says {want_}" for k, has, want_ in (("engine", search.get("engine"), task.get("engine")), ("gap mode", search.get("gap_mode"), task.get("gaps")))
            if want_ not in (None, "auto") and has != want_]
     said("mode", FAIL if off else OK, "; ".join(off) or f"engine {search.get('engine')}, gaps {search.get('gap_mode')}, as the task says")

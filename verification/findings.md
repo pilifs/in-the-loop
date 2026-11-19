@@ -109,6 +109,16 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Closes when**: the fixed rule has had an adversarial pass with its countermodels tested; 287, 289, 290 and 307
   are accepted on frozen-bound jobs that ran on the final checker; I026 is decided; and 288's closeout is recorded.
 
+**Foundation pass, 2026-11-19.** The two-predecessor unit test
+`absorb_preserves_each_predecessors_opaque_string_result` collects both heaps, swaps the numbering of two live
+String results on one branch and checks both guards after the actual merge. A call seen on only one path is dropped.
+The public native checker refuted `stale` at 0, `swapped` at 1 and `branchText` at 1. The independent JVM test in
+`lib/tests/record_countermodels.rs` distinguished each pair at those inputs. For `kept` the checker reported
+incomplete unwinding and for `around` it reached its call-depth limit. The two JVM controls in
+`lib/tests/allocation_countermodels.rs` distinguished both outcomes. The admitted scalar control in
+`callee-countermodels/check.py` verified with 88 related calls. The full comparison is queued in job
+`20261119-154132-challenge-i028-and-i029-on-the-shared-ca`.
+
 ### VF-043: one-value binding checks accept wrong binders in 286 and 288; claims should bind sequences of permitted and denied updates
 
 - **Status**: open (the user's decision on 2026-11-18, run-streams-domain-advances-D036: for later, with the coming
@@ -153,17 +163,30 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
     verified (at `vqquvmnm`) with the class observed under that setting while the result says "it read no system
     property" and nothing of the setting: refuse each or state the setting; the checker-side test is in
     `lib/tests/fixtures/setting-countermodels/README.md`.
-  - Evidence's I015, half done. The first half landed during the run (`lvorrywx`): accept.py compares a later step's
-    `--work` as resolved folders. The second half stays open: where a claim states no bound, accept.py's domain check
-    reads the outcome's own bound (`examples/tools/accept.py`, around line 537).
+  - Evidence's I015. The first half landed during the run (`lvorrywx`): accept.py compares a later step's
+    `--work` as resolved folders. On 2026-11-19 the domain check began requiring an independently planned
+    length for bounded inputs. `TrialBound.test_a_run_cannot_supply_an_unplanned_length_bound` checks the
+    missing-plan case, a predeclared planner default and an irrelevant scalar bound.
   - Evidence's I016 (286's gap packet observed beside the route is read by nothing): optional, and it can wait (D038).
 - **Needs**: an owner for each, in the next brief that touches the observer and the JDK models. I018 and I014 are
   demonstrated false proofs and come first, before those features are relied on in a new example (D038, VF-044).
 - **Tracked in**: run-streams-domain-advances-D036; the inbox items named.
 - **Closes when**: each is fixed with its checker-side test, or decided not to be.
 
+**Foundation pass, 2026-11-19.** The four I018 countermodels now receive a named refusal when they read
+exception details supplied by a JDK model. Their JVM controls still observe the real messages.
+`modeled_exception_details_do_not_establish_the_four_jdk_countermodels` exercises the public native checker.
+For I014, `indirect_setting_reads_refuse_the_observed_initializer` and
+`startup_setting_reads_refuse_the_observed_initializer` exercise all six known setting reads. Each refuses
+the observation before the setting can support a proof. The existing JVM test varies every setting independently.
+The scan covers the observed class and application classes initialized alongside it. A reference in a method
+that did not execute can also cause refusal.
+
 ### VF-041: 287's preservation is proved for terminating runs only, and changes.py drops the checker's assumptions from what it reports
 
+- **Reporting fix, 2026-11-19.** Both the JSON and text forms of `changes.py 287` now carry the accepted
+  preservation evidence's termination assumption. The text report prints each assumption and each evidence limit
+  for its own task. The example's notes already identify the result as agreement on terminating runs.
 - **Status**: open (the user's decision on 2026-11-18, run-streams-domain-advances-D036: report 287 so, fix the
   projection later).
 - **Raised**: 2026-11-18 by an outside review the user asked for, of the domain-advances run's acceptance state.

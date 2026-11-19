@@ -245,6 +245,8 @@ def source_claim(folder, target, task, controls):
         "gaps": task.get("gaps"), "parent": task.get("parent"),
         "controls": [{"id": c["id"], "kind": c["kind"], **hashed(folder, c["path"])} for c in controls],
     }
+    if "boundEnvironment" in stated:
+        claim["boundEnvironment"] = stated["boundEnvironment"]
     claim["key"] = claim_key(claim)
     return claim
 
@@ -264,6 +266,8 @@ def claim_key(claim):
         body["models"] = sorted(m["sha256"] for m in claim["models"])
         body["plan"] = claim["plan"] and claim["plan"]["sha256"]
         body["contracts"] = claim["contracts"] and claim["contracts"]["sha256"]
+        if "boundEnvironment" in claim:
+            body["boundEnvironment"] = claim["boundEnvironment"]
     return canonical_digest({"format": CLAIM_VERSION, **body})[:16]
 
 

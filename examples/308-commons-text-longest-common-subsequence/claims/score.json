@@ -1,0 +1,14 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "property": "public-subsequence-score",
+  "kind": "property",
+  "statement": "For each ordered pair of actual String instances of length 0 through 3 over a and b, the public apply method returns the length of the longest common subsequence.",
+  "assume": "left >= 0 && left < 15 && right >= 0 && right < 15",
+  "assert": "result == score.ScoreOracle.expected(score.LcsScore.word(left), score.LcsScore.word(right))",
+  "observations": ["result", "exception"],
+  "bounds": {"maxArrayLength": 4, "unwind": 18},
+  "assumptions": [
+    {"text": "The parameters are those of the adapter entry score.LcsScore#score(II)I. adapter/score/LcsScore.java maps 0 through 14 bijectively to the fifteen strings and invokes the selected public method. adapter/score/ScoreOracle.java enumerates subsequences independently.", "basis": "fixture"}
+  ]
+}

@@ -235,10 +235,10 @@ pub fn observe(classes: &[String], classpath: &[PathBuf], work: &Path) -> Result
         let observed = parse(&binary, &line)?;
         bind(&binary, &internal, &observed.on, &entries, &tool)?;
         for ran in std::iter::once(internal.as_str()).chain(observed.on.initialized.iter().map(|i| i.name.as_str())) {
-            if let Some(call) = reads_environment(&tool, ran)? {
+            if let Some((setting, call)) = unbound_setting(&tool, ran)? {
                 let whose = if ran == internal { "its code".to_string() } else { format!("its initialization initialized {}, whose code", ran.replace('/', ".")) };
                 return Err(Error::new(format!(
-                    "--observed-initializer {binary}: {whose} reads the environment ({call}), and an observation does not record the environment, so the check cannot take it (the environment is not the class path's, and it differs from one machine to the next)"
+                    "--observed-initializer {binary}: {whose} reads {setting} ({call}), which the observation cannot bind"
                 )));
             }
         }
@@ -325,19 +325,33 @@ fn tool_sha256(tool: &crate::classpath::ClassPath, internal: &str) -> Result<Opt
     Ok(tool.application_bytes(internal)?.map(|b| crate::digest::sha256_hex(&b)))
 }
 
-/// The JDK method by which the class file the tool reads of `internal` reads the environment, if it has one: a call
-/// or a method handle of `System.getenv` or `ProcessBuilder.environment` anywhere in it, run or not.
-fn reads_environment(tool: &crate::classpath::ClassPath, internal: &str) -> Result<Option<String>, Error> {
+/// Settings outside the observation's dynamic recorder. Scan the observed class and the application classes
+/// initialized with it. A reference in an unexecuted method can conservatively refuse an observation.
+fn unbound_setting(tool: &crate::classpath::ClassPath, internal: &str) -> Result<Option<(&'static str, String)>, Error> {
     let Some(bytes) = tool.application_bytes(internal)? else { return Ok(None) };
     let class = crate::classfile::ClassFile::parse(&bytes).map_err(|e| Error::new(format!("--observed-initializer: the class file of {} does not parse: {e}", internal.replace('/', "."))))?;
     for (index, constant) in class.pool.entries().iter().enumerate() {
-        if !matches!(constant, crate::classfile::Constant::MethodRef { .. }) {
-            continue;
-        }
-        let Ok(member) = class.pool.member(index as u16) else { continue };
-        if matches!((member.owner.as_str(), member.name.as_str()), ("java/lang/System", "getenv") | ("java/lang/ProcessBuilder", "environment")) {
-            return Ok(Some(member.display()));
-        }
+        use crate::classfile::Constant;
+        let (index, handle) = match constant {
+            Constant::MethodRef { .. } | Constant::InterfaceMethodRef { .. } => (index as u16, false),
+            Constant::MethodHandle { reference_index, .. } => (*reference_index, true),
+            _ => continue,
+        };
+        let Ok(member) = class.pool.member(index) else { continue };
+        let setting = match (member.owner.as_str(), member.name.as_str()) {
+            ("java/lang/System", "getenv") | ("java/lang/ProcessBuilder", "environment") => "the environment",
+            ("java/lang/System", "getProperty" | "getProperties") if handle => "a system property through a method handle",
+            ("java/util/Properties" | "java/util/Hashtable", "putIfAbsent" | "replace" | "replaceAll" | "merge" | "compute" | "computeIfAbsent" | "computeIfPresent") => "a possible system property through a map update",
+            ("java/lang/invoke/MethodHandles$Lookup", name) if name.starts_with("find") || name.starts_with("unreflect") => "a dynamically looked-up member",
+            ("java/lang/Runtime", "availableProcessors" | "maxMemory" | "totalMemory" | "freeMemory") => "the JVM resource configuration",
+            ("java/io/File", "getAbsolutePath" | "getAbsoluteFile" | "getCanonicalPath" | "getCanonicalFile")
+            | ("java/nio/file/Path", "toAbsolutePath" | "toRealPath") => "the JVM working directory",
+            ("java/nio/charset/Charset", "defaultCharset") => "the default charset",
+            ("java/lang/String", "getBytes") if member.descriptor == "()[B" => "the default charset",
+            ("java/lang/String", "<init>") if matches!(member.descriptor.as_str(), "([B)V" | "([BII)V") => "the default charset",
+            _ => continue,
+        };
+        return Ok(Some((setting, member.display())));
     }
     Ok(None)
 }

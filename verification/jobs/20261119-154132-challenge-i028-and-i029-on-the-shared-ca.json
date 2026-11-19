@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261119-154132-challenge-i028-and-i029-on-the-shared-ca",
+  "title": "Challenge I028 and I029 on the shared-callee controls",
+  "description": "Run every synthetic callee pair independently on the JVM and the native checker. The scalar loop must verify using related calls. Check allocating digest calls, saved state, static state and exceptions against each fixture's JVM observations before requalifying frozen preservation tasks.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "native:shared-callees"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/fixtures/callee-countermodels"
+    ]
+  },
+  "expected": "Every case has a verdict or an explicit refusal. The scalar loop is proved with related calls. No JVM-distinguishable control is proved equivalent.",
+  "submitted": {
+    "at": "2026-11-19T15:41:32+00:00",
+    "session": "01a1f467-856b-7d02-9458-ab076e5fef2f"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "6m"
+  },
+  "steps": [
+    {
+      "name": "JVM controls and native disposition",
+      "run": "python3 -I lib/tests/fixtures/callee-countermodels/check.py --jvmcontract \"$JVMCONTRACT\" --rule-landed --json verification/foundation-callee-controls.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/foundation-callee-controls.json"
+  ]
+}
