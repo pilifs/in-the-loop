@@ -12,24 +12,24 @@
     "claude-fable-5-2"
   ],
   "started": "2026-11-15T19:24:01.389Z",
-  "ended": "2026-11-19T13:42:00.445Z",
-  "duration_seconds": 325079,
+  "ended": "2026-11-19T13:44:26.976Z",
+  "duration_seconds": 325226,
   "stats": {
     "turns": 52,
-    "api_calls": 1397,
-    "tool_calls": 1504,
+    "api_calls": 1399,
+    "tool_calls": 1506,
     "tool_errors": 50,
     "compactions": 11,
     "peak_context_tokens": 466857,
     "usage": {
-      "input_tokens": 2864,
-      "output_tokens": 1966331,
-      "cache_read_input_tokens": 375430564,
-      "cache_creation_input_tokens": 5031959
+      "input_tokens": 2868,
+      "output_tokens": 1967310,
+      "cache_read_input_tokens": 376003576,
+      "cache_creation_input_tokens": 5034133
     }
   },
   "tools": {
-    "Bash": 1288,
+    "Bash": 1290,
     "Write": 78,
     "Edit": 48,
     "Read": 43,
@@ -278,24 +278,24 @@
     {
       "index": 11,
       "started": "2026-11-18T05:37:49.230Z",
-      "ended": "2026-11-19T13:42:00.445Z",
+      "ended": "2026-11-19T13:44:26.976Z",
       "turns": 2,
-      "api_calls": 83,
+      "api_calls": 85,
       "usage": {
-        "input_tokens": 168,
-        "output_tokens": 99033,
-        "cache_read_input_tokens": 16553612,
-        "cache_creation_input_tokens": 400898
+        "input_tokens": 172,
+        "output_tokens": 100012,
+        "cache_read_input_tokens": 17126624,
+        "cache_creation_input_tokens": 403072
       },
-      "peak_context_tokens": 285643
+      "peak_context_tokens": 287817
     }
   ],
   "log": {
-    "sha256": "4944280e77e3524e252fbb82a518783a981c00c51134fb54b0d547fc99b7ac7c",
-    "bytes": 36203417,
-    "lines": 12583,
-    "gzip_bytes": 6263164,
-    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/4944280e77e3524e252fbb82a518783a981c00c51134fb54b0d547fc99b7ac7c.jsonl.gz"
+    "sha256": "872594a48b5ab5d9d8d9db1d4dcc3a1d25321a527dadf3b81e2c81892e80011b",
+    "bytes": 36222600,
+    "lines": 12598,
+    "gzip_bytes": 6265861,
+    "path": "llm-dlc/traces/3e8cabab-4a28-4a79-8207-69568d9e8162/logs/872594a48b5ab5d9d8d9db1d4dcc3a1d25321a527dadf3b81e2c81892e80011b.jsonl.gz"
   },
   "subagents": [
     {
@@ -3079,6 +3079,14 @@
       "summary": "A Codex turn's own compactions reach the loop, and a decision in the allow list that no person took is an error of check",
       "body": "Two things brief 00 had left open, taken up at the user's word and settled by probes of Codex CLI 0.169 from scratch folders (2026-11-19).\n\nAutomatic compaction in the middle of a turn: 'codex exec --json' prints nothing for one (a turn made to compact five times showed only its items), but the thread's log gets a 'compacted' line each time, with the size of the context it replaced. agent_client.py now reads the log as the turn goes (what was appended since the turn began, at each event and at the end) and prints Claude Code's compact_boundary for each, so a moonshot's compaction with no commit is put to its watcher under either client. The translation of a guessed stream event is gone, the stand-in compacts as Codex does, and the trace's boundary carries the size too. The loop's FEATURE_LOOP_AUTOCOMPACT is not passed to Codex: it is a size for Claude Code's window, and Codex keeps the model's own threshold.\n\nThe allow list and the reviewed findings: Codex's sandbox cannot keep them from a patch in a way the tools survive. A file marked 'read' in a permission profile was patched all the same (the automatic reviewer let the request through, as it did for the built-in read-only profile), and one marked 'deny' could not be read by any command, the repository's own tool included, with no way to ask. So the bar is in the tool, for every client: the three commands a person runs (approve and add of the allow list, accept of a review) record each decision they wrote on the machine (person-decisions.json in the state folder, a digest and never the value), and check reports as an error a decision in either file that is neither in the file as published (the newest immutable ancestors of @, asked only when the files change) nor in that record. A person who did take one says so with a new command, vouch, of the allow list, which agents are refused (the tool's own check, a deny rule in .claude/settings.json, a forbidden rule for Codex). The record is a file an agent could write: it catches a mistake or a habit, not a forgery. On this checkout every approved entry is published, so the check finds nothing.\n\nVerified by five new tests (a compaction read from a log once and only if it is the turn's; an approval a person made against one written by hand; a published decision and the cached answer; vouching; an accepted finding) and the changed ones (the adapter through the stand-in over three turns); test_review.py now keeps its state in a folder of its own, since a person's command writes the record. The tests of what changed pass, 23 of 23 Python test files (python3 lib/tools/test_costs.py run --changed --rust-jobs 1 under an 8G cap). The default test run on the merge before this commit passed, 58 of 58 (recorded for tree 93f833f7a9f1).",
       "log_sha256": "4944280e77e3524e252fbb82a518783a981c00c51134fb54b0d547fc99b7ac7c"
+    },
+    {
+      "change_id": "nnrlosqoulwtrnxlltqykmoyluzrkwmk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose the made-up rollout file name of test_codex.py for the allow list",
+      "body": "Finding b24f7c44 (long-token) is the name of a made-up Codex rollout file in llm-dlc/tools/test_codex.py: the word rollout, a date and a made-up thread id, 64 characters in all, which the rules read as a long token wherever this session's log quotes the test. Checked with the masked view of the finding and by finding the one line of the test that holds it. It stays a warning of check until the user approves the proposal in their own terminal.",
+      "log_sha256": "872594a48b5ab5d9d8d9db1d4dcc3a1d25321a527dadf3b81e2c81892e80011b"
     }
   ],
   "logs": {
@@ -3219,6 +3227,12 @@
       "lines": 9853,
       "gzip_bytes": 5082555,
       "url": "https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/8463d1891e35e10700e2a5572bcc49cb3b82cc4fbc038a701754c9b55c401d36.jsonl.gz"
+    },
+    "872594a48b5ab5d9d8d9db1d4dcc3a1d25321a527dadf3b81e2c81892e80011b": {
+      "bytes": 36222600,
+      "lines": 12598,
+      "gzip_bytes": 6265861,
+      "url": null
     },
     "8a1891534c01a88ab53b3d0453c1356aef114aa2ea4196c20533b2c795595dc9": {
       "bytes": 1517762,
