@@ -27,13 +27,17 @@ def build(work):
         if side == "after":
             subprocess.run(["git", "apply", "--whitespace=nowarn", str(patch)], cwd=root, check=True)
         dest = root / "classes"
-        files = sorted((source / "src/main/java").rglob("*.java")) + sorted((source / "src/stubs/java").rglob("*.java"))
-        subprocess.run([jdk / "bin/javac", "-proc:none", "-parameters", "-g", "--release", "21", "-d", dest, *files], check=True)
+        stubs = root / "compile-stubs"
+        javac = [jdk / "bin/javac", "-proc:none", "-parameters", "-g", "--release", "21"]
+        subprocess.run([*javac, "-d", stubs, *sorted((source / "src/stubs/java").rglob("*.java"))], check=True)
+        subprocess.run([*javac, "-cp", stubs, "-d", dest, *sorted((source / "src/main/java").rglob("*.java"))], check=True)
         classes[side] = dest
-        hashes[side] = {f.relative_to(dest).as_posix(): workflow.file_sha256(f) for f in sorted(dest.rglob("*.class"))}
+        hashes[side] = {role: {f.relative_to(directory).as_posix(): workflow.file_sha256(f)
+                                for f in sorted(directory.rglob("*.class"))}
+                        for role, directory in (("application", dest), ("compileStubs", stubs))}
         driver = root / "driver"
-        subprocess.run([jdk / "bin/javac", "-proc:none", "-cp", dest, "-d", driver, FOLDER / "controls/QuoteCases.java"], check=True)
-        output = subprocess.check_output([jdk / "bin/java", "-cp", os.pathsep.join(map(str, (dest, driver))),
+        subprocess.run([jdk / "bin/javac", "-proc:none", "-cp", os.pathsep.join(map(str, (dest, stubs))), "-d", driver, FOLDER / "controls/QuoteCases.java"], check=True)
+        output = subprocess.check_output([jdk / "bin/java", "-cp", os.pathsep.join(map(str, (dest, stubs, driver))),
                                           "shop.QuoteCases", "99", "100"], text=True)
         controls[side] = [json.loads(line) for line in output.splitlines()]
         expected = [{"cents": 1, "quantity": n, "amount": total,
