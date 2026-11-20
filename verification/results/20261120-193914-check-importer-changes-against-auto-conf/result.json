@@ -1,0 +1,213 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-193914-check-importer-changes-against-auto-conf",
+  "title": "Check importer changes against auto-confirm",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 24m43s, peak 2.2 GiB (estimated 25m00s, 2.0 GiB); signals: cargo:tests×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-193914-check-importer-changes-against-auto-conf.json",
+    "sha256": "66357b821c6d41517a159f585ad66fc75109277900d06a8ed897cbf36dbbc524",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-193914-check-importer-changes-against-auto-conf",
+      "title": "Check importer changes against auto-confirm",
+      "description": "Repeat the historical controls with the same bounds, JVM, checker budget and observations after extending native Java stream, comparator, array and reference semantics. Keep expected negative controls and all divergences visible.",
+      "kind": "library",
+      "capabilities": [
+        "tests:proof",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/conformance.rs"
+        ],
+        "jobs": [
+          "20261120-075443-confirm-jvm-corpus-hashes-and-map-outcom",
+          "20261120-100812-confirm-jvm-corpus-results-on-the-calend"
+        ]
+      },
+      "expected": "All auto-confirm checks match each concrete JVM calibration and recorded scope.",
+      "submitted": {
+        "at": "2026-11-20T19:39:14+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 8,
+      "requires": [
+        "cargo",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "25m",
+        "memoryLimit": "5G",
+        "timeout": "35m"
+      },
+      "steps": [
+        {
+          "name": "Check the corpus with auto-confirm",
+          "run": "cargo test --manifest-path lib/Cargo.toml --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --exact --test-threads=1",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "73db36c75d87a311d3a62abbd8e6d159af101448",
+  "startedAt": "2026-11-20T19:46:55+00:00",
+  "finishedAt": "2026-11-20T20:11:46+00:00",
+  "wallSeconds": 1491.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1224582,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 5368709120,
+    "timeoutSeconds": 2100.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 1500.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2348916736,
+    "wallSeconds": 1483.1,
+    "cpuSeconds": 1575.6,
+    "memoryOfEstimate": 1.09,
+    "durationOfEstimate": 0.99
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the corpus with auto-confirm",
+      "run": "cargo test --manifest-path lib/Cargo.toml --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --exact --test-threads=1",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2100.0,
+      "cancelled": false,
+      "wallSeconds": 1483.08,
+      "cpuSeconds": 1575.639,
+      "cpuThrottledSeconds": 1.486,
+      "peakMemoryBytes": 2348916736,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-corpus-with-auto-con.log",
+        "lines": 65,
+        "bytes": 2180,
+        "sha256": "3053d74a8d67da8209cadd4912922ea97e539edf25aef659aa60787303cf1d7b",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 64,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 1245.53s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "   Compiling anstream v1.0.0",
+        "   Compiling num-integer v0.1.47",
+        "   Compiling aho-corasick v1.1.5",
+        "   Compiling cadical v0.1.16",
+        "   Compiling stacker v0.1.25",
+        "   Compiling simd-adler32 v0.3.10",
+        "   Compiling serde v1.0.229",
+        "   Compiling adler2 v2.0.1",
+        "   Compiling heck v0.5.0",
+        "   Compiling strsim v0.11.1",
+        "   Compiling clap_lex v1.1.1",
+        "   Compiling serde_json v1.0.154",
+        "   Compiling regex-syntax v0.8.11",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling num-bigint v0.4.8",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling getrandom v0.4.3",
+        "   Compiling itoa v1.0.18",
+        "   Compiling rustix v1.1.6",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling num-rational v0.4.2",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling tempfile v3.27.0",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261120-193914-check-importer-changes-against-auto-conf/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 57s",
+        "     Running tests/conformance.rs (lib/target/release/deps/conformance-72e36f225237934f)",
+        "",
+        "running 1 test",
+        "test the_corpus_agrees_with_the_jvm_under_auto_confirm ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 1245.53s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-20T20:12:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}
