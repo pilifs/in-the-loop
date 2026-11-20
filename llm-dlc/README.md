@@ -586,7 +586,7 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 | 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 151 | 28 | open |
 | 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 163 | 144 | open |
 | 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](traces/7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 84 | 22 | open |
-| 2026-11-17 12:37 UTC | [/run-brief invocation options](traces/e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 71 | 384 | open |
+| 2026-11-17 12:37 UTC | [/run-brief invocation options](traces/e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 71 | 385 | open |
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 12 | 1 | ended |
 | 2026-11-17 02:26 UTC | [6da9b537-ecce-46cf-99fa-7cae16e7ce99](traces/6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 1 | 2 | ended |
 | 2026-11-17 02:13 UTC | [Window 11 verification loop](traces/b74acbd8-95de-40d7-8793-79948e8c27ae/summary.md) | 11 | 14 | ended |

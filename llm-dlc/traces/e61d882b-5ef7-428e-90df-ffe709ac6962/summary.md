@@ -2869,6 +2869,12 @@ change `tqmksxuxpwlu` · [log `08773679ab9a`](https://terminalvalue.net/raw-trac
 
 The user ruled on 2026-11-20 that the eighteen native outcomes decided under recorded JVM startup conditions (JFreeChart 321: the observed UTC default time zone and calendar factories; Joda-Time 327: the DateTimeZone provider and DateTimeUtils startup states) count as decided, reported as qualified by those conditions and not as unconditional proofs; the original obligations without them stay open. The ruling is in both examples' notes. The user also accepted the watcher's answers D001-D004 of both single-agent runs (foundation-and-python-restart and twenty-example-fast-follow), the two medium-confidence ones included; the fast-follow D005 waits for a later review. Verified with validate_example.py 321 and 327.
 
+### Price Codex auto-review at zero
+
+change `toloxstqkszp` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+
+Codex's reviewer of approval requests reports its calls as the model codex-auto-review, which had no row in llm-dlc/pricing.json, so its 337 calls in 14 sessions counted as $0 for want of a price and warned in check. Its checks are free and draw no plan usage (OpenAI's Codex rate card, and the user on 2026-11-20), so the row prices it at zero explicitly, with that note. The session metrics were regenerated with it in the commit before this one; check reports no pricing warnings.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz) has every step in between: reasoning, tool calls and their results.
