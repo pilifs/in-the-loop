@@ -519,14 +519,21 @@ impl ClassPath {
         })
     }
 
-    /// JDK image bytecode the native checker can enter for BigInteger.valueOf(long) and its allocation.
-    /// The factory decides which inputs use cached objects. A read of JDK cache state still needs its own evidence.
-    pub(crate) fn integer_factory_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
+    /// Numeric factories and constructors taken from the selected JDK image. Allocation outside
+    /// a wrapper's mandatory cache follows its actual bytecode, including any other cache read.
+    pub(crate) fn numeric_factory_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
         if !matches!((owner, name, descriptor),
             ("java/math/BigInteger", "valueOf", "(J)Ljava/math/BigInteger;")
             | ("java/math/BigInteger", "<init>", "(J)V")
             | ("java/math/BigInteger", "toMagArray", "(J)[I")
-            | ("java/lang/Number", "<init>", "()V"))
+            | ("java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;")
+            | ("java/lang/Short", "valueOf", "(S)Ljava/lang/Short;")
+            | ("java/lang/Long", "valueOf", "(J)Ljava/lang/Long;")
+            | ("java/lang/Float", "valueOf", "(F)Ljava/lang/Float;")
+            | ("java/lang/Double", "valueOf", "(D)Ljava/lang/Double;")
+            | ("java/lang/Byte", "<init>", "(B)V") | ("java/lang/Short", "<init>", "(S)V")
+            | ("java/lang/Long", "<init>", "(J)V") | ("java/lang/Float", "<init>", "(F)V")
+            | ("java/lang/Double", "<init>", "(D)V") | ("java/lang/Number", "<init>", "()V"))
         {
             return None;
         }

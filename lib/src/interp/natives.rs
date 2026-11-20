@@ -1920,6 +1920,13 @@ pub fn invoke_static_jdk(m: &mut Machine, owner: &str, name: &str, descriptor: &
             ("logicalXor", _) => Value::bool((a[0].as_int() != 0) != (a[1].as_int() != 0)),
             _ => return unsupported(format!("Boolean.{name}{descriptor}")),
         },
+        "java/lang/reflect/Array" if (name, descriptor) == ("getLength", "(Ljava/lang/Object;)I") => {
+            let Some(r) = a[0].as_ref() else { return Err(m.npe()) };
+            match m.heap.get(r) {
+                Object::Array { data, .. } => Value::Int(data.len() as i32),
+                _ => return Err(m.throw("java/lang/IllegalArgumentException", Some("Argument is not an array"))),
+            }
+        }
         "java/lang/Character" => character(m, name, descriptor, a)?,
         "java/lang/Double" | "java/lang/Float" => floating(m, owner, name, descriptor, a)?,
         "java/lang/String" => match (name, descriptor) {

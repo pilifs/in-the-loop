@@ -161,12 +161,23 @@ pub(super) const EMPTY_MAP: &str = "java/util/Collections$EmptyMap";
 const FOR_NAME: &str = "(Ljava/lang/String;)Ljava/lang/Class;";
 const PROXY: &str = "java/lang/reflect/Proxy";
 
+/// A constant in -128..127 has a mandated cached identity. Other values enter the
+/// selected image's factory, which may allocate or reach an unmodeled cache.
+pub(super) fn cached_wrapper(owner: &str, name: &str, descriptor: &str) -> Option<&'static str> {
+    match (owner, name, descriptor) {
+        ("java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;") => Some("java/lang/Byte"),
+        ("java/lang/Short", "valueOf", "(S)Ljava/lang/Short;") => Some("java/lang/Short"),
+        ("java/lang/Long", "valueOf", "(J)Ljava/lang/Long;") => Some("java/lang/Long"),
+        _ => None,
+    }
+}
+
 /// Whether the engine models the static call here, where its arguments let it.
 pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     if (owner, name, descriptor) == ("java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;") { return true; }
     matches!(
         (owner, name, descriptor),
-        (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;" | FOR_NAME) | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;") | (THREAD, "currentThread", "()Ljava/lang/Thread;") | (COLLECTIONS, "emptyMap", "()Ljava/util/Map;") | (PROXY, "isProxyClass", "(Ljava/lang/Class;)Z")
+        ("java/lang/reflect/Array", "getLength", "(Ljava/lang/Object;)I") | (CLASS, "forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;" | FOR_NAME) | (LOGGER, "getLogger", "(Ljava/lang/String;)Ljava/util/logging/Logger;") | (THREAD, "currentThread", "()Ljava/lang/Thread;") | (COLLECTIONS, "emptyMap", "()Ljava/util/Map;") | (PROXY, "isProxyClass", "(Ljava/lang/Class;)Z")
     )
 }
 
@@ -221,7 +232,7 @@ impl Engine<'_> {
     pub(super) fn class_method(&mut self, path: &mut Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Option<Step> {
         if matches!((owner, name, descriptor), ("java/lang/Integer" | "java/lang/Number", "intValue", "()I")) {
             let value = path.literals.iter().find_map(|(literal, &object)| match literal {
-                Literal::SmallInteger(value) if object == o => Some(*value), _ => None,
+                Literal::CachedIntegral("java/lang/Integer", value) if object == o => Some(*value), _ => None,
             })?;
             self.push(path, Val::I(self.b.constant(i64::from(value), 32)));
             self.advance(path);
@@ -487,9 +498,21 @@ impl Engine<'_> {
     /// the call stays the JDK's.
     pub(super) fn runtime_static(&mut self, path: &mut Path, owner: &str, name: &str, args: &[Val]) -> Option<Step> {
         match (owner, name, args) {
+            ("java/lang/reflect/Array", "getLength", [Val::R(object)]) => {
+                let Some(o) = *object else { return Some(self.raise(path, "java/lang/NullPointerException")) };
+                let obj = &path.objects[o];
+                if !obj.is_array() {
+                    if obj.assumed { return Some(self.of_unknown_class(path, o, "Array.getLength")); }
+                    return Some(self.raise(path, "java/lang/IllegalArgumentException"));
+                }
+                let length = obj.array.as_ref().expect("an array").length.clone();
+                self.push(path, Val::I(length));
+                self.advance(path);
+                Some(Ok(None))
+            }
             ("java/lang/Integer", "valueOf", [Val::I(bits)]) => {
                 let boxed = if let Some(value) = self.b.constant_value(bits) {
-                    Val::R(Some(self.literal(path, Literal::SmallInteger(i8::try_from(value).ok()?), owner)))
+                    Val::R(Some(self.literal(path, Literal::CachedIntegral("java/lang/Integer", i8::try_from(value).ok()?), owner)))
                 } else {
                     // Outside the mandated cache a JVM can choose a larger cache. Keep that path a gap.
                     let mut range = None;
@@ -510,7 +533,7 @@ impl Engine<'_> {
                     for value in range? {
                         let k = self.b.constant(i64::from(value), 32);
                         let guard = self.b.eq(bits, &k);
-                        options.push((guard, Some(self.literal(path, Literal::SmallInteger(value), owner))));
+                        options.push((guard, Some(self.literal(path, Literal::CachedIntegral("java/lang/Integer", value), owner))));
                     }
                     choice(&mut self.b, options)
                 };

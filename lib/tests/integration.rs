@@ -549,6 +549,33 @@ fn compile_writers(name: &str, class: &str, source: &str) -> Option<PathBuf> {
     compile(&format!("writers-{name}"), &[file])
 }
 
+#[test]
+fn native_ieee_comparisons_and_raw_words_agree_with_the_jvm() {
+    jvmcontract::tool_tier!();
+    let source = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/floating/FloatingChecks.java");
+    let Some(classes) = compile("ieee-comparisons", &[source]) else { return };
+    let direct = Command::new("java").arg("-cp").arg(&classes).arg("fixtures.FloatingChecks").output().unwrap();
+    assert!(direct.status.success(), "{}", String::from_utf8_lossy(&direct.stderr));
+    assert_eq!(String::from_utf8_lossy(&direct.stdout).trim(), "1 2 3 1 2");
+    for (method, guard, assertion, expected) in [
+        ("order", "n >= 0 && n < 81", "result == 1", Verdict::Verified),
+        ("zeroBits", "n >= 0 && n < 2", "result == n + 1", Verdict::Verified),
+        ("zeroBits", "n >= 0 && n < 2", "result == 1", Verdict::Violation),
+        ("length", "n >= 0 && n < 3", "result == (n == 0 ? 3 : n)", Verdict::Verified),
+        ("signaling", "n == 2139095041", "result == n", Verdict::Unverifiable),
+    ] {
+        let mut options = property::Options::new(std::slice::from_ref(&classes), &format!("fixtures.FloatingChecks#{method}"));
+        options.engine = jvmcontract::Engine::Native;
+        options.assume = Some(guard.into());
+        options.assert = Some(assertion.into());
+        let result = property::run(&options).unwrap();
+        assert_eq!(result.verdict, expected, "{method}: {}", result.output);
+        if expected == Verdict::Unverifiable {
+            assert!(result.problem.unwrap().contains("signaling NaN"));
+        }
+    }
+}
+
 fn writers_run(before: &Path, after: &Path, target: &str, before_target: Option<&str>, before_arguments: Option<&str>, name: &str) -> equivalence::Outcome {
     related_run(before, after, target, before_target, before_arguments, None, None, name)
 }
@@ -2154,7 +2181,7 @@ public class Gaps {
     static class A { int x; }
     static class B extends A { int x; }
     static class Table {
-        static final int[] PRIMES = { 2, 3, 5 }; static final double[] WEIGHTS = { 2.5 };
+        static final int[] PRIMES = { 2, 3, 5 }; static final double[] WEIGHTS = { PRIMES[0] + 0.5 };
         static int first() { return 7; }
     }
     record Point(int x, int y) {}
@@ -2269,7 +2296,7 @@ public class Shapes {
 /// switch over an enum (which reads the enum's constants), one that only assigns a literal table, one that throws
 /// through a method it calls, one that reads another class's static field, and one that calls the JDK. Since Phase 5
 /// the engine runs them all ([`jvmcontract::bmc::gaps::runs_initializer`]), the enum and its switch map since its
-/// last step, enums; an enum whose initializer is outside the fragment (a `double` field) stays a gap, its shape named.
+/// last step, enums; an enum whose initializer is outside the fragment (a `double` product) stays a gap, its shape named.
 #[test]
 fn the_gap_scan_gives_each_class_initializer_a_shape() {
     jvmcontract::tool_tier!();
@@ -2280,7 +2307,7 @@ fn the_gap_scan_gives_each_class_initializer_a_shape() {
     // In a file of its own, as in the apps: javac makes a `$SwitchMap` class for a switch over an enum of another
     // compilation unit.
     std::fs::write(dir.join("Light.java"), "package fixtures;\nenum Light { RED, GREEN }\n").unwrap();
-    std::fs::write(dir.join("Mass.java"), "package fixtures;\nenum Mass { ONE(1.5); final double kg; Mass(double kg) { this.kg = kg; } }\n").unwrap();
+    std::fs::write(dir.join("Mass.java"), "package fixtures;\nenum Mass { ONE(1.5); final double kg; Mass(double kg) { this.kg = kg * 1.0; } }\n").unwrap();
     let Some(classes) = compile("shapes", &[dir.join("Shapes.java"), dir.join("Light.java"), dir.join("Mass.java")]) else { return };
     let cp = jvmcontract::witness::classpath([classes.as_path()]).unwrap().with_models(true);
     let shapes = |method: &str| {
@@ -2866,7 +2893,7 @@ package fixtures;
 
 public class Contracted {
     static class Table {
-        static final int[] PRIMES = { 2, 3, 5 }; static final double[] WEIGHTS = { 2.5 };
+        static final int[] PRIMES = { 2, 3, 5 }; static final double[] WEIGHTS = { PRIMES[0] + 0.5 };
         static int first() { return 7; }
     }
 
@@ -3409,7 +3436,8 @@ public class Identity {
         static int value(int n) { return n; }
     }
     static class Names {
-        static final double[] ALL = { 0.5, 1.5 };
+        static double half() { return 0.5; }
+        static final double[] ALL = { 0.5, 1.0 + half() };
         static int value(int n) { return n; }
     }
 

@@ -80,7 +80,7 @@ use std::sync::OnceLock;
 
 use serde::Serialize;
 
-use crate::classfile::{BootstrapArg, Insn, Kind, MemberRef, MethodDescriptor, Type};
+use crate::classfile::{Insn, Kind, MemberRef, MethodDescriptor, Narrow, Type};
 use crate::classpath::ClassPath;
 use crate::Error;
 
@@ -596,7 +596,7 @@ pub fn jdk_static_call(owner: &str, name: &str, descriptor: &str) -> JdkCall {
     let floating = |t: &Type| matches!(t, Type::Float | Type::Double);
     // A model that makes an array (`Arrays.copyOf`) is one before an array result is refused.
     if super::bytes::models_static(owner, name, descriptor) || super::strings::models_static(owner, name, descriptor)
-        || super::arraycopy::is_call(owner, name, descriptor) {
+        || super::arraycopy::is_call(owner, name, descriptor) || super::floating::models_static(owner, name, descriptor) {
         return JdkCall::Exact;
     }
     if d.params.iter().any(floating) || matches!(d.ret, Type::Float | Type::Double | Type::Array(_)) {
@@ -1102,7 +1102,7 @@ impl<'a> Walker<'a> {
 
     fn walk(&mut self, owner: &str, name: &str, descriptor: &str) -> Result<(), Error> {
         let Some((cf, m)) = self.cp.checker_method(owner, name, descriptor)
-            .or_else(|| self.cp.integer_factory_method(owner, name, descriptor)) else { return Ok(()) };
+            .or_else(|| self.cp.numeric_factory_method(owner, name, descriptor)) else { return Ok(()) };
         let label = format!("{}.{name}{descriptor}", cf.name.replace('/', "."));
         if !self.scan.methods.insert(label) {
             return Ok(());
@@ -1122,23 +1122,14 @@ impl<'a> Walker<'a> {
                 constant = cf.pool.loadable(index).ok().and_then(|c| c.string_units().map(|units| units.into_owned()));
             }
             match insn {
-                Insn::FConst(_) | Insn::DConst(_) => self.refuse("floating point", "a floating-point constant".into(), &site),
-                Insn::Arith(_, k) | Insn::Return(Some(k)) | Insn::Load(k, _) | Insn::Store(k, _) | Insn::Convert(k, _) if matches!(k, Kind::Float | Kind::Double) => self.refuse("floating point", "floating-point arithmetic".into(), &site),
+                Insn::Arith(op, k @ (Kind::Float | Kind::Double)) => self.refuse("floating point", format!("floating-point {k:?} {op:?}"), &site),
+                Insn::Convert(from, to) if matches!(from, Kind::Float | Kind::Double) || matches!(to, Narrow::To(Kind::Float | Kind::Double)) => {
+                    self.refuse("floating point", format!("floating-point conversion {from:?} to {to:?}"), &site);
+                }
                 Insn::Jsr(_) | Insn::Ret(_) => self.refuse("jsr/ret", "jsr".into(), &site),
                 Insn::PutStatic(index) | Insn::GetStatic(index) => {
                     let member = cf.pool.member(index).map_err(|e| Error::new(e.to_string()))?;
                     self.static_field(&member.owner, &member.name, &member.descriptor, matches!(insn, Insn::PutStatic(_)), &site);
-                }
-                Insn::MultiANewArray(index, dims) => {
-                    let name = cf.pool.class_name(index).map_err(|e| Error::new(e.to_string()))?;
-                    if name.get(usize::from(dims)..).is_some_and(|leaf| matches!(leaf, "F" | "D")) {
-                        self.refuse("floating point", "a multidimensional array of floating-point cells".into(), &site);
-                    }
-                }
-                Insn::Ldc(index) => {
-                    if let Ok(BootstrapArg::Float(_) | BootstrapArg::Double(_)) = cf.pool.loadable(index) {
-                        self.refuse("floating point", "a floating-point constant".into(), &site);
-                    }
                 }
                 Insn::New(index) => {
                     let class = cf.pool.class_name(index).map_err(|e| Error::new(e.to_string()))?.to_string();
@@ -1178,7 +1169,7 @@ impl<'a> Walker<'a> {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
                     } else if self.cp.model(&member.owner).is_some() && self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).is_some_and(|(_, m)| m.code.is_some()) {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
-                    } else if self.cp.integer_factory_method(&member.owner, &member.name, &member.descriptor).is_some() {
+                    } else if self.cp.numeric_factory_method(&member.owner, &member.name, &member.descriptor).is_some() {
                         // A class initializer can call the factory on an input for which it reads no cached
                         // object. Execution checks the path it takes. The full scan lists all possible reads.
                         if !self.deciding {
@@ -1208,8 +1199,8 @@ impl<'a> Walker<'a> {
                 Insn::InvokeSpecial(index) | Insn::InvokeVirtual(index) | Insn::InvokeInterface(index) => {
                     let member = cf.pool.member(index).map_err(|e| Error::new(e.to_string()))?;
                     let special = matches!(insn, Insn::InvokeSpecial(_));
-                    if special && cf.name == "java/math/BigInteger" && member.name == "<init>"
-                        && self.cp.integer_factory_method(&member.owner, &member.name, &member.descriptor).is_some() {
+                    if special && member.name == "<init>"
+                        && self.cp.numeric_factory_method(&member.owner, &member.name, &member.descriptor).is_some() {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
                         continue;
                     }

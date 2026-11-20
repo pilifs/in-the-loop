@@ -12,28 +12,28 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T04:39:53.706Z",
-  "duration_seconds": 25344,
+  "ended": "2026-11-20T05:02:42.624Z",
+  "duration_seconds": 26713,
   "stats": {
-    "turns": 6,
-    "api_calls": 1516,
-    "tool_calls": 3880,
-    "tool_errors": 125,
-    "compactions": 5,
+    "turns": 7,
+    "api_calls": 1605,
+    "tool_calls": 4160,
+    "tool_errors": 137,
+    "compactions": 6,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 2647357,
-      "output_tokens": 765971,
-      "cache_read_input_tokens": 441603584,
+      "input_tokens": 3107778,
+      "output_tokens": 805986,
+      "cache_read_input_tokens": 458465024,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 2217,
-    "exec": 1458,
-    "apply_patch": 158,
+    "Bash": 2406,
+    "exec": 1541,
+    "apply_patch": 161,
     "wait": 42,
-    "sleep": 5
+    "sleep": 10
   },
   "files_touched": [
     "examples/197-shared-int-array-poststates/README.md",
@@ -99,6 +99,7 @@
     "lib/src/bmc/bits.rs",
     "lib/src/bmc/bytes.rs",
     "lib/src/bmc/finite_words.rs",
+    "lib/src/bmc/floating.rs",
     "lib/src/bmc/gaps.rs",
     "lib/src/bmc/mod.rs",
     "lib/src/bmc/observed.rs",
@@ -125,6 +126,7 @@
     "lib/tests/fixtures/claims/claims/Samples.java",
     "lib/tests/fixtures/claims/claims/T.java",
     "lib/tests/fixtures/claims/claims/UnicodePoints.java",
+    "lib/tests/fixtures/floating/FloatingChecks.java",
     "lib/tests/fixtures/restart-qualification/check.py",
     "lib/tests/integration.rs",
     "lib/tests/paired_array_roots.rs",
@@ -209,24 +211,38 @@
     {
       "index": 5,
       "started": "2026-11-20T04:07:01.691Z",
-      "ended": "2026-11-20T04:39:53.706Z",
+      "ended": "2026-11-20T04:47:07.518Z",
       "turns": 0,
-      "api_calls": 118,
+      "api_calls": 136,
       "usage": {
-        "input_tokens": 225845,
-        "output_tokens": 64644,
-        "cache_read_input_tokens": 19164032,
+        "input_tokens": 236607,
+        "output_tokens": 71611,
+        "cache_read_input_tokens": 23625472,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 230665
+      "peak_context_tokens": 239854
+    },
+    {
+      "index": 6,
+      "started": "2026-11-20T04:47:07.525Z",
+      "ended": "2026-11-20T05:02:42.624Z",
+      "turns": 1,
+      "api_calls": 71,
+      "usage": {
+        "input_tokens": 449659,
+        "output_tokens": 33048,
+        "cache_read_input_tokens": 12400000,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 254108
     }
   ],
   "log": {
-    "sha256": "c6a8a8701cb3a75e8e94eaaf32b81881d594a48aa133bd23eeb11cbe87ef9de8",
-    "bytes": 36270242,
-    "lines": 11821,
-    "gzip_bytes": 13811245,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/c6a8a8701cb3a75e8e94eaaf32b81881d594a48aa133bd23eeb11cbe87ef9de8.jsonl.gz"
+    "sha256": "180a5b12307a26f0d0d2d58aa3d7b341df6c732688238daf9e9ac131702a3c37",
+    "bytes": 39448967,
+    "lines": 12551,
+    "gzip_bytes": 14836527,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/180a5b12307a26f0d0d2d58aa3d7b341df6c732688238daf9e9ac131702a3c37.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -829,6 +845,14 @@
       "summary": "Confirm the original two-root array regression on the finished checker",
       "body": "Job 20261120-042933-recheck-both-array-roots-after-the-fast reproduced the original native proof of return preservation and both qualified poststate refutations. The JDK, prepared classpaths, unwind eight, array bound two and 600-second checker budget match the original runs. The direct oracle found zero return differences, three right-root differences and 21 two-root differences among 71 heaps. The right-root witness shares a single [0] array and the two-root witness uses distinct [0] arrays.\n\nThe report and machine-readable register include all 61 collected jobs, the three paired original and current receipts, and the full released Commons Text score proof. All 125 finite receipt digests and 307 report links were checked, example 197 passed validation and the 23 changed test files passed. Across the 20 new examples, 92 claim/subject pairs were established and 33 refuted, with 55 independently decided by the strict native checker.",
       "log_sha256": "c6a8a8701cb3a75e8e94eaaf32b81881d594a48aa133bd23eeb11cbe87ef9de8"
+    },
+    {
+      "change_id": "toxzullsuwsylwoltvyttlrwoqmokkxp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Check IEEE comparisons and signed-zero witnesses (verification pending)",
+      "body": "Carry binary32 and binary64 words through locals, fields and arrays. Compare them with JVM NaN bias, preserve signed zeros in extrema, and qualify raw-bit observations. Load numeric factories and constructors from the selected JDK, preserve mandatory cache identities, and handle reflective array length including its exceptional exits.\n\nThe JVM and native checker agreed on all 81 ordered pairs of signed zeros, subnormals, infinities, ordinary numbers and a quiet NaN. The Commons Lang parent produced the independently replayed raw-bit witness [-0.0, +0.0]. All 35 changed test groups passed individually, including the receipt audit run again after isolated investigation probes. Example 313 validation and tier lint passed.\n\nAt the original budgets, jobs 20261120-045612-verify-both-signed-zero-maxima-with-ieee, 20261120-045612-recheck-guava-map-collisions-after-nativ and 20261120-045612-recheck-cube-intersections-after-native check the four signed-zero claims and twelve transfer claims.",
+      "log_sha256": "180a5b12307a26f0d0d2d58aa3d7b341df6c732688238daf9e9ac131702a3c37"
     }
   ],
   "logs": {
@@ -866,6 +890,12 @@
       "bytes": 28825165,
       "lines": 9201,
       "gzip_bytes": 10815383,
+      "url": null
+    },
+    "180a5b12307a26f0d0d2d58aa3d7b341df6c732688238daf9e9ac131702a3c37": {
+      "bytes": 39448967,
+      "lines": 12551,
+      "gzip_bytes": 14836527,
       "url": null
     },
     "18bd87b5a53dbd7c9b924a89100e17328fca36f977cbdbd5eb08ba109cbcf94c": {

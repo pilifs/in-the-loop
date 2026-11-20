@@ -38,7 +38,8 @@
 //! division by zero is. An array of references holds an object or null per cell, and an index into one that is not
 //! a constant splits the path per cell. An application class's static fields are path state, and its initializer
 //! runs where the JVM runs it (JVMS §5.5); an enum's is one, its constants made through `java.lang.Enum`'s model
-//! and its `$VALUES` an array of references. Floating point, the JDK's static state and the rest of the
+//! and its `$VALUES` an array of references. IEEE 754 comparisons and signed zero use raw bit-vectors.
+//! Floating-point arithmetic, the JDK's unmodeled static state and the rest of the
 //! JDK are refused with a reason, so that a caller can fall back to JBMC. A verdict it gives is on the same statement JBMC would
 //! check, the generated harness class, so a counterexample is replayed and shrunk like JBMC's.
 //!
@@ -51,7 +52,7 @@
 //! | `iadd` … `lxor` (arithmetic, shifts, bitwise), `i2l`, `l2i`, `i2b`, `i2c`, `i2s`, `lcmp` | implemented bit for bit; `idiv`, `irem`, `ldiv`, `lrem` throw `ArithmeticException` on zero |
 //! | `ifeq` …, `if_icmpeq` …, `if_acmpeq`/`if_acmpne`, `ifnull`, `ifnonnull`, `goto`, `tableswitch`, `lookupswitch`, `ireturn` … `return` | implemented; a loop's back edge counts against the unwinding bound, per entry of the loop (an outer loop's back edge or a new call starts an inner loop's count again), and a path that needs another iteration goes on from an invariant of the loop where the engine finds one ([`loops`], [`Options::invariants`]); `if_acmp`, `ifnull` and `ifnonnull` on a symbolic reference are formulas over its guards |
 //! | `newarray`, `arraylength`, `iaload` … `saload`, `iastore` … `sastore` on arrays of primitives | implemented, up to [`Options::max_array_length`] cells; `ArrayIndexOutOfBoundsException`, `NegativeArraySizeException`, and `NullPointerException` on null |
-//! | `multianewarray` | implemented for bounded shapes with integral or reference cells. Each allocated row has a fresh identity, trailing unspecified dimensions stay null, and any negative dimension throws before allocation. |
+//! | `multianewarray` | implemented for bounded shapes with primitive or reference cells. Each allocated row has a fresh identity, trailing unspecified dimensions stay null, and any negative dimension throws before allocation. |
 //! | `anewarray`, `aaload`/`aastore` on arrays of references, and an array's `clone()` | implemented as for primitives, a cell holding an object or null; an `aaload` at an index that is not a constant gives a symbolic reference, the reference of each cell under `index == i` ([`Choice`]), and splits no path; an `aastore` at such an index splits the path per cell ([`Engine::concrete_index`]); a cell may hold a symbolic reference, which an `aastore` stores as it is when every object it may be is of the element type (as `List.of`'s varargs array holds a harness's picks), and splits per object otherwise; `clone()` a new array of the same class and elements; an `aastore` of an object not of the element type (`ArrayStoreException`) is refused |
 //! | `new`, `getfield`, `putfield`, `invokestatic`, `invokespecial`, `invokevirtual`, `invokeinterface` of the application's own methods | implemented: objects with fields, calls inlined, a virtual call dispatched on its receiver's class, `NullPointerException` on a null receiver; a field resolved as the JVM resolves it (JVMS §5.4.3.2), so a field a subclass declares again is a second one. Through a symbolic reference, `getfield` chooses among its objects' fields by the guards and `putfield` writes each under its guard, `NullPointerException` where it is null; a call on one, or any other instruction that needs its object (`checkcast`, `athrow`, a monitor, an array instruction, a JDK call's argument), splits the path per object first ([`Engine::concrete_ref`]) |
 //! | `athrow`, exception handlers, `checkcast`, `instanceof` | implemented, a handler matched by subclass; `instanceof` on a symbolic reference a formula over its guards |
@@ -83,7 +84,8 @@
 //! | `new LinkedHashMap()`, and `values()` on the map with the collection's `size()` and `iterator()` and the iterator's `hasNext()` and `next()` | modelled, for the checker alone: the model's bytecode (`lib/models/java/util/LinkedHashMap.java`) over the `HashMap` model's chain of entries, which is in insertion order; the iterator fails fast as the JDK's. Any other method is the JDK call it names |
 //! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Character.isLetter(char)` of an ASCII unit ([`strings`]); `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers or of references and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `getstatic` of `Locale`'s constants, `Locale.forLanguageTag(String)` and `Locale.setDefault(Locale)` as far as [`locale`] says; `Class.getName()`, `Class.getTypeName()`, `Class.getClassLoader()`, `Object.getClass()` of a String, `Proxy.isProxyClass(Class)`, `Class.forName(String, boolean, ClassLoader)`, `Class.forName(String)` with its initialization, `Class.isAssignableFrom(Class)`, `Thread.currentThread()` and its `getContextClassLoader()`, `Collections.emptyMap()`, `Logger.getLogger(String)`, `getstatic` of a `java.util.logging.Level` other than `OFF`, `getstatic` of `Boolean.TRUE` and `Boolean.FALSE`, `Logger.isLoggable(Level)`, `Logger.log(LogRecord)` and what a library calls to make the record, `new ArrayList()`, `new ConcurrentHashMap()` and `new ConcurrentHashMap(int)` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
 //! | `ldc` of a string or a class | implemented: one object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class, a String with its content, its code units as the class file holds them, an isolated surrogate included (`BootstrapArg::Units`) |
-//! | floating point (`fconst`, `dconst`, `fadd` …, `fcmpl` …, `f2i` …), `jsr`/`ret`, `putstatic` of a JDK field, any other `getstatic` of one, a static field of a class taken to be initialized other than a constant, any other `invokedynamic`, a JDK method with a floating-point parameter or result or an array result, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
+//! | `fconst`, `dconst`, floating-point loads, stores, returns, array cells and `ldc` constants, `fcmpl` / `fcmpg` and their double variants | exact IEEE 754 words and JVM comparison bias. Float and Double bit conversions and NaN tests, plus Math/StrictMath extrema, are bounded as described in [`floating`] |
+//! | floating point arithmetic (`fadd` …) and numeric conversions (`f2i` …), `jsr`/`ret`, `putstatic` of a JDK field, any other `getstatic` of one, a static field of a class taken to be initialized other than a constant, any other `invokedynamic`, a JDK method with a floating-point parameter or result or an array result, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
 //! | under JBMC, not this engine ([`crate::jbmc_gaps`]): a method with no bytecode on JBMC's class path, or an `invokedynamic` JBMC does not link, or a monitor instruction, which JBMC drops | JBMC's gaps: its stub of a JDK method is one of the JDK kinds above, any other is `missing-body`, an unlinked call site is `invokedynamic`, and a method that synchronizes is `monitor`; this engine refuses the first two and implements monitors |
 //!
 //! A gap is refused by name under [`gaps::GapMode::Strict`], the default: the path ends there, and a run that met
@@ -109,6 +111,7 @@ pub mod bitwuzla;
 mod arraycopy;
 pub mod bits;
 mod finite_words;
+mod floating;
 pub mod gaps;
 pub mod bytes;
 pub mod locale;
@@ -611,13 +614,13 @@ fn cell_width(element: &Type) -> usize {
         Type::Boolean => 1,
         Type::Byte => 8,
         Type::Char | Type::Short => 16,
-        Type::Long => 64,
+        Type::Long | Type::Double => 64,
         _ => 32,
     }
 }
 
-/// A value on the operand stack or in a local: an int (32 bits, which boolean, byte, char and short are too), a
-/// long, a reference to an object of the path's (one this run made, an exception, a string) or `null`, or a
+/// A value on the operand stack or in a local: a 32-bit word (including float), a 64-bit word
+/// (long or double), a reference to an object of the path's (one this run made, an exception, a string) or `null`, or a
 /// symbolic reference ([`Choice`]).
 ///
 /// A reference whose target is known is `R`, the fast path every reference took before symbolic ones: nothing
@@ -975,8 +978,8 @@ enum Literal {
     EmptyMap,
     /// `Boolean.TRUE` or `Boolean.FALSE` ([`runtime::truth_constant`]).
     Truth(bool),
-    /// The JDK-mandated Integer.valueOf cache from -128 through 127.
-    SmallInteger(i8),
+    /// A wrapper's mandated cache entry, distinct for each class and small value.
+    CachedIntegral(&'static str, i8),
 }
 
 /// Where a path waits at a join point: for each frame, outermost first, where it is in the method, then the class
@@ -1444,7 +1447,8 @@ fn check_kind(kind: ArrayKind, element: &Type) -> Result<(), Stop> {
         ArrayKind::Byte => matches!(element, Type::Byte | Type::Boolean),
         ArrayKind::Char => *element == Type::Char,
         ArrayKind::Short => *element == Type::Short,
-        ArrayKind::Float | ArrayKind::Double => return unsupported("floating point"),
+        ArrayKind::Float => *element == Type::Float,
+        ArrayKind::Double => *element == Type::Double,
         ArrayKind::Ref => return unsupported("arrays of references"),
     };
     if fits {
@@ -2460,7 +2464,7 @@ impl<'a> Engine<'a> {
                         Literal::Thread => "java/lang/Thread",
                         Literal::EmptyMap => runtime::EMPTY_MAP,
                         Literal::Truth(_) => runtime::BOOLEAN,
-                        Literal::SmallInteger(_) => "java/lang/Integer",
+                        Literal::CachedIntegral(class, _) => class,
                     };
                     self.literal(path, literal.clone(), class);
                 }
@@ -2919,7 +2923,7 @@ impl<'a> Engine<'a> {
                     value = self.b.ite_bits(is, cell, &value);
                 }
                 let value = self.b.extend_cell(&array.element, &value);
-                let value = if array.element == Type::Long { Val::J(value) } else { Val::I(value) };
+                let value = if array.element.slots() == 2 { Val::J(value) } else { Val::I(value) };
                 let in_bounds = self.b.ult(&index, &array.length);
                 self.branch_throw(path, -in_bounds, "java/lang/ArrayIndexOutOfBoundsException", value)
             }
@@ -2978,7 +2982,8 @@ impl<'a> Engine<'a> {
                     ArrayKind::Byte => Type::Byte,
                     ArrayKind::Char => Type::Char,
                     ArrayKind::Short => Type::Short,
-                    ArrayKind::Float | ArrayKind::Double => return unsupported("floating point"),
+                    ArrayKind::Float => Type::Float,
+                    ArrayKind::Double => Type::Double,
                     ArrayKind::Ref => return unsupported("arrays of references"),
                 };
                 let count = self.pop_int(path)?;
@@ -3027,7 +3032,6 @@ impl<'a> Engine<'a> {
                     sizes.push(size);
                 }
                 if negative == TRUE { return self.raise(path, "java/lang/NegativeArraySizeException"); }
-                if matches!(element, Type::Float | Type::Double) { return unsupported("floating point array cells"); }
                 let mut shape = Vec::new();
                 let (mut arrays, mut total) = (1usize, 0usize);
                 for size in sizes.into_iter().rev() {
@@ -3545,7 +3549,8 @@ impl<'a> Engine<'a> {
                 let c = self.b.constant(v, 64);
                 self.push(path, Val::J(c));
             }
-            Insn::FConst(_) | Insn::DConst(_) => return unsupported("floating point"),
+            Insn::FConst(v) => self.push(path, Val::I(self.b.constant(i64::from(v.to_bits()), 32))),
+            Insn::DConst(v) => self.push(path, Val::J(self.b.constant(v.to_bits() as i64, 64))),
             Insn::Ldc(index) => match class.pool.loadable(index).map_err(|e| Stop::Unsupported(e.to_string()))? {
                 // One object per distinct content, as the JVM interns strings (JLS §3.10.5).
                 loaded @ (BootstrapArg::Str(_) | BootstrapArg::Units(_)) => {
@@ -3566,7 +3571,8 @@ impl<'a> Engine<'a> {
                     let o = self.literal(path, Literal::Class(name), "java/lang/Class");
                     self.push(path, Val::R(Some(o)));
                 }
-                BootstrapArg::Float(_) | BootstrapArg::Double(_) => return unsupported("floating point"),
+                BootstrapArg::Float(v) => self.push(path, Val::I(self.b.constant(i64::from(v.to_bits()), 32))),
+                BootstrapArg::Double(v) => self.push(path, Val::J(self.b.constant(v.to_bits() as i64, 64))),
                 other => return unsupported(format!("ldc of {other:?}")),
             },
             Insn::Load(_, slot) => {
@@ -3724,13 +3730,16 @@ impl<'a> Engine<'a> {
                         let t = self.b.trunc(&x, 16);
                         Val::I(self.b.sext(&t, 32))
                     }
-                    _ => return unsupported("floating point"),
+                    _ => return unsupported(format!("floating point conversion {from:?} to {to:?}")),
                 };
                 self.push(path, v);
             }
             Insn::Cmp(op) => {
                 if op.kind != Kind::Long {
-                    return unsupported("floating point");
+                    let result = self.floating_cmp(path, op.kind, op.nan)?;
+                    self.push(path, Val::I(result));
+                    self.advance(path);
+                    return Ok(None);
                 }
                 let y = self.pop_long(path)?;
                 let x = self.pop_long(path)?;
@@ -4524,7 +4533,9 @@ impl<'a> Engine<'a> {
                 let o = self.literal(path, Literal::Str(units), "java/lang/String");
                 Ok(Val::R(Some(o)))
             }
-            Some(_) => unsupported("floating point"),
+            Some(BootstrapArg::Float(v)) => Ok(Val::I(self.b.constant(i64::from(v.to_bits()), 32))),
+            Some(BootstrapArg::Double(v)) => Ok(Val::J(self.b.constant(v.to_bits() as i64, 64))),
+            Some(_) => unsupported("invalid ConstantValue field attribute"),
             None => self.default_value(descriptor),
         })
     }
@@ -4539,7 +4550,14 @@ impl<'a> Engine<'a> {
                 let units = units.clone();
                 self.string(path, &units)
             }
-            Literal::Class(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) | Literal::Level(_) | Literal::Thread | Literal::EmptyMap | Literal::Truth(_) | Literal::SmallInteger(_) => self.alloc(path, class),
+            Literal::Class(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) | Literal::Level(_) | Literal::Thread | Literal::EmptyMap | Literal::Truth(_) => self.alloc(path, class),
+            Literal::CachedIntegral(_, n) => {
+                let o = self.alloc(path, class);
+                let value = i64::from(*n);
+                let word = if class == "java/lang/Long" { Val::J(self.b.constant(value, 64)) } else { Val::I(self.b.constant(value, 32)) };
+                path.objects[o].fields.insert("value".into(), word);
+                o
+            }
         };
         path.literals.insert(literal, o);
         o
@@ -4581,8 +4599,7 @@ impl<'a> Engine<'a> {
 
     fn default_value(&self, descriptor: &str) -> Result<Val, Stop> {
         Ok(match Type::parse(descriptor).map_err(|e| Stop::Unsupported(e.to_string()))? {
-            Type::Long => Val::J(self.b.constant(0, 64)),
-            Type::Float | Type::Double => return unsupported("floating point"),
+            Type::Long | Type::Double => Val::J(self.b.constant(0, 64)),
             Type::Object(_) | Type::Array(_) => Val::R(None),
             _ => Val::I(self.b.constant(0, 32)),
         })
@@ -4611,6 +4628,8 @@ impl<'a> Engine<'a> {
         Ok(match (class.pool.loadable(index), Type::parse(descriptor)) {
             (Ok(BootstrapArg::Int(v)), _) => Val::I(self.b.constant(i64::from(v), 32)),
             (Ok(BootstrapArg::Long(v)), _) => Val::J(self.b.constant(v, 64)),
+            (Ok(BootstrapArg::Double(v)), Ok(Type::Double)) => Val::J(self.b.constant(v.to_bits() as i64, 64)),
+            (Ok(BootstrapArg::Float(v)), Ok(Type::Float)) => Val::I(self.b.constant(i64::from(v.to_bits()), 32)),
             _ => return unsupported(format!("reads static field {}.{name}", owner.replace('/', "."))),
         })
     }
@@ -4726,7 +4745,17 @@ impl<'a> Engine<'a> {
                 return self.call(path, crate::gap_contracts::CLASS, &method, &stub, args);
             }
         }
-        if self.cp.integer_factory_method(&member.owner, &member.name, &member.descriptor).is_some() {
+        if self.cp.numeric_factory_method(&member.owner, &member.name, &member.descriptor).is_some() {
+            if let Some(class) = runtime::cached_wrapper(&member.owner, &member.name, &member.descriptor) {
+                if let [Val::I(word) | Val::J(word)] = args.as_slice() {
+                    if let Some(n) = self.b.constant_value(word).and_then(|v| i8::try_from(v).ok()) {
+                        let o = self.literal(path, Literal::CachedIntegral(class, n), class);
+                        self.push(path, Val::R(Some(o)));
+                        self.advance(path);
+                        return Ok(None);
+                    }
+                }
+            }
             return self.call(path, &member.owner, &member.name, &member.descriptor, args);
         }
         match treatment {
@@ -4891,8 +4920,8 @@ impl<'a> Engine<'a> {
         let unmodelled = gaps::unmodelled_instance_call(self.cp, &member.owner, &member.name, &member.descriptor);
         let contracted = matches!(&unmodelled, JdkCall::Gap(kind) if self.contracts.contains_key(&Gap { kind: *kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() }));
         if !contracted {
-            if special && caller == "java/math/BigInteger" && member.name == "<init>"
-                && self.cp.integer_factory_method(&member.owner, &member.name, &member.descriptor).is_some() {
+            if special && member.name == "<init>"
+                && self.cp.numeric_factory_method(&member.owner, &member.name, &member.descriptor).is_some() {
                 let mut full = vec![Val::R(Some(o))];
                 full.extend(args);
                 return self.call(path, &member.owner, &member.name, &member.descriptor, full);
@@ -5051,7 +5080,7 @@ impl<'a> Engine<'a> {
     /// Enters a bytecode method with the arguments in its locals.
     fn call(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, args: Vec<Val>) -> Step {
         let (cf, m) = self.cp.checker_method(owner, name, descriptor)
-            .or_else(|| self.cp.integer_factory_method(owner, name, descriptor))
+            .or_else(|| self.cp.numeric_factory_method(owner, name, descriptor))
             .ok_or_else(|| Stop::Unsupported(format!("method not found: {}.{name}{descriptor}", owner.replace('/', "."))))?;
         if m.is_abstract() {
             return unsupported(format!("{}.{name} is abstract", cf.name.replace('/', ".")));
@@ -5378,7 +5407,7 @@ impl<'a> Engine<'a> {
         let width = match kind {
             Kind::Int => 32,
             Kind::Long => 64,
-            _ => return unsupported("floating point"),
+            _ => return unsupported(format!("floating point arithmetic {kind:?} {op:?}")),
         };
         let wrap = |b: Bits| if width == 64 { Val::J(b) } else { Val::I(b) };
         if op == ArithOp::Neg {
@@ -5417,6 +5446,9 @@ impl<'a> Engine<'a> {
     /// The JDK's static methods the engine models: the exact and floor arithmetic of `Math`, the comparisons
     /// of the integer wrappers, and their `numberOfLeadingZeros`. [`models_jdk_static`] lists the same arms, for the gap scan.
     fn call_jdk_static(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, parsed: &MethodDescriptor, args: Vec<Val>) -> Step {
+        if floating::models_static(owner, name, descriptor) {
+            return self.floating_static(path, name, &args);
+        }
         // The JVM's own objects ([`runtime`]): a class by name, a logger. Where the arguments are not ones it
         // answers for, the call is the gap it was.
         // Whether a char is a letter, of an ASCII unit ([`strings`]): the JDK's call of any other.
@@ -5757,12 +5789,13 @@ mod tests {
                 Insn::FConst(_) => "`fconst`",
                 Insn::DConst(_) => "`dconst`",
                 Insn::Ldc(_) => "`ldc` of an int or a long",
-                Insn::Load(k, _) | Insn::Store(k, _) | Insn::Return(Some(k)) | Insn::Arith(_, k) if float(k) => "floating point",
+                Insn::Load(k, _) | Insn::Store(k, _) | Insn::Return(Some(k)) if float(k) => "floating-point loads",
+                Insn::Arith(_, k) if float(k) => "floating point arithmetic",
                 Insn::Convert(k, n) if float(k) || matches!(n, Narrow::To(t) if float(t)) => "floating point",
                 Insn::Load(..) => "`iload`",
                 Insn::Store(..) => "`istore`",
                 Insn::ArrayLoad(ArrayKind::Ref) | Insn::ArrayStore(ArrayKind::Ref) => "`aaload`/`aastore`",
-                Insn::ArrayLoad(ArrayKind::Float | ArrayKind::Double) | Insn::ArrayStore(ArrayKind::Float | ArrayKind::Double) => "floating point",
+                Insn::ArrayLoad(ArrayKind::Float | ArrayKind::Double) | Insn::ArrayStore(ArrayKind::Float | ArrayKind::Double) => "array cells",
                 Insn::ArrayLoad(_) => "`iaload` … `saload`",
                 Insn::ArrayStore(_) => "`iastore` … `sastore`",
                 Insn::Pop => "`pop`",

@@ -43,6 +43,7 @@
    "log:c2a04b4f96c022e3": "log:c2a04b4f96c022e30ba4df8a7ba6e7e3aefd6a483fd52e91813b13db10cfc654",
    "log:c3a743173e86cd2d": "log:c3a743173e86cd2dc4fe43c4c056dc6cb76f92d99d0e0c74f3ed3afe1e92e957",
    "log:c41e35f64d8f1650": "log:c41e35f64d8f16505f82168ffe67d2e76830a16871addb5ba07e3be8a7df674b",
+   "log:c6a8a8701cb3a75e": "log:c6a8a8701cb3a75e8e94eaaf32b81881d594a48aa133bd23eeb11cbe87ef9de8",
    "log:d9283d02ee977dd3": "log:d9283d02ee977dd384b65c2c2a44d578cba2d4f02b155bf7c0af773c331b7708",
    "log:fada44c4a77bc0ea": "log:fada44c4a77bc0ea2f7f664ae596d9de213d61043ebc68d9290537658801e9d3"
   }
@@ -144,7 +145,7 @@
    "lib/tests/fresh_pair_countermodels.rs": {"unit": 0, "tool": 2, "proof": 0, "estimated": 0, "retier pending": 0},
    "lib/tests/function_countermodels.rs": {"unit": 0, "tool": 2, "proof": 0, "estimated": 0, "retier pending": 0},
    "lib/tests/heap.rs": {"unit": 1, "tool": 48, "proof": 9, "estimated": 0, "retier pending": 0},
-   "lib/tests/integration.rs": {"unit": 1, "tool": 19, "proof": 45, "estimated": 13, "retier pending": 42},
+   "lib/tests/integration.rs": {"unit": 1, "tool": 20, "proof": 45, "estimated": 14, "retier pending": 42},
    "lib/tests/interface_parameters.rs": {"unit": 0, "tool": 4, "proof": 0, "estimated": 0, "retier pending": 0},
    "lib/tests/interface_regression.rs": {"unit": 0, "tool": 2, "proof": 0, "estimated": 0, "retier pending": 0},
    "lib/tests/lemma_countermodels.rs": {"unit": 0, "tool": 6, "proof": 0, "estimated": 0, "retier pending": 0},
@@ -826,6 +827,7 @@
   {"file": "lib/tests/integration.rs", "name": "a_counterexample_the_shared_callee_cannot_reproduce_falls_back_to_its_bytecode", "tier": "proof", "calls": ["javac", "jbmc", "process"], "cost": {"seconds": 1.23, "kind": "run alone", "runs": 1, "max_seconds": 1.23, "sources": ["log:5dd0fa85bc0d9c42"]}, "why": "calls JBMC", "retier": "pending"},
   {"file": "lib/tests/integration.rs", "name": "a_small_callee_is_computed_as_written_rather_than_shared", "tier": "proof", "calls": ["javac", "jbmc", "process"], "cost": {"seconds": 30.02, "kind": "at most", "sources": ["log:7ebf2c29fcceed1c"]}, "why": "calls JBMC", "retier": "pending"},
   {"file": "lib/tests/integration.rs", "name": "a_target_identical_in_both_versions_needs_no_proof", "tier": "proof", "calls": ["javac", "jbmc", "process"], "cost": {"seconds": 30.02, "kind": "at most", "sources": ["log:7ebf2c29fcceed1c"]}, "why": "calls JBMC", "retier": "pending"},
+  {"file": "lib/tests/integration.rs", "name": "native_ieee_comparisons_and_raw_words_agree_with_the_jvm", "tier": "tool", "calls": ["java", "javac", "process"], "cost": {"seconds": 25.65, "kind": "at most", "sources": ["log:c6a8a8701cb3a75e"], "estimated": "past runs bound it only at 25.65 s: the tier is from what it calls"}, "why": "spawns java, javac, process"},
   {"file": "lib/tests/integration.rs", "name": "a_boolean_that_became_a_remaining_time_is_proved_under_the_stated_relation", "tier": "proof", "calls": ["javac", "jbmc", "process"], "cost": {"seconds": 30.02, "kind": "at most", "sources": ["log:7ebf2c29fcceed1c"]}, "why": "calls JBMC", "retier": "pending"},
   {"file": "lib/tests/integration.rs", "name": "a_remaining_time_in_milliseconds_that_expires_entries_early_is_found_under_the_relation", "tier": "tool", "calls": ["javac", "process"], "cost": {"seconds": 1.41, "kind": "at most", "sources": ["log:c41e35f64d8f1650"]}, "why": "spawns javac, process"},
   {"file": "lib/tests/integration.rs", "name": "results_of_two_types_need_a_relation", "tier": "proof", "calls": ["javac", "jbmc", "process"], "cost": {"seconds": 21.9, "kind": "at most", "sources": ["log:26d304137ac5a035"]}, "why": "calls JBMC", "retier": "pending"},
