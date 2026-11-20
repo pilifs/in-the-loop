@@ -1945,6 +1945,12 @@ change `wzovxqwloyok` · [log `77b8388769e4`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 0 of the 3 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-000226-threetenbp-clock-fix-with-observed-chron: failed: 1 failed step(s) in 10m09s, peak 1.5 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-000226-threetenbp-reversal-fix-with-observed-ch: failed: 1 failed step(s) in 10m10s, peak 1.6 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-000227-threetenbp-reversal-parent-with-observed: failed: 1 failed step(s) in 10m10s, peak 990.8 MiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
+### Record verification results for 1 job(s)
+
+change `nkvunvqknrur` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261120-001338-prove-the-twelve-sub-hour-crossings-at-t: passed: 1 passed step(s) in 21.7s, peak 182.5 MiB (estimated 1m00s, 2.0 GiB); 31 output file(s) changed; signals: example:task-as-expected×2 Applied 31 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz) has every step in between: reasoning, tool calls and their results.

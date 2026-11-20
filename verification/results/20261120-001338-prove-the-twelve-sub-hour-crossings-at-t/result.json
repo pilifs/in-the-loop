@@ -1,0 +1,448 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-001338-prove-the-twelve-sub-hour-crossings-at-t",
+  "title": "Prove the twelve sub-hour crossings at the ThreeTenBP repair",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 21.7s, peak 182.5 MiB (estimated 1m00s, 2.0 GiB); 31 output file(s) changed; signals: example:task-as-expected×2",
+  "attention": [
+    "step 1 (Check introduction of the corrected handling on the two original artifacts) was held back 22.3s by its 1-CPU quota in 21.7s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-001338-prove-the-twelve-sub-hour-crossings-at-t.json",
+    "sha256": "9f0c976f27127ae6507e513629d4253535f2bd5ad9025aa1a24403d5a7a05d2c",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-001338-prove-the-twelve-sub-hour-crossings-at-t",
+      "title": "Prove the twelve sub-hour crossings at the ThreeTenBP repair",
+      "description": "Check the two pinned libraries on every interval of less than an hour that crosses midnight in the original quarter-hour grid, in both directions. The independent direct JVM control enumerated twelve cases, each wrong by one hour on the parent and correct on the fix. Both public tasks must retain their observed chronology state, registry model, bounds and distinct receipt.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "310"
+        ],
+        "jobs": [
+          "20261119-231539-retry-threetenbp-hours-after-exact-jdk-a"
+        ]
+      },
+      "expected": "The parent clock is refuted with an independently replayed witness. The fixed clock is established non-vacuously on all 12 crossings.",
+      "submitted": {
+        "at": "2026-11-20T00:13:38+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 1,
+        "memory": "2G",
+        "memoryLimit": "4G",
+        "duration": "1m",
+        "timeout": "5m",
+        "notes": "The 12-input fixed-clock diagnostic proved the elapsed-minute expression within two seconds. Both tasks run independently on the same pair of pins."
+      },
+      "steps": [
+        {
+          "name": "Check introduction of the corrected handling on the two original artifacts",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-words JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --tasks clock-parent-short-crossings,clock-fix-short-crossings --checker-seconds 120"
+        }
+      ],
+      "outputs": [
+        "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings",
+        "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings"
+      ],
+      "supersedes": "20261120-000646-prove-the-twelve-sub-hour-crossings-at-t"
+    }
+  },
+  "sourceCommit": "95ef35fa21e3ad2f5c3e7be882baa17c7129161f",
+  "startedAt": "2026-11-20T00:18:39+00:00",
+  "finishedAt": "2026-11-20T00:19:02+00:00",
+  "wallSeconds": 23.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1731787,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 300.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 60.0,
+    "notes": "The 12-input fixed-clock diagnostic proved the elapsed-minute expression within two seconds. Both tasks run independently on the same pair of pins."
+  },
+  "usage": {
+    "peakMemoryBytes": 191352832,
+    "wallSeconds": 21.7,
+    "cpuSeconds": 20.7,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.36
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check introduction of the corrected handling on the two original artifacts",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-words JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --tasks clock-parent-short-crossings,clock-fix-short-crossings --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300.0,
+      "cancelled": false,
+      "wallSeconds": 21.656,
+      "cpuSeconds": 20.66,
+      "cpuThrottledSeconds": 22.311,
+      "peakMemoryBytes": 191352832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-introduction-of-the-corr.log",
+        "lines": 4,
+        "bytes": 531,
+        "sha256": "150c12e78a881057d6c9114b0734e4612be8dfbb8accbfc4e056b7d8788b38e8",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 2
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "310-threeten-complete-hours: task clock-parent-short-crossings: refuted (completed; as expected), receipt receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/result.json",
+          "groups": [
+            "310",
+            "clock-parent-short-crossings",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "310-threeten-complete-hours: task clock-fix-short-crossings: established (completed; as expected), receipt receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/result.json",
+          "groups": [
+            "310",
+            "clock-fix-short-crossings",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "310-threeten-complete-hours: running task clock-parent-short-crossings (target route)",
+        "310-threeten-complete-hours: task clock-parent-short-crossings: refuted (completed; as expected), receipt receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/result.json",
+        "310-threeten-complete-hours: running task clock-fix-short-crossings (target route)",
+        "310-threeten-complete-hours: task clock-fix-short-crossings: established (completed; as expected), receipt receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "d96d6d6157abdcb01ec3b9563586f7aa5c8ca559687ed3528c6679e3c8480e2f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/plan.json",
+      "change": "added",
+      "bytes": 20819,
+      "sha256": "071f2c3b97dbee8d7e1039e41f6755275219ff8fce04052d02f1fd2a8e7b4eee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 15828,
+      "sha256": "b8a4776a604612bbc47417c80ceac0eba56a5788096bd49b3708e8704e2c7aae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/records/controls.json",
+      "change": "added",
+      "bytes": 36315,
+      "sha256": "e7486133fbaac345392b16a5c633485c57f368df648a41b196fc79c35a00f1fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/records/execution.json",
+      "change": "added",
+      "bytes": 73102,
+      "sha256": "2ea9d48f0fa75e2c20c19a7d2747536193a2b9959852823fcd49b5f6657bc7dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/records/streams.json",
+      "change": "added",
+      "bytes": 1973,
+      "sha256": "05c81d896a24513d14604abfd72e185b7bb04c93986b63bd27f6ec4bea176b08",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 857,
+      "sha256": "8799eaf176018b88984fc79df48c8f0300708ba6401760c5fdfba8a49b41ab04",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/records/verifier.json",
+      "change": "added",
+      "bytes": 33972,
+      "sha256": "6fcefc998ab6870d7dbd34887c6905db8485af13430dd19a4e7fd1dcdd8d0c74",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/records/verifier.stdout",
+      "change": "added",
+      "bytes": 10293,
+      "sha256": "d60d7fa7c0192ee127d6e4cdddc1e815f6abc28c20629eb2d3bc97218e802db7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/result.json",
+      "change": "added",
+      "bytes": 25620,
+      "sha256": "ab76bfdbacafe777f667d111b4edca5c8d3bfe8e2b4a89a0278f5f336b7c9727",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/executions/20261120T001840Z-d3b45559/attempt.json",
+      "change": "added",
+      "bytes": 30565,
+      "sha256": "c97eef26a188856a4e25aa9c00f54c35948df26ce03d0684469f65abf75ec657",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/executions/20261120T001840Z-d3b45559/checker.json",
+      "change": "added",
+      "bytes": 12099,
+      "sha256": "db7f7b2c7121ebae9efb5831cc65fea956ce2e0af5c48a8581a4532357cbb1e1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/executions/20261120T001840Z-d3b45559/correspondence.json",
+      "change": "added",
+      "bytes": 1306,
+      "sha256": "f9c9faf75bea6dac3c996b76afd6e98ed5e6ca8cb7c6068db26ac951c64f0a42",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/executions/20261120T001840Z-d3b45559/replay.json",
+      "change": "added",
+      "bytes": 1939,
+      "sha256": "be688bde0a2975420c2e3e85110b8492b41679a78853521d0bffb2c55f82744b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "3a8f7c1626af5f79c813d438d46728d3f7ccaa7485110443fcde5c983a880ead",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/plan.json",
+      "change": "added",
+      "bytes": 20914,
+      "sha256": "775510086a60b10bb1a4ea5e0660138f8841d5789a40b66167212d6cf1ad25e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 15661,
+      "sha256": "9a41a5fd7b9a5932e6937a5633bacb300e7086c59219381b533c990fa3de4012",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/records/controls.json",
+      "change": "added",
+      "bytes": 36115,
+      "sha256": "fdc77511373667524338e49eb232d1a2c9a417ba000bf1c602ca2f541ce803ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/records/execution.json",
+      "change": "added",
+      "bytes": 69402,
+      "sha256": "42a127d09023d1c09bcc28883e3317ea080edcd05f4f2036f15515cbd8805a33",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "0225828d1d5b850c18ce76106ef824a6b11282232cb107c83a8c4f98b4dbc5d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 585,
+      "sha256": "37d9800b3730b8535ba5bc09623b022b572272598f4134995bd2162f30c129f6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/records/verifier.json",
+      "change": "added",
+      "bytes": 32839,
+      "sha256": "7527624aa752a7f5a39fd676644a0aaed768f500e3baed7e9307a718a76c6d24",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/records/verifier.stdout",
+      "change": "added",
+      "bytes": 9270,
+      "sha256": "f0f81f069df045a5dce4f01a2409123c63864257e023035ed1920295d612b814",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/result.json",
+      "change": "added",
+      "bytes": 24166,
+      "sha256": "84b263380acd12072f62041e351399f5fbc6a370fe7c1277a3ccbf2bb2a3c713",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/executions/20261120T001851Z-e0f10b94/attempt.json",
+      "change": "added",
+      "bytes": 30422,
+      "sha256": "f57ed87efe19b1b618670605f66b939450be644b50f811008278babb10809b1a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/executions/20261120T001851Z-e0f10b94/checker.json",
+      "change": "added",
+      "bytes": 11012,
+      "sha256": "ff155b8daa73f89e19eefe464d908be7d952c8f0d9e7ba8bf4916f5f9329103c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/executions/20261120T001851Z-e0f10b94/correspondence.json",
+      "change": "added",
+      "bytes": 1300,
+      "sha256": "7b4d959c41413173e7183cc5c68e6c695cd73dfd8bb88a73185e4885d0ddfcd0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T00:19:33+00:00",
+    "applied": [
+      "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/completion.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/plan.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/records/control-parent-jdk21.stderr",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/records/control-parent-jdk21.stdout",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/records/controls.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/records/execution.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/records/streams.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/records/verifier-output.txt",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/records/verifier.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/records/verifier.stderr",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/records/verifier.stdout",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/result.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/executions/20261120T001840Z-d3b45559/attempt.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/executions/20261120T001840Z-d3b45559/checker.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/executions/20261120T001840Z-d3b45559/correspondence.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings/executions/20261120T001840Z-d3b45559/replay.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/completion.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/plan.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/records/control-fix-jdk21.stderr",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/records/control-fix-jdk21.stdout",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/records/controls.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/records/execution.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/records/streams.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/records/verifier-output.txt",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/records/verifier.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/records/verifier.stderr",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/records/verifier.stdout",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/result.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/executions/20261120T001851Z-e0f10b94/attempt.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/executions/20261120T001851Z-e0f10b94/checker.json",
+      "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings/executions/20261120T001851Z-e0f10b94/correspondence.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "e1113f1c2d17615fc5f4afe30ad3deff0d68a08a",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e1113f1c2d17615fc5f4afe30ad3deff0d68a08a/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}
