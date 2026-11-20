@@ -4510,7 +4510,8 @@ impl<'a> Engine<'a> {
         let runs = match self.runs.get(class) {
             Some(&r) => r,
             None => {
-                let r = gaps::runs_initializer(self.cp, class);
+                let r = (self.gap_mode == GapMode::Strict && gaps::builds_static_objects(self.cp, &cf))
+                    || gaps::runs_initializer(self.cp, class);
                 self.runs.insert(class.to_string(), r);
                 r
             }

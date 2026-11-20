@@ -699,6 +699,29 @@ pub fn initialization_supers(cp: &ClassPath, class: &str) -> Vec<String> {
     out
 }
 
+/// A straight-line initializer that constructs final object or array constants through
+/// application code. Strict checking can execute these assignments and their callees
+/// path by path. A refusal in an untaken constructor branch need not block every use
+/// of the class. This predicate chooses work to attempt; it proves nothing about it.
+pub(super) fn builds_static_objects(cp: &ClassPath, cf: &crate::classfile::ClassFile) -> bool {
+    let Some(code) = cf.method("<clinit>", "()V").and_then(|m| m.code.as_ref()) else { return false };
+    let Ok(insns) = code.instructions() else { return false };
+    let mut writes_constant = false;
+    code.exception_table.is_empty() && insns.iter().all(|(_, insn)| match insn {
+        Insn::Nop | Insn::AConstNull | Insn::IConst(_) | Insn::LConst(_) | Insn::FConst(_) | Insn::DConst(_)
+        | Insn::Ldc(_) | Insn::Dup | Insn::NewArray(_) | Insn::ANewArray(_) | Insn::ArrayStore(_) | Insn::Return(None) => true,
+        Insn::New(i) => cf.pool.class_name(*i).is_ok_and(|class| cp.is_application(class)),
+        Insn::InvokeSpecial(i) | Insn::InvokeStatic(i) | Insn::InvokeVirtual(i) | Insn::InvokeInterface(i) =>
+            cf.pool.member(*i).is_ok_and(|m| cp.is_application(&m.owner)),
+        Insn::PutStatic(i) => {
+            writes_constant = true;
+            cf.pool.member(*i).is_ok_and(|m| m.owner == cf.name && m.descriptor.starts_with(['L', '['])
+                && cf.field(&m.name).is_some_and(|f| f.is_static() && f.is_final() && f.descriptor == m.descriptor))
+        }
+        _ => false,
+    }) && writes_constant
+}
+
 /// Whether the engine runs `class`'s `<clinit>` when a use initializes the class, rather than meeting a
 /// `class-initializer` gap there: the class has one, and nothing in it, or in the application methods it calls,
 /// is outside the engine's fragment ([`scan`]'s refusals). That includes a static field it reads or writes of a

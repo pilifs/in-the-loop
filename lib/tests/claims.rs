@@ -1203,3 +1203,18 @@ fn a_write_set_frames_a_field_of_a_type_the_check_makes_no_object_of_by_identity
     assert!(peeked.problem.as_deref().unwrap_or_default().contains("the effect contract of claims.Frames$Peeking#setDisplayName"), "{}", peeked.output);
     assert!(peeked.output.contains("extras"), "the refusal names the read: {}", peeked.output);
 }
+
+/// Construction of final object constants follows reachable branches, including a
+/// constructor that fails and a class that is erroneous on its second use.
+#[test]
+fn static_value_constructors_keep_reachable_gaps_and_erroneous_state() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.ValueConstants").status().unwrap().success());
+    for name in ["kept", "failureState"] {
+        proved(classes, &format!("claims.ValueConstants#{name}"), 2);
+    }
+    let o = run(&options(classes, "claims.ValueConstants#parses", 2, "value-constant-parse"));
+    assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
+    assert!(o.output.contains("Double.parseDouble"), "{}", o.output);
+}
