@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-232343-run-the-full-rxjava-jdbc-historical-sure",
+  "title": "Run the full rxjava-jdbc historical Surefire test set on each H2 pin",
+  "description": "Compile all production and test sources from each exact CompSuite tag with Java 8 and its test dependencies. Reproduce the registry trigger and then run every default JUnit class through Maven 3.6.3’s Surefire 2.12.4 provider. Retain test, skipped, failure and error counts, every failing class/method and exception, full-test duration, and the separate original Maven lifecycle result. This measures the available client CI signal for the public i-87 calibration.",
+  "kind": "other",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "surefire:historical-ci"
+  ],
+  "links": {
+    "examples": [
+      "348"
+    ]
+  },
+  "expected": "Both test sets actually complete and include the exact trigger. Every test failure and error remains visible in the result.",
+  "submitted": {
+    "at": "2026-11-20T23:23:43+00:00",
+    "session": "01a1fb31-b3eb-7231-b464-c3233fd02921"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "paired original test set",
+      "run": "python3 examples/348-rxjava-jdbc-generated-keys/independent/whole_ci.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/348-rxjava-jdbc-generated-keys/records/whole-suite.json"
+  ]
+}

@@ -12,57 +12,59 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-20T23:01:40.990Z",
-  "ended": "2026-11-20T23:20:16.194Z",
-  "duration_seconds": 1115,
+  "ended": "2026-11-20T23:25:19.937Z",
+  "duration_seconds": 1419,
   "stats": {
     "turns": 0,
-    "api_calls": 116,
-    "tool_calls": 244,
+    "api_calls": 138,
+    "tool_calls": 287,
     "tool_errors": 10,
     "compactions": 0,
-    "peak_context_tokens": 164922,
+    "peak_context_tokens": 184637,
     "usage": {
-      "input_tokens": 159905,
-      "output_tokens": 40844,
-      "cache_read_input_tokens": 13182464,
+      "input_tokens": 181187,
+      "output_tokens": 53398,
+      "cache_read_input_tokens": 17028352,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 130,
-    "exec": 92,
-    "send_message": 18,
-    "apply_patch": 4
+    "Bash": 149,
+    "exec": 110,
+    "send_message": 22,
+    "apply_patch": 6
   },
   "files_touched": [
     "examples/348-rxjava-jdbc-generated-keys/adapter/calibration/GeneratedKeys.java",
     "examples/348-rxjava-jdbc-generated-keys/claims/generated-keys.json",
     "examples/348-rxjava-jdbc-generated-keys/driver/EffectivePom.java",
     "examples/348-rxjava-jdbc-generated-keys/driver/NamedSurefire.java",
-    "examples/348-rxjava-jdbc-generated-keys/driver/Observe.java"
+    "examples/348-rxjava-jdbc-generated-keys/driver/Observe.java",
+    "examples/348-rxjava-jdbc-generated-keys/independent/NamedSurefire.java",
+    "examples/348-rxjava-jdbc-generated-keys/independent/reproduce.py"
   ],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-20T23:01:40.990Z",
-      "ended": "2026-11-20T23:20:16.194Z",
+      "ended": "2026-11-20T23:25:19.937Z",
       "turns": 0,
-      "api_calls": 116,
+      "api_calls": 138,
       "usage": {
-        "input_tokens": 159905,
-        "output_tokens": 40844,
-        "cache_read_input_tokens": 13182464,
+        "input_tokens": 181187,
+        "output_tokens": 53398,
+        "cache_read_input_tokens": 17028352,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 164922
+      "peak_context_tokens": 184637
     }
   ],
   "log": {
-    "sha256": "1258a77232330463fd711edbe30c8d85acdcbdbd9468392b3fdfdaa813ea4124",
-    "bytes": 2437106,
-    "lines": 815,
-    "gzip_bytes": 810908,
-    "path": "llm-dlc/traces/01a1fb31-b3eb-7231-b464-c3233fd02921/logs/1258a77232330463fd711edbe30c8d85acdcbdbd9468392b3fdfdaa813ea4124.jsonl.gz"
+    "sha256": "710b6cf8f19c39a33eef3c45d26e0fd076c204eece385dd93af2247b06cc27f5",
+    "bytes": 2771830,
+    "lines": 966,
+    "gzip_bytes": 926016,
+    "path": "llm-dlc/traces/01a1fb31-b3eb-7231-b464-c3233fd02921/logs/710b6cf8f19c39a33eef3c45d26e0fd076c204eece385dd93af2247b06cc27f5.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -75,20 +77,28 @@
       "log_sha256": "26041c89dbf25829307559013a076da01f0150798dadd7673d16f4574e8de0f3"
     },
     {
-      "change_id": "mrlxoqqspprwwzsyztosqvsylstqonsx",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "1258a77232330463fd711edbe30c8d85acdcbdbd9468392b3fdfdaa813ea4124"
-    },
-    {
       "change_id": "qvluvnpvrtpquvkyppuzskpnktommkrp",
       "commit_id": null,
       "immutable": false,
       "summary": "Calibrate two external upgrades on their original client observations (verification pending)",
       "body": "The unchanged rxjava-jdbc client returned [2] then [1, 2] from one two-row insert as H2 changed. Both releases returned [1, 2] for separate inserts and stored the same rows. The registered JDK 21 replay and independent JDK 8 reproduction agree with the original named test. H2 is test-scoped in the client POM. Commons Text preserved every returned UTF-16 field on all 156 inputs with both Lang versions. Removing quote doubling broke 71. The public V0 route stopped at modified UTF-8 during class intake. The direct native diagnostic reached static initialization and remains open.\n\nThese two disclosed calibrations are excluded from all scores, as are Rocker, AWS and Cucumber Reporting. Both public proof plans are executable. The queue validator found no invalid jobs, the first changed-test run passed 29 groups with an acceptance retry, and the independent reviews reran the actual observations and checked the original test identities. Job 20261120-231316-check-returned-h2-keys-through-the-uncha checks the native generated-key claim. Job 20261120-230733-check-commons-text-pr-586-csv-return-pre checks CSV preservation using the standard route.",
       "log_sha256": "1258a77232330463fd711edbe30c8d85acdcbdbd9468392b3fdfdaa813ea4124"
+    },
+    {
+      "change_id": "oqlpswkwxnxwxklowrzxwokqnmywnvzx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "710b6cf8f19c39a33eef3c45d26e0fd076c204eece385dd93af2247b06cc27f5"
+    },
+    {
+      "change_id": "zxqxmmysqyynmmmttolnyloxmnkswxwz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind upgrade references to actual JVM runs and historical CI (verification pending)",
+      "body": "The separate curator committed a seed, reproduced the pinned CompSuite and CompCheck join of 13/123, and added checks for the named test, ordered classpath, non-vacuity, identical production sources and loaded library in both runs. Signed encrypted reference packets are kept outside the product checkout. Open calibration model calls used 176,898 and 214,213 uncached input plus generated tokens at 15 minutes. Freeze the 250,000-token per-PR cap for both product versions.\n\nOn JDK 8, the historical rxjava-jdbc named Surefire assertions ran in four fresh reports. Only the new H2 two-row test failed. The Maven 3.6.3 effective models, unchanged client class hashes, dependency digests and separate whole-suite baseline are replayable. Checked the four actual XML test identities, both effective models and the standard prepared target. The curator exercised signature, tamper, wrong-key and stale-test controls. Verification job 20261120-232343-run-the-full-rxjava-jdbc-historical-sure runs the complete historical Surefire test set on both source tags.",
+      "log_sha256": "710b6cf8f19c39a33eef3c45d26e0fd076c204eece385dd93af2247b06cc27f5"
     }
   ],
   "logs": {
@@ -102,6 +112,12 @@
       "bytes": 1643777,
       "lines": 434,
       "gzip_bytes": 520928,
+      "url": null
+    },
+    "710b6cf8f19c39a33eef3c45d26e0fd076c204eece385dd93af2247b06cc27f5": {
+      "bytes": 2771830,
+      "lines": 966,
+      "gzip_bytes": 926016,
       "url": null
     }
   },
