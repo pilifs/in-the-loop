@@ -36,6 +36,18 @@ public final class ReaderAndListeners {
     }
 
     public static boolean buffered() throws IOException {
+        byte[] bytes = {3, (byte) 255, 9};
+        java.io.ByteArrayInputStream source = new java.io.ByteArrayInputStream(bytes);
+        if (source.read() != 3) return false;
+        source.mark(2);
+        if (source.read() != 255) return false;
+        source.reset();
+        bytes[1] = 7;
+        if (source.read() != 7 || source.read() != 9 || source.read() != -1) return false;
+        byte[] copy = {3, 7, 9};
+        if (!java.util.Arrays.equals(bytes, copy) || java.util.Arrays.equals(bytes, (byte[]) null)) return false;
+        copy[2] = -1;
+        if (java.util.Arrays.equals(bytes, copy) || java.util.Arrays.equals(bytes, new byte[]{3, 7})) return false;
         try (Reader r = new BufferedReader(new StringReader("a\udfffz"), 2)) {
             return r.read() == 'a' && r.read() == '\udfff' && r.read() == 'z' && r.read() == -1;
         }

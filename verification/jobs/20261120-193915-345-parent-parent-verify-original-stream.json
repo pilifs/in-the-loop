@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-193915-345-parent-parent-verify-original-stream",
+  "title": "345 parent-parent verify original stream and page bytecode",
+  "description": "Run the strict native checker on the actual pinned application and runtime dependencies after extending Java initialization, sorting, streams and bounded byte operations. Preserve every raw outcome and independently qualify a concrete failure on the JVM.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "345"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T19:39:15+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "8m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 345 --tasks bytes-parent-parent,count-parent-parent,page-parent-parent,positive-parent-parent --checker-seconds 90",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/345-paged-importer-upgrades/receipts/bytes-parent-parent",
+    "examples/345-paged-importer-upgrades/receipts/count-parent-parent",
+    "examples/345-paged-importer-upgrades/receipts/page-parent-parent",
+    "examples/345-paged-importer-upgrades/receipts/positive-parent-parent"
+  ]
+}

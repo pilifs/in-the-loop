@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-193914-337-range-fill-after-linking-arrays-at-6",
+  "title": "337 range fill after linking Arrays at 64",
+  "description": "Recheck the exact frame and caller observation on both overlapping and independent int-array roots, following the real JDK fill and checked range validation. Keep the same original bounds and both wrong-slice controls.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "337"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T19:39:14+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "6m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 337 --tasks frame-64-original,caller-64-original,frame-64-extra,caller-64-extra --checker-seconds 120",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/337-jdk-range-fill-alias/receipts/frame-64-original",
+    "examples/337-jdk-range-fill-alias/receipts/caller-64-original",
+    "examples/337-jdk-range-fill-alias/receipts/frame-64-extra",
+    "examples/337-jdk-range-fill-alias/receipts/caller-64-extra"
+  ]
+}

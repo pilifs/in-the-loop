@@ -287,6 +287,16 @@ impl Engine<'_> {
     /// on the object `o`, and `getClass()` on it: see the module's
     /// notes. `None` where the call stays the JDK's.
     pub(super) fn class_method(&mut self, path: &mut Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Option<Step> {
+        if (owner, name, descriptor) == (super::bytes::CHARSET, "name", "()Ljava/lang/String;") {
+            let field = path.literals.iter().find_map(|(key, &r)| match key {
+                Literal::Charset(field) if r == o => Some(*field), _ => None,
+            })?;
+            let units = self.cp.charset_name_literal(field)?;
+            let text = self.literal(path, Literal::Str(units), "java/lang/String");
+            self.push(path, Val::R(Some(text)));
+            self.advance(path);
+            return Some(Ok(None));
+        }
         if (owner, name, descriptor) == (BOOLEAN, "booleanValue", "()Z") {
             let truth = canonical_truth(path, o)?;
             self.push(path, Val::I(self.b.constant(i64::from(truth), 32)));
@@ -304,7 +314,10 @@ impl Engine<'_> {
         if (owner, name, descriptor) == (CLASS, "desiredAssertionStatus", "()Z") {
             let class = self.class_named(path, o)?;
             let frame = path.frames.last()?;
-            if frame.method != "<clinit>" || self.cp.state_image_class(&frame.class.name).is_none() || self.cp.state_image_class(&class).is_none() { return None; }
+            let image_host = self.cp.state_image_class(&class).is_some()
+                || (frame.class.name.starts_with(&format!("{class}$")) && self.cp.load(&class).ok().flatten()
+                    .is_some_and(|loaded| matches!(loaded.origin, crate::classpath::Origin::Jdk)));
+            if frame.method != "<clinit>" || self.cp.state_image_class(&frame.class.name).is_none() || !image_host { return None; }
             let flag = path.statics.entry((class, "<VM.desiredAssertionStatus>".into())).or_insert_with(|| {
                 let bit = self.b.var(); Val::I(self.b.zext(&vec![bit], 32))
             }).clone();

@@ -759,6 +759,7 @@ struct Obj {
 #[derive(Debug, Clone, PartialEq)]
 struct Lambda {
     interface: String,
+    serializable: bool,
     name: String,
     handle: crate::classfile::MethodHandle,
     sam_descriptor: String,
@@ -775,6 +776,11 @@ fn captured_key(i: usize) -> String {
 static MADE: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
 
 impl Obj {
+    fn is_instance(&self, cp: &ClassPath, target: &str) -> bool {
+        cp.is_subtype(&self.class, target)
+            || (target == "java/io/Serializable" && self.lambda.as_ref().is_some_and(|l| l.serializable))
+    }
+
     fn new(class: &str) -> Obj {
         Obj { class: class.to_string(), fields: BTreeMap::new(), array: None, limit: None, same: Vec::new(), lambda: None, regex: None, made: MADE.fetch_add(1, std::sync::atomic::Ordering::Relaxed), given: false, before: false, unknown: false, content: None, assumed: false }
     }
@@ -2932,7 +2938,7 @@ impl<'a> Engine<'a> {
                     return self.raise(path, "java/lang/ArrayIndexOutOfBoundsException");
                 };
                 if let Val::R(Some(v)) = value {
-                    if !self.cp.is_subtype(&path.objects[v].class, &class_of(&array.element)) {
+                    if !path.objects[v].is_instance(self.cp, &class_of(&array.element)) {
                         return unsupported(format!("an aastore of a {} into a {}[] (ArrayStoreException)", path.objects[v].class.replace('/', "."), array.element.java_name()));
                     }
                 }
@@ -3232,7 +3238,7 @@ impl<'a> Engine<'a> {
         let (Some(Val::C(choice)), Some(Val::R(Some(o)))) = (stack.last(), n.checked_sub(3).map(|i| &stack[i])) else { return false };
         let Some(array) = path.objects[*o].as_array().filter(|a| holds_references(&a.element)) else { return false };
         let element = class_of(&array.element);
-        choice.0.iter().all(|(_, t)| t.is_none_or(|v| self.cp.is_subtype(&path.objects[v].class, &element)))
+        choice.0.iter().all(|(_, t)| t.is_none_or(|v| path.objects[v].is_instance(self.cp, &element)))
     }
 
     /// Splits the path per option of the symbolic reference `depth` values below the top of the stack, if it is one
@@ -3902,6 +3908,21 @@ impl<'a> Engine<'a> {
             Insn::GetStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
+                let setting = match (declaring.as_str(), member.name.as_str(), member.descriptor.as_str()) {
+                    ("java/io/File", "separatorChar", "C") => Some((16, "the platform file separator")),
+                    ("java/util/Arrays$LegacyMergeSort", "userRequested", "Z") => Some((1, "the JDK array sort selection")),
+                    _ => None,
+                };
+                if let Some((width, reason)) = setting {
+                    let value = path.statics.entry((declaring, member.name)).or_insert_with(|| {
+                        let unit = self.b.fresh(width);
+                        Val::I(self.b.zext(&unit, 32))
+                    }).clone();
+                    path.unbound_platform_value = Some(reason);
+                    self.push(path, value);
+                    self.advance(path);
+                    return Ok(None);
+                }
                 if (declaring.as_str(), member.name.as_str(), member.descriptor.as_str()) == ("java/util/Collections", "EMPTY_SET", "Ljava/util/Set;") && self.cp.collections_empty_singleton("emptySet") {
                     let o = self.literal(path, Literal::CollectionsEmptySet, "java/util/Collections$EmptySet");
                     self.push(path, Val::R(Some(o)));
@@ -4083,11 +4104,17 @@ impl<'a> Engine<'a> {
                 let descriptor = MethodDescriptor::parse(descriptor_text).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 // A lambda or a method reference: an object of the interface, which holds what the site captured.
                 let site = class.bootstrap_methods().ok().and_then(|b| b.into_iter().nth(usize::from(bootstrap)));
-                if let Some(b) = site.as_ref().filter(|b| b.method.member.owner == "java/lang/invoke/LambdaMetafactory" && b.method.member.name == "metafactory") {
+                if let Some(b) = site.as_ref().filter(|b| b.method.member.owner == "java/lang/invoke/LambdaMetafactory"
+                    && matches!(b.method.member.name.as_str(), "metafactory" | "altMetafactory")) {
                     let (_, sam, _) = class.pool.invoke_dynamic(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
-                    let (Type::Object(interface), [BootstrapArg::MethodType(erased), BootstrapArg::MethodHandle(handle), BootstrapArg::MethodType(instantiated)]) = (&descriptor.ret, b.args.as_slice()) else { return unsupported("a lambda site without its three metafactory arguments") };
+                    let (Type::Object(interface), [BootstrapArg::MethodType(erased), BootstrapArg::MethodHandle(handle), BootstrapArg::MethodType(instantiated), flags @ ..]) = (&descriptor.ret, b.args.as_slice()) else { return unsupported("a lambda site without its three metafactory arguments") };
+                    let serializable = match (b.method.member.name.as_str(), flags) {
+                        ("metafactory", []) | ("altMetafactory", [BootstrapArg::Int(0)]) => false,
+                        ("altMetafactory", [BootstrapArg::Int(1)] | [BootstrapArg::Int(5), BootstrapArg::Int(0)]) => true,
+                        _ => return unsupported("a lambda with additional marker interfaces or bridge methods"),
+                    };
                     let instantiated = MethodDescriptor::parse(instantiated).map_err(|e| Stop::Unsupported(e.to_string()))?;
-                    let lambda = Lambda { interface: interface.clone(), name: sam.to_string(), handle: handle.clone(), sam_descriptor: erased.clone(), instantiated, captured: descriptor.params.len() };
+                    let lambda = Lambda { interface: interface.clone(), serializable, name: sam.to_string(), handle: handle.clone(), sam_descriptor: erased.clone(), instantiated, captured: descriptor.params.len() };
                     let captured = self.pop_args(path, descriptor.params.len())?;
                     let r = self.alloc(path, interface);
                     path.objects[r].lambda = Some(Rc::new(lambda));
@@ -4149,7 +4176,7 @@ impl<'a> Engine<'a> {
                 }
                 let r = self.pop_ref(path)?;
                 if let Some(o) = r {
-                    if !self.cp.is_subtype(&path.objects[o].class, &target) {
+                    if !path.objects[o].is_instance(self.cp, &target) {
                         if path.objects[o].assumed {
                             return self.of_unknown_class(path, o, &format!("a cast to {}", target.replace('/', ".")));
                         }
@@ -4162,10 +4189,10 @@ impl<'a> Engine<'a> {
                 let target = class.pool.class_name(index).map_err(|e| Stop::Unsupported(e.to_string()))?.to_string();
                 let r = self.pop(path)?;
                 let Some(options) = r.options() else { return unsupported(format!("expected a reference on the stack, found {r:?}")) };
-                if let Some(o) = options.iter().filter_map(|(_, t)| *t).find(|&o| path.objects[o].assumed && !self.cp.is_subtype(&path.objects[o].class, &target)) {
+                if let Some(o) = options.iter().filter_map(|(_, t)| *t).find(|&o| path.objects[o].assumed && !path.objects[o].is_instance(self.cp, &target)) {
                     return self.of_unknown_class(path, o, &format!("an instanceof {}", target.replace('/', ".")));
                 }
-                let guards: Vec<Lit> = options.iter().filter(|(_, t)| t.is_some_and(|o| self.cp.is_subtype(&path.objects[o].class, &target))).map(|(g, _)| *g).collect();
+                let guards: Vec<Lit> = options.iter().filter(|(_, t)| t.is_some_and(|o| path.objects[o].is_instance(self.cp, &target))).map(|(g, _)| *g).collect();
                 let is = self.any(&guards);
                 let (one, zero) = (self.b.constant(1, 32), self.b.constant(0, 32));
                 let c = self.b.ite_bits(is, &one, &zero);
@@ -5028,7 +5055,7 @@ impl<'a> Engine<'a> {
         let arguments = &stack[receiver_at + 1..];
         for (v, t) in arguments.iter().zip(&lambda.instantiated.params).chain(arguments.iter().zip(&takes.params[lambda.captured..])) {
             if let (Val::R(Some(a)), Type::Object(_) | Type::Array(_)) = (v, t) {
-                if !self.cp.is_subtype(&path.objects[*a].class, &class_of(t)) {
+                if !path.objects[*a].is_instance(self.cp, &class_of(t)) {
                     if path.objects[*a].assumed {
                         return self.of_unknown_class(path, *a, &format!("a cast to {}", class_of(t).replace('/', ".")));
                     }

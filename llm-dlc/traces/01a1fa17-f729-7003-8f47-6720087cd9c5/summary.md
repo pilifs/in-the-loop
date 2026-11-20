@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a1fa17-f729-7003-8f47-6720087cd9c5` (open) |
+| Session | `01a1fa17-f729-7003-8f47-6720087cd9c5` (ended) |
 | When | 2026-11-20 17:53 UTC to 2026-11-20 19:31 UTC (97 min) |
 | Models | `codex-auto-review` |
 | Client | codex 0.170.0 |
@@ -51,10 +51,6 @@ Queued jobs: 20261120-183452-335-prove-guava-signed-means-over-both-e, 20261120-
 change `orvotvxlpsok` · [log `2c3ab0cf8e7c`](https://terminalvalue.net/raw-traces/01a1fa17-f729-7003-8f47-6720087cd9c5/2c3ab0cf8e7ca42d33cbe09ae607f3c829d25bc85218d70ef9b57c3e8567b2e5.jsonl.gz)
 
 Prepare complete Maven products and resolution inventories for the historical rejected-add and rejected-remove repair. Upstream Git confirmed dc4d1c92 as the first parent of fe8eb498. The build uses the same tested artifact capture as the four importer dependencies. Job 20261120-185734-340-build-the-rejected-treelist-edit-acr supplies the immutable products for the iterator and list-state observations.
-
-### (in progress)
-
-change `zrpoxpkvytpy`, not yet described
 
 ### Check startup, iterator, decoder and monitor behavior on real JVM classes (verification pending)
 

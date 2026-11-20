@@ -1,0 +1,48 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-193914-check-importer-changes-against-auto-conf",
+  "title": "Check importer changes against auto-confirm",
+  "description": "Repeat the historical controls with the same bounds, JVM, checker budget and observations after extending native Java stream, comparator, array and reference semantics. Keep expected negative controls and all divergences visible.",
+  "kind": "library",
+  "capabilities": [
+    "tests:proof",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/conformance.rs"
+    ],
+    "jobs": [
+      "20261120-075443-confirm-jvm-corpus-hashes-and-map-outcom",
+      "20261120-100812-confirm-jvm-corpus-results-on-the-calend"
+    ]
+  },
+  "expected": "All auto-confirm checks match each concrete JVM calibration and recorded scope.",
+  "submitted": {
+    "at": "2026-11-20T19:39:14+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 8,
+  "requires": [
+    "cargo",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "25m",
+    "memoryLimit": "5G",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "Check the corpus with auto-confirm",
+      "run": "cargo test --manifest-path lib/Cargo.toml --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --exact --test-threads=1",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

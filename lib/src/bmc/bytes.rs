@@ -51,6 +51,8 @@ pub fn charset_constant(owner: &str, name: &str) -> Option<&'static str> {
     match (owner, name) {
         (STANDARD_CHARSETS, "UTF_8") => Some("UTF_8"),
         (STANDARD_CHARSETS, "US_ASCII") => Some("US_ASCII"),
+        (STANDARD_CHARSETS, "UTF_16BE") => Some("UTF_16BE"),
+        (STANDARD_CHARSETS, "UTF_16LE") => Some("UTF_16LE"),
         _ => None,
     }
 }
@@ -60,7 +62,9 @@ pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!(
         (owner, name, descriptor),
         ("java/lang/String", "valueOf", "(C)Ljava/lang/String;") |
-        (INTEGER, "parseInt", "(Ljava/lang/String;)I") | ("java/lang/Long", "parseLong", "(Ljava/lang/String;)J") | ("java/lang/Long", "toString", "(J)Ljava/lang/String;") | (DIGEST, "isEqual", "([B[B)Z") | (ARRAYS, "copyOf", "([ZI)[Z" | "([BI)[B" | "([CI)[C" | "([SI)[S" | "([II)[I" | "([JI)[J" | "([Ljava/lang/Object;I)[Ljava/lang/Object;")
+        (INTEGER, "parseInt", "(Ljava/lang/String;)I") | ("java/lang/Long", "parseLong", "(Ljava/lang/String;)J") | ("java/lang/Long", "toString", "(J)Ljava/lang/String;") |
+        (DIGEST, "isEqual", "([B[B)Z") | (ARRAYS, "equals", "([B[B)Z") |
+        (ARRAYS, "copyOf", "([ZI)[Z" | "([BI)[B" | "([CI)[C" | "([SI)[S" | "([II)[I" | "([JI)[J" | "([Ljava/lang/Object;I)[Ljava/lang/Object;")
     )
 }
 
@@ -283,24 +287,26 @@ impl Engine<'_> {
                 });
                 Some(inner.and(outer))
             }
-            (DIGEST, "isEqual", [Val::R(a), Val::R(b)]) => {
+            (DIGEST, "isEqual", [Val::R(a), Val::R(b)]) | (ARRAYS, "equals", [Val::R(a), Val::R(b)]) => {
                 let truth = match (*a, *b) {
                     (None, None) => TRUE,
                     (None, _) | (_, None) => FALSE,
                     (Some(a), Some(b)) if a == b => TRUE,
                     (Some(a), Some(b)) => {
-                        if path.objects[a].given || path.objects[b].given {
-                            if let Err(stop) = self.reads(path, || "reads an array that was there before the call (isEqual)".into()) {
+                        if self.there_before(path, a) || self.there_before(path, b) {
+                            if let Err(stop) = self.reads(path, || format!("reads an array that was there before the call ({name})")) {
                                 return Some(Err(stop));
                             }
                         }
-                        let (x, y) = (path.objects[a].as_array()?.clone(), path.objects[b].as_array()?.clone());
+                        let (x, y) = (path.objects[a].as_array()?, path.objects[b].as_array()?);
+                        if x.element != Type::Byte || y.element != Type::Byte { return None; }
                         let mut same = vec![self.b.eq(&x.length, &y.length)];
-                        let zero = self.b.constant(0, 8);
-                        for i in 0..x.cells.len().max(y.cells.len()) {
+                        // Each backing vector covers every legal index. If lengths are equal,
+                        // only the common capacity can contain an observable byte.
+                        for (i, (left, right)) in x.cells.iter().zip(&y.cells).enumerate() {
                             let here = self.b.constant(i as i64, 32);
                             let inside = self.b.slt(&here, &x.length);
-                            let equal = self.b.eq(x.cells.get(i).unwrap_or(&zero), y.cells.get(i).unwrap_or(&zero));
+                            let equal = self.b.eq(left, right);
                             same.push(self.b.or(-inside, equal));
                         }
                         self.b.all(&same)

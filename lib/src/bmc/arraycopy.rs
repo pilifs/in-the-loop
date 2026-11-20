@@ -93,7 +93,7 @@ impl Engine<'_> {
                 let mut compatible = false;
                 let mut incompatible = false;
                 for (_, object) in options {
-                    if let Some(o) = object.filter(|o| !self.cp.is_subtype(&path.objects[*o].class, &target)) {
+                    if let Some(o) = object.filter(|o| !path.objects[*o].is_instance(self.cp, &target)) {
                         if path.objects[o].assumed { return self.of_unknown_class(path, o, "an arraycopy component check"); }
                         incompatible = true;
                     } else {

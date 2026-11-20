@@ -1051,7 +1051,7 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
             "addSuppressed" | "getSuppressed" => invoke_suppression(m, r, name, descriptor, args),
             _ => unsupported(format!("{}.{name}", class.replace('/', "."))),
         },
-        Native::Lambda { sam_name, sam_descriptor, implementation, captured, instantiated, interface } => {
+        Native::Lambda { sam_name, sam_descriptor, implementation, captured, instantiated, interface, .. } => {
             if name == sam_name && sam_descriptor.as_deref().is_none_or(|d| d == descriptor) {
                 call_lambda(m, &implementation, captured, &instantiated, args)
             } else {
@@ -2001,7 +2001,8 @@ pub fn invoke_dynamic(m: &mut Machine, class: &ClassFile, bootstrap_index: u16, 
                 ("metafactory", Some(BootstrapArg::MethodType(d))) => Some(d.clone()),
                 _ => None,
             };
-            let lambda = Native::Lambda { interface, sam_name: name.to_string(), sam_descriptor, implementation, captured: args, instantiated };
+            let serializable = method == "altMetafactory" && matches!(bootstrap.args.get(3), Some(BootstrapArg::Int(flags)) if flags & 1 != 0);
+            let lambda = Native::Lambda { interface, serializable, sam_name: name.to_string(), sam_descriptor, implementation, captured: args, instantiated };
             Ok(Some(Value::Ref(m.alloc_native(lambda))))
         }
         _ => unsupported(format!("invokedynamic with bootstrap {}.{method}", owner.replace('/', "."))),

@@ -299,6 +299,7 @@ impl<'a> Machine<'a> {
     /// Whether an object is an instance of a class or interface, or an array type.
     pub fn is_instance(&self, r: Ref, class: &str) -> bool {
         self.cp.is_subtype(&self.class_of(r), class)
+            || (class == "java/io/Serializable" && matches!(self.heap.get(r), Object::Native(Native::Lambda { serializable: true, .. })))
     }
 
     // Class initialisation
