@@ -1187,7 +1187,9 @@ impl<'a> Walker<'a> {
                 }
                 Insn::InvokeStatic(index) => {
                     let member = cf.pool.member(index).map_err(|e| Error::new(e.to_string()))?;
-                    if self.cp.is_application(&member.owner) || self.cp.checked_image_class(&member.owner).is_some() {
+                    if super::runtime::enum_identity_read(&cf.name, name, &member) {
+                        *self.scan.exact.entry("Enum.hashCode (all stable JVM identity hashes)".into()).or_default() += 1;
+                    } else if self.cp.is_application(&member.owner) || self.cp.checked_image_class(&member.owner).is_some() {
                         let declaring = self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).map(|(c, _)| c.name.clone()).unwrap_or_else(|| member.owner.clone());
                         self.initialise(&declaring, &site);
                         self.enqueue(&member.owner, &member.name, &member.descriptor);

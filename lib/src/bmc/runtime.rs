@@ -155,6 +155,10 @@ const LOADER: &str = "java/lang/ClassLoader";
 const LOGGER: &str = "java/util/logging/Logger";
 const THREAD: &str = "java/lang/Thread";
 pub(super) const LINE_SEPARATOR: &str = "the contents and external string identity of the JVM's initial line separator are not bound";
+pub(super) fn enum_identity_read(caller: &str, method: &str, m: &crate::classfile::MemberRef) -> bool {
+    (caller, method, m.owner.as_str(), m.name.as_str(), m.descriptor.as_str())
+        == ("java/lang/Enum", "hashCode", "java/lang/System", "identityHashCode", "(Ljava/lang/Object;)I")
+}
 const COLLECTIONS: &str = "java/util/Collections";
 pub(super) const EMPTY_MAP: &str = "java/util/Collections$EmptyMap";
 const FOR_NAME: &str = "(Ljava/lang/String;)Ljava/lang/Class;";
@@ -215,6 +219,38 @@ pub fn capacity_constructor(owner: &str, descriptor: &str) -> bool {
 }
 
 impl Engine<'_> {
+    /// Materialize only a range the solver proves contains every possible value on this path.
+    /// Outside the mandatory cache the selected JDK's factory decides what it constructs.
+    pub(super) fn cached_integral(&mut self, path: &mut Path, class: &'static str, word: &Bits) -> Option<Step> {
+        let minimum = if class == "java/lang/Character" { 0 } else { i8::MIN };
+        let boxed = if let Some(n) = self.b.constant_value(word) {
+            let n = i8::try_from(n).ok().filter(|n| *n >= minimum)?;
+            Val::R(Some(self.literal(path, Literal::CachedIntegral(class, n), class)))
+        } else {
+            let mut range = None;
+            for (lo, hi) in [(0, 3), ((-1).max(minimum), 15), (minimum, i8::MAX)] {
+                let below = self.b.slt(word, &self.b.constant(i64::from(lo), word.len()));
+                let above = self.b.slt(&self.b.constant(i64::from(hi), word.len()), word);
+                let mut outside = path.cond.clone();
+                outside.push(self.b.or(below, above));
+                match self.solve(&outside) {
+                    Ok(false) => { range = Some(lo..=hi); break; }
+                    Ok(true) => {}
+                    Err(stop) => return Some(Err(stop)),
+                }
+            }
+            let mut choices = Vec::new();
+            for n in range? {
+                let guard = self.b.eq(word, &self.b.constant(i64::from(n), word.len()));
+                choices.push((guard, Some(self.literal(path, Literal::CachedIntegral(class, n), class))));
+            }
+            choice(&mut self.b, choices)
+        };
+        self.push(path, boxed);
+        self.advance(path);
+        Some(Ok(None))
+    }
+
     /// Boolean.equals also dispatches here when the invocation names Object.equals.
     /// Untracked Boolean receivers or arguments still require their own evidence.
     pub(super) fn boolean_equals(&mut self, path: &mut Path, receiver: usize, args: &[Val]) -> Option<Step> {
@@ -579,37 +615,7 @@ impl Engine<'_> {
                 self.advance(path);
                 Some(Ok(None))
             }
-            ("java/lang/Integer", "valueOf", [Val::I(bits)]) => {
-                let boxed = if let Some(value) = self.b.constant_value(bits) {
-                    Val::R(Some(self.literal(path, Literal::CachedIntegral("java/lang/Integer", i8::try_from(value).ok()?), owner)))
-                } else {
-                    // Outside the mandated cache a JVM can choose a larger cache. Keep that path a gap.
-                    let mut range = None;
-                    for (lo, hi) in [(0i8, 3i8), (-1, 7), (i8::MIN, i8::MAX)] {
-                        let low = self.b.constant(i64::from(lo), 32);
-                        let high = self.b.constant(i64::from(hi), 32);
-                        let below = self.b.slt(bits, &low);
-                        let above = self.b.slt(&high, bits);
-                        let mut assumptions = path.cond.clone();
-                        assumptions.push(self.b.or(below, above));
-                        match self.solve(&assumptions) {
-                            Ok(false) => { range = Some(lo..=hi); break; }
-                            Ok(true) => {}
-                            Err(stop) => return Some(Err(stop)),
-                        }
-                    }
-                    let mut options = Vec::new();
-                    for value in range? {
-                        let k = self.b.constant(i64::from(value), 32);
-                        let guard = self.b.eq(bits, &k);
-                        options.push((guard, Some(self.literal(path, Literal::CachedIntegral("java/lang/Integer", value), owner))));
-                    }
-                    choice(&mut self.b, options)
-                };
-                self.push(path, boxed);
-                self.advance(path);
-                Some(Ok(None))
-            }
+            ("java/lang/Integer", "valueOf", [Val::I(bits)]) => self.cached_integral(path, "java/lang/Integer", bits),
             (CLASS, "forName", [Val::R(named), rest @ ..]) => {
                 // With a loader and no initialization, or by the caller's loader and with it.
                 let initializes = match rest {

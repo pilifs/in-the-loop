@@ -1296,6 +1296,10 @@ fn boxed_characters_and_array_observations_match_the_jvm() {
     let o = run(&options(classes, "claims.CharacterFormats#wrong", 4, "distinct-boxes"));
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
     proved(classes, "claims.CharacterFormats#separator", 4);
+    proved(classes, "claims.CharacterFormats#hashContract", 4);
+    let collision = run(&options(classes, "claims.CharacterFormats#assumesDistinctHashes", 4, "identity-hash-collision"));
+    assert_eq!(collision.verdict, Verdict::Unverifiable, "{}", collision.output);
+    assert!(collision.output.contains("JVM-chosen identity hash"), "{}", collision.output);
     for method in ["expectsUnixContents", "expectsInternedIdentity"] {
         let o = run(&options(classes, &format!("claims.CharacterFormats#{method}"), 4, method));
         assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);

@@ -509,7 +509,7 @@ impl ClassPath {
                 // selected image's own comparison, bridge cast and declaring-class check on those fields.
                 if c == "java/lang/Enum" && matches!((name, descriptor),
                     ("compareTo", "(Ljava/lang/Enum;)I" | "(Ljava/lang/Object;)I")
-                    | ("getDeclaringClass", "()Ljava/lang/Class;")) {
+                    | ("hashCode", "()I") | ("getDeclaringClass", "()Ljava/lang/Class;")) {
                     if let Ok(Some(Loaded { class, origin: Origin::Jdk })) = self.load(c) {
                         return Some(class);
                     }
@@ -617,6 +617,8 @@ impl ClassPath {
             | ("java/lang/Character", "charValue", "()C")
             | ("java/lang/Character", "toString", "()Ljava/lang/String;")
             | ("java/lang/Character", "hashCode", "()I" | "(C)I")
+            | ("java/lang/Boolean", "hashCode", "()I" | "(Z)I")
+            | ("java/lang/Long", "hashCode", "()I" | "(J)I")
             | ("java/lang/Character", "equals", "(Ljava/lang/Object;)Z")
             | ("java/lang/Long", "valueOf", "(J)Ljava/lang/Long;")
             | ("java/lang/Float", "valueOf", "(F)Ljava/lang/Float;")

@@ -4,6 +4,21 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public final class CharacterFormats {
+    private enum Quote { SINGLE, DOUBLE }
+
+    public static boolean hashContract(boolean quoted, boolean limit) {
+        long rows = limit ? 2 : 10;
+        Quote style = quoted ? Quote.SINGLE : Quote.DOUBLE;
+        Object[] first = {quoted, rows, style};
+        Object[] second = {Boolean.valueOf(quoted), Long.valueOf(rows), style};
+        return Objects.hash(first) == Objects.hash(second) && Long.valueOf(rows) == Long.valueOf(rows)
+                && Boolean.valueOf(quoted).hashCode() == (quoted ? 1231 : 1237)
+                && Long.valueOf(rows).hashCode() == (int) rows;
+    }
+
+    public static boolean assumesDistinctHashes() {
+        return Quote.SINGLE.hashCode() != Quote.DOUBLE.hashCode();
+    }
     public static boolean boxed(boolean high) {
         char c = high ? (char) 0xd800 : (char) 127;
         Character a = Character.valueOf(c), b = Character.valueOf(c);
@@ -42,5 +57,6 @@ public final class CharacterFormats {
     public static void main(String[] args) {
         if (!boxed(false) || !boxed(true) || !arrays(false) || !arrays(true) || wrong() || !separator()) throw new AssertionError();
         for (int i = 0; i < 4; i++) if (!cached(i)) throw new AssertionError();
+        for (boolean q : new boolean[] {false, true}) if (!hashContract(q, false) || !hashContract(q, true)) throw new AssertionError();
     }
 }

@@ -68,7 +68,7 @@
 //! | `invokestatic` of `BigInteger.valueOf(long)` with a JDK image | runs the selected JDK's factory and allocation bytecode, including the constructors and the magnitude array. A path reading an initialized JDK cache field stops at that field. Without the image the factory is a `jdk-static-method` gap |
 //! | `invokestatic` of any other JDK method over integers, booleans, arrays and objects ([`gaps::jdk_static_call`]) | gap: `jdk-static-method`, with no assume form |
 //! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
-//! | `java.lang.Enum` construction, accessors and ordering ([`ClassPath::checker_method`]) | The Enum model sets and reads the name and ordinal. The native checker runs the selected JDK image's `compareTo` and `getDeclaringClass` bytecode, including type checks for constants with their own class bodies. |
+//! | `java.lang.Enum` construction, accessors and ordering ([`ClassPath::checker_method`]) | The Enum model sets and reads the name and ordinal. The native checker runs the selected JDK image's `compareTo` and `getDeclaringClass` bytecode, including type checks for constants with their own class bodies. For hashCode the JDK cache reads one universally quantified int per object. A potential violation on a path that used a JVM-chosen identity hash stays open. |
 //! | `invokestatic` of `List.of` (its fixed forms, up to ten elements) and `List.copyOf`, and `invokevirtual`/`invokeinterface` of the immutable lists' methods an evidence record of `values::OPERATIONS` samples (`size`, `isEmpty`, `get`, `iterator`, the iterator's `hasNext` and `next`, and the changes `add`, `set`, `remove(int)`, `clear` and the iterator's `remove`) ([`ClassPath::checker_runs`]); a call from outside the models of any other method they implement (`contains`, `indexOf`, `equals`, `hashCode`, `toArray`, `addAll`, `sort` …, and `List.of(E...)`) is the JDK call it names, a gap or a refusal as any JDK call is ([`gaps::outside_the_list_records`]) | modelled: the models' bytecode (`lib/models/java/util/`, which JBMC runs too: `List12` for one or two elements, `ListN` over an array of its own otherwise, one empty list), `ImmutableCollections`' initializer run as an application class's ([`ClassPath::checker_class`]); order, duplicates and aliases between elements are the elements' references, null rejected, every change `UnsupportedOperationException`, `get` out of range an `IndexOutOfBoundsException` from a `List12` and an `ArrayIndexOutOfBoundsException` from a `ListN`. The interpreter's natives do the same. `copyOf` of another implementation meets its methods as JDK calls |
 //! | `new HashMap()` and `new HashMap(int)`, and `invokevirtual`/`invokeinterface` of `put`, `get`, `containsKey`, `size` and `isEmpty` on the map ([`ClassPath::checker_runs`]) | modelled: the model's bytecode (`lib/models/java/util/HashMap.java`, which JBMC runs too), a map's entries one chain of objects, a key found by its `hashCode` and `equals` as the JDK finds one; each call has an evidence record of `values::OPERATIONS`. The model has no other method: any other (`remove`, `keySet`, `Map`'s default methods) is the JDK call it names |
 //! | `invokespecial` of `Object.<init>()`, `Record.<init>()`, and a JDK exception's `()`, `(String)` or `(String, Throwable)` constructor that only passes its arguments up to `Throwable`'s ([`gaps::exact_jdk_call`]) | modelled exactly: the first two change nothing a proof observes, and an exception's keeps its message and cause ([`throwables`]), refused on a class whose application override of `fillInStackTrace()` the constructor would run |
@@ -934,6 +934,8 @@ struct Path {
     /// Whether the path is past a loop an invariant covers: its state then stands for more than the states a run
     /// reaches, and a computed index into a large array is not followed ([`loops`]).
     loose: bool,
+    /// A JVM-chosen hash was universally quantified on this path. Its value cannot supply a concrete witness.
+    unbound_identity_hash: bool,
     /// In a pair of versions, the loops (by class, a previous version's copy by its own name, method and head) an
     /// invariant covered on this path since the version it runs began ([`loops`]): one entered again is given its
     /// invariant at once ([`Engine::summarize_at_entry`]). A run's own history, and not the check's, so that two
@@ -1738,7 +1740,7 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
         }
         let code = engine.code(&harness, &m.name, &m.descriptor).map_err(|e| Error::new(stop_text(&e)))?;
         locals.resize(code.max_locals.max(locals.len()), None);
-        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, loose: false, summarized: Default::default(), calls: Default::default() };
+        let first = Path { frames: vec![Frame::new(harness.clone(), m.name.clone(), code, locals)], cond, models: vec![Model::default()], undecided: false, resumed: false, objects, literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, unbound_identity_hash: false, loose: false, summarized: Default::default(), calls: Default::default() };
         engine.pending.push(first);
 
         // The smallest violating input so far, by stage: a path that only has one outside the stages does not end the
@@ -2558,6 +2560,7 @@ impl<'a> Engine<'a> {
 
     fn absorb(b: &mut Blaster, into: &mut Path, other: &Path) {
         into.loose |= other.loose;
+        into.unbound_identity_hash |= other.unbound_identity_hash;
         if into.summarized != other.summarized {
             into.summarized = Rc::new(into.summarized.intersection(&other.summarized).cloned().collect());
         }
@@ -3542,6 +3545,9 @@ impl<'a> Engine<'a> {
         }
         if self.cp.is_subtype(&class, "java/lang/AssertionError") {
             let feasible = self.solve(&path.cond.clone())?;
+            if feasible && path.unbound_identity_hash {
+                return unsupported("a candidate counterexample on a path with a JVM-chosen identity hash requires an independent JVM observation");
+            }
             return Ok(Some(if feasible { End::Violation(std::mem::take(&mut path.cond)) } else { End::Infeasible }));
         }
         unsupported(format!("an uncaught {} leaves the harness", class.replace('/', ".")))
@@ -4626,7 +4632,12 @@ impl<'a> Engine<'a> {
                 let units = units.clone();
                 self.string(path, &units)
             }
-            Literal::Class(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) | Literal::Level(_) | Literal::Thread | Literal::EmptyMap | Literal::Truth(_) => self.alloc(path, class),
+            Literal::Class(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) | Literal::Level(_) | Literal::Thread | Literal::EmptyMap => self.alloc(path, class),
+            Literal::Truth(truth) => {
+                let o = self.alloc(path, class);
+                path.objects[o].fields.insert("value".into(), Val::I(self.b.constant(i64::from(*truth), 32)));
+                o
+            }
             Literal::SuppressedSentinel => self.alloc(path, class),
             Literal::LineSeparator => {
                 let o = self.alloc(path, STRING);
@@ -4850,6 +4861,17 @@ impl<'a> Engine<'a> {
                 return self.call(path, crate::gap_contracts::CLASS, &method, &stub, args);
             }
         }
+        if path.frames.last().is_some_and(|f| runtime::enum_identity_read(caller, &f.method, member)) {
+            if let [Val::R(Some(o))] = args.as_slice() {
+                // Every int is permitted, including zero or another object's hash. The value is stable
+                // for this object even if the JDK's cached hash still contains its zero sentinel.
+                let value = path.objects[*o].fields.entry("<JVM.identityHashCode>".into()).or_insert_with(|| Val::I(self.b.fresh(32))).clone();
+                path.unbound_identity_hash = true;
+                self.push(path, value);
+                self.advance(path);
+                return Ok(None);
+            }
+        }
         if self.cp.collection_static(&member.owner, &member.name, &member.descriptor) && self.cp.library_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
             return self.call(path, &member.owner, &member.name, &member.descriptor, args);
         }
@@ -4860,13 +4882,7 @@ impl<'a> Engine<'a> {
         if self.cp.numeric_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
             if let Some(class) = runtime::cached_wrapper(&member.owner, &member.name, &member.descriptor) {
                 if let [Val::I(word) | Val::J(word)] = args.as_slice() {
-                    if let Some(n) = self.b.constant_value(word).and_then(|v| i8::try_from(v).ok())
-                        .filter(|n| class != "java/lang/Character" || *n >= 0) {
-                        let o = self.literal(path, Literal::CachedIntegral(class, n), class);
-                        self.push(path, Val::R(Some(o)));
-                        self.advance(path);
-                        return Ok(None);
-                    }
+                    if let Some(step) = self.cached_integral(path, class, word) { return step; }
                 }
             }
             return self.call(path, &member.owner, &member.name, &member.descriptor, args);
@@ -5038,11 +5054,13 @@ impl<'a> Engine<'a> {
             }
             if let Some(step) = self.image_list_call(path, o, special, member, &args) { return step; }
             // Only a box whose value was initialized by its constructor or the JVM cache.
-            if !special && path.objects[o].class == "java/lang/Character" && path.objects[o].fields.contains_key("value")
-                && self.cp.numeric_image_method("java/lang/Character", &member.name, &member.descriptor).is_some() {
+            let wrapper = path.objects[o].class.as_str();
+            if !special && matches!(wrapper, "java/lang/Character" | "java/lang/Boolean" | "java/lang/Long") && path.objects[o].fields.contains_key("value")
+                && self.cp.numeric_image_method(wrapper, &member.name, &member.descriptor).is_some_and(|(_, m)| !m.is_static()) {
+                let wrapper = wrapper.to_owned();
                 let mut full = vec![Val::R(Some(o))];
                 full.extend(args);
-                return self.call(path, "java/lang/Character", &member.name, &member.descriptor, full);
+                return self.call(path, &wrapper, &member.name, &member.descriptor, full);
             }
             if !special && path.objects[o].class == runtime::BOOLEAN && member.name == "equals" && member.descriptor == "(Ljava/lang/Object;)Z" {
                 if let Some(step) = self.boolean_equals(path, o, &args) { return step; }
@@ -5872,7 +5890,7 @@ mod tests {
     /// object's now. Before, the records kept the old numbers: the first named the array that moved into its place.
     #[test]
     fn a_calls_record_names_its_result_by_the_number_a_merge_gives_it() {
-        let mut path = Path { frames: Vec::new(), cond: Vec::new(), models: Vec::new(), undecided: false, resumed: false, objects: vec![Obj::new("[B"), Obj::new("[I"), Obj::new("[B")], literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, loose: false, summarized: Default::default(), calls: Default::default() };
+        let mut path = Path { frames: Vec::new(), cond: Vec::new(), models: Vec::new(), undecided: false, resumed: false, objects: vec![Obj::new("[B"), Obj::new("[I"), Obj::new("[B")], literals: BTreeMap::new(), classes: BTreeMap::new(), statics: BTreeMap::new(), probing: None, unbound_identity_hash: false, loose: false, summarized: Default::default(), calls: Default::default() };
         // The state reaches the third object alone; the first was a call's result and nothing holds it now.
         path.statics.insert(("app/A".into(), "kept".into()), Val::R(Some(2)));
         path.calls = Rc::new(vec![ties::Call::returning(1, Val::R(Some(0))), ties::Call::returning(2, Val::R(Some(2)))]);
@@ -5892,7 +5910,7 @@ mod tests {
             let mut path = Path {
                 frames: Vec::new(), cond: vec![condition], models: Vec::new(), undecided: false,
                 resumed: false, objects: vec![string.clone(), string], literals: BTreeMap::new(),
-                classes: BTreeMap::new(), probing: None, loose: false, summarized: Default::default(),
+                classes: BTreeMap::new(), probing: None, unbound_identity_hash: false, loose: false, summarized: Default::default(),
                 statics: BTreeMap::from([
                     (("app/Caller".into(), "a".into()), Val::R(Some(first))),
                     (("app/Caller".into(), "b".into()), Val::R(Some(second))),
