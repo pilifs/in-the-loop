@@ -1,0 +1,64 @@
+[
+  {
+    "claimKey": "bcf36d0d372b158c",
+    "entry": "paint.Projection#primary(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 3
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "reversed": {
+        "entryClassSha256": "4331440adb1cd29279a26d56d9fb144af87fe0faf5bbfe1f834736ee4b66329f",
+        "classpath": [
+          "b32227a05cdc8d1e2034930e35a6daa419526f3c74e741db3703b37a28918a5d",
+          "9f038d83cc48f78cb9678b76351261bd96f46d82e88a517f7ef6ffb2a52f2c53"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 3;\nif (!(code >= 0 && code < 8)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = paint.Projection.primary(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 3,
+      "input": {
+        "left": true,
+        "right": true,
+        "body": false
+      },
+      "field": "primary",
+      "direct": {
+        "reversed": {
+          "primary": "L",
+          "suppressed": [
+            "R"
+          ],
+          "close": [
+            "L",
+            "R"
+          ]
+        }
+      },
+      "tableSha256": "be125f3b4a6d5503e9e9ba4b8b627c73885eb77673f7f4a14848a937a5265a36"
+    }
+  }
+]

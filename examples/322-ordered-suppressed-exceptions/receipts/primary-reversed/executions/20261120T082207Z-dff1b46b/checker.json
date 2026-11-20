@@ -1,0 +1,237 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/411cfec96d3cae2e9195010505411126f6921e67/jvmcontract",
+    "prove",
+    "paint.Projection#primary(int)",
+    "--classes",
+    "prepare/reversed/adapter-reversed.jar",
+    "--classpath",
+    "prepare/reversed/reversed.jar",
+    "--assume",
+    "code >= 0 && code < 8",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "10",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 1,
+  "seconds": 0.061,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "violation",
+      "target": "paint.Projection#primary(int)",
+      "domain": "code: int",
+      "assume": "code >= 0 && code < 8",
+      "assert": "result == 1",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": {
+        "input": "primary(code=3)",
+        "outcome": "0",
+        "values": [
+          "3"
+        ],
+        "shrink_runs": 3,
+        "inputs": [
+          {
+            "name": "code",
+            "type": "int",
+            "value": 3
+          }
+        ],
+        "call": {
+          "class": "paint.Projection",
+          "class_file": "paint/Projection.class",
+          "classes": "after",
+          "method": "primary",
+          "descriptor": "(I)I",
+          "static": true,
+          "arguments": [
+            {
+              "name": "code",
+              "type": "int",
+              "value": 3,
+              "from": "code"
+            }
+          ]
+        }
+      },
+      "proof": "found by jvmcontract's own checker (Bitwuzla) in 0.0 s searching inputs in [0:20], replayed in the interpreter; domain code: int",
+      "problem": null,
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [
+        {
+          "rule_id": "property-violated",
+          "message": "Property of paint.Projection#primary(int) violated: `result == 1` where code >= 0 && code < 8:\n  primary(code=3)\n    outcome: 0",
+          "uri": null,
+          "line": 5
+        }
+      ],
+      "output": "✗ Property of paint.Projection#primary(int) violated: `result == 1` where code >= 0 && code < 8:\n  primary(code=3)\n    outcome: 0\n  (found by jvmcontract's own checker (Bitwuzla) in 0.0 s searching inputs in [0:20], replayed in the interpreter; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (Bitwuzla)",
+        "seconds": 0.008885783,
+        "properties": 1,
+        "unwind": 16,
+        "max_array_length": 10,
+        "stage": "[0:20]",
+        "native": {
+          "paths": 7,
+          "merges": 0,
+          "solver_calls": 11,
+          "solving_seconds": 1.7433e-05,
+          "gates_evaluated": 12,
+          "evaluating_seconds": 6.813e-06,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "word_operations": 6,
+          "finite_queries": {
+            "diagrams": 11,
+            "bitwuzla": 0
+          },
+          "variables": 11,
+          "clauses": 1,
+          "seconds": 0.007987564,
+          "loading_seconds": 0.000840372,
+          "decoding_seconds": 0.000141547,
+          "encoding_seconds": 0.000153566,
+          "witness_seconds": 1.4387e-05
+        },
+        "gap_mode": "strict",
+        "deadline_seconds": 60.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 60.0,
+            "seconds": 0.008,
+            "ended": "violation",
+            "ending": "counterexample",
+            "phases": {
+              "loading": 0.001,
+              "lowering": 0.0,
+              "symbolic": 0.007,
+              "encoding": 0.0,
+              "solving": 0.0,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 11,
+              "clauses": 1
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.048,
+          "setup": 0.001,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.008,
+          "replay": 0.009,
+          "jvm": 0.0,
+          "other": 0.03
+        }
+      },
+      "replay": {
+        "by": "interpreter",
+        "reproduced": true
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "code",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "code: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "code >= 0 && code < 8",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result == 1",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 16,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (Bitwuzla)",
+          "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+          "fallback": null,
+          "sat": {
+            "solver": "Bitwuzla",
+            "version": "0.8.2",
+            "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+            "configuration": [
+              "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+              "sat-solver cadical",
+              "produce-models",
+              "otherwise Bitwuzla's default options",
+              "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+              "the run's deadline through Bitwuzla's termination callback",
+              "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 6285,
+    "sha256": "6c8389fabd2ed7667d6167417905b643b29cfc1dc1cc01d7abf27e8db0c61237"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

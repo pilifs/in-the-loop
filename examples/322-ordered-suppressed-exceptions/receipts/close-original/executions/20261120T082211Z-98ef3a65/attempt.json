@@ -1,0 +1,340 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T082211Z-98ef3a65",
+  "task": "close-original",
+  "claimKey": "e66308467b6fb8ad",
+  "revisions": [
+    "original"
+  ],
+  "startedAt": "2026-11-20T08:22:11.626419+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 60
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-081743-recheck-ordered-suppression-against-the",
+  "sourceCommit": "ddf77b2e1673895ef1874faae091521a0b8ac5d8",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 0.0017
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 0.0678
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 0.0692
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 0.1115
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 0.165
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 0.2652
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "original": {
+      "revision": "fixture:original",
+      "target": {
+        "class": "paint.Paint",
+        "method": "run",
+        "descriptor": "(I)Lpaint/Outcome;",
+        "loadedFrom": "original.jar",
+        "classSha256": "b8abf5a5b111446e6cbebf984481ab710068a097cbf8093817617e4a119deedf",
+        "adapterCalls": [
+          "paint.Paint#run(I)Lpaint/Outcome;",
+          "paint.Tagged#getSuppressed()[Ljava/lang/Throwable;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "a807f3569f867b84654b5a309197f135666199eb467598bf24aee951dd78c356",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-original.jar",
+          "sha256": "b32227a05cdc8d1e2034930e35a6daa419526f3c74e741db3703b37a28918a5d",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "original.jar",
+          "sha256": "cff7a4657f1229e0a2fe978edd1611ef7dbb62318eb6b330e546c831763b6af3",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from original by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "cb4c64555322b871e6f30fdeac78788a6bed12af97abb6e7c43cade72b5e2a93",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/411cfec96d3cae2e9195010505411126f6921e67/jvmcontract",
+    "prove",
+    "paint.Projection#close(int)",
+    "--classes",
+    "prepare/original/adapter-original.jar",
+    "--classpath",
+    "prepare/original/original.jar",
+    "--assume",
+    "code >= 0 && code < 8",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "10",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "b30180fc7047c9ee0637eacf8155e42aac3c88e38b71e8ce3727e4aa0b6bbfec",
+    "commit": "ddf77b2e1673895ef1874faae091521a0b8ac5d8",
+    "libTree": "411cfec96d3cae2e9195010505411126f6921e67",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 16,
+      "maxArrayLength": 10
+    },
+    "timeout": 60,
+    "scope": {
+      "label": "adapter",
+      "meaning": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+      "method": "paint.Paint#run(I)Lpaint/Outcome;",
+      "revisions": {
+        "original": {
+          "commit": "fixture:original",
+          "loadedFrom": "original.jar",
+          "classSha256": "b8abf5a5b111446e6cbebf984481ab710068a097cbf8093817617e4a119deedf",
+          "origin": "built from original by the fixture recipe",
+          "parameters": {
+            "names": [
+              "mask"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "paint.Projection#close(I)I",
+        "mapping": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+        "correspondence": "finite-oracle",
+        "cases": 8
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "original": [
+        {
+          "path": "adapter-original.jar",
+          "sha256": "b32227a05cdc8d1e2034930e35a6daa419526f3c74e741db3703b37a28918a5d",
+          "role": "adapter"
+        },
+        {
+          "path": "original.jar",
+          "sha256": "cff7a4657f1229e0a2fe978edd1611ef7dbb62318eb6b330e546c831763b6af3",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "paint.Projection#close(I)I",
+    "entryBindings": {
+      "original": {
+        "entry": "paint.Projection#close(I)I",
+        "classSha256": "4331440adb1cd29279a26d56d9fb144af87fe0faf5bbfe1f834736ee4b66329f",
+        "loadedFrom": "adapter-original.jar",
+        "subject": "paint.Paint#run(I)Lpaint/Outcome;",
+        "subjectClassSha256": "b8abf5a5b111446e6cbebf984481ab710068a097cbf8093817617e4a119deedf"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "paint.Paint#run(I)Lpaint/Outcome;",
+      "checkedEntry": "paint.Projection#close(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 8"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "16"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "10"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "paint.Projection#close(I)I",
+        "mapping": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+        "correspondence": "finite-oracle",
+        "cases": 8
+      }
+    },
+    "commits": {
+      "original": "fixture:original"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+      "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+      "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "original": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/411cfec96d3cae2e9195010505411126f6921e67/jvmcontract",
+          "gaps",
+          "--target",
+          "paint.Projection#close(int)",
+          "--classes",
+          "prepare/original/adapter-original.jar",
+          "--classpath",
+          "prepare/original/original.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-original.stdout",
+        "stderr": "verifier/probe-original.stderr",
+        "gaps": [
+          {
+            "id": "jdk-void-method:java.lang.Throwable.addSuppressed(Ljava/lang/Throwable;)V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.lang.Throwable.addSuppressed(java.lang.Throwable)",
+            "sites": [
+              "paint.Paint.run:7"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0468,
+      "peakRssBytes": 80044032,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0468,
+    "peakRssBytes": 80044032,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.051,
+  "missing": [],
+  "receipt": "receipts/close-original/20261120T082211Z-98ef3a65/result.json",
+  "preparedClaim": "89b7f1d789a64a4a",
+  "firstBlocker": null,
+  "endedAt": "2026-11-20T08:22:11.891772+00:00"
+}

@@ -1,0 +1,570 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "01f697765486b30e",
+    "format": 1,
+    "example": "322",
+    "statement": {
+      "approach": "target",
+      "task": "suppressed-reversed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "paint.Paint#run(I)Lpaint/Outcome;",
+      "revisions": [
+        "reversed"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "suppressed-reversed",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "paint.Paint#run(I)Lpaint/Outcome;",
+        "file": "claims/suppressed.json",
+        "sha256": "4a8cd50e9599dda18fb0bf594808e0bfdc93b529de8d85e1f1800e00715ad22d",
+        "property": "suppressed",
+        "claimKind": "property",
+        "statement": "The suppressed tags follow the actual closing order after the primary.",
+        "assume": "code >= 0 && code < 8",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 16,
+          "maxArrayLength": 10
+        },
+        "explicitBounds": {
+          "unwind": 16,
+          "maxArrayLength": 10
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/paint/Cases.java",
+            "sha256": "0f24398b5f8260d88ed3056c5958668fccf72c9fa979e6077709f6281e1f6de6"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "be125f3b4a6d5503e9e9ba4b8b627c73885eb77673f7f4a14848a937a5265a36"
+          }
+        ],
+        "adapter": {
+          "entry": "paint.Projection#suppressed(I)I",
+          "mapping": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+          "correspondence": "finite-oracle",
+          "cases": 8
+        },
+        "key": "c16432554ab2233a"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 10
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "ca6edd7bd9725a4151ea42454233822dda21e7918ce7775c44cea5e42770644b",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "suppressed-reversed",
+      "sidecar": "42f9a0e8e8b213d0ea6e4825b4fd4065c302b3ed947734e3176a736f722d8847",
+      "revisions": {
+        "reversed": "c12c9b7e827b738986e64eb87379f28697689f7a"
+      },
+      "dependencies": [
+        {
+          "revision": "reversed",
+          "position": 0,
+          "role": "driver",
+          "sha256": "a807f3569f867b84654b5a309197f135666199eb467598bf24aee951dd78c356"
+        },
+        {
+          "revision": "reversed",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "b32227a05cdc8d1e2034930e35a6daa419526f3c74e741db3703b37a28918a5d"
+        },
+        {
+          "revision": "reversed",
+          "position": 2,
+          "role": "original",
+          "sha256": "9f038d83cc48f78cb9678b76351261bd96f46d82e88a517f7ef6ffb2a52f2c53"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/paint/Projection.java": "1dc7486d3575dba08461409313d698f48842817f3fc174671d1daf00713376ef",
+        "claims/suppressed.json": "4a8cd50e9599dda18fb0bf594808e0bfdc93b529de8d85e1f1800e00715ad22d",
+        "controls/table.json": "be125f3b4a6d5503e9e9ba4b8b627c73885eb77673f7f4a14848a937a5265a36",
+        "driver/paint/Cases.java": "0f24398b5f8260d88ed3056c5958668fccf72c9fa979e6077709f6281e1f6de6"
+      },
+      "claimKey": "c16432554ab2233a"
+    }
+  },
+  "attempt": {
+    "id": "20261120T082210Z-e65b7f8e",
+    "claim": "01f697765486b30e",
+    "startedAt": "2026-11-20T08:22:10+00:00",
+    "seconds": 0.1,
+    "engine": "native",
+    "options": [
+      "prove",
+      "paint.Projection#suppressed(int)",
+      "--classes",
+      "prepare/reversed/adapter-reversed.jar",
+      "--classpath",
+      "prepare/reversed/reversed.jar",
+      "--assume",
+      "code >= 0 && code < 8",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "10",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "b30180fc7047c9ee0637eacf8155e42aac3c88e38b71e8ce3727e4aa0b6bbfec"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "23de204589e8e66ce1b17bd984496f7e34225b4b0a4874a6a6324f4f56e04679",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-081743-recheck-ordered-suppression-against-the",
+      "sourceCommit": "ddf77b2e1673895ef1874faae091521a0b8ac5d8",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-081743-recheck-ordered-suppression-against-the"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control reversed on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-reversed-jdk21.stdout",
+        "stderr": "records/control-reversed-jdk21.stderr"
+      },
+      {
+        "name": "verifier reversed on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.051,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 16,
+      "maxArrayLength": 10,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "01f697765486b30e",
+    "attempt": "20261120T082210Z-e65b7f8e",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "refuted",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 8",
+          "verdict": "violation",
+          "domain": "code: int",
+          "proof": "found by jvmcontract's own checker (Bitwuzla) in 0.0 s searching inputs in [0:20], replayed in the interpreter; domain code: int",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": {
+            "input": "suppressed(code=3)",
+            "contract": "result == 1",
+            "actual": "0",
+            "shrinkRuns": 3,
+            "witness": {
+              "inputs": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "value": 3
+                }
+              ],
+              "call": {
+                "class": "paint.Projection",
+                "classFile": "paint/Projection.class",
+                "classFileSha256": null,
+                "classes": "after",
+                "method": "suppressed",
+                "descriptor": "(I)I",
+                "static": true,
+                "arguments": [
+                  {
+                    "name": "code",
+                    "type": "int",
+                    "value": 3,
+                    "from": "code"
+                  }
+                ],
+                "revision": "reversed"
+              }
+            }
+          },
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (Bitwuzla)",
+            "seconds": 0.009,
+            "properties": 1,
+            "unwind": 16,
+            "maxArrayLength": 10,
+            "stage": "[0:20]",
+            "deadlineSeconds": 60.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 60.0,
+                "seconds": 0.008,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.001,
+                  "lowering": 0.0,
+                  "symbolic": 0.006,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 13,
+                  "clauses": 1
+                }
+              }
+            ],
+            "native": {
+              "paths": 7,
+              "merges": 0,
+              "solverCalls": 17,
+              "solvingSeconds": 2.3636e-05,
+              "gatesEvaluated": 18,
+              "evaluatingSeconds": 5.931e-06,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "wordOperations": 8,
+              "finiteQueries": {
+                "diagrams": 17,
+                "bitwuzla": 0
+              },
+              "variables": 13,
+              "clauses": 1,
+              "seconds": 0.007714401,
+              "loadingSeconds": 0.001223452,
+              "decodingSeconds": 0.000101001,
+              "encodingSeconds": 0.000116863,
+              "witnessSeconds": 1.0197e-05
+            },
+            "gapMode": "strict"
+          },
+          "replay": {
+            "by": "interpreter",
+            "reproduced": true
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 8",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 16,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (Bitwuzla)",
+              "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+              "fallback": null,
+              "sat": {
+                "solver": "Bitwuzla",
+                "version": "0.8.2",
+                "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+                "configuration": [
+                  "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                  "sat-solver cadical",
+                  "produce-models",
+                  "otherwise Bitwuzla's default options",
+                  "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                  "the run's deadline through Bitwuzla's termination callback",
+                  "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "✗ Violation",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 19,
+      "code": "\"reversed\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [
+      {
+        "input": "suppressed(code=3)",
+        "contract": "result == 1",
+        "actual": "0",
+        "shrinkRuns": 3,
+        "witness": {
+          "inputs": [
+            {
+              "name": "code",
+              "type": "int",
+              "value": 3
+            }
+          ],
+          "call": {
+            "class": "paint.Projection",
+            "classFile": "paint/Projection.class",
+            "classFileSha256": null,
+            "classes": "after",
+            "method": "suppressed",
+            "descriptor": "(I)I",
+            "static": true,
+            "arguments": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 3,
+                "from": "code"
+              }
+            ],
+            "revision": "reversed"
+          }
+        }
+      }
+    ],
+    "proof": "found by jvmcontract's own checker (Bitwuzla) in 0.0 s searching inputs in [0:20], replayed in the interpreter; domain code: int",
+    "problem": null,
+    "domain": "code: int",
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 8"
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 8",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (Bitwuzla)",
+        "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+        "fallback": null,
+        "sat": {
+          "solver": "Bitwuzla",
+          "version": "0.8.2",
+          "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+          "configuration": [
+            "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+            "sat-solver cadical",
+            "produce-models",
+            "otherwise Bitwuzla's default options",
+            "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+            "the run's deadline through Bitwuzla's termination callback",
+            "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "7727fb46fb07e8ebae59af14d0ee788e015b08475db3ff9dbbc23296852c3890",
+        "bytes": 24335
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "8da181e602e4f53822778ec842cd7fd46f7d978f1862f30a1250c282b2d4543c",
+        "bytes": 516
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "3ad81c5af6b14a3ee169ecbc04df7f34836aea28465c55bc4433531c2618a224",
+        "bytes": 1983
+      },
+      {
+        "path": "records/control-reversed-jdk21.stdout",
+        "sha256": "06ef6447194aa9e7932c81d71a1447c111ef2a71eb83bcebf6f860212429b7ae",
+        "bytes": 1341
+      },
+      {
+        "path": "records/control-reversed-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "8e881cf5b4c86acbc01af2c7989eac7a10dff15c8a4e674481a1a848095c2ee5",
+        "bytes": 6704
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "55f966d7328da980af7c60855d55a1d235ebeaba8b601bcdaa6c7d30f3a82c10",
+        "bytes": 6307
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "ef832ebe5df66f3f3445c9e1f6342b0e1624be668741151391ae652ccdcbcb6e",
+        "bytes": 14971
+      }
+    ]
+  }
+}

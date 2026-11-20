@@ -1,0 +1,222 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-081135-confirm-the-released-lcs-after-library-e",
+  "title": "Confirm the released LCS after library execution changes",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 3.8s, peak 96.7 MiB (estimated 3m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-081135-confirm-the-released-lcs-after-library-e.json",
+    "sha256": "298cf1482a9cc2ce4c70b5c2e6f95d9e5a453cd15538b24bde6e1aed9a696b8a",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-081135-confirm-the-released-lcs-after-library-e",
+      "title": "Confirm the released LCS after library execution changes",
+      "description": "Recheck Commons Text 1.13.1 native score with the original bound four, unwind 18 and 120 seconds. Compare the release, rebuilt source and wrong-row control to the independent oracle on all 225 pairs.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "native:arrays"
+      ],
+      "links": {
+        "examples": [
+          "308"
+        ],
+        "jobs": [
+          "20261120-065325-confirm-commons-text-lcs-after-character"
+        ]
+      },
+      "expected": "Retain the actual bounded checker statement, independent results, measurements and any first diagnostic.",
+      "submitted": {
+        "at": "2026-11-20T08:11:35+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m",
+        "memoryLimit": "4G",
+        "timeout": "10m"
+      },
+      "steps": [
+        {
+          "name": "Exercise the frozen claims",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/308-commons-text-longest-common-subsequence/pilot.py --java-home \"$HOME/.sdkman/candidates/java/21.0.13.0+9-tem\" --fetch-locked --native \"$JVMCONTRACT\" --native-record examples/308-commons-text-longest-common-subsequence/records/library-views-checker-native.json > examples/308-commons-text-longest-common-subsequence/records/library-views-checker-transfer.json",
+          "cwd": "."
+        },
+        {
+          "name": "Check the verdict, raw bound and all three JVM tables",
+          "run": "python3 -c 'import json,sys,hashlib; from pathlib import Path; r=json.loads(Path(sys.argv[1]).read_text()); assert r[\"native\"][\"verdict\"]==\"verified\" and r[\"native\"][\"bounds\"]=={\"maxArrayLength\":4,\"unwind\":18}; assert r[\"native\"][\"outcomeSha256\"]==hashlib.sha256(Path(sys.argv[2]).read_bytes()).hexdigest(); assert {k:(v[\"pairs\"],v[\"disagreements\"]) for k,v in r[\"artifacts\"].items()}=={\"release\":(225,0),\"rebuilt\":(225,0),\"shared-row\":(225,44)}' examples/308-commons-text-longest-common-subsequence/records/library-views-checker-transfer.json examples/308-commons-text-longest-common-subsequence/records/library-views-checker-native.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/308-commons-text-longest-common-subsequence/records/library-views-checker-native.json",
+        "examples/308-commons-text-longest-common-subsequence/records/library-views-checker-transfer.json"
+      ]
+    }
+  },
+  "sourceCommit": "ddf77b2e1673895ef1874faae091521a0b8ac5d8",
+  "startedAt": "2026-11-20T08:19:08+00:00",
+  "finishedAt": "2026-11-20T08:22:06+00:00",
+  "wallSeconds": 178.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4178968,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 101429248,
+    "wallSeconds": 3.8,
+    "cpuSeconds": 6.3,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Exercise the frozen claims",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/308-commons-text-longest-common-subsequence/pilot.py --java-home \"$HOME/.sdkman/candidates/java/21.0.13.0+9-tem\" --fetch-locked --native \"$JVMCONTRACT\" --native-record examples/308-commons-text-longest-common-subsequence/records/library-views-checker-native.json > examples/308-commons-text-longest-common-subsequence/records/library-views-checker-transfer.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 600.0,
+      "cancelled": false,
+      "wallSeconds": 3.61,
+      "cpuSeconds": 6.301,
+      "cpuThrottledSeconds": 0.479,
+      "peakMemoryBytes": 101429248,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-exercise-the-frozen-claims.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check the verdict, raw bound and all three JVM tables",
+      "run": "python3 -c 'import json,sys,hashlib; from pathlib import Path; r=json.loads(Path(sys.argv[1]).read_text()); assert r[\"native\"][\"verdict\"]==\"verified\" and r[\"native\"][\"bounds\"]=={\"maxArrayLength\":4,\"unwind\":18}; assert r[\"native\"][\"outcomeSha256\"]==hashlib.sha256(Path(sys.argv[2]).read_bytes()).hexdigest(); assert {k:(v[\"pairs\"],v[\"disagreements\"]) for k,v in r[\"artifacts\"].items()}=={\"release\":(225,0),\"rebuilt\":(225,0),\"shared-row\":(225,44)}' examples/308-commons-text-longest-common-subsequence/records/library-views-checker-transfer.json examples/308-commons-text-longest-common-subsequence/records/library-views-checker-native.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 600.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.034,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 6782976,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-the-verdict-raw-bound-an.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/308-commons-text-longest-common-subsequence/records/library-views-checker-native.json",
+      "change": "added",
+      "bytes": 6719,
+      "sha256": "5227d1e5b1cc507383ce16e33a77b73811c782bba1e823bc6f798a6053bda70b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/308-commons-text-longest-common-subsequence/records/library-views-checker-transfer.json",
+      "change": "added",
+      "bytes": 2083,
+      "sha256": "f01b78bb73ec2f97dde09a42865b80f58cae97f50787ff8ae5ce7c55b5d076a2",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T08:22:18+00:00",
+    "applied": [
+      "examples/308-commons-text-longest-common-subsequence/records/library-views-checker-native.json",
+      "examples/308-commons-text-longest-common-subsequence/records/library-views-checker-transfer.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "411cfec96d3cae2e9195010505411126f6921e67",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/411cfec96d3cae2e9195010505411126f6921e67/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}
