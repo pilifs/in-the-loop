@@ -76,6 +76,14 @@ The original campaign has 78 native proofs, 29 independently replayed refutation
 
 All six affected examples validated and all 43 selected test groups passed. Each scoped claim matched the original guard, bounds, class bytes, ordered jars, full independent JVM stream and source control. The claimed initializer class hashes matched the actual bytes on both revisions. All 770 files from the first ten jobs matched the collector. The earlier 36,864-pair ThreeTen chronology grids retained their five verdicts and existing state digest. Both original array-root witnesses and the released LCS score passed again. A separate 3,068,037-date UTC sweep produced the same millisecond stream in Rust and on Temurin 21 and 25. The report's 390 links resolved.
 
+### Pair original startup checks with observed runs (verification pending)
+
+change `mkmmssxnmnst` · [log `c12286421465`](https://terminalvalue.net/raw-traces/01a1f832-32f9-7b30-9476-acf6452b4af0/c12286421465e3299a15726e066700872c9bf1368b5122dfb5c8c0be3d1e7e6d.jsonl.gz)
+
+Recheck all eight original chart tasks and all ten original partial-date tasks on exactly the respective binary that decided their observed-startup companions. These negative controls require the original strict query to run, to name the ambient initializer call and to publish an unresolved receipt. They reject an unrelated error, changed binary or hidden observed-initializer assumption.
+
+Both job schemas validated and the checks on receipt stage, gap mode and source binding matched all 18 earlier original diagnostics. The changed-test selector chose no inline tests for the manifests. Jobs 20261120-103714-check-chart-startup-without-a-captured-c and 20261120-103714-check-partial-dates-without-captured-pro retain the original 30-second checker budgets, JDK, classpaths, guards and observers.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/01a1f832-32f9-7b30-9476-acf6452b4af0/c12286421465e3299a15726e066700872c9bf1368b5122dfb5c8c0be3d1e7e6d.jsonl.gz) has every step in between: reasoning, tool calls and their results.
