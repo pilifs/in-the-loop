@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T09:48:52.013Z",
-  "duration_seconds": 43882,
+  "ended": "2026-11-20T10:03:12.110Z",
+  "duration_seconds": 44742,
   "stats": {
     "turns": 10,
-    "api_calls": 2647,
-    "tool_calls": 6637,
-    "tool_errors": 204,
+    "api_calls": 2709,
+    "tool_calls": 6764,
+    "tool_errors": 207,
     "compactions": 9,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 4861211,
-      "output_tokens": 1284217,
-      "cache_read_input_tokens": 794196352,
+      "input_tokens": 4912121,
+      "output_tokens": 1308426,
+      "cache_read_input_tokens": 815471360,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 3810,
-    "exec": 2543,
-    "apply_patch": 198,
+    "Bash": 3863,
+    "exec": 2604,
+    "apply_patch": 211,
     "wait": 44,
     "sleep": 42
   },
@@ -104,6 +104,7 @@
     "lib/src/bmc/finite_words.rs",
     "lib/src/bmc/floating.rs",
     "lib/src/bmc/gaps.rs",
+    "lib/src/bmc/locale.rs",
     "lib/src/bmc/mod.rs",
     "lib/src/bmc/observed.rs",
     "lib/src/bmc/regex.rs",
@@ -125,6 +126,7 @@
     "lib/tests/claims.rs",
     "lib/tests/conformance.rs",
     "lib/tests/fixtures/claims/claims/CharacterFormats.java",
+    "lib/tests/fixtures/claims/claims/Cloned.java",
     "lib/tests/fixtures/claims/claims/EnumOrder.java",
     "lib/tests/fixtures/claims/claims/L.java",
     "lib/tests/fixtures/claims/claims/ListConversions.java",
@@ -138,8 +140,10 @@
     "lib/tests/fixtures/claims/claims/UnicodePoints.java",
     "lib/tests/fixtures/floating/FloatingChecks.java",
     "lib/tests/fixtures/identitymap/IdentityKeys.java",
+    "lib/tests/fixtures/observed-countermodels/app/oc/CalendarAmounts.java",
     "lib/tests/fixtures/restart-qualification/check.py",
     "lib/tests/integration.rs",
+    "lib/tests/observed_countermodels.rs",
     "lib/tests/paired_array_roots.rs",
     "lib/tests/values.rs",
     "llm-dlc/loops/foundation-and-python-results.md",
@@ -279,24 +283,24 @@
     {
       "index": 9,
       "started": "2026-11-20T09:03:21.208Z",
-      "ended": "2026-11-20T09:48:52.013Z",
+      "ended": "2026-11-20T10:03:12.110Z",
       "turns": 1,
-      "api_calls": 166,
+      "api_calls": 228,
       "usage": {
-        "input_tokens": 324702,
-        "output_tokens": 79359,
-        "cache_read_input_tokens": 35889408,
+        "input_tokens": 375612,
+        "output_tokens": 103568,
+        "cache_read_input_tokens": 57164416,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 326154
+      "peak_context_tokens": 372572
     }
   ],
   "log": {
-    "sha256": "5ef3394971367a036e868116fd4bfc297868b95976a5478aeed7430105f4c1e7",
-    "bytes": 62362641,
-    "lines": 20445,
-    "gzip_bytes": 23592067,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/5ef3394971367a036e868116fd4bfc297868b95976a5478aeed7430105f4c1e7.jsonl.gz"
+    "sha256": "0ba1422adc1a7f091df880ae33616ce51cef37c040aa1730eee2e53b845b1124",
+    "bytes": 63334171,
+    "lines": 20880,
+    "gzip_bytes": 23990642,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/0ba1422adc1a7f091df880ae33616ce51cef37c040aa1730eee2e53b845b1124.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1123,6 +1127,22 @@
       "summary": "Check Joda-Time against captured UTC startup (verification pending)",
       "body": "The initializer observer now carries immutable application values with all final scalar and String fields, validates the bytes and full layout of every declaring class, and restores aliases, hidden fields and distinct objects. The checker follows the actual JDK string copy, nested ArrayList sublists and historical chronology caches. The concrete interpreter keeps sublists backed by their root array list and detects stale views. Ten additional source claims bind the observed DateTimeZone and DateTimeUtils states while keeping the ten original startup obligations intact.\n\nThe 25 selected test groups passed. A JBMC process-status stand-in failed once and passed on its automatic retry. Direct and distinguishing controls on Temurin 21 and 25 cover hidden inherited fields, copied Strings, nested list aliases, removal and invalidation. The public registry validated all twenty Joda claim keys and their plans. Capped probes proved the fixed signed day count for all 25 pairs and independently replayed a differing parent result. Job 20261120-094050-verify-monthday-distances-on-observed-ut checks all ten additional claims with distinct receipts and JVM correspondence.",
       "log_sha256": "5ef3394971367a036e868116fd4bfc297868b95976a5478aeed7430105f4c1e7"
+    },
+    {
+      "change_id": "rtpkzskrqkpynxumylrtvrovwuvxzvlw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "0ba1422adc1a7f091df880ae33616ce51cef37c040aa1730eee2e53b845b1124"
+    },
+    {
+      "change_id": "mrktmzqrosokwtmlnqtwzzwqwoxrwxst",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Check integral objects in exception messages (verification pending)",
+      "body": "StringBuilder.append(Object) renders the initialized signed value of final Byte, Short, Integer and Long wrappers with the same decimal conversion used for their primitive overloads. This preserves the actual Joda-Time exception construction reached on leap-day inputs.\n\nThe typed string fixture and direct JVM controls passed, including a negative boxed Integer beside a boxed Long. A capped native probe proved the historical parent reversal conditional on both real calls returning. Seven of the previous ten scoped tasks already met their expectations. Job 20261120-100118-verify-all-partial-date-claims-through-b repeats all ten including the three that reached the boxed-message gap.",
+      "log_sha256": "0ba1422adc1a7f091df880ae33616ce51cef37c040aa1730eee2e53b845b1124"
     }
   ],
   "logs": {
@@ -1154,6 +1174,12 @@
       "bytes": 24107007,
       "lines": 7976,
       "gzip_bytes": 9182785,
+      "url": null
+    },
+    "0ba1422adc1a7f091df880ae33616ce51cef37c040aa1730eee2e53b845b1124": {
+      "bytes": 63334171,
+      "lines": 20880,
+      "gzip_bytes": 23990642,
       "url": null
     },
     "0d5e02c30d5c26a76e72d77495ea4b81906a5a058eb94bbf1a1ada38c8b5e156": {

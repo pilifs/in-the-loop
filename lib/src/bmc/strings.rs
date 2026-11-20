@@ -671,6 +671,13 @@ impl Engine<'_> {
                 // What is appended: a String's units (`null` for null), a char, or an int's decimal digits.
                 let t = match appended {
                     Val::R(None) => Array { element: Type::Char, length: self.b.constant(4, 32), cells: "null".encode_utf16().map(|u| self.b.constant(i64::from(u), 16)).collect(), refs: Vec::new() },
+                    // These final wrappers render their initialized signed value in decimal.
+                    Val::R(Some(r)) if descriptor.starts_with("(Ljava/lang/Object;)") && matches!(
+                        path.objects[*r].class.as_str(), "java/lang/Byte" | "java/lang/Short" | "java/lang/Integer" | "java/lang/Long") => {
+                        let Some(Val::I(word) | Val::J(word)) = path.objects[*r].fields.get("value") else { return None; };
+                        let (length, cells) = self.decimal(word);
+                        Array { element: Type::Char, length, cells, refs: Vec::new() }
+                    }
                     // `append(Object)` appends `String.valueOf(obj)`: a String's own units, an exception's
                     // `toString()` where the engine has it ([`super::throwables`]), and the JDK call otherwise.
                     Val::R(Some(other)) if descriptor.starts_with("(Ljava/lang/Object;)") && path.objects[*other].class != STRING => match self.throwable_text(path, *other)? {

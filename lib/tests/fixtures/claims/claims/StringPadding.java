@@ -18,6 +18,9 @@ public final class StringPadding {
     }
 
     public static boolean boundaries() {
+        Object a = Integer.valueOf(-27);
+        Object b = Long.valueOf(42L);
+        if (!new StringBuilder().append(a).append(b).toString().equals("-2742")) return false;
         char[] none = {};
         Arrays.fill(none, 'x');
         String blank = new String(none);
