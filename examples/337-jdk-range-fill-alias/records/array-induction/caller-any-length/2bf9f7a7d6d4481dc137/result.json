@@ -1,0 +1,225 @@
+{
+  "schema": "java-array-induction-result/v1",
+  "sourceKey": "58b50c51a40dc6f86e18ea2fc073d2b2b0aa7016a8f5aa1f7ea0ecd629d8554b",
+  "entry": "java.util.Arrays#fill([IIII)V",
+  "revision": "original",
+  "rule": "range-fill",
+  "status": "established",
+  "domain": "Every non-null, already allocated int array of legal Java length and all signed scalar inputs with 0 <= from <= to <= length.",
+  "preparation": "fixture:original",
+  "classpath": [
+    {
+      "path": "original.jar",
+      "role": "original",
+      "sha256": "f8e701517b508e86c6dbe4a2ce0701ace715c7d0bf7026aad6ac19e7e5cf4628"
+    }
+  ],
+  "classes": {
+    "java/util/Arrays": {
+      "sha256": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab",
+      "origin": "java.base"
+    },
+    "fill/Range": {
+      "sha256": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742",
+      "origin": "original.jar"
+    }
+  },
+  "jdk": {
+    "feature": "21",
+    "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "release": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  },
+  "rulesSha256": "ad65072c9b78c436841a78066d978aca34e12a264ac856209113ed721bf7272a",
+  "heapCellBits": 32,
+  "indexBits": 32,
+  "javapSha256": "b2146e8dcfe5662c04d14f3fad68756a1a597d01461ca475a2cdbeb44c84a678",
+  "solver": {
+    "version": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e",
+    "sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
+  },
+  "solverTimeoutSeconds": 60,
+  "bytecode": [
+    {
+      "pc": 0,
+      "op": "aload_0",
+      "argument": "",
+      "member": ""
+    },
+    {
+      "pc": 1,
+      "op": "arraylength",
+      "argument": "",
+      "member": ""
+    },
+    {
+      "pc": 2,
+      "op": "iload_1",
+      "argument": "",
+      "member": ""
+    },
+    {
+      "pc": 3,
+      "op": "iload_2",
+      "argument": "",
+      "member": ""
+    },
+    {
+      "pc": 4,
+      "op": "invokestatic",
+      "argument": "#13",
+      "member": "Method rangeCheck:(III)V"
+    },
+    {
+      "pc": 7,
+      "op": "iload_1",
+      "argument": "",
+      "member": ""
+    },
+    {
+      "pc": 8,
+      "op": "istore",
+      "argument": "4",
+      "member": ""
+    },
+    {
+      "pc": 10,
+      "op": "iload",
+      "argument": "4",
+      "member": ""
+    },
+    {
+      "pc": 12,
+      "op": "iload_2",
+      "argument": "",
+      "member": ""
+    },
+    {
+      "pc": 13,
+      "op": "if_icmpge",
+      "argument": "27",
+      "member": ""
+    },
+    {
+      "pc": 16,
+      "op": "aload_0",
+      "argument": "",
+      "member": ""
+    },
+    {
+      "pc": 17,
+      "op": "iload",
+      "argument": "4",
+      "member": ""
+    },
+    {
+      "pc": 19,
+      "op": "iload_3",
+      "argument": "",
+      "member": ""
+    },
+    {
+      "pc": 20,
+      "op": "iastore",
+      "argument": "",
+      "member": ""
+    },
+    {
+      "pc": 21,
+      "op": "iinc",
+      "argument": "4, 1",
+      "member": ""
+    },
+    {
+      "pc": 24,
+      "op": "goto",
+      "argument": "10",
+      "member": ""
+    },
+    {
+      "pc": 27,
+      "op": "return",
+      "argument": "",
+      "member": ""
+    }
+  ],
+  "obligations": [
+    {
+      "name": "nonempty input domain",
+      "expected": "sat",
+      "obtained": "sat"
+    },
+    {
+      "name": "maximal signed length admitted",
+      "expected": "sat",
+      "obtained": "sat"
+    },
+    {
+      "name": "unreachable new at 64 in static void rangeCheck(int, int, int);",
+      "expected": "unsat",
+      "obtained": "unsat"
+    },
+    {
+      "name": "unreachable new at 50 in static void rangeCheck(int, int, int);",
+      "expected": "unsat",
+      "obtained": "unsat"
+    },
+    {
+      "name": "unreachable new at 5 in static void rangeCheck(int, int, int);",
+      "expected": "unsat",
+      "obtained": "unsat"
+    },
+    {
+      "name": "entry establishes invariant",
+      "expected": "unsat",
+      "obtained": "unsat"
+    },
+    {
+      "name": "safe array access at 20",
+      "expected": "unsat",
+      "obtained": "unsat"
+    },
+    {
+      "name": "return with exactly the range written",
+      "expected": "unsat",
+      "obtained": "unsat"
+    },
+    {
+      "name": "iteration preserves invariant",
+      "expected": "unsat",
+      "obtained": "unsat"
+    },
+    {
+      "name": "nonnegative strictly decreasing Java-int variant",
+      "expected": "unsat",
+      "obtained": "unsat"
+    },
+    {
+      "name": "caller establishes the helper precondition",
+      "expected": "unsat",
+      "obtained": "unsat"
+    },
+    {
+      "name": "caller read follows from the proved frame",
+      "expected": "unsat",
+      "obtained": "unsat"
+    }
+  ],
+  "certificateSha256": "84c2bc9cfe602bcde8564670bbfc72807ec962c815156665687d9d89cc36eff7",
+  "disassemblySha256": "c0c8049053c05a16015aeb1e56b2ddfa1f6ccc96840d0c7eab11767b7aa3a596",
+  "caller": {
+    "entry": "fill.Range#observe([I[IIIII)I",
+    "classSha256": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742",
+    "callee": "java.util.Arrays#fill([IIII)V",
+    "calleeClassSha256": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab",
+    "invocationPc": 5,
+    "observationPc": 11,
+    "roots": "the same int array or two distinct int arrays of independent legal lengths"
+  }
+}

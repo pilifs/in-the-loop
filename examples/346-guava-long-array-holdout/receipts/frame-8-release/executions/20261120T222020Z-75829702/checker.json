@@ -1,0 +1,225 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/eb6e139244595c7174c992df962f66b168dc1d1d/jvmcontract",
+    "prove",
+    "com.google.common.primitives.Longs#indexOf(long[], long)",
+    "--classes",
+    "prepare/release/lib/com.google.guava/guava-33.4.8-jre.jar",
+    "--classpath",
+    "prepare/release/lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
+    "--classpath",
+    "prepare/release/lib/org.jspecify/jspecify-1.0.0.jar",
+    "--assume",
+    "true",
+    "--assert",
+    "(\\forall int i; 0 <= i && i < array.length; array[i] == \\old(array[i]))",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "10",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "120",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 0,
+  "seconds": 0.063,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "verified",
+      "target": "com.google.common.primitives.Longs#indexOf(long[], long)",
+      "domain": "array: long[] of length ≤ 8, not null × target: long",
+      "assume": "true",
+      "assert": "(\\forall int i; 0 <= i && i < array.length; array[i] == \\old(array[i]))",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over array: long[] of length ≤ 8, not null × target: long in 0.0 s; loops unwound 10 times with unwinding assertions",
+      "problem": null,
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [],
+      "output": "✓ com.google.common.primitives.Longs#indexOf(long[], long) satisfies `(\\forall int i; 0 <= i && i < array.length; array[i] == \\old(array[i]))` on every input where true (jvmcontract's own checker (CaDiCaL): 1 properties proved over array: long[] of length ≤ 8, not null × target: long in 0.0 s; loops unwound 10 times with unwinding assertions)\n  not vacuous: indexOf(array=[], target=20) reaches the calls\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 0.02689876,
+        "properties": 1,
+        "unwind": 10,
+        "max_array_length": 8,
+        "stage": null,
+        "native": {
+          "paths": 45,
+          "merges": 0,
+          "solver_calls": 80,
+          "solving_seconds": 0.006395284,
+          "gates_evaluated": 12056,
+          "evaluating_seconds": 0.00026495,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 4458,
+          "clauses": 12835,
+          "seconds": 0.022957542,
+          "loading_seconds": 0.00014399,
+          "decoding_seconds": 9.3324e-05,
+          "encoding_seconds": 0.006617593,
+          "witness_seconds": 0.0
+        },
+        "gap_mode": "strict",
+        "deadline_seconds": 120.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 120.0,
+            "seconds": 0.023,
+            "ended": "verified",
+            "ending": "verified",
+            "phases": {
+              "loading": 0.0,
+              "lowering": 0.0,
+              "symbolic": 0.01,
+              "encoding": 0.007,
+              "solving": 0.006,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 4458,
+              "clauses": 12835
+            }
+          },
+          {
+            "checker": "native",
+            "purpose": "probe",
+            "stage": null,
+            "budget_seconds": 119.973,
+            "seconds": 0.009,
+            "ended": "violation",
+            "ending": "counterexample",
+            "phases": {
+              "loading": 0.0,
+              "lowering": 0.0,
+              "symbolic": 0.007,
+              "encoding": 0.002,
+              "solving": 0.0,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 2332,
+              "clauses": 6000
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.057,
+          "setup": 0.002,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.032,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.023
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "array",
+              "type": "long[]",
+              "kind": "array",
+              "null": false,
+              "max_length": 8
+            },
+            {
+              "name": "target",
+              "type": "long",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "array: long[] of length ≤ 8, not null × target: long"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "true",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against (\\forall int i; 0 <= i && i < array.length; array[i] == \\old(array[i]))",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 10,
+          "max_array_length": 8,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "probe",
+          "text": "Some input in the domain reaches the calls: the tool's own checker found indexOf(array=[], target=20).",
+          "witness": "indexOf(array=[], target=20)"
+        }
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 5836,
+    "sha256": "9db3c7efecd5724bd9ca6280b305a3c0a71001c0c7a0b3436231363057c4d5b8"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

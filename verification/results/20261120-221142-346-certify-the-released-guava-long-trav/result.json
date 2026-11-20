@@ -1,0 +1,184 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-221142-346-certify-the-released-guava-long-trav",
+  "title": "346 certify the released Guava long traversal for every legal length",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1.9s, peak 121.3 MiB (estimated 1m00s, 2.0 GiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-221142-346-certify-the-released-guava-long-trav.json",
+    "sha256": "d3a9f26fb7c2b5eff54719faa37cb9ccccf46d0a0c15f9cf13978273aa59f540",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-221142-346-certify-the-released-guava-long-trav",
+      "title": "346 certify the released Guava long traversal for every legal length",
+      "description": "The previous public rule refused the long descriptor. Re-extract the unchanged release JAR bytecode and verify lload, laload and lcmp over signed 64-bit values, leaving the 32-bit cursor invariant, pre-state array, exit and ranking checks intact. Admit unequal elements with identical low 32 bits.",
+      "kind": "real-world",
+      "capabilities": [
+        "native:array-invariant",
+        "target:prove"
+      ],
+      "links": {
+        "examples": [
+          "346"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T22:11:42+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac",
+        "z3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "1m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Prove each compiled control-flow obligation",
+          "run": "python3 examples/tools/build.py 346 --array-induction first-any-length --checker-seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/346-guava-long-array-holdout/records/array-induction/first-any-length"
+      ]
+    }
+  },
+  "sourceCommit": "aa042b39d8ccdaadc1e69f953d3899acd1b11250",
+  "startedAt": "2026-11-20T22:20:07+00:00",
+  "finishedAt": "2026-11-20T22:20:21+00:00",
+  "wallSeconds": 14.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2445690,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 127180800,
+    "wallSeconds": 1.9,
+    "cpuSeconds": 2.5,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Prove each compiled control-flow obligation",
+      "run": "python3 examples/tools/build.py 346 --array-induction first-any-length --checker-seconds 60",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 1.916,
+      "cpuSeconds": 2.524,
+      "cpuThrottledSeconds": 0.091,
+      "peakMemoryBytes": 127180800,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-prove-each-compiled-control-fl.log",
+        "lines": 1,
+        "bytes": 112,
+        "sha256": "60d49fd03cd8045e02829cccb090a7d957b1cadc3463e207bd89077ea19a01ae",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "first-any-length: established, 11 solver answers, records/array-induction/first-any-length/0e84bb986daf03cbffef"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/346-guava-long-array-holdout/records/array-induction/first-any-length/0e84bb986daf03cbffef/class.javap",
+      "change": "added",
+      "bytes": 26852,
+      "sha256": "b3f96622dd45ae57d352230d8ab83b5169ab84ca28f8fb0ddd4f8baa81c65fc3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/records/array-induction/first-any-length/0e84bb986daf03cbffef/obligations.smt2",
+      "change": "added",
+      "bytes": 4705,
+      "sha256": "a722d68c157693a66e58d63678c0b6ae443c1ada5fc9ca7b9644129bc924b16d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/346-guava-long-array-holdout/records/array-induction/first-any-length/0e84bb986daf03cbffef/result.json",
+      "change": "added",
+      "bytes": 5124,
+      "sha256": "b777d56543f02402779368bb6dd02e385c3e4b7fcda316e7625adb97c199cfcb",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T22:20:46+00:00",
+    "applied": [
+      "examples/346-guava-long-array-holdout/records/array-induction/first-any-length/0e84bb986daf03cbffef/class.javap",
+      "examples/346-guava-long-array-holdout/records/array-induction/first-any-length/0e84bb986daf03cbffef/obligations.smt2",
+      "examples/346-guava-long-array-holdout/records/array-induction/first-any-length/0e84bb986daf03cbffef/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
