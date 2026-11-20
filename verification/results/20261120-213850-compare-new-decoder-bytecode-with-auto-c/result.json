@@ -1,0 +1,214 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-213850-compare-new-decoder-bytecode-with-auto-c",
+  "title": "Compare new decoder bytecode with auto-confirm",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 25m37s, peak 2.2 GiB (estimated 25m00s, 2.0 GiB); signals: cargo:tests×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-213850-compare-new-decoder-bytecode-with-auto-c.json",
+    "sha256": "44329593572884154377612fbc4b2c403ef94801b867ea4772faf0629025c02e",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-213850-compare-new-decoder-bytecode-with-auto-c",
+      "title": "Compare new decoder bytecode with auto-confirm",
+      "description": "Repeat the original controls against the decoder, arrays and stream model changes. Retain independent JVM outputs, original bounds and negative controls.",
+      "kind": "library",
+      "capabilities": [
+        "tests:proof",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/conformance.rs"
+        ],
+        "jobs": [
+          "20261120-075443-confirm-jvm-corpus-hashes-and-map-outcom",
+          "20261120-100812-confirm-jvm-corpus-results-on-the-calend",
+          "20261120-193914-check-importer-changes-against-auto-conf"
+        ]
+      },
+      "expected": "All auto-confirm checks match each concrete JVM calibration and recorded scope.",
+      "submitted": {
+        "at": "2026-11-20T21:38:50+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 8,
+      "requires": [
+        "cargo",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "25m",
+        "memoryLimit": "5G",
+        "timeout": "35m"
+      },
+      "steps": [
+        {
+          "name": "Check the corpus with auto-confirm",
+          "run": "cargo test --manifest-path lib/Cargo.toml --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --exact --test-threads=1",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+  "startedAt": "2026-11-20T21:47:27+00:00",
+  "finishedAt": "2026-11-20T22:13:16+00:00",
+  "wallSeconds": 1549.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1837703,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 5368709120,
+    "timeoutSeconds": 2100.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 1500.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2317099008,
+    "wallSeconds": 1537.9,
+    "cpuSeconds": 1657.2,
+    "memoryOfEstimate": 1.08,
+    "durationOfEstimate": 1.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the corpus with auto-confirm",
+      "run": "cargo test --manifest-path lib/Cargo.toml --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --exact --test-threads=1",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2100.0,
+      "cancelled": false,
+      "wallSeconds": 1537.912,
+      "cpuSeconds": 1657.16,
+      "cpuThrottledSeconds": 1.166,
+      "peakMemoryBytes": 2317099008,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-corpus-with-auto-con.log",
+        "lines": 65,
+        "bytes": 2180,
+        "sha256": "c2098ce87075730624ca5a6360137bda5b93bef4b1efc042e968ef0a40d88328",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 64,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 1245.09s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "   Compiling anstream v1.0.0",
+        "   Compiling num-integer v0.1.47",
+        "   Compiling aho-corasick v1.1.5",
+        "   Compiling cadical v0.1.16",
+        "   Compiling stacker v0.1.25",
+        "   Compiling simd-adler32 v0.3.10",
+        "   Compiling serde v1.0.229",
+        "   Compiling adler2 v2.0.1",
+        "   Compiling heck v0.5.0",
+        "   Compiling strsim v0.11.1",
+        "   Compiling clap_lex v1.1.1",
+        "   Compiling serde_json v1.0.154",
+        "   Compiling regex-syntax v0.8.11",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling num-bigint v0.4.8",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling getrandom v0.4.3",
+        "   Compiling itoa v1.0.18",
+        "   Compiling rustix v1.1.6",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling num-rational v0.4.2",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling tempfile v3.27.0",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261120-213850-compare-new-decoder-bytecode-with-auto-c/lib)",
+        "    Finished `release` profile [optimized] target(s) in 4m 52s",
+        "     Running tests/conformance.rs (lib/target/release/deps/conformance-72e36f225237934f)",
+        "",
+        "running 1 test",
+        "test the_corpus_agrees_with_the_jvm_under_auto_confirm ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 1245.09s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-20T22:13:20+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}
