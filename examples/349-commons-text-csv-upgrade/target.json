@@ -1,0 +1,189 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "commons-text-csv-upgrade",
+    "family": "commons-text-commons-lang",
+    "role": "calibration",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/apache/commons-text",
+    "researchedOn": "2026-11-20",
+    "revisions": {
+      "old": {
+        "commit": "c252787dca5fe36e1f1f6c131061bbf016b1e1b6",
+        "checked": "The original PR base archive differs from the head only in pom.xml."
+      },
+      "new": {
+        "commit": "a8e4f42ef23fe396a7c45df3124157401c0da17c",
+        "checked": "The original PR head pins commons-lang3 3.17.0. Both archives contain the same 107 production Java sources."
+      },
+      "mutant": {
+        "mutant": {
+          "base": "new",
+          "patch": "controls/omit-quote-doubling.patch",
+          "sha256": "56f789f47d8031267f58902c22ee310ac7d1ac8b50ef297a85c8ee939af93127",
+          "description": "The constructed sensitivity control leaves embedded quotes single."
+        }
+      }
+    },
+    "pairs": [
+      {
+        "name": "upgrade",
+        "kind": "positive",
+        "before": "old",
+        "after": "new",
+        "selected": true
+      },
+      {
+        "name": "omission",
+        "kind": "mutation",
+        "before": "new",
+        "after": "mutant"
+      }
+    ],
+    "links": [
+      "https://github.com/apache/commons-text/pull/586"
+    ]
+  },
+  "preparation": {
+    "route": "source-slice",
+    "jdks": [
+      "21"
+    ],
+    "slice": {
+      "files": {
+        "old": [
+          "src/main/java/org/apache/commons/text/StringEscapeUtils.java",
+          "src/main/java/org/apache/commons/text/translate/AggregateTranslator.java",
+          "src/main/java/org/apache/commons/text/translate/CharSequenceTranslator.java",
+          "src/main/java/org/apache/commons/text/translate/CodePointTranslator.java",
+          "src/main/java/org/apache/commons/text/translate/CsvTranslators.java",
+          "src/main/java/org/apache/commons/text/translate/EntityArrays.java",
+          "src/main/java/org/apache/commons/text/translate/JavaUnicodeEscaper.java",
+          "src/main/java/org/apache/commons/text/translate/LookupTranslator.java",
+          "src/main/java/org/apache/commons/text/translate/NumericEntityEscaper.java",
+          "src/main/java/org/apache/commons/text/translate/NumericEntityUnescaper.java",
+          "src/main/java/org/apache/commons/text/translate/OctalUnescaper.java",
+          "src/main/java/org/apache/commons/text/translate/SinglePassTranslator.java",
+          "src/main/java/org/apache/commons/text/translate/UnicodeEscaper.java",
+          "src/main/java/org/apache/commons/text/translate/UnicodeUnescaper.java",
+          "src/main/java/org/apache/commons/text/translate/UnicodeUnpairedSurrogateRemover.java"
+        ],
+        "new": [
+          "src/main/java/org/apache/commons/text/StringEscapeUtils.java",
+          "src/main/java/org/apache/commons/text/translate/AggregateTranslator.java",
+          "src/main/java/org/apache/commons/text/translate/CharSequenceTranslator.java",
+          "src/main/java/org/apache/commons/text/translate/CodePointTranslator.java",
+          "src/main/java/org/apache/commons/text/translate/CsvTranslators.java",
+          "src/main/java/org/apache/commons/text/translate/EntityArrays.java",
+          "src/main/java/org/apache/commons/text/translate/JavaUnicodeEscaper.java",
+          "src/main/java/org/apache/commons/text/translate/LookupTranslator.java",
+          "src/main/java/org/apache/commons/text/translate/NumericEntityEscaper.java",
+          "src/main/java/org/apache/commons/text/translate/NumericEntityUnescaper.java",
+          "src/main/java/org/apache/commons/text/translate/OctalUnescaper.java",
+          "src/main/java/org/apache/commons/text/translate/SinglePassTranslator.java",
+          "src/main/java/org/apache/commons/text/translate/UnicodeEscaper.java",
+          "src/main/java/org/apache/commons/text/translate/UnicodeUnescaper.java",
+          "src/main/java/org/apache/commons/text/translate/UnicodeUnpairedSurrogateRemover.java"
+        ]
+      },
+      "jdk": "21",
+      "flags": [
+        "--release",
+        "8",
+        "-encoding",
+        "ISO-8859-1",
+        "-g",
+        "-parameters"
+      ]
+    },
+    "artifacts": [
+      {
+        "revision": "old",
+        "coordinates": "org.apache.commons:commons-lang3:3.16.0",
+        "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.16.0/commons-lang3-3.16.0.jar",
+        "sha256": "08709dd74d602b705ce4017d26544210056a4ba583d5b20c09373406fe7a00f8"
+      },
+      {
+        "revision": "new",
+        "coordinates": "org.apache.commons:commons-lang3:3.17.0",
+        "url": "https://repo.maven.apache.org/maven2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar",
+        "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "upgrade",
+      "target": "org.apache.commons.text.StringEscapeUtils#escapeCsv(Ljava/lang/String;)Ljava/lang/String;"
+    },
+    {
+      "id": "mutant-replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "omission",
+      "target": "org.apache.commons.text.StringEscapeUtils#escapeCsv(Ljava/lang/String;)Ljava/lang/String;"
+    },
+    {
+      "id": "preservation",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "pair": "upgrade",
+      "target": "org.apache.commons.text.StringEscapeUtils#escapeCsv(Ljava/lang/String;)Ljava/lang/String;",
+      "claim": "claims/escape-csv.json",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "engine": "native",
+      "gaps": "strict",
+      "invocation": {
+        "how": "route",
+        "checked": "2026-11-20",
+        "evidence": "The public entry takes the original String argument directly. The driver invokes it on every field."
+      }
+    }
+  ],
+  "controls": [
+    {
+      "id": "csv-fields",
+      "kind": "driver",
+      "path": "driver/calibration/CsvFields.java"
+    },
+    {
+      "id": "csv-oracle",
+      "kind": "oracle",
+      "path": "controls/oracle.py"
+    },
+    {
+      "id": "quote-omission",
+      "kind": "mutation",
+      "path": "controls/omit-quote-doubling.patch",
+      "revision": "mutant"
+    }
+  ],
+  "handoff": {
+    "blockers": [
+      {
+        "kind": "verifier-bug",
+        "observed": true,
+        "recorded": "2026-11-20",
+        "summary": "The V0 external-target intake called the ordinary UTF-8 decoder on a legal modified UTF-8 NUL in the original StringEscapeUtils.class constant pool and exited before the public method could be inspected.",
+        "packet": "records/workflow-intake.json"
+      },
+      {
+        "kind": "java-semantics",
+        "observed": true,
+        "recorded": "2026-11-20",
+        "task": "preservation",
+        "summary": "An assisted direct CLI on the full original classes refused before.org.apache.commons.text.StringEscapeUtils.<clinit>() under strict gaps. Its default bundled solver was CaDiCaL.",
+        "packet": "records/native-cli-run.json"
+      }
+    ]
+  }
+}

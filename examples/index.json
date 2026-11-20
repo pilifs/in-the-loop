@@ -15996,6 +15996,167 @@
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 347 TASK"
       }
+    },
+    {
+      "id": "348",
+      "path": "examples/348-rxjava-jdbc-generated-keys",
+      "title": "H2 returns both generated keys for a single two-row insert through rxjava-jdbc",
+      "summary": "The unchanged client exposes a different Rx list after H2 changes from 1.4.192 to 1.4.200. Its two single-row inserts return the same list on both versions, and both rows are stored in all four runs.",
+      "origin": "real-world",
+      "system": "rxjava-jdbc",
+      "symbol": "com.github.davidmoten.rx.jdbc.QueryUpdateOnSubscribe#performUpdate",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "external-target"
+        ]
+      },
+      "categories": [
+        "compatibility",
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "dependency-upgrade",
+      "verdict": null,
+      "verdictLabel": "Caller-visible change replayed on the JVM",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Disclosed CompSuite i-87 opening calibration. The existing DatabaseSyncTest assertion detects the returned-key change. The independent observation also records the persisted rows. H2 is test-scoped in this client POM."
+      ],
+      "source": "https://github.com/compsuite-team/rxjava-jdbc/commit/735c4108c0ebfd9ad4f350d496e9c74bc0893bb7",
+      "target": {
+        "family": "h2-jdbc-generated-keys",
+        "role": "calibration",
+        "case": "rxjava-jdbc-generated-keys",
+        "tasks": [
+          "replay",
+          "generated-keys"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "generated-keys": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "generated-keys": "unresolved"
+        },
+        "claims": {
+          "generated-keys": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T231806Z-aa24d830/result.json",
+            "attempt": "20261120T231806Z-aa24d830",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 2
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Caller-visible change replayed on the JVM",
+          "source": "https://github.com/compsuite-team/rxjava-jdbc/commit/735c4108c0ebfd9ad4f350d496e9c74bc0893bb7",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 348 TASK"
+      }
+    },
+    {
+      "id": "349",
+      "path": "examples/349-commons-text-csv-upgrade",
+      "title": "Commons Text CSV field quoting across a Commons Lang upgrade",
+      "summary": "Check the characters returned by the original StringEscapeUtils.escapeCsv on both sides of Apache Commons Text PR #586.",
+      "origin": "real-world",
+      "system": "Apache Commons Text",
+      "symbol": "org.apache.commons.text.StringEscapeUtils#escapeCsv(Ljava/lang/String;)Ljava/lang/String;",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries",
+          "text-encoding"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review",
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional",
+        "compatibility"
+      ],
+      "severity": "none",
+      "changeKind": "dependency-upgrade",
+      "verdict": null,
+      "verdictLabel": "Open calibration",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "This published calibration is excluded from both evaluation cohorts. The full-source JVM run compiles both pinned Commons Text trees. The target workflow compiles the original entry and translator classes from the same revisions. Each replay invokes the public method."
+      ],
+      "source": "https://github.com/apache/commons-text/pull/586",
+      "target": {
+        "family": "commons-text-commons-lang",
+        "role": "calibration",
+        "case": "commons-text-csv-upgrade",
+        "tasks": [
+          "replay",
+          "mutant-replay",
+          "preservation"
+        ],
+        "readiness": "partial",
+        "taskReadiness": {
+          "replay": "partial",
+          "mutant-replay": "partial",
+          "preservation": "partial"
+        },
+        "expected": {
+          "replay": null,
+          "mutant-replay": null,
+          "preservation": "established"
+        },
+        "claims": {
+          "preservation": null
+        },
+        "receipts": {},
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Open calibration",
+          "source": "https://github.com/apache/commons-text/pull/586",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 349 TASK"
+      }
     }
   ]
 }

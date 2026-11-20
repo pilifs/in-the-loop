@@ -1,0 +1,38 @@
+{
+  "attestation": "external-upgrade-open-review/v1",
+  "encoding": "UTF-8 JSON of payload, sorted keys, separators comma and colon, ensure_ascii=false, no trailing newline",
+  "algorithm": "Ed25519",
+  "publicKeyHex": "d7a031c3b23ee448748f754a3099c8cbf928d49c2c870aa4b4f9616e21fa6f14",
+  "payloadSha256": "3c5f9ea019de1bc73c99660217a56aafd0e7915c62ae7304a084003137b46068",
+  "signatureHex": "f0b5844b4b5643fce5dae17ffa166d74958d47cac45ae38498702c23afd30ac3c8731a3d710fb68cee5e87855acaa8e2b8356c15c7abcc1e97cded2c0efef80b",
+  "payload": {
+    "reviewer": "Codex isolated calibration_reviewer session, publicly attributed run-local key",
+    "performedUtc": "2026-11-20T23:19:51+00:00",
+    "cohort": "Disclosed opening calibration; excluded from all scored and transfer denominators.",
+    "humanReviewMinutes": 0,
+    "tokenCount": null,
+    "usdCost": null,
+    "costMeasurement": "No person graded this calibration. Agent token and dollar attribution were unavailable per case.",
+    "caseId": "open-compsuite-i87",
+    "reference": "CompSuite i-87 on rxjava-jdbc",
+    "revisions": {
+      "old": "5e04239e1f831878884972fbf72ab1f529b0647d",
+      "new": "735c4108c0ebfd9ad4f350d496e9c74bc0893bb7"
+    },
+    "observations": "ordered emitted integer key list from the real update/returnGeneratedKeys/getAs(Integer.class) chain, plus sorted stored row IDs and texts, with a new JVM and in-memory H2 database for every observation.",
+    "basis": "A fresh source export and separate compilation on each side produced identical QueryUpdateOnSubscribe.class bytes. I ran the published direct observer independently and selected both original DatabaseSyncTest methods by name through JUnitCore on each side. I also checked the independently generated named-test Surefire XML.",
+    "result": "One insert statement with two values returned [2] on H2 1.4.192 and [1, 2] on 1.4.200. Two single-row insert executions returned [1, 2] on both sides. All four databases held (1, something), (2, again).",
+    "ci": "Each JUnit 4 single-method run executed exactly one test with zero skips. The combined insert failed only on the new side with java.lang.AssertionError, expected:<[2]> but was:<[1, 2]>. The separate-inserts test passed on both. This matches the named Surefire evidence.",
+    "incremental": "Original CI already exposed the relevant changed list. Independent sorted stored rows and the separate-insert companion isolate what changes for callers; no new CI-missed defect is established.",
+    "action": "Inspect code that assumes one final generated key per statement. If callers expect every inserted key, adjust the named expectation; otherwise explicitly retain the last key. Both returned IDs refer to stored rows.",
+    "eligibility": "Both original POMs declare H2 test scope. This benchmark pair illustrates a functional observation and is ineligible as a scored production dependency upgrade.",
+    "assurancesContradicted": 0,
+    "referenceRoute": "independent old/new full checkout JVM replay; separately selected original named tests, not a native proof",
+    "artifactsSha256": {
+      "rxjava-rerun.json": "de0c6a06a967d773cca6f5dfc8886c6b6a2820e7a640f6c65b96c28b42a67afd",
+      "ReviewerJUnit.java": "ca2bc630420cf4f68441c75ceb79e4a5d59653b4b8b7663c3e4a1eb8531fbfd6",
+      "observer": "f0a5fe3601845936cbc8d4e9fab44c1d7bfccf6f19729a2c5cba4681ec5948da",
+      "registeredTwoSidedReplay": "88f1b7a0e430a75418fe49f40071a2f0879a3a5e2ff46f9cf2855db6f9ca58a8"
+    }
+  }
+}

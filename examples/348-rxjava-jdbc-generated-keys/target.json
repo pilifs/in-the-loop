@@ -1,0 +1,205 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "rxjava-jdbc-generated-keys",
+    "family": "h2-jdbc-generated-keys",
+    "role": "calibration",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/compsuite-team/rxjava-jdbc",
+    "revisions": {
+      "old": {
+        "commit": "5e04239e1f831878884972fbf72ab1f529b0647d",
+        "tag": "com.h2database--h2-1.4.192"
+      },
+      "new": {
+        "commit": "735c4108c0ebfd9ad4f350d496e9c74bc0893bb7",
+        "parent": "5e04239e1f831878884972fbf72ab1f529b0647d",
+        "tag": "com.h2database--h2-1.4.200"
+      }
+    },
+    "pairs": [
+      {
+        "name": "upgrade",
+        "kind": "introduction",
+        "before": "old",
+        "after": "new",
+        "selected": true
+      }
+    ],
+    "links": [
+      "https://github.com/compsuite-team/compsuite/blob/6e6d738c8b0ca6ecbba6220b1fd549b2ae14a05d/incompatibilities.json"
+    ],
+    "introduction": {
+      "status": "established",
+      "commit": "735c4108c0ebfd9ad4f350d496e9c74bc0893bb7",
+      "evidence": "The only change between these CompSuite parent and child commits is the H2 dependency pin. The unchanged concrete test passes on the parent and reports its specific returned-key assertion on the child. This identifies the client upgrade introducing the mismatch."
+    }
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "upgrade",
+      "target": "com.github.davidmoten.rx.jdbc.QueryUpdate$Builder#returnGeneratedKeys()Lcom/github/davidmoten/rx/jdbc/QueryUpdate$ReturnGeneratedKeysBuilder;"
+    },
+    {
+      "id": "generated-keys",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "pair": "upgrade",
+      "target": "com.github.davidmoten.rx.jdbc.QueryUpdate$Builder#returnGeneratedKeys()Lcom/github/davidmoten/rx/jdbc/QueryUpdate$ReturnGeneratedKeysBuilder;",
+      "engine": "native",
+      "gaps": "strict",
+      "claim": "claims/generated-keys.json",
+      "expected": "unresolved",
+      "allowedChange": "false"
+    }
+  ],
+  "preparation": {
+    "route": "published-artifact",
+    "jdks": [
+      "21"
+    ],
+    "artifacts": [
+      {
+        "revision": "old",
+        "coordinates": "com.github.davidmoten:rxjava-jdbc:0.7.15",
+        "url": "https://repo.maven.apache.org/maven2/com/github/davidmoten/rxjava-jdbc/0.7.15/rxjava-jdbc-0.7.15.jar",
+        "sha256": "255534e7f9851da0c8058d46943bdf669c28bf9c8f470f76431782b16a00eddb"
+      },
+      {
+        "revision": "old",
+        "coordinates": "io.reactivex:rxjava:1.3.7",
+        "url": "https://repo.maven.apache.org/maven2/io/reactivex/rxjava/1.3.7/rxjava-1.3.7.jar",
+        "sha256": "0b98b07e261badda7b77e249e911dedd91110f920a714370fab63d8b9fa793f0"
+      },
+      {
+        "revision": "old",
+        "coordinates": "com.github.davidmoten:rxjava-extras:0.8.0.14",
+        "url": "https://repo.maven.apache.org/maven2/com/github/davidmoten/rxjava-extras/0.8.0.14/rxjava-extras-0.8.0.14.jar",
+        "sha256": "9788497de36c12400868cfc5c2a6a30c7070a73e03583a71756cd3998fd887f3"
+      },
+      {
+        "revision": "old",
+        "coordinates": "commons-io:commons-io:2.4",
+        "url": "https://repo.maven.apache.org/maven2/commons-io/commons-io/2.4/commons-io-2.4.jar",
+        "sha256": "cc6a41dc3eaacc9e440a6bd0d2890b20d36b4ee408fe2d67122f328bb6e01581"
+      },
+      {
+        "revision": "old",
+        "coordinates": "org.slf4j:slf4j-api:1.7.21",
+        "url": "https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/1.7.21/slf4j-api-1.7.21.jar",
+        "sha256": "1d5aeb6bd98b0fdd151269eae941c05f6468a791ea0f1e68d8e7fe518af3e7df"
+      },
+      {
+        "revision": "old",
+        "coordinates": "com.zaxxer:HikariCP-java6:2.3.13",
+        "url": "https://repo.maven.apache.org/maven2/com/zaxxer/HikariCP-java6/2.3.13/HikariCP-java6-2.3.13.jar",
+        "sha256": "15ff85021790a1e92f5eb58eb436c8ad96d9484fb411256979a4431082bf75fe"
+      },
+      {
+        "revision": "old",
+        "coordinates": "com.github.davidmoten:guava-mini:0.1.1",
+        "url": "https://repo.maven.apache.org/maven2/com/github/davidmoten/guava-mini/0.1.1/guava-mini-0.1.1.jar",
+        "sha256": "27ead171e2d11a3228946b512a326525322d96f73c4a21736fec6b00ea2f248d"
+      },
+      {
+        "revision": "old",
+        "coordinates": "org.slf4j:slf4j-log4j12:1.7.21",
+        "url": "https://repo.maven.apache.org/maven2/org/slf4j/slf4j-log4j12/1.7.21/slf4j-log4j12-1.7.21.jar",
+        "sha256": "9563e26fd7863cca0f5d468ef09f2927047f8b85a8c76d98766ed5863cb678b2"
+      },
+      {
+        "revision": "old",
+        "coordinates": "log4j:log4j:1.2.17",
+        "url": "https://repo.maven.apache.org/maven2/log4j/log4j/1.2.17/log4j-1.2.17.jar",
+        "sha256": "1d31696445697720527091754369082a6651bd49781b6005deb94e56753406f9"
+      },
+      {
+        "revision": "old",
+        "coordinates": "com.h2database:h2:1.4.192",
+        "url": "https://repo.maven.apache.org/maven2/com/h2database/h2/1.4.192/h2-1.4.192.jar",
+        "sha256": "225b22e9857235c46c93861410b60b8c81c10dc8985f4faf188985ba5445126c"
+      },
+      {
+        "revision": "new",
+        "coordinates": "com.github.davidmoten:rxjava-jdbc:0.7.15",
+        "url": "https://repo.maven.apache.org/maven2/com/github/davidmoten/rxjava-jdbc/0.7.15/rxjava-jdbc-0.7.15.jar",
+        "sha256": "255534e7f9851da0c8058d46943bdf669c28bf9c8f470f76431782b16a00eddb"
+      },
+      {
+        "revision": "new",
+        "coordinates": "io.reactivex:rxjava:1.3.7",
+        "url": "https://repo.maven.apache.org/maven2/io/reactivex/rxjava/1.3.7/rxjava-1.3.7.jar",
+        "sha256": "0b98b07e261badda7b77e249e911dedd91110f920a714370fab63d8b9fa793f0"
+      },
+      {
+        "revision": "new",
+        "coordinates": "com.github.davidmoten:rxjava-extras:0.8.0.14",
+        "url": "https://repo.maven.apache.org/maven2/com/github/davidmoten/rxjava-extras/0.8.0.14/rxjava-extras-0.8.0.14.jar",
+        "sha256": "9788497de36c12400868cfc5c2a6a30c7070a73e03583a71756cd3998fd887f3"
+      },
+      {
+        "revision": "new",
+        "coordinates": "commons-io:commons-io:2.4",
+        "url": "https://repo.maven.apache.org/maven2/commons-io/commons-io/2.4/commons-io-2.4.jar",
+        "sha256": "cc6a41dc3eaacc9e440a6bd0d2890b20d36b4ee408fe2d67122f328bb6e01581"
+      },
+      {
+        "revision": "new",
+        "coordinates": "org.slf4j:slf4j-api:1.7.21",
+        "url": "https://repo.maven.apache.org/maven2/org/slf4j/slf4j-api/1.7.21/slf4j-api-1.7.21.jar",
+        "sha256": "1d5aeb6bd98b0fdd151269eae941c05f6468a791ea0f1e68d8e7fe518af3e7df"
+      },
+      {
+        "revision": "new",
+        "coordinates": "com.zaxxer:HikariCP-java6:2.3.13",
+        "url": "https://repo.maven.apache.org/maven2/com/zaxxer/HikariCP-java6/2.3.13/HikariCP-java6-2.3.13.jar",
+        "sha256": "15ff85021790a1e92f5eb58eb436c8ad96d9484fb411256979a4431082bf75fe"
+      },
+      {
+        "revision": "new",
+        "coordinates": "com.github.davidmoten:guava-mini:0.1.1",
+        "url": "https://repo.maven.apache.org/maven2/com/github/davidmoten/guava-mini/0.1.1/guava-mini-0.1.1.jar",
+        "sha256": "27ead171e2d11a3228946b512a326525322d96f73c4a21736fec6b00ea2f248d"
+      },
+      {
+        "revision": "new",
+        "coordinates": "org.slf4j:slf4j-log4j12:1.7.21",
+        "url": "https://repo.maven.apache.org/maven2/org/slf4j/slf4j-log4j12/1.7.21/slf4j-log4j12-1.7.21.jar",
+        "sha256": "9563e26fd7863cca0f5d468ef09f2927047f8b85a8c76d98766ed5863cb678b2"
+      },
+      {
+        "revision": "new",
+        "coordinates": "log4j:log4j:1.2.17",
+        "url": "https://repo.maven.apache.org/maven2/log4j/log4j/1.2.17/log4j-1.2.17.jar",
+        "sha256": "1d31696445697720527091754369082a6651bd49781b6005deb94e56753406f9"
+      },
+      {
+        "revision": "new",
+        "coordinates": "com.h2database:h2:1.4.200",
+        "url": "https://repo.maven.apache.org/maven2/com/h2database/h2/1.4.200/h2-1.4.200.jar",
+        "sha256": "3ad9ac4b6aae9cd9d3ac1c447465e1ed06019b851b893dd6a8d76ddb6d85bca6"
+      }
+    ],
+    "adapters": [
+      "adapter/calibration/GeneratedKeys.java"
+    ]
+  },
+  "controls": [
+    {
+      "id": "independent-observer",
+      "kind": "oracle",
+      "path": "controls/oracle.py"
+    },
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/calibration/KeyCases.java"
+    }
+  ]
+}

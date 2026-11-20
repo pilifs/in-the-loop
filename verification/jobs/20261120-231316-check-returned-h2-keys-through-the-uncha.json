@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-231316-check-returned-h2-keys-through-the-uncha",
+  "title": "Check returned H2 keys through the unchanged rxjava-jdbc subscriber",
+  "description": "Run the public strict native equivalence route on rxjava-jdbc 0.7.15 and its pinned old/new H2 closures. A boolean selects one multi-row statement or two calls, each on a new in-memory database. The adapter returns all integers in subscriber order. Report the first unsupported stage if the database path is open. Separately preserved original-test XML and concrete JVM evidence remain the calibration baseline.",
+  "kind": "example",
+  "capabilities": [
+    "external-upgrade-evaluation",
+    "jvmcontract:equivalence",
+    "h2:generated-keys",
+    "target:equivalence"
+  ],
+  "links": {
+    "claims": [
+      "8a3ffbec57461471"
+    ],
+    "examples": [
+      "348"
+    ]
+  },
+  "expected": "example 348 task generated-keys gives its expected conclusion, unresolved: build.py prints 'as expected' and exits 0",
+  "submitted": {
+    "at": "2026-11-20T23:16:31+00:00",
+    "session": "01a1fb31-b3eb-7231-b464-c3233fd02921"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "example 348 task generated-keys (equivalence)",
+      "run": "python3 examples/tools/build.py 348 --task generated-keys",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys"
+  ]
+}

@@ -12,29 +12,29 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T23:10:20.652Z",
-  "duration_seconds": 91971,
+  "ended": "2026-11-20T23:20:18.364Z",
+  "duration_seconds": 92568,
   "stats": {
     "turns": 15,
-    "api_calls": 3779,
-    "tool_calls": 9871,
-    "tool_errors": 307,
+    "api_calls": 3822,
+    "tool_calls": 9984,
+    "tool_errors": 313,
     "compactions": 13,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 6747926,
-      "output_tokens": 1935624,
-      "cache_read_input_tokens": 1172399232,
+      "input_tokens": 6806635,
+      "output_tokens": 1958841,
+      "cache_read_input_tokens": 1180058752,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 5717,
-    "exec": 3636,
-    "apply_patch": 411,
+    "Bash": 5791,
+    "exec": 3663,
+    "apply_patch": 412,
     "wait": 53,
     "sleep": 43,
-    "send_message": 7,
+    "send_message": 18,
     "spawn_agent": 3,
     "send_message_to_user_async": 1
   },
@@ -125,6 +125,7 @@
     "lib/Cargo.toml",
     "lib/benchmark/external-upgrades/pin.py",
     "lib/benchmark/external-upgrades/protocol.md",
+    "lib/benchmark/external-upgrades/replay_open.py",
     "lib/models/README.md",
     "lib/models/build.sh",
     "lib/models/java/util/IdentityHashMap.java",
@@ -455,24 +456,24 @@
     {
       "index": 13,
       "started": "2026-11-20T22:47:51.080Z",
-      "ended": "2026-11-20T23:10:20.652Z",
+      "ended": "2026-11-20T23:20:18.364Z",
       "turns": 2,
-      "api_calls": 53,
+      "api_calls": 96,
       "usage": {
-        "input_tokens": 143672,
-        "output_tokens": 28794,
-        "cache_read_input_tokens": 5807360,
+        "input_tokens": 202381,
+        "output_tokens": 52011,
+        "cache_read_input_tokens": 13466880,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 153150
+      "peak_context_tokens": 208910
     }
   ],
   "log": {
-    "sha256": "cc43e484e5c9f54acda60ee8dab0be3e347b6114ae120ec45e51ad9cfd640343",
-    "bytes": 88733853,
-    "lines": 29820,
-    "gzip_bytes": 34257201,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/cc43e484e5c9f54acda60ee8dab0be3e347b6114ae120ec45e51ad9cfd640343.jsonl.gz"
+    "sha256": "b3ea3a943472f17a5184e7618ca2ad6126bcc65f37fbbb6543aa35941362c99a",
+    "bytes": 89685131,
+    "lines": 30188,
+    "gzip_bytes": 34591086,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/b3ea3a943472f17a5184e7618ca2ad6126bcc65f37fbbb6543aa35941362c99a.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1469,14 +1470,6 @@
       "log_sha256": "cc43e484e5c9f54acda60ee8dab0be3e347b6114ae120ec45e51ad9cfd640343"
     },
     {
-      "change_id": "wkykvlzzqvnnmyztvmuqsynqotrrwmrk",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "A Codex worker adopts other sessions' logs inside its sandbox, and any agent may without asking",
-      "body": "",
-      "log_sha256": "cc43e484e5c9f54acda60ee8dab0be3e347b6114ae120ec45e51ad9cfd640343"
-    },
-    {
       "change_id": "ouptxtykuzrymmvyzkykzzoxqwnqvtun",
       "commit_id": null,
       "immutable": false,
@@ -1498,6 +1491,14 @@
       "immutable": false,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-181157-check-the-unchanged-importer-on-the-pinn: failed: 1 failed step(s) in 23.0s, peak 181.2 MiB (estimated 3m00s, 2.0 GiB); 240 output file(s) changed; signals: example:task-unexpected×16 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.",
+      "log_sha256": "cc43e484e5c9f54acda60ee8dab0be3e347b6114ae120ec45e51ad9cfd640343"
+    },
+    {
+      "change_id": "wkykvlzzqvnnmyztvmuqsynqotrrwmrk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "A Codex worker adopts other sessions' logs inside its sandbox, and any agent may without asking",
+      "body": "",
       "log_sha256": "cc43e484e5c9f54acda60ee8dab0be3e347b6114ae120ec45e51ad9cfd640343"
     },
     {
@@ -1741,20 +1742,28 @@
       "log_sha256": "cc43e484e5c9f54acda60ee8dab0be3e347b6114ae120ec45e51ad9cfd640343"
     },
     {
-      "change_id": "ypwlulppnvtqmlnvzwywkovwkvqmnsym",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "cc43e484e5c9f54acda60ee8dab0be3e347b6114ae120ec45e51ad9cfd640343"
-    },
-    {
       "change_id": "nznwyxozwvrwskxqwtrnnomyqupltzrl",
       "commit_id": null,
       "immutable": false,
       "summary": "Preregister the external upgrade evaluation and freeze its product baseline",
       "body": "The accepted importer and array campaign landed at e7cdfb6a6ede. Freeze that product, its verifier and solver digests, JDK image, model settings and the neutral maintainer prompt before scoring. Register deterministic matching, an independent curator seed commitment, the held-out split, evidence rules, budgets and investment gates. The four disclosed scope examples and prospective teams remain outside the retrospective denominators.\n\nRebuilt the locked test-fast verifier offline, reproduced the 12 tool and JDK digests with pin.py --check, and checked the prompt against the original brief byte for byte. The queue validator reported zero invalid files.",
       "log_sha256": "cc43e484e5c9f54acda60ee8dab0be3e347b6114ae120ec45e51ad9cfd640343"
+    },
+    {
+      "change_id": "mrlxoqqspprwwzsyztosqvsylstqonsx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "b3ea3a943472f17a5184e7618ca2ad6126bcc65f37fbbb6543aa35941362c99a"
+    },
+    {
+      "change_id": "qvluvnpvrtpquvkyppuzskpnktommkrp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Calibrate two external upgrades on their original client observations (verification pending)",
+      "body": "The unchanged rxjava-jdbc client returned [2] then [1, 2] from one two-row insert as H2 changed. Both releases returned [1, 2] for separate inserts and stored the same rows. The registered JDK 21 replay and independent JDK 8 reproduction agree with the original named test. H2 is test-scoped in the client POM. Commons Text preserved every returned UTF-16 field on all 156 inputs with both Lang versions. Removing quote doubling broke 71. The public V0 route stopped at modified UTF-8 during class intake. The direct native diagnostic reached static initialization and remains open.\n\nThese two disclosed calibrations are excluded from all scores, as are Rocker, AWS and Cucumber Reporting. Both public proof plans are executable. The queue validator found no invalid jobs, the first changed-test run passed 29 groups with an acceptance retry, and the independent reviews reran the actual observations and checked the original test identities. Job 20261120-231316-check-returned-h2-keys-through-the-uncha checks the native generated-key claim. Job 20261120-230733-check-commons-text-pr-586-csv-return-pre checks CSV preservation using the standard route.",
+      "log_sha256": "b3ea3a943472f17a5184e7618ca2ad6126bcc65f37fbbb6543aa35941362c99a"
     }
   ],
   "logs": {
@@ -2123,6 +2132,12 @@
       "lines": 6875,
       "gzip_bytes": 8288248,
       "url": "https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/b158de6b16afab90d0661213c498c6d71ce5e7d2402eaa6b6d2eeffa5c6e002b.jsonl.gz"
+    },
+    "b3ea3a943472f17a5184e7618ca2ad6126bcc65f37fbbb6543aa35941362c99a": {
+      "bytes": 89685131,
+      "lines": 30188,
+      "gzip_bytes": 34591086,
+      "url": null
     },
     "bb1c5d731ed81cebfbb3a2fe5a6071ce9054546e9838ec5a5e933efdf6c5086f": {
       "bytes": 18533929,

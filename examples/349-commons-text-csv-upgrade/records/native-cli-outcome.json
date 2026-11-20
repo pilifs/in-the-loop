@@ -1,0 +1,338 @@
+{
+  "wire_version": 1,
+  "verdict": "unverifiable",
+  "target": "org.apache.commons.text.StringEscapeUtils#escapeCsv",
+  "domain": "input: String of ≤ 3 code units, not null",
+  "counterexample": null,
+  "proof": null,
+  "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:before.org.apache.commons.text.StringEscapeUtils.<clinit>()V (before.org.apache.commons.text.StringEscapeUtils.<clinit>() at RegressionPair.agree:41). With --gaps assume it assumes instead that before.org.apache.commons.text.StringEscapeUtils.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+  "statement": "${PROBE}/work/pair/RegressionPair.java",
+  "findings": [
+    {
+      "rule_id": "unverifiable",
+      "message": "RegressionPair#agree cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:before.org.apache.commons.text.StringEscapeUtils.<clinit>()V (before.org.apache.commons.text.StringEscapeUtils.<clinit>() at RegressionPair.agree:41). With --gaps assume it assumes instead that before.org.apache.commons.text.StringEscapeUtils.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+      "uri": null,
+      "line": 38
+    }
+  ],
+  "output": "note: checked as a property of the pair of versions: RegressionPair.agree (${PROBE}/work/pair/RegressionPair.java) calls the previous version's org.apache.commons.text.StringEscapeUtils#escapeCsv, relocated under `before`, and then the new one's on the same inputs, each on its own dependency closure, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n✗ org.apache.commons.text.StringEscapeUtils#escapeCsv cannot be verified as a property of the pair of versions (below)\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter input has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✗ RegressionPair#agree cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:before.org.apache.commons.text.StringEscapeUtils.<clinit>()V (before.org.apache.commons.text.StringEscapeUtils.<clinit>() at RegressionPair.agree:41). With --gaps assume it assumes instead that before.org.apache.commons.text.StringEscapeUtils.<clinit>() has run already, and threw nothing, and the verdict names the assumption\n",
+  "work": "${PROBE}/work",
+  "search": {
+    "engine": "native",
+    "checker": "jvmcontract's own checker (CaDiCaL)",
+    "seconds": 0.025732037,
+    "properties": 1,
+    "unwind": 24,
+    "max_array_length": 3,
+    "stage": null,
+    "native": {
+      "paths": 187,
+      "merges": 0,
+      "solver_calls": 224,
+      "solving_seconds": 0.001652549,
+      "gates_evaluated": 4339,
+      "evaluating_seconds": 0.000127892,
+      "divisions": 0,
+      "divisions_built": 0,
+      "multiplications": 0,
+      "multiplications_built": 0,
+      "variables": 809,
+      "clauses": 2394,
+      "seconds": 0.023563689,
+      "loading_seconds": 0.004741924,
+      "decoding_seconds": 0.000083998,
+      "encoding_seconds": 0.000877712,
+      "witness_seconds": 0.0
+    },
+    "gap_mode": "strict",
+    "gaps": [
+      {
+        "id": "class-initializer:before.org.apache.commons.text.StringEscapeUtils.<clinit>()V",
+        "kind": "class-initializer",
+        "call": "before.org.apache.commons.text.StringEscapeUtils.<clinit>()",
+        "sites": [
+          "RegressionPair.agree:41"
+        ],
+        "approximation": "has run already, and threw nothing",
+        "treatment": "refused"
+      }
+    ],
+    "deadline_seconds": 30.0,
+    "runs": [
+      {
+        "checker": "native",
+        "purpose": "proof",
+        "stage": null,
+        "budget_seconds": 30.0,
+        "seconds": 0.024,
+        "ended": "no-verdict",
+        "ending": "no-verdict",
+        "phases": {
+          "loading": 0.005,
+          "lowering": 0.0,
+          "symbolic": 0.016,
+          "encoding": 0.001,
+          "solving": 0.002,
+          "trace": 0.0,
+          "other": 0.0
+        },
+        "formula": {
+          "variables": 809,
+          "clauses": 2394
+        }
+      }
+    ]
+  },
+  "stated": {
+    "kind": "property",
+    "domain": {
+      "parameters": [
+        {
+          "name": "input",
+          "type": "java.lang.String",
+          "kind": "value",
+          "null": false,
+          "max_length": 3
+        }
+      ],
+      "shared_arrays": false,
+      "text": "input: String of ≤ 3 code units, not null"
+    },
+    "assumptions": [
+      {
+        "kind": "precondition",
+        "text": "(input.length() < 1 || input.charAt(0) == 97 || input.charAt(0) == 44 || input.charAt(0) == 34 || input.charAt(0) == 13 || input.charAt(0) == 10) && (input.length() < 2 || input.charAt(1) == 97 || input.charAt(1) == 44 || input.charAt(1) == 34 || input.charAt(1) == 13 || input.charAt(1) == 10) && (input.length() < 3 || input.charAt(2) == 97 || input.charAt(2) == 44 || input.charAt(2) == 34 || input.charAt(2) == 13 || input.charAt(2) == 10)",
+        "basis": "stated"
+      },
+      {
+        "kind": "initialization",
+        "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+        "basis": "engine"
+      }
+    ],
+    "observations": {
+      "result": "the result and the parameters, against result",
+      "exceptions": "none may be thrown"
+    },
+    "bounds": {
+      "unwind": 24,
+      "max_array_length": null,
+      "complete": false,
+      "max_value_length": 3
+    },
+    "models": {
+      "used": true,
+      "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+      "classes": 40,
+      "jdk": "21.0.13",
+      "values": [
+        {
+          "source": "jvmcontract String model 8: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
+          "jdk": "25.0.5",
+          "level": "tested",
+          "leaves_out": [
+            "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
+            "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
+            "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
+            "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
+          ]
+        }
+      ]
+    },
+    "checker": {
+      "engine": "native",
+      "name": "jvmcontract's own checker (CaDiCaL)",
+      "solver": "CaDiCaL 1.9.5 (bundled)",
+      "fallback": null,
+      "sat": {
+        "solver": "CaDiCaL",
+        "version": "1.9.5",
+        "source": "bundled by the Rust crate cadical 0.1.16",
+        "configuration": [
+          "CaDiCaL's default options",
+          "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+          "the run's deadline through CaDiCaL's terminate callback",
+          "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+        ]
+      }
+    },
+    "gap_mode": "strict",
+    "confirmation": null
+  },
+  "pair": {
+    "verdict": "unverifiable",
+    "target": "RegressionPair#agree",
+    "domain": "input: String of ≤ 3 code units, not null",
+    "assume": "(input.length() < 1 || input.charAt(0) == 97 || input.charAt(0) == 44 || input.charAt(0) == 34 || input.charAt(0) == 13 || input.charAt(0) == 10) && (input.length() < 2 || input.charAt(1) == 97 || input.charAt(1) == 44 || input.charAt(1) == 34 || input.charAt(1) == 13 || input.charAt(1) == 10) && (input.length() < 3 || input.charAt(2) == 97 || input.charAt(2) == 44 || input.charAt(2) == 34 || input.charAt(2) == 13 || input.charAt(2) == 10)",
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:before.org.apache.commons.text.StringEscapeUtils.<clinit>()V (before.org.apache.commons.text.StringEscapeUtils.<clinit>() at RegressionPair.agree:41). With --gaps assume it assumes instead that before.org.apache.commons.text.StringEscapeUtils.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+    "statement": "${PROBE}/work/pair-work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "RegressionPair#agree cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:before.org.apache.commons.text.StringEscapeUtils.<clinit>()V (before.org.apache.commons.text.StringEscapeUtils.<clinit>() at RegressionPair.agree:41). With --gaps assume it assumes instead that before.org.apache.commons.text.StringEscapeUtils.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+        "uri": null,
+        "line": 38
+      }
+    ],
+    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter input has type java.lang.String; only integral and boolean parameters can appear in the expression); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✗ RegressionPair#agree cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:before.org.apache.commons.text.StringEscapeUtils.<clinit>()V (before.org.apache.commons.text.StringEscapeUtils.<clinit>() at RegressionPair.agree:41). With --gaps assume it assumes instead that before.org.apache.commons.text.StringEscapeUtils.<clinit>() has run already, and threw nothing, and the verdict names the assumption\n",
+    "work": "${PROBE}/work/pair-work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.025732037,
+      "properties": 1,
+      "unwind": 24,
+      "max_array_length": 3,
+      "stage": null,
+      "native": {
+        "paths": 187,
+        "merges": 0,
+        "solver_calls": 224,
+        "solving_seconds": 0.001652549,
+        "gates_evaluated": 4339,
+        "evaluating_seconds": 0.000127892,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 809,
+        "clauses": 2394,
+        "seconds": 0.023563689,
+        "loading_seconds": 0.004741924,
+        "decoding_seconds": 0.000083998,
+        "encoding_seconds": 0.000877712,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "class-initializer:before.org.apache.commons.text.StringEscapeUtils.<clinit>()V",
+          "kind": "class-initializer",
+          "call": "before.org.apache.commons.text.StringEscapeUtils.<clinit>()",
+          "sites": [
+            "RegressionPair.agree:41"
+          ],
+          "approximation": "has run already, and threw nothing",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 30.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 30.0,
+          "seconds": 0.024,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.005,
+            "lowering": 0.0,
+            "symbolic": 0.016,
+            "encoding": 0.001,
+            "solving": 0.002,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 809,
+            "clauses": 2394
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.478,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.024,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.453
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "input",
+            "type": "java.lang.String",
+            "kind": "value",
+            "null": false,
+            "max_length": 3
+          }
+        ],
+        "shared_arrays": false,
+        "text": "input: String of ≤ 3 code units, not null"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "(input.length() < 1 || input.charAt(0) == 97 || input.charAt(0) == 44 || input.charAt(0) == 34 || input.charAt(0) == 13 || input.charAt(0) == 10) && (input.length() < 2 || input.charAt(1) == 97 || input.charAt(1) == 44 || input.charAt(1) == 34 || input.charAt(1) == 13 || input.charAt(1) == 10) && (input.length() < 3 || input.charAt(2) == 97 || input.charAt(2) == 44 || input.charAt(2) == 34 || input.charAt(2) == 13 || input.charAt(2) == 10)",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 24,
+        "max_array_length": null,
+        "complete": false,
+        "max_value_length": 3
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13",
+        "values": [
+          {
+            "source": "jvmcontract String model 8: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
+            "jdk": "25.0.5",
+            "level": "tested",
+            "leaves_out": [
+              "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
+              "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
+              "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
+              "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object"
+            ]
+          }
+        ]
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+}
