@@ -1,0 +1,1396 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-081743-recheck-ordered-suppression-against-the",
+  "title": "Recheck ordered suppression against the shared JDK empty list",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 9.9s, peak 139.0 MiB (estimated 2m00s, 2.0 GiB); 138 output file(s) changed; signals: example:task-as-expected×9",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-081743-recheck-ordered-suppression-against-the.json",
+    "sha256": "0429c7f78e88272e5b69824bf09bad0a17b1ad6fe638cd5b981bb52bfef74776",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-081743-recheck-ordered-suppression-against-the",
+      "title": "Recheck ordered suppression against the shared JDK empty list",
+      "description": "Verify all nine frozen primary, ordered suppression and closing claims on the eight original masks. The public empty-list singleton now shares the same identity with Throwable in the checker and interpreter; preserve the independent JVM witnesses for reversed acquisition.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "322"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T08:17:43+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "18m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 322 --tasks primary-original,primary-nested,primary-reversed,suppressed-original,suppressed-nested,suppressed-reversed,close-original,close-nested,close-reversed --checker-seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/322-ordered-suppressed-exceptions/receipts/primary-original",
+        "examples/322-ordered-suppressed-exceptions/receipts/primary-nested",
+        "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed",
+        "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original",
+        "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested",
+        "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed",
+        "examples/322-ordered-suppressed-exceptions/receipts/close-original",
+        "examples/322-ordered-suppressed-exceptions/receipts/close-nested",
+        "examples/322-ordered-suppressed-exceptions/receipts/close-reversed"
+      ]
+    }
+  },
+  "sourceCommit": "ddf77b2e1673895ef1874faae091521a0b8ac5d8",
+  "startedAt": "2026-11-20T08:19:08+00:00",
+  "finishedAt": "2026-11-20T08:22:13+00:00",
+  "wallSeconds": 185.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4178968,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1080.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 145743872,
+    "wallSeconds": 9.9,
+    "cpuSeconds": 15.7,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 322 --tasks primary-original,primary-nested,primary-reversed,suppressed-original,suppressed-nested,suppressed-reversed,close-original,close-nested,close-reversed --checker-seconds 60",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1080.0,
+      "cancelled": false,
+      "wallSeconds": 9.887,
+      "cpuSeconds": 15.678,
+      "cpuThrottledSeconds": 0.852,
+      "peakMemoryBytes": 145743872,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-obligations-o.log",
+        "lines": 18,
+        "bytes": 2211,
+        "sha256": "75017c5cc7d02839ffc912fa676df24992e99086bae1f4800f621303e70233dc",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 9
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "322-ordered-suppressed-exceptions: task primary-original: established (completed; as expected), receipt receipts/primary-original/20261120T082203Z-6a8e6a55/result.json",
+          "groups": [
+            "322",
+            "primary-original",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "322-ordered-suppressed-exceptions: task primary-nested: established (completed; as expected), receipt receipts/primary-nested/20261120T082205Z-c524d905/result.json",
+          "groups": [
+            "322",
+            "primary-nested",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "322-ordered-suppressed-exceptions: task primary-reversed: refuted (completed; as expected), receipt receipts/primary-reversed/20261120T082207Z-dff1b46b/result.json",
+          "groups": [
+            "322",
+            "primary-reversed",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "322-ordered-suppressed-exceptions: task suppressed-original: established (completed; as expected), receipt receipts/suppressed-original/20261120T082210Z-625eaaa0/result.json",
+          "groups": [
+            "322",
+            "suppressed-original",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 10,
+          "text": "322-ordered-suppressed-exceptions: task suppressed-nested: established (completed; as expected), receipt receipts/suppressed-nested/20261120T082210Z-a570d484/result.json",
+          "groups": [
+            "322",
+            "suppressed-nested",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 12,
+          "text": "322-ordered-suppressed-exceptions: task suppressed-reversed: refuted (completed; as expected), receipt receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/result.json",
+          "groups": [
+            "322",
+            "suppressed-reversed",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 14,
+          "text": "322-ordered-suppressed-exceptions: task close-original: established (completed; as expected), receipt receipts/close-original/20261120T082211Z-98ef3a65/result.json",
+          "groups": [
+            "322",
+            "close-original",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 16,
+          "text": "322-ordered-suppressed-exceptions: task close-nested: established (completed; as expected), receipt receipts/close-nested/20261120T082211Z-dd8c8e31/result.json",
+          "groups": [
+            "322",
+            "close-nested",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 18,
+          "text": "322-ordered-suppressed-exceptions: task close-reversed: refuted (completed; as expected), receipt receipts/close-reversed/20261120T082212Z-2f3bdf81/result.json",
+          "groups": [
+            "322",
+            "close-reversed",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "322-ordered-suppressed-exceptions: running task primary-original (target route)",
+        "322-ordered-suppressed-exceptions: task primary-original: established (completed; as expected), receipt receipts/primary-original/20261120T082203Z-6a8e6a55/result.json",
+        "322-ordered-suppressed-exceptions: running task primary-nested (target route)",
+        "322-ordered-suppressed-exceptions: task primary-nested: established (completed; as expected), receipt receipts/primary-nested/20261120T082205Z-c524d905/result.json",
+        "322-ordered-suppressed-exceptions: running task primary-reversed (target route)",
+        "322-ordered-suppressed-exceptions: task primary-reversed: refuted (completed; as expected), receipt receipts/primary-reversed/20261120T082207Z-dff1b46b/result.json",
+        "322-ordered-suppressed-exceptions: running task suppressed-original (target route)",
+        "322-ordered-suppressed-exceptions: task suppressed-original: established (completed; as expected), receipt receipts/suppressed-original/20261120T082210Z-625eaaa0/result.json",
+        "322-ordered-suppressed-exceptions: running task suppressed-nested (target route)",
+        "322-ordered-suppressed-exceptions: task suppressed-nested: established (completed; as expected), receipt receipts/suppressed-nested/20261120T082210Z-a570d484/result.json",
+        "322-ordered-suppressed-exceptions: running task suppressed-reversed (target route)",
+        "322-ordered-suppressed-exceptions: task suppressed-reversed: refuted (completed; as expected), receipt receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/result.json",
+        "322-ordered-suppressed-exceptions: running task close-original (target route)",
+        "322-ordered-suppressed-exceptions: task close-original: established (completed; as expected), receipt receipts/close-original/20261120T082211Z-98ef3a65/result.json",
+        "322-ordered-suppressed-exceptions: running task close-nested (target route)",
+        "322-ordered-suppressed-exceptions: task close-nested: established (completed; as expected), receipt receipts/close-nested/20261120T082211Z-dd8c8e31/result.json",
+        "322-ordered-suppressed-exceptions: running task close-reversed (target route)",
+        "322-ordered-suppressed-exceptions: task close-reversed: refuted (completed; as expected), receipt receipts/close-reversed/20261120T082212Z-2f3bdf81/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "4418afa39204137dcf421a60b50d798210b4ccc5171b14a26b4626b9dfec259d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/plan.json",
+      "change": "added",
+      "bytes": 5374,
+      "sha256": "f4909b47bdaafe4b98192f8902fa3be33ae0f768cd3570ffae1dfca9cb2341a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/records/control-original-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/records/control-original-jdk21.stdout",
+      "change": "added",
+      "bytes": 1341,
+      "sha256": "f2cb15d270b8889e0c4d14b075b6cc59d1b89ae3738b04d7e2babf8ae3432730",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/records/controls.json",
+      "change": "added",
+      "bytes": 6698,
+      "sha256": "6692bb4c6da6a743e5b363406178dfb7c9925650252db7f4b5db1df4aebfe0e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/records/execution.json",
+      "change": "added",
+      "bytes": 21241,
+      "sha256": "21a721a49f9133b34f944c41aaba4851a4dc8e575325b5e1f8164739055cd2e9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/records/streams.json",
+      "change": "added",
+      "bytes": 1983,
+      "sha256": "ac5ecb02ffe7c3d71b10661e5468164c5a13281501151f372dd6faf6bfd3e3d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 284,
+      "sha256": "07338e14fd0ccd513930a3c86a0a09061c50db6e99435536c200f3be39591ada",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/records/verifier.json",
+      "change": "added",
+      "bytes": 14457,
+      "sha256": "d77afd4328701dc0dc07b6ed6c72e49acc0141472da3dd8028365291dedc032f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5873,
+      "sha256": "b167c68ddab548fc6a14602fc3fc958b9653a2d54e442a10faf0f0d4fe038225",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/result.json",
+      "change": "added",
+      "bytes": 17719,
+      "sha256": "7791c158dd66e7411174fb0b99dd1efcde2cdfa70c6c5e1c7e28a31104087886",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-original/executions/20261120T082203Z-6a8e6a55/attempt.json",
+      "change": "added",
+      "bytes": 10300,
+      "sha256": "c911d4065eddbccaf360b235e25af1581880da63ab6e12252e2918cb6757e7f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-original/executions/20261120T082203Z-6a8e6a55/checker.json",
+      "change": "added",
+      "bytes": 7209,
+      "sha256": "e565dff144768966f4f6bfa1ca3639bde23099d66646a847ac7e0801c6f254f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-original/executions/20261120T082203Z-6a8e6a55/correspondence.json",
+      "change": "added",
+      "bytes": 1110,
+      "sha256": "02c798cdff587dd1e15f34d5dd49d2aa51f7fbcd308bec849d70a34180eef9d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "2bc3e7355f776e2fcb2abcd3ce0284cd48b7c93aab58b95dd50f955f8176b9da",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/plan.json",
+      "change": "added",
+      "bytes": 5352,
+      "sha256": "1c1bd641692981b978da13e9598008ed519449d7fff8763f05937865a9e31b05",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/records/control-nested-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/records/control-nested-jdk21.stdout",
+      "change": "added",
+      "bytes": 1341,
+      "sha256": "f2cb15d270b8889e0c4d14b075b6cc59d1b89ae3738b04d7e2babf8ae3432730",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/records/controls.json",
+      "change": "added",
+      "bytes": 6674,
+      "sha256": "f30ed42abddec1aa62823929a43a6cd226d6149b17431e1755faac9774df34b6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/records/execution.json",
+      "change": "added",
+      "bytes": 21177,
+      "sha256": "44477814c68ae8db27dc20cbf3b3e2c3c4472d07dcdc888e11e0039a45f309c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/records/streams.json",
+      "change": "added",
+      "bytes": 1967,
+      "sha256": "0444b30bdc602a912b22ef079d829ec9e70e4560dd546814ee3e932f2ad5d513",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 284,
+      "sha256": "07338e14fd0ccd513930a3c86a0a09061c50db6e99435536c200f3be39591ada",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/records/verifier.json",
+      "change": "added",
+      "bytes": 14405,
+      "sha256": "579d16c9bb576469b0d7e5f8fbed118c2cb9c6eda56b4462b6d0a6f86f8df50e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5874,
+      "sha256": "ad58d4f6d02d9bdf47450257641d0db7b8c1064e735698ee51a946ff85432028",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/result.json",
+      "change": "added",
+      "bytes": 17681,
+      "sha256": "d03d2aef0897c2451612ca6f03189ea9f9b8f977a5242e13f2aae63d31feeeca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/executions/20261120T082205Z-c524d905/attempt.json",
+      "change": "added",
+      "bytes": 10239,
+      "sha256": "14e54cd285263c52df34d07112639df111f68f9d5eb13be839d83816cf90a300",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/executions/20261120T082205Z-c524d905/checker.json",
+      "change": "added",
+      "bytes": 7201,
+      "sha256": "1fbef28e4f2e8d141e9f8d171774539dcbc8137eb254948a56d8132f51e701e1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/executions/20261120T082205Z-c524d905/correspondence.json",
+      "change": "added",
+      "bytes": 1106,
+      "sha256": "cc8f16c694c7a74b826da9b3fcc4ed1b1d70aa36bea2d5a85f1c696afcafc709",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "3ae7b07785f4596f7fc03e1a4e5f3a9226a46139553587c6dd587a2ab50b7df3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/plan.json",
+      "change": "added",
+      "bytes": 5379,
+      "sha256": "80cec16a23fe79cfb9591c84e873a12f0a7409ab4b9106c782b7543ca96c41c9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/records/control-reversed-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/records/control-reversed-jdk21.stdout",
+      "change": "added",
+      "bytes": 1341,
+      "sha256": "06ef6447194aa9e7932c81d71a1447c111ef2a71eb83bcebf6f860212429b7ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/records/controls.json",
+      "change": "added",
+      "bytes": 6698,
+      "sha256": "e6bb4028a2484f9aab34f922a0e7b5de7878a9ff2d7d8bd920a5170b3fbb2320",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/records/execution.json",
+      "change": "added",
+      "bytes": 24280,
+      "sha256": "1e26c004cf7846da627a999af7fd2f3b0f36b27bcbba87a675f5a39d6240e785",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/records/streams.json",
+      "change": "added",
+      "bytes": 1983,
+      "sha256": "119b7b9f260e5c530a438610b2c7beecb98d729e0811e7ead4f11cc939aac577",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 510,
+      "sha256": "a7fb776f632dac44d45bac952f8d69d10daa0ba565a711233436c41df5daed2c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/records/verifier.json",
+      "change": "added",
+      "bytes": 14919,
+      "sha256": "93c8d5071b9b9cab3c6697a1b8de7eb98270e6e4ecb8adc472b41877e84ad238",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6285,
+      "sha256": "6c8389fabd2ed7667d6167417905b643b29cfc1dc1cc01d7abf27e8db0c61237",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/result.json",
+      "change": "added",
+      "bytes": 18441,
+      "sha256": "76d304e58f8f9c2bdb2fbeba9b3e51acb0d76d5eadd173960267f7bc0262e809",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/executions/20261120T082207Z-dff1b46b/attempt.json",
+      "change": "added",
+      "bytes": 10422,
+      "sha256": "8735ddb9e1a4a9675b3fbc0837f670ec1d5331a758048f38f02a1fcf9f8f94bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/executions/20261120T082207Z-dff1b46b/checker.json",
+      "change": "added",
+      "bytes": 7645,
+      "sha256": "6f1f35e14f0a196f334adcc0124ce3cc914c3e6ad0fc92e7585937dd0d4f15c9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/executions/20261120T082207Z-dff1b46b/correspondence.json",
+      "change": "added",
+      "bytes": 1110,
+      "sha256": "8db573937681c3620ec1b0320e38013a21e20e4d7cf51407f8a492e23ed9ee7a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/executions/20261120T082207Z-dff1b46b/replay.json",
+      "change": "added",
+      "bytes": 2017,
+      "sha256": "55357dd47bbf9e336bbea896798bd83aadc255c1c590136770b5a1504e69e020",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "eab146285b9b7005f62a4515105ed25dad528f11fc7e838831db5ebdf44e4a7a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/plan.json",
+      "change": "added",
+      "bytes": 5445,
+      "sha256": "c3653de11d990819dddb3eebf2ce6d357aa79be5a37f4c9f6c8748327081d7b9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/records/control-original-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/records/control-original-jdk21.stdout",
+      "change": "added",
+      "bytes": 1341,
+      "sha256": "f2cb15d270b8889e0c4d14b075b6cc59d1b89ae3738b04d7e2babf8ae3432730",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/records/controls.json",
+      "change": "added",
+      "bytes": 6704,
+      "sha256": "68f17a701e3feb4c935ad6e2cc424b3b8da48e4f83dadb063ad58b5d1307edc6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/records/execution.json",
+      "change": "added",
+      "bytes": 21284,
+      "sha256": "2b36f7ea87876972990acb3341c55363b5a6470c2f8d9e17fb3a9f442a3eaa77",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/records/streams.json",
+      "change": "added",
+      "bytes": 1983,
+      "sha256": "f5ecbc3d35633aab57be38b9a19afe319097952d71aaa757a7d493cdca12e1d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 290,
+      "sha256": "a6010e8fdf23d0b82286085fbe745687331621b58981196d9190cd627a7e1dc5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/records/verifier.json",
+      "change": "added",
+      "bytes": 14506,
+      "sha256": "a01577ac213f43f8dc2e05b15981f073acc3486efb6cb95abd3e644f364e2127",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5893,
+      "sha256": "498af9939dd685ea318de14b5d45e364455f934d7c74342fa762e60ac2c5d9f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/result.json",
+      "change": "added",
+      "bytes": 17778,
+      "sha256": "e5198c725deb0e43ff723e47e303425b6fdcc2b970a99244c8026e3ebd252b3c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/executions/20261120T082210Z-625eaaa0/attempt.json",
+      "change": "added",
+      "bytes": 10327,
+      "sha256": "d0efd574ac69d6b7c5561752f455d4a88a66998b5298302f91b9afa0c5d042e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/executions/20261120T082210Z-625eaaa0/checker.json",
+      "change": "added",
+      "bytes": 7231,
+      "sha256": "ae777cf20fbac1b40e7d6731651476ae60f8b9f950679bbba897827045014d2c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/executions/20261120T082210Z-625eaaa0/correspondence.json",
+      "change": "added",
+      "bytes": 1113,
+      "sha256": "8e6f02cc7db8bb06654d39657458a183440df1d914dd6073dbe4e431e13981ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "578e51049c2087f819781484886b649e253bc08481b0d673a9343b4e8b67849b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/plan.json",
+      "change": "added",
+      "bytes": 5423,
+      "sha256": "f71228db6893b5a1ed97e29a7065a2581e15ecf1af00416a6e1ffa516eae064b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/records/control-nested-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/records/control-nested-jdk21.stdout",
+      "change": "added",
+      "bytes": 1341,
+      "sha256": "f2cb15d270b8889e0c4d14b075b6cc59d1b89ae3738b04d7e2babf8ae3432730",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/records/controls.json",
+      "change": "added",
+      "bytes": 6680,
+      "sha256": "4fba39f9f0b51c657a7e753f528d9ff8e9608871d08291ce0f911f49b052c4ea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/records/execution.json",
+      "change": "added",
+      "bytes": 21218,
+      "sha256": "738c66826ba73d3ee365686764cf0a89a9982e94492013e27841cf1efb5ad2ea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/records/streams.json",
+      "change": "added",
+      "bytes": 1967,
+      "sha256": "1c0925aa426b4fee124bc95ec83088e8fde5c0c07b8b36d161f28b4ae6e5af2c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 290,
+      "sha256": "a6010e8fdf23d0b82286085fbe745687331621b58981196d9190cd627a7e1dc5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/records/verifier.json",
+      "change": "added",
+      "bytes": 14452,
+      "sha256": "c7dada6706752cd8ac850f3ba53c4033c82f73bdd8d98483758e6ca71e3fb1a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5891,
+      "sha256": "7b719f1852fd740888089883bb2169ee40c0c2e82a00429df98ce368c220f822",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/result.json",
+      "change": "added",
+      "bytes": 17739,
+      "sha256": "b37c8d87948faaa42e66247cd8c7c84a9810fdb81afb5949fc90a39038631d0f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/executions/20261120T082210Z-a570d484/attempt.json",
+      "change": "added",
+      "bytes": 10264,
+      "sha256": "9691f5ba5612142dcfe7f16bdb004f37feacd6e99dbbcc2bd1f6a8c30f2a9d28",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/executions/20261120T082210Z-a570d484/checker.json",
+      "change": "added",
+      "bytes": 7221,
+      "sha256": "d30dd1a4f1923a397e91720a025fe9d031687adfeced405a46ed5658ce1aff6c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/executions/20261120T082210Z-a570d484/correspondence.json",
+      "change": "added",
+      "bytes": 1109,
+      "sha256": "0d053f779e0ec584c624bdcbd33eaf3bab5b3dc51ab800315c2acf5d158ad007",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "809c13fc37ec48dee6be22720c02f3d465025de9dc391c18e81b27b279371210",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/plan.json",
+      "change": "added",
+      "bytes": 5450,
+      "sha256": "34a3094540dcd8c975d8237903670d044492d022b1ab49aa99e5a2a97f316328",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/records/control-reversed-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/records/control-reversed-jdk21.stdout",
+      "change": "added",
+      "bytes": 1341,
+      "sha256": "06ef6447194aa9e7932c81d71a1447c111ef2a71eb83bcebf6f860212429b7ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/records/controls.json",
+      "change": "added",
+      "bytes": 6704,
+      "sha256": "8e881cf5b4c86acbc01af2c7989eac7a10dff15c8a4e674481a1a848095c2ee5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/records/execution.json",
+      "change": "added",
+      "bytes": 24335,
+      "sha256": "7727fb46fb07e8ebae59af14d0ee788e015b08475db3ff9dbbc23296852c3890",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/records/streams.json",
+      "change": "added",
+      "bytes": 1983,
+      "sha256": "3ad81c5af6b14a3ee169ecbc04df7f34836aea28465c55bc4433531c2618a224",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 516,
+      "sha256": "8da181e602e4f53822778ec842cd7fd46f7d978f1862f30a1250c282b2d4543c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/records/verifier.json",
+      "change": "added",
+      "bytes": 14971,
+      "sha256": "ef832ebe5df66f3f3445c9e1f6342b0e1624be668741151391ae652ccdcbcb6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6307,
+      "sha256": "55f966d7328da980af7c60855d55a1d235ebeaba8b601bcdaa6c7d30f3a82c10",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/result.json",
+      "change": "added",
+      "bytes": 18496,
+      "sha256": "a83749a5aa37423e63c6bfe26b3ad8d2e33c9425b4d24e9b571353f4e64352f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/executions/20261120T082210Z-e65b7f8e/attempt.json",
+      "change": "added",
+      "bytes": 10446,
+      "sha256": "6f734a93000b56c2020c0c932ac22e55680e79a7e918a9255c853983d0f739f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/executions/20261120T082210Z-e65b7f8e/checker.json",
+      "change": "added",
+      "bytes": 7670,
+      "sha256": "32d693fd698346b74f7d8b5bd4a65d6e27ebd3c010ef333292bd70c1dfac99a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/executions/20261120T082210Z-e65b7f8e/correspondence.json",
+      "change": "added",
+      "bytes": 1113,
+      "sha256": "3d9f8212d2af87d84ddcafdf97eac8f83daf79d7b686feaf69a922ceeeb09f62",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/executions/20261120T082210Z-e65b7f8e/replay.json",
+      "change": "added",
+      "bytes": 2026,
+      "sha256": "6e29f9771326f1009d3624522ab5b066f0f20600b2ef66eab6485a1b86b6dc22",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "5e4c07f086e3062757f26d20bad95f162578d3e8063294ef044e37877a4f2d84",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/plan.json",
+      "change": "added",
+      "bytes": 5382,
+      "sha256": "b7abd8a194c01af534bb0936cc654a9c5eb62120ae415447bd4ddba38969cbed",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/records/control-original-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/records/control-original-jdk21.stdout",
+      "change": "added",
+      "bytes": 1341,
+      "sha256": "f2cb15d270b8889e0c4d14b075b6cc59d1b89ae3738b04d7e2babf8ae3432730",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/records/controls.json",
+      "change": "added",
+      "bytes": 6694,
+      "sha256": "907aeeb788420d55758946119a04b9281a51159e0db2d3515d5984f8836d2cfe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/records/execution.json",
+      "change": "added",
+      "bytes": 21216,
+      "sha256": "b3620f2f82eae75f1169163ec36c4c82cf8763cbf3e74d3b54456f8a77df0b51",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/records/streams.json",
+      "change": "added",
+      "bytes": 1983,
+      "sha256": "49a429897589c316d9c27cbc6c2090a9748dd9977272c5f9ae40c3146e0ca165",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 280,
+      "sha256": "84b481bd93795923e06473f37e4eb0bf5124b3ea4b6caac773f101f2d582c00e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/records/verifier.json",
+      "change": "added",
+      "bytes": 14428,
+      "sha256": "feeeba187cf0599ebf4eee6db012630fb5a508558bb6ffd829db52aeb74cc72c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5865,
+      "sha256": "1c3cbb2b78ed4d8471bd829cde525341d037b9d644ef55fb55f96620054bbf34",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/result.json",
+      "change": "added",
+      "bytes": 17711,
+      "sha256": "7f79124db0da0c0235e30c2b1dd49059266b15da51d3a01b7fc905c419c830b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-original/executions/20261120T082211Z-98ef3a65/attempt.json",
+      "change": "added",
+      "bytes": 10282,
+      "sha256": "35396524c29bbd71b64951e66da6bf67e992ee79066e863794757144005bf8a2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-original/executions/20261120T082211Z-98ef3a65/checker.json",
+      "change": "added",
+      "bytes": 7198,
+      "sha256": "d27fbb4f63df0df1e723d71491ad8f561f6e8264bccea7eff8885bdecf3bab06",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-original/executions/20261120T082211Z-98ef3a65/correspondence.json",
+      "change": "added",
+      "bytes": 1108,
+      "sha256": "5c1397075b7211a7b7771da4f01f1317c15424a40949f1199b066c6b4de7eab0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "89dba6964525826a9b5d9809cbcf0ce6ed7d180aab8b1eec2685e253416ee97a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/plan.json",
+      "change": "added",
+      "bytes": 5360,
+      "sha256": "aa0fe7d6abe4ed9c255f886276c65fa1a7c578cd8fa8eaedbc020b498a278907",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/records/control-nested-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/records/control-nested-jdk21.stdout",
+      "change": "added",
+      "bytes": 1341,
+      "sha256": "f2cb15d270b8889e0c4d14b075b6cc59d1b89ae3738b04d7e2babf8ae3432730",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/records/controls.json",
+      "change": "added",
+      "bytes": 6670,
+      "sha256": "4c5aff67a5909cf7a6c65117554e4b92ef6be36af8745471bd1fde13d281b709",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/records/execution.json",
+      "change": "added",
+      "bytes": 21149,
+      "sha256": "366e12b524e09fd0aab89b6c00475c3e4e4041bc93e552dd493865be6c64f846",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/records/streams.json",
+      "change": "added",
+      "bytes": 1967,
+      "sha256": "ebc100d94c60ded213b56a485a570c0cf742d03b5146555b490b1b562727d12a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 280,
+      "sha256": "84b481bd93795923e06473f37e4eb0bf5124b3ea4b6caac773f101f2d582c00e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/records/verifier.json",
+      "change": "added",
+      "bytes": 14373,
+      "sha256": "72c242f22a6e8d8ede159b0823f328a63ab06c1950e2ffd6636d43b2bb7e9f52",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5862,
+      "sha256": "263f727d1643e6d4417f8caf8217711a5e4b29e0e14d55fa5063b9dc5f12930e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/result.json",
+      "change": "added",
+      "bytes": 17669,
+      "sha256": "3a42b52188ee8e90718b1f0ff484ee03408583d186f05d0600fdf9b0d59618e4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-nested/executions/20261120T082211Z-dd8c8e31/attempt.json",
+      "change": "added",
+      "bytes": 10220,
+      "sha256": "1e014bbd1483be136243f0cf939fe48f390e443dcde5383b067bf65bc4d9ee31",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-nested/executions/20261120T082211Z-dd8c8e31/checker.json",
+      "change": "added",
+      "bytes": 7187,
+      "sha256": "4f378e2dae302c6d60876e4997d74cd42b80988dee0e3b89febcedab569a384a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-nested/executions/20261120T082211Z-dd8c8e31/correspondence.json",
+      "change": "added",
+      "bytes": 1104,
+      "sha256": "207f4ea3465fcdf4cad102a9d38a7d97f0180a71cfee1567b3a27a08f3f6a1c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "f6689291b8cf78ad10de18a6a1d685ed7576d6b906f11a41bb57fbeaaca94390",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/plan.json",
+      "change": "added",
+      "bytes": 5387,
+      "sha256": "14efdfb22f95bd074ec9781dcc202cd0738c1d35701edfaa5731876905ab0ac8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/records/control-reversed-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/records/control-reversed-jdk21.stdout",
+      "change": "added",
+      "bytes": 1341,
+      "sha256": "06ef6447194aa9e7932c81d71a1447c111ef2a71eb83bcebf6f860212429b7ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/records/controls.json",
+      "change": "added",
+      "bytes": 6694,
+      "sha256": "d6a70c3cfd1b77a9ed9e23d3fff3dc09f91da0d561ba0a4c22322c22b5c22e17",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/records/execution.json",
+      "change": "added",
+      "bytes": 24195,
+      "sha256": "f5b9483d5a38f839a5f68d2555babc39f170389eb0907447f0eecce288c7eed0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/records/streams.json",
+      "change": "added",
+      "bytes": 1983,
+      "sha256": "3ac4376abaf020657d579395090546df6bcac198ba14f12b10d8fcb4b1d37f42",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 506,
+      "sha256": "4f801f20ec6200d3c99e69fe8f8365dac0c976985b5f12bbf6ee0f022405e5ab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/records/verifier.json",
+      "change": "added",
+      "bytes": 14876,
+      "sha256": "8530b7e035534b1e06dff7423cb466aca324f0629df12ce0ef43c10a3796dcff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6264,
+      "sha256": "4567338fbe807a3c3b330b0502eb32f3942b94cd4388d604305d22ede10e9083",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/result.json",
+      "change": "added",
+      "bytes": 18424,
+      "sha256": "52908ef985acf582f6719fe75837f5df789b5c9d7498fe6c1dfd8abf49e38941",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/executions/20261120T082212Z-2f3bdf81/attempt.json",
+      "change": "added",
+      "bytes": 10399,
+      "sha256": "2f4544233d8dcbf5e0ea1a8bfaa7288d8d0a58233d60f9964195f8a7ab11a635",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/executions/20261120T082212Z-2f3bdf81/checker.json",
+      "change": "added",
+      "bytes": 7622,
+      "sha256": "0ea1cdc0868f53ea5de6c908df7c3cbfe0c705681f88aeca1641bcfc34b7809c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/executions/20261120T082212Z-2f3bdf81/correspondence.json",
+      "change": "added",
+      "bytes": 1108,
+      "sha256": "f76b98567bf5e13234e26fbe282df3252b0df9467d2b4b63df8a06eb22fff886",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/executions/20261120T082212Z-2f3bdf81/replay.json",
+      "change": "added",
+      "bytes": 1987,
+      "sha256": "28a65af34153b09bc00a68ed5346e94d42caf6549bbc95b00a75635d4e4c0f9c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T08:22:18+00:00",
+    "applied": [
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/completion.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/plan.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/records/control-original-jdk21.stderr",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/records/control-original-jdk21.stdout",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/records/controls.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/records/execution.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/records/streams.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/records/verifier-output.txt",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/records/verifier.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/records/verifier.stderr",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/records/verifier.stdout",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-original/20261120T082203Z-6a8e6a55/result.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-original/executions/20261120T082203Z-6a8e6a55/attempt.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-original/executions/20261120T082203Z-6a8e6a55/checker.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-original/executions/20261120T082203Z-6a8e6a55/correspondence.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/completion.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/plan.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/records/control-nested-jdk21.stderr",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/records/control-nested-jdk21.stdout",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/records/controls.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/records/execution.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/records/streams.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/records/verifier-output.txt",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/records/verifier.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/records/verifier.stderr",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/records/verifier.stdout",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/20261120T082205Z-c524d905/result.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/executions/20261120T082205Z-c524d905/attempt.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/executions/20261120T082205Z-c524d905/checker.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-nested/executions/20261120T082205Z-c524d905/correspondence.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/completion.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/plan.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/records/control-reversed-jdk21.stderr",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/records/control-reversed-jdk21.stdout",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/records/controls.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/records/execution.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/records/streams.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/records/verifier-output.txt",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/records/verifier.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/records/verifier.stderr",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/records/verifier.stdout",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/20261120T082207Z-dff1b46b/result.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/executions/20261120T082207Z-dff1b46b/attempt.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/executions/20261120T082207Z-dff1b46b/checker.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/executions/20261120T082207Z-dff1b46b/correspondence.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/primary-reversed/executions/20261120T082207Z-dff1b46b/replay.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/completion.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/plan.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/records/control-original-jdk21.stderr",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/records/control-original-jdk21.stdout",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/records/controls.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/records/execution.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/records/streams.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/records/verifier-output.txt",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/records/verifier.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/records/verifier.stderr",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/records/verifier.stdout",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/20261120T082210Z-625eaaa0/result.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/executions/20261120T082210Z-625eaaa0/attempt.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/executions/20261120T082210Z-625eaaa0/checker.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-original/executions/20261120T082210Z-625eaaa0/correspondence.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/completion.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/plan.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/records/control-nested-jdk21.stderr",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/records/control-nested-jdk21.stdout",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/records/controls.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/records/execution.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/records/streams.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/records/verifier-output.txt",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/records/verifier.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/records/verifier.stderr",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/records/verifier.stdout",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/20261120T082210Z-a570d484/result.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/executions/20261120T082210Z-a570d484/attempt.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/executions/20261120T082210Z-a570d484/checker.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-nested/executions/20261120T082210Z-a570d484/correspondence.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/completion.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/plan.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/records/control-reversed-jdk21.stderr",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/records/control-reversed-jdk21.stdout",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/records/controls.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/records/execution.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/records/streams.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/records/verifier-output.txt",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/records/verifier.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/records/verifier.stderr",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/records/verifier.stdout",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/result.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/executions/20261120T082210Z-e65b7f8e/attempt.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/executions/20261120T082210Z-e65b7f8e/checker.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/executions/20261120T082210Z-e65b7f8e/correspondence.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/suppressed-reversed/executions/20261120T082210Z-e65b7f8e/replay.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/completion.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/plan.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/records/control-original-jdk21.stderr",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/records/control-original-jdk21.stdout",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/records/controls.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/records/execution.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/records/streams.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/records/verifier-output.txt",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/records/verifier.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/records/verifier.stderr",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/records/verifier.stdout",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-original/20261120T082211Z-98ef3a65/result.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-original/executions/20261120T082211Z-98ef3a65/attempt.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-original/executions/20261120T082211Z-98ef3a65/checker.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-original/executions/20261120T082211Z-98ef3a65/correspondence.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/completion.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/plan.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/records/control-nested-jdk21.stderr",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/records/control-nested-jdk21.stdout",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/records/controls.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/records/execution.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/records/streams.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/records/verifier-output.txt",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/records/verifier.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/records/verifier.stderr",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/records/verifier.stdout",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-nested/20261120T082211Z-dd8c8e31/result.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-nested/executions/20261120T082211Z-dd8c8e31/attempt.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-nested/executions/20261120T082211Z-dd8c8e31/checker.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-nested/executions/20261120T082211Z-dd8c8e31/correspondence.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/completion.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/plan.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/records/control-reversed-jdk21.stderr",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/records/control-reversed-jdk21.stdout",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/records/controls.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/records/execution.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/records/streams.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/records/verifier-output.txt",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/records/verifier.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/records/verifier.stderr",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/records/verifier.stdout",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/20261120T082212Z-2f3bdf81/result.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/executions/20261120T082212Z-2f3bdf81/attempt.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/executions/20261120T082212Z-2f3bdf81/checker.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/executions/20261120T082212Z-2f3bdf81/correspondence.json",
+      "examples/322-ordered-suppressed-exceptions/receipts/close-reversed/executions/20261120T082212Z-2f3bdf81/replay.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "411cfec96d3cae2e9195010505411126f6921e67",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/411cfec96d3cae2e9195010505411126f6921e67/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

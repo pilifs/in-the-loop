@@ -1,0 +1,263 @@
+{
+  "plan": {
+    "example": "316",
+    "task": "hash-contract-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.csv.CSVFormat#hashCode()I",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "hash-contract-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.csv.CSVFormat#hashCode()I",
+      "file": "claims/hash-contract.json",
+      "sha256": "57286fe47c1002191ffdbe491454b661694b7039b1b66296e8e96c1fa07153a0",
+      "property": "hash-contract",
+      "claimKind": "property",
+      "statement": "Every pair of equal formats has equal hashes.",
+      "assume": "code >= 0 && code < 9",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 24,
+        "maxArrayLength": 12
+      },
+      "explicitBounds": {
+        "unwind": 24,
+        "maxArrayLength": 12
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/csvgrid/CsvCases.java",
+          "sha256": "1415765dc371a1d867f9537c8f2447b2676416012466afc09ac0c211c55effc1"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "36b1f5e1e529b3b79fab2cd38376945c9f3eaccc58ed4938bc729395dd47aa1b"
+        }
+      ],
+      "adapter": {
+        "entry": "csvgrid.Projection#hashContract(I)I",
+        "mapping": "The quotient and remainder of code divided by three select independent left and right maxRows values 1, 2 and 10. Each builds from CSVFormat.DEFAULT. The fixed text contains three one-field rows. Hash implication is checked only for objects equal according to the actual equals call.",
+        "correspondence": "finite-oracle",
+        "cases": 9
+      },
+      "key": "57ad584ba9edcaf1"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "source-slice",
+        "repository": "https://github.com/apache/commons-csv",
+        "commit": "6d5993cb89f4f723ae416123b20f361bd863c484",
+        "parent": "69248ba0bed03c71454b71ec0c79805f48f5c447",
+        "published": [
+          {
+            "coordinates": "commons-io:commons-io:2.22.0",
+            "url": "https://repo.maven.apache.org/maven2/commons-io/commons-io/2.22.0/commons-io-2.22.0.jar",
+            "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758"
+          },
+          {
+            "coordinates": "commons-codec:commons-codec:1.22.0",
+            "url": "https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar",
+            "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
+          }
+        ],
+        "slice": {
+          "files": [
+            "src/main/java/org/apache/commons/csv/CSVException.java",
+            "src/main/java/org/apache/commons/csv/CSVFormat.java",
+            "src/main/java/org/apache/commons/csv/CSVParser.java",
+            "src/main/java/org/apache/commons/csv/CSVPrinter.java",
+            "src/main/java/org/apache/commons/csv/CSVRecord.java",
+            "src/main/java/org/apache/commons/csv/Constants.java",
+            "src/main/java/org/apache/commons/csv/DuplicateHeaderMode.java",
+            "src/main/java/org/apache/commons/csv/ExtendedBufferedReader.java",
+            "src/main/java/org/apache/commons/csv/Lexer.java",
+            "src/main/java/org/apache/commons/csv/QuoteMode.java",
+            "src/main/java/org/apache/commons/csv/Token.java",
+            "src/main/java/org/apache/commons/csv/package-info.java"
+          ],
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "21",
+            "-g",
+            "-parameters"
+          ]
+        },
+        "adapters": [
+          "adapter/csvgrid/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/hash-contract-fix"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-081134-trace-both-csv-limit-readers-from-string/examples/316-commons-csv-row-limit-equality",
+    "network": true
+  },
+  "inputs": {
+    "example": "316",
+    "task": "hash-contract-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.csv.CSVFormat#hashCode()I",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "hash-contract-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.csv.CSVFormat#hashCode()I",
+      "file": "claims/hash-contract.json",
+      "sha256": "57286fe47c1002191ffdbe491454b661694b7039b1b66296e8e96c1fa07153a0",
+      "property": "hash-contract",
+      "claimKind": "property",
+      "statement": "Every pair of equal formats has equal hashes.",
+      "assume": "code >= 0 && code < 9",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 24,
+        "maxArrayLength": 12
+      },
+      "explicitBounds": {
+        "unwind": 24,
+        "maxArrayLength": 12
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/csvgrid/CsvCases.java",
+          "sha256": "1415765dc371a1d867f9537c8f2447b2676416012466afc09ac0c211c55effc1"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "36b1f5e1e529b3b79fab2cd38376945c9f3eaccc58ed4938bc729395dd47aa1b"
+        }
+      ],
+      "adapter": {
+        "entry": "csvgrid.Projection#hashContract(I)I",
+        "mapping": "The quotient and remainder of code divided by three select independent left and right maxRows values 1, 2 and 10. Each builds from CSVFormat.DEFAULT. The fixed text contains three one-field rows. Hash implication is checked only for objects equal according to the actual equals call.",
+        "correspondence": "finite-oracle",
+        "cases": 9
+      },
+      "key": "57ad584ba9edcaf1"
+    },
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "source-slice",
+        "repository": "https://github.com/apache/commons-csv",
+        "commit": "6d5993cb89f4f723ae416123b20f361bd863c484",
+        "parent": "69248ba0bed03c71454b71ec0c79805f48f5c447",
+        "published": [
+          {
+            "coordinates": "commons-io:commons-io:2.22.0",
+            "url": "https://repo.maven.apache.org/maven2/commons-io/commons-io/2.22.0/commons-io-2.22.0.jar",
+            "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758"
+          },
+          {
+            "coordinates": "commons-codec:commons-codec:1.22.0",
+            "url": "https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar",
+            "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
+          }
+        ],
+        "slice": {
+          "files": [
+            "src/main/java/org/apache/commons/csv/CSVException.java",
+            "src/main/java/org/apache/commons/csv/CSVFormat.java",
+            "src/main/java/org/apache/commons/csv/CSVParser.java",
+            "src/main/java/org/apache/commons/csv/CSVPrinter.java",
+            "src/main/java/org/apache/commons/csv/CSVRecord.java",
+            "src/main/java/org/apache/commons/csv/Constants.java",
+            "src/main/java/org/apache/commons/csv/DuplicateHeaderMode.java",
+            "src/main/java/org/apache/commons/csv/ExtendedBufferedReader.java",
+            "src/main/java/org/apache/commons/csv/Lexer.java",
+            "src/main/java/org/apache/commons/csv/QuoteMode.java",
+            "src/main/java/org/apache/commons/csv/Token.java",
+            "src/main/java/org/apache/commons/csv/package-info.java"
+          ],
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "21",
+            "-g",
+            "-parameters"
+          ]
+        },
+        "adapters": [
+          "adapter/csvgrid/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/csvgrid/Projection.java",
+        "sha256": "f3d9ab4cebd67778e8c8266c7083272344f538a96dfad23928ff56a0efd8f50c"
+      }
+    ]
+  },
+  "key": "b530877d1d684a8aa60ef2dce88a868dea12f21761dfed748950f5647a3192cf"
+}

@@ -7223,28 +7223,28 @@
             "attempts": 2
           },
           "return-only": {
-            "path": "receipts/return-only/20261120T070138Z-d41ba8fa/result.json",
-            "attempt": "20261120T070138Z-d41ba8fa",
+            "path": "receipts/return-only/20261120T082203Z-6e151396/result.json",
+            "attempt": "20261120T082203Z-6e151396",
             "execution": "completed",
             "status": "established",
             "expectation": "yes",
-            "attempts": 5
+            "attempts": 6
           },
           "right-root": {
-            "path": "receipts/right-root/20261120T070142Z-68f8d9ca/result.json",
-            "attempt": "20261120T070142Z-68f8d9ca",
+            "path": "receipts/right-root/20261120T082207Z-3ba61c44/result.json",
+            "attempt": "20261120T082207Z-3ba61c44",
             "execution": "completed",
             "status": "refuted",
             "expectation": "yes",
-            "attempts": 5
+            "attempts": 6
           },
           "both-roots": {
-            "path": "receipts/both-roots/20261120T070144Z-7235405d/result.json",
-            "attempt": "20261120T070144Z-7235405d",
+            "path": "receipts/both-roots/20261120T082209Z-72e7bb82/result.json",
+            "attempt": "20261120T082209Z-72e7bb82",
             "execution": "completed",
             "status": "refuted",
             "expectation": "yes",
-            "attempts": 5
+            "attempts": 6
           }
         },
         "staleReceipts": [],
@@ -10678,7 +10678,7 @@
       "notes": [
         "On the 20 pinned TAI instants the parent failed six exact formatting and six independent parsing cases. Every object round trip passed. The fix passed all three comparisons on every input.",
         "At negative half a second the parent prints -1.500000000s(TAI) and reads the canonical -0.500000000s(TAI) as positive half a second. Both directions use separately supplied oracle inputs.",
-        "The native formatter refuted the parent and proved the fix. Both native parsers and both round trips reach Matcher.group(int). The exhaustive JVM decided all six frozen claims. An interrupted three-claim batch retained the completed round trip and the two missing stages. A reordered retry in a fresh checkout reproduced the same bytes and observations. [Batch recovery](records/batch-recovery.json)",
+        "The native formatter refuted the parent and proved the fix. Before capture support, both native parsers and both round trips stopped at Matcher.group(int). The exhaustive JVM decided all six frozen claims. An interrupted three-claim batch retained the completed round trip and the two missing stages. A reordered retry in a fresh checkout reproduced the same bytes and observations. [Batch recovery](records/batch-recovery.json)",
         "Strict native checks decided all six original claims at unwind 24. Across the 20 inputs the parent fails formatting and parsing independently and passes every round trip. The fix satisfies all three observers."
       ],
       "source": "https://github.com/ThreeTen/threeten-extra/commit/1a51a1dc391ddbcbcb20eb7b9d13ceedf6a47c3c",
@@ -11447,15 +11447,15 @@
           "other-count-parent",
           "other-count-fix"
         ],
-        "readiness": "scaffolded",
+        "readiness": "executable",
         "taskReadiness": {
           "replay": "scaffolded",
-          "total-parent": "scaffolded",
-          "total-fix": "scaffolded",
-          "membership-parent": "scaffolded",
-          "membership-fix": "scaffolded",
-          "other-count-parent": "scaffolded",
-          "other-count-fix": "scaffolded"
+          "total-parent": "executable",
+          "total-fix": "executable",
+          "membership-parent": "executable",
+          "membership-fix": "executable",
+          "other-count-parent": "executable",
+          "other-count-fix": "executable"
         },
         "expected": {
           "replay": null,
@@ -11467,12 +11467,12 @@
           "other-count-fix": "established"
         },
         "claims": {
-          "total-parent": null,
-          "total-fix": null,
-          "membership-parent": null,
-          "membership-fix": null,
-          "other-count-parent": null,
-          "other-count-fix": null
+          "total-parent": "refuted",
+          "total-fix": "established",
+          "membership-parent": "established",
+          "membership-fix": "established",
+          "other-count-parent": "established",
+          "other-count-fix": "established"
         },
         "receipts": {
           "replay": {
@@ -11480,6 +11480,54 @@
             "attempt": "20261120T030524Z-6c0a02ff",
             "execution": "completed",
             "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "total-parent": {
+            "path": "receipts/total-parent/20261120T080130Z-e5514984/result.json",
+            "attempt": "20261120T080130Z-e5514984",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "total-fix": {
+            "path": "receipts/total-fix/20261120T080137Z-0fe1d9e0/result.json",
+            "attempt": "20261120T080137Z-0fe1d9e0",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "membership-parent": {
+            "path": "receipts/membership-parent/20261120T080142Z-409d5ba7/result.json",
+            "attempt": "20261120T080142Z-409d5ba7",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "membership-fix": {
+            "path": "receipts/membership-fix/20261120T080142Z-8a567339/result.json",
+            "attempt": "20261120T080142Z-8a567339",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "other-count-parent": {
+            "path": "receipts/other-count-parent/20261120T080142Z-d30967d8/result.json",
+            "attempt": "20261120T080142Z-d30967d8",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "other-count-fix": {
+            "path": "receipts/other-count-fix/20261120T080143Z-33c9d396/result.json",
+            "attempt": "20261120T080143Z-33c9d396",
+            "execution": "completed",
+            "status": "established",
             "expectation": "yes",
             "attempts": 1
           }
@@ -11723,76 +11771,76 @@
             "attempts": 1
           },
           "primary-original": {
-            "path": "receipts/primary-original/20261120T064847Z-abd2ec5f/result.json",
-            "attempt": "20261120T064847Z-abd2ec5f",
+            "path": "receipts/primary-original/20261120T082203Z-6a8e6a55/result.json",
+            "attempt": "20261120T082203Z-6a8e6a55",
             "execution": "completed",
             "status": "established",
             "expectation": "yes",
-            "attempts": 2
+            "attempts": 3
           },
           "primary-nested": {
-            "path": "receipts/primary-nested/20261120T064850Z-1e567949/result.json",
-            "attempt": "20261120T064850Z-1e567949",
+            "path": "receipts/primary-nested/20261120T082205Z-c524d905/result.json",
+            "attempt": "20261120T082205Z-c524d905",
             "execution": "completed",
             "status": "established",
             "expectation": "yes",
-            "attempts": 2
+            "attempts": 3
           },
           "primary-reversed": {
-            "path": "receipts/primary-reversed/20261120T064852Z-6b4def44/result.json",
-            "attempt": "20261120T064852Z-6b4def44",
+            "path": "receipts/primary-reversed/20261120T082207Z-dff1b46b/result.json",
+            "attempt": "20261120T082207Z-dff1b46b",
             "execution": "completed",
             "status": "refuted",
             "expectation": "yes",
-            "attempts": 2
+            "attempts": 3
           },
           "suppressed-original": {
-            "path": "receipts/suppressed-original/20261120T064854Z-f0edd25c/result.json",
-            "attempt": "20261120T064854Z-f0edd25c",
+            "path": "receipts/suppressed-original/20261120T082210Z-625eaaa0/result.json",
+            "attempt": "20261120T082210Z-625eaaa0",
             "execution": "completed",
             "status": "established",
             "expectation": "yes",
-            "attempts": 2
+            "attempts": 3
           },
           "suppressed-nested": {
-            "path": "receipts/suppressed-nested/20261120T064855Z-42813be2/result.json",
-            "attempt": "20261120T064855Z-42813be2",
+            "path": "receipts/suppressed-nested/20261120T082210Z-a570d484/result.json",
+            "attempt": "20261120T082210Z-a570d484",
             "execution": "completed",
             "status": "established",
             "expectation": "yes",
-            "attempts": 2
+            "attempts": 3
           },
           "suppressed-reversed": {
-            "path": "receipts/suppressed-reversed/20261120T064855Z-8c8692cf/result.json",
-            "attempt": "20261120T064855Z-8c8692cf",
+            "path": "receipts/suppressed-reversed/20261120T082210Z-e65b7f8e/result.json",
+            "attempt": "20261120T082210Z-e65b7f8e",
             "execution": "completed",
             "status": "refuted",
             "expectation": "yes",
-            "attempts": 2
+            "attempts": 3
           },
           "close-original": {
-            "path": "receipts/close-original/20261120T064856Z-5219f7b6/result.json",
-            "attempt": "20261120T064856Z-5219f7b6",
+            "path": "receipts/close-original/20261120T082211Z-98ef3a65/result.json",
+            "attempt": "20261120T082211Z-98ef3a65",
             "execution": "completed",
             "status": "established",
             "expectation": "yes",
-            "attempts": 2
+            "attempts": 3
           },
           "close-nested": {
-            "path": "receipts/close-nested/20261120T064856Z-99816e5a/result.json",
-            "attempt": "20261120T064856Z-99816e5a",
+            "path": "receipts/close-nested/20261120T082211Z-dd8c8e31/result.json",
+            "attempt": "20261120T082211Z-dd8c8e31",
             "execution": "completed",
             "status": "established",
             "expectation": "yes",
-            "attempts": 2
+            "attempts": 3
           },
           "close-reversed": {
-            "path": "receipts/close-reversed/20261120T064856Z-e12d57f1/result.json",
-            "attempt": "20261120T064856Z-e12d57f1",
+            "path": "receipts/close-reversed/20261120T082212Z-2f3bdf81/result.json",
+            "attempt": "20261120T082212Z-2f3bdf81",
             "execution": "completed",
             "status": "refuted",
             "expectation": "yes",
-            "attempts": 2
+            "attempts": 3
           }
         },
         "staleReceipts": [
@@ -12583,7 +12631,7 @@
       "existingTestsPassed": null,
       "notes": [
         "The independent JVM oracle covered 13 inputs on each revision. parent mismatches were 4 for bits, 0 for normal. fix mismatches were 0 for bits, 0 for normal.",
-        "The numerical checker was re-run on all six original obligations. Each still stops at the Fraction class initializer before the percentage result can be checked. The independent thirteen-value JVM grids and their four parent bit discrepancies remain the evidence for these claims.",
+        "Before path-sensitive construction, all six native checks stopped at the Fraction class initializer. The independent thirteen-value JVM grids recorded four parent bit discrepancies.",
         "Following the fourteen static Fraction constants and their reachable constructors let the strict checker decide all six original claims. The parent has four wrong raw percentages among 13 inputs. Both revisions complete normally and preserve the three small controls."
       ],
       "source": "https://github.com/apache/commons-math/commit/63a48705a496bf2506121dcddbd8cac2a78f877c",

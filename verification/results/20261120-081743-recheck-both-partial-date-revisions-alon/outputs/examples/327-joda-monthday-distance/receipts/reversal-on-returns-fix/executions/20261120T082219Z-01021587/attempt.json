@@ -1,0 +1,1236 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T082219Z-01021587",
+  "task": "reversal-on-returns-fix",
+  "claimKey": "62fcdf3eecf21061",
+  "revisions": [
+    "fix"
+  ],
+  "startedAt": "2026-11-20T08:22:19.004129+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 30
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-081743-recheck-both-partial-date-revisions-alon",
+  "sourceCommit": "ddf77b2e1673895ef1874faae091521a0b8ac5d8",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 0.0016
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 0.1254
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 0.128
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 0.3549
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 1.1166
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 1.2078
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "fix": {
+      "revision": "3a413d7844c22dc6ddd50bf5d0d55ff3589e47ac",
+      "target": {
+        "class": "org.joda.time.Days",
+        "method": "daysBetween",
+        "descriptor": "(Lorg/joda/time/ReadablePartial;Lorg/joda/time/ReadablePartial;)Lorg/joda/time/Days;",
+        "loadedFrom": "slice/fix.jar",
+        "classSha256": "6a31ae2203fa1de13205857b4525c8a44a5834b4880a525ba2b5b333e38c48c9",
+        "adapterCalls": [
+          "org.joda.time.Days#daysBetween(Lorg/joda/time/ReadablePartial;Lorg/joda/time/ReadablePartial;)Lorg/joda/time/Days;",
+          "org.joda.time.Days#getDays()I",
+          "org.joda.time.MonthDay#<init>(IILorg/joda/time/Chronology;)V",
+          "org.joda.time.chrono.ISOChronology#getInstanceUTC()Lorg/joda/time/chrono/ISOChronology;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "493abd7e27ac201e4ebb281fb637a0d9d84d0e68a093bae8b3d06f1bee40b183",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-fix.jar",
+          "sha256": "c8af8c1de3c6bc77567967049ab591c285ba3ef303573d61f25339e52be6d0e8",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "slice/fix.jar",
+          "sha256": "5d0c9d52c048fda0ab78f6bc7e339e91e2525816247ddd0e02e65ae23cb117ac",
+          "role": "original",
+          "coordinates": null,
+          "origin": "an extracted source slice of 3a413d7844c22dc6ddd50bf5d0d55ff3589e47ac: src/main/java/org/joda/time/Chronology.java, src/main/java/org/joda/time/DateMidnight.java, src/main/java/org/joda/time/DateTime.java, src/main/java/org/joda/time/DateTimeComparator.java, src/main/java/org/joda/time/DateTimeConstants.java, src/main/java/org/joda/time/DateTimeField.java, src/main/java/org/joda/time/DateTimeFieldType.java, src/main/java/org/joda/time/DateTimeUtils.java, src/main/java/org/joda/time/DateTimeZone.java, src/main/java/org/joda/time/Days.java, src/main/java/org/joda/time/Duration.java, src/main/java/org/joda/time/DurationField.java, src/main/java/org/joda/time/DurationFieldType.java, src/main/java/org/joda/time/Hours.java, src/main/java/org/joda/time/IllegalFieldValueException.java, src/main/java/org/joda/time/IllegalInstantException.java, src/main/java/org/joda/time/Instant.java, src/main/java/org/joda/time/Interval.java, src/main/java/org/joda/time/JodaTimePermission.java, src/main/java/org/joda/time/LocalDate.java, src/main/java/org/joda/time/LocalDateTime.java, src/main/java/org/joda/time/LocalTime.java, src/main/java/org/joda/time/Minutes.java, src/main/java/org/joda/time/MonthDay.java, src/main/java/org/joda/time/Months.java, src/main/java/org/joda/time/MutableDateTime.java, src/main/java/org/joda/time/MutableInterval.java, src/main/java/org/joda/time/MutablePeriod.java, src/main/java/org/joda/time/Partial.java, src/main/java/org/joda/time/Period.java, src/main/java/org/joda/time/PeriodType.java, src/main/java/org/joda/time/ReadWritableDateTime.java, src/main/java/org/joda/time/ReadWritableInstant.java, src/main/java/org/joda/time/ReadWritableInterval.java, src/main/java/org/joda/time/ReadWritablePeriod.java, src/main/java/org/joda/time/ReadableDateTime.java, src/main/java/org/joda/time/ReadableDuration.java, src/main/java/org/joda/time/ReadableInstant.java, src/main/java/org/joda/time/ReadableInterval.java, src/main/java/org/joda/time/ReadablePartial.java, src/main/java/org/joda/time/ReadablePeriod.java, src/main/java/org/joda/time/Seconds.java, src/main/java/org/joda/time/TimeOfDay.java, src/main/java/org/joda/time/Weeks.java, src/main/java/org/joda/time/YearMonth.java, src/main/java/org/joda/time/YearMonthDay.java, src/main/java/org/joda/time/Years.java, src/main/java/org/joda/time/base/AbstractDateTime.java, src/main/java/org/joda/time/base/AbstractDuration.java, src/main/java/org/joda/time/base/AbstractInstant.java, src/main/java/org/joda/time/base/AbstractInterval.java, src/main/java/org/joda/time/base/AbstractPartial.java, src/main/java/org/joda/time/base/AbstractPeriod.java, src/main/java/org/joda/time/base/BaseDateTime.java, src/main/java/org/joda/time/base/BaseDuration.java, src/main/java/org/joda/time/base/BaseInterval.java, src/main/java/org/joda/time/base/BaseLocal.java, src/main/java/org/joda/time/base/BasePartial.java, src/main/java/org/joda/time/base/BasePeriod.java, src/main/java/org/joda/time/base/BaseSingleFieldPeriod.java, src/main/java/org/joda/time/chrono/AssembledChronology.java, src/main/java/org/joda/time/chrono/BaseChronology.java, src/main/java/org/joda/time/chrono/BasicChronology.java, src/main/java/org/joda/time/chrono/BasicDayOfMonthDateTimeField.java, src/main/java/org/joda/time/chrono/BasicDayOfYearDateTimeField.java, src/main/java/org/joda/time/chrono/BasicFixedMonthChronology.java, src/main/java/org/joda/time/chrono/BasicGJChronology.java, src/main/java/org/joda/time/chrono/BasicMonthOfYearDateTimeField.java, src/main/java/org/joda/time/chrono/BasicSingleEraDateTimeField.java, src/main/java/org/joda/time/chrono/BasicWeekOfWeekyearDateTimeField.java, src/main/java/org/joda/time/chrono/BasicWeekyearDateTimeField.java, src/main/java/org/joda/time/chrono/BasicYearDateTimeField.java, src/main/java/org/joda/time/chrono/BuddhistChronology.java, src/main/java/org/joda/time/chrono/CopticChronology.java, src/main/java/org/joda/time/chrono/EthiopicChronology.java, src/main/java/org/joda/time/chrono/GJChronology.java, src/main/java/org/joda/time/chrono/GJDayOfWeekDateTimeField.java, src/main/java/org/joda/time/chrono/GJEraDateTimeField.java, src/main/java/org/joda/time/chrono/GJLocaleSymbols.java, src/main/java/org/joda/time/chrono/GJMonthOfYearDateTimeField.java, src/main/java/org/joda/time/chrono/GJYearOfEraDateTimeField.java, src/main/java/org/joda/time/chrono/GregorianChronology.java, src/main/java/org/joda/time/chrono/ISOChronology.java, src/main/java/org/joda/time/chrono/ISOYearOfEraDateTimeField.java, src/main/java/org/joda/time/chrono/IslamicChronology.java, src/main/java/org/joda/time/chrono/JulianChronology.java, src/main/java/org/joda/time/chrono/LenientChronology.java, src/main/java/org/joda/time/chrono/LimitChronology.java, src/main/java/org/joda/time/chrono/StrictChronology.java, src/main/java/org/joda/time/chrono/ZonedChronology.java, src/main/java/org/joda/time/convert/AbstractConverter.java, src/main/java/org/joda/time/convert/CalendarConverter.java, src/main/java/org/joda/time/convert/Converter.java, src/main/java/org/joda/time/convert/ConverterManager.java, src/main/java/org/joda/time/convert/ConverterSet.java, src/main/java/org/joda/time/convert/DateConverter.java, src/main/java/org/joda/time/convert/DurationConverter.java, src/main/java/org/joda/time/convert/InstantConverter.java, src/main/java/org/joda/time/convert/IntervalConverter.java, src/main/java/org/joda/time/convert/LongConverter.java, src/main/java/org/joda/time/convert/NullConverter.java, src/main/java/org/joda/time/convert/PartialConverter.java, src/main/java/org/joda/time/convert/PeriodConverter.java, src/main/java/org/joda/time/convert/ReadableDurationConverter.java, src/main/java/org/joda/time/convert/ReadableInstantConverter.java, src/main/java/org/joda/time/convert/ReadableIntervalConverter.java, src/main/java/org/joda/time/convert/ReadablePartialConverter.java, src/main/java/org/joda/time/convert/ReadablePeriodConverter.java, src/main/java/org/joda/time/convert/StringConverter.java, src/main/java/org/joda/time/field/AbstractPartialFieldProperty.java, src/main/java/org/joda/time/field/AbstractReadableInstantFieldProperty.java, src/main/java/org/joda/time/field/BaseDateTimeField.java, src/main/java/org/joda/time/field/BaseDurationField.java, src/main/java/org/joda/time/field/DecoratedDateTimeField.java, src/main/java/org/joda/time/field/DecoratedDurationField.java, src/main/java/org/joda/time/field/DelegatedDateTimeField.java, src/main/java/org/joda/time/field/DelegatedDurationField.java, src/main/java/org/joda/time/field/DividedDateTimeField.java, src/main/java/org/joda/time/field/FieldUtils.java, src/main/java/org/joda/time/field/ImpreciseDateTimeField.java, src/main/java/org/joda/time/field/LenientDateTimeField.java, src/main/java/org/joda/time/field/MillisDurationField.java, src/main/java/org/joda/time/field/OffsetDateTimeField.java, src/main/java/org/joda/time/field/PreciseDateTimeField.java, src/main/java/org/joda/time/field/PreciseDurationDateTimeField.java, src/main/java/org/joda/time/field/PreciseDurationField.java, src/main/java/org/joda/time/field/RemainderDateTimeField.java, src/main/java/org/joda/time/field/ScaledDurationField.java, src/main/java/org/joda/time/field/SkipDateTimeField.java, src/main/java/org/joda/time/field/SkipUndoDateTimeField.java, src/main/java/org/joda/time/field/StrictDateTimeField.java, src/main/java/org/joda/time/field/UnsupportedDateTimeField.java, src/main/java/org/joda/time/field/UnsupportedDurationField.java, src/main/java/org/joda/time/field/ZeroIsMaxDateTimeField.java, src/main/java/org/joda/time/format/DateTimeFormat.java, src/main/java/org/joda/time/format/DateTimeFormatter.java, src/main/java/org/joda/time/format/DateTimeFormatterBuilder.java, src/main/java/org/joda/time/format/DateTimeParser.java, src/main/java/org/joda/time/format/DateTimeParserBucket.java, src/main/java/org/joda/time/format/DateTimePrinter.java, src/main/java/org/joda/time/format/FormatUtils.java, src/main/java/org/joda/time/format/ISODateTimeFormat.java, src/main/java/org/joda/time/format/ISOPeriodFormat.java, src/main/java/org/joda/time/format/PeriodFormat.java, src/main/java/org/joda/time/format/PeriodFormatter.java, src/main/java/org/joda/time/format/PeriodFormatterBuilder.java, src/main/java/org/joda/time/format/PeriodParser.java, src/main/java/org/joda/time/format/PeriodPrinter.java, src/main/java/org/joda/time/tz/CachedDateTimeZone.java, src/main/java/org/joda/time/tz/DateTimeZoneBuilder.java, src/main/java/org/joda/time/tz/DefaultNameProvider.java, src/main/java/org/joda/time/tz/FixedDateTimeZone.java, src/main/java/org/joda/time/tz/NameProvider.java, src/main/java/org/joda/time/tz/Provider.java, src/main/java/org/joda/time/tz/UTCProvider.java, src/main/java/org/joda/time/tz/ZoneInfoCompiler.java, src/main/java/org/joda/time/tz/ZoneInfoProvider.java, compiled by JDK 21 with --release 8 -g -parameters"
+        },
+        {
+          "path": "lib/org.joda/joda-convert-1.2.jar",
+          "sha256": "5703e1a2ac1969fe90f87076c1f1136822bf31d8948252159c86e6d0535c81a8",
+          "role": "dependency",
+          "coordinates": "org.joda:joda-convert:1.2",
+          "origin": "https://repo.maven.apache.org/maven2/org/joda/joda-convert/1.2/joda-convert-1.2.jar"
+        }
+      ]
+    }
+  },
+  "bindingId": "426672ffe674ab3c1d664cab4516581c14d0272d79bfae68f0f130a814e72629",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/411cfec96d3cae2e9195010505411126f6921e67/jvmcontract",
+    "prove",
+    "jodagrid.Projection#reversal(int)",
+    "--classes",
+    "prepare/fix/adapter-fix.jar",
+    "--classpath",
+    "prepare/fix/slice/fix.jar",
+    "--classpath",
+    "prepare/fix/lib/org.joda/joda-convert-1.2.jar",
+    "--assume",
+    "code >= 0 && code < 25 && jodagrid.Projection.normal(code) == 1 && jodagrid.Projection.normal((code % 5) * 5 + code / 5) == 1",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "30",
+    "--max-array-length",
+    "12",
+    "--timeout",
+    "30",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "b30180fc7047c9ee0637eacf8155e42aac3c88e38b71e8ce3727e4aa0b6bbfec",
+    "commit": "ddf77b2e1673895ef1874faae091521a0b8ac5d8",
+    "libTree": "411cfec96d3cae2e9195010505411126f6921e67",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 30,
+      "maxArrayLength": 12
+    },
+    "timeout": 30,
+    "scope": {
+      "label": "adapter",
+      "meaning": "For code 5*i+j the actual ReadablePartial arguments are MonthDay at indices i and j from Feb 27 through March 2, including leap day, using ISOChronology in UTC. The expected signed count uses daily offsets in a leap year.",
+      "method": "org.joda.time.Days#daysBetween(Lorg/joda/time/ReadablePartial;Lorg/joda/time/ReadablePartial;)Lorg/joda/time/Days;",
+      "revisions": {
+        "fix": {
+          "commit": "3a413d7844c22dc6ddd50bf5d0d55ff3589e47ac",
+          "loadedFrom": "slice/fix.jar",
+          "classSha256": "6a31ae2203fa1de13205857b4525c8a44a5834b4880a525ba2b5b333e38c48c9",
+          "origin": "an extracted source slice of 3a413d7844c22dc6ddd50bf5d0d55ff3589e47ac: src/main/java/org/joda/time/Chronology.java, src/main/java/org/joda/time/DateMidnight.java, src/main/java/org/joda/time/DateTime.java, src/main/java/org/joda/time/DateTimeComparator.java, src/main/java/org/joda/time/DateTimeConstants.java, src/main/java/org/joda/time/DateTimeField.java, src/main/java/org/joda/time/DateTimeFieldType.java, src/main/java/org/joda/time/DateTimeUtils.java, src/main/java/org/joda/time/DateTimeZone.java, src/main/java/org/joda/time/Days.java, src/main/java/org/joda/time/Duration.java, src/main/java/org/joda/time/DurationField.java, src/main/java/org/joda/time/DurationFieldType.java, src/main/java/org/joda/time/Hours.java, src/main/java/org/joda/time/IllegalFieldValueException.java, src/main/java/org/joda/time/IllegalInstantException.java, src/main/java/org/joda/time/Instant.java, src/main/java/org/joda/time/Interval.java, src/main/java/org/joda/time/JodaTimePermission.java, src/main/java/org/joda/time/LocalDate.java, src/main/java/org/joda/time/LocalDateTime.java, src/main/java/org/joda/time/LocalTime.java, src/main/java/org/joda/time/Minutes.java, src/main/java/org/joda/time/MonthDay.java, src/main/java/org/joda/time/Months.java, src/main/java/org/joda/time/MutableDateTime.java, src/main/java/org/joda/time/MutableInterval.java, src/main/java/org/joda/time/MutablePeriod.java, src/main/java/org/joda/time/Partial.java, src/main/java/org/joda/time/Period.java, src/main/java/org/joda/time/PeriodType.java, src/main/java/org/joda/time/ReadWritableDateTime.java, src/main/java/org/joda/time/ReadWritableInstant.java, src/main/java/org/joda/time/ReadWritableInterval.java, src/main/java/org/joda/time/ReadWritablePeriod.java, src/main/java/org/joda/time/ReadableDateTime.java, src/main/java/org/joda/time/ReadableDuration.java, src/main/java/org/joda/time/ReadableInstant.java, src/main/java/org/joda/time/ReadableInterval.java, src/main/java/org/joda/time/ReadablePartial.java, src/main/java/org/joda/time/ReadablePeriod.java, src/main/java/org/joda/time/Seconds.java, src/main/java/org/joda/time/TimeOfDay.java, src/main/java/org/joda/time/Weeks.java, src/main/java/org/joda/time/YearMonth.java, src/main/java/org/joda/time/YearMonthDay.java, src/main/java/org/joda/time/Years.java, src/main/java/org/joda/time/base/AbstractDateTime.java, src/main/java/org/joda/time/base/AbstractDuration.java, src/main/java/org/joda/time/base/AbstractInstant.java, src/main/java/org/joda/time/base/AbstractInterval.java, src/main/java/org/joda/time/base/AbstractPartial.java, src/main/java/org/joda/time/base/AbstractPeriod.java, src/main/java/org/joda/time/base/BaseDateTime.java, src/main/java/org/joda/time/base/BaseDuration.java, src/main/java/org/joda/time/base/BaseInterval.java, src/main/java/org/joda/time/base/BaseLocal.java, src/main/java/org/joda/time/base/BasePartial.java, src/main/java/org/joda/time/base/BasePeriod.java, src/main/java/org/joda/time/base/BaseSingleFieldPeriod.java, src/main/java/org/joda/time/chrono/AssembledChronology.java, src/main/java/org/joda/time/chrono/BaseChronology.java, src/main/java/org/joda/time/chrono/BasicChronology.java, src/main/java/org/joda/time/chrono/BasicDayOfMonthDateTimeField.java, src/main/java/org/joda/time/chrono/BasicDayOfYearDateTimeField.java, src/main/java/org/joda/time/chrono/BasicFixedMonthChronology.java, src/main/java/org/joda/time/chrono/BasicGJChronology.java, src/main/java/org/joda/time/chrono/BasicMonthOfYearDateTimeField.java, src/main/java/org/joda/time/chrono/BasicSingleEraDateTimeField.java, src/main/java/org/joda/time/chrono/BasicWeekOfWeekyearDateTimeField.java, src/main/java/org/joda/time/chrono/BasicWeekyearDateTimeField.java, src/main/java/org/joda/time/chrono/BasicYearDateTimeField.java, src/main/java/org/joda/time/chrono/BuddhistChronology.java, src/main/java/org/joda/time/chrono/CopticChronology.java, src/main/java/org/joda/time/chrono/EthiopicChronology.java, src/main/java/org/joda/time/chrono/GJChronology.java, src/main/java/org/joda/time/chrono/GJDayOfWeekDateTimeField.java, src/main/java/org/joda/time/chrono/GJEraDateTimeField.java, src/main/java/org/joda/time/chrono/GJLocaleSymbols.java, src/main/java/org/joda/time/chrono/GJMonthOfYearDateTimeField.java, src/main/java/org/joda/time/chrono/GJYearOfEraDateTimeField.java, src/main/java/org/joda/time/chrono/GregorianChronology.java, src/main/java/org/joda/time/chrono/ISOChronology.java, src/main/java/org/joda/time/chrono/ISOYearOfEraDateTimeField.java, src/main/java/org/joda/time/chrono/IslamicChronology.java, src/main/java/org/joda/time/chrono/JulianChronology.java, src/main/java/org/joda/time/chrono/LenientChronology.java, src/main/java/org/joda/time/chrono/LimitChronology.java, src/main/java/org/joda/time/chrono/StrictChronology.java, src/main/java/org/joda/time/chrono/ZonedChronology.java, src/main/java/org/joda/time/convert/AbstractConverter.java, src/main/java/org/joda/time/convert/CalendarConverter.java, src/main/java/org/joda/time/convert/Converter.java, src/main/java/org/joda/time/convert/ConverterManager.java, src/main/java/org/joda/time/convert/ConverterSet.java, src/main/java/org/joda/time/convert/DateConverter.java, src/main/java/org/joda/time/convert/DurationConverter.java, src/main/java/org/joda/time/convert/InstantConverter.java, src/main/java/org/joda/time/convert/IntervalConverter.java, src/main/java/org/joda/time/convert/LongConverter.java, src/main/java/org/joda/time/convert/NullConverter.java, src/main/java/org/joda/time/convert/PartialConverter.java, src/main/java/org/joda/time/convert/PeriodConverter.java, src/main/java/org/joda/time/convert/ReadableDurationConverter.java, src/main/java/org/joda/time/convert/ReadableInstantConverter.java, src/main/java/org/joda/time/convert/ReadableIntervalConverter.java, src/main/java/org/joda/time/convert/ReadablePartialConverter.java, src/main/java/org/joda/time/convert/ReadablePeriodConverter.java, src/main/java/org/joda/time/convert/StringConverter.java, src/main/java/org/joda/time/field/AbstractPartialFieldProperty.java, src/main/java/org/joda/time/field/AbstractReadableInstantFieldProperty.java, src/main/java/org/joda/time/field/BaseDateTimeField.java, src/main/java/org/joda/time/field/BaseDurationField.java, src/main/java/org/joda/time/field/DecoratedDateTimeField.java, src/main/java/org/joda/time/field/DecoratedDurationField.java, src/main/java/org/joda/time/field/DelegatedDateTimeField.java, src/main/java/org/joda/time/field/DelegatedDurationField.java, src/main/java/org/joda/time/field/DividedDateTimeField.java, src/main/java/org/joda/time/field/FieldUtils.java, src/main/java/org/joda/time/field/ImpreciseDateTimeField.java, src/main/java/org/joda/time/field/LenientDateTimeField.java, src/main/java/org/joda/time/field/MillisDurationField.java, src/main/java/org/joda/time/field/OffsetDateTimeField.java, src/main/java/org/joda/time/field/PreciseDateTimeField.java, src/main/java/org/joda/time/field/PreciseDurationDateTimeField.java, src/main/java/org/joda/time/field/PreciseDurationField.java, src/main/java/org/joda/time/field/RemainderDateTimeField.java, src/main/java/org/joda/time/field/ScaledDurationField.java, src/main/java/org/joda/time/field/SkipDateTimeField.java, src/main/java/org/joda/time/field/SkipUndoDateTimeField.java, src/main/java/org/joda/time/field/StrictDateTimeField.java, src/main/java/org/joda/time/field/UnsupportedDateTimeField.java, src/main/java/org/joda/time/field/UnsupportedDurationField.java, src/main/java/org/joda/time/field/ZeroIsMaxDateTimeField.java, src/main/java/org/joda/time/format/DateTimeFormat.java, src/main/java/org/joda/time/format/DateTimeFormatter.java, src/main/java/org/joda/time/format/DateTimeFormatterBuilder.java, src/main/java/org/joda/time/format/DateTimeParser.java, src/main/java/org/joda/time/format/DateTimeParserBucket.java, src/main/java/org/joda/time/format/DateTimePrinter.java, src/main/java/org/joda/time/format/FormatUtils.java, src/main/java/org/joda/time/format/ISODateTimeFormat.java, src/main/java/org/joda/time/format/ISOPeriodFormat.java, src/main/java/org/joda/time/format/PeriodFormat.java, src/main/java/org/joda/time/format/PeriodFormatter.java, src/main/java/org/joda/time/format/PeriodFormatterBuilder.java, src/main/java/org/joda/time/format/PeriodParser.java, src/main/java/org/joda/time/format/PeriodPrinter.java, src/main/java/org/joda/time/tz/CachedDateTimeZone.java, src/main/java/org/joda/time/tz/DateTimeZoneBuilder.java, src/main/java/org/joda/time/tz/DefaultNameProvider.java, src/main/java/org/joda/time/tz/FixedDateTimeZone.java, src/main/java/org/joda/time/tz/NameProvider.java, src/main/java/org/joda/time/tz/Provider.java, src/main/java/org/joda/time/tz/UTCProvider.java, src/main/java/org/joda/time/tz/ZoneInfoCompiler.java, src/main/java/org/joda/time/tz/ZoneInfoProvider.java, compiled by JDK 21 with --release 8 -g -parameters",
+          "parameters": {
+            "names": [
+              "start",
+              "end"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "jodagrid.Projection#reversal(I)I",
+        "mapping": "For code 5*i+j the actual ReadablePartial arguments are MonthDay at indices i and j from Feb 27 through March 2, including leap day, using ISOChronology in UTC. The expected signed count uses daily offsets in a leap year.",
+        "correspondence": "finite-oracle",
+        "cases": 25
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "fix": [
+        {
+          "path": "adapter-fix.jar",
+          "sha256": "c8af8c1de3c6bc77567967049ab591c285ba3ef303573d61f25339e52be6d0e8",
+          "role": "adapter"
+        },
+        {
+          "path": "slice/fix.jar",
+          "sha256": "5d0c9d52c048fda0ab78f6bc7e339e91e2525816247ddd0e02e65ae23cb117ac",
+          "role": "original"
+        },
+        {
+          "path": "lib/org.joda/joda-convert-1.2.jar",
+          "sha256": "5703e1a2ac1969fe90f87076c1f1136822bf31d8948252159c86e6d0535c81a8",
+          "role": "dependency"
+        }
+      ]
+    },
+    "checkedEntry": "jodagrid.Projection#reversal(I)I",
+    "entryBindings": {
+      "fix": {
+        "entry": "jodagrid.Projection#reversal(I)I",
+        "classSha256": "8aaf7142a66aafa8754b28ffc061e4575e8edb15f2e93e0c48fba4b4515c9068",
+        "loadedFrom": "adapter-fix.jar",
+        "subject": "org.joda.time.Days#daysBetween(Lorg/joda/time/ReadablePartial;Lorg/joda/time/ReadablePartial;)Lorg/joda/time/Days;",
+        "subjectClassSha256": "6a31ae2203fa1de13205857b4525c8a44a5834b4880a525ba2b5b333e38c48c9"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "org.joda.time.Days#daysBetween(Lorg/joda/time/ReadablePartial;Lorg/joda/time/ReadablePartial;)Lorg/joda/time/Days;",
+      "checkedEntry": "jodagrid.Projection#reversal(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 25 && jodagrid.Projection.normal(code) == 1 && jodagrid.Projection.normal((code % 5) * 5 + code / 5) == 1"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "30"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "12"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "jodagrid.Projection#reversal(I)I",
+        "mapping": "For code 5*i+j the actual ReadablePartial arguments are MonthDay at indices i and j from Feb 27 through March 2, including leap day, using ISOChronology in UTC. The expected signed count uses daily offsets in a leap year.",
+        "correspondence": "finite-oracle",
+        "cases": 25
+      }
+    },
+    "commits": {
+      "fix": "3a413d7844c22dc6ddd50bf5d0d55ff3589e47ac"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+      "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+      "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "fix": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/411cfec96d3cae2e9195010505411126f6921e67/jvmcontract",
+          "gaps",
+          "--target",
+          "jodagrid.Projection#reversal(int)",
+          "--classes",
+          "prepare/fix/adapter-fix.jar",
+          "--classpath",
+          "prepare/fix/slice/fix.jar",
+          "--classpath",
+          "prepare/fix/lib/org.joda/joda-convert-1.2.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.214,
+        "stdout": "verifier/probe-fix.stdout",
+        "stderr": "verifier/probe-fix.stderr",
+        "gaps": [
+          {
+            "id": "jdk-constructor:java.io.DataInputStream.<init>(Ljava/io/InputStream;)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.io.DataInputStream.<init>(java.io.InputStream)",
+            "sites": [
+              "org.joda.time.tz.DateTimeZoneBuilder.readFrom:98",
+              "org.joda.time.tz.ZoneInfoProvider.loadZoneInfoMap:253"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.io.File.<init>(Ljava/io/File;Ljava/lang/String;)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.io.File.<init>(java.io.File, java.lang.String)",
+            "sites": [
+              "org.joda.time.tz.ZoneInfoProvider.openResource:197"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.io.FileInputStream.<init>(Ljava/io/File;)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.io.FileInputStream.<init>(java.io.File)",
+            "sites": [
+              "org.joda.time.tz.ZoneInfoProvider.openResource:197"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.lang.String.<init>(Ljava/lang/String;)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.lang.String.<init>(java.lang.String)",
+            "sites": [
+              "org.joda.time.format.DateTimeFormat.parsePatternTo:555"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.lang.StringBuffer.<init>()V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.lang.StringBuffer.<init>()",
+            "sites": [
+              "org.joda.time.DateTimeZone.printOffset:631",
+              "org.joda.time.IllegalFieldValueException.createMessage:74"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.lang.StringBuffer.<init>(I)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.lang.StringBuffer.<init>(int)",
+            "sites": [
+              "org.joda.time.format.DateTimeFormatter.print:583",
+              "org.joda.time.format.DateTimeFormatter.print:613"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.lang.ref.SoftReference.<init>(Ljava/lang/Object;)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.lang.ref.SoftReference.<init>(java.lang.Object)",
+            "sites": [
+              "org.joda.time.DateTimeZone.fixedOffsetZone:364",
+              "org.joda.time.tz.ZoneInfoProvider.loadZoneData:228",
+              "org.joda.time.tz.ZoneInfoProvider.loadZoneInfoMap:262"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.text.DateFormatSymbols.<init>(Ljava/util/Locale;)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.text.DateFormatSymbols.<init>(java.util.Locale)",
+            "sites": [
+              "org.joda.time.DateTimeUtils.getDateFormatSymbols:398"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.util.HashSet.<init>(I)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.util.HashSet.<init>(int)",
+            "sites": [
+              "org.joda.time.format.DateTimeFormatterBuilder$TextField.parseInto:1840"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.util.HashSet.<init>(Ljava/util/Collection;)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.util.HashSet.<init>(java.util.Collection)",
+            "sites": [
+              "org.joda.time.format.ISODateTimeFormat.forFields:233"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.util.TreeSet.<init>(Ljava/util/Collection;)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.util.TreeSet.<init>(java.util.Collection)",
+            "sites": [
+              "org.joda.time.tz.ZoneInfoProvider.getAvailableIDs:174"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.io.DataInputStream.close()V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.io.DataInputStream.close()",
+            "sites": [
+              "org.joda.time.tz.ZoneInfoProvider.loadZoneInfoMap:258"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.io.InputStream.close()V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.io.InputStream.close()",
+            "sites": [
+              "org.joda.time.tz.ZoneInfoProvider.loadZoneData:237"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.io.Writer.write(I)V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.io.Writer.write(int)",
+            "sites": [
+              "org.joda.time.format.DateTimeFormatterBuilder.printUnknownString:1196",
+              "org.joda.time.format.DateTimeFormatterBuilder$Fraction.printTo:1968",
+              "org.joda.time.format.DateTimeFormatterBuilder$Fraction.printTo:1991",
+              "org.joda.time.format.DateTimeFormatterBuilder$Fraction.printTo:2013"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.io.Writer.write(Ljava/lang/String;)V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.io.Writer.write(java.lang.String)",
+            "sites": [
+              "org.joda.time.format.DateTimeFormatterBuilder$Fraction.printTo:2023"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.lang.ThreadGroup.uncaughtException(Ljava/lang/Thread;Ljava/lang/Throwable;)V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.lang.ThreadGroup.uncaughtException(java.lang.Thread, java.lang.Throwable)",
+            "sites": [
+              "org.joda.time.DateTimeZone.getDefaultNameProvider:537",
+              "org.joda.time.DateTimeZone.getDefaultProvider:453",
+              "org.joda.time.DateTimeZone.getDefaultProvider:465",
+              "org.joda.time.tz.ZoneInfoProvider.uncaughtException:184"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.io.DataInput.readUTF()Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.io.DataInput.readUTF()",
+            "sites": [
+              "org.joda.time.tz.DateTimeZoneBuilder.readFrom:113",
+              "org.joda.time.tz.DateTimeZoneBuilder$PrecalculatedZone.readFrom:1344",
+              "org.joda.time.tz.DateTimeZoneBuilder$Recurrence.readFrom:740"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.io.DataInputStream.readUTF()Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.io.DataInputStream.readUTF()",
+            "sites": [
+              "org.joda.time.tz.ZoneInfoProvider.readZoneInfoMap:277"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.lang.Class.getMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.Class.getMethod(java.lang.String, java.lang.Class[])",
+            "sites": [
+              "org.joda.time.DateTimeUtils.getDateFormatSymbols:395"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.lang.Class.newInstance()Ljava/lang/Object;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.Class.newInstance()",
+            "sites": [
+              "org.joda.time.DateTimeZone.getDefaultNameProvider:534",
+              "org.joda.time.DateTimeZone.getDefaultProvider:450"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.lang.ClassLoader.getResourceAsStream(Ljava/lang/String;)Ljava/io/InputStream;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.ClassLoader.getResourceAsStream(java.lang.String)",
+            "sites": [
+              "org.joda.time.tz.ZoneInfoProvider.openResource:201"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.lang.IllegalArgumentException.getMessage()Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.IllegalArgumentException.getMessage()",
+            "sites": [
+              "org.joda.time.IllegalFieldValueException.<init>:116",
+              "org.joda.time.IllegalFieldValueException.<init>:137",
+              "org.joda.time.IllegalFieldValueException.<init>:197"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.lang.Object.toString()Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.Object.toString()",
+            "sites": [
+              "org.joda.time.tz.ZoneInfoProvider.openResource:210"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.lang.String.intern()Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.String.intern()",
+            "sites": [
+              "org.joda.time.tz.ZoneInfoProvider.readZoneInfoMap:277"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.lang.String.toUpperCase(Ljava/util/Locale;)Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.String.toUpperCase(java.util.Locale)",
+            "sites": [
+              "org.joda.time.format.DateTimeFormatterBuilder$TextField.parseInto:1853",
+              "org.joda.time.format.DateTimeFormatterBuilder$TextField.parseInto:1856"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.lang.StringBuffer.append(C)Ljava/lang/StringBuffer;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.StringBuffer.append(char)",
+            "sites": [
+              "org.joda.time.DateTimeZone.printOffset:633",
+              "org.joda.time.DateTimeZone.printOffset:635",
+              "org.joda.time.DateTimeZone.printOffset:644",
+              "org.joda.time.DateTimeZone.printOffset:652",
+              "org.joda.time.DateTimeZone.printOffset:659",
+              "org.joda.time.IllegalFieldValueException.createMessage:79",
+              "org.joda.time.IllegalFieldValueException.createMessage:81",
+              "org.joda.time.IllegalFieldValueException.createMessage:84",
+              "org.joda.time.format.DateTimeFormatterBuilder.appendUnknownString:1190",
+              "org.joda.time.format.DateTimeFormatterBuilder$CharacterLiteral.printTo:1218",
+              "org.joda.time.format.DateTimeFormatterBuilder$CharacterLiteral.printTo:1228",
+              "org.joda.time.format.DateTimeFormatterBuilder$Fraction.printTo:1964",
+              "org.joda.time.format.DateTimeFormatterBuilder$Fraction.printTo:1989",
+              "org.joda.time.format.DateTimeFormatterBuilder$Fraction.printTo:2009",
+              "org.joda.time.format.DateTimeFormatterBuilder$TextField.printTo:1769",
+              "org.joda.time.format.DateTimeFormatterBuilder$TextField.printTo:1787",
+              "org.joda.time.format.DateTimeFormatterBuilder$TimeZoneOffset.printTo:2158",
+              "org.joda.time.format.DateTimeFormatterBuilder$TimeZoneOffset.printTo:2160",
+              "org.joda.time.format.DateTimeFormatterBuilder$TimeZoneOffset.printTo:2176",
+              "org.joda.time.format.DateTimeFormatterBuilder$TimeZoneOffset.printTo:2189",
+              "org.joda.time.format.DateTimeFormatterBuilder$TimeZoneOffset.printTo:2201",
+              "org.joda.time.format.DateTimeFormatterBuilder$TwoDigitYear.printTo:1679",
+              "org.joda.time.format.DateTimeFormatterBuilder$TwoDigitYear.printTo:1680",
+              "org.joda.time.format.DateTimeFormatterBuilder$TwoDigitYear.printTo:1713",
+              "org.joda.time.format.DateTimeFormatterBuilder$TwoDigitYear.printTo:1714",
+              "org.joda.time.format.DateTimeFormatterBuilder$UnpaddedNumber.printTo:1415",
+              "org.joda.time.format.DateTimeFormatterBuilder$UnpaddedNumber.printTo:1435",
+              "org.joda.time.format.DateTimeFormatterBuilder$UnpaddedNumber.printTo:1438",
+              "org.joda.time.format.FormatUtils.appendPaddedInteger:51",
+              "org.joda.time.format.FormatUtils.appendPaddedInteger:56",
+              "org.joda.time.format.FormatUtils.appendPaddedInteger:64",
+              "org.joda.time.format.FormatUtils.appendPaddedInteger:66",
+              "org.joda.time.format.FormatUtils.appendPaddedInteger:69",
+              "org.joda.time.format.FormatUtils.appendPaddedInteger:75",
+              "org.joda.time.format.FormatUtils.appendPaddedInteger:77",
+              "org.joda.time.format.FormatUtils.appendPaddedInteger:88",
+              "org.joda.time.format.FormatUtils.appendUnpaddedInteger:237",
+              "org.joda.time.format.FormatUtils.appendUnpaddedInteger:246",
+              "org.joda.time.format.FormatUtils.appendUnpaddedInteger:252",
+              "org.joda.time.format.FormatUtils.appendUnpaddedInteger:254"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.lang.StringBuffer.append(Ljava/lang/String;)Ljava/lang/StringBuffer;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.StringBuffer.append(java.lang.String)",
+            "sites": [
+              "org.joda.time.IllegalFieldValueException.createMessage:74",
+              "org.joda.time.IllegalFieldValueException.createMessage:77",
+              "org.joda.time.IllegalFieldValueException.createMessage:80",
+              "org.joda.time.IllegalFieldValueException.createMessage:84",
+              "org.joda.time.format.DateTimeFormatterBuilder$Fraction.printTo:2021",
+              "org.joda.time.format.DateTimeFormatterBuilder$StringLiteral.printTo:1281",
+              "org.joda.time.format.DateTimeFormatterBuilder$StringLiteral.printTo:1291",
+              "org.joda.time.format.DateTimeFormatterBuilder$TextField.printTo:1767",
+              "org.joda.time.format.DateTimeFormatterBuilder$TextField.printTo:1785",
+              "org.joda.time.format.DateTimeFormatterBuilder$TimeZoneId.printTo:2565",
+              "org.joda.time.format.DateTimeFormatterBuilder$TimeZoneName.printTo:2489",
+              "org.joda.time.format.DateTimeFormatterBuilder$TimeZoneOffset.printTo:2154",
+              "org.joda.time.format.FormatUtils.appendPaddedInteger:58",
+              "org.joda.time.format.FormatUtils.appendPaddedInteger:90",
+              "org.joda.time.format.FormatUtils.appendUnpaddedInteger:241",
+              "org.joda.time.format.FormatUtils.appendUnpaddedInteger:256"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.lang.StringBuffer.toString()Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.StringBuffer.toString()",
+            "sites": [
+              "org.joda.time.DateTimeZone.printOffset:648",
+              "org.joda.time.DateTimeZone.printOffset:656",
+              "org.joda.time.DateTimeZone.printOffset:661",
+              "org.joda.time.IllegalFieldValueException.createMessage:86",
+              "org.joda.time.format.DateTimeFormatter.print:585",
+              "org.joda.time.format.DateTimeFormatter.print:615"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.lang.Thread.getThreadGroup()Ljava/lang/ThreadGroup;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.Thread.getThreadGroup()",
+            "sites": [
+              "org.joda.time.DateTimeZone.getDefaultNameProvider:537",
+              "org.joda.time.DateTimeZone.getDefaultProvider:453",
+              "org.joda.time.DateTimeZone.getDefaultProvider:465",
+              "org.joda.time.tz.ZoneInfoProvider.uncaughtException:184"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.lang.ref.Reference.get()Ljava/lang/Object;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.ref.Reference.get()",
+            "sites": [
+              "org.joda.time.DateTimeZone.fixedOffsetZone:358"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.lang.ref.SoftReference.get()Ljava/lang/Object;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.ref.SoftReference.get()",
+            "sites": [
+              "org.joda.time.tz.ZoneInfoProvider.getZone:153"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.lang.reflect.Method.invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.reflect.Method.invoke(java.lang.Object, java.lang.Object[])",
+            "sites": [
+              "org.joda.time.DateTimeUtils.getDateFormatSymbols:396"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.util.Iterator.next()Ljava/lang/Object;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.util.Iterator.next()",
+            "sites": [
+              "org.joda.time.format.DateTimeFormatterBuilder$TimeZoneId.<clinit>:2552",
+              "org.joda.time.format.DateTimeFormatterBuilder$TimeZoneId.parseInto:2589",
+              "org.joda.time.format.DateTimeFormatterBuilder$TimeZoneName.parseInto:2528"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.util.Locale.getLanguage()Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.util.Locale.getLanguage()",
+            "sites": [
+              "org.joda.time.format.DateTimeFormatterBuilder$TextField.parseInto:1858"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.util.Map.keySet()Ljava/util/Set;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.util.Map.keySet()",
+            "sites": [
+              "org.joda.time.format.DateTimeFormatterBuilder$TimeZoneName.parseInto:2528",
+              "org.joda.time.tz.ZoneInfoProvider.getAvailableIDs:174"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.util.Map.remove(Ljava/lang/Object;)Ljava/lang/Object;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.util.Map.remove(java.lang.Object)",
+            "sites": [
+              "org.joda.time.tz.ZoneInfoProvider.loadZoneData:232"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.util.Set.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.util.Set.iterator()",
+            "sites": [
+              "org.joda.time.format.DateTimeFormatterBuilder$TimeZoneId.<clinit>:2552",
+              "org.joda.time.format.DateTimeFormatterBuilder$TimeZoneId.parseInto:2589",
+              "org.joda.time.format.DateTimeFormatterBuilder$TimeZoneName.parseInto:2528"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.util.TimeZone.getID()Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.util.TimeZone.getID()",
+            "sites": [
+              "org.joda.time.DateTimeZone.forTimeZone:305",
+              "org.joda.time.DateTimeZone.forTimeZone:325"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:org.joda.time.IllegalFieldValueException.initCause(Ljava/lang/Throwable;)Ljava/lang/Throwable;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "org.joda.time.IllegalFieldValueException.initCause(java.lang.Throwable)",
+            "sites": [
+              "org.joda.time.chrono.ZonedChronology$ZonedDateTimeField.set:468"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:org.joda.time.IllegalInstantException.getMessage()Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "org.joda.time.IllegalInstantException.getMessage()",
+            "sites": [
+              "org.joda.time.chrono.ZonedChronology$ZonedDateTimeField.set:467"
+            ]
+          },
+          {
+            "id": "class-initializer:org.joda.time.DateTimeUtils.<clinit>()V",
+            "kind": "class-initializer",
+            "call": "org.joda.time.DateTimeUtils.<clinit>()",
+            "sites": [
+              "org.joda.time.Days.daysBetween:136"
+            ]
+          },
+          {
+            "id": "class-initializer:org.joda.time.Days.<clinit>()V",
+            "kind": "class-initializer",
+            "call": "org.joda.time.Days.<clinit>()",
+            "sites": [
+              "jodagrid.Projection.read:10"
+            ]
+          },
+          {
+            "id": "class-initializer:org.joda.time.MonthDay.<clinit>()V",
+            "kind": "class-initializer",
+            "call": "org.joda.time.MonthDay.<clinit>()",
+            "sites": [
+              "jodagrid.Projection.date:8"
+            ]
+          },
+          {
+            "id": "class-initializer:org.joda.time.chrono.ISOChronology.<clinit>()V",
+            "kind": "class-initializer",
+            "call": "org.joda.time.chrono.ISOChronology.<clinit>()",
+            "sites": [
+              "jodagrid.Projection.date:8"
+            ]
+          },
+          {
+            "id": "class-initializer:org.joda.time.chrono.ISOYearOfEraDateTimeField.<clinit>()V",
+            "kind": "class-initializer",
+            "call": "org.joda.time.chrono.ISOYearOfEraDateTimeField.<clinit>()",
+            "sites": [
+              "org.joda.time.chrono.ISOChronology.assemble:171"
+            ]
+          },
+          {
+            "id": "class-initializer:org.joda.time.format.FormatUtils.<clinit>()V",
+            "kind": "class-initializer",
+            "call": "org.joda.time.format.FormatUtils.<clinit>()",
+            "sites": [
+              "org.joda.time.DateTimeZone.printOffset:640"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.io.DataInput.readBoolean()Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.io.DataInput.readBoolean()",
+            "sites": [
+              "org.joda.time.tz.DateTimeZoneBuilder$OfYear.readFrom:486",
+              "org.joda.time.tz.DateTimeZoneBuilder$PrecalculatedZone.readFrom:1371"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.io.DataInput.readByte()B@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.io.DataInput.readByte()",
+            "sites": [
+              "org.joda.time.tz.DateTimeZoneBuilder$OfYear.readFrom:484"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.io.DataInput.readInt()I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.io.DataInput.readInt()",
+            "sites": [
+              "org.joda.time.tz.DateTimeZoneBuilder$PrecalculatedZone.readFrom:1347"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.io.DataInput.readLong()J@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.io.DataInput.readLong()",
+            "sites": [
+              "org.joda.time.tz.DateTimeZoneBuilder.readMillis:209"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.io.DataInput.readUnsignedByte()I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.io.DataInput.readUnsignedByte()",
+            "sites": [
+              "org.joda.time.tz.DateTimeZoneBuilder.readFrom:110",
+              "org.joda.time.tz.DateTimeZoneBuilder.readMillis:183",
+              "org.joda.time.tz.DateTimeZoneBuilder.readMillis:193",
+              "org.joda.time.tz.DateTimeZoneBuilder.readMillis:194",
+              "org.joda.time.tz.DateTimeZoneBuilder.readMillis:195",
+              "org.joda.time.tz.DateTimeZoneBuilder.readMillis:201",
+              "org.joda.time.tz.DateTimeZoneBuilder.readMillis:202",
+              "org.joda.time.tz.DateTimeZoneBuilder.readMillis:203",
+              "org.joda.time.tz.DateTimeZoneBuilder.readMillis:204",
+              "org.joda.time.tz.DateTimeZoneBuilder$OfYear.readFrom:482",
+              "org.joda.time.tz.DateTimeZoneBuilder$OfYear.readFrom:483",
+              "org.joda.time.tz.DateTimeZoneBuilder$OfYear.readFrom:485",
+              "org.joda.time.tz.DateTimeZoneBuilder$PrecalculatedZone.readFrom:1360"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.io.DataInput.readUnsignedShort()I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.io.DataInput.readUnsignedShort()",
+            "sites": [
+              "org.joda.time.tz.DateTimeZoneBuilder$PrecalculatedZone.readFrom:1341",
+              "org.joda.time.tz.DateTimeZoneBuilder$PrecalculatedZone.readFrom:1362"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.io.DataInputStream.readUnsignedShort()I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.io.DataInputStream.readUnsignedShort()",
+            "sites": [
+              "org.joda.time.tz.ZoneInfoProvider.readZoneInfoMap:274",
+              "org.joda.time.tz.ZoneInfoProvider.readZoneInfoMap:281",
+              "org.joda.time.tz.ZoneInfoProvider.readZoneInfoMap:284"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.Object.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.Object.equals(java.lang.Object)",
+            "sites": [
+              "java.util.HashMap.find:80",
+              "java.util.Objects.equals:64",
+              "org.joda.time.chrono.ISOChronology.equals:190",
+              "org.joda.time.chrono.ZonedChronology.equals:242",
+              "org.joda.time.field.AbstractReadableInstantFieldProperty.equals:451",
+              "org.joda.time.field.FieldUtils.equals:327",
+              "org.joda.time.field.ScaledDurationField.equals:134"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.Object.hashCode()I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.Object.hashCode()",
+            "sites": [
+              "java.util.HashMap.find:77",
+              "java.util.HashMap.put:65",
+              "org.joda.time.PeriodType.hashCode:853",
+              "org.joda.time.base.AbstractInstant.hashCode:280",
+              "org.joda.time.base.AbstractPartial.hashCode:283",
+              "org.joda.time.base.AbstractPartial.hashCode:285",
+              "org.joda.time.base.BaseSingleFieldPeriod.hashCode:319",
+              "org.joda.time.chrono.ZonedChronology.hashCode:253",
+              "org.joda.time.field.AbstractReadableInstantFieldProperty.hashCode:461",
+              "org.joda.time.field.ScaledDurationField.hashCode:149",
+              "org.joda.time.field.ScaledDurationField.hashCode:150"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.String.equalsIgnoreCase(Ljava/lang/String;)Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.String.equalsIgnoreCase(java.lang.String)",
+            "sites": [
+              "org.joda.time.tz.UTCProvider.getZone:45"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.String.regionMatches(ZILjava/lang/String;II)Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.String.regionMatches(boolean, int, java.lang.String, int, int)",
+            "sites": [
+              "org.joda.time.format.DateTimeFormatterBuilder$StringLiteral.parseInto:1303",
+              "org.joda.time.format.DateTimeFormatterBuilder$TimeZoneOffset.parseInto:2293"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.ArrayList.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.ArrayList.add(java.lang.Object)",
+            "sites": [
+              "org.joda.time.format.DateTimeFormatterBuilder.append0:376",
+              "org.joda.time.format.DateTimeFormatterBuilder.append0:377",
+              "org.joda.time.format.DateTimeFormatterBuilder.append0:384",
+              "org.joda.time.format.DateTimeFormatterBuilder.append0:385"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.ArrayList.size()I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.ArrayList.size()",
+            "sites": [
+              "org.joda.time.format.DateTimeFormatterBuilder.getFormatter:1141"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.Collection.remove(Ljava/lang/Object;)Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.Collection.remove(java.lang.Object)",
+            "sites": [
+              "org.joda.time.format.ISODateTimeFormat.dateByMonth:294",
+              "org.joda.time.format.ISODateTimeFormat.dateByMonth:296",
+              "org.joda.time.format.ISODateTimeFormat.dateByMonth:297",
+              "org.joda.time.format.ISODateTimeFormat.dateByMonth:310",
+              "org.joda.time.format.ISODateTimeFormat.dateByMonth:322",
+              "org.joda.time.format.ISODateTimeFormat.dateByMonth:326",
+              "org.joda.time.format.ISODateTimeFormat.dateByMonth:334",
+              "org.joda.time.format.ISODateTimeFormat.dateByOrdinal:362",
+              "org.joda.time.format.ISODateTimeFormat.dateByOrdinal:364",
+              "org.joda.time.format.ISODateTimeFormat.dateByOrdinal:373",
+              "org.joda.time.format.ISODateTimeFormat.dateByWeek:399",
+              "org.joda.time.format.ISODateTimeFormat.dateByWeek:401",
+              "org.joda.time.format.ISODateTimeFormat.dateByWeek:405",
+              "org.joda.time.format.ISODateTimeFormat.dateByWeek:414",
+              "org.joda.time.format.ISODateTimeFormat.dateByWeek:427",
+              "org.joda.time.format.ISODateTimeFormat.dateByWeek:431",
+              "org.joda.time.format.ISODateTimeFormat.dateByWeek:439",
+              "org.joda.time.format.ISODateTimeFormat.time:470",
+              "org.joda.time.format.ISODateTimeFormat.time:471",
+              "org.joda.time.format.ISODateTimeFormat.time:472",
+              "org.joda.time.format.ISODateTimeFormat.time:473"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.Collection.retainAll(Ljava/util/Collection;)Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.Collection.retainAll(java.util.Collection)",
+            "sites": [
+              "org.joda.time.format.ISODateTimeFormat.forFields:268"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.Collection.size()I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.Collection.size()",
+            "sites": [
+              "org.joda.time.format.ISODateTimeFormat.forFields:230"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.Iterator.hasNext()Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.Iterator.hasNext()",
+            "sites": [
+              "org.joda.time.format.DateTimeFormatterBuilder$TimeZoneId.<clinit>:2552",
+              "org.joda.time.format.DateTimeFormatterBuilder$TimeZoneId.parseInto:2589",
+              "org.joda.time.format.DateTimeFormatterBuilder$TimeZoneName.parseInto:2528"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.List.add(java.lang.Object)",
+            "sites": [
+              "org.joda.time.MonthDay.toString:781",
+              "org.joda.time.MonthDay.toString:782",
+              "org.joda.time.format.DateTimeFormatterBuilder$Composite.addArrayToList:2780",
+              "org.joda.time.format.DateTimeFormatterBuilder$Composite.decompose:2765",
+              "org.joda.time.format.DateTimeFormatterBuilder$Composite.decompose:2772"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.List.contains(Ljava/lang/Object;)Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.List.contains(java.lang.Object)",
+            "sites": [
+              "org.joda.time.format.DateTimeFormatterBuilder$Composite.<init>:2622",
+              "org.joda.time.format.DateTimeFormatterBuilder$Composite.<init>:2637"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.List.isEmpty()Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.List.isEmpty()",
+            "sites": [
+              "org.joda.time.format.DateTimeFormatterBuilder$Composite.<init>:2622",
+              "org.joda.time.format.DateTimeFormatterBuilder$Composite.<init>:2637"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.List.size()I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.List.size()",
+            "sites": [
+              "org.joda.time.format.DateTimeFormatterBuilder$Composite.<init>:2626",
+              "org.joda.time.format.DateTimeFormatterBuilder$Composite.<init>:2641",
+              "org.joda.time.format.DateTimeFormatterBuilder$Composite.decompose:2759"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.Set.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.Set.add(java.lang.Object)",
+            "sites": [
+              "org.joda.time.format.DateTimeFormatterBuilder$TextField.parseInto:1851",
+              "org.joda.time.format.DateTimeFormatterBuilder$TextField.parseInto:1852",
+              "org.joda.time.format.DateTimeFormatterBuilder$TextField.parseInto:1853",
+              "org.joda.time.format.DateTimeFormatterBuilder$TextField.parseInto:1854",
+              "org.joda.time.format.DateTimeFormatterBuilder$TextField.parseInto:1855",
+              "org.joda.time.format.DateTimeFormatterBuilder$TextField.parseInto:1856",
+              "org.joda.time.format.DateTimeFormatterBuilder$TextField.parseInto:1860",
+              "org.joda.time.format.DateTimeFormatterBuilder$TextField.parseInto:1861",
+              "org.joda.time.format.DateTimeFormatterBuilder$TextField.parseInto:1862",
+              "org.joda.time.format.DateTimeFormatterBuilder$TextField.parseInto:1863"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.Set.contains(Ljava/lang/Object;)Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.Set.contains(java.lang.Object)",
+            "sites": [
+              "org.joda.time.DateTimeZone.setProvider0:423",
+              "org.joda.time.format.DateTimeFormatterBuilder$TextField.parseInto:1877",
+              "org.joda.time.format.ISODateTimeFormat.forFields:238",
+              "org.joda.time.format.ISODateTimeFormat.forFields:240",
+              "org.joda.time.format.ISODateTimeFormat.forFields:242",
+              "org.joda.time.format.ISODateTimeFormat.forFields:244",
+              "org.joda.time.format.ISODateTimeFormat.forFields:246"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.Set.remove(Ljava/lang/Object;)Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.Set.remove(java.lang.Object)",
+            "sites": [
+              "org.joda.time.format.ISODateTimeFormat.forFields:248",
+              "org.joda.time.format.ISODateTimeFormat.forFields:251"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.Set.size()I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.Set.size()",
+            "sites": [
+              "org.joda.time.DateTimeZone.setProvider0:419",
+              "org.joda.time.format.ISODateTimeFormat.forFields:234",
+              "org.joda.time.format.ISODateTimeFormat.forFields:255"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:org.joda.time.DurationField.compareTo(Ljava/lang/Object;)I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "org.joda.time.DurationField.compareTo(java.lang.Object)",
+            "sites": [
+              "org.joda.time.format.DateTimeParserBucket.compareReverse:520"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.lang.Character.toLowerCase(C)C@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.lang.Character.toLowerCase(char)",
+            "sites": [
+              "org.joda.time.format.DateTimeFormatterBuilder$CharacterLiteral.parseInto:1251",
+              "org.joda.time.format.DateTimeFormatterBuilder$CharacterLiteral.parseInto:1252"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.lang.Character.toUpperCase(C)C@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.lang.Character.toUpperCase(char)",
+            "sites": [
+              "org.joda.time.format.DateTimeFormatterBuilder$CharacterLiteral.parseInto:1248",
+              "org.joda.time.format.DateTimeFormatterBuilder$CharacterLiteral.parseInto:1249"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.lang.ClassLoader.getSystemResourceAsStream(Ljava/lang/String;)Ljava/io/InputStream;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.lang.ClassLoader.getSystemResourceAsStream(java.lang.String)",
+            "sites": [
+              "org.joda.time.tz.ZoneInfoProvider.openResource:203"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.lang.Integer.getInteger(Ljava/lang/String;)Ljava/lang/Integer;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.lang.Integer.getInteger(java.lang.String)",
+            "sites": [
+              "org.joda.time.tz.CachedDateTimeZone.<clinit>:39"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.lang.Integer.toString(I)Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.lang.Integer.toString(int)",
+            "sites": [
+              "org.joda.time.field.BaseDateTimeField.getAsText:153",
+              "org.joda.time.field.BaseDateTimeField.getMaximumTextLength:839",
+              "org.joda.time.format.DateTimeFormatterBuilder$Fraction.printTo:1980",
+              "org.joda.time.format.FormatUtils.appendPaddedInteger:90",
+              "org.joda.time.format.FormatUtils.appendUnpaddedInteger:256"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.lang.String.valueOf(I)Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.lang.String.valueOf(int)",
+            "sites": [
+              "org.joda.time.Days.toString:488",
+              "org.joda.time.base.BaseSingleFieldPeriod.getFieldType:218",
+              "org.joda.time.base.BaseSingleFieldPeriod.getValue:234"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.lang.System.getProperty(java.lang.String)",
+            "sites": [
+              "org.joda.time.DateTimeZone.getDefault:141",
+              "org.joda.time.DateTimeZone.getDefaultNameProvider:531",
+              "org.joda.time.DateTimeZone.getDefaultProvider:447"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.lang.System.identityHashCode(Ljava/lang/Object;)I@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.lang.System.identityHashCode(java.lang.Object)",
+            "sites": [
+              "org.joda.time.chrono.ISOChronology.getInstance:99"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.Arrays.binarySearch([JJ)I@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.Arrays.binarySearch(long[], long)",
+            "sites": [
+              "org.joda.time.tz.DateTimeZoneBuilder$PrecalculatedZone.getNameKey:1510",
+              "org.joda.time.tz.DateTimeZoneBuilder$PrecalculatedZone.getOffset:1529",
+              "org.joda.time.tz.DateTimeZoneBuilder$PrecalculatedZone.nextTransition:1571",
+              "org.joda.time.tz.DateTimeZoneBuilder$PrecalculatedZone.previousTransition:1588"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.Arrays.equals([I[I)Z@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.Arrays.equals(int[], int[])",
+            "sites": [
+              "org.joda.time.tz.DateTimeZoneBuilder$PrecalculatedZone.equals:1628",
+              "org.joda.time.tz.DateTimeZoneBuilder$PrecalculatedZone.equals:1629"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.Arrays.equals([J[J)Z@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.Arrays.equals(long[], long[])",
+            "sites": [
+              "org.joda.time.tz.DateTimeZoneBuilder$PrecalculatedZone.equals:1626"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.Arrays.sort([Ljava/lang/Object;II)V@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.Arrays.sort(java.lang.Object[], int, int)",
+            "sites": [
+              "org.joda.time.format.DateTimeParserBucket.sort:417"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.Collections.singleton(Ljava/lang/Object;)Ljava/util/Set;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.Collections.singleton(java.lang.Object)",
+            "sites": [
+              "org.joda.time.tz.UTCProvider.getAvailableIDs:55"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.Locale.getDefault()Ljava/util/Locale;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.Locale.getDefault()",
+            "sites": [
+              "org.joda.time.DateTimeZone.getName:785",
+              "org.joda.time.DateTimeZone.getShortName:745",
+              "org.joda.time.format.DateTimeFormatterBuilder$Composite.printTo:2667",
+              "org.joda.time.format.DateTimeFormatterBuilder$Composite.printTo:2703",
+              "org.joda.time.format.DateTimeParserBucket.<init>:125"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.TimeZone.getDefault()Ljava/util/TimeZone;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.TimeZone.getDefault()",
+            "sites": [
+              "org.joda.time.DateTimeZone.getDefault:149"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 1.1337,
+      "peakRssBytes": 93130752,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 1.1337,
+    "peakRssBytes": 93130752,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.759,
+  "missing": [
+    "eligible conclusion"
+  ],
+  "receipt": "receipts/reversal-on-returns-fix/20261120T082219Z-01021587/result.json",
+  "preparedClaim": "f80ad033cd59b619",
+  "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at org.joda.time.DateTimeZone.getDefaultProvider:447). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+  "endedAt": "2026-11-20T08:22:20.212032+00:00"
+}

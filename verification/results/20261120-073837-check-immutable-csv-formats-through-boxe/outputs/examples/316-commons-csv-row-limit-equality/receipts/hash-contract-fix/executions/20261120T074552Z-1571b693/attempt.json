@@ -1,0 +1,446 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T074552Z-1571b693",
+  "task": "hash-contract-fix",
+  "claimKey": "57ad584ba9edcaf1",
+  "revisions": [
+    "fix"
+  ],
+  "startedAt": "2026-11-20T07:45:52.087835+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 60
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-073837-check-immutable-csv-formats-through-boxe",
+  "sourceCommit": "f22ba794701374e1a9a83ab40af6052ffdab5809",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 3.4025
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 3.53
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 3.5332
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 3.5816
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 3.6343
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 3.7557
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "fix": {
+      "revision": "6d5993cb89f4f723ae416123b20f361bd863c484",
+      "target": {
+        "class": "org.apache.commons.csv.CSVFormat",
+        "method": "hashCode",
+        "descriptor": "()I",
+        "loadedFrom": "slice/fix.jar",
+        "classSha256": "68797a70d9c45da0b66fd23c505dadae218479cf26c31aec67f2feaad9888417",
+        "adapterCalls": [
+          "org.apache.commons.csv.CSVFormat#builder()Lorg/apache/commons/csv/CSVFormat$Builder;",
+          "org.apache.commons.csv.CSVFormat#equals(Ljava/lang/Object;)Z",
+          "org.apache.commons.csv.CSVFormat#hashCode()I",
+          "org.apache.commons.csv.CSVFormat#parse(Ljava/io/Reader;)Lorg/apache/commons/csv/CSVParser;",
+          "org.apache.commons.csv.CSVFormat$Builder#get()Lorg/apache/commons/csv/CSVFormat;",
+          "org.apache.commons.csv.CSVFormat$Builder#setMaxRows(J)Lorg/apache/commons/csv/CSVFormat$Builder;",
+          "org.apache.commons.csv.CSVParser#close()V",
+          "org.apache.commons.csv.CSVParser#getRecords()Ljava/util/List;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "8dece1e74a1d70d42806d01bfb06a8ea310b6a526e34b14b669b30347f850693",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-fix.jar",
+          "sha256": "335c73d08b2fb47c48955b843fa25e7b4a8835343ba34b7a4e528ef29cf09d07",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "slice/fix.jar",
+          "sha256": "1c527dc585b991a6ac7c8bd0291a76887b5f30a0002c9177308659d934472f21",
+          "role": "original",
+          "coordinates": null,
+          "origin": "an extracted source slice of 6d5993cb89f4f723ae416123b20f361bd863c484: src/main/java/org/apache/commons/csv/CSVException.java, src/main/java/org/apache/commons/csv/CSVFormat.java, src/main/java/org/apache/commons/csv/CSVParser.java, src/main/java/org/apache/commons/csv/CSVPrinter.java, src/main/java/org/apache/commons/csv/CSVRecord.java, src/main/java/org/apache/commons/csv/Constants.java, src/main/java/org/apache/commons/csv/DuplicateHeaderMode.java, src/main/java/org/apache/commons/csv/ExtendedBufferedReader.java, src/main/java/org/apache/commons/csv/Lexer.java, src/main/java/org/apache/commons/csv/QuoteMode.java, src/main/java/org/apache/commons/csv/Token.java, src/main/java/org/apache/commons/csv/package-info.java, compiled by JDK 21 with --release 21 -g -parameters"
+        },
+        {
+          "path": "lib/commons-io/commons-io-2.22.0.jar",
+          "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
+          "role": "dependency",
+          "coordinates": "commons-io:commons-io:2.22.0",
+          "origin": "https://repo.maven.apache.org/maven2/commons-io/commons-io/2.22.0/commons-io-2.22.0.jar"
+        },
+        {
+          "path": "lib/commons-codec/commons-codec-1.22.0.jar",
+          "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+          "role": "dependency",
+          "coordinates": "commons-codec:commons-codec:1.22.0",
+          "origin": "https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar"
+        }
+      ]
+    }
+  },
+  "bindingId": "13b2f600f97242baf63e104e1f38f0b16c7c25c30562a69239f8a6940a91096b",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/a0952cd0510be445e07fb0348d900b3a7091511d/jvmcontract",
+    "prove",
+    "csvgrid.Projection#hashContract(int)",
+    "--classes",
+    "prepare/fix/adapter-fix.jar",
+    "--classpath",
+    "prepare/fix/slice/fix.jar",
+    "--classpath",
+    "prepare/fix/lib/commons-io/commons-io-2.22.0.jar",
+    "--classpath",
+    "prepare/fix/lib/commons-codec/commons-codec-1.22.0.jar",
+    "--assume",
+    "code >= 0 && code < 9",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "24",
+    "--max-array-length",
+    "12",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "46c4296e5f6046785a4f9202451a540162772e36f64d5f4585bf72efc659ff11",
+    "commit": "f22ba794701374e1a9a83ab40af6052ffdab5809",
+    "libTree": "a0952cd0510be445e07fb0348d900b3a7091511d",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 24,
+      "maxArrayLength": 12
+    },
+    "timeout": 60,
+    "scope": {
+      "label": "adapter",
+      "meaning": "The quotient and remainder of code divided by three select independent left and right maxRows values 1, 2 and 10. Each builds from CSVFormat.DEFAULT. The fixed text contains three one-field rows. Hash implication is checked only for objects equal according to the actual equals call.",
+      "method": "org.apache.commons.csv.CSVFormat#hashCode()I",
+      "revisions": {
+        "fix": {
+          "commit": "6d5993cb89f4f723ae416123b20f361bd863c484",
+          "loadedFrom": "slice/fix.jar",
+          "classSha256": "68797a70d9c45da0b66fd23c505dadae218479cf26c31aec67f2feaad9888417",
+          "origin": "an extracted source slice of 6d5993cb89f4f723ae416123b20f361bd863c484: src/main/java/org/apache/commons/csv/CSVException.java, src/main/java/org/apache/commons/csv/CSVFormat.java, src/main/java/org/apache/commons/csv/CSVParser.java, src/main/java/org/apache/commons/csv/CSVPrinter.java, src/main/java/org/apache/commons/csv/CSVRecord.java, src/main/java/org/apache/commons/csv/Constants.java, src/main/java/org/apache/commons/csv/DuplicateHeaderMode.java, src/main/java/org/apache/commons/csv/ExtendedBufferedReader.java, src/main/java/org/apache/commons/csv/Lexer.java, src/main/java/org/apache/commons/csv/QuoteMode.java, src/main/java/org/apache/commons/csv/Token.java, src/main/java/org/apache/commons/csv/package-info.java, compiled by JDK 21 with --release 21 -g -parameters",
+          "parameters": {
+            "names": [],
+            "recordedIn": "LocalVariableTable"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "csvgrid.Projection#hashContract(I)I",
+        "mapping": "The quotient and remainder of code divided by three select independent left and right maxRows values 1, 2 and 10. Each builds from CSVFormat.DEFAULT. The fixed text contains three one-field rows. Hash implication is checked only for objects equal according to the actual equals call.",
+        "correspondence": "finite-oracle",
+        "cases": 9
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "fix": [
+        {
+          "path": "adapter-fix.jar",
+          "sha256": "335c73d08b2fb47c48955b843fa25e7b4a8835343ba34b7a4e528ef29cf09d07",
+          "role": "adapter"
+        },
+        {
+          "path": "slice/fix.jar",
+          "sha256": "1c527dc585b991a6ac7c8bd0291a76887b5f30a0002c9177308659d934472f21",
+          "role": "original"
+        },
+        {
+          "path": "lib/commons-io/commons-io-2.22.0.jar",
+          "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/commons-codec/commons-codec-1.22.0.jar",
+          "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+          "role": "dependency"
+        }
+      ]
+    },
+    "checkedEntry": "csvgrid.Projection#hashContract(I)I",
+    "entryBindings": {
+      "fix": {
+        "entry": "csvgrid.Projection#hashContract(I)I",
+        "classSha256": "a6ec762d84191338ba1cb166252b3c18ca2c138be78a67da5361faf89062c75a",
+        "loadedFrom": "adapter-fix.jar",
+        "subject": "org.apache.commons.csv.CSVFormat#hashCode()I",
+        "subjectClassSha256": "68797a70d9c45da0b66fd23c505dadae218479cf26c31aec67f2feaad9888417"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "org.apache.commons.csv.CSVFormat#hashCode()I",
+      "checkedEntry": "csvgrid.Projection#hashContract(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 9"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "24"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "12"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "csvgrid.Projection#hashContract(I)I",
+        "mapping": "The quotient and remainder of code divided by three select independent left and right maxRows values 1, 2 and 10. Each builds from CSVFormat.DEFAULT. The fixed text contains three one-field rows. Hash implication is checked only for objects equal according to the actual equals call.",
+        "correspondence": "finite-oracle",
+        "cases": 9
+      }
+    },
+    "commits": {
+      "fix": "6d5993cb89f4f723ae416123b20f361bd863c484"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+      "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+      "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "fix": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/a0952cd0510be445e07fb0348d900b3a7091511d/jvmcontract",
+          "gaps",
+          "--target",
+          "csvgrid.Projection#hashContract(int)",
+          "--classes",
+          "prepare/fix/adapter-fix.jar",
+          "--classpath",
+          "prepare/fix/slice/fix.jar",
+          "--classpath",
+          "prepare/fix/lib/commons-io/commons-io-2.22.0.jar",
+          "--classpath",
+          "prepare/fix/lib/commons-codec/commons-codec-1.22.0.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-fix.stdout",
+        "stderr": "verifier/probe-fix.stderr",
+        "gaps": [
+          {
+            "id": "jdk-constructor:java.util.HashSet.<init>(I)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.util.HashSet.<init>(int)",
+            "sites": [
+              "org.apache.commons.csv.CSVFormat.validate:2628"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.lang.String.trim()Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.String.trim()",
+            "sites": [
+              "org.apache.commons.csv.CSVFormat.isBlank:1460"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.Character.charValue()C@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.Character.charValue()",
+            "sites": [
+              "org.apache.commons.csv.CSVFormat.isLineBreak:1480",
+              "org.apache.commons.csv.CSVFormat.validate:2608",
+              "org.apache.commons.csv.CSVFormat.validate:2611",
+              "org.apache.commons.csv.CSVFormat.validate:2614"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.Character.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.Character.equals(java.lang.Object)",
+            "sites": [
+              "org.apache.commons.csv.CSVFormat.validate:2617",
+              "org.apache.commons.csv.CSVFormat.validate:2620"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.Object.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.Object.equals(java.lang.Object)",
+            "sites": [
+              "java.util.Objects.equals:64"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.Object.hashCode()I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.Object.hashCode()",
+            "sites": [
+              "java.util.Arrays.hashCode:4599"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.Set.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.Set.add(java.lang.Object)",
+            "sites": [
+              "org.apache.commons.csv.CSVFormat.validate:2633"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.lang.String.format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.lang.String.format(java.lang.String, java.lang.Object[])",
+            "sites": [
+              "org.apache.commons.csv.CSVFormat.validate:2635"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.Arrays.toString([Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.Arrays.toString(java.lang.Object[])",
+            "sites": [
+              "org.apache.commons.csv.CSVFormat.validate:2637"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0475,
+      "peakRssBytes": 80715776,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0475,
+    "peakRssBytes": 80715776,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.051,
+  "missing": [
+    "eligible conclusion"
+  ],
+  "receipt": "receipts/hash-contract-fix/20261120T074552Z-1571b693/result.json",
+  "preparedClaim": "9dd9c97d9494428a",
+  "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Object.hashCode()I@jdk-21.0.13 (java.lang.Object.hashCode() at java.util.Arrays.hashCode:4599). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+  "endedAt": "2026-11-20T07:45:55.843678+00:00"
+}

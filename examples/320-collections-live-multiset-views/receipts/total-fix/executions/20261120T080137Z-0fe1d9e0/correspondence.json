@@ -1,0 +1,36 @@
+[
+  {
+    "revision": "fix",
+    "entry": "multigrid.Projection#total(I)I",
+    "adapterSha256": "7260fb6e73d7b8febf9fe36c40868ed6d5d18e4f854da6f8fa8e9a741a099c9c",
+    "adapterClassSha256": "b1d25981f407f4e08d5c298b6b8bd446db2f6d39c8d8f055a1dcb9dbda20753d",
+    "subject": {
+      "class": "org.apache.commons.collections4.multiset.AbstractMapMultiSet",
+      "method": "size",
+      "descriptor": "()I",
+      "loadedFrom": "slice/fix.jar",
+      "classSha256": "d52acba27d61066a2b4ac91b7536fa636c13c935d6232647b37b00d3ddcea61c",
+      "adapterCalls": [
+        "org.apache.commons.collections4.MultiSet$Entry#getElement()Ljava/lang/Object;",
+        "org.apache.commons.collections4.multiset.AbstractMapMultiSet#add(Ljava/lang/Object;I)I",
+        "org.apache.commons.collections4.multiset.AbstractMapMultiSet#contains(Ljava/lang/Object;)Z",
+        "org.apache.commons.collections4.multiset.AbstractMapMultiSet#entrySet()Ljava/util/Set;",
+        "org.apache.commons.collections4.multiset.AbstractMapMultiSet#getCount(Ljava/lang/Object;)I",
+        "org.apache.commons.collections4.multiset.AbstractMapMultiSet#size()I",
+        "org.apache.commons.collections4.multiset.AbstractMapMultiSet#uniqueSet()Ljava/util/Set;",
+        "org.apache.commons.collections4.multiset.HashMultiSet#<init>()V"
+      ],
+      "adapterCallsTarget": true
+    },
+    "mapping": "Code chooses positive A and B multiplicities 1 through 3, then uniqueSet or entrySet iteration. The iterator removes the key it actually returned on the same multiset. The expected result is indexed by that selected key independently for every row.",
+    "jdk": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "cases": 18,
+    "disagreements": 0
+  }
+]

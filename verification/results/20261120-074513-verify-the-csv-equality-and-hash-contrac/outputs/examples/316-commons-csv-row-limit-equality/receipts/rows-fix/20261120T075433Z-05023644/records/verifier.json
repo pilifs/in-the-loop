@@ -1,0 +1,803 @@
+{
+  "task": "rows-fix",
+  "record": {
+    "kind": "verifier",
+    "revision": "fix",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/23d7a169135a468bc39a55f00a33b63511c00bd2/jvmcontract",
+      "prove",
+      "csvgrid.Projection#rows(int)",
+      "--classes",
+      "prepare/fix/adapter-fix.jar",
+      "--classpath",
+      "prepare/fix/slice/fix.jar",
+      "--classpath",
+      "prepare/fix/lib/commons-io/commons-io-2.22.0.jar",
+      "--classpath",
+      "prepare/fix/lib/commons-codec/commons-codec-1.22.0.jar",
+      "--assume",
+      "code >= 0 && code < 9",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "24",
+      "--max-array-length",
+      "12",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 1,
+    "seconds": 0.051,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "ec92e32f76db57382b6dd7ebd722d118d6f10d34bd23435b0aab81aee8faf0da",
+      "commit": "a709c3dc6dfc21f25ad6217e7314aeb2aca6331e",
+      "libTree": "23d7a169135a468bc39a55f00a33b63511c00bd2",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 24,
+        "maxArrayLength": 12
+      },
+      "timeout": 60,
+      "scope": {
+        "label": "adapter",
+        "meaning": "The quotient and remainder of code divided by three select independent left and right maxRows values 1, 2 and 10. Each builds from CSVFormat.DEFAULT. The fixed text contains three one-field rows. Hash implication is checked only for objects equal according to the actual equals call.",
+        "method": "org.apache.commons.csv.CSVFormat#parse(Ljava/io/Reader;)Lorg/apache/commons/csv/CSVParser;",
+        "revisions": {
+          "fix": {
+            "commit": "6d5993cb89f4f723ae416123b20f361bd863c484",
+            "loadedFrom": "slice/fix.jar",
+            "classSha256": "68797a70d9c45da0b66fd23c505dadae218479cf26c31aec67f2feaad9888417",
+            "origin": "an extracted source slice of 6d5993cb89f4f723ae416123b20f361bd863c484: src/main/java/org/apache/commons/csv/CSVException.java, src/main/java/org/apache/commons/csv/CSVFormat.java, src/main/java/org/apache/commons/csv/CSVParser.java, src/main/java/org/apache/commons/csv/CSVPrinter.java, src/main/java/org/apache/commons/csv/CSVRecord.java, src/main/java/org/apache/commons/csv/Constants.java, src/main/java/org/apache/commons/csv/DuplicateHeaderMode.java, src/main/java/org/apache/commons/csv/ExtendedBufferedReader.java, src/main/java/org/apache/commons/csv/Lexer.java, src/main/java/org/apache/commons/csv/QuoteMode.java, src/main/java/org/apache/commons/csv/Token.java, src/main/java/org/apache/commons/csv/package-info.java, compiled by JDK 21 with --release 21 -g -parameters",
+            "parameters": {
+              "names": [
+                "reader"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "csvgrid.Projection#rows(I)I",
+          "mapping": "The quotient and remainder of code divided by three select independent left and right maxRows values 1, 2 and 10. Each builds from CSVFormat.DEFAULT. The fixed text contains three one-field rows. Hash implication is checked only for objects equal according to the actual equals call.",
+          "correspondence": "finite-oracle",
+          "cases": 9
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "fix": [
+          {
+            "path": "adapter-fix.jar",
+            "sha256": "335c73d08b2fb47c48955b843fa25e7b4a8835343ba34b7a4e528ef29cf09d07",
+            "role": "adapter"
+          },
+          {
+            "path": "slice/fix.jar",
+            "sha256": "1c527dc585b991a6ac7c8bd0291a76887b5f30a0002c9177308659d934472f21",
+            "role": "original"
+          },
+          {
+            "path": "lib/commons-io/commons-io-2.22.0.jar",
+            "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/commons-codec/commons-codec-1.22.0.jar",
+            "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+            "role": "dependency"
+          }
+        ]
+      },
+      "checkedEntry": "csvgrid.Projection#rows(I)I",
+      "entryBindings": {
+        "fix": {
+          "entry": "csvgrid.Projection#rows(I)I",
+          "classSha256": "a6ec762d84191338ba1cb166252b3c18ca2c138be78a67da5361faf89062c75a",
+          "loadedFrom": "adapter-fix.jar",
+          "subject": "org.apache.commons.csv.CSVFormat#parse(Ljava/io/Reader;)Lorg/apache/commons/csv/CSVParser;",
+          "subjectClassSha256": "68797a70d9c45da0b66fd23c505dadae218479cf26c31aec67f2feaad9888417"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "org.apache.commons.csv.CSVFormat#parse(Ljava/io/Reader;)Lorg/apache/commons/csv/CSVParser;",
+        "checkedEntry": "csvgrid.Projection#rows(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 9"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "24"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "12"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "csvgrid.Projection#rows(I)I",
+          "mapping": "The quotient and remainder of code divided by three select independent left and right maxRows values 1, 2 and 10. Each builds from CSVFormat.DEFAULT. The fixed text contains three one-field rows. Hash implication is checked only for objects equal according to the actual equals call.",
+          "correspondence": "finite-oracle",
+          "cases": 9
+        }
+      },
+      "commits": {
+        "fix": "6d5993cb89f4f723ae416123b20f361bd863c484"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+        "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+        "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "fix": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/23d7a169135a468bc39a55f00a33b63511c00bd2/jvmcontract",
+            "gaps",
+            "--target",
+            "csvgrid.Projection#rows(int)",
+            "--classes",
+            "prepare/fix/adapter-fix.jar",
+            "--classpath",
+            "prepare/fix/slice/fix.jar",
+            "--classpath",
+            "prepare/fix/lib/commons-io/commons-io-2.22.0.jar",
+            "--classpath",
+            "prepare/fix/lib/commons-codec/commons-codec-1.22.0.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.064,
+          "stdout": "verifier/probe-fix.stdout",
+          "stderr": "verifier/probe-fix.stderr",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.io.Reader.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.io.Reader.<init>()",
+              "sites": [
+                "org.apache.commons.io.input.UnsynchronizedReader.<init>:52"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.io.StringReader.<init>(Ljava/lang/String;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.io.StringReader.<init>(java.lang.String)",
+              "sites": [
+                "csvgrid.Projection.count:12"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.ArrayList.<init>(I)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.ArrayList.<init>(int)",
+              "sites": [
+                "org.apache.commons.csv.CSVParser.createHeaders:647"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.HashSet.<init>(I)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.HashSet.<init>(int)",
+              "sites": [
+                "org.apache.commons.csv.CSVFormat.validate:2628"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.TreeMap.<init>(Ljava/util/Comparator;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.TreeMap.<init>(java.util.Comparator)",
+              "sites": [
+                "org.apache.commons.csv.CSVParser.createEmptyHeaderMap:590"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.io.Reader.close()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.io.Reader.close()",
+              "sites": [
+                "org.apache.commons.io.input.UnsynchronizedBufferedReader.close:130"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.lang.StringBuilder.setLength(I)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.lang.StringBuilder.setLength(int)",
+              "sites": [
+                "org.apache.commons.csv.Lexer.trimTrailingSpaces:517",
+                "org.apache.commons.csv.Token.reset:65"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.lang.Throwable.addSuppressed(Ljava/lang/Throwable;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.lang.Throwable.addSuppressed(java.lang.Throwable)",
+              "sites": [
+                "csvgrid.Projection.count:12"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.List.clear()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.List.clear()",
+              "sites": [
+                "org.apache.commons.csv.CSVParser.nextRecord:887"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.Class.getSimpleName()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Class.getSimpleName()",
+              "sites": [
+                "org.apache.commons.io.build.AbstractOrigin.getSimpleClassName:1354",
+                "org.apache.commons.io.build.AbstractOrigin.unsupportedOperation:1398"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.String.trim()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.String.trim()",
+              "sites": [
+                "org.apache.commons.csv.CSVFormat.isBlank:1460",
+                "org.apache.commons.csv.CSVFormat.trim:2587",
+                "org.apache.commons.csv.Lexer.nextToken:270"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/CharSequence;)Ljava/lang/StringBuilder;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.StringBuilder.append(java.lang.CharSequence)",
+              "sites": [
+                "org.apache.commons.csv.CSVParser.nextRecord:916"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.StringBuilder.append([C)Ljava/lang/StringBuilder;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.StringBuilder.append(char[])",
+              "sites": [
+                "org.apache.commons.csv.Lexer.appendNextEscapedCharacterToToken:77"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.charset.Charset.newEncoder()Ljava/nio/charset/CharsetEncoder;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.charset.Charset.newEncoder()",
+              "sites": [
+                "org.apache.commons.csv.ExtendedBufferedReader.<init>:83"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.nio.charset.CharsetEncoder.encode(Ljava/nio/CharBuffer;)Ljava/nio/ByteBuffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.nio.charset.CharsetEncoder.encode(java.nio.CharBuffer)",
+              "sites": [
+                "org.apache.commons.csv.ExtendedBufferedReader.getEncodedCharLength:138",
+                "org.apache.commons.csv.ExtendedBufferedReader.getEncodedCharLength:145"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.stream.Stream.collect(Ljava/util/stream/Collector;)Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.stream.Stream.collect(java.util.stream.Collector)",
+              "sites": [
+                "org.apache.commons.csv.CSVParser.getRecords:769"
+              ]
+            },
+            {
+              "id": "class-initializer:org.apache.commons.io.Charsets.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "org.apache.commons.io.Charsets.<clinit>()",
+              "sites": [
+                "org.apache.commons.io.build.AbstractOrigin.getReader:1345"
+              ]
+            },
+            {
+              "id": "class-initializer:org.apache.commons.io.IOUtils.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "org.apache.commons.io.IOUtils.<clinit>()",
+              "sites": [
+                "org.apache.commons.io.input.UnsynchronizedBufferedReader.read:280"
+              ]
+            },
+            {
+              "id": "class-initializer:org.apache.commons.io.build.AbstractStreamBuilder.<clinit>()V",
+              "kind": "class-initializer",
+              "call": "org.apache.commons.io.build.AbstractStreamBuilder.<clinit>()",
+              "sites": [
+                "org.apache.commons.csv.CSVParser.builder:301"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.io.Reader.read([CII)I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.io.Reader.read(char[], int, int)",
+              "sites": [
+                "org.apache.commons.io.input.UnsynchronizedBufferedReader.fillBuf:146",
+                "org.apache.commons.io.input.UnsynchronizedBufferedReader.fillBuf:173",
+                "org.apache.commons.io.input.UnsynchronizedBufferedReader.read:315"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.io.Reader.ready()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.io.Reader.ready()",
+              "sites": [
+                "org.apache.commons.io.input.UnsynchronizedBufferedReader.read:304",
+                "org.apache.commons.io.input.UnsynchronizedBufferedReader.ready:423"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Character.charValue()C@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Character.charValue()",
+              "sites": [
+                "org.apache.commons.csv.CSVFormat.isLineBreak:1480",
+                "org.apache.commons.csv.CSVFormat.validate:2608",
+                "org.apache.commons.csv.CSVFormat.validate:2611",
+                "org.apache.commons.csv.CSVFormat.validate:2614",
+                "org.apache.commons.csv.Lexer.nullToDisabled:310"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Character.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Character.equals(java.lang.Object)",
+              "sites": [
+                "org.apache.commons.csv.CSVFormat.validate:2617",
+                "org.apache.commons.csv.CSVFormat.validate:2620"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Object.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Object.equals(java.lang.Object)",
+              "sites": [
+                "java.util.HashMap.find:80",
+                "java.util.Objects.equals:64"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Object.hashCode()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Object.hashCode()",
+              "sites": [
+                "java.util.Arrays.hashCode:4599",
+                "java.util.HashMap.find:77",
+                "java.util.HashMap.put:65"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.nio.ByteBuffer.limit()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.nio.ByteBuffer.limit()",
+              "sites": [
+                "org.apache.commons.csv.ExtendedBufferedReader.getEncodedCharLength:138",
+                "org.apache.commons.csv.ExtendedBufferedReader.getEncodedCharLength:145"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.add(java.lang.Object)",
+              "sites": [
+                "org.apache.commons.csv.CSVParser.addRecordValue:574",
+                "org.apache.commons.csv.CSVParser.createHeaders:649"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.isEmpty()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.isEmpty()",
+              "sites": [
+                "org.apache.commons.csv.CSVParser.nextRecord:923"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.size()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.size()",
+              "sites": [
+                "csvgrid.Projection.count:13"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Set.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Set.add(java.lang.Object)",
+              "sites": [
+                "org.apache.commons.csv.CSVFormat.validate:2633"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Character.isHighSurrogate(C)Z@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Character.isHighSurrogate(char)",
+              "sites": [
+                "org.apache.commons.csv.ExtendedBufferedReader.getEncodedCharLength:140"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Character.isSurrogate(C)Z@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Character.isSurrogate(char)",
+              "sites": [
+                "org.apache.commons.csv.ExtendedBufferedReader.getEncodedCharLength:137"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Character.isSurrogatePair(CC)Z@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Character.isSurrogatePair(char, char)",
+              "sites": [
+                "org.apache.commons.csv.ExtendedBufferedReader.getEncodedCharLength:144"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Character.isWhitespace(C)Z@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Character.isWhitespace(char)",
+              "sites": [
+                "org.apache.commons.csv.Lexer.nextToken:279",
+                "org.apache.commons.csv.Lexer.parseEncapsulatedToken:367",
+                "org.apache.commons.csv.Lexer.trimTrailingSpaces:513"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Character.toString(C)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Character.toString(char)",
+              "sites": [
+                "org.apache.commons.csv.Lexer.<clinit>:34",
+                "org.apache.commons.csv.Lexer.<clinit>:35"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.String.format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.String.format(java.lang.String, java.lang.Object[])",
+              "sites": [
+                "org.apache.commons.csv.CSVException.<init>:43",
+                "org.apache.commons.csv.CSVFormat.validate:2635",
+                "org.apache.commons.csv.CSVParser.createHeaders:639",
+                "org.apache.commons.io.IOUtils.checkFromIndexSize:607",
+                "org.apache.commons.io.build.AbstractOrigin.unsupportedOperation:1396",
+                "org.apache.commons.io.build.AbstractStreamBuilder.throwIae:426"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.nio.CharBuffer.wrap([C)Ljava/nio/CharBuffer;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.nio.CharBuffer.wrap(char[])",
+              "sites": [
+                "org.apache.commons.csv.ExtendedBufferedReader.getEncodedCharLength:138",
+                "org.apache.commons.csv.ExtendedBufferedReader.getEncodedCharLength:145"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.nio.file.Files.newBufferedReader(Ljava/nio/file/Path;Ljava/nio/charset/Charset;)Ljava/io/BufferedReader;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.nio.file.Files.newBufferedReader(java.nio.file.Path, java.nio.charset.Charset)",
+              "sites": [
+                "org.apache.commons.io.build.AbstractOrigin.getReader:1345"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Arrays.toString([Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Arrays.toString(java.lang.Object[])",
+              "sites": [
+                "org.apache.commons.csv.CSVFormat.validate:2637",
+                "org.apache.commons.csv.CSVParser.createHeaders:632",
+                "org.apache.commons.csv.CSVParser.createHeaders:641"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Collections.emptyList()Ljava/util/List;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Collections.emptyList()",
+              "sites": [
+                "org.apache.commons.csv.CSVParser.createHeaders:655"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Collections.unmodifiableList(Ljava/util/List;)Ljava/util/List;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Collections.unmodifiableList(java.util.List)",
+              "sites": [
+                "org.apache.commons.csv.CSVParser.createHeaders:655"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Objects.toString(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Objects.toString(java.lang.Object, java.lang.String)",
+              "sites": [
+                "org.apache.commons.csv.CSVParser.nextRecord:925"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Spliterators.spliteratorUnknownSize(Ljava/util/Iterator;I)Ljava/util/Spliterator;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Spliterators.spliteratorUnknownSize(java.util.Iterator, int)",
+              "sites": [
+                "org.apache.commons.csv.CSVParser.stream:945"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.stream.Collectors.toList()Ljava/util/stream/Collector;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.stream.Collectors.toList()",
+              "sites": [
+                "org.apache.commons.csv.CSVParser.getRecords:769"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.stream.StreamSupport.stream(Ljava/util/Spliterator;Z)Ljava/util/stream/Stream;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.stream.StreamSupport.stream(java.util.Spliterator, boolean)",
+              "sites": [
+                "org.apache.commons.csv.CSVParser.stream:945"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0471,
+        "peakRssBytes": 80875520,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "csvgrid.Projection#rows(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 9",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.StringReader.<init>(Ljava/lang/String;)V@jdk-21.0.13 (java.io.StringReader.<init>(java.lang.String) at csvgrid.Projection.count:12). With --gaps assume it assumes instead that java.io.StringReader.<init>(java.lang.String) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "csvgrid.Projection#rows(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.StringReader.<init>(Ljava/lang/String;)V@jdk-21.0.13 (java.io.StringReader.<init>(java.lang.String) at csvgrid.Projection.count:12). With --gaps assume it assumes instead that java.io.StringReader.<init>(java.lang.String) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "uri": null,
+            "line": 24
+          }
+        ],
+        "output": "✗ csvgrid.Projection#rows(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.StringReader.<init>(Ljava/lang/String;)V@jdk-21.0.13 (java.io.StringReader.<init>(java.lang.String) at csvgrid.Projection.count:12). With --gaps assume it assumes instead that java.io.StringReader.<init>(java.lang.String) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (Bitwuzla)",
+          "seconds": 0.012973577,
+          "properties": 1,
+          "unwind": 24,
+          "max_array_length": 12,
+          "stage": null,
+          "native": {
+            "paths": 4,
+            "merges": 0,
+            "solver_calls": 4,
+            "solving_seconds": 1.0771e-05,
+            "gates_evaluated": 10,
+            "evaluating_seconds": 5.7e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "word_operations": 6,
+            "finite_queries": {
+              "diagrams": 4,
+              "bitwuzla": 0
+            },
+            "variables": 73,
+            "clauses": 1,
+            "seconds": 0.011282286,
+            "loading_seconds": 0.001377783,
+            "decoding_seconds": 0.000290251,
+            "encoding_seconds": 0.000229428,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.io.StringReader.<init>(Ljava/lang/String;)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.io.StringReader.<init>(java.lang.String)",
+              "sites": [
+                "csvgrid.Projection.count:12"
+              ],
+              "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+              "treatment": "refused"
+            }
+          ],
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.011,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.001,
+                "lowering": 0.0,
+                "symbolic": 0.009,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 73,
+                "clauses": 1
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.043,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.011,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.03
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 9",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 24,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (Bitwuzla)",
+            "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+            "fallback": null,
+            "sat": {
+              "solver": "Bitwuzla",
+              "version": "0.8.2",
+              "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+              "configuration": [
+                "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                "sat-solver cadical",
+                "produce-models",
+                "otherwise Bitwuzla's default options",
+                "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                "the run's deadline through Bitwuzla's termination callback",
+                "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261120-074513-verify-the-csv-equality-and-hash-contrac/.build-py/examples-bsavcven/targets/316/rows-fix/20261120T075433Z-05023644",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261120-074513-verify-the-csv-equality-and-hash-contrac/.build-py/examples-bsavcven/targets/316/rows-fix/20261120T075433Z-05023644"
+  }
+}

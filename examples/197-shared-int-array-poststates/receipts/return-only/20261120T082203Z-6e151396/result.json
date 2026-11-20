@@ -1,0 +1,438 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "9ff6c97d2aae8061",
+    "format": 1,
+    "example": "197",
+    "statement": {
+      "approach": "target",
+      "task": "return-only",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "arrays.Update#apply([I[I)I",
+      "revisions": [
+        "reference",
+        "skipped-write"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "return-only",
+        "kind": "equivalence",
+        "relation": "preservation",
+        "target": "arrays.Update#apply([I[I)I",
+        "file": "claims/return-only.json",
+        "sha256": "5b559494356137133800b090a311dda87165a8c8407420692ec372c8631105fd",
+        "property": "return-only",
+        "claimKind": "preservation",
+        "statement": "Both versions agree on the return value for every admitted input heap.",
+        "assume": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
+        "assert": null,
+        "throws": [],
+        "nullable": [
+          "left",
+          "right"
+        ],
+        "mayAlias": [
+          "left,right"
+        ],
+        "observations": [
+          {
+            "kind": "result"
+          }
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 8,
+          "maxArrayLength": 2
+        },
+        "explicitBounds": {
+          "maxArrayLength": 2,
+          "unwind": 8
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "root-driver",
+            "kind": "driver",
+            "path": "driver/arrays/RootCases.java",
+            "sha256": "aa08a4dab75223b756d23790de1ad2db8f5422ff54690da47baa6b37436e33d4"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "1d51111027fe71a83ec413f8a23b63655dc33c0b35c2d8a23c38373aebd20b82"
+          }
+        ],
+        "key": "bb7a6542bb91c33a"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 2,
+      "intendedInputs": null
+    },
+    "inputs": {
+      "patch": null,
+      "before": {
+        "sha256": "64a18479433f652d1aab3961153791924f919d62e9fde43c8c18da871ce24683",
+        "files": 1
+      },
+      "after": {
+        "sha256": "2538d3c1dcdf7943d2bc5ad14bf23f63c302fc15f0ca0d7a5b504a9c1c25a16e",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "return-only",
+      "sidecar": "2079167da1ad9240b1361d23a941dcd30c7cee127ee4241665978f04f4497b6a",
+      "revisions": {
+        "reference": "1f5b49504123c5d6728e376e9242173595eabc19",
+        "skipped-write": "c9d261dde1ce7d28386e02a064ea4c6157450a97"
+      },
+      "dependencies": [
+        {
+          "revision": "reference",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ee6e5c8a0aad68edf9a0a4e1a03b5325bf24c54fe879eafc1b5f82c7beee3a7e"
+        },
+        {
+          "revision": "reference",
+          "position": 1,
+          "role": "original",
+          "sha256": "00239502188785b9f40e7d3b0f30b5b7a13a1663e72fcffe06c4ad08ecf9a826"
+        },
+        {
+          "revision": "skipped-write",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ee6e5c8a0aad68edf9a0a4e1a03b5325bf24c54fe879eafc1b5f82c7beee3a7e"
+        },
+        {
+          "revision": "skipped-write",
+          "position": 1,
+          "role": "original",
+          "sha256": "0652189c24e51f6ef652ee82d935dfce6967443c5ebd6753c39f88a2e10706a3"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/return-only.json": "5b559494356137133800b090a311dda87165a8c8407420692ec372c8631105fd",
+        "controls/oracle.py": "1d51111027fe71a83ec413f8a23b63655dc33c0b35c2d8a23c38373aebd20b82",
+        "driver/arrays/RootCases.java": "aa08a4dab75223b756d23790de1ad2db8f5422ff54690da47baa6b37436e33d4"
+      },
+      "claimKey": "bb7a6542bb91c33a"
+    }
+  },
+  "attempt": {
+    "id": "20261120T082203Z-6e151396",
+    "claim": "9ff6c97d2aae8061",
+    "startedAt": "2026-11-20T08:22:03+00:00",
+    "seconds": 1.2,
+    "engine": "native",
+    "options": [
+      "equivalence",
+      "--before",
+      "verifier/classes/reference",
+      "--after",
+      "verifier/classes/skipped-write",
+      "--target",
+      "arrays.Update#apply(int[], int[])",
+      "--assume",
+      "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
+      "--observe",
+      "{\"kind\": \"result\"}",
+      "--nullable",
+      "left",
+      "--nullable",
+      "right",
+      "--may-alias",
+      "left,right",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "8",
+      "--max-array-length",
+      "2",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "b30180fc7047c9ee0637eacf8155e42aac3c88e38b71e8ce3727e4aa0b6bbfec"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "214534724a652800b8f1026493add7a1ecdd6966c5870624be62651c28b3f14b",
+        "files": 1
+      },
+      "after": {
+        "sha256": "615a34bbc4f6ae4f5e69a33ec8b8b6d9eff1e2057da7ba5151bb8a46378f66ce",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-081135-confirm-aliased-array-roots-after-librar",
+      "sourceCommit": "ddf77b2e1673895ef1874faae091521a0b8ac5d8",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-081135-confirm-aliased-array-roots-after-librar"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control reference on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-reference-jdk21.stdout",
+        "stderr": "records/control-reference-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control skipped-write on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-skipped-write-jdk21.stdout",
+        "stderr": "records/control-skipped-write-jdk21.stderr"
+      },
+      {
+        "name": "verifier pair on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 1.054,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 8,
+      "maxArrayLength": 2,
+      "complete": true
+    }
+  },
+  "conclusion": {
+    "claim": "9ff6c97d2aae8061",
+    "attempt": "20261120T082203Z-6e151396",
+    "status": "established",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "✓ Verified",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"reference\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"skipped-write\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean in 0.0 s; loops unwound 8 times with unwinding assertions",
+    "problem": null,
+    "domain": "left: int[] of length ≤ 2, or null × right: int[] of length ≤ 2, or null; left and right may be the same array",
+    "replay": null,
+    "stated": {
+      "kind": "regression",
+      "domain": {
+        "parameters": [
+          {
+            "name": "left",
+            "type": "int[]",
+            "kind": "array",
+            "null": true,
+            "maxLength": 2
+          },
+          {
+            "name": "right",
+            "type": "int[]",
+            "kind": "array",
+            "null": true,
+            "maxLength": 2
+          }
+        ],
+        "sharedArrays": true,
+        "mayAlias": [
+          [
+            "left",
+            "right"
+          ]
+        ],
+        "text": "left: int[] of length ≤ 2, or null × right: int[] of length ≤ 2, or null; left and right may be the same array"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "return value and whether one was returned",
+        "exceptions": "unselected"
+      },
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 2,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false).",
+        "witness": "agree(len0=0, cell0_0=20, cell0_1=20, len1=0, cell1_0=20, cell1_1=20, flag2=false, flag3=false, flag4=false)"
+      },
+      "spec": {
+        "contract": {
+          "subject": "arrays.Update#apply(int[], int[])",
+          "inputs": [
+            {
+              "name": "left",
+              "type": "int[]",
+              "derivation": {
+                "kind": "identity"
+              }
+            },
+            {
+              "name": "right",
+              "type": "int[]",
+              "derivation": {
+                "kind": "identity"
+              }
+            }
+          ],
+          "required": [
+            "result"
+          ]
+        },
+        "observations": [
+          {
+            "kind": "result"
+          }
+        ]
+      }
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "3f82a4f7bdfc2e15c104248f8fa54f7ea0994b7447137e0f493f3648136ec167",
+        "bytes": 62122
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "eef4f2624ec07a5019fe723905076103c35541890786aa5b83ddb0232a7f455d",
+        "bytes": 1392
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "c3bc8f13f9ada2f000d39ac39c946666e94c2f203c2f4e6b78e627ea91c80607",
+        "bytes": 2721
+      },
+      {
+        "path": "records/control-reference-jdk21.stdout",
+        "sha256": "cc178142f43de06e80d0f2c9fb6193f8dcf70d8fe3f1d254b04ba3dd998d36b8",
+        "bytes": 4696
+      },
+      {
+        "path": "records/control-reference-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "0ec9f6de133808a23cfe2c97a373e457cd53961882262037d5044330f3682a79",
+        "bytes": 34858
+      },
+      {
+        "path": "records/control-skipped-write-jdk21.stdout",
+        "sha256": "087d19a3bf89b8d693b9a0c8fda15ac9bfe505f6758ef21ac1b0a0143c69ecd3",
+        "bytes": 4696
+      },
+      {
+        "path": "records/control-skipped-write-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "7bf46f85c222ab46d1d62ab5f4404a2845f6d302ca2b8724e6f402cf925311d8",
+        "bytes": 14990
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "a3965e5bdc397903e3ddd4a1b22840630e5e747cffcea3fbfbbb8d2af0722ef5",
+        "bytes": 26962
+      }
+    ]
+  }
+}
