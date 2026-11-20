@@ -156,6 +156,8 @@ def translate(plan: TaskPlan) -> ProofRecipe | Unsupported:
     for field, flag in (("plan", "--plan"), ("contracts", "--contracts")):
         if claim.get(field):
             arguments.append(Argument(field, flag, claim[field]["path"], file=True))
+    if plan.checkedLemmas:
+        arguments.append(Argument("checkedLemmas", "--lemmas", plan.checkedLemmas["path"], file=True))
     add("engine", "--engine", [plan.engine])
     add("gaps", "--gaps", [plan.gaps])
     add("namedModels", "--model", claim.get("namedModels") or [])

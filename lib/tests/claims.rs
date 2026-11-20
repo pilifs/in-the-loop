@@ -105,7 +105,7 @@ fn a_string_array_parameter_is_strings_of_their_own_or_null_and_a_witness_runs_o
 fn lambdas_method_references_and_the_stream_models_run_as_the_loops_they_stand_for() {
     jvmcontract::tool_tier!();
     let Some(classes) = classes() else { return };
-    for method in ["lambda", "streams", "chars", "range", "mapped"] {
+    for method in ["lambda", "streams", "chars", "range", "mapped", "optional"] {
         proved(classes, &format!("claims.L#{method}"), 3);
     }
 }

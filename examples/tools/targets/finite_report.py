@@ -11,11 +11,13 @@ from targets import route, workflow
 from targets.finite_oracle import Table, agrees
 
 
-def report(folder):
+def report(folder, sequence_field=None):
     example = json.loads((folder / "example.json").read_text())
     target = json.loads((folder / "target.json").read_text())
     oracle = next(c["path"] for c in target["controls"] if c["kind"] == "oracle")
     table = Table(folder / oracle)
+    if sequence_field and any(not isinstance(c["input"].get(sequence_field), list) for c in table.cases.values()):
+        raise ValueError(f"every admitted input must have a sequence named {sequence_field!r}")
     runs = []
     for task in (t for t in target["tasks"] if t["kind"] == "replay"):
         plan = route.resolve(folder, example, target, task["id"])
@@ -46,6 +48,14 @@ def report(folder):
                              if not agrees(row["direct"][name], table.expected(case, row, name), field)]
                 result = {"mismatches": len(different)}
                 if different:
+                    if sequence_field:
+                        different.sort(key=lambda pair: (len(pair[0]["input"][sequence_field]), pair[0]["id"]))
+                        length = len(different[0][0]["input"][sequence_field])
+                        result["minimum"] = {
+                            "field": sequence_field, "length": length,
+                            "shorterInputsChecked": sum(len(c["input"][sequence_field]) < length for c, _ in data),
+                            "witnessesOfThisLength": sum(len(c["input"][sequence_field]) == length for c, _ in different),
+                        }
                     case, row = different[0]
                     result["first"] = {"id": case["id"], "input": case["input"], "direct": row["direct"][name],
                                        "expected": table.expected(case, row, name),
@@ -64,6 +74,7 @@ def report(folder):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("number")
+    parser.add_argument("--sequence-field", help="minimize each disagreement by the length of this input sequence")
     args = parser.parse_args()
     [folder] = list(TOOLS.parent.glob(args.number + "-*"))
-    print(json.dumps(report(folder), ensure_ascii=False, indent=2))
+    print(json.dumps(report(folder, args.sequence_field), ensure_ascii=False, indent=2))

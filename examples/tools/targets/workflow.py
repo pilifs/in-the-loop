@@ -332,6 +332,9 @@ def plan_task(folder, example, target, task):
                           f"{' or '.join(missing)}")
     try:
         claim = source_claim(folder, target, t, controls)
+        lemmas = hashed(folder, t["checkedLemmas"]) if t.get("checkedLemmas") else None
+        if lemmas and (t["kind"] != "prove" or t.get("engine") != "native"):
+            return refuse("checked lemmas require a native property task", stage="claim")
     except ClaimError as e:
         return refuse(str(e), stage="claim")
     prep = target["preparation"]
@@ -340,7 +343,7 @@ def plan_task(folder, example, target, task):
         revisions=revisions, claim=claim, prerequisites=tuple(t.get("requires", [])), artifacts=artifacts,
         tools=tools_of(t, prep["route"], prep, controls, artifacts), engine=t.get("engine"), gaps=t.get("gaps"),
         expected=t.get("expected"), outputs={"receipts": f"receipts/{task}"}, folder=str(folder.resolve()),
-        network=prep["route"] in ("published-artifact", "upstream-build", "source-slice"))
+        network=prep["route"] in ("published-artifact", "upstream-build", "source-slice"), checkedLemmas=lemmas)
 
 
 

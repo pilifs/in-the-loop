@@ -1,0 +1,130 @@
+{
+  "status": "established",
+  "entry": "fractiongrid.Projection#bits(I)I",
+  "inputs": 3,
+  "differences": 0,
+  "sides": {
+    "fix": {
+      "commit": "63a48705a496bf2506121dcddbd8cac2a78f877c",
+      "entry": {
+        "entry": "fractiongrid.Projection#bits(I)I",
+        "classSha256": "94d3a5ee7c09f793efbfd89efa259fda5c015db60cef869c80ad7b32c03be510",
+        "loadedFrom": "adapter-fix.jar",
+        "subject": "org.apache.commons.math3.fraction.Fraction#percentageValue()D",
+        "subjectClassSha256": "056fbe526b7f36c404807ba2c6fd477439aba018895ede24ea29a58b621656b9"
+      },
+      "classpath": [
+        {
+          "path": "adapter-fix.jar",
+          "sha256": "bbdeba30222ffb8fe61928bb1a864f8960e47aef76e86c2d70c6bd79c56ece90",
+          "role": "adapter"
+        },
+        {
+          "path": "slice/fix.jar",
+          "sha256": "53d79a465aa65ea2910dc56540b29ea7afc20d18fde4d7f8c61bce8739f258cb",
+          "role": "original"
+        }
+      ],
+      "parameter": "code",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 10 && code < 13)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = fractiongrid.Projection.bits(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "950703bb411977b3b46e6b5c1e35f86f840ad559ab057043691d0b528d02e969",
+      "stdoutSha256": "6a2c43ff6f93f7588fd39212928882f92e9cf80b87f789ac8b41c2492518ae7c",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC"
+      ],
+      "interval": [
+        10,
+        12
+      ],
+      "rows": [
+        {
+          "value": 10,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 11,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 12,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        }
+      ],
+      "seconds": 0.072,
+      "cpuSeconds": 0.1102,
+      "peakRssBytes": 63655936,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "correspondence": [
+    {
+      "revision": "fix",
+      "entry": "fractiongrid.Projection#bits(I)I",
+      "adapterSha256": "bbdeba30222ffb8fe61928bb1a864f8960e47aef76e86c2d70c6bd79c56ece90",
+      "adapterClassSha256": "94d3a5ee7c09f793efbfd89efa259fda5c015db60cef869c80ad7b32c03be510",
+      "subject": {
+        "class": "org.apache.commons.math3.fraction.Fraction",
+        "method": "percentageValue",
+        "descriptor": "()D",
+        "loadedFrom": "slice/fix.jar",
+        "classSha256": "056fbe526b7f36c404807ba2c6fd477439aba018895ede24ea29a58b621656b9",
+        "adapterCalls": [
+          "org.apache.commons.math3.fraction.Fraction#<init>(II)V",
+          "org.apache.commons.math3.fraction.Fraction#percentageValue()D"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "Code 0 to 9 selects both signs of 21474836 plus offsets -2 through 2. Codes 10 to 12 select -1, 0 and 1. Denominator is one. Each exact integer product 100L*n is representable as double; the observer uses all 64 raw bits.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 13,
+      "disagreements": 0
+    }
+  ],
+  "prepareSeconds": 0.0087,
+  "controlSeconds": 0.0051,
+  "wallSeconds": 0.599,
+  "task": "small-fix",
+  "sourceClaim": "1cb81567d9bc538a",
+  "inputsKey": "10d2589dac643cf2716dcec6ffee7add71d80d6178a329ae298bfe4d5af82dfb",
+  "revisions": [
+    "fix"
+  ],
+  "expected": "established",
+  "sourceLocks": {
+    "fix": "b3061871010c31801fff281920a9d86191c2591a61cfef712f37be367d4625c4"
+  }
+}

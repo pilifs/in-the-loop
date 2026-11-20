@@ -229,9 +229,6 @@ def campaign(folder, example, target, tasks, seconds, retry, stop_after):
     if not tasks or len(set(tasks)) != len(tasks) or any(not isinstance(p, interfaces.TaskPlan) for p in plans):
         raise ValueError("the batch must name distinct plannable tasks")
     attempts = folder / "records/finite-proofs"
-    batch_id = executions.new_id(executions.now())
-    directory = attempts / batch_id
-    directory.mkdir(parents=True)
     if seconds <= 0 or (stop_after is not None and not 1 <= stop_after < len(tasks)):
         raise ValueError("invalid finite execution budget or interruption point")
     keys = {p.task: claim_identity(p) for p in plans}
@@ -241,6 +238,9 @@ def campaign(folder, example, target, tasks, seconds, retry, stop_after):
         prior = json.loads((attempts / retry / "batch.json").read_text())
         if prior["claims"] != keys:
             raise ValueError("the retry changed the frozen claim set or revision bindings")
+    batch_id = executions.new_id(executions.now())
+    directory = attempts / batch_id
+    directory.mkdir(parents=True)
     journal = {"schema": "finite-jvm-batch/v1", "id": batch_id, "retryOf": retry, "order": tasks, "claims": keys,
                "status": "running", "completed": [], "missing": list(tasks), "secondsPerJvm": seconds,
                "launcherSha256": runtime.sha256(LAUNCHER), "scope": "One JVM per claim and revision. Each integer starts with a fresh application class loader, on the pinned runtime and classpath."}
@@ -252,8 +252,17 @@ def campaign(folder, example, target, tasks, seconds, retry, stop_after):
         work = Path(tmp)
         launcher = work / "launcher"
         launcher.mkdir()
-        java = Path(runtime.runtime_jdk.home("21")) / "bin/javac"
-        subprocess.run([str(java), "--release", "11", "-d", str(launcher), str(LAUNCHER)], check=True)
+        java = runtime.runtime_jdk.home("21")
+        if not java:
+            journal.update(status="refused", reason="the isolated JVM launcher requires a JDK 21 compiler")
+            save()
+            return 1
+        compiled = subprocess.run([str(Path(java) / "bin/javac"), "--release", "11", "-d", str(launcher), str(LAUNCHER)],
+                                  capture_output=True, text=True)
+        if compiled.returncode:
+            journal.update(status="refused", reason=compiled.stderr[-1000:])
+            save()
+            return 1
         for p in plans:
             try:
                 record = run_claim(p, work / p.task, shared, launcher, seconds)
@@ -385,8 +394,16 @@ def main(argv):
     args = parser.parse_args(argv)
     import build
     from targets import sidecar
-    [folder] = list(build.EXAMPLES.glob(args.number + "-*"))
+    folders = list(build.EXAMPLES.glob(args.number + "-*")) if re.fullmatch(r"[0-9]{3}", args.number) else []
+    if len(folders) != 1:
+        parser.error("expected the number of a registered example")
+    folder = folders[0]
     example = build.load_example(folder)
     target = sidecar.load(folder, example)
+    if not target:
+        parser.error("this example has no target sidecar")
     tasks = args.tasks.split(",") if args.tasks else [t["id"] for t in target["tasks"] if t["kind"] in ("prove", "equivalence")]
-    return campaign(folder, example, target, tasks, args.checker_seconds, args.retry_of, args.stop_after)
+    try:
+        return campaign(folder, example, target, tasks, args.checker_seconds, args.retry_of, args.stop_after)
+    except (OSError, ValueError) as error:
+        parser.error(str(error))

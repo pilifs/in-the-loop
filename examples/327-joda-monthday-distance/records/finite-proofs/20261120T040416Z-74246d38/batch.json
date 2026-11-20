@@ -1,0 +1,50 @@
+{
+  "schema": "finite-jvm-batch/v1",
+  "id": "20261120T040416Z-74246d38",
+  "retryOf": null,
+  "order": [
+    "reversal-on-returns-parent",
+    "reversal-on-returns-fix"
+  ],
+  "claims": {
+    "reversal-on-returns-parent": {
+      "sourceClaim": "62fcdf3eecf21061",
+      "inputsKey": "e5821c78f98dfb7969fcfcce7bb2af10dfc251f6f14bbf0de5f8d9cc59c0f275",
+      "revisions": [
+        "parent"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "parent": "930614ebcfb1ba932544b477a6d8845bb3a54a71181af017e8f8e0dfb52aa1fa"
+      }
+    },
+    "reversal-on-returns-fix": {
+      "sourceClaim": "62fcdf3eecf21061",
+      "inputsKey": "7d8a861ed9cb04437fdc2bb1ba0e051d0c4208cd6b9e211a41aed5bab6109f60",
+      "revisions": [
+        "fix"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "fix": "7c74956dc117b02e55e7e43bfa78898b7c5ee145e425e7581cfeed1d20b9effd"
+      }
+    }
+  },
+  "status": "completed",
+  "completed": [
+    {
+      "task": "reversal-on-returns-parent",
+      "status": "established",
+      "sha256": "c1d40cae3400380ef3d13c5e3a3ea3ecd4698960ed7ffc7efb1ba6208a52a1ae"
+    },
+    {
+      "task": "reversal-on-returns-fix",
+      "status": "established",
+      "sha256": "d83e0062de955f8bc9657ad25a3230fcfe1753e7acf7d8bc851c163e946504e3"
+    }
+  ],
+  "missing": [],
+  "secondsPerJvm": 120,
+  "launcherSha256": "8dd2ea5568ee5f61c0f92ca27a09338ca8c33333cceb04fff6370ad131f2c8f8",
+  "scope": "One JVM per claim and revision. Each integer starts with a fresh application class loader, on the pinned runtime and classpath."
+}

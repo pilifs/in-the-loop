@@ -599,6 +599,14 @@ def verifier_outcome(plan, bound, records):
         elif verdict == "verified" and v.directory and (Path(v.directory) / v.stdout).is_file() and (Path(v.directory) / v.stdout).stat().st_size > STREAM_CAP:
             artifact_problem = "the verifier output needed for this establishment exceeds the archived evidence limit"
         entry = v.identities.get("checkedEntry") or plan.target
+        lemmas = v.identities.get("checkedLemmas")
+        if lemmas != plan.checkedLemmas or bool(lemmas) != ("--lemmas" in v.argv):
+            artifact_problem = "the verifier used different checked lemma declarations"
+        elif lemmas:
+            for outcome in outcomes:
+                assumptions = (outcome.get("stated") or {}).get("assumptions") or []
+                if not any(a.get("kind") == "summary" and a.get("basis") == "proved" for a in assumptions):
+                    artifact_problem = "the caller result lacks the checked helper proof"
         independent = v.identities.get("independentReplay")
         if verdict == "violation" and v.identities.get("recipe") and independent is None:
             from targets import replay_candidate

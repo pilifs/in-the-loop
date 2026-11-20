@@ -1600,7 +1600,7 @@ def java_target(target):
 
 def _claim_file(plan, part):
     """A claim's referenced file ({path, sha256}), rechecked: a changed file is a different claim."""
-    ref = plan.claim.get(part)
+    ref = plan.checkedLemmas if part == "checkedLemmas" else plan.claim.get(part)
     if not ref:
         return None
     folder = Path(plan.folder).resolve()
@@ -1797,6 +1797,15 @@ def run_verifier(plan, prepared, workdir, *, before_launch=None, timeout=None):
             raise Refused("claim", recipe.reason)
         invocation = recipe.bind(plan, exe, sides, rel(workdir), timeout)
         argv = invocation.argv
+        if plan.checkedLemmas:
+            source = _claim_file(plan, "checkedLemmas")
+            local_lemmas = workdir / "checked-lemmas.contract"
+            shutil.copyfile(source, local_lemmas)
+            if sha256(local_lemmas) != plan.checkedLemmas["sha256"]:
+                raise Refused("claim", "the checked lemma file changed during preparation")
+            at = argv.index("--lemmas") + 1
+            argv = (*argv[:at], rel(local_lemmas), *argv[at+1:])
+            identities["checkedLemmas"] = dict(plan.checkedLemmas)
         env = _verifier_env(jdk)
         identities.update({
             "jdk": jdk["version"], "jdkFeature": jdk["feature"], "jdkHome": jdk["home"], "jdkRelease": jdk["release"],

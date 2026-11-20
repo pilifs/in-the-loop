@@ -503,6 +503,7 @@ impl ClassPath {
         self.method_in(owner, name, descriptor, &|c| match self.application(c) {
             Ok(Some(class)) => Some(class),
             _ => {
+                if let Some(class) = self.checked_image_class(c) { return Some(class); }
                 let model = self.checker_model(c)?;
                 // Enum's model constructs the JDK's name and ordinal fields. For ordering, execute the
                 // selected image's own comparison, bridge cast and declaring-class check on those fields.
@@ -539,7 +540,15 @@ impl ClassPath {
     /// and those of the models it runs although they are only for JBMC's class path ([`crate::models::CHECKER_RUNS`],
     /// `java.lang.Enum`). The other models it runs for static calls alone.
     pub fn checker_runs(&self, name: &str) -> bool {
-        self.is_application(name) || (self.runs_model(name) && self.checker_model(name).is_some())
+        self.is_application(name) || self.checked_image_class(name).is_some() || (self.runs_model(name) && self.checker_model(name).is_some())
+    }
+
+    /// This class uses ordinary instance and static fields. The selected image supplies its
+    /// initializer, empty singleton, branches, and actual Supplier dispatch.
+    pub(crate) fn checked_image_class(&self, name: &str) -> Option<Rc<ClassFile>> {
+        if name != "java/util/Optional" { return None; }
+        let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
+        Some(class)
     }
 
     /// The class whose static fields and initializer the tool's own checker holds and runs (JVMS §5.5): an
@@ -547,6 +556,7 @@ impl ClassPath {
     /// whose initializer makes the one empty list and the sentinel of a list of one). Any other JDK class is taken to
     /// be initialized already, and only its constants are read.
     pub fn checker_class(&self, name: &str) -> Option<Rc<ClassFile>> {
+        if let Some(class) = self.checked_image_class(name) { return Some(class); }
         if self.runs_model(name) {
             return self.checker_model(name);
         }

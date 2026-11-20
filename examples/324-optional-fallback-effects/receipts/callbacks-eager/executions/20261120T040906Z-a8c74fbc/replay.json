@@ -1,0 +1,58 @@
+[
+  {
+    "claimKey": "fd17da09f7be85db",
+    "entry": "optionalgrid.Projection#callbacks(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 1
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "eager": {
+        "entryClassSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
+        "classpath": [
+          "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
+          "4f2d25c1a3ad66d16a75489f0af4e47f0742b6a263c021c94bb153ce9d671a12"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 1;\nif (!(code >= 0 && code < 4)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = optionalgrid.Projection.callbacks(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 1,
+      "input": {
+        "present": 0
+      },
+      "field": "callbacks",
+      "direct": {
+        "eager": {
+          "value": 0,
+          "callbacks": [
+            "fallback"
+          ]
+        }
+      },
+      "tableSha256": "d8c14334f1b946ada2729005ec3663a188fbf9b1f0d60a42afdb035224190066"
+    }
+  }
+]

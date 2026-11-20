@@ -77,6 +77,29 @@ class RecipesTest(unittest.TestCase):
             self.assertIsInstance(failed, interfaces.Unsupported)
             self.assertIn(part, failed.reason)
 
+    def test_checked_lemmas_bind_strategy_bytes_to_the_same_caller_claim(self):
+        from targets import runtime
+        folder = next(TOOLS.parent.glob("331-*"))
+        example = json.loads((folder / "example.json").read_text())
+        target = json.loads((folder / "target.json").read_text())
+        task = next(t for t in target["tasks"] if t["id"] == "exact-recursive")
+        def plan():
+            return workflow.plan_task(folder, example, target, task["id"])
+        checked = plan()
+        path = task.pop("checkedLemmas")
+        inline = plan()
+        self.assertEqual(checked.claim["key"], inline.claim["key"])
+        self.assertEqual(workflow.inputs_key(checked), workflow.inputs_key(inline))
+        self.assertEqual(runtime._claim_file(checked, "checkedLemmas"), folder / path)
+        self.assertEqual([a.value for a in recipes.translate(checked).arguments if a.flag == "--lemmas"], [path])
+        self.assertFalse(any(a.flag == "--lemmas" for a in recipes.translate(inline).arguments))
+        with self.assertRaises(runtime.Refused):
+            runtime._claim_file(replace(checked, checkedLemmas={"path": path, "sha256": "0" * 64}), "checkedLemmas")
+        task["checkedLemmas"] = "claims/missing.contract"
+        self.assertIsInstance(plan(), interfaces.Unsupported)
+        task.update(checkedLemmas=path, engine="jbmc")
+        self.assertIsInstance(plan(), interfaces.Unsupported)
+
     def test_wire_versions_preserve_mixed_outcomes_and_refuse_unknown_formats(self):
         outcomes = [{"output": "a", "verdict": "verified"}, {"wire_version": 1, "output": "b", "verdict": "violation"}]
         self.assertEqual(checker_output.decode(json.dumps(outcomes), "prove"), (tuple(outcomes), None))

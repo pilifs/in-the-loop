@@ -47,7 +47,7 @@ def completion_problem(directory, journal, verifier):
     if verifier.status == "exited":
         bound = journal.get("checker") or {}
         if journal.get("argv") != list(verifier.argv) or not bound.get("jvmcontract") or any(
-                bound.get(k) != verifier.identities.get(k) for k in ("jvmcontract", "jdkRelease", "classpath", "recipe", "checkedEntry")):
+                bound.get(k) != verifier.identities.get(k) for k in ("jvmcontract", "jdkRelease", "classpath", "recipe", "checkedEntry", "checkedLemmas")):
             return "the delivered verifier or classpath differs from the bound invocation"
     review = directory / "replay.json"
     if review.is_file() and json.loads(review.read_text()) != verifier.identities.get("independentReplay"):
@@ -94,6 +94,8 @@ class Execution:
                  "host": {"machine": platform.machine(), "kernel": platform.release(), "node": platform.node()},
                  "job": os.getenv("VERIFY_JOB_ID"), "sourceCommit": os.getenv("VERIFY_SOURCE_COMMIT"),
                  "cache": "fresh verifier work directory", "stages": [], "status": "running"}
+        if plan.checkedLemmas:
+            state["strategy"]["checkedLemmas"] = dict(plan.checkedLemmas)
         run = cls(directory, state)
         run.stage("planned")
         return run

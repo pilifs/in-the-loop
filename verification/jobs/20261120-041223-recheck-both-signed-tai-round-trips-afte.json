@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-041223-recheck-both-signed-tai-round-trips-afte",
+  "title": "Recheck both signed TAI round trips after decimal formatting",
+  "description": "Run the two original round-trip claims again at the same sixty-second bound. Their older native attempts reached the long formatter. Each JVM oracle separately checks the entire object round trip; record the next actual native outcome or blocker.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "315"
+    ],
+    "jobs": [
+      "20261120-023617-check-signed-time-in-each-direction-on-t"
+    ]
+  },
+  "expected": "Retain the actual bounded checker statement, independent results, measurements and any first diagnostic.",
+  "submitted": {
+    "at": "2026-11-20T04:12:23+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "10m"
+  },
+  "steps": [
+    {
+      "name": "Exercise the frozen claims",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 315 --tasks round-trip-parent,round-trip-fix --retry-of 20261120T024342Z-92622846,20261120T024342Z-ccfdac70 --checker-seconds 60",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/315-tai-signed-fraction/receipts/round-trip-parent",
+    "examples/315-tai-signed-fraction/receipts/round-trip-fix"
+  ]
+}

@@ -1,0 +1,202 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-035022-recover-and-reorder-the-interrupted-tai",
+  "title": "Recover and reorder the interrupted TAI proof batch",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 11.6s, peak 158.2 MiB (estimated 2m00s, 2.0 GiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-035022-recover-and-reorder-the-interrupted-tai.json",
+    "sha256": "0cda1b50a3426b99d9d06b6c0cee11b516abcd495ad713ff41b22e56c870cc79",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-035022-recover-and-reorder-the-interrupted-tai",
+      "title": "Recover and reorder the interrupted TAI proof batch",
+      "description": "A fresh job reads the preserved completion and two missing stages, retries the same three frozen claim/subject pairs in another order, and rechecks the original completed artifact binding.",
+      "kind": "real-world",
+      "capabilities": [
+        "target:history",
+        "jvm:finite-domain"
+      ],
+      "links": {
+        "examples": [
+          "315"
+        ],
+        "jobs": [
+          "20261120-032650-interrupt-a-reordered-three-claim-tai-ba"
+        ]
+      },
+      "expected": "Retain the actual bounded checker statement, independent results, measurements and any first diagnostic.",
+      "submitted": {
+        "at": "2026-11-20T03:50:22+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "10m"
+      },
+      "steps": [
+        {
+          "name": "Exercise the frozen claims",
+          "run": "python3 examples/tools/build.py 315 --finite-domain --tasks format-fix,round-trip-fix,parse-fix --retry-of 20261120T034454Z-86f0b844",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/315-tai-signed-fraction/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "4a1b5ef112df93c81f1d839c7f6dec4fee762e20",
+  "startedAt": "2026-11-20T04:00:23+00:00",
+  "finishedAt": "2026-11-20T04:04:27+00:00",
+  "wallSeconds": 244.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 165867520,
+    "wallSeconds": 11.6,
+    "cpuSeconds": 17.1,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Exercise the frozen claims",
+      "run": "python3 examples/tools/build.py 315 --finite-domain --tasks format-fix,round-trip-fix,parse-fix --retry-of 20261120T034454Z-86f0b844",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 600.0,
+      "cancelled": false,
+      "wallSeconds": 11.625,
+      "cpuSeconds": 17.074,
+      "cpuThrottledSeconds": 0.68,
+      "peakMemoryBytes": 165867520,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-exercise-the-frozen-claims.log",
+        "lines": 3,
+        "bytes": 123,
+        "sha256": "4e0fb3998ca01674beec1e44c165c8ef93e9c6f73ae6238717a25798ddc1ed71",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "315 format-fix established 20 admitted ",
+        "315 round-trip-fix established 20 admitted ",
+        "315 parse-fix established 20 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/315-tai-signed-fraction/records/finite-proofs/20261120T040416Z-76458c1a/batch.json",
+      "change": "added",
+      "bytes": 2032,
+      "sha256": "3cb74ee0086aa3ad0bab29832dc606f9e27010e69782955580b56ef2c0ed24d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/records/finite-proofs/20261120T040416Z-76458c1a/format-fix.json",
+      "change": "added",
+      "bytes": 8367,
+      "sha256": "9fcb0491d191cd342b55cdd34da9ced22d3d7e9921e0fec349a390fb1c31c624",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/records/finite-proofs/20261120T040416Z-76458c1a/parse-fix.json",
+      "change": "added",
+      "bytes": 8441,
+      "sha256": "f969b0f2b8ed20f4e177e121010b1dadc306161c914ace62532b37f7b030654a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/315-tai-signed-fraction/records/finite-proofs/20261120T040416Z-76458c1a/round-trip-fix.json",
+      "change": "added",
+      "bytes": 8383,
+      "sha256": "baae4e2b5d95916a4589de187bcc3eacae87d1afaec816e6333e3272bfb7b567",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T04:04:37+00:00",
+    "applied": [
+      "examples/315-tai-signed-fraction/records/finite-proofs/20261120T040416Z-76458c1a/batch.json",
+      "examples/315-tai-signed-fraction/records/finite-proofs/20261120T040416Z-76458c1a/format-fix.json",
+      "examples/315-tai-signed-fraction/records/finite-proofs/20261120T040416Z-76458c1a/parse-fix.json",
+      "examples/315-tai-signed-fraction/records/finite-proofs/20261120T040416Z-76458c1a/round-trip-fix.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "f5fabd2a442fc816be6daceb77f2ea87b60d0e0c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f5fabd2a442fc816be6daceb77f2ea87b60d0e0c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

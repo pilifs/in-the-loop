@@ -1,0 +1,126 @@
+{
+  "schema": "finite-jvm-batch-recovery/v1",
+  "jobs": {
+    "interruption": "verification/results/20261120-032650-interrupt-a-reordered-three-claim-tai-ba/result.json",
+    "recovery": "verification/results/20261120-035022-recover-and-reorder-the-interrupted-tai/result.json"
+  },
+  "interrupted": {
+    "journal": "records/finite-proofs/20261120T034454Z-86f0b844/batch.json",
+    "journalSha256": "c8629ed5415ac765a64cc010f234bd51327acfe7ed5abe2692f460078d88d5b4",
+    "order": [
+      "round-trip-fix",
+      "parse-fix",
+      "format-fix"
+    ],
+    "completed": [
+      {
+        "task": "round-trip-fix",
+        "status": "established",
+        "sha256": "39277d4caa2176a72e5a75fb9154f4a00e631a3bb5dce20582ad9cb803a3aead"
+      }
+    ],
+    "missing": [
+      "parse-fix",
+      "format-fix"
+    ]
+  },
+  "retry": {
+    "journal": "records/finite-proofs/20261120T040416Z-76458c1a/batch.json",
+    "journalSha256": "3cb74ee0086aa3ad0bab29832dc606f9e27010e69782955580b56ef2c0ed24d3",
+    "order": [
+      "format-fix",
+      "round-trip-fix",
+      "parse-fix"
+    ],
+    "completed": [
+      {
+        "task": "format-fix",
+        "status": "established",
+        "sha256": "9fcb0491d191cd342b55cdd34da9ced22d3d7e9921e0fec349a390fb1c31c624"
+      },
+      {
+        "task": "round-trip-fix",
+        "status": "established",
+        "sha256": "baae4e2b5d95916a4589de187bcc3eacae87d1afaec816e6333e3272bfb7b567"
+      },
+      {
+        "task": "parse-fix",
+        "status": "established",
+        "sha256": "f969b0f2b8ed20f4e177e121010b1dadc306161c914ace62532b37f7b030654a"
+      }
+    ],
+    "missing": []
+  },
+  "retryOf": "20261120T034454Z-86f0b844",
+  "sourceBindings": {
+    "round-trip-fix": {
+      "sourceClaim": "429bf8873db162ec",
+      "inputsKey": "08546f542e5e4031c110bb388ec4edb678e5bb24e50c6aa36f39c85bc9b7b3f1",
+      "revisions": [
+        "fix"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "fix": "9930fb16b4aab423a1081d7f3dba40ef6452500da8151dbc952f4128a0f60e87"
+      }
+    },
+    "parse-fix": {
+      "sourceClaim": "c65785218966300a",
+      "inputsKey": "34d7100e4f09be03c9dee53e7eebc5fd58df832b30bf3345dbfadd36f095ef70",
+      "revisions": [
+        "fix"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "fix": "9930fb16b4aab423a1081d7f3dba40ef6452500da8151dbc952f4128a0f60e87"
+      }
+    },
+    "format-fix": {
+      "sourceClaim": "e3dbf91e847c50cc",
+      "inputsKey": "23820e23e484859cb788f55c75b5efa87692784ceb36ebf9d06b455ad435874d",
+      "revisions": [
+        "fix"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "fix": "9930fb16b4aab423a1081d7f3dba40ef6452500da8151dbc952f4128a0f60e87"
+      }
+    }
+  },
+  "launcherSha256": "8dd2ea5568ee5f61c0f92ca27a09338ca8c33333cceb04fff6370ad131f2c8f8",
+  "repeatedRoundTrip": {
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "cases": 20,
+    "disagreements": 0,
+    "identicalProbeClass": "ec7db493054e906d04bdb40c197a5cf96097a698fa304135b40656cb2e7538f6",
+    "identicalJvmStream": "b8f11c5cca1c1143f8a98843fb8b3f3ca076f840f69c4819181aa8904645c76e",
+    "identicalOrderedClasspath": [
+      {
+        "path": "adapter-fix.jar",
+        "sha256": "e5a1196dbe5ead43aa433ddc281283f422ae5d3177029670632bb6a420517ef1",
+        "role": "adapter"
+      },
+      {
+        "path": "slice/fix.jar",
+        "sha256": "ff4ce05db7be9138585a464485e41667bd4ed8ef97c827567809e438b72d3955",
+        "role": "original"
+      },
+      {
+        "path": "lib/org.joda/joda-convert-2.2.4.jar",
+        "sha256": "c5ddb12bbfe57a69280114ec1c4da08db8c95070c478c6f495fa2cc081d62373",
+        "role": "dependency"
+      },
+      {
+        "path": "lib/org.jspecify/jspecify-1.0.1.jar",
+        "sha256": "070d75f261fe4c5b8202508366715f7f2d4660f88c8ef7e6d3575e48c9683b66",
+        "role": "dependency"
+      }
+    ]
+  }
+}
