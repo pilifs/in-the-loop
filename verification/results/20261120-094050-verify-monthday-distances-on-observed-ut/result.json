@@ -1,0 +1,1563 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-094050-verify-monthday-distances-on-observed-ut",
+  "title": "Verify MonthDay distances on observed UTC provider startup",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 32.9s, peak 290.2 MiB (estimated 2m00s, 2.0 GiB); 151 output file(s) changed; signals: example:task-as-expected×7; example:task-unexpected×3",
+  "attention": [
+    "step 1 (Check the frozen obligations on their prepared bytes) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-094050-verify-monthday-distances-on-observed-ut.json",
+    "sha256": "99d05d32f17d697e6113f576d44e6ae18f2cec3475dbec36b8b84714a8024d49",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-094050-verify-monthday-distances-on-observed-ut",
+      "title": "Verify MonthDay distances on observed UTC provider startup",
+      "description": "Check the same ten parent and fixed MonthDay claims on all 25 original ISO-UTC pairs after independently observing the initializers of DateTimeZone and DateTimeUtils on JDK 21.0.13. Bind both observed-state digests and every original input, bytecode target, guard, budget and independent replay. These are separate startup-qualified claims.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "327"
+        ],
+        "jobs": [
+          "20261120-081743-recheck-both-partial-date-revisions-alon"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T09:40:50+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "12m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 327 --tasks normal-parent-observed,normal-fix-observed,days-parent-observed,days-fix-observed,reversal-parent-observed,reversal-fix-observed,march-parent-observed,march-fix-observed,reversal-on-returns-parent-observed,reversal-on-returns-fix-observed --checker-seconds 30",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/327-joda-monthday-distance/receipts/normal-parent-observed",
+        "examples/327-joda-monthday-distance/receipts/normal-fix-observed",
+        "examples/327-joda-monthday-distance/receipts/days-parent-observed",
+        "examples/327-joda-monthday-distance/receipts/days-fix-observed",
+        "examples/327-joda-monthday-distance/receipts/reversal-parent-observed",
+        "examples/327-joda-monthday-distance/receipts/reversal-fix-observed",
+        "examples/327-joda-monthday-distance/receipts/march-parent-observed",
+        "examples/327-joda-monthday-distance/receipts/march-fix-observed",
+        "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed",
+        "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed"
+      ]
+    }
+  },
+  "sourceCommit": "78d7900af84acc5c70a2614e364fdd9a06a30df4",
+  "startedAt": "2026-11-20T09:49:09+00:00",
+  "finishedAt": "2026-11-20T09:52:27+00:00",
+  "wallSeconds": 198.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1057316,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 304320512,
+    "wallSeconds": 32.9,
+    "cpuSeconds": 48.2,
+    "memoryOfEstimate": 0.14,
+    "durationOfEstimate": 0.27
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 161.824,
+      "cpuSeconds": 162.086,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2157756416,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "8f27a8dd3ec286594f1d37c49d479b566c285de30c35e343f118ec6db1d5e6b1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261120-094050-verify-monthday-distances-on-observed-ut/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 41s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 327 --tasks normal-parent-observed,normal-fix-observed,days-parent-observed,days-fix-observed,reversal-parent-observed,reversal-fix-observed,march-parent-observed,march-fix-observed,reversal-on-returns-parent-observed,reversal-on-returns-fix-observed --checker-seconds 30",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 32.869,
+      "cpuSeconds": 48.195,
+      "cpuThrottledSeconds": 5.864,
+      "peakMemoryBytes": 304320512,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-obligations-o.log",
+        "lines": 20,
+        "bytes": 2590,
+        "sha256": "d05dde232e051d436af0e46ef8a848b5ed6b3f910fb582b726140d8296719db9",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 3,
+        "example:task-as-expected": 7
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "327-joda-monthday-distance: task normal-parent-observed: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/normal-parent-observed/20261120T095154Z-55cb35f9/result.json",
+          "groups": [
+            "327",
+            "normal-parent-observed",
+            "unresolved",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "327-joda-monthday-distance: task normal-fix-observed: established (completed; as expected), receipt receipts/normal-fix-observed/20261120T095200Z-23423312/result.json",
+          "groups": [
+            "327",
+            "normal-fix-observed",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "327-joda-monthday-distance: task days-parent-observed: refuted (completed; as expected), receipt receipts/days-parent-observed/20261120T095205Z-bcb53f44/result.json",
+          "groups": [
+            "327",
+            "days-parent-observed",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "327-joda-monthday-distance: task days-fix-observed: established (completed; as expected), receipt receipts/days-fix-observed/20261120T095208Z-2e6f0378/result.json",
+          "groups": [
+            "327",
+            "days-fix-observed",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 10,
+          "text": "327-joda-monthday-distance: task reversal-parent-observed: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/reversal-parent-observed/20261120T095210Z-25d875e5/result.json",
+          "groups": [
+            "327",
+            "reversal-parent-observed",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 12,
+          "text": "327-joda-monthday-distance: task reversal-fix-observed: established (completed; as expected), receipt receipts/reversal-fix-observed/20261120T095212Z-372487b0/result.json",
+          "groups": [
+            "327",
+            "reversal-fix-observed",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 14,
+          "text": "327-joda-monthday-distance: task march-parent-observed: established (completed; as expected), receipt receipts/march-parent-observed/20261120T095214Z-2ccd0846/result.json",
+          "groups": [
+            "327",
+            "march-parent-observed",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 16,
+          "text": "327-joda-monthday-distance: task march-fix-observed: established (completed; as expected), receipt receipts/march-fix-observed/20261120T095216Z-9fa75e7c/result.json",
+          "groups": [
+            "327",
+            "march-fix-observed",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 18,
+          "text": "327-joda-monthday-distance: task reversal-on-returns-parent-observed: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/result.json",
+          "groups": [
+            "327",
+            "reversal-on-returns-parent-observed",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 20,
+          "text": "327-joda-monthday-distance: task reversal-on-returns-fix-observed: established (completed; as expected), receipt receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/result.json",
+          "groups": [
+            "327",
+            "reversal-on-returns-fix-observed",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "327-joda-monthday-distance: running task normal-parent-observed (target route)",
+        "327-joda-monthday-distance: task normal-parent-observed: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/normal-parent-observed/20261120T095154Z-55cb35f9/result.json",
+        "327-joda-monthday-distance: running task normal-fix-observed (target route)",
+        "327-joda-monthday-distance: task normal-fix-observed: established (completed; as expected), receipt receipts/normal-fix-observed/20261120T095200Z-23423312/result.json",
+        "327-joda-monthday-distance: running task days-parent-observed (target route)",
+        "327-joda-monthday-distance: task days-parent-observed: refuted (completed; as expected), receipt receipts/days-parent-observed/20261120T095205Z-bcb53f44/result.json",
+        "327-joda-monthday-distance: running task days-fix-observed (target route)",
+        "327-joda-monthday-distance: task days-fix-observed: established (completed; as expected), receipt receipts/days-fix-observed/20261120T095208Z-2e6f0378/result.json",
+        "327-joda-monthday-distance: running task reversal-parent-observed (target route)",
+        "327-joda-monthday-distance: task reversal-parent-observed: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/reversal-parent-observed/20261120T095210Z-25d875e5/result.json",
+        "327-joda-monthday-distance: running task reversal-fix-observed (target route)",
+        "327-joda-monthday-distance: task reversal-fix-observed: established (completed; as expected), receipt receipts/reversal-fix-observed/20261120T095212Z-372487b0/result.json",
+        "327-joda-monthday-distance: running task march-parent-observed (target route)",
+        "327-joda-monthday-distance: task march-parent-observed: established (completed; as expected), receipt receipts/march-parent-observed/20261120T095214Z-2ccd0846/result.json",
+        "327-joda-monthday-distance: running task march-fix-observed (target route)",
+        "327-joda-monthday-distance: task march-fix-observed: established (completed; as expected), receipt receipts/march-fix-observed/20261120T095216Z-9fa75e7c/result.json",
+        "327-joda-monthday-distance: running task reversal-on-returns-parent-observed (target route)",
+        "327-joda-monthday-distance: task reversal-on-returns-parent-observed: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/result.json",
+        "327-joda-monthday-distance: running task reversal-on-returns-fix-observed (target route)",
+        "327-joda-monthday-distance: task reversal-on-returns-fix-observed: established (completed; as expected), receipt receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "481483db262e43b9ca2bc9210a5a09447a4a00b1a9a3ea9828f84caa9e184bc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/plan.json",
+      "change": "added",
+      "bytes": 29555,
+      "sha256": "56420af10a845bd406b9a4c9c9f80b20851de91acc43b3e1605047f2108224a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 861,
+      "sha256": "70cbc54bd3c67c46e575bce7997cde4199807aea16f7bc46f1b4bad33f17c7d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 5101,
+      "sha256": "3829efd65a07fa18f7e7118c1708a43cfe6a602521865c4aff61d6c46650b3ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/records/controls.json",
+      "change": "added",
+      "bytes": 14447,
+      "sha256": "5106348c173c462e750445bcb1823d77517cec041314e016de8253a5f8d3fca8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/records/execution.json",
+      "change": "added",
+      "bytes": 93289,
+      "sha256": "bced287e6b80985d71022aaed62a67ea1477e3f0f3b455d310b2e75b92a2aeb6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/records/streams.json",
+      "change": "added",
+      "bytes": 1975,
+      "sha256": "ba603527e7e7fd36efc66a35e6d496b4880a467d541c38ef97b072face3c3e72",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 628,
+      "sha256": "aae7c2f39f4b13023eeb18703a47759077a26e411dc44a20b167cda23ec0e4ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/records/verifier.json",
+      "change": "added",
+      "bytes": 76954,
+      "sha256": "9657f12d35a957e08589b419bd22fa248707b742c99d68529c150fde57bfa298",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/records/verifier.stdout",
+      "change": "added",
+      "bytes": 12412,
+      "sha256": "05925d5bddb45a01f7c1e428b158ebb7a0b1d8b81f030bca1732743ec4b12c15",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/result.json",
+      "change": "added",
+      "bytes": 21937,
+      "sha256": "a52dc89bd1e6b53865f14b973e76c4f15df257f472a0b722952a24ebe1b222a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-parent-observed/executions/20261120T095154Z-55cb35f9/attempt.json",
+      "change": "added",
+      "bytes": 74564,
+      "sha256": "104ecab97b11073c81917c5e27f3944590ab9781f735c86e80e8d9362c21ff8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-parent-observed/executions/20261120T095154Z-55cb35f9/checker.json",
+      "change": "added",
+      "bytes": 13967,
+      "sha256": "418e6b7191ded080fdf64c17388ead13f1b8d57b835d5419adb45e510d437b2f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-parent-observed/executions/20261120T095154Z-55cb35f9/correspondence.json",
+      "change": "added",
+      "bytes": 1497,
+      "sha256": "e12034f4a40a0e8502393ab9b4993fed56f4135505180a3be58d7f0a95a56992",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "7b8679c28cd863e7b867f90920241df97d535369fa70cd399ce6d699edfb8930",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/plan.json",
+      "change": "added",
+      "bytes": 29656,
+      "sha256": "1f352afbda5502879031abb16a78baf5e190511a0711b2703fb51076a8d8e377",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 861,
+      "sha256": "70cbc54bd3c67c46e575bce7997cde4199807aea16f7bc46f1b4bad33f17c7d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 4700,
+      "sha256": "560df9c11b3deffa13e431c925903139514b5369406886ba1037ae7986cd8a15",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/records/controls.json",
+      "change": "added",
+      "bytes": 14013,
+      "sha256": "cd2a6b74617ae877f4eda8d0085b51896a9a729c38a4b00fd6c76232707af861",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/records/execution.json",
+      "change": "added",
+      "bytes": 91553,
+      "sha256": "e0c5aaf3cac4583e17b875247c80035f96ecce62887bd60fc346a08c7855e2e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/records/streams.json",
+      "change": "added",
+      "bytes": 1951,
+      "sha256": "82105564900e7bb1bf8ca2b28d0d564ebf048a69f260909b532c122dc55828b6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 286,
+      "sha256": "27507bd9b42940922d31e21cc01621e7a2caa6721963e0d9e9900876d649d237",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/records/verifier.json",
+      "change": "added",
+      "bytes": 75616,
+      "sha256": "21bb54c325b86389d42a200ca564029341695abc665412e290bf50e0dbd5fa97",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/records/verifier.stdout",
+      "change": "added",
+      "bytes": 11113,
+      "sha256": "05a734149731fe663f6c00f7c6c666b76bd3daae16a12c98e82ccc776d983d61",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/result.json",
+      "change": "added",
+      "bytes": 26857,
+      "sha256": "6a0d4e04bfa218cb6a5687e0a3fb0c55b51e1f4ef7251affc74303522472659e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-fix-observed/executions/20261120T095200Z-23423312/attempt.json",
+      "change": "added",
+      "bytes": 73882,
+      "sha256": "979b3a549b8c5d55a94829b0e86fbf32b15fa6a23e6d6bb7e6f1c1d809bfffad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-fix-observed/executions/20261120T095200Z-23423312/checker.json",
+      "change": "added",
+      "bytes": 12671,
+      "sha256": "b61ccfec6f5e12182d294ada9634668c1ab16237549cb55b3fa1f01d1f3546bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/normal-fix-observed/executions/20261120T095200Z-23423312/correspondence.json",
+      "change": "added",
+      "bytes": 1491,
+      "sha256": "2ba816d4071c0a684b73743f55c326ab677ca9f32811b114fe709c116fe82987",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "bebd0bd8a01dcc2b2c5e4454fa9c801a651207556b3dbb245d6e0bba3ebc4c7a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/plan.json",
+      "change": "added",
+      "bytes": 29585,
+      "sha256": "e9cb030b20de0ebb757b368228488e91493b9a1c1dfdf40cd5e290f4e1665232",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 861,
+      "sha256": "70cbc54bd3c67c46e575bce7997cde4199807aea16f7bc46f1b4bad33f17c7d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 5101,
+      "sha256": "3829efd65a07fa18f7e7118c1708a43cfe6a602521865c4aff61d6c46650b3ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/records/controls.json",
+      "change": "added",
+      "bytes": 14443,
+      "sha256": "6a0eecff6ea99ea59d2c4c4e60d3f1cfaa5ca4a2eb24c3422ee4d5f9f9417b84",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/records/execution.json",
+      "change": "added",
+      "bytes": 95785,
+      "sha256": "41fd14e08101a0eebfa487a8e53893249671ae37dbd3b173900cd09130814585",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/records/streams.json",
+      "change": "added",
+      "bytes": 1975,
+      "sha256": "0e0a6193f5c734c852d2b022f0235f604306e68c610ad2f57df753bc256bda3f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 545,
+      "sha256": "efbf37666c8a495e05e16c0ff2c53215af69f381615d616792053c5756097b3f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/records/verifier.json",
+      "change": "added",
+      "bytes": 76801,
+      "sha256": "41071e40963cff472f84d195eab5723bad71a773e374680cd39a66e7ce5d1593",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/records/verifier.stdout",
+      "change": "added",
+      "bytes": 12143,
+      "sha256": "77932f2eb96d40adeb12f808e2347382e7381c6d130fd7529f1bca55a012677e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/result.json",
+      "change": "added",
+      "bytes": 28350,
+      "sha256": "42ce25e7dc748813d8c99c94fff5b9dbe4cf8de0dfa2993388c5238a74a77fe5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-parent-observed/executions/20261120T095205Z-bcb53f44/attempt.json",
+      "change": "added",
+      "bytes": 74069,
+      "sha256": "64951df192da055d1cd24714817b723002ec47e1cf38ac0eba48242915b8742d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-parent-observed/executions/20261120T095205Z-bcb53f44/checker.json",
+      "change": "added",
+      "bytes": 13764,
+      "sha256": "9da7443b369f73620f74e081c9bea2ce7151f714f69a6dd436ea5188fc28c826",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-parent-observed/executions/20261120T095205Z-bcb53f44/correspondence.json",
+      "change": "added",
+      "bytes": 1495,
+      "sha256": "391f9821a16f708337704c19e8a6c6523607265a54dac4739d907c54633005aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-parent-observed/executions/20261120T095205Z-bcb53f44/replay.json",
+      "change": "added",
+      "bytes": 2067,
+      "sha256": "72cef763d9ad9b44bae6e13363c9919ebbfa81af32f92b833d6fa9b1aa5aa9c0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e827c1625b24e4917b1f3b39402a0fec22bc4c118e9db42f5b484d225fcf69e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/plan.json",
+      "change": "added",
+      "bytes": 29686,
+      "sha256": "c0b350f0314593b7c092308ad11ab7296de436c5b8ac7368f928ba0a89825762",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 861,
+      "sha256": "70cbc54bd3c67c46e575bce7997cde4199807aea16f7bc46f1b4bad33f17c7d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 4700,
+      "sha256": "560df9c11b3deffa13e431c925903139514b5369406886ba1037ae7986cd8a15",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/records/controls.json",
+      "change": "added",
+      "bytes": 14009,
+      "sha256": "804036e44e5bc76521de24efc3e416c0de7bfda8ba574746c3516b0f0550c495",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/records/execution.json",
+      "change": "added",
+      "bytes": 91527,
+      "sha256": "1fcead43de890ab16d9f3e06b7785688113f6d5b9df49e67a73374ba659c90ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/records/streams.json",
+      "change": "added",
+      "bytes": 1951,
+      "sha256": "1e1203fb7d94e58b760f71570adcde08115c5f266b80753a63b865c16c3c7e83",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 282,
+      "sha256": "d1648b2ee19ac46305a526e93cc3c7757a1135c447627d2f0c0cc7c177002a68",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/records/verifier.json",
+      "change": "added",
+      "bytes": 75586,
+      "sha256": "20475718d896738381901bc52a933a83fc259f61408f7f58ecaf02e4b868dfaa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/records/verifier.stdout",
+      "change": "added",
+      "bytes": 11105,
+      "sha256": "c4573a255e7a5f00ee633864d5e1519524ffec0a469e7db415b1627412f7c39f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/result.json",
+      "change": "added",
+      "bytes": 26859,
+      "sha256": "68e8b4ffff8a988af1ad60d83e5944c73116be316d8853d1838726722b58883f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-fix-observed/executions/20261120T095208Z-2e6f0378/attempt.json",
+      "change": "added",
+      "bytes": 73860,
+      "sha256": "1ee11573be146b99eafe9880523f18b8535175bb6f0bfdc01e73dd4cc27352c9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-fix-observed/executions/20261120T095208Z-2e6f0378/checker.json",
+      "change": "added",
+      "bytes": 12659,
+      "sha256": "83447cf21e94f7d358d78e56bee481b8bf438ac7da7264be822320fb2b1b9f32",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/days-fix-observed/executions/20261120T095208Z-2e6f0378/correspondence.json",
+      "change": "added",
+      "bytes": 1489,
+      "sha256": "82fd2b6bf6a6a2fb69a845d75121d53d66aa9ddc6319b746fab48d7a2c87ea92",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "6f6b48ff6b899451b00846b52bb2de8ba792cb8ee04e7d7b2722c75a5c4b40b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/plan.json",
+      "change": "added",
+      "bytes": 29659,
+      "sha256": "4ccd5b36e0ad9ab55f298aa04e4a70c408ed3db02e8d68a5037991ad0640f893",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 861,
+      "sha256": "70cbc54bd3c67c46e575bce7997cde4199807aea16f7bc46f1b4bad33f17c7d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 5101,
+      "sha256": "3829efd65a07fa18f7e7118c1708a43cfe6a602521865c4aff61d6c46650b3ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/records/controls.json",
+      "change": "added",
+      "bytes": 14451,
+      "sha256": "ba32d0b179d260497e7fc2a0f7f132a1c9c31d792ec103865a437f5eb22660ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/records/execution.json",
+      "change": "added",
+      "bytes": 93311,
+      "sha256": "fd14d36ddf6eaf33836ecef7c49867af9fc2ce6e49958177e9430b4e3830186e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/records/streams.json",
+      "change": "added",
+      "bytes": 1975,
+      "sha256": "ea4efc06c266bbe4d165e8cab4ddc4da209831281a5cb8f017177f4de9ceb719",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 630,
+      "sha256": "e9d266d5c251231e1ee2be4f1bdcf8fac7bb60c31bf812743945dbe57eef9abc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/records/verifier.json",
+      "change": "added",
+      "bytes": 76980,
+      "sha256": "93a309d8753445ee77c0c976438ba7174657fe854f0989c6c94d402d840f73ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/records/verifier.stdout",
+      "change": "added",
+      "bytes": 12419,
+      "sha256": "5f5f8edb4843626883c215ce5b3baf98b0805f6b3ee4a7b1203464341bdf5176",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/result.json",
+      "change": "added",
+      "bytes": 21997,
+      "sha256": "b307ec52739df615741ef17588c5f74a104ca68737f12d5d6cbea8c6d2b77bf4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/executions/20261120T095210Z-25d875e5/attempt.json",
+      "change": "added",
+      "bytes": 74578,
+      "sha256": "731da8e3ae2dd090bce7b3ce16f099d55678f613c1593e359021a7a4f06ba652",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/executions/20261120T095210Z-25d875e5/checker.json",
+      "change": "added",
+      "bytes": 13976,
+      "sha256": "5aa2baff6900cf4f37c580dbd7b3c3311b3219c48ba205deb54dc9a690d9a885",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/executions/20261120T095210Z-25d875e5/correspondence.json",
+      "change": "added",
+      "bytes": 1499,
+      "sha256": "5f214d829e07c89a22d58c8ab453ca4e469ee8342a0fb29388757cede6235a47",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "05344730244c422963b7efd85465f19717eb2bb3227c542df9121a9d7da58d60",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/plan.json",
+      "change": "added",
+      "bytes": 29756,
+      "sha256": "6c0aa436d915bd85119a990c01778f5a0ed68490a68bf6038757d9226edcc906",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 861,
+      "sha256": "70cbc54bd3c67c46e575bce7997cde4199807aea16f7bc46f1b4bad33f17c7d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 4700,
+      "sha256": "560df9c11b3deffa13e431c925903139514b5369406886ba1037ae7986cd8a15",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/records/controls.json",
+      "change": "added",
+      "bytes": 14017,
+      "sha256": "349e7a7768fcffc5fb7f46d9ba3b7b58f8968588d1987d5daec8a0743fdc108a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/records/execution.json",
+      "change": "added",
+      "bytes": 91580,
+      "sha256": "d12af133046dac1efb31e75550738f7dd726220c20d26756eb36ecef0c71ec86",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/records/streams.json",
+      "change": "added",
+      "bytes": 1951,
+      "sha256": "20b4039b96ddadca6e4cbe7a5527ec8765a34c7967fbfb6caf689076350d6ef1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 290,
+      "sha256": "2558e309ce38b36cfa80e97491be059d7b2832500a161dc0d7157ea7f833acd4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/records/verifier.json",
+      "change": "added",
+      "bytes": 75647,
+      "sha256": "0073422c568b07f20dd4e4146361a3449d81441bc845a71df8483f93440c3e7e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/records/verifier.stdout",
+      "change": "added",
+      "bytes": 11125,
+      "sha256": "ea49875dab846b956f0d2a1e2c6b0ae4856f33ea51ed64a0804e56517f5359d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/result.json",
+      "change": "added",
+      "bytes": 26921,
+      "sha256": "b8b7ac563e928ef8a8825b26ccefa8fa27dfcb52e4012b2fac40383421835d94",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/executions/20261120T095212Z-372487b0/attempt.json",
+      "change": "added",
+      "bytes": 73899,
+      "sha256": "47e61da4fe303d36aa0da50398163dca5a57c2e1a8d92859971284c08e740521",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/executions/20261120T095212Z-372487b0/checker.json",
+      "change": "added",
+      "bytes": 12684,
+      "sha256": "d5983c42f06a3cfb76bb660725c6c2e6d4f83eb0bf2bf1fd9b4c24ddbd96d05a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/executions/20261120T095212Z-372487b0/correspondence.json",
+      "change": "added",
+      "bytes": 1493,
+      "sha256": "edeefe7c2aa4808184e102a15fc29bccceab680ca353306df69956bbdbf154d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "fbfecfddf85b9cce09c3efb63e316af4f4d8717c94012ffc775b7f308ded47b9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/plan.json",
+      "change": "added",
+      "bytes": 29648,
+      "sha256": "dcf40adcd986cd2770bba85cda2eb9751174073e77dfe824ebd254fb0c9b4dae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 861,
+      "sha256": "70cbc54bd3c67c46e575bce7997cde4199807aea16f7bc46f1b4bad33f17c7d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 5101,
+      "sha256": "3829efd65a07fa18f7e7118c1708a43cfe6a602521865c4aff61d6c46650b3ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/records/controls.json",
+      "change": "added",
+      "bytes": 14445,
+      "sha256": "1ab51e6b5dcb54bc07d4dfbc2ef90a2b467dc5f16795a814739b653f00602b74",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/records/execution.json",
+      "change": "added",
+      "bytes": 92193,
+      "sha256": "c54d737df2c0cf821e975d22d1c41b537b1dafaf87b040a5b55a97b45cf78870",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/records/streams.json",
+      "change": "added",
+      "bytes": 1975,
+      "sha256": "114a90fd1d64e35d5f28fe5bddcbf0df312f8aac1f7676e26bd52bd0255ce394",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 317,
+      "sha256": "965e7cb6ca867403b9346344aa33ba259209e78996dda43e240abab3c89687ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/records/verifier.json",
+      "change": "added",
+      "bytes": 75838,
+      "sha256": "0145d5e3b37eae47b2e4394d018281c369fd5e7dff785929504b1e38c13fbba9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/records/verifier.stdout",
+      "change": "added",
+      "bytes": 11210,
+      "sha256": "b8e19c117df363d956abdab3d9729a1552298254b98ecde9a1c855ee4840e3fb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/result.json",
+      "change": "added",
+      "bytes": 27132,
+      "sha256": "d31d6d462041c2e81a09cb84c405d6ecd2188999dd35ea0dcc486bd24b1e052e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-parent-observed/executions/20261120T095214Z-2ccd0846/attempt.json",
+      "change": "added",
+      "bytes": 74018,
+      "sha256": "ad77e7d8fb8b5aabb45ee3fd164e2dd077ee33eaa0a7180c19d203b9e877278f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-parent-observed/executions/20261120T095214Z-2ccd0846/checker.json",
+      "change": "added",
+      "bytes": 12814,
+      "sha256": "14d8f4d48a498e850531a332d5ea551105030d18829bb503dfbb215b024996c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-parent-observed/executions/20261120T095214Z-2ccd0846/correspondence.json",
+      "change": "added",
+      "bytes": 1495,
+      "sha256": "391f9821a16f708337704c19e8a6c6523607265a54dac4739d907c54633005aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "61338e3882167b03f67ad56786b35667d541373cc5dfaffb484d54639fc5ff0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/plan.json",
+      "change": "added",
+      "bytes": 29745,
+      "sha256": "1717215ff1e33388f9603b2fec69c0caf5a2c61ad628a46a5095fc1cc012cf8d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 861,
+      "sha256": "70cbc54bd3c67c46e575bce7997cde4199807aea16f7bc46f1b4bad33f17c7d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 4700,
+      "sha256": "560df9c11b3deffa13e431c925903139514b5369406886ba1037ae7986cd8a15",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/records/controls.json",
+      "change": "added",
+      "bytes": 14011,
+      "sha256": "90146bbc419d4f436324e9cf0276411cd44023dbf13b962aaa2311a7b56d0458",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/records/execution.json",
+      "change": "added",
+      "bytes": 91708,
+      "sha256": "effc2fd39071e84264285837772e3c3e31dce4d77008037fb43d6ec1dce91f49",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/records/streams.json",
+      "change": "added",
+      "bytes": 1951,
+      "sha256": "59ec26e4e59f67cbf23b0936396baa7b03d675e7bc71efee3151023efc0dc705",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 317,
+      "sha256": "e586e1caeb8603d94d2cfbcde56be583b996951d994061addd535b139428cf5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/records/verifier.json",
+      "change": "added",
+      "bytes": 75769,
+      "sha256": "1978f347827aeb0bb96e6490ba328aa0deb7de71c44df0a99250c71115ed8a22",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/records/verifier.stdout",
+      "change": "added",
+      "bytes": 11216,
+      "sha256": "61d66693e627ee3142d3550f53bb66724758c818c0020c7e36fdb1d38df2c9ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/result.json",
+      "change": "added",
+      "bytes": 27064,
+      "sha256": "2b3387bbf7c0951b75d731cee29efcfd8def383c0497031cdddd22c51636ba45",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-fix-observed/executions/20261120T095216Z-9fa75e7c/attempt.json",
+      "change": "added",
+      "bytes": 73933,
+      "sha256": "67a300de2fffa2fb92318a0aefa3d47d3333b8a59cad9a7aff8b04a577f09b1e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-fix-observed/executions/20261120T095216Z-9fa75e7c/checker.json",
+      "change": "added",
+      "bytes": 12805,
+      "sha256": "4e069d40e47b8779d7d408211272f0e8aaec48a50407780714557ef806b5f8f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/march-fix-observed/executions/20261120T095216Z-9fa75e7c/correspondence.json",
+      "change": "added",
+      "bytes": 1489,
+      "sha256": "82fd2b6bf6a6a2fb69a845d75121d53d66aa9ddc6319b746fab48d7a2c87ea92",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "b13efe863ed5a275d626460a7728eb7fac7f3a92b1afde788de5843e52c271e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/plan.json",
+      "change": "added",
+      "bytes": 30054,
+      "sha256": "71b9ae59bf8476131095b1fecbe3c615963d059066b3e071ca380006933ae14b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 861,
+      "sha256": "70cbc54bd3c67c46e575bce7997cde4199807aea16f7bc46f1b4bad33f17c7d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 5101,
+      "sha256": "3829efd65a07fa18f7e7118c1708a43cfe6a602521865c4aff61d6c46650b3ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/records/controls.json",
+      "change": "added",
+      "bytes": 14473,
+      "sha256": "5e5917ec2f10a9ee87e1f662272e7c376a374e2b891b826bcbe50037c5b6057c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/records/execution.json",
+      "change": "added",
+      "bytes": 93999,
+      "sha256": "5aaeaecaa45bb893bbf6e1a7ce557eaa74a9a90af043b34b4aa0b5fa7894dc66",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/records/streams.json",
+      "change": "added",
+      "bytes": 1975,
+      "sha256": "f707ad67a7a4f0ccf4bb28135dd884999579c8d3425d8af12b591f9369ce8db0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 885,
+      "sha256": "404eefa3c01768db5edc93e415a99470459092fc303fd7f778173e4ac0bbdc16",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/records/verifier.json",
+      "change": "added",
+      "bytes": 77690,
+      "sha256": "0739303be1d6d1a3792631bb7faac7ba10fb8906f1483792ea84904ad4ce45ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/records/verifier.stdout",
+      "change": "added",
+      "bytes": 12889,
+      "sha256": "0715df3078f1d9a4720f91c409cab2af1108e86b6805be250b572d23aa0c65c3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/result.json",
+      "change": "added",
+      "bytes": 22629,
+      "sha256": "e10ba56781abaf886dfc683376165d80df4dc663a6fb3caa890e40deafb98766",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/executions/20261120T095219Z-002f5d71/attempt.json",
+      "change": "added",
+      "bytes": 74810,
+      "sha256": "438b332d37660b64746e2d9c1053dbe173f8de409fa4d8af1d1bed226502b7fb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/executions/20261120T095219Z-002f5d71/checker.json",
+      "change": "added",
+      "bytes": 14549,
+      "sha256": "4e4cb0a2615a7ceeb1d6caa61956cd3bd6dbc18ac9326c6fca1deff0d9b807de",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/executions/20261120T095219Z-002f5d71/correspondence.json",
+      "change": "added",
+      "bytes": 1499,
+      "sha256": "5f214d829e07c89a22d58c8ab453ca4e469ee8342a0fb29388757cede6235a47",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "8298c2cd2fc5b0c03b52b8453f0b92b02e534afce087bab6f62e92f3032531cd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/plan.json",
+      "change": "added",
+      "bytes": 30151,
+      "sha256": "9d2fd8c852cbf544e251bdf4d2aca22df84b3014a5677cfe213551e926894bb9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 861,
+      "sha256": "70cbc54bd3c67c46e575bce7997cde4199807aea16f7bc46f1b4bad33f17c7d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 4700,
+      "sha256": "560df9c11b3deffa13e431c925903139514b5369406886ba1037ae7986cd8a15",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/records/controls.json",
+      "change": "added",
+      "bytes": 14039,
+      "sha256": "a2881655c23ab53646420f9bc013c5aa4911c162252806089655eaf9c2364879",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/records/execution.json",
+      "change": "added",
+      "bytes": 92387,
+      "sha256": "ec92ade051e013515e6c0bd5304292d9ec38169042dfca5ca8c4558a2cd5df24",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/records/streams.json",
+      "change": "added",
+      "bytes": 1951,
+      "sha256": "ee83ea8fbb989021220bcf37c0908f9a4d585665e2914269c135de152d0b28b5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 649,
+      "sha256": "95cd96192245358e7511a107d31c054714cad202e675cc3524d0d221398e5edb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/records/verifier.json",
+      "change": "added",
+      "bytes": 76476,
+      "sha256": "0f18d3fc657a484071bf128cd92e6778116fb24204371adc17d1dbbb35c26264",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/records/verifier.stdout",
+      "change": "added",
+      "bytes": 11715,
+      "sha256": "ee9fff45044df900daabb5af180a726d2b0b9c68aa6c8e6db0554e3c8685bf1a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/result.json",
+      "change": "added",
+      "bytes": 27667,
+      "sha256": "ab418fa0e33530f9da7a8f4a50ad73328d1a03ec2c963962f4917b60d17a76c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/executions/20261120T095222Z-bc773aa3/attempt.json",
+      "change": "added",
+      "bytes": 74125,
+      "sha256": "1fe08abbff74b16de3fe6ada43b9358bd2ad4c34b683ce4725ff726776faed8d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/executions/20261120T095222Z-bc773aa3/checker.json",
+      "change": "added",
+      "bytes": 13377,
+      "sha256": "eb9ae7934c22914f946f54de830afb8239386b4c78c1f6bc600245d04d5dbddb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/executions/20261120T095222Z-bc773aa3/correspondence.json",
+      "change": "added",
+      "bytes": 1493,
+      "sha256": "edeefe7c2aa4808184e102a15fc29bccceab680ca353306df69956bbdbf154d2",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T09:52:51+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/completion.json",
+      "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/plan.json",
+      "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/records/control-parent-jdk21.stderr",
+      "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/records/control-parent-jdk21.stdout",
+      "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/records/controls.json",
+      "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/records/execution.json",
+      "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/records/streams.json",
+      "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/records/verifier-output.txt",
+      "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/records/verifier.json",
+      "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/records/verifier.stderr",
+      "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/records/verifier.stdout",
+      "examples/327-joda-monthday-distance/receipts/normal-parent-observed/20261120T095154Z-55cb35f9/result.json",
+      "examples/327-joda-monthday-distance/receipts/normal-parent-observed/executions/20261120T095154Z-55cb35f9/attempt.json",
+      "examples/327-joda-monthday-distance/receipts/normal-parent-observed/executions/20261120T095154Z-55cb35f9/checker.json",
+      "examples/327-joda-monthday-distance/receipts/normal-parent-observed/executions/20261120T095154Z-55cb35f9/correspondence.json",
+      "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/completion.json",
+      "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/plan.json",
+      "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/records/control-fix-jdk21.stderr",
+      "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/records/control-fix-jdk21.stdout",
+      "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/records/controls.json",
+      "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/records/execution.json",
+      "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/records/streams.json",
+      "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/records/verifier-output.txt",
+      "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/records/verifier.json",
+      "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/records/verifier.stderr",
+      "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/records/verifier.stdout",
+      "examples/327-joda-monthday-distance/receipts/normal-fix-observed/20261120T095200Z-23423312/result.json",
+      "examples/327-joda-monthday-distance/receipts/normal-fix-observed/executions/20261120T095200Z-23423312/attempt.json",
+      "examples/327-joda-monthday-distance/receipts/normal-fix-observed/executions/20261120T095200Z-23423312/checker.json",
+      "examples/327-joda-monthday-distance/receipts/normal-fix-observed/executions/20261120T095200Z-23423312/correspondence.json",
+      "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/completion.json",
+      "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/plan.json",
+      "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/records/control-parent-jdk21.stderr",
+      "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/records/control-parent-jdk21.stdout",
+      "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/records/controls.json",
+      "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/records/execution.json",
+      "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/records/streams.json",
+      "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/records/verifier-output.txt",
+      "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/records/verifier.json",
+      "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/records/verifier.stderr",
+      "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/records/verifier.stdout",
+      "examples/327-joda-monthday-distance/receipts/days-parent-observed/20261120T095205Z-bcb53f44/result.json",
+      "examples/327-joda-monthday-distance/receipts/days-parent-observed/executions/20261120T095205Z-bcb53f44/attempt.json",
+      "examples/327-joda-monthday-distance/receipts/days-parent-observed/executions/20261120T095205Z-bcb53f44/checker.json",
+      "examples/327-joda-monthday-distance/receipts/days-parent-observed/executions/20261120T095205Z-bcb53f44/correspondence.json",
+      "examples/327-joda-monthday-distance/receipts/days-parent-observed/executions/20261120T095205Z-bcb53f44/replay.json",
+      "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/completion.json",
+      "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/plan.json",
+      "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/records/control-fix-jdk21.stderr",
+      "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/records/control-fix-jdk21.stdout",
+      "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/records/controls.json",
+      "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/records/execution.json",
+      "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/records/streams.json",
+      "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/records/verifier-output.txt",
+      "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/records/verifier.json",
+      "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/records/verifier.stderr",
+      "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/records/verifier.stdout",
+      "examples/327-joda-monthday-distance/receipts/days-fix-observed/20261120T095208Z-2e6f0378/result.json",
+      "examples/327-joda-monthday-distance/receipts/days-fix-observed/executions/20261120T095208Z-2e6f0378/attempt.json",
+      "examples/327-joda-monthday-distance/receipts/days-fix-observed/executions/20261120T095208Z-2e6f0378/checker.json",
+      "examples/327-joda-monthday-distance/receipts/days-fix-observed/executions/20261120T095208Z-2e6f0378/correspondence.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/completion.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/plan.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/records/control-parent-jdk21.stderr",
+      "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/records/control-parent-jdk21.stdout",
+      "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/records/controls.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/records/execution.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/records/streams.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/records/verifier-output.txt",
+      "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/records/verifier.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/records/verifier.stderr",
+      "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/records/verifier.stdout",
+      "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/20261120T095210Z-25d875e5/result.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/executions/20261120T095210Z-25d875e5/attempt.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/executions/20261120T095210Z-25d875e5/checker.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-parent-observed/executions/20261120T095210Z-25d875e5/correspondence.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/completion.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/plan.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/records/control-fix-jdk21.stderr",
+      "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/records/control-fix-jdk21.stdout",
+      "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/records/controls.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/records/execution.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/records/streams.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/records/verifier-output.txt",
+      "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/records/verifier.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/records/verifier.stderr",
+      "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/records/verifier.stdout",
+      "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/20261120T095212Z-372487b0/result.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/executions/20261120T095212Z-372487b0/attempt.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/executions/20261120T095212Z-372487b0/checker.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-fix-observed/executions/20261120T095212Z-372487b0/correspondence.json",
+      "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/completion.json",
+      "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/plan.json",
+      "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/records/control-parent-jdk21.stderr",
+      "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/records/control-parent-jdk21.stdout",
+      "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/records/controls.json",
+      "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/records/execution.json",
+      "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/records/streams.json",
+      "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/records/verifier-output.txt",
+      "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/records/verifier.json",
+      "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/records/verifier.stderr",
+      "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/records/verifier.stdout",
+      "examples/327-joda-monthday-distance/receipts/march-parent-observed/20261120T095214Z-2ccd0846/result.json",
+      "examples/327-joda-monthday-distance/receipts/march-parent-observed/executions/20261120T095214Z-2ccd0846/attempt.json",
+      "examples/327-joda-monthday-distance/receipts/march-parent-observed/executions/20261120T095214Z-2ccd0846/checker.json",
+      "examples/327-joda-monthday-distance/receipts/march-parent-observed/executions/20261120T095214Z-2ccd0846/correspondence.json",
+      "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/completion.json",
+      "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/plan.json",
+      "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/records/control-fix-jdk21.stderr",
+      "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/records/control-fix-jdk21.stdout",
+      "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/records/controls.json",
+      "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/records/execution.json",
+      "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/records/streams.json",
+      "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/records/verifier-output.txt",
+      "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/records/verifier.json",
+      "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/records/verifier.stderr",
+      "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/records/verifier.stdout",
+      "examples/327-joda-monthday-distance/receipts/march-fix-observed/20261120T095216Z-9fa75e7c/result.json",
+      "examples/327-joda-monthday-distance/receipts/march-fix-observed/executions/20261120T095216Z-9fa75e7c/attempt.json",
+      "examples/327-joda-monthday-distance/receipts/march-fix-observed/executions/20261120T095216Z-9fa75e7c/checker.json",
+      "examples/327-joda-monthday-distance/receipts/march-fix-observed/executions/20261120T095216Z-9fa75e7c/correspondence.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/completion.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/plan.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/records/control-parent-jdk21.stderr",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/records/control-parent-jdk21.stdout",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/records/controls.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/records/execution.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/records/streams.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/records/verifier-output.txt",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/records/verifier.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/records/verifier.stderr",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/records/verifier.stdout",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/20261120T095219Z-002f5d71/result.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/executions/20261120T095219Z-002f5d71/attempt.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/executions/20261120T095219Z-002f5d71/checker.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-parent-observed/executions/20261120T095219Z-002f5d71/correspondence.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/completion.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/plan.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/records/control-fix-jdk21.stderr",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/records/control-fix-jdk21.stdout",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/records/controls.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/records/execution.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/records/streams.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/records/verifier-output.txt",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/records/verifier.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/records/verifier.stderr",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/records/verifier.stdout",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/20261120T095222Z-bc773aa3/result.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/executions/20261120T095222Z-bc773aa3/attempt.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/executions/20261120T095222Z-bc773aa3/checker.json",
+      "examples/327-joda-monthday-distance/receipts/reversal-on-returns-fix-observed/executions/20261120T095222Z-bc773aa3/correspondence.json"
+    ],
+    "why": "not applied: the job failed",
+    "changesDiff": {
+      "bytes": 3570305,
+      "kept": "changes.diff.gz",
+      "how": "gzipped"
+    }
+  },
+  "jvmcontract": {
+    "libTree": "b28e7aef110bf69569370fbc8da805d53b3e66ad",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b28e7aef110bf69569370fbc8da805d53b3e66ad/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff.gz",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-094050-verify-monthday-distances-on-observed-ut"
+}
