@@ -1,0 +1,236 @@
+{
+  "plan": {
+    "example": "312",
+    "task": "invoice-values",
+    "kind": "equivalence",
+    "relation": "preservation",
+    "target": "invoice.Invoice#total(I)I",
+    "revisions": [
+      "two-first",
+      "three-first"
+    ],
+    "claim": {
+      "task": "invoice-values",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "invoice.Invoice#total(I)I",
+      "file": "claims/invoice-values.json",
+      "sha256": "e5060f92872f7e8bbd2879db8c325fc464cc03cc039b2a95f8fb738d44192bdc",
+      "property": "invoice-values",
+      "claimKind": "preservation",
+      "statement": "Both ordered closures return the same invoice amount on the admitted quantities.",
+      "assume": "q >= -2 && q <= 2",
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 3
+      },
+      "explicitBounds": {
+        "unwind": 10,
+        "maxArrayLength": 3
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/invoice/Invoices.java",
+          "sha256": "81544b955d71dc4932005efd62f005c792e8e43253e125e96a50225ba0e48595"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "c35340f7315c9ef8c3dc880c4433d6408dbd7fb28f80ec7fa3c49a039deaa16a"
+        }
+      ],
+      "key": "a3277271b04b82e9"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "two-first",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "client",
+        "fixtureClasspath": [
+          "rates/two",
+          "rates/three"
+        ],
+        "orderedClasses": [
+          "invoice.Rate"
+        ],
+        "dependencySourceDigests": [
+          "cdbfb718238276c32f67161540873665bea6445ebae55c1f4461ab0babee6d13",
+          "6d03ed073a2ae865769fefb46840cc4ebfe359970160c028394def1ac4e824d9"
+        ],
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "three-first",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "client",
+        "fixtureClasspath": [
+          "rates/three",
+          "rates/two"
+        ],
+        "orderedClasses": [
+          "invoice.Rate"
+        ],
+        "dependencySourceDigests": [
+          "6d03ed073a2ae865769fefb46840cc4ebfe359970160c028394def1ac4e824d9",
+          "cdbfb718238276c32f67161540873665bea6445ebae55c1f4461ab0babee6d13"
+        ],
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/invoice-values"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-023617-check-invoice-values-on-swapped-dependen/examples/312-invoice-ordered-rate-jars",
+    "network": false
+  },
+  "inputs": {
+    "example": "312",
+    "task": "invoice-values",
+    "kind": "equivalence",
+    "relation": "preservation",
+    "target": "invoice.Invoice#total(I)I",
+    "revisions": [
+      "two-first",
+      "three-first"
+    ],
+    "claim": {
+      "task": "invoice-values",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "invoice.Invoice#total(I)I",
+      "file": "claims/invoice-values.json",
+      "sha256": "e5060f92872f7e8bbd2879db8c325fc464cc03cc039b2a95f8fb738d44192bdc",
+      "property": "invoice-values",
+      "claimKind": "preservation",
+      "statement": "Both ordered closures return the same invoice amount on the admitted quantities.",
+      "assume": "q >= -2 && q <= 2",
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 3
+      },
+      "explicitBounds": {
+        "unwind": 10,
+        "maxArrayLength": 3
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/invoice/Invoices.java",
+          "sha256": "81544b955d71dc4932005efd62f005c792e8e43253e125e96a50225ba0e48595"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "c35340f7315c9ef8c3dc880c4433d6408dbd7fb28f80ec7fa3c49a039deaa16a"
+        }
+      ],
+      "key": "a3277271b04b82e9"
+    },
+    "artifacts": [
+      {
+        "revision": "two-first",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "client",
+        "fixtureClasspath": [
+          "rates/two",
+          "rates/three"
+        ],
+        "orderedClasses": [
+          "invoice.Rate"
+        ],
+        "dependencySourceDigests": [
+          "cdbfb718238276c32f67161540873665bea6445ebae55c1f4461ab0babee6d13",
+          "6d03ed073a2ae865769fefb46840cc4ebfe359970160c028394def1ac4e824d9"
+        ],
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "three-first",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "client",
+        "fixtureClasspath": [
+          "rates/three",
+          "rates/two"
+        ],
+        "orderedClasses": [
+          "invoice.Rate"
+        ],
+        "dependencySourceDigests": [
+          "6d03ed073a2ae865769fefb46840cc4ebfe359970160c028394def1ac4e824d9",
+          "cdbfb718238276c32f67161540873665bea6445ebae55c1f4461ab0babee6d13"
+        ],
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "f14118ed603b524dd0be29ea967819a35c5b720df665c348f1b52615598092ec"
+}

@@ -12,28 +12,28 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-20T02:18:37.005Z",
-  "duration_seconds": 377470,
+  "ended": "2026-11-20T02:41:07.307Z",
+  "duration_seconds": 378821,
   "stats": {
-    "turns": 359,
-    "api_calls": 2086,
-    "tool_calls": 1893,
+    "turns": 361,
+    "api_calls": 2095,
+    "tool_calls": 1904,
     "tool_errors": 31,
     "compactions": 8,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 4878,
-      "output_tokens": 1197792,
-      "cache_read_input_tokens": 495534556,
-      "cache_creation_input_tokens": 3052434
+      "input_tokens": 4900,
+      "output_tokens": 1201428,
+      "cache_read_input_tokens": 498252259,
+      "cache_creation_input_tokens": 3060078
     }
   },
   "tools": {
-    "Bash": 1793,
+    "Bash": 1803,
     "Edit": 28,
     "SendMessage": 18,
     "ToolSearch": 13,
-    "TaskStop": 10,
+    "TaskStop": 11,
     "Write": 8,
     "ListAgents": 7,
     "Read": 7,
@@ -174,24 +174,24 @@
     {
       "index": 8,
       "started": "2026-11-19T18:00:49.571Z",
-      "ended": "2026-11-20T02:18:37.005Z",
-      "turns": 56,
-      "api_calls": 261,
+      "ended": "2026-11-20T02:41:07.307Z",
+      "turns": 58,
+      "api_calls": 270,
       "usage": {
-        "input_tokens": 636,
-        "output_tokens": 83947,
-        "cache_read_input_tokens": 51142084,
-        "cache_creation_input_tokens": 264158
+        "input_tokens": 658,
+        "output_tokens": 87583,
+        "cache_read_input_tokens": 53859787,
+        "cache_creation_input_tokens": 271802
       },
-      "peak_context_tokens": 298423
+      "peak_context_tokens": 306067
     }
   ],
   "log": {
-    "sha256": "a90e8da76e31170e0cd41386381821b7d3da1d86ebc792ed529a0ec7cb2c4b68",
-    "bytes": 39506946,
-    "lines": 17430,
-    "gzip_bytes": 6593662,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/a90e8da76e31170e0cd41386381821b7d3da1d86ebc792ed529a0ec7cb2c4b68.jsonl.gz"
+    "sha256": "7c10078572d0af9cd301f0ac95e8cfb443ba3cb398292d718ca1c324df08caa3",
+    "bytes": 39630770,
+    "lines": 17504,
+    "gzip_bytes": 6611705,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/7c10078572d0af9cd301f0ac95e8cfb443ba3cb398292d718ca1c324df08caa3.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3778,6 +3778,14 @@
       "summary": "Allow the statement's vacuity.outside in the receipt schema",
       "body": "The foundation-and-python-restart run added Vacuity.outside to the checker's statement (lib/src/statement.rs, nwkovvmp: the allowed change a regression witness is known to lie outside) and a qualification that requires it, but examples/schema/result.schema.json still forbids extra vacuity fields, so a receipt from a current build fails check_result. The run's own default run did not see it: its workspace has no release build, so test_targets_contract's fixture calibration skipped there; this checkout's release binary predated the change until it was rebuilt. The schema now admits the field. test_targets_contract passes on the rebuilt binary, and test_costs.py run --changed passed 10 of 10.",
       "log_sha256": "a90e8da76e31170e0cd41386381821b7d3da1d86ebc792ed529a0ec7cb2c4b68"
+    },
+    {
+      "change_id": "vwpmlwpnpxwruqzqokklrszzlylsrprq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 3 job(s)",
+      "body": "Outputs applied for 0 of the 3 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-023617-check-invoice-values-on-swapped-dependen: failed: 1 failed step(s) in 8.8s, peak 167.7 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×3; example:task-unexpected×1 20261120-023617-check-partial-copy-state-through-arrayst: failed: 1 failed step(s) in 6.6s, peak 145.1 MiB (estimated 2m00s, 2.0 GiB); 51 output file(s) changed; signals: example:task-unexpected×3 20261120-023617-check-signed-time-in-each-direction-on-t: failed: 1 failed step(s) in 11.2s, peak 191.4 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "7c10078572d0af9cd301f0ac95e8cfb443ba3cb398292d718ca1c324df08caa3"
     }
   ],
   "logs": {
@@ -4344,6 +4352,12 @@
       "lines": 11372,
       "gzip_bytes": 4447700,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/7b762ec15d7b3f8abd9a96b3a4f13ea469b5857a3ea05337aa2316fc9e529092.jsonl.gz"
+    },
+    "7c10078572d0af9cd301f0ac95e8cfb443ba3cb398292d718ca1c324df08caa3": {
+      "bytes": 39630770,
+      "lines": 17504,
+      "gzip_bytes": 6611705,
+      "url": null
     },
     "7c198109efb86f5e179b9ee2a863473d1eb888e818f15283d544f973789e5b0b": {
       "bytes": 38592847,

@@ -1,0 +1,192 @@
+{
+  "plan": {
+    "example": "312",
+    "task": "rate-two-first",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "invoice.Invoice#total(I)I",
+    "revisions": [
+      "two-first"
+    ],
+    "claim": {
+      "task": "rate-two-first",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "invoice.Invoice#total(I)I",
+      "file": "claims/rate-two-first.json",
+      "sha256": "5a73e542bd8be41274dac00c515ce67d62b57e50acb0923be1dc1b03dd8cb432",
+      "property": "rate-two-first",
+      "claimKind": "property",
+      "statement": "The invoice uses the rate supplied by the first dependency JAR.",
+      "assume": "q >= -2 && q <= 2",
+      "assert": "result == q * 2",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 3
+      },
+      "explicitBounds": {
+        "unwind": 10,
+        "maxArrayLength": 3
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/invoice/Invoices.java",
+          "sha256": "81544b955d71dc4932005efd62f005c792e8e43253e125e96a50225ba0e48595"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "c35340f7315c9ef8c3dc880c4433d6408dbd7fb28f80ec7fa3c49a039deaa16a"
+        }
+      ],
+      "key": "d0500ccf7426fbf2"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "two-first",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "client",
+        "fixtureClasspath": [
+          "rates/two",
+          "rates/three"
+        ],
+        "orderedClasses": [
+          "invoice.Rate"
+        ],
+        "dependencySourceDigests": [
+          "cdbfb718238276c32f67161540873665bea6445ebae55c1f4461ab0babee6d13",
+          "6d03ed073a2ae865769fefb46840cc4ebfe359970160c028394def1ac4e824d9"
+        ],
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/rate-two-first"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-023617-check-invoice-values-on-swapped-dependen/examples/312-invoice-ordered-rate-jars",
+    "network": false
+  },
+  "inputs": {
+    "example": "312",
+    "task": "rate-two-first",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "invoice.Invoice#total(I)I",
+    "revisions": [
+      "two-first"
+    ],
+    "claim": {
+      "task": "rate-two-first",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "invoice.Invoice#total(I)I",
+      "file": "claims/rate-two-first.json",
+      "sha256": "5a73e542bd8be41274dac00c515ce67d62b57e50acb0923be1dc1b03dd8cb432",
+      "property": "rate-two-first",
+      "claimKind": "property",
+      "statement": "The invoice uses the rate supplied by the first dependency JAR.",
+      "assume": "q >= -2 && q <= 2",
+      "assert": "result == q * 2",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 3
+      },
+      "explicitBounds": {
+        "unwind": 10,
+        "maxArrayLength": 3
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/invoice/Invoices.java",
+          "sha256": "81544b955d71dc4932005efd62f005c792e8e43253e125e96a50225ba0e48595"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "c35340f7315c9ef8c3dc880c4433d6408dbd7fb28f80ec7fa3c49a039deaa16a"
+        }
+      ],
+      "key": "d0500ccf7426fbf2"
+    },
+    "artifacts": [
+      {
+        "revision": "two-first",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "client",
+        "fixtureClasspath": [
+          "rates/two",
+          "rates/three"
+        ],
+        "orderedClasses": [
+          "invoice.Rate"
+        ],
+        "dependencySourceDigests": [
+          "cdbfb718238276c32f67161540873665bea6445ebae55c1f4461ab0babee6d13",
+          "6d03ed073a2ae865769fefb46840cc4ebfe359970160c028394def1ac4e824d9"
+        ],
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "1eec495b92a979fe8c376a12e62006b798d9a396afca19382fc8532a6d48f9a9"
+}

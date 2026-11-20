@@ -1,0 +1,337 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "e557ec51e8e52ec3",
+    "format": 1,
+    "example": "314",
+    "statement": {
+      "approach": "target",
+      "task": "exception-class",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "copy.Copy#transfer([Ljava/lang/Object;[Ljava/lang/String;)V",
+      "revisions": [
+        "reference",
+        "precheck"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "exception-class",
+        "kind": "equivalence",
+        "relation": "preservation",
+        "target": "copy.Copy#transfer([Ljava/lang/Object;[Ljava/lang/String;)V",
+        "file": "claims/exception-class.json",
+        "sha256": "ed5997e7639f631fbb271ed9803905b4dd736096cefdaa261d7c2741e8878405",
+        "property": "exception-class",
+        "claimKind": "preservation",
+        "statement": "Both calls complete normally or throw the same ArrayStoreException.",
+        "assume": "code >= 0 && code < 40",
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 10,
+          "maxArrayLength": 3
+        },
+        "explicitBounds": {
+          "unwind": 10,
+          "maxArrayLength": 3
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/copy/CopyCases.java",
+            "sha256": "eacc0ffbc1ec4dd409e3d19350494f7642c61b8886a599f550dbf7902f1a730d"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "3e45a3502dda068dccc872b35b49ee6a0c65c36972a9824c1dea885bca9b956a"
+          }
+        ],
+        "adapter": {
+          "entry": "copy.Projection#thrown(I)I",
+          "mapping": "Bijective base three encodes all Object[] inputs of zero to three cells, low digit first: null, String A, boxed Integer 1. Every destination is a fresh String[] initially filled with x. State encodes the final x/null/A cells in base three for the known length, after either exit. Thrown covers exactly ArrayStoreException.",
+          "correspondence": "finite-oracle",
+          "cases": 40
+        },
+        "key": "417c9f288204be81"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 3,
+      "intendedInputs": null
+    },
+    "inputs": {
+      "patch": null,
+      "before": {
+        "sha256": "13fe2de34f8d60bafa4e26a096e6d7fec21b3496dae8897b4711cf7a9e7a1b73",
+        "files": 1
+      },
+      "after": {
+        "sha256": "801b8cca2e883d5a90a990b3373d9d7edf7276575c2441e1106952d95da3801a",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "exception-class",
+      "sidecar": "dd62f0854aa7455448e827d3efef219ee565311b2b52dc4ed9e5bb3cbb80c6fc",
+      "revisions": {
+        "reference": "e229cf4b1160cd60296030b9098ba961b76edc34",
+        "precheck": "8b7b055bfe7a97b25b3b5cb7a5a127b0b1536877"
+      },
+      "dependencies": [
+        {
+          "revision": "reference",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ca78590d88fb4f993eba5666c51679623a265d9017cecec2cbc484d4953fda65"
+        },
+        {
+          "revision": "reference",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "ab42a5d072e99404c26889d48653d768075c1048330d697d6dc0eed90252a0ca"
+        },
+        {
+          "revision": "reference",
+          "position": 2,
+          "role": "original",
+          "sha256": "978747c97c2cb0c8b440abfe278fb79cd7ceb6ff12204dcddd8a93c6236cadfb"
+        },
+        {
+          "revision": "precheck",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ca78590d88fb4f993eba5666c51679623a265d9017cecec2cbc484d4953fda65"
+        },
+        {
+          "revision": "precheck",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "ab42a5d072e99404c26889d48653d768075c1048330d697d6dc0eed90252a0ca"
+        },
+        {
+          "revision": "precheck",
+          "position": 2,
+          "role": "original",
+          "sha256": "01c403190988a64969b18075e2846aa130e3e1b7e38714856721e8db60f0ab6b"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/copy/Projection.java": "315da84c3a0e3472e1bd2c4057122ba9a215c3088626aa9f23758d1d8c4cbd36",
+        "claims/exception-class.json": "ed5997e7639f631fbb271ed9803905b4dd736096cefdaa261d7c2741e8878405",
+        "controls/table.json": "3e45a3502dda068dccc872b35b49ee6a0c65c36972a9824c1dea885bca9b956a",
+        "driver/copy/CopyCases.java": "eacc0ffbc1ec4dd409e3d19350494f7642c61b8886a599f550dbf7902f1a730d"
+      },
+      "claimKey": "417c9f288204be81"
+    }
+  },
+  "attempt": {
+    "id": "20261120T024332Z-321a69ab",
+    "claim": "e557ec51e8e52ec3",
+    "startedAt": "2026-11-20T02:43:32+00:00",
+    "seconds": 0.6,
+    "engine": "native",
+    "options": [
+      "equivalence",
+      "--before",
+      "verifier/classes/reference",
+      "--after",
+      "verifier/classes/precheck",
+      "--target",
+      "copy.Projection#thrown(int)",
+      "--classpath",
+      "prepare/precheck/precheck.jar",
+      "--before-classpath",
+      "prepare/reference/reference.jar",
+      "--assume",
+      "code >= 0 && code < 40",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "10",
+      "--max-array-length",
+      "3",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "c2dd914e701f54bac1690aa01b4eea9800282c81a0f58526fa321ec126909658"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "30eb2af8234dfbcc549d917eb252b997bc0878db7c13d6401d350baf453b61b2",
+        "files": 1
+      },
+      "after": {
+        "sha256": "b182c4dd1615bf5ace1aadfb2ed1f6240569497c997666ad354985bfd6b94893",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-023617-check-partial-copy-state-through-arrayst",
+      "sourceCommit": "1dbedf86dfb5de3f953482f8d2e2d8234e7adaf7",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-023617-check-partial-copy-state-through-arrayst"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control reference on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-reference-jdk21.stdout",
+        "stderr": "records/control-reference-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control precheck on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-precheck-jdk21.stdout",
+        "stderr": "records/control-precheck-jdk21.stderr"
+      },
+      {
+        "name": "verifier pair on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.496,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 10,
+      "maxArrayLength": 3,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "e557ec51e8e52ec3",
+    "attempt": "20261120T024332Z-321a69ab",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"reference\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"precheck\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 2 gaps, a construct it does not implement as the JVM does, and refused them (--gaps strict): jdk-static-method:java.lang.Integer.valueOf(I)Ljava/lang/Integer;@jdk-21.0.13 (java.lang.Integer.valueOf(int) at before.copy.Projection.input:19); jdk-static-method:java.lang.System.arraycopy(Ljava/lang/Object;ILjava/lang/Object;II)V@jdk-21.0.13 (java.lang.System.arraycopy(java.lang.Object, int, java.lang.Object, int, int) at before.copy.Copy.transfer:5). They have no approximation under --gaps assume, since their values could only be made up: only contracts close them (--gaps advised)",
+    "domain": "code: int",
+    "replay": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "44d259169eaf740b2fcc7014b0ef02b61de7edceb9bb8314279ceaf6708d7afc",
+        "bytes": 77508
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "7f5f8fb613e957917bd219232fa755b171e6dd3814c1009c38eec5265813467a",
+        "bytes": 1513
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "4c94a24550670d20d7d7c7ede178c66cc1f7306c13863f4a85f1d753bdeeab17",
+        "bytes": 2691
+      },
+      {
+        "path": "records/control-reference-jdk21.stdout",
+        "sha256": "a23d3c0edc9ee6e05e347878f3190f92fb30ddb00897d93caca600e46230b107",
+        "bytes": 8689
+      },
+      {
+        "path": "records/control-reference-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "d6edcc2476db69efa32956b0b5fa998e5026d543ee00d845ae8ca1ef567d338f",
+        "bytes": 47411
+      },
+      {
+        "path": "records/control-precheck-jdk21.stdout",
+        "sha256": "2cb3bc4b5e7bc117f44d5ad215c114695c3422d68f8c08dc8a57534e637756d1",
+        "bytes": 8674
+      },
+      {
+        "path": "records/control-precheck-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "3ee8c920adb4b64e6b7d61e7444b1e5557cd20e86c8bf2b8448b1562f2ea6321",
+        "bytes": 15749
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "00d38d952c66a5bf7262994c7fd167665d13ff5c4a18e321c31076980908dbc5",
+        "bytes": 29858
+      }
+    ]
+  }
+}

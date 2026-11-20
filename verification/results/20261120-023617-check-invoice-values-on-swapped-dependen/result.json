@@ -1,0 +1,707 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-023617-check-invoice-values-on-swapped-dependen",
+  "title": "Check invoice values on swapped dependency JARs",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 8.8s, peak 167.7 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×3; example:task-unexpected×1",
+  "attention": [
+    "step 1 (Check the frozen obligations on their prepared bytes) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-023617-check-invoice-values-on-swapped-dependen.json",
+    "sha256": "e09227c6c3fffe0a72bc47c43458fb8c5a28d2e8d431103a9a0149a8f06d2c74",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-023617-check-invoice-values-on-swapped-dependen",
+      "title": "Check invoice values on swapped dependency JARs",
+      "description": "One compiled Invoice sees Rate from the first of two identically named classes. Compare the full signed five-input grid, the zero-only subset and each expected absolute amount against fresh JVM runs.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "312"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T02:36:17+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 312 --tasks invoice-values,zero-only,rate-two-first,rate-three-first --checker-seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/312-invoice-ordered-rate-jars/receipts/invoice-values",
+        "examples/312-invoice-ordered-rate-jars/receipts/zero-only",
+        "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first",
+        "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first"
+      ]
+    }
+  },
+  "sourceCommit": "1dbedf86dfb5de3f953482f8d2e2d8234e7adaf7",
+  "startedAt": "2026-11-20T02:40:51+00:00",
+  "finishedAt": "2026-11-20T02:43:40+00:00",
+  "wallSeconds": 169.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3702167,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 175865856,
+    "wallSeconds": 8.8,
+    "cpuSeconds": 13.6,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 312 --tasks invoice-values,zero-only,rate-two-first,rate-three-first --checker-seconds 60",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 8.816,
+      "cpuSeconds": 13.629,
+      "cpuThrottledSeconds": 0.531,
+      "peakMemoryBytes": 175865856,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-obligations-o.log",
+        "lines": 8,
+        "bytes": 939,
+        "sha256": "9232b7c9d478a25f5a4d64dc8d4e1181978767a762fb3ba33b00834debff8764",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 1,
+        "example:task-as-expected": 3
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "312-invoice-ordered-rate-jars: task invoice-values: none (invalid-output; NOT AS EXPECTED (refuted)), receipt receipts/invoice-values/20261120T024332Z-33024846/result.json",
+          "groups": [
+            "312",
+            "invoice-values",
+            "none",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "312-invoice-ordered-rate-jars: task zero-only: established (completed; as expected), receipt receipts/zero-only/20261120T024338Z-576e4a40/result.json",
+          "groups": [
+            "312",
+            "zero-only",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "312-invoice-ordered-rate-jars: task rate-two-first: established (completed; as expected), receipt receipts/rate-two-first/20261120T024339Z-33b9775f/result.json",
+          "groups": [
+            "312",
+            "rate-two-first",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "312-invoice-ordered-rate-jars: task rate-three-first: established (completed; as expected), receipt receipts/rate-three-first/20261120T024339Z-dc65caa2/result.json",
+          "groups": [
+            "312",
+            "rate-three-first",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "312-invoice-ordered-rate-jars: running task invoice-values (target route)",
+        "312-invoice-ordered-rate-jars: task invoice-values: none (invalid-output; NOT AS EXPECTED (refuted)), receipt receipts/invoice-values/20261120T024332Z-33024846/result.json",
+        "312-invoice-ordered-rate-jars: running task zero-only (target route)",
+        "312-invoice-ordered-rate-jars: task zero-only: established (completed; as expected), receipt receipts/zero-only/20261120T024338Z-576e4a40/result.json",
+        "312-invoice-ordered-rate-jars: running task rate-two-first (target route)",
+        "312-invoice-ordered-rate-jars: task rate-two-first: established (completed; as expected), receipt receipts/rate-two-first/20261120T024339Z-33b9775f/result.json",
+        "312-invoice-ordered-rate-jars: running task rate-three-first (target route)",
+        "312-invoice-ordered-rate-jars: task rate-three-first: established (completed; as expected), receipt receipts/rate-three-first/20261120T024339Z-dc65caa2/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e37a3c8b09472e03948641cf244924e06d4ba9e1f364b01f0d3830dec13d4db5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/plan.json",
+      "change": "added",
+      "bytes": 6501,
+      "sha256": "b4a63c0a0d5d743683709c582eee4723b0477a4396aae8a5dc1fde67b1116c5c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/control-three-first-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/control-three-first-jdk21.stdout",
+      "change": "added",
+      "bytes": 1009,
+      "sha256": "c8242cf445460c0739d4c1287bc079ea142af0188f2273028f730be5d7b090bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/control-two-first-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/control-two-first-jdk21.stdout",
+      "change": "added",
+      "bytes": 999,
+      "sha256": "78d76a80c31af20fc8fcae2895c0e4344a57c03f5ad6c583a360e4aad1b5975d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/controls.json",
+      "change": "added",
+      "bytes": 9356,
+      "sha256": "ee2a3db76cc79d5f6c6d76841ef1fcabb419a4242b9019824f45f2e53a09d536",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/execution.json",
+      "change": "added",
+      "bytes": 33533,
+      "sha256": "e83264e6e66d3c556e3cd3fce6dc2be1616092698ccb63a043badc73dacd48dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/streams.json",
+      "change": "added",
+      "bytes": 2705,
+      "sha256": "3133216c0b779ba996e68773511deb7a42bc292018b953acb08b038be843f301",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1367,
+      "sha256": "533af6ec0c28157ad85341306e72f0090caaf915346e09d0e1c1d12900e6b42b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/verifier.json",
+      "change": "added",
+      "bytes": 24012,
+      "sha256": "e9c23e0c053e035b2e5633f251a6dd0c0bfc3c1bd4556bdd9bb0f7d2f08dfe53",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/verifier.stdout",
+      "change": "added",
+      "bytes": 11954,
+      "sha256": "914188a6676510b37b252aef445a1c14e5fe3fde8cc9dc2b939be94f348c5df2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/result.json",
+      "change": "added",
+      "bytes": 10775,
+      "sha256": "9497ca6f46ff5af0394e6213dc7a28ab1701034473a534eb9db71c3bac7f1b1a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/executions/20261120T024332Z-33024846/attempt.json",
+      "change": "added",
+      "bytes": 15613,
+      "sha256": "6798041da5d35bd78fa6d1e20425fc575cafd22ec6f9c8cad8a4c664657f357e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/executions/20261120T024332Z-33024846/checker.json",
+      "change": "added",
+      "bytes": 14502,
+      "sha256": "5a6f276a02b95b19e43685233338fffeb635688187cd61e4040d0148bf3e9d3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "ba76b676ec6f49d468a25a714f9f33a251fe6dec102a7beac5e9bbd2a5fc5638",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/plan.json",
+      "change": "added",
+      "bytes": 6438,
+      "sha256": "8c832017b3fce7068ee05ddc616ffa96705c6d512a595dc712760c09c83a0f76",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/control-three-first-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/control-three-first-jdk21.stdout",
+      "change": "added",
+      "bytes": 1009,
+      "sha256": "c8242cf445460c0739d4c1287bc079ea142af0188f2273028f730be5d7b090bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/control-two-first-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/control-two-first-jdk21.stdout",
+      "change": "added",
+      "bytes": 999,
+      "sha256": "78d76a80c31af20fc8fcae2895c0e4344a57c03f5ad6c583a360e4aad1b5975d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/controls.json",
+      "change": "added",
+      "bytes": 9341,
+      "sha256": "e706920efd8b70d58ddd448d4f885467e2589a18913631900697d2f193bef394",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/execution.json",
+      "change": "added",
+      "bytes": 33250,
+      "sha256": "246a9e120388e78e31697a5cba9c926e43942d67cd6b74ce56752f342996da97",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/streams.json",
+      "change": "added",
+      "bytes": 2705,
+      "sha256": "d33ecf12a6a28b65246ad0e1dda8a0e97a237a24b728d701b4ffe2237d9f3408",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1118,
+      "sha256": "7213706dbe9c0d47ed1093d925e8f77a8cd7d85788f572e34eb73d1877bdd443",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/verifier.json",
+      "change": "added",
+      "bytes": 23707,
+      "sha256": "355e45b646bcca18ec719bb9b4d6860e5974983eb7e27a7c44361ffad8bec3b5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/verifier.stdout",
+      "change": "added",
+      "bytes": 11648,
+      "sha256": "7021d00f9a70a40bc0d547c8d3e0156d647037c97c4f22949c70ccd7f9192afa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/result.json",
+      "change": "added",
+      "bytes": 13120,
+      "sha256": "2ddbe303a1903d2f4037769b586f68a9048324a961055da1d30a6326d5516afc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/zero-only/executions/20261120T024338Z-576e4a40/attempt.json",
+      "change": "added",
+      "bytes": 15427,
+      "sha256": "b848e9fc72f291b07688be500f120bfca1394765b58974931e2eee60af508ec2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/zero-only/executions/20261120T024338Z-576e4a40/checker.json",
+      "change": "added",
+      "bytes": 14211,
+      "sha256": "fcff9c2b7f65adfed742b0fd8f7ae70eff8f52985c82fb4e657652bafdb165ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e7e72ec7a1f593506b014e7ae2389d6ad058199c2ed91026ac47c9bbd4669472",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/plan.json",
+      "change": "added",
+      "bytes": 5231,
+      "sha256": "87a6e286434c0a97ee69d038eb56aea2b8b06b2e1543abd207fab2f8e5fb2f49",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/records/control-two-first-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/records/control-two-first-jdk21.stdout",
+      "change": "added",
+      "bytes": 999,
+      "sha256": "78d76a80c31af20fc8fcae2895c0e4344a57c03f5ad6c583a360e4aad1b5975d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/records/controls.json",
+      "change": "added",
+      "bytes": 4692,
+      "sha256": "9c892c4672585d3f15ac8847a7c4aeada5a0953b861184ba8a6e99c712c5f6bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/records/execution.json",
+      "change": "added",
+      "bytes": 18574,
+      "sha256": "66a3643307945df2900e7f178218804222325c1667678ba1c9ebe1f7e5743ebc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/records/streams.json",
+      "change": "added",
+      "bytes": 1989,
+      "sha256": "8164bf46ab073e667ea6accbcfe3bc34e2ab7cb03b1feb11cabb94abf7cfcdaa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 273,
+      "sha256": "67facef97fe4f67ce98f8674e69b7e4c41cf6e41a7db30b97e294eb09a73b4cf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/records/verifier.json",
+      "change": "added",
+      "bytes": 13813,
+      "sha256": "ff8f5772867ea04a34ad6b6062a9603f1b0349460e812cf26a478c8d732bb3a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5843,
+      "sha256": "04d6fd453a04e27e3074ab7b73c883fb0a3c7ecb5bfcc51ee1e4e2a5fcda6c2f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/result.json",
+      "change": "added",
+      "bytes": 17545,
+      "sha256": "db9f11e7cabe5da790914cadbcd0fc4d2296500fc9ebd1fbc54540f3ae3ce4f6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/executions/20261120T024339Z-33b9775f/attempt.json",
+      "change": "added",
+      "bytes": 10276,
+      "sha256": "ceaf91f572c4aa1def5fbf2e7a04a632a32649db4e1f0d00b74cef5f91ab2769",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/executions/20261120T024339Z-33b9775f/checker.json",
+      "change": "added",
+      "bytes": 7237,
+      "sha256": "8d1d01847158a5bb07084cb0ae702acc47e5454bc3b199c3b5b600740163d60c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "8d4f584acdd083ca844fc9b0c937feda7f01db4ae92c7dcfc38f3e28aaf40a80",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/plan.json",
+      "change": "added",
+      "bytes": 5257,
+      "sha256": "76d770036fde067cd722de7c57e21dd3b14a3ec0f23652073a16629e29b003dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/records/control-three-first-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/records/control-three-first-jdk21.stdout",
+      "change": "added",
+      "bytes": 1009,
+      "sha256": "c8242cf445460c0739d4c1287bc079ea142af0188f2273028f730be5d7b090bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/records/controls.json",
+      "change": "added",
+      "bytes": 4718,
+      "sha256": "cbc8dab21a68c3f5d160c1402b5b1d6d2f3519dc5556f0110bf07fca889f8a29",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/records/execution.json",
+      "change": "added",
+      "bytes": 18636,
+      "sha256": "535423b947d760b50375d1effc03ac0c69a92b216040257585c4d03d2a2d749f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/records/streams.json",
+      "change": "added",
+      "bytes": 2007,
+      "sha256": "7049ad97f8e41caad5e28b5dbce5b6b3bebfcb86b55eb4e2ec142484397c525b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 273,
+      "sha256": "8dab5e3df8bcc0bf194624171eff7359c9f41624d6479a6c521a8b291fd7c97a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/records/verifier.json",
+      "change": "added",
+      "bytes": 13859,
+      "sha256": "880c13429585eab8739d1518cf1c270540e1642775906f1a3426ab6847301368",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5845,
+      "sha256": "c8b714331a268ea5bf5e742c370295d00259845363995c78f3814a5552e18f91",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/result.json",
+      "change": "added",
+      "bytes": 17593,
+      "sha256": "971482e10170812213ee93eba65012b5965aa3a9de7371c2322a55fc31486b8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/executions/20261120T024339Z-dc65caa2/attempt.json",
+      "change": "added",
+      "bytes": 10326,
+      "sha256": "4003081b8d98bc07dc341e2c064ee6a6d55f5fa94e2ea34c84b8dcb9ac53051c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/executions/20261120T024339Z-dc65caa2/checker.json",
+      "change": "added",
+      "bytes": 7247,
+      "sha256": "7806436cbf7fd4e40942b2cb63f18b81eda426af8b9cd79f07a5f0b8d1a8f3ad",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T02:44:07+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/completion.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/plan.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/control-three-first-jdk21.stderr",
+      "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/control-three-first-jdk21.stdout",
+      "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/control-two-first-jdk21.stderr",
+      "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/control-two-first-jdk21.stdout",
+      "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/controls.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/execution.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/streams.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/verifier-output.txt",
+      "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/verifier.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/verifier.stderr",
+      "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/records/verifier.stdout",
+      "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/20261120T024332Z-33024846/result.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/executions/20261120T024332Z-33024846/attempt.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/invoice-values/executions/20261120T024332Z-33024846/checker.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/completion.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/plan.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/control-three-first-jdk21.stderr",
+      "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/control-three-first-jdk21.stdout",
+      "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/control-two-first-jdk21.stderr",
+      "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/control-two-first-jdk21.stdout",
+      "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/controls.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/execution.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/streams.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/verifier-output.txt",
+      "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/verifier.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/verifier.stderr",
+      "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/records/verifier.stdout",
+      "examples/312-invoice-ordered-rate-jars/receipts/zero-only/20261120T024338Z-576e4a40/result.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/zero-only/executions/20261120T024338Z-576e4a40/attempt.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/zero-only/executions/20261120T024338Z-576e4a40/checker.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/completion.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/plan.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/records/control-two-first-jdk21.stderr",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/records/control-two-first-jdk21.stdout",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/records/controls.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/records/execution.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/records/streams.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/records/verifier-output.txt",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/records/verifier.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/records/verifier.stderr",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/records/verifier.stdout",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/20261120T024339Z-33b9775f/result.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/executions/20261120T024339Z-33b9775f/attempt.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first/executions/20261120T024339Z-33b9775f/checker.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/completion.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/plan.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/records/control-three-first-jdk21.stderr",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/records/control-three-first-jdk21.stdout",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/records/controls.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/records/execution.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/records/streams.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/records/verifier-output.txt",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/records/verifier.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/records/verifier.stderr",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/records/verifier.stdout",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/20261120T024339Z-dc65caa2/result.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/executions/20261120T024339Z-dc65caa2/attempt.json",
+      "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first/executions/20261120T024339Z-dc65caa2/checker.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "7ba17ac074cbcdb92a76f2c540a4773d803df672",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7ba17ac074cbcdb92a76f2c540a4773d803df672/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-023617-check-invoice-values-on-swapped-dependen"
+}

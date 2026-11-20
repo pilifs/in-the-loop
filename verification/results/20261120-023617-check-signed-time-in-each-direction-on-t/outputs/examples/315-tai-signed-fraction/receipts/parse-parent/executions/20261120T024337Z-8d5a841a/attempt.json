@@ -1,0 +1,419 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T024337Z-8d5a841a",
+  "task": "parse-parent",
+  "claimKey": "c65785218966300a",
+  "revisions": [
+    "parent"
+  ],
+  "startedAt": "2026-11-20T02:43:37.578984+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 60
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-023617-check-signed-time-in-each-direction-on-t",
+  "sourceCommit": "1dbedf86dfb5de3f953482f8d2e2d8234e7adaf7",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 2.2042
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 2.2723
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 2.2735
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 2.2992
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 2.3426
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 2.4304
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "parent": {
+      "revision": "5361f0d32889e1a5104743429c3716e5de0937ce",
+      "target": {
+        "class": "org.threeten.extra.scale.TaiInstant",
+        "method": "parse",
+        "descriptor": "(Ljava/lang/CharSequence;)Lorg/threeten/extra/scale/TaiInstant;",
+        "loadedFrom": "slice/parent.jar",
+        "classSha256": "bed910890b47408e1c15d62efa3ec18f3c8ee5530484ff2aa59a613e82ffd814",
+        "adapterCalls": [
+          "org.threeten.extra.scale.TaiInstant#getNano()I",
+          "org.threeten.extra.scale.TaiInstant#getTaiSeconds()J",
+          "org.threeten.extra.scale.TaiInstant#ofTaiSeconds(JJ)Lorg/threeten/extra/scale/TaiInstant;",
+          "org.threeten.extra.scale.TaiInstant#parse(Ljava/lang/CharSequence;)Lorg/threeten/extra/scale/TaiInstant;",
+          "org.threeten.extra.scale.TaiInstant#toString()Ljava/lang/String;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "d3a204143aa4278a0f5d92e887666ea249aa032f7274812e7d57c70f2db55a61",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-parent.jar",
+          "sha256": "e5a1196dbe5ead43aa433ddc281283f422ae5d3177029670632bb6a420517ef1",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "slice/parent.jar",
+          "sha256": "a657de870795c0c1ecfa8306a83506f1420ffa3743a1a4dc6f6bcf42b1cdefd4",
+          "role": "original",
+          "coordinates": null,
+          "origin": "an extracted source slice of 5361f0d32889e1a5104743429c3716e5de0937ce: src/main/java/org/threeten/extra/scale/SystemUtcRules.java, src/main/java/org/threeten/extra/scale/TaiInstant.java, src/main/java/org/threeten/extra/scale/TimeSource.java, src/main/java/org/threeten/extra/scale/UtcInstant.java, src/main/java/org/threeten/extra/scale/UtcRules.java, src/main/java/org/threeten/extra/scale/package-info.java, compiled by JDK 21 with --release 21 -g -parameters"
+        },
+        {
+          "path": "lib/org.joda/joda-convert-2.2.4.jar",
+          "sha256": "c5ddb12bbfe57a69280114ec1c4da08db8c95070c478c6f495fa2cc081d62373",
+          "role": "dependency",
+          "coordinates": "org.joda:joda-convert:2.2.4",
+          "origin": "https://repo.maven.apache.org/maven2/org/joda/joda-convert/2.2.4/joda-convert-2.2.4.jar"
+        },
+        {
+          "path": "lib/org.jspecify/jspecify-1.0.1.jar",
+          "sha256": "070d75f261fe4c5b8202508366715f7f2d4660f88c8ef7e6d3575e48c9683b66",
+          "role": "dependency",
+          "coordinates": "org.jspecify:jspecify:1.0.1",
+          "origin": "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.jar"
+        }
+      ]
+    }
+  },
+  "bindingId": "4ff92a334e39dfa37c7b6ff5e6c1963da40d33437106bf8fa8fb37e2ac2f84aa",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7ba17ac074cbcdb92a76f2c540a4773d803df672/jvmcontract",
+    "prove",
+    "taigrid.Projection#parse(int)",
+    "--classes",
+    "prepare/parent/adapter-parent.jar",
+    "--classpath",
+    "prepare/parent/slice/parent.jar",
+    "--classpath",
+    "prepare/parent/lib/org.joda/joda-convert-2.2.4.jar",
+    "--classpath",
+    "prepare/parent/lib/org.jspecify/jspecify-1.0.1.jar",
+    "--assume",
+    "code >= 0 && code < 20",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "24",
+    "--max-array-length",
+    "20",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "c2dd914e701f54bac1690aa01b4eea9800282c81a0f58526fa321ec126909658",
+    "commit": "1dbedf86dfb5de3f953482f8d2e2d8234e7adaf7",
+    "libTree": "7ba17ac074cbcdb92a76f2c540a4773d803df672",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 24,
+      "maxArrayLength": 20
+    },
+    "timeout": 60,
+    "scope": {
+      "label": "adapter",
+      "meaning": "With code 0 to 19, floor(code/4)-2 is the TAI seconds field. The remainder selects nanos 0, 1, 500000000 or 999999999. Formatting compares exact characters with a canonical decimal literal. Parsing starts from that literal. Round-trip starts from the object.",
+      "method": "org.threeten.extra.scale.TaiInstant#parse(Ljava/lang/CharSequence;)Lorg/threeten/extra/scale/TaiInstant;",
+      "revisions": {
+        "parent": {
+          "commit": "5361f0d32889e1a5104743429c3716e5de0937ce",
+          "loadedFrom": "slice/parent.jar",
+          "classSha256": "bed910890b47408e1c15d62efa3ec18f3c8ee5530484ff2aa59a613e82ffd814",
+          "origin": "an extracted source slice of 5361f0d32889e1a5104743429c3716e5de0937ce: src/main/java/org/threeten/extra/scale/SystemUtcRules.java, src/main/java/org/threeten/extra/scale/TaiInstant.java, src/main/java/org/threeten/extra/scale/TimeSource.java, src/main/java/org/threeten/extra/scale/UtcInstant.java, src/main/java/org/threeten/extra/scale/UtcRules.java, src/main/java/org/threeten/extra/scale/package-info.java, compiled by JDK 21 with --release 21 -g -parameters",
+          "parameters": {
+            "names": [
+              "text"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "taigrid.Projection#parse(I)I",
+        "mapping": "With code 0 to 19, floor(code/4)-2 is the TAI seconds field. The remainder selects nanos 0, 1, 500000000 or 999999999. Formatting compares exact characters with a canonical decimal literal. Parsing starts from that literal. Round-trip starts from the object.",
+        "correspondence": "finite-oracle",
+        "cases": 20
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "parent": [
+        {
+          "path": "adapter-parent.jar",
+          "sha256": "e5a1196dbe5ead43aa433ddc281283f422ae5d3177029670632bb6a420517ef1",
+          "role": "adapter"
+        },
+        {
+          "path": "slice/parent.jar",
+          "sha256": "a657de870795c0c1ecfa8306a83506f1420ffa3743a1a4dc6f6bcf42b1cdefd4",
+          "role": "original"
+        },
+        {
+          "path": "lib/org.joda/joda-convert-2.2.4.jar",
+          "sha256": "c5ddb12bbfe57a69280114ec1c4da08db8c95070c478c6f495fa2cc081d62373",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org.jspecify/jspecify-1.0.1.jar",
+          "sha256": "070d75f261fe4c5b8202508366715f7f2d4660f88c8ef7e6d3575e48c9683b66",
+          "role": "dependency"
+        }
+      ]
+    },
+    "checkedEntry": "taigrid.Projection#parse(I)I",
+    "entryBindings": {
+      "parent": {
+        "entry": "taigrid.Projection#parse(I)I",
+        "classSha256": "a660eb6780fe7be33f7135b99d0ef67213401970506cfd136d74b4863be82253",
+        "loadedFrom": "adapter-parent.jar",
+        "subject": "org.threeten.extra.scale.TaiInstant#parse(Ljava/lang/CharSequence;)Lorg/threeten/extra/scale/TaiInstant;",
+        "subjectClassSha256": "bed910890b47408e1c15d62efa3ec18f3c8ee5530484ff2aa59a613e82ffd814"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "org.threeten.extra.scale.TaiInstant#parse(Ljava/lang/CharSequence;)Lorg/threeten/extra/scale/TaiInstant;",
+      "checkedEntry": "taigrid.Projection#parse(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 20"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "24"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "20"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "taigrid.Projection#parse(I)I",
+        "mapping": "With code 0 to 19, floor(code/4)-2 is the TAI seconds field. The remainder selects nanos 0, 1, 500000000 or 999999999. Formatting compares exact characters with a canonical decimal literal. Parsing starts from that literal. Round-trip starts from the object.",
+        "correspondence": "finite-oracle",
+        "cases": 20
+      }
+    },
+    "commits": {
+      "parent": "5361f0d32889e1a5104743429c3716e5de0937ce"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+      "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+      "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "parent": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7ba17ac074cbcdb92a76f2c540a4773d803df672/jvmcontract",
+          "gaps",
+          "--target",
+          "taigrid.Projection#parse(int)",
+          "--classes",
+          "prepare/parent/adapter-parent.jar",
+          "--classpath",
+          "prepare/parent/slice/parent.jar",
+          "--classpath",
+          "prepare/parent/lib/org.joda/joda-convert-2.2.4.jar",
+          "--classpath",
+          "prepare/parent/lib/org.jspecify/jspecify-1.0.1.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "stdout": "verifier/probe-parent.stdout",
+        "stderr": "verifier/probe-parent.stderr",
+        "gaps": [
+          {
+            "id": "jdk-constructor:java.time.format.DateTimeParseException.<init>(Ljava/lang/String;Ljava/lang/CharSequence;I)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.time.format.DateTimeParseException.<init>(java.lang.String, java.lang.CharSequence, int)",
+            "sites": [
+              "org.threeten.extra.scale.TaiInstant.parse:215"
+            ]
+          },
+          {
+            "id": "jdk-constructor:java.time.format.DateTimeParseException.<init>(Ljava/lang/String;Ljava/lang/CharSequence;ILjava/lang/Throwable;)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.time.format.DateTimeParseException.<init>(java.lang.String, java.lang.CharSequence, int, java.lang.Throwable)",
+            "sites": [
+              "org.threeten.extra.scale.TaiInstant.parse:212"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.util.regex.Matcher.group(I)Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.util.regex.Matcher.group(int)",
+            "sites": [
+              "org.threeten.extra.scale.TaiInstant.parse:208",
+              "org.threeten.extra.scale.TaiInstant.parse:209"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.util.regex.Pattern.matcher(Ljava/lang/CharSequence;)Ljava/util/regex/Matcher;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.util.regex.Pattern.matcher(java.lang.CharSequence)",
+            "sites": [
+              "org.threeten.extra.scale.TaiInstant.parse:205"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.util.regex.Matcher.matches()Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.util.regex.Matcher.matches()",
+            "sites": [
+              "org.threeten.extra.scale.TaiInstant.parse:206"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.lang.Long.parseLong(Ljava/lang/String;)J@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.lang.Long.parseLong(java.lang.String)",
+            "sites": [
+              "org.threeten.extra.scale.TaiInstant.parse:208",
+              "org.threeten.extra.scale.TaiInstant.parse:209"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0366,
+      "peakRssBytes": 79888384,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0366,
+    "peakRssBytes": 79888384,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.041,
+  "missing": [
+    "eligible conclusion"
+  ],
+  "receipt": "receipts/parse-parent/20261120T024337Z-8d5a841a/result.json",
+  "preparedClaim": "3581bc704e544db0",
+  "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.util.regex.Matcher.group(I)Ljava/lang/String;@jdk-21.0.13 (java.util.regex.Matcher.group(int) at org.threeten.extra.scale.TaiInstant.parse:208). With --gaps assume it assumes instead that java.util.regex.Matcher.group(int) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+  "endedAt": "2026-11-20T02:43:40.009432+00:00"
+}
