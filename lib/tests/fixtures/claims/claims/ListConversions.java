@@ -1,7 +1,10 @@
 package claims;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 public final class ListConversions {
@@ -60,8 +63,35 @@ public final class ListConversions {
         return list.toArray(new String[0]).length == 0;
     }
 
+    public static boolean liveIterator(boolean invalidate) {
+        List<String> list = new ArrayList<>(3);
+        list.add("a"); list.add("b"); list.add("c");
+        Iterator<String> it = list.iterator();
+        try { it.remove(); return false; } catch (IllegalStateException expected) { }
+        if (it.next() != "a") return false;
+        list.set(1, "new");
+        if (it.next() != "new") return false;
+        it.remove();
+        if (list.size() != 2 || list.get(1) != "c") return false;
+        try { it.remove(); return false; } catch (IllegalStateException expected) { }
+        if (invalidate) {
+            list.remove("a");
+            try { it.next(); return false; } catch (ConcurrentModificationException expected) { return true; }
+        }
+        if (!it.hasNext() || it.next() != "c" || it.hasNext()) return false;
+        try { it.next(); return false; } catch (NoSuchElementException expected) { return true; }
+    }
+
+    public static boolean snapshotIterator() {
+        List<String> list = new ArrayList<>(1);
+        list.add("before");
+        Iterator<String> it = list.iterator();
+        list.set(0, "after");
+        return it.next() == "before";
+    }
+
     public static void main(String[] args) {
         if (!snapshots(false) || !snapshots(true) || !storesPrefix() || !shortCircuit(false) || !shortCircuit(true)
-                || !digits(false) || !digits(true) || wrong()) throw new AssertionError();
+                || !digits(false) || !digits(true) || !liveIterator(false) || !liveIterator(true) || snapshotIterator() || wrong()) throw new AssertionError();
     }
 }

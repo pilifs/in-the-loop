@@ -264,7 +264,7 @@ fn native_to_string(m: &mut Machine, r: Ref) -> Exec<JStr> {
             out.push_str("]");
             out
         }
-        Native::Iterator { .. } => return unsupported("Iterator.toString is identity-based"),
+        Native::Iterator { .. } | Native::ArrayListIterator { .. } => return unsupported("Iterator.toString is identity-based"),
         Native::Lambda { .. } => return unsupported("a lambda's toString is identity-based"),
     })
 }
@@ -505,6 +505,7 @@ pub fn invoke_special_jdk(m: &mut Machine, r: Ref, owner: &str, name: &str, desc
                 _ => return unsupported(format!("ArrayList.<init>{descriptor}")),
             };
             *m.heap.get_mut(r) = Object::Native(Native::List { elements, mutable: true });
+            if owner == "java/util/ArrayList" { m.array_list_mod_count.insert(r, 0); }
         }
         Native::Set { .. } => {
             let mut elements = Vec::new();
@@ -869,6 +870,30 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
         Native::List { elements, mutable } => list_method(m, r, elements, mutable, name, descriptor, &args),
         Native::Set { elements, mutable } => set_method(m, r, elements, mutable, name, descriptor, &args),
         Native::Map { entries, mutable } => map_method(m, r, entries, mutable, name, descriptor, &args),
+        Native::ArrayListIterator { list, cursor, last, expected_mod_count } => {
+            let Some(&current) = m.array_list_mod_count.get(&list) else { return unsupported("ArrayList iterator lost its list"); };
+            let Object::Native(Native::List { elements, .. }) = m.heap.get(list) else { return unsupported("ArrayList iterator without list storage"); };
+            match (name, descriptor) {
+                ("hasNext", "()Z") => Ok(Some(Value::bool(cursor != elements.len()))),
+                ("remove", "()V") if last.is_none() => Err(m.throw("java/lang/IllegalStateException", None)),
+                ("next", "()Ljava/lang/Object;") | ("remove", "()V") if current != expected_mod_count =>
+                    Err(m.throw("java/util/ConcurrentModificationException", None)),
+                ("next", "()Ljava/lang/Object;") => {
+                    let Some(&element) = elements.get(cursor) else { return Err(m.throw("java/util/NoSuchElementException", None)); };
+                    m.check_write(r, "an iterator cursor")?;
+                    *m.heap.get_mut(r) = Object::Native(Native::ArrayListIterator { list, cursor: cursor + 1, last: Some(cursor), expected_mod_count });
+                    Ok(Some(element))
+                }
+                ("remove", "()V") => {
+                    m.check_write(r, "an iterator cursor")?;
+                    let i = last.expect("remove checked the last returned index");
+                    m.call_virtual(Value::Ref(list), "java/util/ArrayList", "remove", "(I)Ljava/lang/Object;", vec![Value::Int(i as i32)])?;
+                    *m.heap.get_mut(r) = Object::Native(Native::ArrayListIterator { list, cursor: i, last: None, expected_mod_count: m.array_list_mod_count[&list] });
+                    Ok(None)
+                }
+                _ => unsupported(format!("ArrayList iterator.{name}{descriptor}")),
+            }
+        }
         Native::Iterator { elements, position, immutable: of_immutable } => match name {
             "hasNext" => Ok(Some(Value::bool(position < elements.len()))),
             "next" => {
@@ -1355,6 +1380,12 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
         }
         m.check_write(r, "a List")
     };
+    let store = |m: &mut Machine, elements, structural: bool| {
+        if structural {
+            if let Some(count) = m.array_list_mod_count.get_mut(&r) { *count = count.wrapping_add(1); }
+        }
+        *m.heap.get_mut(r) = Object::Native(Native::List { elements, mutable });
+    };
     Ok(match (name, descriptor) {
         ("size", _) => Some(Value::Int(len as i32)),
         ("isEmpty", _) => Some(Value::bool(len == 0)),
@@ -1396,7 +1427,13 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
             }
             Some(Value::Int(result))
         }
-        ("iterator", _) => Some(Value::Ref(m.alloc_native(Native::Iterator { elements, position: 0, immutable: !mutable }))),
+        ("iterator", _) => {
+            let iterator = match m.array_list_mod_count.get(&r) {
+                Some(&expected_mod_count) => Native::ArrayListIterator { list: r, cursor: 0, last: None, expected_mod_count },
+                None => Native::Iterator { elements, position: 0, immutable: !mutable },
+            };
+            Some(Value::Ref(m.alloc_native(iterator)))
+        }
         ("forEach", _) => {
             for e in elements {
                 m.call_virtual(args[0], "java/util/function/Consumer", "accept", "(Ljava/lang/Object;)V", vec![e])?;
@@ -1433,7 +1470,7 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
         ("add", "(Ljava/lang/Object;)Z") => {
             write(m)?;
             elements.push(args[0]);
-            *m.heap.get_mut(r) = Object::Native(Native::List { elements, mutable });
+            store(m, elements, true);
             Some(Value::Int(1))
         }
         ("add", "(ILjava/lang/Object;)V") => {
@@ -1443,7 +1480,7 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
                 return Err(out_of_bounds(m, i));
             }
             elements.insert(i as usize, args[1]);
-            *m.heap.get_mut(r) = Object::Native(Native::List { elements, mutable });
+            store(m, elements, true);
             None
         }
         ("addAll", "(Ljava/util/Collection;)Z") => {
@@ -1451,7 +1488,7 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
             let others = collection_elements(m, args[0])?;
             let changed = !others.is_empty();
             elements.extend(others);
-            *m.heap.get_mut(r) = Object::Native(Native::List { elements, mutable });
+            store(m, elements, true);
             Some(Value::bool(changed))
         }
         ("set", _) => {
@@ -1462,7 +1499,7 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
             }
             let old = elements[i as usize];
             elements[i as usize] = args[1];
-            *m.heap.get_mut(r) = Object::Native(Native::List { elements, mutable });
+            store(m, elements, false);
             Some(old)
         }
         ("remove", "(I)Ljava/lang/Object;") => {
@@ -1472,7 +1509,7 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
                 return Err(out_of_bounds(m, i));
             }
             let old = elements.remove(i as usize);
-            *m.heap.get_mut(r) = Object::Native(Native::List { elements, mutable });
+            store(m, elements, true);
             Some(old)
         }
         ("remove", "(Ljava/lang/Object;)Z") => {
@@ -1481,12 +1518,12 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
             if i >= 0 {
                 elements.remove(i as usize);
             }
-            *m.heap.get_mut(r) = Object::Native(Native::List { elements, mutable });
+            store(m, elements, i >= 0);
             Some(Value::bool(i >= 0))
         }
         ("clear", _) => {
             write(m)?;
-            *m.heap.get_mut(r) = Object::Native(Native::List { elements: Vec::new(), mutable });
+            store(m, Vec::new(), true);
             None
         }
         _ => return unsupported(format!("List.{name}{descriptor}")),

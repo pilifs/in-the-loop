@@ -615,6 +615,15 @@ impl ClassPath {
             | ("java/util/ArrayList", "size", "()I") | ("java/util/ArrayList", "isEmpty", "()Z")
             | ("java/util/ArrayList", "get" | "elementData", "(I)Ljava/lang/Object;")
             | ("java/util/ArrayList", "clear", "()V")
+            | ("java/util/ArrayList", "iterator", "()Ljava/util/Iterator;")
+            | ("java/util/ArrayList", "remove", "(I)Ljava/lang/Object;" | "(Ljava/lang/Object;)Z")
+            | ("java/util/ArrayList", "fastRemove", "([Ljava/lang/Object;I)V")
+            | ("java/util/ArrayList", "elementAt", "([Ljava/lang/Object;I)Ljava/lang/Object;")
+            | ("java/util/ArrayList$Itr", "<init>", "(Ljava/util/ArrayList;)V")
+            | ("java/util/ArrayList$Itr", "next", "()Ljava/lang/Object;")
+            | ("java/util/ArrayList$Itr", "hasNext", "()Z")
+            | ("java/util/ArrayList$Itr", "remove" | "checkForComodification", "()V")
+            | ("java/util/ArrayList$Itr", "forEachRemaining", "(Ljava/util/function/Consumer;)V")
             | ("java/util/ArrayList", "set", "(ILjava/lang/Object;)Ljava/lang/Object;")
             | ("java/util/ArrayList", "contains", "(Ljava/lang/Object;)Z") | ("java/util/ArrayList", "indexOf", "(Ljava/lang/Object;)I")
             | ("java/util/ArrayList", "indexOfRange", "(Ljava/lang/Object;II)I")
@@ -625,6 +634,7 @@ impl ClassPath {
             | ("jdk/internal/util/ArraysSupport", "newLength", "(III)I")
             | ("jdk/internal/util/ArraysSupport", "hugeLength", "(II)I")) { return None; }
         let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
+        if owner == "java/util/ArrayList$Itr" && class.method("<clinit>", "()V").is_some() { return None; }
         let method = class.method(name, descriptor)?.clone();
         method.code.as_ref()?;
         Some((class, method))

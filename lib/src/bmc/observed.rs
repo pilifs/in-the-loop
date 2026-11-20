@@ -82,6 +82,18 @@ impl Engine<'_> {
             Object::Str { units, interned: true } => self.literal(path, Literal::Str(units.clone()), STRING),
             Object::Str { units, interned: false } => self.string(path, units),
             Object::Class(name) => self.literal(path, Literal::Class(name.clone()), "java/lang/Class"),
+            Object::Value(chain) => {
+                let class = &chain.first().ok_or("an immutable value without a runtime class")?.name;
+                let o = self.alloc(path, class);
+                for part in chain {
+                    for ((name, ty), value) in &part.fields {
+                        let key = self.cp.field_key(class, &part.name, name);
+                        let v = self.observed_value(path, observed, value, Some(ty), made)?;
+                        path.objects[o].fields.insert(key, v);
+                    }
+                }
+                o
+            }
             Object::EmptyConcurrentMap => {
                 let class = crate::models::CONCURRENT_MAP;
                 if !self.cp.checker_runs(class) || !self.cp.checker_runs(MAP) {

@@ -229,6 +229,8 @@ pub enum Native {
     /// An iterator over a snapshot of a list or set; `immutable` for one of an immutable collection (`List.of`,
     /// `Set.of`), whose `remove` throws `UnsupportedOperationException` as the JDK's does.
     Iterator { elements: Vec<Value>, position: usize, immutable: bool },
+    /// The cursor and last returned index of an iterator into a particular mutable ArrayList.
+    ArrayListIterator { list: Ref, cursor: usize, last: Option<usize>, expected_mod_count: i32 },
     /// An exception of a JDK class: `java.lang.ArithmeticException`, say.
     Throwable { class: String, message: Option<Ref>, cause: Option<Ref>, suppressed: Option<Value> },
     /// A lambda or method reference: the functional interface and its method, the implementation method and the
@@ -273,6 +275,7 @@ impl Native {
             Native::Boxed { class, .. } => class,
             Native::Class(_) => "java/lang/Class",
             Native::Iterator { .. } => "java/util/Iterator",
+            Native::ArrayListIterator { .. } => "java/util/ArrayList$Itr",
             Native::Throwable { class, .. } => class,
             Native::Lambda { interface, .. } => interface,
             Native::Optional(_) => "java/util/Optional",

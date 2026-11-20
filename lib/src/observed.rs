@@ -109,8 +109,17 @@ pub enum Object {
     Map(Vec<(Slot, Slot)>),
     /// An exact ConcurrentHashMap observed empty. Its references share the same object number.
     EmptyConcurrentMap,
+    /// Final application value, with every inherited instance field and its defining bytes.
+    Value(Vec<ValueClass>),
     /// An array: its element type's descriptor and its cells.
     Array { element: String, cells: Vec<Slot> },
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct ValueClass {
+    pub name: String,
+    pub sha256: String,
+    pub fields: BTreeMap<(String, String), Slot>,
 }
 
 /// The static state one class's initializer left on a JVM.
@@ -239,6 +248,7 @@ pub fn observe(classes: &[String], classpath: &[PathBuf], work: &Path) -> Result
         let line = jvm.run(&binary, Some(&log))?;
         let observed = parse(&binary, &line)?;
         bind(&binary, &internal, &observed.on, &entries, &tool)?;
+        bind_values(&binary, &observed, &tool)?;
         for ran in std::iter::once(internal.as_str()).chain(observed.on.initialized.iter().map(|i| i.name.as_str())) {
             if let Some((setting, call)) = unbound_setting(&tool, ran)? {
                 let whose = if ran == internal { "its code".to_string() } else { format!("its initialization initialized {}, whose code", ran.replace('/', ".")) };
@@ -328,6 +338,38 @@ impl Jvm {
 /// The sha256 of the class file the tool reads of `internal` on its class path, or none.
 fn tool_sha256(tool: &crate::classpath::ClassPath, internal: &str) -> Result<Option<String>, Error> {
     Ok(tool.application_bytes(internal)?.map(|b| crate::digest::sha256_hex(&b)))
+}
+
+/// Check every declaring class independently. The JVM's class-loader resource and
+/// the verifier's selected bytes must agree, and no inherited field may be omitted.
+fn bind_values(binary: &str, observed: &Observed, tool: &crate::classpath::ClassPath) -> Result<(), Error> {
+    for object in &observed.objects {
+        let Object::Value(chain) = object else { continue };
+        for (i, part) in chain.iter().enumerate() {
+            let mismatch = || Error::new(format!("--observed-initializer {binary}: immutable value {} does not match its selected application class bytes or complete field layout", part.name));
+            let cf = tool.application(&part.name)?.ok_or_else(mismatch)?;
+            let parent = chain.get(i + 1).map_or("java/lang/Object", |c| &c.name);
+            if tool_sha256(tool, &part.name)?.as_deref() != Some(part.sha256.as_str()) || (i == 0 && !cf.is_final())
+                || cf.super_class.as_deref() != Some(parent) { return Err(mismatch()); }
+            let fields: Vec<_> = cf.fields.iter().filter(|f| !f.is_static()).collect();
+            if fields.len() != part.fields.len() { return Err(mismatch()); }
+            for f in fields {
+                let Some(slot) = part.fields.get(&(f.name.clone(), f.descriptor.clone())) else { return Err(mismatch()); };
+                let fits = match (f.descriptor.as_str(), slot) {
+                    ("Ljava/lang/String;", Slot::Null) | ("J", Slot::Number(_)) => true,
+                    ("Ljava/lang/String;", Slot::Object(n)) => matches!(observed.objects.get(*n), Some(Object::Str { .. })),
+                    ("Z", Slot::Number(n)) => matches!(n, 0 | 1),
+                    ("B", Slot::Number(n)) => i8::try_from(*n).is_ok(),
+                    ("S", Slot::Number(n)) => i16::try_from(*n).is_ok(),
+                    ("C", Slot::Number(n)) => u16::try_from(*n).is_ok(),
+                    ("I", Slot::Number(n)) => i32::try_from(*n).is_ok(),
+                    _ => false,
+                };
+                if !f.is_final() || !fits { return Err(mismatch()); }
+            }
+        }
+    }
+    Ok(())
 }
 
 /// Settings outside the observation's dynamic recorder. Scan the observed class and the application classes
@@ -493,6 +535,15 @@ pub fn observe_previous(classes: &[String], previous: &crate::relocate::Previous
         }
         let held = format!("{}/{class}", previous.prefix);
         for object in &mut observed.objects {
+            if let Object::Value(chain) = object {
+                for part in chain {
+                    let Found::Class(held) = previous.find(&part.name) else {
+                        return Err(Error::new(format!("--observed-initializer {binary}: the check holds no copy of the previous version's immutable value class {}", part.name)));
+                    };
+                    part.name = held;
+                }
+                continue;
+            }
             let Object::Class(name) = object else { continue };
             // A class by its internal name, or an array of one by its descriptor (`[Lx/Y;`).
             let (open, element, close) = match name.rfind("[L") {
@@ -552,6 +603,21 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
                 Object::Map(flat.chunks(2).map(|kv| (kv[0].clone(), kv[1].clone())).collect())
             }
             Some("array") => Object::Array { element: o.get("element").and_then(|e| e.as_str()).ok_or_else(|| bad("an array"))?.to_string(), cells: slots(o.get("cells"))? },
+            Some("value") => {
+                let string = |v: &serde_json::Value, k: &str| v.get(k).and_then(|t| t.as_str()).map(str::to_owned).ok_or_else(|| bad("an immutable value field or class"));
+                let classes = o["classes"].as_array().filter(|v| !v.is_empty()).ok_or_else(|| bad("an immutable value hierarchy"))?;
+                let mut hierarchy = Vec::new();
+                for class in classes {
+                    let mut fields = BTreeMap::new();
+                    for field in class["fields"].as_array().ok_or_else(|| bad("immutable value fields"))? {
+                        let key = (string(field, "name")?, string(field, "type")?);
+                        let value = slot(field.get("value").ok_or_else(|| bad("a missing immutable field value"))?)?;
+                        if fields.insert(key, value).is_some() { return Err(bad("a repeated immutable field")); }
+                    }
+                    hierarchy.push(ValueClass { name: string(class, "name")?, sha256: string(class, "sha256")?, fields });
+                }
+                Object::Value(hierarchy)
+            }
             _ => return Err(bad("an object")),
         });
     }
@@ -593,6 +659,7 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
     let all = observed.fields.values().chain(observed.objects.iter().flat_map(|o| match o {
         Object::Map(entries) => entries.iter().flat_map(|(k, v)| [k, v]).collect::<Vec<_>>(),
         Object::Array { cells, .. } => cells.iter().collect(),
+        Object::Value(chain) => chain.iter().flat_map(|c| c.fields.values()).collect(),
         _ => Vec::new(),
     }));
     if !all.into_iter().all(within) {

@@ -31,12 +31,19 @@ pub(super) fn empty_storage(cp: &ClassPath, member: &crate::classfile::MemberRef
 
 impl Engine<'_> {
     pub(super) fn image_list_call(&mut self, path: &mut Path, o: usize, special: bool, member: &crate::classfile::MemberRef, args: &[Val]) -> Option<Step> {
-        if path.objects[o].class != LIST || self.cp.runs_model(LIST) { return None; }
+        if self.cp.runs_model(LIST) { return None; }
+        let class = path.objects[o].class.as_str();
+        let iterator = class == "java/util/ArrayList$Itr";
+        if class != LIST && !iterator { return None; }
         let (name, descriptor) = (member.name.as_str(), member.descriptor.as_str());
-        if special && member.owner != LIST { return None; }
-        self.cp.library_image_method(LIST, name, descriptor)?;
+        if special && member.owner != class { return None; }
+        let (cf, method) = self.cp.library_image_method(class, name, descriptor)?;
         if name == "<init>" {
             if !special { return None; }
+            if iterator {
+                let [Val::R(Some(list))] = args else { return None };
+                if path.objects[*list].class != LIST || !path.objects[*list].fields.contains_key("elementData") { return None; }
+            }
             if let [Val::I(capacity)] = args {
                 // Negative capacities throw in the constructor itself. A successful
                 // allocation must fit the checker, just like an ordinary anewarray.
@@ -46,18 +53,22 @@ impl Engine<'_> {
                     Err(stop) => return Some(Err(stop)),
                 }
             }
-        } else if !path.objects[o].fields.contains_key("elementData") {
+        } else if !path.objects[o].fields.contains_key(if iterator { "this$0" } else { "elementData" }) {
             return None;
         }
         let mut full = vec![Val::R(Some(o))];
         full.extend_from_slice(args);
-        Some(self.call(path, LIST, name, descriptor, full))
+        Some(self.enter_method(path, &member.owner, cf, method, full))
     }
 
     /// Helpers reached from real list bytecode. The JDK performs typed copying using
     /// the actual destination component and System.arraycopy, including partial stores.
     pub(super) fn image_list_static(&mut self, path: &mut Path, caller: &str, m: &crate::classfile::MemberRef, args: &[Val]) -> Option<Step> {
         match (caller, m.owner.as_str(), m.name.as_str(), m.descriptor.as_str(), args) {
+            ("java/util/ArrayList$Itr", LIST, "elementAt", "([Ljava/lang/Object;I)Ljava/lang/Object;", _)
+                if self.cp.library_image_method(LIST, &m.name, &m.descriptor).is_some() => {
+                Some(self.call(path, LIST, &m.name, &m.descriptor, args.to_vec()))
+            }
             (LIST, "java/util/Objects", "checkIndex", "(II)I", [Val::I(i), Val::I(n)]) => {
                 let inside = self.b.ult(i, n); // n is the initialized list's nonnegative size
                 Some(self.branch_throw(path, -inside, "java/lang/IndexOutOfBoundsException", Val::I(i.clone())))

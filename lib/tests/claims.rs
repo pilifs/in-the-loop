@@ -1244,7 +1244,7 @@ fn selected_jdk_lists_keep_capacity_growth_typed_arrays_and_partial_stores() {
     let Some(classes) = classes() else { return };
     let jvm = Command::new("java").arg("-cp").arg(classes).arg("claims.ListConversions").output().unwrap();
     assert!(jvm.status.success(), "{}", String::from_utf8_lossy(&jvm.stderr));
-    for name in ["snapshots", "storesPrefix", "shortCircuit", "digits"] {
+    for name in ["snapshots", "storesPrefix", "shortCircuit", "digits", "liveIterator"] {
         let o = run(&options(classes, &format!("claims.ListConversions#{name}"), 4, &format!("list-image-{name}")));
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
         assert!(!o.stated.unwrap().assumptions.iter().any(|a| a.text.contains("java.util.ArrayList is the tool's model")));
@@ -1253,10 +1253,14 @@ fn selected_jdk_lists_keep_capacity_growth_typed_arrays_and_partial_stores() {
     let mut machine = Machine::new(&cp);
     for sized in [0, 1] {
         assert_eq!(machine.call_static("claims/ListConversions", "snapshots", "(Z)Z", vec![Value::Int(sized)]).unwrap(), Some(Value::Int(1)));
+        assert_eq!(machine.call_static("claims/ListConversions", "liveIterator", "(Z)Z", vec![Value::Int(sized)]).unwrap(), Some(Value::Int(1)));
     }
     assert_eq!(machine.call_static("claims/ListConversions", "storesPrefix", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
     let o = run(&options(classes, "claims.ListConversions#wrong", 4, "wrong-typed-copy"));
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+    let snapshot = run(&options(classes, "claims.ListConversions#snapshotIterator", 4, "wrong-snapshot-iterator"));
+    assert_eq!(snapshot.verdict, Verdict::Violation, "{}", snapshot.output);
+    assert!(snapshot.replay.is_some_and(|r| r.reproduced));
 }
 
 #[test]

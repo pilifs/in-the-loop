@@ -111,6 +111,8 @@ pub struct Machine<'a> {
     /// The lists `List.of` and `List.copyOf` made, with the JDK class each is: its `get` out of range and its search
     /// for `null` throw as that class does, and `copyOf` hands back only these.
     immutable_lists: HashMap<Ref, ImmutableList>,
+    /// Structural modification counts of exact ArrayLists constructed by this JVM.
+    array_list_mod_count: HashMap<Ref, i32>,
     /// The one empty list `List.of()` returns, the JDK's `ImmutableCollections.EMPTY_LIST`.
     empty_list: Option<Ref>,
 }
@@ -144,6 +146,7 @@ impl<'a> Machine<'a> {
             cost: Cost::default(),
             monitor: true,
             immutable_lists: HashMap::new(),
+            array_list_mod_count: HashMap::new(),
             empty_list: None,
         }
     }
@@ -163,6 +166,7 @@ impl<'a> Machine<'a> {
         if !self.pinned_in_case {
             self.heap.truncate(mark);
             self.immutable_lists.retain(|r, _| (*r as usize) < mark);
+            self.array_list_mod_count.retain(|r, _| (*r as usize) < mark);
         }
     }
 
