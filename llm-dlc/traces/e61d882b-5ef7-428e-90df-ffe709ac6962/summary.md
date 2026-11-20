@@ -1915,15 +1915,17 @@ change `zpymnulpnmwt` · [log `dfaf011093aa`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 1 of the 1 job(s). 20261119-231539-retry-threetenbp-hours-after-exact-jdk-a: passed: 5 passed step(s) in 28.9s, peak 210.8 MiB (estimated 3m00s, 3.0 GiB); 89 output file(s) changed; signals: example:task-unexpected×5 Applied 89 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
-### (in progress)
-
-change `nzyvnnolmnxm`, not yet described
-
 ### Twenty Java verification examples as a fast-follow brief for one agent's run
 
 change `onuzmoonrylt` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 llm-dlc/loops/twenty-example-fast-follow.md is the user's brief for the run after foundation-and-python-restart: 20 new cases, ten historical upstream repairs (Commons Lang, ThreeTen-Extra, Commons CSV, Guava, Commons Collections, JFreeChart, Joda-Time, Commons Math, Commons Geometry) and ten controlled Java examples, in four waves (artifacts and observations; heaps and sequences; language and library boundaries; transfer and cost), each with a frozen subject, domain, observation, independent oracle and expected discriminator. Copied unchanged.
+
+### Record verification results for 1 job(s)
+
+change `zqmtmlosvpxv` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261120-000226-threetenbp-clock-parent-with-observed-ch: passed: 1 passed step(s) in 13.0s, peak 154.4 MiB (estimated 1m00s, 2.0 GiB); 16 output file(s) changed; signals: example:task-as-expected×1 Applied 16 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.
 
 ## Conversation
 
