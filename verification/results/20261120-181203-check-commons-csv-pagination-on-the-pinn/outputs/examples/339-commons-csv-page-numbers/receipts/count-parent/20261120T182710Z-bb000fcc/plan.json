@@ -1,0 +1,230 @@
+{
+  "plan": {
+    "example": "339",
+    "task": "count-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.csv.CSVParser#iterator()Ljava/util/Iterator;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "count-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.csv.CSVParser#iterator()Ljava/util/Iterator;",
+      "file": "claims/count.json",
+      "sha256": "d2071a18504e698ee1ed420251b7d7f69ba938975e7abe7f414193df8553d5c8",
+      "property": "count",
+      "claimKind": "property",
+      "statement": "The cap limits produced records independently of their displayed numbers.",
+      "assume": "code >= 0 && code < 24",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/pagination/PageCases.java",
+          "sha256": "6a51eb0881e60a2d5320575156980e28655d62e8661590547d7244e3765405de"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "8c62b967dfab8c5f9dd6c08f0e3352e0463e84415d7488b00bf1bf6d1601f9e4"
+        }
+      ],
+      "adapter": {
+        "entry": "pagination.Projection#count(I)I",
+        "mapping": "The selector chooses the number of literal records, starting record number, page limit and whether hasNext is called twice before each next. Observe the records returned by the actual CSV iterator.",
+        "cases": 24,
+        "correspondence": "finite-oracle"
+      },
+      "key": "8f3e909bdca5847d"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-csv",
+        "commit": "4f9a4037a2c1890154e1f077d66306ec54afbf60",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.test.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotbugs.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/build-parent.json",
+          "sha256": "8b77fecec8fb4fe95f9c7d4185da9de8ac5c2864985f18e2990db79258f50584"
+        },
+        "adapters": [
+          "adapter/pagination/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/count-parent"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-181203-check-commons-csv-pagination-on-the-pinn/examples/339-commons-csv-page-numbers",
+    "network": true
+  },
+  "inputs": {
+    "example": "339",
+    "task": "count-parent",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.csv.CSVParser#iterator()Ljava/util/Iterator;",
+    "revisions": [
+      "parent"
+    ],
+    "claim": {
+      "task": "count-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.csv.CSVParser#iterator()Ljava/util/Iterator;",
+      "file": "claims/count.json",
+      "sha256": "d2071a18504e698ee1ed420251b7d7f69ba938975e7abe7f414193df8553d5c8",
+      "property": "count",
+      "claimKind": "property",
+      "statement": "The cap limits produced records independently of their displayed numbers.",
+      "assume": "code >= 0 && code < 24",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/pagination/PageCases.java",
+          "sha256": "6a51eb0881e60a2d5320575156980e28655d62e8661590547d7244e3765405de"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "8c62b967dfab8c5f9dd6c08f0e3352e0463e84415d7488b00bf1bf6d1601f9e4"
+        }
+      ],
+      "adapter": {
+        "entry": "pagination.Projection#count(I)I",
+        "mapping": "The selector chooses the number of literal records, starting record number, page limit and whether hasNext is called twice before each next. Observe the records returned by the actual CSV iterator.",
+        "cases": 24,
+        "correspondence": "finite-oracle"
+      },
+      "key": "8f3e909bdca5847d"
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-csv",
+        "commit": "4f9a4037a2c1890154e1f077d66306ec54afbf60",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.test.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotbugs.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/build-parent.json",
+          "sha256": "8b77fecec8fb4fe95f9c7d4185da9de8ac5c2864985f18e2990db79258f50584"
+        },
+        "adapters": [
+          "adapter/pagination/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/pagination/Projection.java",
+        "sha256": "ce2bfccfdb51d698acd9f1c69bb32778b08640540c73adc0c023e93e018474a6"
+      }
+    ]
+  },
+  "key": "bb3f0a4bb9d7b1e0d399d28d427ed8a3e1d88720ab45b43ea20aa6e7f0734b70"
+}

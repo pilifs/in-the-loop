@@ -1,0 +1,453 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "3ad3266bdde94dc0",
+    "format": 1,
+    "example": "339",
+    "statement": {
+      "approach": "target",
+      "task": "count-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.csv.CSVParser#iterator()Ljava/util/Iterator;",
+      "revisions": [
+        "fix"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "count-fix",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "org.apache.commons.csv.CSVParser#iterator()Ljava/util/Iterator;",
+        "file": "claims/count.json",
+        "sha256": "d2071a18504e698ee1ed420251b7d7f69ba938975e7abe7f414193df8553d5c8",
+        "property": "count",
+        "claimKind": "property",
+        "statement": "The cap limits produced records independently of their displayed numbers.",
+        "assume": "code >= 0 && code < 24",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 96,
+          "maxArrayLength": 96
+        },
+        "explicitBounds": {
+          "unwind": 96,
+          "maxArrayLength": 96
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/pagination/PageCases.java",
+            "sha256": "6a51eb0881e60a2d5320575156980e28655d62e8661590547d7244e3765405de"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "8c62b967dfab8c5f9dd6c08f0e3352e0463e84415d7488b00bf1bf6d1601f9e4"
+          }
+        ],
+        "adapter": {
+          "entry": "pagination.Projection#count(I)I",
+          "mapping": "The selector chooses the number of literal records, starting record number, page limit and whether hasNext is called twice before each next. Observe the records returned by the actual CSV iterator.",
+          "cases": 24,
+          "correspondence": "finite-oracle"
+        },
+        "key": "8f3e909bdca5847d"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 96
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "count-fix",
+      "sidecar": "9f95dfc5a4f887227330a50377d5c36bc5902957ecf45b2ced69891df98225eb",
+      "revisions": {
+        "fix": "7a4f93f3d13218a74dce0c8d8b85af4b341ac3ac"
+      },
+      "dependencies": [
+        {
+          "revision": "fix",
+          "position": 0,
+          "role": "driver",
+          "sha256": "2621a4d360965f46f6d3e3744deb23dcae0685ae29502d013198c5753b1cd01c"
+        },
+        {
+          "revision": "fix",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "60d40d3fe5c92474164b2e10fe1677708930e1b456f9152a5ef1734b4e94b093"
+        },
+        {
+          "revision": "fix",
+          "position": 2,
+          "role": "original",
+          "sha256": "98986788babf396a8baa51d3dd3f35e3533ab0212cfb2e90895915bf4fdd9701"
+        },
+        {
+          "revision": "fix",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758",
+          "coordinates": "commons-io:commons-io:2.22.0"
+        },
+        {
+          "revision": "fix",
+          "position": 4,
+          "role": "dependency",
+          "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+          "coordinates": "commons-codec:commons-codec:1.22.0"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/pagination/Projection.java": "ce2bfccfdb51d698acd9f1c69bb32778b08640540c73adc0c023e93e018474a6",
+        "claims/count.json": "d2071a18504e698ee1ed420251b7d7f69ba938975e7abe7f414193df8553d5c8",
+        "controls/table.json": "8c62b967dfab8c5f9dd6c08f0e3352e0463e84415d7488b00bf1bf6d1601f9e4",
+        "driver/pagination/PageCases.java": "6a51eb0881e60a2d5320575156980e28655d62e8661590547d7244e3765405de"
+      },
+      "claimKey": "8f3e909bdca5847d"
+    }
+  },
+  "attempt": {
+    "id": "20261120T182713Z-ec32a2ae",
+    "claim": "3ad3266bdde94dc0",
+    "startedAt": "2026-11-20T18:27:13+00:00",
+    "seconds": 0.1,
+    "engine": "native",
+    "options": [
+      "prove",
+      "pagination.Projection#count(int)",
+      "--classes",
+      "prepare/fix/adapter-fix.jar",
+      "--classpath",
+      "prepare/fix/built/commons-csv-1.15.0-SNAPSHOT.jar",
+      "--classpath",
+      "prepare/fix/lib/commons-io/commons-io/2.22.0/commons-io-2.22.0.jar",
+      "--classpath",
+      "prepare/fix/lib/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar",
+      "--assume",
+      "code >= 0 && code < 24",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "96",
+      "--max-array-length",
+      "96",
+      "--timeout",
+      "90",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "9023ef64c7c58fcd092b7102df57f30e13ebb09f0e672583f0027caed9d78e80",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-181203-check-commons-csv-pagination-on-the-pinn",
+      "sourceCommit": "d9d5a28566b1273cf7d15f776c9d69b227ae5b06",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-181203-check-commons-csv-pagination-on-the-pinn"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control fix on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-fix-jdk21.stdout",
+        "stderr": "records/control-fix-jdk21.stderr"
+      },
+      {
+        "name": "verifier fix on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.031,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 96,
+      "maxArrayLength": 96,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "3ad3266bdde94dc0",
+    "attempt": "20261120T182713Z-ec32a2ae",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 24",
+          "verdict": "unverifiable",
+          "domain": "code: int",
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/Object;)Ljava/lang/StringBuilder;@jdk-21.0.13 (java.lang.StringBuilder.append(java.lang.Object) at org.apache.commons.csv.CSVFormat$Builder.setQuote:810). With --gaps assume it assumes instead that java.lang.StringBuilder.append(java.lang.Object) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.01,
+            "properties": 1,
+            "unwind": 96,
+            "maxArrayLength": 96,
+            "stage": null,
+            "deadlineSeconds": 90.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 90.0,
+                "seconds": 0.009,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.002,
+                  "lowering": 0.0,
+                  "symbolic": 0.004,
+                  "encoding": 0.002,
+                  "solving": 0.001,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 4693,
+                  "clauses": 16166
+                }
+              }
+            ],
+            "native": {
+              "paths": 5,
+              "merges": 0,
+              "solverCalls": 5,
+              "solvingSeconds": 0.00050167,
+              "gatesEvaluated": 271,
+              "evaluatingSeconds": 8.387e-06,
+              "divisions": 1,
+              "divisionsBuilt": 1,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 4693,
+              "clauses": 16166,
+              "seconds": 0.008731962,
+              "loadingSeconds": 0.001727571,
+              "decodingSeconds": 0.000142215,
+              "encodingSeconds": 0.002239232,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/Object;)Ljava/lang/StringBuilder;@jdk-21.0.13",
+                "kind": "jdk-reference-method",
+                "call": "java.lang.StringBuilder.append(java.lang.Object)",
+                "sites": [
+                  "org.apache.commons.csv.CSVFormat$Builder.setQuote:810"
+                ],
+                "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
+                "treatment": "refused"
+              }
+            ]
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 24",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 96,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"fix\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.StringBuilder.append(Ljava/lang/Object;)Ljava/lang/StringBuilder;@jdk-21.0.13 (java.lang.StringBuilder.append(java.lang.Object) at org.apache.commons.csv.CSVFormat$Builder.setQuote:810). With --gaps assume it assumes instead that java.lang.StringBuilder.append(java.lang.Object) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 24"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "101c60a5b62cae9e37908db9cef3bcf3e7599037a43233cfa94269715a69c12e",
+        "bytes": 47922
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "d37bcdeb8fbf8a6c8718c8e74280566ee697571b326d0c40705beeaedbed8f04",
+        "bytes": 625
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "69693a177bea3dbc9ee4a499a2a58d936256b5e168db7b9ad47e80cfa0f6c208",
+        "bytes": 1945
+      },
+      {
+        "path": "records/control-fix-jdk21.stdout",
+        "sha256": "f497cdcbf899837182c9c538376dd5e5a4ff79b91928683a71d399d1fa7c1987",
+        "bytes": 3914
+      },
+      {
+        "path": "records/control-fix-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "bfe15b34b39a550711e705cfd512103a8690837617857879169b6f010c636e1b",
+        "bytes": 16511
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "5f901a1d50d5556a53d3289c91c20a8f19aa69afd6dcb2b179b4dfe223754769",
+        "bytes": 6534
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "67494b88c041569be6597df9b8fc23f9fc6f345f617a5d4bc98bc3eaea80df76",
+        "bytes": 30677
+      }
+    ]
+  }
+}

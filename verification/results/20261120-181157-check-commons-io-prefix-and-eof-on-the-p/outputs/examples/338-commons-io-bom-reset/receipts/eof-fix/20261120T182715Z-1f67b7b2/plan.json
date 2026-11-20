@@ -1,0 +1,232 @@
+{
+  "plan": {
+    "example": "338",
+    "task": "eof-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.io.input.BOMInputStream#reset()V",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "eof-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.io.input.BOMInputStream#reset()V",
+      "file": "claims/eof.json",
+      "sha256": "7f32bb3c4fd2afc28fcc96463bef96c2e7933190672088e44d152ac8428b9ab8",
+      "property": "eof",
+      "claimKind": "property",
+      "statement": "Reading after the last byte returns EOF.",
+      "assume": "code >= 0 && code < 36",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/bom/BomCases.java",
+          "sha256": "362158fbf7d8b1b9fec4f91d523526a45ad6e74ff16cba385dc99fd2b3a96b9c"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "05d1d044deaa06657d4aa15c6aaf9352c5bf59316b3db72c945908dc8ae907f8"
+        }
+      ],
+      "adapter": {
+        "entry": "bom.Projection#eof(I)I",
+        "mapping": "Index the ordered product of payload, BOM, inclusion and reset mode. Open distinct wrapper and delegate objects. Read the remaining bytes and then read at EOF.",
+        "cases": 36,
+        "correspondence": "finite-oracle"
+      },
+      "key": "ec7710c3d0d496b1"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-io",
+        "commit": "4f1e3e564d0be5e2a01702039b1ddf3b5cea16ce",
+        "parent": "16bcc65a493123dfc1eeba7b3943a69acf03e47c",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.test.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotbugs.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/build-fix.json",
+          "sha256": "951c131a700d89372b07194cfd9e9329540d00ae6d85dcffb205e0b7a5065aee"
+        },
+        "adapters": [
+          "adapter/bom/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/eof-fix"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-181157-check-commons-io-prefix-and-eof-on-the-p/examples/338-commons-io-bom-reset",
+    "network": true
+  },
+  "inputs": {
+    "example": "338",
+    "task": "eof-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.io.input.BOMInputStream#reset()V",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "eof-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.io.input.BOMInputStream#reset()V",
+      "file": "claims/eof.json",
+      "sha256": "7f32bb3c4fd2afc28fcc96463bef96c2e7933190672088e44d152ac8428b9ab8",
+      "property": "eof",
+      "claimKind": "property",
+      "statement": "Reading after the last byte returns EOF.",
+      "assume": "code >= 0 && code < 36",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "explicitBounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/bom/BomCases.java",
+          "sha256": "362158fbf7d8b1b9fec4f91d523526a45ad6e74ff16cba385dc99fd2b3a96b9c"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "05d1d044deaa06657d4aa15c6aaf9352c5bf59316b3db72c945908dc8ae907f8"
+        }
+      ],
+      "adapter": {
+        "entry": "bom.Projection#eof(I)I",
+        "mapping": "Index the ordered product of payload, BOM, inclusion and reset mode. Open distinct wrapper and delegate objects. Read the remaining bytes and then read at EOF.",
+        "cases": 36,
+        "correspondence": "finite-oracle"
+      },
+      "key": "ec7710c3d0d496b1"
+    },
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-io",
+        "commit": "4f1e3e564d0be5e2a01702039b1ddf3b5cea16ce",
+        "parent": "16bcc65a493123dfc1eeba7b3943a69acf03e47c",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "--batch-mode",
+            "--no-transfer-progress",
+            "-Dmaven.test.skip=true",
+            "-Dmaven.javadoc.skip=true",
+            "-Drat.skip=true",
+            "-Dcheckstyle.skip=true",
+            "-Dspotbugs.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/build-fix.json",
+          "sha256": "951c131a700d89372b07194cfd9e9329540d00ae6d85dcffb205e0b7a5065aee"
+        },
+        "adapters": [
+          "adapter/bom/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/bom/Projection.java",
+        "sha256": "224157e38d7f9cbd2e7fa09d8cdfdf7fe810ed98e5a4e4c28e53f7da7a34d043"
+      }
+    ]
+  },
+  "key": "30d9bef16c860992ea67bc636bcaa9958d64079ba01a5a5a053faa58d5822c1c"
+}
