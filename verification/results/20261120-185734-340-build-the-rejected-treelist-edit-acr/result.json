@@ -1,0 +1,236 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-185734-340-build-the-rejected-treelist-edit-acr",
+  "title": "340 build the rejected TreeList edit across both upstream revisions",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 57.7s, peak 784.4 MiB (estimated 5m00s, 2.0 GiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-185734-340-build-the-rejected-treelist-edit-acr.json",
+    "sha256": "981fc37cd8b2827ade7219581d0f3ceebb6989a396dc6e74543bcf8e856b744b",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-185734-340-build-the-rejected-treelist-edit-acr",
+      "title": "340 build the rejected TreeList edit across both upstream revisions",
+      "description": "Build the actual Commons Collections parent and its direct fix on JDK 21. Record all Maven inputs, the first-parent link and content hashes for the runtime JARs.",
+      "kind": "real-world",
+      "capabilities": [
+        "targets:upstream-build",
+        "build:from-source"
+      ],
+      "links": {
+        "examples": [
+          "340"
+        ]
+      },
+      "expected": "Both clean Maven products have complete resolution inventories and the declared first parent.",
+      "submitted": {
+        "at": "2026-11-20T18:57:34+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "mvn",
+        "java",
+        "javac",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "parent",
+          "run": "python3 examples/tools/targets/upstream_artifact.py examples/340-treelist-rejected-edit/controls/builds.json parent examples/340-treelist-rejected-edit/records/builds/parent.json",
+          "cwd": "."
+        },
+        {
+          "name": "fix",
+          "run": "python3 examples/tools/targets/upstream_artifact.py examples/340-treelist-rejected-edit/controls/builds.json fix examples/340-treelist-rejected-edit/records/builds/fix.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/340-treelist-rejected-edit/records/builds"
+      ]
+    }
+  },
+  "sourceCommit": "72aac02b798d3f431668cfadbbd7a5722f8fd2f1",
+  "startedAt": "2026-11-20T18:59:14+00:00",
+  "finishedAt": "2026-11-20T19:00:21+00:00",
+  "wallSeconds": 67.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 754811,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 822517760,
+    "wallSeconds": 57.7,
+    "cpuSeconds": 76.9,
+    "memoryOfEstimate": 0.38,
+    "durationOfEstimate": 0.19
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "parent",
+      "run": "python3 examples/tools/targets/upstream_artifact.py examples/340-treelist-rejected-edit/controls/builds.json parent examples/340-treelist-rejected-edit/records/builds/parent.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 27.459,
+      "cpuSeconds": 38.4,
+      "cpuThrottledSeconds": 5.536,
+      "peakMemoryBytes": 814055424,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-parent.log",
+        "lines": 2,
+        "bytes": 260,
+        "sha256": "9068397c1181e140a96f550e32b99f35aba55e8fff232e9af74f9cca04ec9905",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "original f202a9f8e2babe1544a0607cc5ef22835900739be35e9a4114050d3c796a33d4 built/commons-collections4-4.6.0-SNAPSHOT.jar",
+        "dependency d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4 lib/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "fix",
+      "run": "python3 examples/tools/targets/upstream_artifact.py examples/340-treelist-rejected-edit/controls/builds.json fix examples/340-treelist-rejected-edit/records/builds/fix.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 30.267,
+      "cpuSeconds": 38.509,
+      "cpuThrottledSeconds": 6.29,
+      "peakMemoryBytes": 822517760,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-fix.log",
+        "lines": 2,
+        "bytes": 260,
+        "sha256": "2fefdd8d43f07cc8b9f82f23e5fc4df1ea3ff0ba03b0ebf2ac9a13fe2fae4136",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "original 392cb273d3dd5d13b39f65c38f0cc3bbee1a37e97f9a3f973a03e53c09f26d89 built/commons-collections4-4.6.0-SNAPSHOT.jar",
+        "dependency d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4 lib/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/340-treelist-rejected-edit/records/builds/fix.json",
+      "change": "added",
+      "bytes": 15295,
+      "sha256": "9682247aa8959e05ea92d21771b0f459aee7c06742709f7f760a048a83e64447",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/records/builds/fix.resolution.json",
+      "change": "added",
+      "bytes": 876002,
+      "sha256": "621d4cbd92b854a28d4f67dae3a1c06ccc3ba17d2bb75df29fbc90f0d0387349",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/records/builds/parent.json",
+      "change": "added",
+      "bytes": 14383,
+      "sha256": "064c272ec7f8d0e82e98ffcb6db7b5e227fe9a90ffe7cd36ef704c6d834aec25",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/340-treelist-rejected-edit/records/builds/parent.resolution.json",
+      "change": "added",
+      "bytes": 876002,
+      "sha256": "e2cd053b55646b7c66215f1e0917841c3c5f0c5605ab21c24d2e31eeb4eb90af",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T19:00:52+00:00",
+    "applied": [
+      "examples/340-treelist-rejected-edit/records/builds/fix.json",
+      "examples/340-treelist-rejected-edit/records/builds/fix.resolution.json",
+      "examples/340-treelist-rejected-edit/records/builds/parent.json",
+      "examples/340-treelist-rejected-edit/records/builds/parent.resolution.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
