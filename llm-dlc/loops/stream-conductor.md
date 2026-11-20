@@ -210,7 +210,7 @@ Otherwise it waits for the final merge. An early merge happens in the conductor'
 It never touches the running streams, and tells them nothing unless the merge changes what they have to do. Each early
 merge is itself a logged decision (cheap or costly by the test above).
 
-**Superseded on 2026-11-17, at the user's word:** there is no final merge any more. The watcher of `/run-brief`
+**Superseded on 2026-11-17, at the user's word:** there is no final merge any more. The watcher of `/multi-agent-brief`
 merges every stream the moment it is finished (`brief_run.py merge`, answering `run-streams.sh`'s `merge`
 question), and the brief's own loop no longer runs after the streams ([`llm-dlc/README.md`](../README.md#a-briefs-run)).
 
@@ -528,7 +528,7 @@ The next parallel run uses the conductor:
 - 2026-11-16/17: the user asked for briefs to be run by a watcher on command, as a local skill, with a foundation
   stage on Fable 5.2 before the streams. Built in the workspace `run-brief`, outside this brief's loop, and it is
   the attended part of Design 8 (its points 1 to 3 settled that way: attended, one model, a skill of its own):
-  `/run-brief` and `llm-dlc/tools/brief_run.py` (preflight, foundation, land, start, wait, status), the `blocked`
+  `/multi-agent-brief` and `llm-dlc/tools/brief_run.py` (preflight, foundation, land, start, wait, status), the `blocked`
   question `run-streams.sh` asks its watcher so a decision reaches its stream during the run, and the streams
   read from the brief's Loop settings. Not built: `inbox.py collect` and the routing of interface requests as a
   script inside `wait` (the watcher runs them by hand), early merge (step 5), the measurements of step 6, and a

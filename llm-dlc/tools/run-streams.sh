@@ -11,7 +11,7 @@
 #   NAME is a brief of llm-dlc/loops/ (NAME.md), FILE.md a brief's file. The brief names its streams in its Loop
 #   settings, "- streams: a, b, c", each with a brief of its own beside it (NAME-a.md); a brief that names none has
 #   no streams, and its own loop is the whole run. --plan prints the brief and its streams and starts nothing.
-#   A person starts a run with /run-brief, whose watcher starts this script (llm-dlc/tools/brief_run.py) after the
+#   A person starts a run with /multi-agent-brief, whose watcher starts this script (llm-dlc/tools/brief_run.py) after the
 #   run's foundation stage, and answers what it asks; by hand it runs as before. The briefs older than the
 #   setting are still known by name:
 #   engines      llm-dlc/loops/engine-priorities.md: the streams jbmc and native

@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "e61d882b-5ef7-428e-90df-ffe709ac6962",
-  "status": "ended",
+  "status": "open",
   "title": "/run-brief invocation options",
   "first_prompt": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>",
   "client": {
@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-20T16:25:40.078Z",
-  "duration_seconds": 272877,
+  "ended": "2026-11-20T18:15:51.558Z",
+  "duration_seconds": 279488,
   "stats": {
-    "turns": 72,
-    "api_calls": 579,
-    "tool_calls": 573,
+    "turns": 74,
+    "api_calls": 589,
+    "tool_calls": 581,
     "tool_errors": 14,
     "compactions": 3,
     "peak_context_tokens": 565519,
     "usage": {
-      "input_tokens": 1304,
-      "output_tokens": 406085,
-      "cache_read_input_tokens": 144103083,
-      "cache_creation_input_tokens": 2240478
+      "input_tokens": 1326,
+      "output_tokens": 412675,
+      "cache_read_input_tokens": 145938140,
+      "cache_creation_input_tokens": 2427407
     }
   },
   "tools": {
-    "Bash": 501,
+    "Bash": 508,
     "Edit": 34,
-    "Read": 20,
+    "Read": 21,
     "SendMessage": 6,
     "Write": 5,
     "ToolSearch": 3,
@@ -101,24 +101,24 @@
     {
       "index": 3,
       "started": "2026-11-19T17:21:27.141Z",
-      "ended": "2026-11-20T16:25:40.078Z",
-      "turns": 11,
-      "api_calls": 70,
+      "ended": "2026-11-20T18:15:51.558Z",
+      "turns": 13,
+      "api_calls": 80,
       "usage": {
-        "input_tokens": 160,
-        "output_tokens": 38920,
-        "cache_read_input_tokens": 8476987,
-        "cache_creation_input_tokens": 519499
+        "input_tokens": 182,
+        "output_tokens": 45510,
+        "cache_read_input_tokens": 10312044,
+        "cache_creation_input_tokens": 706428
       },
-      "peak_context_tokens": 184800
+      "peak_context_tokens": 212859
     }
   ],
   "log": {
-    "sha256": "aa378f1fa1dce62a3afbec3c54386fd0a9a25cb5178c4aca505d86960450e289",
-    "bytes": 11886137,
-    "lines": 4354,
-    "gzip_bytes": 2146587,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/aa378f1fa1dce62a3afbec3c54386fd0a9a25cb5178c4aca505d86960450e289.jsonl.gz"
+    "sha256": "9079e87b73c13487a1e64e9f0d09be888e2932197fcf64eccc329af491591aa6",
+    "bytes": 12110265,
+    "lines": 4431,
+    "gzip_bytes": 2204462,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/9079e87b73c13487a1e64e9f0d09be888e2932197fcf64eccc329af491591aa6.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3217,6 +3217,30 @@
       "summary": "List the decision-id review test in the test-cost inventory",
       "body": "The unit test added with the decision-id exemption of the long-token rule (test_review.py) was not in lib/tests/costs.json, so the tier lint failed the default run and held the push. test_costs.py estimate adds it as unit tier (nothing outside the process) and refreshes the inventory's sources from the newer session logs; test_costs.py lint now agrees.",
       "log_sha256": "aa378f1fa1dce62a3afbec3c54386fd0a9a25cb5178c4aca505d86960450e289"
+    },
+    {
+      "change_id": "rovpsyxsrqsmxsqskolsuqtktmvutulp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Drop the eight proposals the decision-id rule made moot",
+      "body": "Eight allow-list proposals covered long-token findings on the restart run's decision ids (single-foundation-and-python-restart-D001 to D004, and the same ids after an escaped newline's n). Since the long-token rule skips decision ids, none matches an open finding (sync.py review: 0 open). The user chose on 2026-11-20 to drop them rather than approve entries for values that no longer warn.",
+      "log_sha256": "9079e87b73c13487a1e64e9f0d09be888e2932197fcf64eccc329af491591aa6"
+    },
+    {
+      "change_id": "omutzsoxzmznypunxoolnpyvtxpnwoov",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add the next-proof-campaign brief",
+      "body": "The user's brief for the next single-agent run, copied unchanged: 14 new non-CVE examples (a CSV importer across Commons IO and Commons CSV upgrades, startup and environment, symbolic arrays, stateful library classes, two-thread monitor histories) and a return to 310, 321 and 327 to discharge their original environment-bound obligations.",
+      "log_sha256": "9079e87b73c13487a1e64e9f0d09be888e2932197fcf64eccc329af491591aa6"
+    },
+    {
+      "change_id": "zkzpxvssnuyrnmrvytxumzoklnlqnqqy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Rename the run-brief skill to multi-agent-brief",
+      "body": "Codex work turns given a brief to execute alone twice opened the run-brief skill as if it were the way to run any brief (VF-045). At the user's word the skill is renamed multi-agent-brief: its folder, its name, the Codex link at .agents/skills, and the live references (the llm-dlc README's 'A brief's run', the brief template, stream-conductor, brief_run.py, run-streams.sh, single-agent-run). Historical records (past briefs, the rehearsal, the README's session table, the old workspace name) keep the name they had. VF-045 notes the rename; its invocation flags stay open. Verified: agent_client.py instructions --client codex lists the skill with no problems, and test_costs.py run --changed passed 12 of 12.",
+      "log_sha256": "9079e87b73c13487a1e64e9f0d09be888e2932197fcf64eccc329af491591aa6"
     }
   ],
   "logs": {
@@ -3399,6 +3423,12 @@
       "lines": 3472,
       "gzip_bytes": 1693109,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/8f9bf47d929ac4df661ed8db937a955e0195b6fa5334caa7effd6ccf7f769d3a.jsonl.gz"
+    },
+    "9079e87b73c13487a1e64e9f0d09be888e2932197fcf64eccc329af491591aa6": {
+      "bytes": 12110265,
+      "lines": 4431,
+      "gzip_bytes": 2204462,
+      "url": null
     },
     "9090e861ccddf9e655c71c2377a905c5373576a92bb47804927954df873d7873": {
       "bytes": 6101397,

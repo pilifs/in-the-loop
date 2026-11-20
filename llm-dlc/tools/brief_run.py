@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The watcher's tools for the run of a brief (.claude/skills/run-brief, llm-dlc/README.md "A brief's run").
+"""The watcher's tools for the run of a brief (.claude/skills/multi-agent-brief, llm-dlc/README.md "A brief's run").
 
 A brief (llm-dlc/loops/NAME.md) is run by one watcher session, as /prove-java-change runs a proof: the watcher
 does none of the work, starts what does, is called back when something needs a judgement, and reports at

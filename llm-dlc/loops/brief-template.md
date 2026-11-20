@@ -53,7 +53,7 @@ Put these under the brief's `## How to work through it`, adjusted to its own wor
 
 Say in the brief which of the two modes it runs in:
 - **With the pipeline** (the default): the jobs are run and their results collected and committed (by the watcher of
-  `/run-brief`, or by `verification-loop.sh`, which `run-streams.sh` starts when it runs without one), and a loop whose
+  `/multi-agent-brief`, or by `verification-loop.sh`, which `run-streams.sh` starts when it runs without one), and a loop whose
   remaining work waits on jobs stops with `- Status: waiting on jobs ID ...` and is run again when they are back.
 - **Separate** (`- verification: separate` in Loop settings): no verification loop is started and no loop stops to wait.
   A quick job (a few minutes or less) is submitted with `--priority 10` and may be awaited inside a cycle for a bounded
@@ -72,7 +72,7 @@ that setting is gone, and a brief that still says it runs as above.)
 
 ### How a brief is run
 
-A person starts a brief with `/run-brief NAME` (`.claude/skills/run-brief`): a watcher session runs the
+A person starts a brief with `/multi-agent-brief NAME` (`.claude/skills/multi-agent-brief`): a watcher session runs the
 preflight, the foundation stage and the streams, merges each stream the moment it is finished, and answers what
 they ask
 ([`llm-dlc/README.md`](../README.md#a-briefs-run)). So a brief needs no planning session to fork from, and no

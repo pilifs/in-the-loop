@@ -87,6 +87,9 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
     `agent_client.py instructions --client codex`. A person typing `/run-brief` still starts it for a watcher.
   - Word a single agent's starting prompt or brief pointer so that it does not read as a request for a
     multi-agent run, e.g. by naming the document a plan rather than a brief.
+  - Done 2026-11-20, at the user's word: the skill is renamed `multi-agent-brief` (`.claude/skills/multi-agent-brief`,
+    with its Codex link), so its name no longer reads as the way to run any brief. The invocation flags above are
+    still open.
 - **Tracked in**: this entry; the run's loop output above.
 - **Closes when**: a Codex work turn given a prompt like this one does not open or run the run-brief skill, and the
   skills' invocation policy agrees between the two clients.

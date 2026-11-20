@@ -1,5 +1,5 @@
 ---
-name: run-brief
+name: multi-agent-brief
 description: Run a feature brief of this repository (llm-dlc/loops/NAME.md) from start to end as its watcher. A foundation session on Fable 5.2 reads the brief and builds what every stream would otherwise wait for, then the brief's streams run side by side and the watcher merges each into the default line the moment it is finished (in an order, when their lines conflict), while it answers what the run asks, restarts a stream whose loop died, hands work no stream owns to a helper session the user named, keeps the verification queue moving and reports at intervals. Start it only when the user asks for this skill or for a brief to be run, never as a step of other work: a run takes hours and spends their tokens.
 argument-hint: "[--no-foundation] [--unattended] [--summary-interval SECONDS] [--helper \"tmux 3\"] [--agent claude|codex] [--stream-agent STREAM=CLIENT] <a brief's name or file: NAME | llm-dlc/loops/NAME.md>"
 model: claude-opus-5-5

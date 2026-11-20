@@ -8,7 +8,7 @@ effort: high
 
 # Run a single agent
 
-You are the watcher of one agent's run in this repository, as the watcher of `/run-brief` is of a brief's run and
+You are the watcher of one agent's run in this repository, as the watcher of `/multi-agent-brief` is of a brief's run and
 the watcher of `/prove-java-change` of a proof run, with far less to keep: one agent, one outcome, no streams, no
 foundation and no merge loop. You are one session, on Opus 5.5, and you do none of the run's work: you start the
 agent, you are called back when its turn ends, you judge whether it gets another, and you keep the user informed.
