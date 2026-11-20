@@ -9,3 +9,5 @@ The table records the direct observations, and each selected adapter field is ch
 [Frozen inputs and oracle](controls/table.json) · [JVM counts, witnesses and bindings](records/finite-grid.json) · [Required claims](milestones.json) · [Public tasks](target.json)
 
 The first batch could not bind the mask argument to the integer named code in the frozen guard. The corrected adapter exposes that name. Both original JVM calibrations, the refused executions and the fresh-classloader results remain separate.
+
+The final strict checker decided all nine claims on the eight failure masks. Original and nested resource acquisition satisfy all three observers. Reversal changes the primary on one mask, the ordered suppressed sequence on two, and the close order on all eight. [Verification job](../../verification/results/20261120-063346-recheck-ordered-resource-failures-on-sha/result.json)

@@ -29,3 +29,5 @@ Selecting only the right root forced JBMC to produce two references to the same 
 The fast-follow regression repeated the original native tasks at array bound two and unwind eight with the same classpaths and JDK. All 71 direct heaps per revision reproduced the original disagreements. Return preservation was established, and the right-root and both-root violations replayed on the JVM. [Regression job](../../verification/results/20261120-042933-recheck-both-array-roots-after-the-fast/result.json)
 
 The numerical checker repeated all three original native verdicts. The reference and skipped-write JVM grids had the same digests as the preceding 71-heap run. [Array-root regression](../../verification/results/20261120-053727-confirm-both-array-roots-after-the-numer/result.json)
+
+The language and list changes retained the three original array-root results at unwind eight and array bound two. All 71 direct heaps on each revision have the prior JVM stream digests. Both distinct poststate witnesses reproduced. [Verification job](../../verification/results/20261120-065325-confirm-shared-array-poststates-after-ch/result.json)

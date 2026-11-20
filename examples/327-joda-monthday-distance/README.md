@@ -9,3 +9,5 @@ The table records the direct observations, and each selected adapter field is ch
 [Frozen inputs and oracle](controls/table.json) · [JVM counts, witnesses and bindings](records/finite-grid.json) · [Required claims](milestones.json) · [Public tasks](target.json)
 
 Two further claims execute both actual directional calls in their Java guard, then test reversal only where both returned. The earlier implication covering all 25 input pairs remains in history.
+
+All ten strict native checks reach System.getProperty("org.joda.time.DateTimeZone.Provider") in DateTimeZone.getDefaultProvider while the historical classes initialize. The provider choice remains open on that route. The independent 25-pair JVM results retain their original ISO-UTC chronology. [Verification job](../../verification/results/20261120-063346-verify-partial-dates-past-the-shared-lis/result.json)

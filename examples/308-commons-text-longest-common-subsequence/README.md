@@ -30,3 +30,5 @@ The original release score claim subsequently passed its strict native check at 
 A second strict release run took 0.997 seconds and 78.7 MiB. The complete checker statement records the guard, asserted score, complete unwind and non-vacuity witness. [Full checker output](records/release-score-native.json) · [Release and independent comparisons](records/release-score-transfer.json)
 
 The numerical checker proved the released score in 0.663 s at 78.1 MiB peak RSS. The release and rebuild agreed on all 225 pairs, and the shared-row control disagreed on 44. [Raw checker output](records/numeric-checker-native.json) · [JVM comparison](records/numeric-checker-transfer.json)
+
+The language and list changes retained the strict release-score proof at unwind 18 and array bound four in 0.639 s with 79.1 MiB peak RSS. The release and rebuild agreed on 225 pairs each and the shared-row control disagreed on 44. [Verification job](../../verification/results/20261120-065325-confirm-commons-text-lcs-after-character/result.json)
