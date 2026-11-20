@@ -1,0 +1,310 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T215304Z-e7c0b062",
+  "task": "parity-recursive",
+  "claimKey": "69f24181ef8dfc59",
+  "revisions": [
+    "recursive"
+  ],
+  "startedAt": "2026-11-20T21:53:04.949259+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 25
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict",
+    "checkedLemmas": {
+      "path": "claims/helper.contract",
+      "sha256": "0814af54dfc34582416340875a5761c395851a3e9da115b8380944a859adbe76"
+    }
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-213850-331-recheck-compiler-and-downstream-help",
+  "sourceCommit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 1.3804
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 1.4478
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 1.4745
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 3.9499
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 4.0499
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "recursive": {
+      "revision": "fixture:recursive",
+      "target": {
+        "class": "tiling.Floor",
+        "method": "parity",
+        "descriptor": "(I)I",
+        "loadedFrom": "recursive.jar",
+        "classSha256": "b142c7b9341d0e6e99e6bee9e01883fed60c267cc0f865121e7d537445d701ee"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "ec6cbf57fad3dcacd8a5415b841351adef7d466f8bd28df070e10e20bdd9952c",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "recursive.jar",
+          "sha256": "d9739bee0045310d4862fce5bdc70008360bd1b233a144199e48b1974228a059",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from recursive by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "a89780df27f9aff461c32c478cb0ac85f01d5426740cef92f420720e599f743d",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7e8366148d029322203a901b5bd5e471e3510cda/jvmcontract",
+    "prove",
+    "tiling.Floor#parity(int)",
+    "--classes",
+    "prepare/recursive/recursive.jar",
+    "--assume",
+    "n >= 0 && n <= 18",
+    "--assert",
+    "result == tiling.Oracle.parity(n)",
+    "--lemmas",
+    "verifier/checked-lemmas.contract",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "24",
+    "--max-array-length",
+    "0",
+    "--timeout",
+    "25",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "a8c156fbd999555d80f338e97eaa9eaba9bc51d436877725a1234e654585c4e6",
+    "commit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+    "libTree": "7e8366148d029322203a901b5bd5e471e3510cda",
+    "command": "prove",
+    "checkedLemmas": {
+      "path": "claims/helper.contract",
+      "sha256": "0814af54dfc34582416340875a5761c395851a3e9da115b8380944a859adbe76"
+    },
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 24,
+      "maxArrayLength": 0
+    },
+    "timeout": 25,
+    "scope": {
+      "label": "constructed-fixture",
+      "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+      "method": "tiling.Floor#parity(I)I",
+      "revisions": {
+        "recursive": {
+          "commit": "fixture:recursive",
+          "loadedFrom": "recursive.jar",
+          "classSha256": "b142c7b9341d0e6e99e6bee9e01883fed60c267cc0f865121e7d537445d701ee",
+          "origin": "built from recursive by the fixture recipe",
+          "parameters": {
+            "names": [
+              "n"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "recursive": [
+        {
+          "path": "recursive.jar",
+          "sha256": "d9739bee0045310d4862fce5bdc70008360bd1b233a144199e48b1974228a059",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "tiling.Floor#parity(I)I",
+    "entryBindings": {
+      "recursive": {
+        "entry": "tiling.Floor#parity(I)I",
+        "classSha256": "b142c7b9341d0e6e99e6bee9e01883fed60c267cc0f865121e7d537445d701ee",
+        "loadedFrom": "recursive.jar",
+        "subject": "tiling.Floor#parity(I)I",
+        "subjectClassSha256": "b142c7b9341d0e6e99e6bee9e01883fed60c267cc0f865121e7d537445d701ee"
+      }
+    },
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "tiling.Floor#parity(I)I",
+      "checkedEntry": "tiling.Floor#parity(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "n >= 0 && n <= 18"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == tiling.Oracle.parity(n)"
+        },
+        {
+          "field": "checkedLemmas",
+          "flag": "--lemmas",
+          "value": "claims/helper.contract",
+          "bindSha256AtPreparation": true
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "24"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "0"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "recursive": "fixture:recursive"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+      "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+      "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "recursive": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7e8366148d029322203a901b5bd5e471e3510cda/jvmcontract",
+          "gaps",
+          "--target",
+          "tiling.Floor#parity(int)",
+          "--classes",
+          "prepare/recursive/recursive.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.016,
+        "stdout": "verifier/probe-recursive.stdout",
+        "stderr": "verifier/probe-recursive.stderr",
+        "gaps": []
+      }
+    },
+    "usage": {
+      "cpuSeconds": 3.3393,
+      "peakRssBytes": 116793344,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 3.3393,
+    "peakRssBytes": 116793344,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 2.474,
+  "missing": [],
+  "receipt": "receipts/parity-recursive/20261120T215304Z-e7c0b062/result.json",
+  "preparedClaim": "c6b2f2ff6eb3d35f",
+  "firstBlocker": null,
+  "endedAt": "2026-11-20T21:53:08.999268+00:00"
+}

@@ -1,0 +1,70 @@
+[
+  {
+    "claimKey": "29bbeb2c22580443",
+    "entry": "fill.Range#observe([I[IIIII)I",
+    "inputs": [
+      {
+        "name": "a",
+        "type": "int[]",
+        "value": [
+          1
+        ]
+      },
+      {
+        "name": "other",
+        "type": "int[]",
+        "value": {
+          "same": 0
+        }
+      },
+      {
+        "name": "from",
+        "type": "int",
+        "value": 0
+      },
+      {
+        "name": "to",
+        "type": "int",
+        "value": 0
+      },
+      {
+        "name": "value",
+        "type": "int",
+        "value": 0
+      },
+      {
+        "name": "k",
+        "type": "int",
+        "value": 0
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "extra": {
+        "entryClassSha256": "b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe",
+        "classpath": [
+          "42aed2685824c3275dd18e76e419f21c7407f87b264dd0fda2b46ebdc4614190"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint[] a = new int[]{1};\nint[] other = a;\nint from = 0;\nint to = 0;\nint value = 0;\nint k = 0;\nif (!(0 <= from && from <= to && to <= a.length && 0 <= k && k < other.length)) { System.out.println(\"outside\"); return; }\nint[] originalArray1 = other == null ? null : other.clone();\nint result = 0;\nThrowable failure = null;\ntry { result = fill.Range.observe(a, other, from, to, value, k); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == (a == other && from <= k && k < to ? value : originalArray1[k])));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  }
+]

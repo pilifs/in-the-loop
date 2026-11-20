@@ -1,0 +1,768 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "6c49c833cb60acf6",
+    "format": 1,
+    "example": "337",
+    "statement": {
+      "approach": "target",
+      "task": "frame-64-extra",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "fill.Range#apply([I[IIII)I",
+      "revisions": [
+        "extra"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "frame-64-extra",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "fill.Range#apply([I[IIII)I",
+        "file": "claims/frame-64.json",
+        "sha256": "c6df52a3dd31a7cb8e220d6b363900fd02dc23727f3545010881c8d7c817600e",
+        "property": "frame-64",
+        "claimKind": "property",
+        "statement": "Write exactly the selected half-open slice and preserve every other cell, including what the second root observes.",
+        "assume": "0 <= from && from <= to && to <= a.length",
+        "assert": "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [
+          "a,other"
+        ],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 67,
+          "maxArrayLength": 64
+        },
+        "explicitBounds": {
+          "unwind": 67,
+          "maxArrayLength": 64
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/fill/FillCases.java",
+            "sha256": "df934c915b1f69036ec1daff862cf92519f5558f9e65fa8e32aa8d76acb9f2df"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "bcd21cea9fee6568d798f70163f85c458a4db50b7051dea3f48df25b82772653"
+          }
+        ],
+        "key": "fffda11b80d4522b"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 64
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "0d163c29e187455280b92d8c09aa675aee1e2759c860738f5f23ea172c6e1859",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "frame-64-extra",
+      "sidecar": "77714fe1e60a858b2668bead26d145f9c612017e1a52f30038541bd7c09b05f1",
+      "revisions": {
+        "extra": "a044051a2a814a0b463d28b9bc72fd0674d7a93c"
+      },
+      "dependencies": [
+        {
+          "revision": "extra",
+          "position": 0,
+          "role": "driver",
+          "sha256": "614c229ff9f20e7fbe91ff17fec6bab2fed8679e01607385e2febb639e45eba5"
+        },
+        {
+          "revision": "extra",
+          "position": 1,
+          "role": "original",
+          "sha256": "42aed2685824c3275dd18e76e419f21c7407f87b264dd0fda2b46ebdc4614190"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/frame-64.json": "c6df52a3dd31a7cb8e220d6b363900fd02dc23727f3545010881c8d7c817600e",
+        "controls/oracle.py": "bcd21cea9fee6568d798f70163f85c458a4db50b7051dea3f48df25b82772653",
+        "driver/fill/FillCases.java": "df934c915b1f69036ec1daff862cf92519f5558f9e65fa8e32aa8d76acb9f2df"
+      },
+      "claimKey": "fffda11b80d4522b"
+    }
+  },
+  "attempt": {
+    "id": "20261120T215333Z-4b49c242",
+    "claim": "6c49c833cb60acf6",
+    "startedAt": "2026-11-20T21:53:33+00:00",
+    "seconds": 1.2,
+    "engine": "native",
+    "options": [
+      "prove",
+      "fill.Range#apply(int[], int[], int, int, int)",
+      "--classes",
+      "prepare/extra/extra.jar",
+      "--assume",
+      "0 <= from && from <= to && to <= a.length",
+      "--assert",
+      "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+      "--may-alias",
+      "a,other",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "67",
+      "--max-array-length",
+      "64",
+      "--timeout",
+      "120",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "a8c156fbd999555d80f338e97eaa9eaba9bc51d436877725a1234e654585c4e6"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "a4841425992fb39e84622143436aa21408de392ad66d2ce32b3945c0508d392c",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-213849-337-close-bound-64-through-exact-compile",
+      "sourceCommit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-213849-337-close-bound-64-through-exact-compile"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control extra on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-extra-jdk21.stdout",
+        "stderr": "records/control-extra-jdk21.stderr"
+      },
+      {
+        "name": "verifier extra on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 1.104,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 67,
+      "maxArrayLength": 64,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "6c49c833cb60acf6",
+    "attempt": "20261120T215333Z-4b49c242",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+        "status": "refuted",
+        "evidence": {
+          "harness": null,
+          "assert": "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+          "assume": "0 <= from && from <= to && to <= a.length",
+          "verdict": "violation",
+          "domain": "a: int[] of length ≤ 64, not null × other: int[] of length ≤ 64, not null × from: int × to: int × value: int; a and other may be the same array",
+          "proof": "found by jvmcontract's own checker (CaDiCaL) in 1.1 s searching inputs in [0:20] as apply(a=[20], other=[], from=0, to=0, value=16), shrunk to the input above in 18 interpreter runs, replayed in the interpreter; domain a: int[] of length ≤ 64, not null × other: int[] of length ≤ 64, not null × from: int × to: int × value: int; a and other may be the same array",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": {
+            "input": "apply(a=[1], other=[], from=0, to=0, value=0)",
+            "contract": "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+            "actual": "1, leaving a=[0]",
+            "found": "apply(a=[20], other=[], from=0, to=0, value=16)",
+            "shrinkRuns": 18,
+            "witness": {
+              "inputs": [
+                {
+                  "name": "a",
+                  "type": "int[]",
+                  "value": [
+                    1
+                  ]
+                },
+                {
+                  "name": "other",
+                  "type": "int[]",
+                  "value": []
+                },
+                {
+                  "name": "from",
+                  "type": "int",
+                  "value": 0
+                },
+                {
+                  "name": "to",
+                  "type": "int",
+                  "value": 0
+                },
+                {
+                  "name": "value",
+                  "type": "int",
+                  "value": 0
+                }
+              ],
+              "foundInputs": [
+                {
+                  "name": "a",
+                  "type": "int[]",
+                  "value": [
+                    20
+                  ]
+                },
+                {
+                  "name": "other",
+                  "type": "int[]",
+                  "value": []
+                },
+                {
+                  "name": "from",
+                  "type": "int",
+                  "value": 0
+                },
+                {
+                  "name": "to",
+                  "type": "int",
+                  "value": 0
+                },
+                {
+                  "name": "value",
+                  "type": "int",
+                  "value": 16
+                }
+              ],
+              "call": {
+                "class": "fill.Range",
+                "classFile": "fill/Range.class",
+                "classFileSha256": null,
+                "classes": "after",
+                "method": "apply",
+                "descriptor": "([I[IIII)I",
+                "static": true,
+                "arguments": [
+                  {
+                    "name": "a",
+                    "type": "int[]",
+                    "value": [
+                      1
+                    ],
+                    "from": "a"
+                  },
+                  {
+                    "name": "other",
+                    "type": "int[]",
+                    "value": [],
+                    "from": "other"
+                  },
+                  {
+                    "name": "from",
+                    "type": "int",
+                    "value": 0,
+                    "from": "from"
+                  },
+                  {
+                    "name": "to",
+                    "type": "int",
+                    "value": 0,
+                    "from": "to"
+                  },
+                  {
+                    "name": "value",
+                    "type": "int",
+                    "value": 0,
+                    "from": "value"
+                  }
+                ],
+                "revision": "extra"
+              }
+            }
+          },
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 1.066,
+            "properties": 1,
+            "unwind": 67,
+            "maxArrayLength": 64,
+            "stage": "[0:20]",
+            "deadlineSeconds": 120.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 120.0,
+                "seconds": 1.056,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.001,
+                  "lowering": 0.0,
+                  "symbolic": 0.044,
+                  "encoding": 0.152,
+                  "solving": 0.858,
+                  "trace": 0.001,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 36334,
+                  "clauses": 113381
+                }
+              }
+            ],
+            "native": {
+              "paths": 71,
+              "merges": 0,
+              "solverCalls": 2487,
+              "solvingSeconds": 0.85790614,
+              "gatesEvaluated": 75460,
+              "evaluatingSeconds": 0.004758797,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 36334,
+              "clauses": 113381,
+              "seconds": 1.056059444,
+              "loadingSeconds": 0.001078983,
+              "decodingSeconds": 0.000236893,
+              "encodingSeconds": 0.152059463,
+              "witnessSeconds": 0.000504666
+            },
+            "gapMode": "strict"
+          },
+          "replay": {
+            "by": "interpreter",
+            "reproduced": true
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "a",
+                  "type": "int[]",
+                  "kind": "array",
+                  "null": false,
+                  "maxLength": 64
+                },
+                {
+                  "name": "other",
+                  "type": "int[]",
+                  "kind": "array",
+                  "null": false,
+                  "maxLength": 64
+                },
+                {
+                  "name": "from",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "to",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "value",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": true,
+              "mayAlias": [
+                [
+                  "a",
+                  "other"
+                ]
+              ],
+              "text": "a: int[] of length ≤ 64, not null × other: int[] of length ≤ 64, not null × from: int × to: int × value: int; a and other may be the same array"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "0 <= from && from <= to && to <= a.length",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against (\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 67,
+              "maxArrayLength": 64,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "✗ Violation",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"extra\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [
+      {
+        "input": "apply(a=[1], other=[], from=0, to=0, value=0)",
+        "contract": "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+        "actual": "1, leaving a=[0]",
+        "found": "apply(a=[20], other=[], from=0, to=0, value=16)",
+        "shrinkRuns": 18,
+        "witness": {
+          "inputs": [
+            {
+              "name": "a",
+              "type": "int[]",
+              "value": [
+                1
+              ]
+            },
+            {
+              "name": "other",
+              "type": "int[]",
+              "value": []
+            },
+            {
+              "name": "from",
+              "type": "int",
+              "value": 0
+            },
+            {
+              "name": "to",
+              "type": "int",
+              "value": 0
+            },
+            {
+              "name": "value",
+              "type": "int",
+              "value": 0
+            }
+          ],
+          "foundInputs": [
+            {
+              "name": "a",
+              "type": "int[]",
+              "value": [
+                20
+              ]
+            },
+            {
+              "name": "other",
+              "type": "int[]",
+              "value": []
+            },
+            {
+              "name": "from",
+              "type": "int",
+              "value": 0
+            },
+            {
+              "name": "to",
+              "type": "int",
+              "value": 0
+            },
+            {
+              "name": "value",
+              "type": "int",
+              "value": 16
+            }
+          ],
+          "call": {
+            "class": "fill.Range",
+            "classFile": "fill/Range.class",
+            "classFileSha256": null,
+            "classes": "after",
+            "method": "apply",
+            "descriptor": "([I[IIII)I",
+            "static": true,
+            "arguments": [
+              {
+                "name": "a",
+                "type": "int[]",
+                "value": [
+                  1
+                ],
+                "from": "a"
+              },
+              {
+                "name": "other",
+                "type": "int[]",
+                "value": [],
+                "from": "other"
+              },
+              {
+                "name": "from",
+                "type": "int",
+                "value": 0,
+                "from": "from"
+              },
+              {
+                "name": "to",
+                "type": "int",
+                "value": 0,
+                "from": "to"
+              },
+              {
+                "name": "value",
+                "type": "int",
+                "value": 0,
+                "from": "value"
+              }
+            ],
+            "revision": "extra"
+          }
+        }
+      }
+    ],
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 1.1 s searching inputs in [0:20] as apply(a=[20], other=[], from=0, to=0, value=16), shrunk to the input above in 18 interpreter runs, replayed in the interpreter; domain a: int[] of length ≤ 64, not null × other: int[] of length ≤ 64, not null × from: int × to: int × value: int; a and other may be the same array",
+    "problem": null,
+    "domain": "a: int[] of length ≤ 64, not null × other: int[] of length ≤ 64, not null × from: int × to: int × value: int; a and other may be the same array",
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "property": {
+      "assert": "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+      "assume": "0 <= from && from <= to && to <= a.length"
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "a",
+            "type": "int[]",
+            "kind": "array",
+            "null": false,
+            "maxLength": 64
+          },
+          {
+            "name": "other",
+            "type": "int[]",
+            "kind": "array",
+            "null": false,
+            "maxLength": 64
+          },
+          {
+            "name": "from",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "to",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "value",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": true,
+        "mayAlias": [
+          [
+            "a",
+            "other"
+          ]
+        ],
+        "text": "a: int[] of length ≤ 64, not null × other: int[] of length ≤ 64, not null × from: int × to: int × value: int; a and other may be the same array"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "0 <= from && from <= to && to <= a.length",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against (\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 67,
+        "maxArrayLength": 64,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "472f94b01f8419cb10f9d9101dd5475521ed2ae91afb4ec94ab7a882bade791c",
+        "bytes": 65591
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "a171fbfb2d22f933c093fc97b46ed83ca337b2cc2468f8b3fec0849ae30d0d07",
+        "bytes": 1034
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "34d30a200741492b4954ca1022b9e69ff780fb1ea36b3f58a1eeedca90f6956e",
+        "bytes": 1963
+      },
+      {
+        "path": "records/control-extra-jdk21.stdout",
+        "sha256": "a49b6f4f8cfbbf791cd32ae714a55177ebda46ea4ed40646a23e4ab665bde172",
+        "bytes": 12048
+      },
+      {
+        "path": "records/control-extra-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "165e2cb74979c6915bef8b2850589baf42c2fd5ef9db160eff3e95813852ce45",
+        "bytes": 43779
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "d9585368d6f4a149e0b5b4fba3f5242958a1973340478f207a4f900fdd3850c3",
+        "bytes": 9817
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "c0fb96d8b2508941b6585f3fb8ee105cb28af871b92852a7bf62ea0a7b52e011",
+        "bytes": 18466
+      }
+    ]
+  }
+}

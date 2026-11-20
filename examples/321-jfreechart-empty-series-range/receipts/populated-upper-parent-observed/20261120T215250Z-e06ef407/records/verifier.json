@@ -1,0 +1,721 @@
+{
+  "task": "populated-upper-parent-observed",
+  "record": {
+    "kind": "verifier",
+    "revision": "parent",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7e8366148d029322203a901b5bd5e471e3510cda/jvmcontract",
+      "prove",
+      "rangegrid.Projection#upper(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/slice/parent.jar",
+      "--classpath",
+      "prepare/parent/lib/org.jfree/jcommon-1.0.17.jar",
+      "--classpath",
+      "prepare/parent/lib/javax.servlet/servlet-api-2.5.jar",
+      "--classpath",
+      "prepare/parent/lib/com.lowagie/itext-2.1.5.jar",
+      "--assume",
+      "code >= 0 && code < 30 && rangegrid.Projection.populated(code)",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--observed-initializer",
+      "org.jfree.data.time.RegularTimePeriod",
+      "--unwind",
+      "30",
+      "--max-array-length",
+      "12",
+      "--timeout",
+      "30",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 0,
+    "seconds": 2.514,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "a8c156fbd999555d80f338e97eaa9eaba9bc51d436877725a1234e654585c4e6",
+      "commit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+      "libTree": "7e8366148d029322203a901b5bd5e471e3510cda",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 30,
+        "maxArrayLength": 12
+      },
+      "timeout": 30,
+      "scope": {
+        "label": "adapter",
+        "meaning": "For the fifteen nonempty pairs of series choices (empty, -1, 0, 1), code chooses the two-key order. Only year 2012 in UTC is populated. The horizontal interval spans the full year and includeInterval is false. An absent result and NaN are distinct from any finite bound.",
+        "method": "org.jfree.data.time.TimeSeriesCollection#getRangeBounds(Ljava/util/List;Lorg/jfree/data/Range;Z)Lorg/jfree/data/Range;",
+        "revisions": {
+          "parent": {
+            "commit": "f210e33d06f03354fb49b98d2b2282f8c9a89303",
+            "loadedFrom": "slice/parent.jar",
+            "classSha256": "6a0d3736c23372efbc1c6a6dd239a0b8672fe5e9eb0ae52fda032be9a597d0f8",
+            "origin": "an extracted source slice of f210e33d06f03354fb49b98d2b2282f8c9a89303: source/org/jfree/chart/ChartColor.java, source/org/jfree/chart/ChartFactory.java, source/org/jfree/chart/ChartFrame.java, source/org/jfree/chart/ChartMouseEvent.java, source/org/jfree/chart/ChartMouseListener.java, source/org/jfree/chart/ChartPanel.java, source/org/jfree/chart/ChartRenderingInfo.java, source/org/jfree/chart/ChartTheme.java, source/org/jfree/chart/ChartTransferable.java, source/org/jfree/chart/ChartUtilities.java, source/org/jfree/chart/ClipPath.java, source/org/jfree/chart/DrawableLegendItem.java, source/org/jfree/chart/Effect3D.java, source/org/jfree/chart/HashUtilities.java, source/org/jfree/chart/JFreeChart.java, source/org/jfree/chart/LegendItem.java, source/org/jfree/chart/LegendItemCollection.java, source/org/jfree/chart/LegendItemSource.java, source/org/jfree/chart/LegendRenderingOrder.java, source/org/jfree/chart/MouseWheelHandler.java, source/org/jfree/chart/PaintMap.java, source/org/jfree/chart/PolarChartPanel.java, source/org/jfree/chart/StandardChartTheme.java, source/org/jfree/chart/StrokeMap.java, source/org/jfree/chart/annotations/AbstractAnnotation.java, source/org/jfree/chart/annotations/AbstractXYAnnotation.java, source/org/jfree/chart/annotations/Annotation.java, source/org/jfree/chart/annotations/CategoryAnnotation.java, source/org/jfree/chart/annotations/CategoryLineAnnotation.java, source/org/jfree/chart/annotations/CategoryPointerAnnotation.java, source/org/jfree/chart/annotations/CategoryTextAnnotation.java, source/org/jfree/chart/annotations/TextAnnotation.java, source/org/jfree/chart/annotations/XYAnnotation.java, source/org/jfree/chart/annotations/XYAnnotationBoundsInfo.java, source/org/jfree/chart/annotations/XYBoxAnnotation.java, source/org/jfree/chart/annotations/XYDataImageAnnotation.java, source/org/jfree/chart/annotations/XYDrawableAnnotation.java, source/org/jfree/chart/annotations/XYImageAnnotation.java, source/org/jfree/chart/annotations/XYLineAnnotation.java, source/org/jfree/chart/annotations/XYPointerAnnotation.java, source/org/jfree/chart/annotations/XYPolygonAnnotation.java, source/org/jfree/chart/annotations/XYShapeAnnotation.java, source/org/jfree/chart/annotations/XYTextAnnotation.java, source/org/jfree/chart/annotations/XYTitleAnnotation.java, source/org/jfree/chart/axis/Axis.java, source/org/jfree/chart/axis/AxisCollection.java, source/org/jfree/chart/axis/AxisLocation.java, source/org/jfree/chart/axis/AxisSpace.java, source/org/jfree/chart/axis/AxisState.java, source/org/jfree/chart/axis/CategoryAnchor.java, source/org/jfree/chart/axis/CategoryAxis.java, source/org/jfree/chart/axis/CategoryAxis3D.java, source/org/jfree/chart/axis/CategoryLabelPosition.java, source/org/jfree/chart/axis/CategoryLabelPositions.java, source/org/jfree/chart/axis/CategoryLabelWidthType.java, source/org/jfree/chart/axis/CategoryTick.java, source/org/jfree/chart/axis/ColorBar.java, source/org/jfree/chart/axis/CompassFormat.java, source/org/jfree/chart/axis/CyclicNumberAxis.java, source/org/jfree/chart/axis/DateAxis.java, source/org/jfree/chart/axis/DateTick.java, source/org/jfree/chart/axis/DateTickMarkPosition.java, source/org/jfree/chart/axis/DateTickUnit.java, source/org/jfree/chart/axis/DateTickUnitType.java, source/org/jfree/chart/axis/ExtendedCategoryAxis.java, source/org/jfree/chart/axis/LogAxis.java, source/org/jfree/chart/axis/LogarithmicAxis.java, source/org/jfree/chart/axis/MarkerAxisBand.java, source/org/jfree/chart/axis/ModuloAxis.java, source/org/jfree/chart/axis/MonthDateFormat.java, source/org/jfree/chart/axis/NumberAxis.java, source/org/jfree/chart/axis/NumberAxis3D.java, source/org/jfree/chart/axis/NumberTick.java, source/org/jfree/chart/axis/NumberTickUnit.java, source/org/jfree/chart/axis/PeriodAxis.java, source/org/jfree/chart/axis/PeriodAxisLabelInfo.java, source/org/jfree/chart/axis/QuarterDateFormat.java, source/org/jfree/chart/axis/SegmentedTimeline.java, source/org/jfree/chart/axis/StandardTickUnitSource.java, source/org/jfree/chart/axis/SubCategoryAxis.java, source/org/jfree/chart/axis/SymbolAxis.java, source/org/jfree/chart/axis/Tick.java, source/org/jfree/chart/axis/TickType.java, source/org/jfree/chart/axis/TickUnit.java, source/org/jfree/chart/axis/TickUnitSource.java, source/org/jfree/chart/axis/TickUnits.java, source/org/jfree/chart/axis/Timeline.java, source/org/jfree/chart/axis/ValueAxis.java, source/org/jfree/chart/axis/ValueTick.java, source/org/jfree/chart/block/AbstractBlock.java, source/org/jfree/chart/block/Arrangement.java, source/org/jfree/chart/block/Block.java, source/org/jfree/chart/block/BlockBorder.java, source/org/jfree/chart/block/BlockContainer.java, source/org/jfree/chart/block/BlockFrame.java, source/org/jfree/chart/block/BlockParams.java, source/org/jfree/chart/block/BlockResult.java, source/org/jfree/chart/block/BorderArrangement.java, source/org/jfree/chart/block/CenterArrangement.java, source/org/jfree/chart/block/ColorBlock.java, source/org/jfree/chart/block/ColumnArrangement.java, source/org/jfree/chart/block/EmptyBlock.java, source/org/jfree/chart/block/EntityBlockParams.java, source/org/jfree/chart/block/EntityBlockResult.java, source/org/jfree/chart/block/FlowArrangement.java, source/org/jfree/chart/block/GridArrangement.java, source/org/jfree/chart/block/LabelBlock.java, source/org/jfree/chart/block/LengthConstraintType.java, source/org/jfree/chart/block/LineBorder.java, source/org/jfree/chart/block/RectangleConstraint.java, source/org/jfree/chart/demo/BarChartDemo1.java, source/org/jfree/chart/demo/PieChartDemo1.java, source/org/jfree/chart/demo/TimeSeriesChartDemo1.java, source/org/jfree/chart/editor/ChartEditor.java, source/org/jfree/chart/editor/ChartEditorFactory.java, source/org/jfree/chart/editor/ChartEditorManager.java, source/org/jfree/chart/editor/DefaultAxisEditor.java, source/org/jfree/chart/editor/DefaultChartEditor.java, source/org/jfree/chart/editor/DefaultChartEditorFactory.java, source/org/jfree/chart/editor/DefaultColorBarEditor.java, source/org/jfree/chart/editor/DefaultLogAxisEditor.java, source/org/jfree/chart/editor/DefaultNumberAxisEditor.java, source/org/jfree/chart/editor/DefaultPlotEditor.java, source/org/jfree/chart/editor/DefaultPolarPlotEditor.java, source/org/jfree/chart/editor/DefaultTitleEditor.java, source/org/jfree/chart/editor/DefaultValueAxisEditor.java, source/org/jfree/chart/editor/PaletteChooserPanel.java, source/org/jfree/chart/editor/PaletteSample.java, source/org/jfree/chart/encoders/EncoderUtil.java, source/org/jfree/chart/encoders/ImageEncoder.java, source/org/jfree/chart/encoders/ImageEncoderFactory.java, source/org/jfree/chart/encoders/ImageFormat.java, source/org/jfree/chart/encoders/KeypointPNGEncoderAdapter.java, source/org/jfree/chart/encoders/SunJPEGEncoderAdapter.java, source/org/jfree/chart/encoders/SunPNGEncoderAdapter.java, source/org/jfree/chart/entity/AxisEntity.java, source/org/jfree/chart/entity/CategoryItemEntity.java, source/org/jfree/chart/entity/CategoryLabelEntity.java, source/org/jfree/chart/entity/ChartEntity.java, source/org/jfree/chart/entity/ContourEntity.java, source/org/jfree/chart/entity/EntityCollection.java, source/org/jfree/chart/entity/JFreeChartEntity.java, source/org/jfree/chart/entity/LegendItemEntity.java, source/org/jfree/chart/entity/PieSectionEntity.java, source/org/jfree/chart/entity/PlotEntity.java, source/org/jfree/chart/entity/StandardEntityCollection.java, source/org/jfree/chart/entity/TickLabelEntity.java, source/org/jfree/chart/entity/TitleEntity.java, source/org/jfree/chart/entity/XYAnnotationEntity.java, source/org/jfree/chart/entity/XYItemEntity.java, source/org/jfree/chart/event/AnnotationChangeEvent.java, source/org/jfree/chart/event/AnnotationChangeListener.java, source/org/jfree/chart/event/AxisChangeEvent.java, source/org/jfree/chart/event/AxisChangeListener.java, source/org/jfree/chart/event/ChartChangeEvent.java, source/org/jfree/chart/event/ChartChangeEventType.java, source/org/jfree/chart/event/ChartChangeListener.java, source/org/jfree/chart/event/ChartProgressEvent.java, source/org/jfree/chart/event/ChartProgressListener.java, source/org/jfree/chart/event/MarkerChangeEvent.java, source/org/jfree/chart/event/MarkerChangeListener.java, source/org/jfree/chart/event/OverlayChangeEvent.java, source/org/jfree/chart/event/OverlayChangeListener.java, source/org/jfree/chart/event/PlotChangeEvent.java, source/org/jfree/chart/event/PlotChangeListener.java, source/org/jfree/chart/event/RendererChangeEvent.java, source/org/jfree/chart/event/RendererChangeListener.java, source/org/jfree/chart/event/TitleChangeEvent.java, source/org/jfree/chart/event/TitleChangeListener.java, source/org/jfree/chart/imagemap/DynamicDriveToolTipTagFragmentGenerator.java, source/org/jfree/chart/imagemap/ImageMapUtilities.java, source/org/jfree/chart/imagemap/OverLIBToolTipTagFragmentGenerator.java, source/org/jfree/chart/imagemap/StandardToolTipTagFragmentGenerator.java, source/org/jfree/chart/imagemap/StandardURLTagFragmentGenerator.java, source/org/jfree/chart/imagemap/ToolTipTagFragmentGenerator.java, source/org/jfree/chart/imagemap/URLTagFragmentGenerator.java, source/org/jfree/chart/labels/AbstractCategoryItemLabelGenerator.java, source/org/jfree/chart/labels/AbstractPieItemLabelGenerator.java, source/org/jfree/chart/labels/AbstractXYItemLabelGenerator.java, source/org/jfree/chart/labels/BoxAndWhiskerToolTipGenerator.java, source/org/jfree/chart/labels/BoxAndWhiskerXYToolTipGenerator.java, source/org/jfree/chart/labels/BubbleXYItemLabelGenerator.java, source/org/jfree/chart/labels/CategoryItemLabelGenerator.java, source/org/jfree/chart/labels/CategorySeriesLabelGenerator.java, source/org/jfree/chart/labels/CategoryToolTipGenerator.java, source/org/jfree/chart/labels/ContourToolTipGenerator.java, source/org/jfree/chart/labels/CrosshairLabelGenerator.java, source/org/jfree/chart/labels/CustomXYToolTipGenerator.java, source/org/jfree/chart/labels/HighLowItemLabelGenerator.java, source/org/jfree/chart/labels/IntervalCategoryItemLabelGenerator.java, source/org/jfree/chart/labels/IntervalCategoryToolTipGenerator.java, source/org/jfree/chart/labels/IntervalXYItemLabelGenerator.java, source/org/jfree/chart/labels/ItemLabelAnchor.java, source/org/jfree/chart/labels/ItemLabelPosition.java, source/org/jfree/chart/labels/MultipleXYSeriesLabelGenerator.java, source/org/jfree/chart/labels/PieSectionLabelGenerator.java, source/org/jfree/chart/labels/PieToolTipGenerator.java, source/org/jfree/chart/labels/StandardCategoryItemLabelGenerator.java, source/org/jfree/chart/labels/StandardCategorySeriesLabelGenerator.java, source/org/jfree/chart/labels/StandardCategoryToolTipGenerator.java, source/org/jfree/chart/labels/StandardContourToolTipGenerator.java, source/org/jfree/chart/labels/StandardCrosshairLabelGenerator.java, source/org/jfree/chart/labels/StandardPieSectionLabelGenerator.java, source/org/jfree/chart/labels/StandardPieToolTipGenerator.java, source/org/jfree/chart/labels/StandardXYItemLabelGenerator.java, source/org/jfree/chart/labels/StandardXYSeriesLabelGenerator.java, source/org/jfree/chart/labels/StandardXYToolTipGenerator.java, source/org/jfree/chart/labels/StandardXYZToolTipGenerator.java, source/org/jfree/chart/labels/SymbolicXYItemLabelGenerator.java, source/org/jfree/chart/labels/XYItemLabelGenerator.java, source/org/jfree/chart/labels/XYSeriesLabelGenerator.java, source/org/jfree/chart/labels/XYToolTipGenerator.java, source/org/jfree/chart/labels/XYZToolTipGenerator.java, source/org/jfree/chart/needle/ArrowNeedle.java, source/org/jfree/chart/needle/LineNeedle.java, source/org/jfree/chart/needle/LongNeedle.java, source/org/jfree/chart/needle/MeterNeedle.java, source/org/jfree/chart/needle/MiddlePinNeedle.java, source/org/jfree/chart/needle/PinNeedle.java, source/org/jfree/chart/needle/PlumNeedle.java, source/org/jfree/chart/needle/PointerNeedle.java, source/org/jfree/chart/needle/ShipNeedle.java, source/org/jfree/chart/needle/WindNeedle.java, source/org/jfree/chart/panel/AbstractOverlay.java, source/org/jfree/chart/panel/CrosshairOverlay.java, source/org/jfree/chart/panel/Overlay.java, source/org/jfree/chart/plot/AbstractPieLabelDistributor.java, source/org/jfree/chart/plot/CategoryCrosshairState.java, source/org/jfree/chart/plot/CategoryMarker.java, source/org/jfree/chart/plot/CategoryPlot.java, source/org/jfree/chart/plot/ColorPalette.java, source/org/jfree/chart/plot/CombinedDomainCategoryPlot.java, source/org/jfree/chart/plot/CombinedDomainXYPlot.java, source/org/jfree/chart/plot/CombinedRangeCategoryPlot.java, source/org/jfree/chart/plot/CombinedRangeXYPlot.java, source/org/jfree/chart/plot/CompassPlot.java, source/org/jfree/chart/plot/ContourPlot.java, source/org/jfree/chart/plot/ContourPlotUtilities.java, source/org/jfree/chart/plot/ContourValuePlot.java, source/org/jfree/chart/plot/Crosshair.java, source/org/jfree/chart/plot/CrosshairState.java, source/org/jfree/chart/plot/DatasetRenderingOrder.java, source/org/jfree/chart/plot/DefaultDrawingSupplier.java, source/org/jfree/chart/plot/DialShape.java, source/org/jfree/chart/plot/DrawingSupplier.java, source/org/jfree/chart/plot/FastScatterPlot.java, source/org/jfree/chart/plot/GreyPalette.java, source/org/jfree/chart/plot/IntervalMarker.java, source/org/jfree/chart/plot/JThermometer.java, source/org/jfree/chart/plot/Marker.java, source/org/jfree/chart/plot/MeterInterval.java, source/org/jfree/chart/plot/MeterPlot.java, source/org/jfree/chart/plot/MultiplePiePlot.java, source/org/jfree/chart/plot/Pannable.java, source/org/jfree/chart/plot/PieLabelDistributor.java, source/org/jfree/chart/plot/PieLabelLinkStyle.java, source/org/jfree/chart/plot/PieLabelRecord.java, source/org/jfree/chart/plot/PiePlot.java, source/org/jfree/chart/plot/PiePlot3D.java, source/org/jfree/chart/plot/PiePlotState.java, source/org/jfree/chart/plot/Plot.java, source/org/jfree/chart/plot/PlotOrientation.java, source/org/jfree/chart/plot/PlotRenderingInfo.java, source/org/jfree/chart/plot/PlotState.java, source/org/jfree/chart/plot/PlotUtilities.java, source/org/jfree/chart/plot/PolarAxisLocation.java, source/org/jfree/chart/plot/PolarPlot.java, source/org/jfree/chart/plot/RainbowPalette.java, source/org/jfree/chart/plot/RingPlot.java, source/org/jfree/chart/plot/SeriesRenderingOrder.java, source/org/jfree/chart/plot/SpiderWebPlot.java, source/org/jfree/chart/plot/ThermometerPlot.java, source/org/jfree/chart/plot/ValueAxisPlot.java, source/org/jfree/chart/plot/ValueMarker.java, source/org/jfree/chart/plot/WaferMapPlot.java, source/org/jfree/chart/plot/XYCrosshairState.java, source/org/jfree/chart/plot/XYPlot.java, source/org/jfree/chart/plot/Zoomable.java, source/org/jfree/chart/plot/dial/AbstractDialLayer.java, source/org/jfree/chart/plot/dial/ArcDialFrame.java, source/org/jfree/chart/plot/dial/DialBackground.java, source/org/jfree/chart/plot/dial/DialCap.java, source/org/jfree/chart/plot/dial/DialFrame.java, source/org/jfree/chart/plot/dial/DialLayer.java, source/org/jfree/chart/plot/dial/DialLayerChangeEvent.java, source/org/jfree/chart/plot/dial/DialLayerChangeListener.java, source/org/jfree/chart/plot/dial/DialPlot.java, source/org/jfree/chart/plot/dial/DialPointer.java, source/org/jfree/chart/plot/dial/DialScale.java, source/org/jfree/chart/plot/dial/DialTextAnnotation.java, source/org/jfree/chart/plot/dial/DialValueIndicator.java, source/org/jfree/chart/plot/dial/StandardDialFrame.java, source/org/jfree/chart/plot/dial/StandardDialRange.java, source/org/jfree/chart/plot/dial/StandardDialScale.java, source/org/jfree/chart/renderer/AbstractRenderer.java, source/org/jfree/chart/renderer/AreaRendererEndType.java, source/org/jfree/chart/renderer/DefaultPolarItemRenderer.java, source/org/jfree/chart/renderer/GrayPaintScale.java, source/org/jfree/chart/renderer/LookupPaintScale.java, source/org/jfree/chart/renderer/NotOutlierException.java, source/org/jfree/chart/renderer/Outlier.java, source/org/jfree/chart/renderer/OutlierList.java, source/org/jfree/chart/renderer/OutlierListCollection.java, source/org/jfree/chart/renderer/PaintScale.java, source/org/jfree/chart/renderer/PolarItemRenderer.java, source/org/jfree/chart/renderer/RendererState.java, source/org/jfree/chart/renderer/RendererUtilities.java, source/org/jfree/chart/renderer/WaferMapRenderer.java, source/org/jfree/chart/renderer/category/AbstractCategoryItemRenderer.java, source/org/jfree/chart/renderer/category/AreaRenderer.java, source/org/jfree/chart/renderer/category/BarPainter.java, source/org/jfree/chart/renderer/category/BarRenderer.java, source/org/jfree/chart/renderer/category/BarRenderer3D.java, source/org/jfree/chart/renderer/category/BoxAndWhiskerRenderer.java, source/org/jfree/chart/renderer/category/CategoryItemRenderer.java, source/org/jfree/chart/renderer/category/CategoryItemRendererState.java, source/org/jfree/chart/renderer/category/CategoryStepRenderer.java, source/org/jfree/chart/renderer/category/DefaultCategoryItemRenderer.java, source/org/jfree/chart/renderer/category/GanttRenderer.java, source/org/jfree/chart/renderer/category/GradientBarPainter.java, source/org/jfree/chart/renderer/category/GroupedStackedBarRenderer.java, source/org/jfree/chart/renderer/category/IntervalBarRenderer.java, source/org/jfree/chart/renderer/category/LayeredBarRenderer.java, source/org/jfree/chart/renderer/category/LevelRenderer.java, source/org/jfree/chart/renderer/category/LineAndShapeRenderer.java, source/org/jfree/chart/renderer/category/LineRenderer3D.java, source/org/jfree/chart/renderer/category/MinMaxCategoryRenderer.java, source/org/jfree/chart/renderer/category/ScatterRenderer.java, source/org/jfree/chart/renderer/category/StackedAreaRenderer.java, source/org/jfree/chart/renderer/category/StackedBarRenderer.java, source/org/jfree/chart/renderer/category/StackedBarRenderer3D.java, source/org/jfree/chart/renderer/category/StandardBarPainter.java, source/org/jfree/chart/renderer/category/StatisticalBarRenderer.java, source/org/jfree/chart/renderer/category/StatisticalLineAndShapeRenderer.java, source/org/jfree/chart/renderer/category/WaterfallBarRenderer.java, source/org/jfree/chart/renderer/xy/AbstractXYItemRenderer.java, source/org/jfree/chart/renderer/xy/CandlestickRenderer.java, source/org/jfree/chart/renderer/xy/ClusteredXYBarRenderer.java, source/org/jfree/chart/renderer/xy/CyclicXYItemRenderer.java, source/org/jfree/chart/renderer/xy/DefaultXYItemRenderer.java, source/org/jfree/chart/renderer/xy/DeviationRenderer.java, source/org/jfree/chart/renderer/xy/GradientXYBarPainter.java, source/org/jfree/chart/renderer/xy/HighLowRenderer.java, source/org/jfree/chart/renderer/xy/SamplingXYLineRenderer.java, source/org/jfree/chart/renderer/xy/StackedXYAreaRenderer.java, source/org/jfree/chart/renderer/xy/StackedXYAreaRenderer2.java, source/org/jfree/chart/renderer/xy/StackedXYBarRenderer.java, source/org/jfree/chart/renderer/xy/StandardXYBarPainter.java, source/org/jfree/chart/renderer/xy/StandardXYItemRenderer.java, source/org/jfree/chart/renderer/xy/VectorRenderer.java, source/org/jfree/chart/renderer/xy/WindItemRenderer.java, source/org/jfree/chart/renderer/xy/XYAreaRenderer.java, source/org/jfree/chart/renderer/xy/XYAreaRenderer2.java, source/org/jfree/chart/renderer/xy/XYBarPainter.java, source/org/jfree/chart/renderer/xy/XYBarRenderer.java, source/org/jfree/chart/renderer/xy/XYBlockRenderer.java, source/org/jfree/chart/renderer/xy/XYBoxAndWhiskerRenderer.java, source/org/jfree/chart/renderer/xy/XYBubbleRenderer.java, source/org/jfree/chart/renderer/xy/XYDifferenceRenderer.java, source/org/jfree/chart/renderer/xy/XYDotRenderer.java, source/org/jfree/chart/renderer/xy/XYErrorRenderer.java, source/org/jfree/chart/renderer/xy/XYItemRenderer.java, source/org/jfree/chart/renderer/xy/XYItemRendererState.java, source/org/jfree/chart/renderer/xy/XYLine3DRenderer.java, source/org/jfree/chart/renderer/xy/XYLineAndShapeRenderer.java, source/org/jfree/chart/renderer/xy/XYShapeRenderer.java, source/org/jfree/chart/renderer/xy/XYSplineRenderer.java, source/org/jfree/chart/renderer/xy/XYStepAreaRenderer.java, source/org/jfree/chart/renderer/xy/XYStepRenderer.java, source/org/jfree/chart/renderer/xy/YIntervalRenderer.java, source/org/jfree/chart/resources/JFreeChartResources.java, source/org/jfree/chart/servlet/ChartDeleter.java, source/org/jfree/chart/servlet/DisplayChart.java, source/org/jfree/chart/servlet/ServletUtilities.java, source/org/jfree/chart/title/CompositeTitle.java, source/org/jfree/chart/title/DateTitle.java, source/org/jfree/chart/title/ImageTitle.java, source/org/jfree/chart/title/LegendGraphic.java, source/org/jfree/chart/title/LegendItemBlockContainer.java, source/org/jfree/chart/title/LegendTitle.java, source/org/jfree/chart/title/PaintScaleLegend.java, source/org/jfree/chart/title/ShortTextTitle.java, source/org/jfree/chart/title/TextTitle.java, source/org/jfree/chart/title/Title.java, source/org/jfree/chart/urls/CategoryURLGenerator.java, source/org/jfree/chart/urls/CustomCategoryURLGenerator.java, source/org/jfree/chart/urls/CustomPieURLGenerator.java, source/org/jfree/chart/urls/CustomXYURLGenerator.java, source/org/jfree/chart/urls/PieURLGenerator.java, source/org/jfree/chart/urls/StandardCategoryURLGenerator.java, source/org/jfree/chart/urls/StandardPieURLGenerator.java, source/org/jfree/chart/urls/StandardXYURLGenerator.java, source/org/jfree/chart/urls/StandardXYZURLGenerator.java, source/org/jfree/chart/urls/TimeSeriesURLGenerator.java, source/org/jfree/chart/urls/URLUtilities.java, source/org/jfree/chart/urls/XYURLGenerator.java, source/org/jfree/chart/urls/XYZURLGenerator.java, source/org/jfree/chart/util/DefaultShadowGenerator.java, source/org/jfree/chart/util/HexNumberFormat.java, source/org/jfree/chart/util/LineUtilities.java, source/org/jfree/chart/util/LogFormat.java, source/org/jfree/chart/util/ParamChecks.java, source/org/jfree/chart/util/RelativeDateFormat.java, source/org/jfree/chart/util/ResourceBundleWrapper.java, source/org/jfree/chart/util/ShadowGenerator.java, source/org/jfree/chart/util/XYCoordinateType.java, source/org/jfree/data/ComparableObjectItem.java, source/org/jfree/data/ComparableObjectSeries.java, source/org/jfree/data/DataUtilities.java, source/org/jfree/data/DefaultKeyedValue.java, source/org/jfree/data/DefaultKeyedValues.java, source/org/jfree/data/DefaultKeyedValues2D.java, source/org/jfree/data/DomainInfo.java, source/org/jfree/data/DomainOrder.java, source/org/jfree/data/KeyToGroupMap.java, source/org/jfree/data/KeyedObject.java, source/org/jfree/data/KeyedObjects.java, source/org/jfree/data/KeyedObjects2D.java, source/org/jfree/data/KeyedValue.java, source/org/jfree/data/KeyedValueComparator.java, source/org/jfree/data/KeyedValueComparatorType.java, source/org/jfree/data/KeyedValues.java, source/org/jfree/data/KeyedValues2D.java, source/org/jfree/data/Range.java, source/org/jfree/data/RangeInfo.java, source/org/jfree/data/RangeType.java, source/org/jfree/data/UnknownKeyException.java, source/org/jfree/data/Value.java, source/org/jfree/data/Values.java, source/org/jfree/data/Values2D.java, source/org/jfree/data/category/CategoryDataset.java, source/org/jfree/data/category/CategoryRangeInfo.java, source/org/jfree/data/category/CategoryToPieDataset.java, source/org/jfree/data/category/DefaultCategoryDataset.java, source/org/jfree/data/category/DefaultIntervalCategoryDataset.java, source/org/jfree/data/category/IntervalCategoryDataset.java, source/org/jfree/data/category/SlidingCategoryDataset.java, source/org/jfree/data/contour/ContourDataset.java, source/org/jfree/data/contour/DefaultContourDataset.java, source/org/jfree/data/contour/NonGridContourDataset.java, source/org/jfree/data/function/Function2D.java, source/org/jfree/data/function/LineFunction2D.java, source/org/jfree/data/function/NormalDistributionFunction2D.java, source/org/jfree/data/function/PolynomialFunction2D.java, source/org/jfree/data/function/PowerFunction2D.java, source/org/jfree/data/gantt/GanttCategoryDataset.java, source/org/jfree/data/gantt/SlidingGanttCategoryDataset.java, source/org/jfree/data/gantt/Task.java, source/org/jfree/data/gantt/TaskSeries.java, source/org/jfree/data/gantt/TaskSeriesCollection.java, source/org/jfree/data/gantt/XYTaskDataset.java, source/org/jfree/data/general/AbstractDataset.java, source/org/jfree/data/general/AbstractSeriesDataset.java, source/org/jfree/data/general/CombinationDataset.java, source/org/jfree/data/general/CombinedDataset.java, source/org/jfree/data/general/Dataset.java, source/org/jfree/data/general/DatasetChangeEvent.java, source/org/jfree/data/general/DatasetChangeListener.java, source/org/jfree/data/general/DatasetGroup.java, source/org/jfree/data/general/DatasetUtilities.java, source/org/jfree/data/general/DefaultHeatMapDataset.java, source/org/jfree/data/general/DefaultKeyedValueDataset.java, source/org/jfree/data/general/DefaultKeyedValues2DDataset.java, source/org/jfree/data/general/DefaultKeyedValuesDataset.java, source/org/jfree/data/general/DefaultPieDataset.java, source/org/jfree/data/general/DefaultValueDataset.java, source/org/jfree/data/general/HeatMapDataset.java, source/org/jfree/data/general/HeatMapUtilities.java, source/org/jfree/data/general/KeyedValueDataset.java, source/org/jfree/data/general/KeyedValues2DDataset.java, source/org/jfree/data/general/KeyedValuesDataset.java, source/org/jfree/data/general/PieDataset.java, source/org/jfree/data/general/Series.java, source/org/jfree/data/general/SeriesChangeEvent.java, source/org/jfree/data/general/SeriesChangeListener.java, source/org/jfree/data/general/SeriesDataset.java, source/org/jfree/data/general/SeriesException.java, source/org/jfree/data/general/SubSeriesDataset.java, source/org/jfree/data/general/ValueDataset.java, source/org/jfree/data/general/WaferMapDataset.java, source/org/jfree/data/io/CSV.java, source/org/jfree/data/jdbc/JDBCCategoryDataset.java, source/org/jfree/data/jdbc/JDBCPieDataset.java, source/org/jfree/data/jdbc/JDBCXYDataset.java, source/org/jfree/data/resources/DataPackageResources.java, source/org/jfree/data/resources/DataPackageResources_de.java, source/org/jfree/data/resources/DataPackageResources_es.java, source/org/jfree/data/resources/DataPackageResources_fr.java, source/org/jfree/data/resources/DataPackageResources_pl.java, source/org/jfree/data/resources/DataPackageResources_ru.java, source/org/jfree/data/statistics/BoxAndWhiskerCalculator.java, source/org/jfree/data/statistics/BoxAndWhiskerCategoryDataset.java, source/org/jfree/data/statistics/BoxAndWhiskerItem.java, source/org/jfree/data/statistics/BoxAndWhiskerXYDataset.java, source/org/jfree/data/statistics/DefaultBoxAndWhiskerCategoryDataset.java, source/org/jfree/data/statistics/DefaultBoxAndWhiskerXYDataset.java, source/org/jfree/data/statistics/DefaultMultiValueCategoryDataset.java, source/org/jfree/data/statistics/DefaultStatisticalCategoryDataset.java, source/org/jfree/data/statistics/HistogramBin.java, source/org/jfree/data/statistics/HistogramDataset.java, source/org/jfree/data/statistics/HistogramType.java, source/org/jfree/data/statistics/MeanAndStandardDeviation.java, source/org/jfree/data/statistics/MultiValueCategoryDataset.java, source/org/jfree/data/statistics/Regression.java, source/org/jfree/data/statistics/SimpleHistogramBin.java, source/org/jfree/data/statistics/SimpleHistogramDataset.java, source/org/jfree/data/statistics/StatisticalCategoryDataset.java, source/org/jfree/data/statistics/Statistics.java, source/org/jfree/data/time/DateRange.java, source/org/jfree/data/time/Day.java, source/org/jfree/data/time/DynamicTimeSeriesCollection.java, source/org/jfree/data/time/FixedMillisecond.java, source/org/jfree/data/time/Hour.java, source/org/jfree/data/time/Millisecond.java, source/org/jfree/data/time/Minute.java, source/org/jfree/data/time/Month.java, source/org/jfree/data/time/MovingAverage.java, source/org/jfree/data/time/Quarter.java, source/org/jfree/data/time/RegularTimePeriod.java, source/org/jfree/data/time/Second.java, source/org/jfree/data/time/SimpleTimePeriod.java, source/org/jfree/data/time/TimePeriod.java, source/org/jfree/data/time/TimePeriodAnchor.java, source/org/jfree/data/time/TimePeriodFormatException.java, source/org/jfree/data/time/TimePeriodValue.java, source/org/jfree/data/time/TimePeriodValues.java, source/org/jfree/data/time/TimePeriodValuesCollection.java, source/org/jfree/data/time/TimeSeries.java, source/org/jfree/data/time/TimeSeriesCollection.java, source/org/jfree/data/time/TimeSeriesDataItem.java, source/org/jfree/data/time/TimeSeriesTableModel.java, source/org/jfree/data/time/TimeTableXYDataset.java, source/org/jfree/data/time/Week.java, source/org/jfree/data/time/Year.java, source/org/jfree/data/time/ohlc/OHLC.java, source/org/jfree/data/time/ohlc/OHLCItem.java, source/org/jfree/data/time/ohlc/OHLCSeries.java, source/org/jfree/data/time/ohlc/OHLCSeriesCollection.java, source/org/jfree/data/xml/CategoryDatasetHandler.java, source/org/jfree/data/xml/CategorySeriesHandler.java, source/org/jfree/data/xml/DatasetReader.java, source/org/jfree/data/xml/DatasetTags.java, source/org/jfree/data/xml/ItemHandler.java, source/org/jfree/data/xml/KeyHandler.java, source/org/jfree/data/xml/PieDatasetHandler.java, source/org/jfree/data/xml/RootHandler.java, source/org/jfree/data/xml/ValueHandler.java, source/org/jfree/data/xy/AbstractIntervalXYDataset.java, source/org/jfree/data/xy/AbstractXYDataset.java, source/org/jfree/data/xy/AbstractXYZDataset.java, source/org/jfree/data/xy/CategoryTableXYDataset.java, source/org/jfree/data/xy/DefaultHighLowDataset.java, source/org/jfree/data/xy/DefaultIntervalXYDataset.java, source/org/jfree/data/xy/DefaultOHLCDataset.java, source/org/jfree/data/xy/DefaultTableXYDataset.java, source/org/jfree/data/xy/DefaultWindDataset.java, source/org/jfree/data/xy/DefaultXYDataset.java, source/org/jfree/data/xy/DefaultXYZDataset.java, source/org/jfree/data/xy/IntervalXYDataset.java, source/org/jfree/data/xy/IntervalXYDelegate.java, source/org/jfree/data/xy/IntervalXYZDataset.java, source/org/jfree/data/xy/MatrixSeries.java, source/org/jfree/data/xy/MatrixSeriesCollection.java, source/org/jfree/data/xy/NormalizedMatrixSeries.java, source/org/jfree/data/xy/OHLCDataItem.java, source/org/jfree/data/xy/OHLCDataset.java, source/org/jfree/data/xy/TableXYDataset.java, source/org/jfree/data/xy/Vector.java, source/org/jfree/data/xy/VectorDataItem.java, source/org/jfree/data/xy/VectorSeries.java, source/org/jfree/data/xy/VectorSeriesCollection.java, source/org/jfree/data/xy/VectorXYDataset.java, source/org/jfree/data/xy/WindDataset.java, source/org/jfree/data/xy/XIntervalDataItem.java, source/org/jfree/data/xy/XIntervalSeries.java, source/org/jfree/data/xy/XIntervalSeriesCollection.java, source/org/jfree/data/xy/XYBarDataset.java, source/org/jfree/data/xy/XYCoordinate.java, source/org/jfree/data/xy/XYDataItem.java, source/org/jfree/data/xy/XYDataset.java, source/org/jfree/data/xy/XYDatasetTableModel.java, source/org/jfree/data/xy/XYDomainInfo.java, source/org/jfree/data/xy/XYInterval.java, source/org/jfree/data/xy/XYIntervalDataItem.java, source/org/jfree/data/xy/XYIntervalSeries.java, source/org/jfree/data/xy/XYIntervalSeriesCollection.java, source/org/jfree/data/xy/XYRangeInfo.java, source/org/jfree/data/xy/XYSeries.java, source/org/jfree/data/xy/XYSeriesCollection.java, source/org/jfree/data/xy/XYZDataset.java, source/org/jfree/data/xy/XisSymbolic.java, source/org/jfree/data/xy/YInterval.java, source/org/jfree/data/xy/YIntervalDataItem.java, source/org/jfree/data/xy/YIntervalSeries.java, source/org/jfree/data/xy/YIntervalSeriesCollection.java, source/org/jfree/data/xy/YWithXInterval.java, source/org/jfree/data/xy/YisSymbolic.java, compiled by JDK 21 with --release 8 -encoding ISO-8859-1 -g -parameters",
+            "parameters": {
+              "names": [
+                "visibleSeriesKeys",
+                "xRange",
+                "includeInterval"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "rangegrid.Projection#upper(I)I",
+          "mapping": "For the fifteen nonempty pairs of series choices (empty, -1, 0, 1), code chooses the two-key order. Only year 2012 in UTC is populated. The horizontal interval spans the full year and includeInterval is false. An absent result and NaN are distinct from any finite bound.",
+          "correspondence": "finite-oracle",
+          "cases": 30
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "parent": [
+          {
+            "path": "adapter-parent.jar",
+            "sha256": "c705a93a4b9acba9688a88fe0b956d37a3179af6b1259578a936bf653232dd86",
+            "role": "adapter"
+          },
+          {
+            "path": "slice/parent.jar",
+            "sha256": "3fe30a535cc14d3c1d7667e36b7deb0a6753d72ebedd9dc670ead2f0d7d9ed9c",
+            "role": "original"
+          },
+          {
+            "path": "lib/org.jfree/jcommon-1.0.17.jar",
+            "sha256": "90a5f9ceaed977edfe8f514dcb15ddf5001cf9111a8fcd87b7cd8b0bb6231acc",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/javax.servlet/servlet-api-2.5.jar",
+            "sha256": "c658ea360a70faeeadb66fb3c90a702e4142a0ab7768f9ae9828678e0d9ad4dc",
+            "role": "dependency"
+          },
+          {
+            "path": "lib/com.lowagie/itext-2.1.5.jar",
+            "sha256": "40bc530593f9173e90aff5cd000c8cb185ebf851f9617b131d43f81989a9ad41",
+            "role": "dependency"
+          }
+        ]
+      },
+      "checkedEntry": "rangegrid.Projection#upper(I)I",
+      "entryBindings": {
+        "parent": {
+          "entry": "rangegrid.Projection#upper(I)I",
+          "classSha256": "5877b246e6e32578bae2dcf53a016e0af318936285b021d8fafe03b22b387aee",
+          "loadedFrom": "adapter-parent.jar",
+          "subject": "org.jfree.data.time.TimeSeriesCollection#getRangeBounds(Ljava/util/List;Lorg/jfree/data/Range;Z)Lorg/jfree/data/Range;",
+          "subjectClassSha256": "6a0d3736c23372efbc1c6a6dd239a0b8672fe5e9eb0ae52fda032be9a597d0f8",
+          "initializerClasses": {
+            "org.jfree.data.time.RegularTimePeriod": "694273cb6b018ab215ec3e2dd0ada8e7250a0786245c2ff844cc1a6366a1babe"
+          }
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "org.jfree.data.time.TimeSeriesCollection#getRangeBounds(Ljava/util/List;Lorg/jfree/data/Range;Z)Lorg/jfree/data/Range;",
+        "checkedEntry": "rangegrid.Projection#upper(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 30 && rangegrid.Projection.populated(code)"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "observedInitializers",
+            "flag": "--observed-initializer",
+            "value": "org.jfree.data.time.RegularTimePeriod"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "30"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "12"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "requiredStatementEvidence": {
+            "jdk": "21.0.13",
+            "assumptions": [
+              {
+                "kind": "library",
+                "text": "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup",
+                "basis": "engine",
+                "id": "observed-calendar:gregorian-utc-ad"
+              }
+            ]
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "observedInitializerStates": {
+          "org.jfree.data.time.RegularTimePeriod": "9f574efa736308120b87112a4f36d040c567a3a996346d80d079b3e87e5e0956"
+        },
+        "correspondence": {
+          "entry": "rangegrid.Projection#upper(I)I",
+          "mapping": "For the fifteen nonempty pairs of series choices (empty, -1, 0, 1), code chooses the two-key order. Only year 2012 in UTC is populated. The horizontal interval spans the full year and includeInterval is false. An absent result and NaN are distinct from any finite bound.",
+          "correspondence": "finite-oracle",
+          "cases": 30
+        }
+      },
+      "commits": {
+        "parent": "f210e33d06f03354fb49b98d2b2282f8c9a89303"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+        "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+        "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "parent": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7e8366148d029322203a901b5bd5e471e3510cda/jvmcontract",
+            "gaps",
+            "--target",
+            "rangegrid.Projection#upper(int)",
+            "--classes",
+            "prepare/parent/adapter-parent.jar",
+            "--classpath",
+            "prepare/parent/slice/parent.jar",
+            "--classpath",
+            "prepare/parent/lib/org.jfree/jcommon-1.0.17.jar",
+            "--classpath",
+            "prepare/parent/lib/javax.servlet/servlet-api-2.5.jar",
+            "--classpath",
+            "prepare/parent/lib/com.lowagie/itext-2.1.5.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.033,
+          "stdout": "verifier/probe-parent.stdout",
+          "stderr": "verifier/probe-parent.stderr",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.lang.StringBuffer.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.StringBuffer.<init>()",
+              "sites": [
+                "org.jfree.data.time.TimeSeries.add:576",
+                "org.jfree.data.time.TimeSeries.add:606"
+              ]
+            },
+            {
+              "id": "jdk-constructor:java.util.Date.<init>(J)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.util.Date.<init>(long)",
+              "sites": [
+                "org.jfree.data.time.RegularTimePeriod.getStart:194"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.lang.CloneNotSupportedException.printStackTrace()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.lang.CloneNotSupportedException.printStackTrace()",
+              "sites": [
+                "org.jfree.data.time.TimeSeriesDataItem.clone:226"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.Calendar.set(II)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.Calendar.set(int, int)",
+              "sites": [
+                "org.jfree.data.time.Year.getFirstMillisecond:269",
+                "org.jfree.data.time.Year.getLastMillisecond:288"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.Calendar.set(IIIIII)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.Calendar.set(int, int, int, int, int, int)",
+              "sites": [
+                "org.jfree.data.time.Year.getFirstMillisecond:268",
+                "org.jfree.data.time.Year.getLastMillisecond:287"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.util.List.add(ILjava/lang/Object;)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.util.List.add(int, java.lang.Object)",
+              "sites": [
+                "org.jfree.data.time.TimeSeries.add:602"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.Object.clone()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Object.clone()",
+              "sites": [
+                "org.jfree.data.time.TimeSeriesDataItem.clone:223"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.StringBuffer.append(Ljava/lang/String;)Ljava/lang/StringBuffer;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.StringBuffer.append(java.lang.String)",
+              "sites": [
+                "org.jfree.data.time.TimeSeries.add:577",
+                "org.jfree.data.time.TimeSeries.add:578",
+                "org.jfree.data.time.TimeSeries.add:579",
+                "org.jfree.data.time.TimeSeries.add:580",
+                "org.jfree.data.time.TimeSeries.add:581",
+                "org.jfree.data.time.TimeSeries.add:582",
+                "org.jfree.data.time.TimeSeries.add:607",
+                "org.jfree.data.time.TimeSeries.add:608",
+                "org.jfree.data.time.TimeSeries.add:609",
+                "org.jfree.data.time.TimeSeries.add:610",
+                "org.jfree.data.time.TimeSeries.add:611",
+                "org.jfree.data.time.TimeSeries.add:612"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.StringBuffer.toString()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.StringBuffer.toString()",
+              "sites": [
+                "org.jfree.data.time.TimeSeries.add:583",
+                "org.jfree.data.time.TimeSeries.add:613"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.StringBuilder.append(D)Ljava/lang/StringBuilder;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.StringBuilder.append(double)",
+              "sites": [
+                "org.jfree.data.Range.<init>:89"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Calendar.getTime()Ljava/util/Date;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Calendar.getTime()",
+              "sites": [
+                "org.jfree.data.time.Year.getFirstMillisecond:272",
+                "org.jfree.data.time.Year.getLastMillisecond:291"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.Iterator.next()Ljava/lang/Object;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.Iterator.next()",
+              "sites": [
+                "org.jfree.data.time.TimeSeries.findBoundsByIteration:1253",
+                "org.jfree.data.time.TimeSeriesCollection.getRangeBounds:678",
+                "org.jfree.data.time.TimeSeriesCollection.getSeries:323"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.util.List.iterator()Ljava/util/Iterator;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.util.List.iterator()",
+              "sites": [
+                "org.jfree.data.time.TimeSeries.findBoundsByIteration:1251",
+                "org.jfree.data.time.TimeSeriesCollection.getRangeBounds:676",
+                "org.jfree.data.time.TimeSeriesCollection.getSeries:321"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Comparable.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Comparable.equals(java.lang.Object)",
+              "sites": [
+                "org.jfree.data.general.Series.equals:279",
+                "org.jfree.data.time.TimeSeriesCollection.getSeries:325"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Object.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Object.equals(java.lang.Object)",
+              "sites": [
+                "org.jfree.data.time.TimeSeries.add:575",
+                "org.jfree.util.ObjectUtilities.equal:132"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Date.getTime()J@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Date.getTime()",
+              "sites": [
+                "org.jfree.data.time.Year.getFirstMillisecond:272",
+                "org.jfree.data.time.Year.getLastMillisecond:291"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.Iterator.hasNext()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.Iterator.hasNext()",
+              "sites": [
+                "org.jfree.data.time.TimeSeries.findBoundsByIteration:1252",
+                "org.jfree.data.time.TimeSeriesCollection.getRangeBounds:677",
+                "org.jfree.data.time.TimeSeriesCollection.getSeries:322"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.add(java.lang.Object)",
+              "sites": [
+                "org.jfree.data.time.TimeSeries.add:590",
+                "org.jfree.data.time.TimeSeries.add:596",
+                "org.jfree.data.time.TimeSeriesCollection.<init>:188",
+                "org.jfree.data.time.TimeSeriesCollection.addSeries:355"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.util.List.size()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.util.List.size()",
+              "sites": [
+                "org.jfree.data.time.TimeSeries.getItemCount:253"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:org.jfree.data.time.RegularTimePeriod.compareTo(Ljava/lang/Object;)I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "org.jfree.data.time.RegularTimePeriod.compareTo(java.lang.Object)",
+              "sites": [
+                "org.jfree.data.time.TimeSeries.add:595"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Integer.toString(I)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Integer.toString(int)",
+              "sites": [
+                "org.jfree.data.time.Year.toString:377"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.String.valueOf(Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.String.valueOf(java.lang.Object)",
+              "sites": [
+                "javax.swing.event.EventListenerList.add:213",
+                "org.jfree.data.time.RegularTimePeriod.toString:348"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Calendar.getInstance()Ljava/util/Calendar;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Calendar.getInstance()",
+              "sites": [
+                "org.jfree.data.time.Year.<init>:120"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Calendar.getInstance(Ljava/util/TimeZone;)Ljava/util/Calendar;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Calendar.getInstance(java.util.TimeZone)",
+              "sites": [
+                "org.jfree.data.time.RegularTimePeriod.<clinit>:172",
+                "org.jfree.data.time.TimeSeriesCollection.<init>:185"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.Collections.binarySearch(Ljava/util/List;Ljava/lang/Object;)I@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.Collections.binarySearch(java.util.List, java.lang.Object)",
+              "sites": [
+                "org.jfree.data.time.TimeSeries.add:600"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.TimeZone.getDefault()Ljava/util/TimeZone;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.TimeZone.getDefault()",
+              "sites": [
+                "org.jfree.data.time.RegularTimePeriod.<clinit>:165",
+                "org.jfree.data.time.TimeSeriesCollection.<init>:183"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.util.TimeZone.getTimeZone(Ljava/lang/String;)Ljava/util/TimeZone;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.util.TimeZone.getTimeZone(java.lang.String)",
+              "sites": [
+                "rangegrid.Projection.check:18"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 3.9687,
+        "peakRssBytes": 137814016,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "rangegrid.Projection#upper(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 30 && rangegrid.Projection.populated(code)",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 1.6 s; loops unwound 30 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [],
+        "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"rangegrid\"; the names are code); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ rangegrid.Projection#upper(int) satisfies `result == 1` on every input where code >= 0 && code < 30 && rangegrid.Projection.populated(code) (jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 1.6 s; loops unwound 30 times with unwinding assertions)\n  not vacuous: upper(code=16) reaches the calls\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (Bitwuzla)",
+          "seconds": 1.579663058,
+          "properties": 1,
+          "unwind": 30,
+          "max_array_length": 12,
+          "stage": null,
+          "native": {
+            "paths": 6,
+            "merges": 0,
+            "solver_calls": 13,
+            "solving_seconds": 0.029436243,
+            "gates_evaluated": 594,
+            "evaluating_seconds": 0.00035821,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "word_operations": 177,
+            "finite_queries": {
+              "diagrams": 0,
+              "bitwuzla": 13
+            },
+            "variables": 7984,
+            "clauses": 1,
+            "seconds": 0.384497465,
+            "loading_seconds": 0.002997778,
+            "decoding_seconds": 0.000379084,
+            "encoding_seconds": 0.339673093,
+            "witness_seconds": 0.0,
+            "assumed": [
+              "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup",
+              "the class initializer of org.jfree.data.time.RegularTimePeriod was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 694273cb6b01), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+            ]
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 30.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 28.814,
+              "seconds": 0.384,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.003,
+                "lowering": 0.0,
+                "symbolic": 0.012,
+                "encoding": 0.34,
+                "solving": 0.029,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 7984,
+                "clauses": 1
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 28.42,
+              "seconds": 0.307,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.006,
+                "encoding": 0.299,
+                "solving": 0.002,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 199,
+                "clauses": 1
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 2.501,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.691,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 1.808
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 30 && rangegrid.Projection.populated(code)",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            },
+            {
+              "kind": "library",
+              "text": "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup",
+              "basis": "engine",
+              "id": "observed-calendar:gregorian-utc-ad"
+            },
+            {
+              "kind": "library",
+              "text": "the class initializer of org.jfree.data.time.RegularTimePeriod was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the class first thing on the check's class path, from the class file the check reads (sha256 694273cb6b01), in a JVM whose default locale was en (formatting en, display en) and default time zone UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+              "basis": "engine",
+              "id": "observed-initializer:org.jfree.data.time.RegularTimePeriod:694273cb6b018ab215ec3e2dd0ada8e7250a0786245c2ff844cc1a6366a1babe:9f574efa736308120b87112a4f36d040c567a3a996346d80d079b3e87e5e0956"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 30,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (Bitwuzla)",
+            "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+            "fallback": null,
+            "sat": {
+              "solver": "Bitwuzla",
+              "version": "0.8.2",
+              "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+              "configuration": [
+                "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                "sat-solver cadical",
+                "produce-models",
+                "otherwise Bitwuzla's default options",
+                "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                "the run's deadline through Bitwuzla's termination callback",
+                "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found upper(code=16).",
+            "witness": "upper(code=16)"
+          }
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261120-213850-321-recover-observed-startup-controls-on/.build-py/examples-nsqpvsf0/targets/321/populated-upper-parent-observed/20261120T215250Z-e06ef407",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261120-213850-321-recover-observed-startup-controls-on/.build-py/examples-nsqpvsf0/targets/321/populated-upper-parent-observed/20261120T215250Z-e06ef407"
+  }
+}

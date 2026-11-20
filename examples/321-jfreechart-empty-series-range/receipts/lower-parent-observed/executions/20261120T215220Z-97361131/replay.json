@@ -1,0 +1,64 @@
+[
+  {
+    "claimKey": "574238e4b5051ea6",
+    "entry": "rangegrid.Projection#lower(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 5
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "5877b246e6e32578bae2dcf53a016e0af318936285b021d8fafe03b22b387aee",
+        "classpath": [
+          "c705a93a4b9acba9688a88fe0b956d37a3179af6b1259578a936bf653232dd86",
+          "3fe30a535cc14d3c1d7667e36b7deb0a6753d72ebedd9dc670ead2f0d7d9ed9c",
+          "90a5f9ceaed977edfe8f514dcb15ddf5001cf9111a8fcd87b7cd8b0bb6231acc",
+          "c658ea360a70faeeadb66fb3c90a702e4142a0ab7768f9ae9828678e0d9ad4dc",
+          "40bc530593f9173e90aff5cd000c8cb185ebf851f9617b131d43f81989a9ad41"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 5;\nif (!(code >= 0 && code < 30)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = rangegrid.Projection.lower(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 5,
+      "input": {
+        "A": null,
+        "B": 1,
+        "order": "BA",
+        "year": 2012,
+        "zone": "UTC",
+        "includeInterval": false
+      },
+      "field": "lower",
+      "direct": {
+        "parent": {
+          "lower": "NaN",
+          "upper": "NaN"
+        }
+      },
+      "tableSha256": "ff3a79972d079aa578365ead2582ec5e9996fc3933cbcdc4fda80246460218f7"
+    }
+  }
+]

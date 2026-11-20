@@ -1,0 +1,299 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T215244Z-2ee31c2c",
+  "task": "exact-one-tile",
+  "claimKey": "4502d9700b57c016",
+  "revisions": [
+    "one-tile"
+  ],
+  "startedAt": "2026-11-20T21:52:44.192049+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 25
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-213850-331-recheck-compiler-and-downstream-help",
+  "sourceCommit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 1.4177
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 1.4838
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 1.5272
+    },
+    {
+      "stage": "candidate-recorded",
+      "elapsedSeconds": 2.2188
+    },
+    {
+      "stage": "witness-qualification",
+      "elapsedSeconds": 2.7625
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 2.9206
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "one-tile": {
+      "revision": "fixture:one-tile",
+      "target": {
+        "class": "tiling.Floor",
+        "method": "exact",
+        "descriptor": "(I)I",
+        "loadedFrom": "one-tile.jar",
+        "classSha256": "b142c7b9341d0e6e99e6bee9e01883fed60c267cc0f865121e7d537445d701ee"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "ec6cbf57fad3dcacd8a5415b841351adef7d466f8bd28df070e10e20bdd9952c",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "one-tile.jar",
+          "sha256": "e6abf080d17ede29468a0761c32972e02a6aeebe8e8f42815495d092ec7ed960",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from one-tile by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "b80c8ba9d94044ae800265218e7abc18e9a2e0b2416687078fdd73f3cb41f197",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7e8366148d029322203a901b5bd5e471e3510cda/jvmcontract",
+    "prove",
+    "tiling.Floor#exact(int)",
+    "--classes",
+    "prepare/one-tile/one-tile.jar",
+    "--assume",
+    "n >= 0 && n <= 18",
+    "--assert",
+    "result == tiling.Oracle.exact(n)",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "24",
+    "--max-array-length",
+    "0",
+    "--timeout",
+    "25",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "a8c156fbd999555d80f338e97eaa9eaba9bc51d436877725a1234e654585c4e6",
+    "commit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+    "libTree": "7e8366148d029322203a901b5bd5e471e3510cda",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 24,
+      "maxArrayLength": 0
+    },
+    "timeout": 25,
+    "scope": {
+      "label": "constructed-fixture",
+      "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+      "method": "tiling.Floor#exact(I)I",
+      "revisions": {
+        "one-tile": {
+          "commit": "fixture:one-tile",
+          "loadedFrom": "one-tile.jar",
+          "classSha256": "b142c7b9341d0e6e99e6bee9e01883fed60c267cc0f865121e7d537445d701ee",
+          "origin": "built from one-tile by the fixture recipe",
+          "parameters": {
+            "names": [
+              "n"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "one-tile": [
+        {
+          "path": "one-tile.jar",
+          "sha256": "e6abf080d17ede29468a0761c32972e02a6aeebe8e8f42815495d092ec7ed960",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "tiling.Floor#exact(I)I",
+    "entryBindings": {
+      "one-tile": {
+        "entry": "tiling.Floor#exact(I)I",
+        "classSha256": "b142c7b9341d0e6e99e6bee9e01883fed60c267cc0f865121e7d537445d701ee",
+        "loadedFrom": "one-tile.jar",
+        "subject": "tiling.Floor#exact(I)I",
+        "subjectClassSha256": "b142c7b9341d0e6e99e6bee9e01883fed60c267cc0f865121e7d537445d701ee"
+      }
+    },
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "tiling.Floor#exact(I)I",
+      "checkedEntry": "tiling.Floor#exact(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "n >= 0 && n <= 18"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == tiling.Oracle.exact(n)"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "24"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "0"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "one-tile": "fixture:one-tile"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+      "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+      "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "one-tile": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7e8366148d029322203a901b5bd5e471e3510cda/jvmcontract",
+          "gaps",
+          "--target",
+          "tiling.Floor#exact(int)",
+          "--classes",
+          "prepare/one-tile/one-tile.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-one-tile.stdout",
+        "stderr": "verifier/probe-one-tile.stderr",
+        "gaps": []
+      }
+    },
+    "usage": {
+      "cpuSeconds": 1.1097,
+      "peakRssBytes": 81543168,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 1.1097,
+    "peakRssBytes": 81543168,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.69,
+  "missing": [],
+  "replayEvidence": "replay.json",
+  "receipt": "receipts/exact-one-tile/20261120T215244Z-2ee31c2c/result.json",
+  "preparedClaim": "4d87f98ce5531f27",
+  "firstBlocker": null,
+  "endedAt": "2026-11-20T21:52:47.112779+00:00"
+}

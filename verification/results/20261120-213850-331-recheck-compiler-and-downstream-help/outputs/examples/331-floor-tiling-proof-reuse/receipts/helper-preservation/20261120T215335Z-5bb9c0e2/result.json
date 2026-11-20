@@ -1,0 +1,314 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "7ac577aa313828df",
+    "format": 1,
+    "example": "331",
+    "statement": {
+      "approach": "target",
+      "task": "helper-preservation",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "tiling.Ways#tiles(I)I",
+      "revisions": [
+        "recursive",
+        "iterative"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "helper-preservation",
+        "kind": "equivalence",
+        "relation": "preservation",
+        "target": "tiling.Ways#tiles(I)I",
+        "file": "claims/helper-preservation.json",
+        "sha256": "0a11b7cb77dbcfa878ee6c2db59ff4b06ff25aff5259baf52a9a64ef8b838f1f",
+        "property": "helper-preservation",
+        "claimKind": "preservation",
+        "statement": "The recursive and bottom-up implementations agree on the helper result.",
+        "assume": "n >= 0 && n <= 18",
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 24,
+          "maxArrayLength": 0
+        },
+        "explicitBounds": {
+          "unwind": 24,
+          "maxArrayLength": 0
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/tiling/Cases.java",
+            "sha256": "87fa8673c92d1c74e198012a81c3f1ed0e1811f782ad7edf614849a6538d9e45"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "7ebcdd6e0c43576cd2af52d472cd4fbbf4321a86231c69ba85f9b51aa819feaa"
+          }
+        ],
+        "key": "62db0507e32a53d3"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 0,
+      "intendedInputs": null
+    },
+    "inputs": {
+      "patch": null,
+      "before": {
+        "sha256": "568dca2a17ea0951b361e0def3712058dc996e8541d50585807ce1df90443b2e",
+        "files": 1
+      },
+      "after": {
+        "sha256": "d681c8569d8214f4650255eb95a7482129e1198acbc202a7aab254e571b70649",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "helper-preservation",
+      "sidecar": "6dc389dc1412c31e5b128223f07ba175873490af60ffd812197ba6e146650387",
+      "revisions": {
+        "recursive": "06462fa4fc549bac059829d5ffc924b5ab2bb59f",
+        "iterative": "8908787b367336a5e1b8428c6fb858cfe6634de6"
+      },
+      "dependencies": [
+        {
+          "revision": "recursive",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ec6cbf57fad3dcacd8a5415b841351adef7d466f8bd28df070e10e20bdd9952c"
+        },
+        {
+          "revision": "recursive",
+          "position": 1,
+          "role": "original",
+          "sha256": "d9739bee0045310d4862fce5bdc70008360bd1b233a144199e48b1974228a059"
+        },
+        {
+          "revision": "iterative",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ec6cbf57fad3dcacd8a5415b841351adef7d466f8bd28df070e10e20bdd9952c"
+        },
+        {
+          "revision": "iterative",
+          "position": 1,
+          "role": "original",
+          "sha256": "d9c90f4145583fa7963d15c007183b72da35871bd06fd00c514f18eca1de3266"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/helper-preservation.json": "0a11b7cb77dbcfa878ee6c2db59ff4b06ff25aff5259baf52a9a64ef8b838f1f",
+        "controls/table.json": "7ebcdd6e0c43576cd2af52d472cd4fbbf4321a86231c69ba85f9b51aa819feaa",
+        "driver/tiling/Cases.java": "87fa8673c92d1c74e198012a81c3f1ed0e1811f782ad7edf614849a6538d9e45"
+      },
+      "claimKey": "62db0507e32a53d3"
+    }
+  },
+  "attempt": {
+    "id": "20261120T215335Z-5bb9c0e2",
+    "claim": "7ac577aa313828df",
+    "startedAt": "2026-11-20T21:53:35+00:00",
+    "seconds": 26.0,
+    "engine": "native",
+    "options": [
+      "equivalence",
+      "--before",
+      "verifier/classes/recursive",
+      "--after",
+      "verifier/classes/iterative",
+      "--target",
+      "tiling.Ways#tiles(int)",
+      "--assume",
+      "n >= 0 && n <= 18",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "24",
+      "--max-array-length",
+      "0",
+      "--timeout",
+      "25",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "a8c156fbd999555d80f338e97eaa9eaba9bc51d436877725a1234e654585c4e6"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "c7606c5a1d1879c8c860616af243a4345c32850c69cbc50a2fcecd63bb815aab",
+        "files": 1
+      },
+      "after": {
+        "sha256": "caf14d9ca3fe9b3e0308e3a08bd12bf8e2407fc5fbd0add662a75d158608c65f",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-213850-331-recheck-compiler-and-downstream-help",
+      "sourceCommit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-213850-331-recheck-compiler-and-downstream-help"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control recursive on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-recursive-jdk21.stdout",
+        "stderr": "records/control-recursive-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control iterative on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.065,
+        "stdout": "records/control-iterative-jdk21.stdout",
+        "stderr": "records/control-iterative-jdk21.stderr"
+      },
+      {
+        "name": "verifier pair on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 25.869,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 24,
+      "maxArrayLength": 0,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "7ac577aa313828df",
+    "attempt": "20261120T215335Z-5bb9c0e2",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"recursive\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"iterative\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the engine did not finish within the time limit",
+    "domain": "n: int",
+    "replay": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "0712661825987e60c6c06861f1c8f108bb762c2243300d4c9f26992f85531bf0",
+        "bytes": 34070
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "cb9b20416e8df2c8c453419b610380653c2ee29f5087331a842aba1fb01b07ae",
+        "bytes": 904
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "e0d037f49a11c1bee2ae319f709eededacdf73a2759e09b44a4b1d581c07d269",
+        "bytes": 2697
+      },
+      {
+        "path": "records/control-recursive-jdk21.stdout",
+        "sha256": "c6f72d676bba70979b6ae255dac85e97e8c3fe4c0959e12ef84b3e0f1cbfd109",
+        "bytes": 1372
+      },
+      {
+        "path": "records/control-recursive-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "fd7e1a44d478d949ad67b694f32eb8067777864fb732e9bc1936e8b6e4c460a5",
+        "bytes": 13421
+      },
+      {
+        "path": "records/control-iterative-jdk21.stdout",
+        "sha256": "c6f72d676bba70979b6ae255dac85e97e8c3fe4c0959e12ef84b3e0f1cbfd109",
+        "bytes": 1372
+      },
+      {
+        "path": "records/control-iterative-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "f389adab97a7a7745c2eb76c8de27600f655eeb4e65a2bc48bf274d7f74293e2",
+        "bytes": 10211
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "cc4de51ac71c50b630251d68a49a11cfdaed25f2d25df435e1d92bb039d71139",
+        "bytes": 20657
+      }
+    ]
+  }
+}

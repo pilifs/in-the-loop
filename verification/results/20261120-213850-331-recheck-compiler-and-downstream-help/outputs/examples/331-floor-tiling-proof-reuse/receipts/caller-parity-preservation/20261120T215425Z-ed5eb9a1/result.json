@@ -1,0 +1,384 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "099f9c91a3a06c5a",
+    "format": 1,
+    "example": "331",
+    "statement": {
+      "approach": "target",
+      "task": "caller-parity-preservation",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "tiling.Floor#parity(I)I",
+      "revisions": [
+        "recursive",
+        "iterative"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "caller-parity-preservation",
+        "kind": "equivalence",
+        "relation": "preservation",
+        "target": "tiling.Floor#parity(I)I",
+        "file": "claims/caller-parity-preservation.json",
+        "sha256": "f83596468c24d5673748005bcf9158a5794710743f69b4db2777809d86307dd0",
+        "property": "caller-parity-preservation",
+        "claimKind": "preservation",
+        "statement": "The recursive and bottom-up implementations agree on the caller-parity result.",
+        "assume": "n >= 0 && n <= 18",
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 24,
+          "maxArrayLength": 0
+        },
+        "explicitBounds": {
+          "unwind": 24,
+          "maxArrayLength": 0
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/tiling/Cases.java",
+            "sha256": "87fa8673c92d1c74e198012a81c3f1ed0e1811f782ad7edf614849a6538d9e45"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "7ebcdd6e0c43576cd2af52d472cd4fbbf4321a86231c69ba85f9b51aa819feaa"
+          }
+        ],
+        "key": "3d29bf124846f20a"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 0,
+      "intendedInputs": null
+    },
+    "inputs": {
+      "patch": null,
+      "before": {
+        "sha256": "568dca2a17ea0951b361e0def3712058dc996e8541d50585807ce1df90443b2e",
+        "files": 1
+      },
+      "after": {
+        "sha256": "d681c8569d8214f4650255eb95a7482129e1198acbc202a7aab254e571b70649",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "caller-parity-preservation",
+      "sidecar": "6dc389dc1412c31e5b128223f07ba175873490af60ffd812197ba6e146650387",
+      "revisions": {
+        "recursive": "06462fa4fc549bac059829d5ffc924b5ab2bb59f",
+        "iterative": "8908787b367336a5e1b8428c6fb858cfe6634de6"
+      },
+      "dependencies": [
+        {
+          "revision": "recursive",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ec6cbf57fad3dcacd8a5415b841351adef7d466f8bd28df070e10e20bdd9952c"
+        },
+        {
+          "revision": "recursive",
+          "position": 1,
+          "role": "original",
+          "sha256": "d9739bee0045310d4862fce5bdc70008360bd1b233a144199e48b1974228a059"
+        },
+        {
+          "revision": "iterative",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ec6cbf57fad3dcacd8a5415b841351adef7d466f8bd28df070e10e20bdd9952c"
+        },
+        {
+          "revision": "iterative",
+          "position": 1,
+          "role": "original",
+          "sha256": "d9c90f4145583fa7963d15c007183b72da35871bd06fd00c514f18eca1de3266"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/caller-parity-preservation.json": "f83596468c24d5673748005bcf9158a5794710743f69b4db2777809d86307dd0",
+        "controls/table.json": "7ebcdd6e0c43576cd2af52d472cd4fbbf4321a86231c69ba85f9b51aa819feaa",
+        "driver/tiling/Cases.java": "87fa8673c92d1c74e198012a81c3f1ed0e1811f782ad7edf614849a6538d9e45"
+      },
+      "claimKey": "3d29bf124846f20a"
+    }
+  },
+  "attempt": {
+    "id": "20261120T215425Z-ed5eb9a1",
+    "claim": "099f9c91a3a06c5a",
+    "startedAt": "2026-11-20T21:54:25+00:00",
+    "seconds": 20.2,
+    "engine": "native",
+    "options": [
+      "equivalence",
+      "--before",
+      "verifier/classes/recursive",
+      "--after",
+      "verifier/classes/iterative",
+      "--target",
+      "tiling.Floor#parity(int)",
+      "--assume",
+      "n >= 0 && n <= 18",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "24",
+      "--max-array-length",
+      "0",
+      "--timeout",
+      "25",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "a8c156fbd999555d80f338e97eaa9eaba9bc51d436877725a1234e654585c4e6"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "c7606c5a1d1879c8c860616af243a4345c32850c69cbc50a2fcecd63bb815aab",
+        "files": 1
+      },
+      "after": {
+        "sha256": "caf14d9ca3fe9b3e0308e3a08bd12bf8e2407fc5fbd0add662a75d158608c65f",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-213850-331-recheck-compiler-and-downstream-help",
+      "sourceCommit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-213850-331-recheck-compiler-and-downstream-help"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control recursive on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.115,
+        "stdout": "records/control-recursive-jdk21.stdout",
+        "stderr": "records/control-recursive-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control iterative on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-iterative-jdk21.stdout",
+        "stderr": "records/control-iterative-jdk21.stderr"
+      },
+      {
+        "name": "verifier pair on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 19.975,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 24,
+      "maxArrayLength": 0,
+      "complete": true
+    }
+  },
+  "conclusion": {
+    "claim": "099f9c91a3a06c5a",
+    "attempt": "20261120T215425Z-ed5eb9a1",
+    "status": "established",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "✓ Verified",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"recursive\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"iterative\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over n: int in 19.4 s; loops unwound 24 times with unwinding assertions",
+    "problem": null,
+    "domain": "n: int",
+    "replay": null,
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "n",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "n: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "n >= 0 && n <= 18",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 24,
+        "maxArrayLength": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (Bitwuzla)",
+        "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+        "fallback": null,
+        "sat": {
+          "solver": "Bitwuzla",
+          "version": "0.8.2",
+          "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+          "configuration": [
+            "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+            "sat-solver cadical",
+            "produce-models",
+            "otherwise Bitwuzla's default options",
+            "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+            "the run's deadline through Bitwuzla's termination callback",
+            "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found agree(n=0).",
+        "witness": "agree(n=0)"
+      }
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "835a472bbceab393c1347f4b2512fc4c6214c1de3fa2b65356acf1d3f100a978",
+        "bytes": 36068
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "38552a7e893f6427aa27a76c63ed1d5a9cee9286222581e9c57eeb8a262af324",
+        "bytes": 1101
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "1a1aaccfa3167d9892cab3ce4f9839df4a566845f3e024fc2079aec038c675ce",
+        "bytes": 2697
+      },
+      {
+        "path": "records/control-recursive-jdk21.stdout",
+        "sha256": "c6f72d676bba70979b6ae255dac85e97e8c3fe4c0959e12ef84b3e0f1cbfd109",
+        "bytes": 1372
+      },
+      {
+        "path": "records/control-recursive-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "eb6393119417ac4be437c2a771f60b978d91cfb84ae4bd9576f2497eb4a25166",
+        "bytes": 13436
+      },
+      {
+        "path": "records/control-iterative-jdk21.stdout",
+        "sha256": "c6f72d676bba70979b6ae255dac85e97e8c3fe4c0959e12ef84b3e0f1cbfd109",
+        "bytes": 1372
+      },
+      {
+        "path": "records/control-iterative-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "dce0a34040ce7d1fd7e7692de71ee734519a38aa3d9681614e72c202f1dcbd77",
+        "bytes": 11844
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "1bafafa1bf3a851db725a34e5b4c1f303633838f341372b691deed3b2799b00d",
+        "bytes": 22585
+      }
+    ]
+  }
+}

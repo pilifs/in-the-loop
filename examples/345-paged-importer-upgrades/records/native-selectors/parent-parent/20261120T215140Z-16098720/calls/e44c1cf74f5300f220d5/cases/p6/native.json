@@ -1,0 +1,167 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "violation",
+    "target": "verificationselectors.Calls#p6()",
+    "domain": "",
+    "assume": null,
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": {
+      "input": "p6()",
+      "outcome": "0",
+      "values": [],
+      "shrink_runs": 0,
+      "inputs": [],
+      "call": {
+        "class": "verificationselectors.Calls",
+        "class_file": "verificationselectors/Calls.class",
+        "classes": "after",
+        "method": "p6",
+        "descriptor": "()I",
+        "static": true,
+        "arguments": []
+      }
+    },
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 2.2 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain ",
+    "problem": null,
+    "statement": "/tmp/native-selectors-kvnxpxt6/count-parent-parent-p6/checker/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "property-violated",
+        "message": "Property of verificationselectors.Calls#p6() violated: `result == 1`:\n  p6()\n    outcome: 0",
+        "uri": null,
+        "line": 1
+      }
+    ],
+    "output": "✗ Property of verificationselectors.Calls#p6() violated: `result == 1`:\n  p6()\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 2.2 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain )\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+    "work": "/tmp/native-selectors-kvnxpxt6/count-parent-parent-p6/checker",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 2.214708186,
+      "properties": 1,
+      "unwind": 96,
+      "max_array_length": 96,
+      "stage": "[0:20]",
+      "native": {
+        "paths": 546,
+        "merges": 30,
+        "solver_calls": 1574,
+        "solving_seconds": 0.908103533,
+        "gates_evaluated": 677,
+        "evaluating_seconds": 0.000217771,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 35281,
+        "clauses": 5068,
+        "seconds": 2.209968043,
+        "loading_seconds": 0.006531959,
+        "decoding_seconds": 0.001221757,
+        "encoding_seconds": 0.047109217,
+        "witness_seconds": 0.000018835,
+        "assumed": [
+          "system properties use the standard JVM Properties table and the running JVM permits this property access"
+        ]
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 90.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 90.0,
+          "seconds": 2.21,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.007,
+            "lowering": 0.001,
+            "symbolic": 1.247,
+            "encoding": 0.047,
+            "solving": 0.908,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 35281,
+            "clauses": 5068
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 2.341,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 2.21,
+        "replay": 0.007,
+        "jvm": 0.102,
+        "other": 0.021
+      }
+    },
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [],
+        "shared_arrays": false,
+        "text": ""
+      },
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 96,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]
