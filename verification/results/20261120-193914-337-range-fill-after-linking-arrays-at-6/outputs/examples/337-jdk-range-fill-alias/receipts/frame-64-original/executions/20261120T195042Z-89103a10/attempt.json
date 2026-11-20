@@ -1,0 +1,311 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T195042Z-89103a10",
+  "task": "frame-64-original",
+  "claimKey": "fffda11b80d4522b",
+  "revisions": [
+    "original"
+  ],
+  "startedAt": "2026-11-20T19:50:42.561411+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 120
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-193914-337-range-fill-after-linking-arrays-at-6",
+  "sourceCommit": "73db36c75d87a311d3a62abbd8e6d159af101448",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 1.4782
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 1.6221
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 1.672
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 121.765
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 121.9227
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "original": {
+      "revision": "fixture:original",
+      "target": {
+        "class": "fill.Range",
+        "method": "apply",
+        "descriptor": "([I[IIII)I",
+        "loadedFrom": "original.jar",
+        "classSha256": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "614c229ff9f20e7fbe91ff17fec6bab2fed8679e01607385e2febb639e45eba5",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "original.jar",
+          "sha256": "f8e701517b508e86c6dbe4a2ce0701ace715c7d0bf7026aad6ac19e7e5cf4628",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from original by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "704fe5321d3167ffb10a3188b263e1e7f97c05dc10dfb8e4664a2c4ba9ee43d1",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92673c7e0e044fbb29322fefd2ab3d4a6b7f501c/jvmcontract",
+    "prove",
+    "fill.Range#apply(int[], int[], int, int, int)",
+    "--classes",
+    "prepare/original/original.jar",
+    "--assume",
+    "0 <= from && from <= to && to <= a.length",
+    "--assert",
+    "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+    "--may-alias",
+    "a,other",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "67",
+    "--max-array-length",
+    "64",
+    "--timeout",
+    "120",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "808e0655f897611ccc779592ebbbddfa1f3be5bad18d6fd51f68286ad1233147",
+    "commit": "73db36c75d87a311d3a62abbd8e6d159af101448",
+    "libTree": "92673c7e0e044fbb29322fefd2ab3d4a6b7f501c",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 67,
+      "maxArrayLength": 64
+    },
+    "timeout": 120,
+    "scope": {
+      "label": "constructed-fixture",
+      "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+      "method": "fill.Range#apply([I[IIII)I",
+      "revisions": {
+        "original": {
+          "commit": "fixture:original",
+          "loadedFrom": "original.jar",
+          "classSha256": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742",
+          "origin": "built from original by the fixture recipe",
+          "parameters": {
+            "names": [
+              "a",
+              "other",
+              "from",
+              "to",
+              "value"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "original": [
+        {
+          "path": "original.jar",
+          "sha256": "f8e701517b508e86c6dbe4a2ce0701ace715c7d0bf7026aad6ac19e7e5cf4628",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "fill.Range#apply([I[IIII)I",
+    "entryBindings": {
+      "original": {
+        "entry": "fill.Range#apply([I[IIII)I",
+        "classSha256": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742",
+        "loadedFrom": "original.jar",
+        "subject": "fill.Range#apply([I[IIII)I",
+        "subjectClassSha256": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742"
+      }
+    },
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "fill.Range#apply([I[IIII)I",
+      "checkedEntry": "fill.Range#apply([I[IIII)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "0 <= from && from <= to && to <= a.length"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))"
+        },
+        {
+          "field": "mayAlias",
+          "flag": "--may-alias",
+          "value": "a,other"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "67"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "64"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "original": "fixture:original"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "original": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92673c7e0e044fbb29322fefd2ab3d4a6b7f501c/jvmcontract",
+          "gaps",
+          "--target",
+          "fill.Range#apply(int[], int[], int, int, int)",
+          "--classes",
+          "prepare/original/original.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-original.stdout",
+        "stderr": "verifier/probe-original.stderr",
+        "gaps": [
+          {
+            "id": "jdk-constructor:java.lang.ArrayIndexOutOfBoundsException.<init>(I)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.lang.ArrayIndexOutOfBoundsException.<init>(int)",
+            "sites": [
+              "java.util.Arrays.rangeCheck:723",
+              "java.util.Arrays.rangeCheck:726"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 120.0407,
+      "peakRssBytes": 615047168,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": true,
+  "usage": {
+    "cpuSeconds": 120.0407,
+    "peakRssBytes": 615047168,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 120.091,
+  "missing": [
+    "eligible conclusion"
+  ],
+  "receipt": "receipts/frame-64-original/20261120T195042Z-89103a10/result.json",
+  "preparedClaim": "ee099e82b674469f",
+  "firstBlocker": "the engine did not finish within the time limit",
+  "endedAt": "2026-11-20T19:52:44.484293+00:00"
+}

@@ -1,0 +1,447 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "ee099e82b674469f",
+    "format": 1,
+    "example": "337",
+    "statement": {
+      "approach": "target",
+      "task": "frame-64-original",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "fill.Range#apply([I[IIII)I",
+      "revisions": [
+        "original"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "frame-64-original",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "fill.Range#apply([I[IIII)I",
+        "file": "claims/frame-64.json",
+        "sha256": "c6df52a3dd31a7cb8e220d6b363900fd02dc23727f3545010881c8d7c817600e",
+        "property": "frame-64",
+        "claimKind": "property",
+        "statement": "Write exactly the selected half-open slice and preserve every other cell, including what the second root observes.",
+        "assume": "0 <= from && from <= to && to <= a.length",
+        "assert": "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [
+          "a,other"
+        ],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 67,
+          "maxArrayLength": 64
+        },
+        "explicitBounds": {
+          "unwind": 67,
+          "maxArrayLength": 64
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/fill/FillCases.java",
+            "sha256": "df934c915b1f69036ec1daff862cf92519f5558f9e65fa8e32aa8d76acb9f2df"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "bcd21cea9fee6568d798f70163f85c458a4db50b7051dea3f48df25b82772653"
+          }
+        ],
+        "key": "fffda11b80d4522b"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 64
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "954c92b4e21841b84c91dbbba67ff4a1d214d83c143812b073e35db83ff281ed",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "frame-64-original",
+      "sidecar": "3c3994cb95291b7ae6f80aa84b34f87e63258ef696ea2d2244fb9eb450a4c4fb",
+      "revisions": {
+        "original": "91df891d2521ea99c64503fd9449f4daf520da53"
+      },
+      "dependencies": [
+        {
+          "revision": "original",
+          "position": 0,
+          "role": "driver",
+          "sha256": "614c229ff9f20e7fbe91ff17fec6bab2fed8679e01607385e2febb639e45eba5"
+        },
+        {
+          "revision": "original",
+          "position": 1,
+          "role": "original",
+          "sha256": "f8e701517b508e86c6dbe4a2ce0701ace715c7d0bf7026aad6ac19e7e5cf4628"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/frame-64.json": "c6df52a3dd31a7cb8e220d6b363900fd02dc23727f3545010881c8d7c817600e",
+        "controls/oracle.py": "bcd21cea9fee6568d798f70163f85c458a4db50b7051dea3f48df25b82772653",
+        "driver/fill/FillCases.java": "df934c915b1f69036ec1daff862cf92519f5558f9e65fa8e32aa8d76acb9f2df"
+      },
+      "claimKey": "fffda11b80d4522b"
+    }
+  },
+  "attempt": {
+    "id": "20261120T195042Z-89103a10",
+    "claim": "ee099e82b674469f",
+    "startedAt": "2026-11-20T19:50:42+00:00",
+    "seconds": 120.2,
+    "engine": "native",
+    "options": [
+      "prove",
+      "fill.Range#apply(int[], int[], int, int, int)",
+      "--classes",
+      "prepare/original/original.jar",
+      "--assume",
+      "0 <= from && from <= to && to <= a.length",
+      "--assert",
+      "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+      "--may-alias",
+      "a,other",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "67",
+      "--max-array-length",
+      "64",
+      "--timeout",
+      "120",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "808e0655f897611ccc779592ebbbddfa1f3be5bad18d6fd51f68286ad1233147"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "f0b437da04b1b10096c166912f6cbe7e275b89cc4629107f3546da72aefbb449",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-193914-337-range-fill-after-linking-arrays-at-6",
+      "sourceCommit": "73db36c75d87a311d3a62abbd8e6d159af101448",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-193914-337-range-fill-after-linking-arrays-at-6"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control original on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.115,
+        "stdout": "records/control-original-jdk21.stdout",
+        "stderr": "records/control-original-jdk21.stderr"
+      },
+      {
+        "name": "verifier original on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 120.091,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 67,
+      "maxArrayLength": 64,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "ee099e82b674469f",
+    "attempt": "20261120T195042Z-89103a10",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+          "assume": "0 <= from && from <= to && to <= a.length",
+          "verdict": "unverifiable",
+          "domain": "a: int[] of length ≤ 64, not null × other: int[] of length ≤ 64, not null × from: int × to: int × value: int; a and other may be the same array",
+          "proof": null,
+          "problem": "the engine did not finish within the time limit",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 120.022,
+            "properties": 1,
+            "unwind": 67,
+            "maxArrayLength": 64,
+            "stage": null,
+            "deadlineSeconds": 120.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 120.0,
+                "seconds": 120.001,
+                "ended": "out-of-time",
+                "ending": "timeout",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.656,
+                  "encoding": 1.605,
+                  "solving": 117.74,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 484444,
+                  "clauses": 1777532
+                }
+              }
+            ],
+            "native": {
+              "paths": 905,
+              "merges": 382,
+              "solverCalls": 8419,
+              "solvingSeconds": 117.739721455,
+              "gatesEvaluated": 1551261,
+              "evaluatingSeconds": 0.041483109,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 484444,
+              "clauses": 1777532,
+              "seconds": 120.00102254,
+              "loadingSeconds": 0.000376076,
+              "decodingSeconds": 0.000148698,
+              "encodingSeconds": 1.604877164,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict"
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "a",
+                  "type": "int[]",
+                  "kind": "array",
+                  "null": false,
+                  "maxLength": 64
+                },
+                {
+                  "name": "other",
+                  "type": "int[]",
+                  "kind": "array",
+                  "null": false,
+                  "maxLength": 64
+                },
+                {
+                  "name": "from",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "to",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                },
+                {
+                  "name": "value",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": true,
+              "mayAlias": [
+                [
+                  "a",
+                  "other"
+                ]
+              ],
+              "text": "a: int[] of length ≤ 64, not null × other: int[] of length ≤ 64, not null × from: int × to: int × value: int; a and other may be the same array"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "0 <= from && from <= to && to <= a.length",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against (\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 67,
+              "maxArrayLength": 64,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"original\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the engine did not finish within the time limit",
+    "domain": "a: int[] of length ≤ 64, not null × other: int[] of length ≤ 64, not null × from: int × to: int × value: int; a and other may be the same array",
+    "replay": null,
+    "property": {
+      "assert": "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+      "assume": "0 <= from && from <= to && to <= a.length"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "dc4bf8889b786dd6cef604ea67a537f16fc9295f4a8dc43ef26e3edeb0bc9bb6",
+        "bytes": 58003
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "ad52bf10660b91c7465495d4e1095cb969f3f1e79c2ed5904cec3b8170a3d9a1",
+        "bytes": 118
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "f59d71bdea3b81937b0ee0dc60e362ceeb4186379afc7d7d941c3c2b49b61222",
+        "bytes": 1987
+      },
+      {
+        "path": "records/control-original-jdk21.stdout",
+        "sha256": "f0532337fe3b43758e9a746a13ddcf6b19b82717735cbac46797f9e407de9f01",
+        "bytes": 12008
+      },
+      {
+        "path": "records/control-original-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "1c8e13d7b5298f070735403127db6e44eebb62cb9643524b01ea6c3ee9daff2d",
+        "bytes": 43769
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "338dc455e1f714eb77ceb2156ee308ca9b890812a8144c1a2bdf30251c5d34b4",
+        "bytes": 5926
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "459557056bea7d07a66a3eb7fa591531f2cf114ccdf96686541b86b4387eb6c2",
+        "bytes": 14179
+      }
+    ]
+  }
+}

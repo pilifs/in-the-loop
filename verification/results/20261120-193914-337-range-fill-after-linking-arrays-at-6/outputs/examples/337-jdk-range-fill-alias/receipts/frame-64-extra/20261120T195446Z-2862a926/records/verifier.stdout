@@ -1,0 +1,300 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "violation",
+    "target": "fill.Range#apply(int[], int[], int, int, int)",
+    "domain": "a: int[] of length ≤ 64, not null × other: int[] of length ≤ 64, not null × from: int × to: int × value: int; a and other may be the same array",
+    "assume": "0 <= from && from <= to && to <= a.length",
+    "assert": "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": {
+      "input": "apply(a=[1], other=[], from=0, to=0, value=0)",
+      "outcome": "1, leaving a=[0]",
+      "values": [
+        "[1]",
+        "[]",
+        "0",
+        "0",
+        "0"
+      ],
+      "found": "apply(a=[20], other=[], from=0, to=0, value=16)",
+      "shrink_runs": 18,
+      "inputs": [
+        {
+          "name": "a",
+          "type": "int[]",
+          "value": [
+            1
+          ]
+        },
+        {
+          "name": "other",
+          "type": "int[]",
+          "value": []
+        },
+        {
+          "name": "from",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "name": "to",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "name": "value",
+          "type": "int",
+          "value": 0
+        }
+      ],
+      "found_inputs": [
+        {
+          "name": "a",
+          "type": "int[]",
+          "value": [
+            20
+          ]
+        },
+        {
+          "name": "other",
+          "type": "int[]",
+          "value": []
+        },
+        {
+          "name": "from",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "name": "to",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "name": "value",
+          "type": "int",
+          "value": 16
+        }
+      ],
+      "call": {
+        "class": "fill.Range",
+        "class_file": "fill/Range.class",
+        "classes": "after",
+        "method": "apply",
+        "descriptor": "([I[IIII)I",
+        "static": true,
+        "arguments": [
+          {
+            "name": "a",
+            "type": "int[]",
+            "value": [
+              1
+            ],
+            "from": "a"
+          },
+          {
+            "name": "other",
+            "type": "int[]",
+            "value": [],
+            "from": "other"
+          },
+          {
+            "name": "from",
+            "type": "int",
+            "value": 0,
+            "from": "from"
+          },
+          {
+            "name": "to",
+            "type": "int",
+            "value": 0,
+            "from": "to"
+          },
+          {
+            "name": "value",
+            "type": "int",
+            "value": 0,
+            "from": "value"
+          }
+        ]
+      }
+    },
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.4 s searching inputs in [0:20] as apply(a=[20], other=[], from=0, to=0, value=16), shrunk to the input above in 18 interpreter runs, replayed in the interpreter; domain a: int[] of length ≤ 64, not null × other: int[] of length ≤ 64, not null × from: int × to: int × value: int; a and other may be the same array",
+    "problem": null,
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "property-violated",
+        "message": "Property of fill.Range#apply(int[], int[], int, int, int) violated: `(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))` where 0 <= from && from <= to && to <= a.length:\n  apply(a=[1], other=[], from=0, to=0, value=0)\n    outcome: 1, leaving a=[0]",
+        "uri": null,
+        "line": 7
+      }
+    ],
+    "output": "✗ Property of fill.Range#apply(int[], int[], int, int, int) violated: `(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))` where 0 <= from && from <= to && to <= a.length:\n  apply(a=[1], other=[], from=0, to=0, value=0)\n    outcome: 1, leaving a=[0]\n  (found by jvmcontract's own checker (CaDiCaL) in 0.4 s searching inputs in [0:20] as apply(a=[20], other=[], from=0, to=0, value=16), shrunk to the input above in 18 interpreter runs, replayed in the interpreter; domain a: int[] of length ≤ 64, not null × other: int[] of length ≤ 64, not null × from: int × to: int × value: int; a and other may be the same array)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.448808283,
+      "properties": 1,
+      "unwind": 67,
+      "max_array_length": 64,
+      "stage": "[0:20]",
+      "native": {
+        "paths": 71,
+        "merges": 0,
+        "solver_calls": 2491,
+        "solving_seconds": 0.258353118,
+        "gates_evaluated": 84531,
+        "evaluating_seconds": 0.002905668,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 26019,
+        "clauses": 75595,
+        "seconds": 0.444291788,
+        "loading_seconds": 0.000784712,
+        "decoding_seconds": 0.000157717,
+        "encoding_seconds": 0.119396461,
+        "witness_seconds": 0.000288413
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 120.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 120.0,
+          "seconds": 0.444,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.001,
+            "lowering": 0.0,
+            "symbolic": 0.065,
+            "encoding": 0.119,
+            "solving": 0.258,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 26019,
+            "clauses": 75595
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.473,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.444,
+        "replay": 0.012,
+        "jvm": 0.0,
+        "other": 0.015
+      }
+    },
+    "replay": {
+      "by": "interpreter",
+      "reproduced": true
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "a",
+            "type": "int[]",
+            "kind": "array",
+            "null": false,
+            "max_length": 64
+          },
+          {
+            "name": "other",
+            "type": "int[]",
+            "kind": "array",
+            "null": false,
+            "max_length": 64
+          },
+          {
+            "name": "from",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "to",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "value",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": true,
+        "may_alias": [
+          [
+            "a",
+            "other"
+          ]
+        ],
+        "text": "a: int[] of length ≤ 64, not null × other: int[] of length ≤ 64, not null × from: int × to: int × value: int; a and other may be the same array"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "0 <= from && from <= to && to <= a.length",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against (\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 67,
+        "max_array_length": 64,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]
