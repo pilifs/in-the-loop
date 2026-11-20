@@ -1,0 +1,169 @@
+{
+  "plan": {
+    "example": "331",
+    "task": "exact-one-tile",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "tiling.Floor#exact(I)I",
+    "revisions": [
+      "one-tile"
+    ],
+    "claim": {
+      "task": "exact-one-tile",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tiling.Floor#exact(I)I",
+      "file": "claims/exact.json",
+      "sha256": "dcbf82c259dc927aa498585834ac15c13fbfcb67080673ae73cae67a49c7984e",
+      "property": "exact",
+      "claimKind": "property",
+      "statement": "For n from zero to eighteen the exact caller agrees with the binomial tiling count.",
+      "assume": "n >= 0 && n <= 18",
+      "assert": "result == tiling.Oracle.exact(n)",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 24,
+        "maxArrayLength": 0
+      },
+      "explicitBounds": {
+        "unwind": 24,
+        "maxArrayLength": 0
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/tiling/Cases.java",
+          "sha256": "87fa8673c92d1c74e198012a81c3f1ed0e1811f782ad7edf614849a6538d9e45"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "7ebcdd6e0c43576cd2af52d472cd4fbbf4321a86231c69ba85f9b51aa819feaa"
+        }
+      ],
+      "key": "4502d9700b57c016"
+    },
+    "prerequisites": [
+      "replay-one-tile"
+    ],
+    "artifacts": [
+      {
+        "revision": "one-tile",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "one-tile",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/exact-one-tile"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-032648-native-331-floor-tiling-counts-and-two-d/examples/331-floor-tiling-proof-reuse",
+    "network": false
+  },
+  "inputs": {
+    "example": "331",
+    "task": "exact-one-tile",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "tiling.Floor#exact(I)I",
+    "revisions": [
+      "one-tile"
+    ],
+    "claim": {
+      "task": "exact-one-tile",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tiling.Floor#exact(I)I",
+      "file": "claims/exact.json",
+      "sha256": "dcbf82c259dc927aa498585834ac15c13fbfcb67080673ae73cae67a49c7984e",
+      "property": "exact",
+      "claimKind": "property",
+      "statement": "For n from zero to eighteen the exact caller agrees with the binomial tiling count.",
+      "assume": "n >= 0 && n <= 18",
+      "assert": "result == tiling.Oracle.exact(n)",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 24,
+        "maxArrayLength": 0
+      },
+      "explicitBounds": {
+        "unwind": 24,
+        "maxArrayLength": 0
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/tiling/Cases.java",
+          "sha256": "87fa8673c92d1c74e198012a81c3f1ed0e1811f782ad7edf614849a6538d9e45"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "7ebcdd6e0c43576cd2af52d472cd4fbbf4321a86231c69ba85f9b51aa819feaa"
+        }
+      ],
+      "key": "4502d9700b57c016"
+    },
+    "artifacts": [
+      {
+        "revision": "one-tile",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "one-tile",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "706e228293582f79a2a1ca9782035586035b655320e350512ffad1c709dcc872"
+}

@@ -1,0 +1,56 @@
+[
+  {
+    "claimKey": "fa6d8638769a3bdd",
+    "entry": "labelgrid.Projection#label(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 0
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "changed": {
+        "entryClassSha256": "53a0bf6166b883c8f8208daa9c8840ff4d7caa6f525a350f7898341abbead595",
+        "classpath": [
+          "a7d6fba548ad73069b9c45512c73ef967a6ab65bec94e53b7ab41c7cd0ba025e",
+          "69eb44bb040af6bccce7d8cf906347dc3e0dcc95d16300c4989a82aebab2b86f"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 0;\nif (!(code >= 0 && code < 9)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = labelgrid.Projection.label(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 0,
+      "input": [
+        -1,
+        null
+      ],
+      "field": "label",
+      "direct": {
+        "changed": {
+          "label": "S-1null"
+        }
+      },
+      "tableSha256": "f76ef4e06716d0550b13c766ca53c0763477dc7caa1d8f9453bc7e8c4f08e6d0"
+    }
+  }
+]

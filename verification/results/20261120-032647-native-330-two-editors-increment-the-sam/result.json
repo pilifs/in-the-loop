@@ -1,0 +1,710 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-032647-native-330-two-editors-increment-the-sam",
+  "title": "Native 330 Two editors increment the same revision",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 8.2s, peak 164.0 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-032647-native-330-two-editors-increment-the-sam.json",
+    "sha256": "3e22113766ebf1d37b316ba8a2c600c5c91538360167c445e354f090f205f050",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-032647-native-330-two-editors-increment-the-sam",
+      "title": "Native 330 Two editors increment the same revision",
+      "description": "Four of six legal read/write interleavings lose one increment when a write uses its saved value. Run each original claim on its declared subject, preserve all stages and require the independently calibrated observation.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "330"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T03:26:47+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 330 --tasks revision-current,revision-saved,serial-current,serial-saved --checker-seconds 30",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/330-two-editor-interleavings/receipts/revision-current",
+        "examples/330-two-editor-interleavings/receipts/revision-saved",
+        "examples/330-two-editor-interleavings/receipts/serial-current",
+        "examples/330-two-editor-interleavings/receipts/serial-saved"
+      ]
+    }
+  },
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "startedAt": "2026-11-20T03:48:54+00:00",
+  "finishedAt": "2026-11-20T03:49:05+00:00",
+  "wallSeconds": 11.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 171999232,
+    "wallSeconds": 8.2,
+    "cpuSeconds": 12.1,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 330 --tasks revision-current,revision-saved,serial-current,serial-saved --checker-seconds 30",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 8.223,
+      "cpuSeconds": 12.125,
+      "cpuThrottledSeconds": 0.347,
+      "peakMemoryBytes": 171999232,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-obligations-o.log",
+        "lines": 8,
+        "bytes": 924,
+        "sha256": "2f0b91eb911334b31f788a5a96e249f10f1d59d8f0c8793b4a0ed0fd03489ee0",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 4
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "330-two-editor-interleavings: task revision-current: established (completed; as expected), receipt receipts/revision-current/20261120T034856Z-f133faa5/result.json",
+          "groups": [
+            "330",
+            "revision-current",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "330-two-editor-interleavings: task revision-saved: refuted (completed; as expected), receipt receipts/revision-saved/20261120T034859Z-a91cd714/result.json",
+          "groups": [
+            "330",
+            "revision-saved",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "330-two-editor-interleavings: task serial-current: established (completed; as expected), receipt receipts/serial-current/20261120T034902Z-c00a3e19/result.json",
+          "groups": [
+            "330",
+            "serial-current",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "330-two-editor-interleavings: task serial-saved: established (completed; as expected), receipt receipts/serial-saved/20261120T034903Z-ccfc17f2/result.json",
+          "groups": [
+            "330",
+            "serial-saved",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "330-two-editor-interleavings: running task revision-current (target route)",
+        "330-two-editor-interleavings: task revision-current: established (completed; as expected), receipt receipts/revision-current/20261120T034856Z-f133faa5/result.json",
+        "330-two-editor-interleavings: running task revision-saved (target route)",
+        "330-two-editor-interleavings: task revision-saved: refuted (completed; as expected), receipt receipts/revision-saved/20261120T034859Z-a91cd714/result.json",
+        "330-two-editor-interleavings: running task serial-current (target route)",
+        "330-two-editor-interleavings: task serial-current: established (completed; as expected), receipt receipts/serial-current/20261120T034902Z-c00a3e19/result.json",
+        "330-two-editor-interleavings: running task serial-saved (target route)",
+        "330-two-editor-interleavings: task serial-saved: established (completed; as expected), receipt receipts/serial-saved/20261120T034903Z-ccfc17f2/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "43c1d0d34c92ac161526488f90293284d17f05d45282a543b3924d0d635123be",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/plan.json",
+      "change": "added",
+      "bytes": 5455,
+      "sha256": "258c9633ec2a464df3a5f912c5ad97b14ab2c4f8492867896ad6bb6764e03c36",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/records/control-current-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/records/control-current-jdk21.stdout",
+      "change": "added",
+      "bytes": 786,
+      "sha256": "6a15ae823601849a7ccef6a9c2720b914f139b7e5cc488fab789ecbcee2b5dd4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/records/controls.json",
+      "change": "added",
+      "bytes": 5239,
+      "sha256": "ccd4331f24bcfe4054f4e3064f59c2d890f5515569451e19653eaf13617b33df",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/records/execution.json",
+      "change": "added",
+      "bytes": 19481,
+      "sha256": "fc4985d4652dfca06406642e40404b10f0b8c154f8434dac26762f5089b28732",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/records/streams.json",
+      "change": "added",
+      "bytes": 1973,
+      "sha256": "68331fbce3ecdc5815c8a203183c9a333dcb23c8c67f0b2c8c13c74d196aeffb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 289,
+      "sha256": "a2bcebdaed107ce06299ec324a242ca66cab7cc25248892764e1221af2f1102f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/records/verifier.json",
+      "change": "added",
+      "bytes": 14177,
+      "sha256": "92012a13a30d56fc8fef1bb84bb1fcb5cc26ec28ec9d6f368c61ac39871d2fdb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5883,
+      "sha256": "05aad9422560ed61a5b0c204a3721ce1c8038f7ceca02c8f6f7129e594d20f3f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/result.json",
+      "change": "added",
+      "bytes": 17752,
+      "sha256": "2f33ee561447699905466fcdfea921d1ebfab121ba25b24161b143fbed35b7b9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-current/executions/20261120T034856Z-f133faa5/attempt.json",
+      "change": "added",
+      "bytes": 9949,
+      "sha256": "4cae69641ac919fab34cfa5cb0f8e6aecd70907a44e74658832b61de9a6c6e02",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-current/executions/20261120T034856Z-f133faa5/checker.json",
+      "change": "added",
+      "bytes": 7215,
+      "sha256": "9609fe200c93536d06c1a0d342896384ab8f90dc9d245e1e9722221c088ebf1a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-current/executions/20261120T034856Z-f133faa5/correspondence.json",
+      "change": "added",
+      "bytes": 1062,
+      "sha256": "d5a5bcb3254dc2bc454775cb15e358ec45800c416a7d6db94d040f99bc49af0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "155f2de893395d098ea8783551d0e58d93bdba292c4326070ab5e32bba78b5db",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/plan.json",
+      "change": "added",
+      "bytes": 5429,
+      "sha256": "0a879f730ce237b867f1274d003b11c284bd63aad13b336877e78da7120159c2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/records/control-saved-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/records/control-saved-jdk21.stdout",
+      "change": "added",
+      "bytes": 786,
+      "sha256": "18b02090f28f194224addf390f634b129873a4267a56324ea5bac6c1da9d0374",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/records/controls.json",
+      "change": "added",
+      "bytes": 5215,
+      "sha256": "8b2a8e9118c36bed68a76ee7d846619738bd1162ea211064de617a92936f1b31",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/records/execution.json",
+      "change": "added",
+      "bytes": 22739,
+      "sha256": "ecafa514c1c9eef20816248130cfc32c652b8e1fca018a647e0630eaf3501839",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/records/streams.json",
+      "change": "added",
+      "bytes": 1957,
+      "sha256": "e91b8733bd140f920f2df20c87ad484ef4a06066de22399ea1e1333732901143",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 584,
+      "sha256": "81c24f53bd3b0ab7f7b5c1e25c750edd31d4d549e5d20fbc25e18f231dc012a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/records/verifier.json",
+      "change": "added",
+      "bytes": 14930,
+      "sha256": "ed7306af464cb3a1993c04de0b9d7722e9f95241fd05413b6a4761937ba2f170",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6604,
+      "sha256": "bff16a8fe54c704f5f1e51fa8fccd07b894748344700fbbb401db3a038ddcf4c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/result.json",
+      "change": "added",
+      "bytes": 18992,
+      "sha256": "3204d01db1af0a096a56c55cec54c662691287b0c60067874942bc06801f63a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-saved/executions/20261120T034859Z-a91cd714/attempt.json",
+      "change": "added",
+      "bytes": 10007,
+      "sha256": "847ce67876647a4d3f5c7d55528b6f83e9107f0d86cc65624a2ca332d0571fa3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-saved/executions/20261120T034859Z-a91cd714/checker.json",
+      "change": "added",
+      "bytes": 7970,
+      "sha256": "f60daaf7b9371c88d22d5e6bce8911317cee3babdd1225cf97f6f2b8c25fbfed",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-saved/executions/20261120T034859Z-a91cd714/correspondence.json",
+      "change": "added",
+      "bytes": 1058,
+      "sha256": "d689629fe87de1a7b19283de4841e934c9876fe01b94ae7cae21ea19e69886c1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/revision-saved/executions/20261120T034859Z-a91cd714/replay.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "e6b02e98c98d1c4cbed1fb859c1c18cb311d12ebe5b143a6e1b453dc3fafdef2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "b2a6ab7132dcdf59e489be11aa8816558758f8c0c099a331d270e5313a566b01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/plan.json",
+      "change": "added",
+      "bytes": 5449,
+      "sha256": "ed7ead5110fc0cfda3b9d6391eff93df8f35508475fa1935464bf1728f434c21",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/records/control-current-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/records/control-current-jdk21.stdout",
+      "change": "added",
+      "bytes": 786,
+      "sha256": "6a15ae823601849a7ccef6a9c2720b914f139b7e5cc488fab789ecbcee2b5dd4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/records/controls.json",
+      "change": "added",
+      "bytes": 5235,
+      "sha256": "c059ef655635b58585ff7141f3f25077ff9c206d302f3b258eeaa9e1f4463678",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/records/execution.json",
+      "change": "added",
+      "bytes": 19633,
+      "sha256": "bbbe9b4130c81c489c6d386fc124c75c75af11419efef6c5b03486a6c07566bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/records/streams.json",
+      "change": "added",
+      "bytes": 1973,
+      "sha256": "a3fc43515cc54434f78e52eeda6570a9f38472dd75016ebd0d2f8f25c3083cc5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 317,
+      "sha256": "0f9663c0815c3071292615a205465728e42f173862c3f197dacbe6e7c1f0c604",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/records/verifier.json",
+      "change": "added",
+      "bytes": 14325,
+      "sha256": "30f623d80fe83032d66f0fcd23aa5f39a279cca1759d26aef2c92f88db2aa4b1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5978,
+      "sha256": "6b59c614d2a5ef04490ab933f9639beef4009b8bed8caf941ba0256e58306b87",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/result.json",
+      "change": "added",
+      "bytes": 17900,
+      "sha256": "58b0878f9cf47e53e003f821549f2ac436224b8357c0589a75c6a5aa25efcec3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-current/executions/20261120T034902Z-c00a3e19/attempt.json",
+      "change": "added",
+      "bytes": 10004,
+      "sha256": "66972d0f86280ac9ce7cb9b2879053ad5e1d9e47c6abf357b37f832efee05dfa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-current/executions/20261120T034902Z-c00a3e19/checker.json",
+      "change": "added",
+      "bytes": 7340,
+      "sha256": "29c218924f9ca164f1bf9863cb97c190e4be47b2db6234cd633cf7e603b031d3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-current/executions/20261120T034902Z-c00a3e19/correspondence.json",
+      "change": "added",
+      "bytes": 1062,
+      "sha256": "d5a5bcb3254dc2bc454775cb15e358ec45800c416a7d6db94d040f99bc49af0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "49205c9c7798221a436d0ba178f95fe08b12fc6b110a667e94c2544d5bad20da",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/plan.json",
+      "change": "added",
+      "bytes": 5427,
+      "sha256": "a3ce5eb8aa9b255432a267aaa7d8d23725a459389839a54b373886818f4fa507",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/records/control-saved-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/records/control-saved-jdk21.stdout",
+      "change": "added",
+      "bytes": 786,
+      "sha256": "18b02090f28f194224addf390f634b129873a4267a56324ea5bac6c1da9d0374",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/records/controls.json",
+      "change": "added",
+      "bytes": 5211,
+      "sha256": "ddd3e6d39333ba29072fef44eb82d0d048bb2add0070e4c43240f51d824c04a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/records/execution.json",
+      "change": "added",
+      "bytes": 19568,
+      "sha256": "7528dac5c465facd4e3081e01db0ed2f8abc5680825e9872908a8cedcdf93dab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/records/streams.json",
+      "change": "added",
+      "bytes": 1957,
+      "sha256": "7f7e0067b6fbb2489fa71a18557306333241e77b5fe4acd481d429d46f791985",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 317,
+      "sha256": "679970c0e802c3fed85524924d40fe6f396032adb678714cbad2855572e37e18",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/records/verifier.json",
+      "change": "added",
+      "bytes": 14272,
+      "sha256": "bef145f1ef30e1921f2d098589a5df5a9a2a917c89ca5fc1547f9f85a1bce1bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5978,
+      "sha256": "43f55f088b5fe46a2404c9ffcc88dd4d34fd8720cd8390a23b572b6cdbbd69af",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/result.json",
+      "change": "added",
+      "bytes": 17861,
+      "sha256": "cc4910a93cdee3f2cd3a09e674e84d01521df15af57091ee1a0d06bce4f2caff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-saved/executions/20261120T034903Z-ccfc17f2/attempt.json",
+      "change": "added",
+      "bytes": 9942,
+      "sha256": "6c785b05f5528b9a5f5abae74a4a39b535d5f4ef66a3eb3b07c455c12ab68b3b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-saved/executions/20261120T034903Z-ccfc17f2/checker.json",
+      "change": "added",
+      "bytes": 7331,
+      "sha256": "c710536846d8ce7d71f14f15f24b9f6cfdc3e6e1b0da38b77d19801229d68c12",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/330-two-editor-interleavings/receipts/serial-saved/executions/20261120T034903Z-ccfc17f2/correspondence.json",
+      "change": "added",
+      "bytes": 1058,
+      "sha256": "d689629fe87de1a7b19283de4841e934c9876fe01b94ae7cae21ea19e69886c1",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T03:49:25+00:00",
+    "applied": [
+      "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/completion.json",
+      "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/plan.json",
+      "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/records/control-current-jdk21.stderr",
+      "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/records/control-current-jdk21.stdout",
+      "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/records/controls.json",
+      "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/records/execution.json",
+      "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/records/streams.json",
+      "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/records/verifier-output.txt",
+      "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/records/verifier.json",
+      "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/records/verifier.stderr",
+      "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/records/verifier.stdout",
+      "examples/330-two-editor-interleavings/receipts/revision-current/20261120T034856Z-f133faa5/result.json",
+      "examples/330-two-editor-interleavings/receipts/revision-current/executions/20261120T034856Z-f133faa5/attempt.json",
+      "examples/330-two-editor-interleavings/receipts/revision-current/executions/20261120T034856Z-f133faa5/checker.json",
+      "examples/330-two-editor-interleavings/receipts/revision-current/executions/20261120T034856Z-f133faa5/correspondence.json",
+      "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/completion.json",
+      "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/plan.json",
+      "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/records/control-saved-jdk21.stderr",
+      "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/records/control-saved-jdk21.stdout",
+      "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/records/controls.json",
+      "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/records/execution.json",
+      "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/records/streams.json",
+      "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/records/verifier-output.txt",
+      "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/records/verifier.json",
+      "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/records/verifier.stderr",
+      "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/records/verifier.stdout",
+      "examples/330-two-editor-interleavings/receipts/revision-saved/20261120T034859Z-a91cd714/result.json",
+      "examples/330-two-editor-interleavings/receipts/revision-saved/executions/20261120T034859Z-a91cd714/attempt.json",
+      "examples/330-two-editor-interleavings/receipts/revision-saved/executions/20261120T034859Z-a91cd714/checker.json",
+      "examples/330-two-editor-interleavings/receipts/revision-saved/executions/20261120T034859Z-a91cd714/correspondence.json",
+      "examples/330-two-editor-interleavings/receipts/revision-saved/executions/20261120T034859Z-a91cd714/replay.json",
+      "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/completion.json",
+      "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/plan.json",
+      "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/records/control-current-jdk21.stderr",
+      "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/records/control-current-jdk21.stdout",
+      "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/records/controls.json",
+      "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/records/execution.json",
+      "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/records/streams.json",
+      "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/records/verifier-output.txt",
+      "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/records/verifier.json",
+      "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/records/verifier.stderr",
+      "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/records/verifier.stdout",
+      "examples/330-two-editor-interleavings/receipts/serial-current/20261120T034902Z-c00a3e19/result.json",
+      "examples/330-two-editor-interleavings/receipts/serial-current/executions/20261120T034902Z-c00a3e19/attempt.json",
+      "examples/330-two-editor-interleavings/receipts/serial-current/executions/20261120T034902Z-c00a3e19/checker.json",
+      "examples/330-two-editor-interleavings/receipts/serial-current/executions/20261120T034902Z-c00a3e19/correspondence.json",
+      "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/completion.json",
+      "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/plan.json",
+      "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/records/control-saved-jdk21.stderr",
+      "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/records/control-saved-jdk21.stdout",
+      "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/records/controls.json",
+      "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/records/execution.json",
+      "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/records/streams.json",
+      "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/records/verifier-output.txt",
+      "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/records/verifier.json",
+      "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/records/verifier.stderr",
+      "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/records/verifier.stdout",
+      "examples/330-two-editor-interleavings/receipts/serial-saved/20261120T034903Z-ccfc17f2/result.json",
+      "examples/330-two-editor-interleavings/receipts/serial-saved/executions/20261120T034903Z-ccfc17f2/attempt.json",
+      "examples/330-two-editor-interleavings/receipts/serial-saved/executions/20261120T034903Z-ccfc17f2/checker.json",
+      "examples/330-two-editor-interleavings/receipts/serial-saved/executions/20261120T034903Z-ccfc17f2/correspondence.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "d00ba7c3f52b04a91fea90e43ff5bd4c92983354",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

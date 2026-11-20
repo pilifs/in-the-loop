@@ -1,0 +1,1246 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-032647-native-323-an-erased-mapper-bridge-rejec",
+  "title": "Native 323 An erased Mapper bridge rejects the wrong runtime type",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 13.0s, peak 143.4 MiB (estimated 2m00s, 2.0 GiB); 121 output file(s) changed; signals: example:task-as-expected×8",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-032647-native-323-an-erased-mapper-bridge-rejec.json",
+    "sha256": "3f81987e71204ba272f506140f1d087a1542716c93855cd7d06481c9d52d6c49",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-032647-native-323-an-erased-mapper-bridge-rejec",
+      "title": "Native 323 An erased Mapper bridge rejects the wrong runtime type",
+      "description": "The compiler-generated bridge casts its input before the typed method increments the entry counter. Run each original claim on its declared subject, preserve all stages and require the independently calibrated observation.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "323"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T03:26:47+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 323 --tasks value-original,value-changed,exception-original,exception-changed,entries-original,entries-changed,typed-agreement-original,typed-agreement-changed --checker-seconds 30",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/323-erased-mapper-bridge/receipts/value-original",
+        "examples/323-erased-mapper-bridge/receipts/value-changed",
+        "examples/323-erased-mapper-bridge/receipts/exception-original",
+        "examples/323-erased-mapper-bridge/receipts/exception-changed",
+        "examples/323-erased-mapper-bridge/receipts/entries-original",
+        "examples/323-erased-mapper-bridge/receipts/entries-changed",
+        "examples/323-erased-mapper-bridge/receipts/typed-agreement-original",
+        "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed"
+      ]
+    }
+  },
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "startedAt": "2026-11-20T03:45:36+00:00",
+  "finishedAt": "2026-11-20T03:48:57+00:00",
+  "wallSeconds": 201.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 150405120,
+    "wallSeconds": 13.0,
+    "cpuSeconds": 20.5,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.11
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 323 --tasks value-original,value-changed,exception-original,exception-changed,entries-original,entries-changed,typed-agreement-original,typed-agreement-changed --checker-seconds 30",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 13.039,
+      "cpuSeconds": 20.483,
+      "cpuThrottledSeconds": 0.88,
+      "peakMemoryBytes": 150405120,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-obligations-o.log",
+        "lines": 16,
+        "bytes": 1872,
+        "sha256": "60690864fb527285b155d254b19d8f413cff42f09d901c792ff7d83379292419",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 8
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "323-erased-mapper-bridge: task value-original: established (completed; as expected), receipt receipts/value-original/20261120T034844Z-5e8a9a64/result.json",
+          "groups": [
+            "323",
+            "value-original",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "323-erased-mapper-bridge: task value-changed: refuted (completed; as expected), receipt receipts/value-changed/20261120T034846Z-e8b1f408/result.json",
+          "groups": [
+            "323",
+            "value-changed",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "323-erased-mapper-bridge: task exception-original: established (completed; as expected), receipt receipts/exception-original/20261120T034850Z-2287fae1/result.json",
+          "groups": [
+            "323",
+            "exception-original",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "323-erased-mapper-bridge: task exception-changed: established (completed; as expected), receipt receipts/exception-changed/20261120T034850Z-768c8d4a/result.json",
+          "groups": [
+            "323",
+            "exception-changed",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 10,
+          "text": "323-erased-mapper-bridge: task entries-original: established (completed; as expected), receipt receipts/entries-original/20261120T034850Z-cc6f8ae2/result.json",
+          "groups": [
+            "323",
+            "entries-original",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 12,
+          "text": "323-erased-mapper-bridge: task entries-changed: established (completed; as expected), receipt receipts/entries-changed/20261120T034851Z-346e7629/result.json",
+          "groups": [
+            "323",
+            "entries-changed",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 14,
+          "text": "323-erased-mapper-bridge: task typed-agreement-original: established (completed; as expected), receipt receipts/typed-agreement-original/20261120T034851Z-8ca55c75/result.json",
+          "groups": [
+            "323",
+            "typed-agreement-original",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 16,
+          "text": "323-erased-mapper-bridge: task typed-agreement-changed: established (completed; as expected), receipt receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/result.json",
+          "groups": [
+            "323",
+            "typed-agreement-changed",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "323-erased-mapper-bridge: running task value-original (target route)",
+        "323-erased-mapper-bridge: task value-original: established (completed; as expected), receipt receipts/value-original/20261120T034844Z-5e8a9a64/result.json",
+        "323-erased-mapper-bridge: running task value-changed (target route)",
+        "323-erased-mapper-bridge: task value-changed: refuted (completed; as expected), receipt receipts/value-changed/20261120T034846Z-e8b1f408/result.json",
+        "323-erased-mapper-bridge: running task exception-original (target route)",
+        "323-erased-mapper-bridge: task exception-original: established (completed; as expected), receipt receipts/exception-original/20261120T034850Z-2287fae1/result.json",
+        "323-erased-mapper-bridge: running task exception-changed (target route)",
+        "323-erased-mapper-bridge: task exception-changed: established (completed; as expected), receipt receipts/exception-changed/20261120T034850Z-768c8d4a/result.json",
+        "323-erased-mapper-bridge: running task entries-original (target route)",
+        "323-erased-mapper-bridge: task entries-original: established (completed; as expected), receipt receipts/entries-original/20261120T034850Z-cc6f8ae2/result.json",
+        "323-erased-mapper-bridge: running task entries-changed (target route)",
+        "323-erased-mapper-bridge: task entries-changed: established (completed; as expected), receipt receipts/entries-changed/20261120T034851Z-346e7629/result.json",
+        "323-erased-mapper-bridge: running task typed-agreement-original (target route)",
+        "323-erased-mapper-bridge: task typed-agreement-original: established (completed; as expected), receipt receipts/typed-agreement-original/20261120T034851Z-8ca55c75/result.json",
+        "323-erased-mapper-bridge: running task typed-agreement-changed (target route)",
+        "323-erased-mapper-bridge: task typed-agreement-changed: established (completed; as expected), receipt receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "a32bb1d916413aadd70087ab52217d5b4af62acb00f825d336b6eae60a790186",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/plan.json",
+      "change": "added",
+      "bytes": 5545,
+      "sha256": "ecce0aaa3048a7a40856a152fcab9c1118471908447a0e59451cbf45561d2d04",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/records/control-original-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/records/control-original-jdk21.stdout",
+      "change": "added",
+      "bytes": 986,
+      "sha256": "5613c1286f0ae6598374a02149f99fd3814fe495e6e923a4c879ef3f2ba9ad81",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/records/controls.json",
+      "change": "added",
+      "bytes": 5273,
+      "sha256": "a127aea9316b94581dd4b3010cb3a064a115724de927c467cbea61080a19603b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/records/execution.json",
+      "change": "added",
+      "bytes": 19561,
+      "sha256": "a4f3e7b4dfe6b53eb3f7a6267e8f3c5f21f433f4ee318b489c372cc0f482bd10",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/records/streams.json",
+      "change": "added",
+      "bytes": 1981,
+      "sha256": "2d48e283eca97efc5d502b3ebfb6b522b2b1bd83b26db7d1288958dcedf56d5b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 285,
+      "sha256": "476713697bdd1101671f0f770b2ec64e25291e3d69e4c87a36952eb663b04920",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/records/verifier.json",
+      "change": "added",
+      "bytes": 14214,
+      "sha256": "0af92c44f9f861b71262d85a511ea889364aebfd16d6d9f459acefaafdea2837",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5877,
+      "sha256": "d51edcf6de290aa6d4762aaf3710f1e0b5ef3a29f6569d6ab359ec28d577328e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/result.json",
+      "change": "added",
+      "bytes": 17805,
+      "sha256": "f9a0c99c706e045a70f8749d72b2ad9978ed919292d6fff5274d0705f2036fb9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-original/executions/20261120T034844Z-5e8a9a64/attempt.json",
+      "change": "added",
+      "bytes": 10421,
+      "sha256": "6167db8440a951403a810dead24fd9d63c746a361de656ba6e80ee89eb98c52a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-original/executions/20261120T034844Z-5e8a9a64/checker.json",
+      "change": "added",
+      "bytes": 7212,
+      "sha256": "56624f10cade9c166dc4d00025e5a1bdcd981e130b1a8c7d2bcf622218b28d1e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-original/executions/20261120T034844Z-5e8a9a64/correspondence.json",
+      "change": "added",
+      "bytes": 1446,
+      "sha256": "14c2a78457104e89cd0c925d1711781efea2e07fbbe38c0d00d47db075cba6c0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "0ae407e8e14a4dab4eb7299aeb5ed56ed0b22974ea969be37ed7fb21ad022423",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/plan.json",
+      "change": "added",
+      "bytes": 5530,
+      "sha256": "130d3e823e235c7f1ee0a10b30c27f47c2b10c163e7e09672c9d74f2b1279e89",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/records/control-changed-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/records/control-changed-jdk21.stdout",
+      "change": "added",
+      "bytes": 986,
+      "sha256": "dc1898167966a40800d0d83a87dc1bcdfc0a662506d30f0d70a20afa8bf81521",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/records/controls.json",
+      "change": "added",
+      "bytes": 5261,
+      "sha256": "42c67c956836b99962062b3db3df95c8d732b2553e0125952b30202d6f8e31b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/records/execution.json",
+      "change": "added",
+      "bytes": 22488,
+      "sha256": "476aa898e02397827cf488c47b5c152dbb7d7089a2b4dd3182fb7b7382083bda",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/records/streams.json",
+      "change": "added",
+      "bytes": 1973,
+      "sha256": "5219a39aaecda96b9af0bb286a9d40896406b1addc9ba9bece3d5c52ea411a45",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 511,
+      "sha256": "47cc0ed83cbb5c73e95ae3da99e1d85a4f1aece8897926ef75fbbada30476198",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/records/verifier.json",
+      "change": "added",
+      "bytes": 14661,
+      "sha256": "e8ab1dce00db3c60c6ab8113d6d57b58d531bcedbf72180c3f402c8de9221d68",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6296,
+      "sha256": "daaaab5b06a6a5eb141176ba00b06e789c02a51731ed7d5c6e35a047ce736118",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/result.json",
+      "change": "added",
+      "bytes": 18522,
+      "sha256": "bd802aa5bf59f01d534905851dacdf885b76b8e04b65d7f63b9ac407d606d60b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-changed/executions/20261120T034846Z-e8b1f408/attempt.json",
+      "change": "added",
+      "bytes": 10512,
+      "sha256": "e8d75258bfe1d29ba75ae4812712bf449e30e9e7e85e0b834c2b6d2b40a5c0e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-changed/executions/20261120T034846Z-e8b1f408/checker.json",
+      "change": "added",
+      "bytes": 7654,
+      "sha256": "6f6aebf6df7462d490e41aa37a32064e653e2b31fd0f44bb5b28cf532a734901",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-changed/executions/20261120T034846Z-e8b1f408/correspondence.json",
+      "change": "added",
+      "bytes": 1444,
+      "sha256": "cd33962bd4a8a7cbfc6fb8470aadd762f8081c92595a4f320d6cf6123d5a9f58",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/value-changed/executions/20261120T034846Z-e8b1f408/replay.json",
+      "change": "added",
+      "bytes": 1966,
+      "sha256": "be1903a42fd87168990202e493df3b00b0a8b65a3311312be212961f0b9bccd5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "403f18ba5d3bc42cea83126133ee9168055503446142c06ef4b08ca537ef598a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/plan.json",
+      "change": "added",
+      "bytes": 5533,
+      "sha256": "c7670c3423ccb38bc7a35d45ba0ca178094ceaa0d243253c06791b21084dd295",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/records/control-original-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/records/control-original-jdk21.stdout",
+      "change": "added",
+      "bytes": 986,
+      "sha256": "5613c1286f0ae6598374a02149f99fd3814fe495e6e923a4c879ef3f2ba9ad81",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/records/controls.json",
+      "change": "added",
+      "bytes": 5281,
+      "sha256": "6138c4b0f78ea8df6e4aaa61d596dc9bf22535d89792123fd5b2c799686fd80d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/records/execution.json",
+      "change": "added",
+      "bytes": 19610,
+      "sha256": "dd8f56aa5f9d6a16fc7d81c70c65c337afc61f8a15d2392a5418926caf0c8bb9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/records/streams.json",
+      "change": "added",
+      "bytes": 1981,
+      "sha256": "08a28c22669393c8dc820a65a854d6711aaa89a42c633edc693fc1889be50775",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 293,
+      "sha256": "5227924ae80bbe6fe7e59890673cc56ae71df79394927d9bac09c7ae6a4db7b0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/records/verifier.json",
+      "change": "added",
+      "bytes": 14271,
+      "sha256": "d3c59e49f3467004105ab3359c5b6acfedf00d104fbd4af803c765bfaf121621",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5892,
+      "sha256": "a2903ceee66cef118b4956b8d0031e5f8d6bcb1fd124c0e77e0d9b5af6dfb053",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/result.json",
+      "change": "added",
+      "bytes": 17820,
+      "sha256": "3a173c0baf4675b7d8494fb6a3b6683b7aa106fa75c605e6eaae0814060961e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-original/executions/20261120T034850Z-2287fae1/attempt.json",
+      "change": "added",
+      "bytes": 10457,
+      "sha256": "9fa327ef8c5bbd7f69859b7b584f9e52d1ec70e1106e84b5e7fe022b810273f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-original/executions/20261120T034850Z-2287fae1/checker.json",
+      "change": "added",
+      "bytes": 7232,
+      "sha256": "478fb3e7b7e3555d8f9e2629588bddc74756a83ee73bba25b6388fd7aae3f503",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-original/executions/20261120T034850Z-2287fae1/correspondence.json",
+      "change": "added",
+      "bytes": 1450,
+      "sha256": "571db890b288924bd225d9df63eb541e0d013d608da816b3d2c3ad4385434881",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "5f3fde1675bb0c6769720ea4021d84977e29b4c66adc2788c3ab938bbb6fab7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/plan.json",
+      "change": "added",
+      "bytes": 5522,
+      "sha256": "490cc1b83ae9fa5265a5c71c1661e7c5687aafb8f1c3cb939a1d1284ae73b4ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/records/control-changed-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/records/control-changed-jdk21.stdout",
+      "change": "added",
+      "bytes": 986,
+      "sha256": "dc1898167966a40800d0d83a87dc1bcdfc0a662506d30f0d70a20afa8bf81521",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/records/controls.json",
+      "change": "added",
+      "bytes": 5269,
+      "sha256": "3e803a3594caa6910fe26638d6fed681edf4bfd402312c51c159e36997508bd3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/records/execution.json",
+      "change": "added",
+      "bytes": 19584,
+      "sha256": "27f61bc5c0b7a3d25047c6764907708be2bdece7f1c13e092b0e20f8effa8262",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/records/streams.json",
+      "change": "added",
+      "bytes": 1973,
+      "sha256": "356bf1d6bd3a8153c1e71499f340b7aeafae5f4d7db71eb498db1e5f0a977225",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 293,
+      "sha256": "5227924ae80bbe6fe7e59890673cc56ae71df79394927d9bac09c7ae6a4db7b0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/records/verifier.json",
+      "change": "added",
+      "bytes": 14251,
+      "sha256": "48b4939ecff1cf440ced219823f2feedf006cc79a89d5e4117b2a4e25b59fd33",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5896,
+      "sha256": "74a903a4ceb38844c16007c4d45771231abf233a94ba14a9e38ff5149b432781",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/result.json",
+      "change": "added",
+      "bytes": 17808,
+      "sha256": "2b9229acb25bbc0aa194a1aecbfef659a064a19663b4e3cb0b68523f31b0f5f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-changed/executions/20261120T034850Z-768c8d4a/attempt.json",
+      "change": "added",
+      "bytes": 10428,
+      "sha256": "e6ae9fe5881ec2344728eabec47fb123873706fba6353b01bdc7f0b561d110f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-changed/executions/20261120T034850Z-768c8d4a/checker.json",
+      "change": "added",
+      "bytes": 7234,
+      "sha256": "ce3d06120f1d0814b31c94979838c276c90fe3fad622dc53412ccc4612636493",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/exception-changed/executions/20261120T034850Z-768c8d4a/correspondence.json",
+      "change": "added",
+      "bytes": 1448,
+      "sha256": "a972e773aabbe1e948206b281166ce5c2b30c1ce3a4003ec0d5727564de280d5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "02a18e9f4098301dfd3dcd941492586a744519c897415fa1a0542a9537b3873d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/plan.json",
+      "change": "added",
+      "bytes": 5549,
+      "sha256": "49549b55d2e6d5871f2a04520fc6092e1a279a5cec54dae74c122d230d5f8177",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/records/control-original-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/records/control-original-jdk21.stdout",
+      "change": "added",
+      "bytes": 986,
+      "sha256": "5613c1286f0ae6598374a02149f99fd3814fe495e6e923a4c879ef3f2ba9ad81",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/records/controls.json",
+      "change": "added",
+      "bytes": 5277,
+      "sha256": "2b531b6e2818831c9d7715a60b074598b105d9c71c8a26a04ed2b17952ad283c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/records/execution.json",
+      "change": "added",
+      "bytes": 19589,
+      "sha256": "5206445f5d186e13cc4e6f49c880122c6a70f417e1d7cbedbf9c473b9d5d0972",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/records/streams.json",
+      "change": "added",
+      "bytes": 1981,
+      "sha256": "968c956903ceeec566834dbb97401c5bd0220c3e476ca2a343251ae446110ef7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 289,
+      "sha256": "1721c13337e92bbf232cfa4c24110936bac9abe3c463de767b0c587ceb167ee5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/records/verifier.json",
+      "change": "added",
+      "bytes": 14246,
+      "sha256": "5ebf2a6cf40b18ed088240aab9900939d2ba605a8b18cf642cf6a3f140c0bf45",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5886,
+      "sha256": "ae0a71415711e6867d081fa1abb71684ada51c229aafe19d0d795a3c98708a1a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/result.json",
+      "change": "added",
+      "bytes": 17821,
+      "sha256": "b8ec6f34659af12a83d621c982009a0ec1f4b21749fe87dc47eea3282e5f8f68",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-original/executions/20261120T034850Z-cc6f8ae2/attempt.json",
+      "change": "added",
+      "bytes": 10441,
+      "sha256": "3e1c83073cde8dcd3089708c4574c82cffad46215fdd45669b0ebe7874a55de8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-original/executions/20261120T034850Z-cc6f8ae2/checker.json",
+      "change": "added",
+      "bytes": 7225,
+      "sha256": "e4ea42bb060216086cd5d2ae2a7cc043a1f696b7bbd3676e04a6ba6dd13ea3e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-original/executions/20261120T034850Z-cc6f8ae2/correspondence.json",
+      "change": "added",
+      "bytes": 1448,
+      "sha256": "8a46301a0cdd6bd51ca21e1b4b0f5e0d2fc1b8bfa32b8ba89ca9d6cb4ad8640c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "de8515097988b8ba14ca979b6cf18371099b4dd20fe622c47df7d8c0bf45de52",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/plan.json",
+      "change": "added",
+      "bytes": 5538,
+      "sha256": "3e798b0e4f6aca582a1b6ff6b16b75a87034ec644bbb9cc71e5a2889f4afac8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/records/control-changed-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/records/control-changed-jdk21.stdout",
+      "change": "added",
+      "bytes": 986,
+      "sha256": "dc1898167966a40800d0d83a87dc1bcdfc0a662506d30f0d70a20afa8bf81521",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/records/controls.json",
+      "change": "added",
+      "bytes": 5265,
+      "sha256": "cc47c41a372f7c46187dceafc3026fbd0acfd0aefbe120329e7addb0e37c5413",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/records/execution.json",
+      "change": "added",
+      "bytes": 19558,
+      "sha256": "7b327044d84efba7acf3722ceb3127907db9888c307fa19af1edd416e5ff0a0b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/records/streams.json",
+      "change": "added",
+      "bytes": 1973,
+      "sha256": "41bbad2a4f1ca7c9bc9dc4ab5297d443a0513c624178d489b5a40cd1697c1a6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 289,
+      "sha256": "1721c13337e92bbf232cfa4c24110936bac9abe3c463de767b0c587ceb167ee5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/records/verifier.json",
+      "change": "added",
+      "bytes": 14221,
+      "sha256": "782bbc795440a2c9057cfcb83e6b710f63f55efb69b223f566c6710ed7751a20",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5887,
+      "sha256": "e8665d2e2eef189af58ddc8b676b91e4db84a4dcd7779677285510ac70d1e024",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/result.json",
+      "change": "added",
+      "bytes": 17802,
+      "sha256": "75d21d9207ce7acca946208ab45a0f5f7fe5c86770b5498649d2da7f919a2b47",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-changed/executions/20261120T034851Z-346e7629/attempt.json",
+      "change": "added",
+      "bytes": 10410,
+      "sha256": "0af710b0ab10245948e446aeaa87d3d77c97704499f7234d8866fe2e41e069c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-changed/executions/20261120T034851Z-346e7629/checker.json",
+      "change": "added",
+      "bytes": 7222,
+      "sha256": "cb84e69d7549bbf8d60aaba8398e00b9dcdd2cfaed218fabaacd715b885c23d6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/entries-changed/executions/20261120T034851Z-346e7629/correspondence.json",
+      "change": "added",
+      "bytes": 1446,
+      "sha256": "f407c89c5bf81da0e5c33c2e6bb0f17465c4d53e52844cee56cb8b3196bd688b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "7a627d9b04ff85aa5488df0fceead1425721a2df9523c3c3b8339740b0463fdd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/plan.json",
+      "change": "added",
+      "bytes": 5619,
+      "sha256": "ae684d70853c8a36d7ba3dda293e18cfa5212d23fb4f9236e1298808f294ad01",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/records/control-original-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/records/control-original-jdk21.stdout",
+      "change": "added",
+      "bytes": 986,
+      "sha256": "5613c1286f0ae6598374a02149f99fd3814fe495e6e923a4c879ef3f2ba9ad81",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/records/controls.json",
+      "change": "added",
+      "bytes": 5303,
+      "sha256": "1ed17e59124a6dc6f80f7591d3a430b871dd122500a66255e24280bea6027bdf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/records/execution.json",
+      "change": "added",
+      "bytes": 19532,
+      "sha256": "652d62d153679eb6033a8ebeb3da1fa72b74949c67ec4f69aec39b121c60478d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/records/streams.json",
+      "change": "added",
+      "bytes": 1981,
+      "sha256": "65bf075f0423fd8ec4de988cbafae7401b8ed516f89583e6982bbee25b556536",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 303,
+      "sha256": "a8525a2b42a133def147e0dd9778c05eff397d39c44cbc1ce606adee3e7a0f95",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/records/verifier.json",
+      "change": "added",
+      "bytes": 14205,
+      "sha256": "0a8792a79c804391e50e28458d855e869229ddc1c4c4acedacaedb262bdff2c3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5912,
+      "sha256": "57e665f07214968572d6b8a0a8d78aa99c350594a5cf892a1b9ddc7f1eeea466",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/result.json",
+      "change": "added",
+      "bytes": 17891,
+      "sha256": "b3fd662e4227717c543e3340017cae8156434a67b1e72ee8ab52dd1d33923d60",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/executions/20261120T034851Z-8ca55c75/attempt.json",
+      "change": "added",
+      "bytes": 10119,
+      "sha256": "9aa263f69a6d80e2502f09827066d8adefdcac7bbde0a3ea217e3299ad5a29df",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/executions/20261120T034851Z-8ca55c75/checker.json",
+      "change": "added",
+      "bytes": 7258,
+      "sha256": "4be8dc8ac99adff5b5518a3b6c2a53c19eaba7fd03a61f3f5b0d9e63e38ae2b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/executions/20261120T034851Z-8ca55c75/correspondence.json",
+      "change": "added",
+      "bytes": 1178,
+      "sha256": "e1fd4af0485a414cf5410e5da9c4f8581e25780db4e3c20d55d6a452c3da37aa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "dceea1b07ce14ab08291a6a6abd1f92e3fbb07228dd83318bc2afaedece0200e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/plan.json",
+      "change": "added",
+      "bytes": 5608,
+      "sha256": "2bb5abda2dabeeb9af09f83bbfcd8c13f00bd6d6de464fd0b90ceabf36cb358e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/records/control-changed-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/records/control-changed-jdk21.stdout",
+      "change": "added",
+      "bytes": 986,
+      "sha256": "dc1898167966a40800d0d83a87dc1bcdfc0a662506d30f0d70a20afa8bf81521",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/records/controls.json",
+      "change": "added",
+      "bytes": 5291,
+      "sha256": "4db1895f2b64fcb5e9cb6df18b17fbcae939d894fd08f599f1abce4b5b0fa954",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/records/execution.json",
+      "change": "added",
+      "bytes": 19497,
+      "sha256": "7a926a1993f2a0c2adfbb80ce32e605a3bad7e4dda3876ca623264a186276111",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/records/streams.json",
+      "change": "added",
+      "bytes": 1973,
+      "sha256": "1f872bda24d69e650f89e4b48c9d2ba0003b28e7d7abd24dcc5c0e5edaa1bd86",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 303,
+      "sha256": "a8525a2b42a133def147e0dd9778c05eff397d39c44cbc1ce606adee3e7a0f95",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/records/verifier.json",
+      "change": "added",
+      "bytes": 14176,
+      "sha256": "8626c189911a0e4a067d7102df696d6f6f4e3b34dde37e6083a1c5c603460679",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5910,
+      "sha256": "d48c8fd40d2d6f2a0dd35577c3d0346f31418d2bfe6a988e8492034d1edc209d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/result.json",
+      "change": "added",
+      "bytes": 17870,
+      "sha256": "cce5ff66f63fa19719ac19e8020e1f76415ca156fb6d6ccc9b834c5b75e30230",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/executions/20261120T034854Z-1f4e6a8a/attempt.json",
+      "change": "added",
+      "bytes": 10086,
+      "sha256": "0b1b7f57331599e91d36347b242dc7a5079e1bbbb4b46b60b92707b1ef87f4ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/executions/20261120T034854Z-1f4e6a8a/checker.json",
+      "change": "added",
+      "bytes": 7252,
+      "sha256": "a833d1f40bfa36095934b211ef2e9e2025b96d61566cbfebf93fb52f1ca283e9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/executions/20261120T034854Z-1f4e6a8a/correspondence.json",
+      "change": "added",
+      "bytes": 1176,
+      "sha256": "c8de6891db57c99269375c9ae980e3f653d6ec56d30a588266f80e3a2a68e87c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T03:49:24+00:00",
+    "applied": [
+      "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/completion.json",
+      "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/plan.json",
+      "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/records/control-original-jdk21.stderr",
+      "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/records/control-original-jdk21.stdout",
+      "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/records/controls.json",
+      "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/records/execution.json",
+      "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/records/streams.json",
+      "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/records/verifier-output.txt",
+      "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/records/verifier.json",
+      "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/records/verifier.stderr",
+      "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/records/verifier.stdout",
+      "examples/323-erased-mapper-bridge/receipts/value-original/20261120T034844Z-5e8a9a64/result.json",
+      "examples/323-erased-mapper-bridge/receipts/value-original/executions/20261120T034844Z-5e8a9a64/attempt.json",
+      "examples/323-erased-mapper-bridge/receipts/value-original/executions/20261120T034844Z-5e8a9a64/checker.json",
+      "examples/323-erased-mapper-bridge/receipts/value-original/executions/20261120T034844Z-5e8a9a64/correspondence.json",
+      "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/completion.json",
+      "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/plan.json",
+      "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/records/control-changed-jdk21.stderr",
+      "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/records/control-changed-jdk21.stdout",
+      "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/records/controls.json",
+      "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/records/execution.json",
+      "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/records/streams.json",
+      "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/records/verifier-output.txt",
+      "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/records/verifier.json",
+      "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/records/verifier.stderr",
+      "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/records/verifier.stdout",
+      "examples/323-erased-mapper-bridge/receipts/value-changed/20261120T034846Z-e8b1f408/result.json",
+      "examples/323-erased-mapper-bridge/receipts/value-changed/executions/20261120T034846Z-e8b1f408/attempt.json",
+      "examples/323-erased-mapper-bridge/receipts/value-changed/executions/20261120T034846Z-e8b1f408/checker.json",
+      "examples/323-erased-mapper-bridge/receipts/value-changed/executions/20261120T034846Z-e8b1f408/correspondence.json",
+      "examples/323-erased-mapper-bridge/receipts/value-changed/executions/20261120T034846Z-e8b1f408/replay.json",
+      "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/completion.json",
+      "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/plan.json",
+      "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/records/control-original-jdk21.stderr",
+      "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/records/control-original-jdk21.stdout",
+      "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/records/controls.json",
+      "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/records/execution.json",
+      "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/records/streams.json",
+      "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/records/verifier-output.txt",
+      "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/records/verifier.json",
+      "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/records/verifier.stderr",
+      "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/records/verifier.stdout",
+      "examples/323-erased-mapper-bridge/receipts/exception-original/20261120T034850Z-2287fae1/result.json",
+      "examples/323-erased-mapper-bridge/receipts/exception-original/executions/20261120T034850Z-2287fae1/attempt.json",
+      "examples/323-erased-mapper-bridge/receipts/exception-original/executions/20261120T034850Z-2287fae1/checker.json",
+      "examples/323-erased-mapper-bridge/receipts/exception-original/executions/20261120T034850Z-2287fae1/correspondence.json",
+      "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/completion.json",
+      "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/plan.json",
+      "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/records/control-changed-jdk21.stderr",
+      "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/records/control-changed-jdk21.stdout",
+      "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/records/controls.json",
+      "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/records/execution.json",
+      "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/records/streams.json",
+      "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/records/verifier-output.txt",
+      "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/records/verifier.json",
+      "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/records/verifier.stderr",
+      "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/records/verifier.stdout",
+      "examples/323-erased-mapper-bridge/receipts/exception-changed/20261120T034850Z-768c8d4a/result.json",
+      "examples/323-erased-mapper-bridge/receipts/exception-changed/executions/20261120T034850Z-768c8d4a/attempt.json",
+      "examples/323-erased-mapper-bridge/receipts/exception-changed/executions/20261120T034850Z-768c8d4a/checker.json",
+      "examples/323-erased-mapper-bridge/receipts/exception-changed/executions/20261120T034850Z-768c8d4a/correspondence.json",
+      "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/completion.json",
+      "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/plan.json",
+      "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/records/control-original-jdk21.stderr",
+      "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/records/control-original-jdk21.stdout",
+      "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/records/controls.json",
+      "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/records/execution.json",
+      "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/records/streams.json",
+      "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/records/verifier-output.txt",
+      "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/records/verifier.json",
+      "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/records/verifier.stderr",
+      "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/records/verifier.stdout",
+      "examples/323-erased-mapper-bridge/receipts/entries-original/20261120T034850Z-cc6f8ae2/result.json",
+      "examples/323-erased-mapper-bridge/receipts/entries-original/executions/20261120T034850Z-cc6f8ae2/attempt.json",
+      "examples/323-erased-mapper-bridge/receipts/entries-original/executions/20261120T034850Z-cc6f8ae2/checker.json",
+      "examples/323-erased-mapper-bridge/receipts/entries-original/executions/20261120T034850Z-cc6f8ae2/correspondence.json",
+      "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/completion.json",
+      "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/plan.json",
+      "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/records/control-changed-jdk21.stderr",
+      "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/records/control-changed-jdk21.stdout",
+      "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/records/controls.json",
+      "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/records/execution.json",
+      "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/records/streams.json",
+      "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/records/verifier-output.txt",
+      "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/records/verifier.json",
+      "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/records/verifier.stderr",
+      "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/records/verifier.stdout",
+      "examples/323-erased-mapper-bridge/receipts/entries-changed/20261120T034851Z-346e7629/result.json",
+      "examples/323-erased-mapper-bridge/receipts/entries-changed/executions/20261120T034851Z-346e7629/attempt.json",
+      "examples/323-erased-mapper-bridge/receipts/entries-changed/executions/20261120T034851Z-346e7629/checker.json",
+      "examples/323-erased-mapper-bridge/receipts/entries-changed/executions/20261120T034851Z-346e7629/correspondence.json",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/completion.json",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/plan.json",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/records/control-original-jdk21.stderr",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/records/control-original-jdk21.stdout",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/records/controls.json",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/records/execution.json",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/records/streams.json",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/records/verifier-output.txt",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/records/verifier.json",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/records/verifier.stderr",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/records/verifier.stdout",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/20261120T034851Z-8ca55c75/result.json",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/executions/20261120T034851Z-8ca55c75/attempt.json",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/executions/20261120T034851Z-8ca55c75/checker.json",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-original/executions/20261120T034851Z-8ca55c75/correspondence.json",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/completion.json",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/plan.json",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/records/control-changed-jdk21.stderr",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/records/control-changed-jdk21.stdout",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/records/controls.json",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/records/execution.json",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/records/streams.json",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/records/verifier-output.txt",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/records/verifier.json",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/records/verifier.stderr",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/records/verifier.stdout",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/result.json",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/executions/20261120T034854Z-1f4e6a8a/attempt.json",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/executions/20261120T034854Z-1f4e6a8a/checker.json",
+      "examples/323-erased-mapper-bridge/receipts/typed-agreement-changed/executions/20261120T034854Z-1f4e6a8a/correspondence.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "d00ba7c3f52b04a91fea90e43ff5bd4c92983354",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

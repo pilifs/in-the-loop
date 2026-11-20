@@ -1,0 +1,136 @@
+{
+  "status": "established",
+  "entry": "editgrid.Projection#revision(I)I",
+  "inputs": 2,
+  "differences": 0,
+  "sides": {
+    "saved": {
+      "commit": "fixture:saved",
+      "entry": {
+        "entry": "editgrid.Projection#revision(I)I",
+        "classSha256": "8cd4eacc50d68cf1b674a24c27ce3267772940a498379d70c47a43e0e4b60856",
+        "loadedFrom": "adapter-saved.jar",
+        "subject": "editgrid.Editor#execute([I)I",
+        "subjectClassSha256": "c394a2e147dfb7ce11a146965e74630fb589228da6dce4b8ce680c88a9d79cd1"
+      },
+      "classpath": [
+        {
+          "path": "adapter-saved.jar",
+          "sha256": "9f4eaad50961e4b1e8a9d456a3d9c41fe2ea6692bad1c8bd06278312980c3680",
+          "role": "adapter"
+        },
+        {
+          "path": "saved.jar",
+          "sha256": "640cd7cbdd55632595801f94673ea6f9d459293bd5535376ca8a5919f2101fa7",
+          "role": "original"
+        }
+      ],
+      "parameter": "code",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 6 && (code == 0 || code == 5))) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = editgrid.Projection.revision(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "7fb5dc2e190d2fef96cda0cbe76d6fbb36857bcfd5ce7fa6af239569334ef31d",
+      "stdoutSha256": "0b0599b901f2b2f93602554e5cb81f6747e1e1c6dae62f8de4bc00021e5bf868",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC"
+      ],
+      "interval": [
+        0,
+        5
+      ],
+      "rows": [
+        {
+          "value": 0,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 1,
+          "admitted": false
+        },
+        {
+          "value": 2,
+          "admitted": false
+        },
+        {
+          "value": 3,
+          "admitted": false
+        },
+        {
+          "value": 4,
+          "admitted": false
+        },
+        {
+          "value": 5,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        }
+      ],
+      "seconds": 0.072,
+      "cpuSeconds": 0.0852,
+      "peakRssBytes": 61526016,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "correspondence": [
+    {
+      "revision": "saved",
+      "entry": "editgrid.Projection#revision(I)I",
+      "adapterSha256": "9f4eaad50961e4b1e8a9d456a3d9c41fe2ea6692bad1c8bd06278312980c3680",
+      "adapterClassSha256": "8cd4eacc50d68cf1b674a24c27ce3267772940a498379d70c47a43e0e4b60856",
+      "subject": {
+        "class": "editgrid.Editor",
+        "method": "execute",
+        "descriptor": "([I)I",
+        "loadedFrom": "saved.jar",
+        "classSha256": "c394a2e147dfb7ce11a146965e74630fb589228da6dce4b8ce680c88a9d79cd1",
+        "adapterCalls": [
+          "editgrid.Editor#execute([I)I"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "Code indexes the six linear extensions of read A before write A and read B before write B. The initial revision is zero. Each read and each write is one explicit transition.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 6,
+      "disagreements": 0
+    }
+  ],
+  "prepareSeconds": 0.002,
+  "controlSeconds": 0.0009,
+  "wallSeconds": 0.7044,
+  "task": "serial-saved",
+  "sourceClaim": "8488739123d714ad",
+  "inputsKey": "bd46f95bdbeb08800ee5db06df1707694a2dc0902af94631d087ad5d7c827eaa",
+  "revisions": [
+    "saved"
+  ],
+  "expected": "established",
+  "sourceLocks": {
+    "saved": "b4e5041c64d350bca334ddc1fd50565e27b88be9b73409d8533f8bf21ae88fdf"
+  }
+}

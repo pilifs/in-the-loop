@@ -2874,6 +2874,7 @@ public class Contracted {
     public static int firstByte(byte[] out) { if (out.length == 0) return 0; new java.util.Random(1).nextBytes(out); return out[0]; }
     public static int filled(byte[] out) { new java.util.Random(1).nextBytes(out); return out.length; }
     public static boolean chained(int n) { StringBuilder b = new StringBuilder(); return b.append((long) n) == b; }
+    public static boolean chainedBoolean(int n) { StringBuilder b = new StringBuilder(); return b.append(n != 0) == b; }
     public static boolean named(int n) { StringBuilder b = new StringBuilder(); return b.append((CharSequence) "n") == b && n == n; }
     public static boolean spelled(int n) { StringBuilder b = new StringBuilder(); return b.append("n") == b && n == n; }
     public static int initialised(int n) { return Table.first() + n; }
@@ -3057,7 +3058,7 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
     let random = block("jdk-constructor:java.util.Random.<init>(J)V", "  call: java.util.Random.<init>(long seed)\n  modifies: nothing\n");
     let fill = block("jdk-void-method:java.util.Random.nextBytes([B)V", "  call: java.util.Random.nextBytes(byte[] bytes)\n  modifies: this, bytes\n");
     let builder = block("jdk-constructor:java.lang.StringBuilder.<init>()V", "  call: java.lang.StringBuilder.<init>()\n  modifies: nothing\n");
-    let append = |result: &str| block("jdk-reference-method:java.lang.StringBuilder.append(J)Ljava/lang/StringBuilder;", &format!("  call: java.lang.StringBuilder.append(long i) -> java.lang.StringBuilder\n  assert: {result}\n  modifies: this\n"));
+    let append = |result: &str| block("jdk-reference-method:java.lang.StringBuilder.append(Z)Ljava/lang/StringBuilder;", &format!("  call: java.lang.StringBuilder.append(boolean flag) -> java.lang.StringBuilder\n  assert: {result}\n  modifies: this\n"));
     let table = block("class-initializer:fixtures.Contracted$Table.<clinit>()V", "  call: fixtures.Contracted$Table.<clinit>()\n  modifies: nothing\n");
     let prove = |name: &str, method: &str, assert: &str, throws: &[&str], blocks: &[&str], engine: Engine| {
         let file = dir.join(format!("{name}.contracts"));
@@ -3169,14 +3170,14 @@ fn a_contract_closes_its_gap_and_the_verdict_rests_on_it() {
         assert!(refused.contains("the JVM's call returns with it false, where the contract says it returns with `assert: (\\forall int i; 0 <= i && i < bytes.length; bytes[i] == 0)` holding"), "{}", o.output);
 
         // A reference result is the object the contract names.
-        let o = prove("chained", "chained", "result", &[], &[&builder, &append("result == this")], engine).unwrap();
+        let o = prove("chained", "chainedBoolean", "result", &[], &[&builder, &append("result == this")], engine).unwrap();
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
         // A contract that says otherwise than the JDK's call: 3b found it only because its witness did not
         // reproduce in the interpreter; the JVM refutes it before any solving.
-        let o = prove("chained-fresh", "chained", "result", &[], &[&builder, &append("\\fresh(result)")], engine).unwrap();
+        let o = prove("chained-fresh", "chainedBoolean", "result", &[], &[&builder, &append("\\fresh(result)")], engine).unwrap();
         assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
         let refused = o.advice.as_ref().map(|a| a.gaps[0].refused_contract.clone().unwrap()).unwrap_or_default();
-        assert!(refused.starts_with("a JVM refutes it: on i=0L the JVM's call returns the object it is called on, where the contract says it returns a new object"), "{}", o.output);
+        assert!(refused.starts_with("a JVM refutes it: on flag=false the JVM's call returns the object it is called on, where the contract says it returns a new object"), "{}", o.output);
 
         // An initializer that throws nothing has run.
         let o = prove("table", "initialised", "result == n + 7", &[], &[&table], engine).unwrap();

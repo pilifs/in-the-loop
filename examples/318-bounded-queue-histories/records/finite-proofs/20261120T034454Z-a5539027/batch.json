@@ -1,0 +1,84 @@
+{
+  "schema": "finite-jvm-batch/v1",
+  "id": "20261120T034454Z-a5539027",
+  "retryOf": null,
+  "order": [
+    "history-reject",
+    "history-evict",
+    "contents-reject",
+    "contents-evict"
+  ],
+  "claims": {
+    "history-reject": {
+      "sourceClaim": "f3d3b70d1ca5e34f",
+      "inputsKey": "3884edc2b33e661f6769e996802f3866bc5184a71e20bd404203d9896a73d243",
+      "revisions": [
+        "reject"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "reject": "1b39ac162cb666a71b204e3bcc6f87b4f7771a900ff3c9a47258cfe8466a3749"
+      }
+    },
+    "history-evict": {
+      "sourceClaim": "f3d3b70d1ca5e34f",
+      "inputsKey": "21582142217426c59e04613f794ed03dffc936841d7171a4de2faa0d46d40007",
+      "revisions": [
+        "evict"
+      ],
+      "expected": "refuted",
+      "sourceLocks": {
+        "evict": "29d9b6d1fa346868acdfbb5eff964f661d4b1b410da901240ee552be138a8a8a"
+      }
+    },
+    "contents-reject": {
+      "sourceClaim": "5f4d3004149c082d",
+      "inputsKey": "37eae3b3a4e97755b31ba019a3144ba2dfefcd563cb6fbda1a577b78a344ac9d",
+      "revisions": [
+        "reject"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "reject": "1b39ac162cb666a71b204e3bcc6f87b4f7771a900ff3c9a47258cfe8466a3749"
+      }
+    },
+    "contents-evict": {
+      "sourceClaim": "5f4d3004149c082d",
+      "inputsKey": "a39a90280bfd3227f22c46f1ea601029a7357db1f29ed75388ae27011013e424",
+      "revisions": [
+        "evict"
+      ],
+      "expected": "refuted",
+      "sourceLocks": {
+        "evict": "29d9b6d1fa346868acdfbb5eff964f661d4b1b410da901240ee552be138a8a8a"
+      }
+    }
+  },
+  "status": "completed",
+  "completed": [
+    {
+      "task": "history-reject",
+      "status": "established",
+      "sha256": "d6606aad77801a180b6f3b905a9d90372a18533eeb76d28e04471321c00fe7be"
+    },
+    {
+      "task": "history-evict",
+      "status": "refuted",
+      "sha256": "a636515f58f29a1573d641609fe5b3802994eb5d2cfdfdd359fc3d3556bc8704"
+    },
+    {
+      "task": "contents-reject",
+      "status": "established",
+      "sha256": "c64e199657ec8dd0d24e4880ee5cf7320be34d528dc5da5e95ed98a85ac2271e"
+    },
+    {
+      "task": "contents-evict",
+      "status": "refuted",
+      "sha256": "f7d7bcbe8ec9ad01089b6e71f28734df058ea063a0976cb79da6631a8d98037b"
+    }
+  ],
+  "missing": [],
+  "secondsPerJvm": 120,
+  "launcherSha256": "8dd2ea5568ee5f61c0f92ca27a09338ca8c33333cceb04fff6370ad131f2c8f8",
+  "scope": "One JVM per claim and revision. Each integer starts with a fresh application class loader, on the pinned runtime and classpath."
+}

@@ -1,0 +1,220 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-032649-exhaustive-jvm-326-commons-lang-duration",
+  "title": "Exhaustive JVM 326 Commons Lang duration fields separated by a literal",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 25.7s, peak 311.4 MiB (estimated 2m00s, 2.0 GiB); 7 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-032649-exhaustive-jvm-326-commons-lang-duration.json",
+    "sha256": "aebf9e765496ba10fbf96430eeb70ae67111385e7242bf643c895d7e9d96da8a",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-032649-exhaustive-jvm-326-commons-lang-duration",
+      "title": "Exhaustive JVM 326 Commons Lang duration fields separated by a literal",
+      "description": "A second H after a literal can incorrectly extend the width of an earlier hour token. Certify the complete integer envelope of each frozen claim, run its actual guard and assertion with fresh application classes at each input, compare the direct data to its oracle, and replay any witness on a separate JVM.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvm:finite-domain",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "326"
+        ]
+      },
+      "expected": "Every admitted point is accounted for and each declared disposition agrees with the independently checked byte-bound certificate.",
+      "submitted": {
+        "at": "2026-11-20T03:26:49+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 8,
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Validate every bounded observation",
+          "run": "python3 examples/tools/build.py 326 --finite-domain --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/326-commons-lang-separated-duration-tokens/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "startedAt": "2026-11-20T03:45:06+00:00",
+  "finishedAt": "2026-11-20T03:45:34+00:00",
+  "wallSeconds": 28.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 326569984,
+    "wallSeconds": 25.7,
+    "cpuSeconds": 42.2,
+    "memoryOfEstimate": 0.15,
+    "durationOfEstimate": 0.21
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Validate every bounded observation",
+      "run": "python3 examples/tools/build.py 326 --finite-domain --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 25.725,
+      "cpuSeconds": 42.153,
+      "cpuThrottledSeconds": 3.628,
+      "peakMemoryBytes": 326569984,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-validate-every-bounded-observa.log",
+        "lines": 6,
+        "bytes": 257,
+        "sha256": "9abf5ddba508ad3ddacec400adf5d7e46ee901fd4685f97371d0a0c2c868486b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "326 separated-parent refuted 52 admitted ",
+        "326 separated-fix established 52 admitted ",
+        "326 quoting-parent established 52 admitted ",
+        "326 quoting-fix established 52 admitted ",
+        "326 adjacent-parent established 26 admitted ",
+        "326 adjacent-fix established 26 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/records/finite-proofs/20261120T034509Z-84c589a8/adjacent-fix.json",
+      "change": "added",
+      "bytes": 12536,
+      "sha256": "7b33c2ea1724de438b788431ef0a259d9ce1e52672871ee141020669ed7eb555",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/records/finite-proofs/20261120T034509Z-84c589a8/adjacent-parent.json",
+      "change": "added",
+      "bytes": 12564,
+      "sha256": "773ce631dd6958448ceeaa4b922f2b467314c532ac37d5e15b540938178aad8d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/records/finite-proofs/20261120T034509Z-84c589a8/batch.json",
+      "change": "added",
+      "bytes": 3627,
+      "sha256": "89f3fb5fa7597b987da9fe3965b06ee05b6fef5a877666fdc298e272b2701957",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/records/finite-proofs/20261120T034509Z-84c589a8/quoting-fix.json",
+      "change": "added",
+      "bytes": 15174,
+      "sha256": "4478d272139fa2ebdcd5e316e430cb201a0c907c10d795eacffb07965031aed3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/records/finite-proofs/20261120T034509Z-84c589a8/quoting-parent.json",
+      "change": "added",
+      "bytes": 15201,
+      "sha256": "ff1547eda602e4ebd6862515a367f676cdad6922e1a684c5080ae30f78fab7d4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/records/finite-proofs/20261120T034509Z-84c589a8/separated-fix.json",
+      "change": "added",
+      "bytes": 15162,
+      "sha256": "b1c3ffea147ecc765aed1ae2d8b6b9d50cb261183a2941afc45b98e4036aa49e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/326-commons-lang-separated-duration-tokens/records/finite-proofs/20261120T034509Z-84c589a8/separated-parent.json",
+      "change": "added",
+      "bytes": 17183,
+      "sha256": "9c802bdb52064db5a57553a4e7826228fadbd463cb9ef5834247cc8a770e1eec",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T03:48:23+00:00",
+    "applied": [
+      "examples/326-commons-lang-separated-duration-tokens/records/finite-proofs/20261120T034509Z-84c589a8/adjacent-fix.json",
+      "examples/326-commons-lang-separated-duration-tokens/records/finite-proofs/20261120T034509Z-84c589a8/adjacent-parent.json",
+      "examples/326-commons-lang-separated-duration-tokens/records/finite-proofs/20261120T034509Z-84c589a8/batch.json",
+      "examples/326-commons-lang-separated-duration-tokens/records/finite-proofs/20261120T034509Z-84c589a8/quoting-fix.json",
+      "examples/326-commons-lang-separated-duration-tokens/records/finite-proofs/20261120T034509Z-84c589a8/quoting-parent.json",
+      "examples/326-commons-lang-separated-duration-tokens/records/finite-proofs/20261120T034509Z-84c589a8/separated-fix.json",
+      "examples/326-commons-lang-separated-duration-tokens/records/finite-proofs/20261120T034509Z-84c589a8/separated-parent.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

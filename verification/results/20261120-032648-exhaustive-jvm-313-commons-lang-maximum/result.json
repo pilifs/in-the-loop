@@ -1,0 +1,202 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-032648-exhaustive-jvm-313-commons-lang-maximum",
+  "title": "Exhaustive JVM 313 Commons Lang maximum distinguishes negative and positive zero",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 24.9s, peak 319.5 MiB (estimated 2m00s, 2.0 GiB); 5 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-032648-exhaustive-jvm-313-commons-lang-maximum.json",
+    "sha256": "be4553b42e2fe70ccb9f682cd93028e0e843f817645696dbc54623826a0e4bab",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-032648-exhaustive-jvm-313-commons-lang-maximum",
+      "title": "Exhaustive JVM 313 Commons Lang maximum distinguishes negative and positive zero",
+      "description": "The historical parent can retain negative zero when a later positive zero is the greater IEEE value. Certify the complete integer envelope of each frozen claim, run its actual guard and assertion with fresh application classes at each input, compare the direct data to its oracle, and replay any witness on a separate JVM.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvm:finite-domain",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "313"
+        ]
+      },
+      "expected": "Every admitted point is accounted for and each declared disposition agrees with the independently checked byte-bound certificate.",
+      "submitted": {
+        "at": "2026-11-20T03:26:48+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 8,
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Validate every bounded observation",
+          "run": "python3 examples/tools/build.py 313 --finite-domain --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/313-commons-lang-signed-zero-max/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "startedAt": "2026-11-20T03:44:48+00:00",
+  "finishedAt": "2026-11-20T03:45:19+00:00",
+  "wallSeconds": 31.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 335036416,
+    "wallSeconds": 24.9,
+    "cpuSeconds": 39.5,
+    "memoryOfEstimate": 0.16,
+    "durationOfEstimate": 0.21
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Validate every bounded observation",
+      "run": "python3 examples/tools/build.py 313 --finite-domain --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 24.89,
+      "cpuSeconds": 39.519,
+      "cpuThrottledSeconds": 2.857,
+      "peakMemoryBytes": 335036416,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-validate-every-bounded-observa.log",
+        "lines": 4,
+        "bytes": 168,
+        "sha256": "fc838ba08e7cf3c7e6aad68f599438d66c5e6eca25f9e31dd61c531577461b5c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "313 numeric-parent established 84 admitted ",
+        "313 numeric-fix established 84 admitted ",
+        "313 raw-bits-parent refuted 84 admitted ",
+        "313 raw-bits-fix established 84 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/records/finite-proofs/20261120T034454Z-9ad67524/batch.json",
+      "change": "added",
+      "bytes": 2558,
+      "sha256": "8a646c28c25f475ecef0b190be3c040e3a7703e24ea265cee6735a777745086e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/records/finite-proofs/20261120T034454Z-9ad67524/numeric-fix.json",
+      "change": "added",
+      "bytes": 18671,
+      "sha256": "4b8ef21c37d8a544e9e39631978b43ec21c41886afb84faa2b5439a1330e9097",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/records/finite-proofs/20261120T034454Z-9ad67524/numeric-parent.json",
+      "change": "added",
+      "bytes": 18698,
+      "sha256": "b1735cbcc3f51e13f7bfa12e0c2181ebfd2c4eef527ded91d9dba7b61a8f03c8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/records/finite-proofs/20261120T034454Z-9ad67524/raw-bits-fix.json",
+      "change": "added",
+      "bytes": 18659,
+      "sha256": "fc360cc9ace566f5796f13641c5d4b51bbae18ff5878ad2bab3ae9c7d7e0c076",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/313-commons-lang-signed-zero-max/records/finite-proofs/20261120T034454Z-9ad67524/raw-bits-parent.json",
+      "change": "added",
+      "bytes": 20627,
+      "sha256": "6205bf490a20baa075f1bd10cc14c85a10c916a1096fb316ee4f7d7812559d28",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T03:48:23+00:00",
+    "applied": [
+      "examples/313-commons-lang-signed-zero-max/records/finite-proofs/20261120T034454Z-9ad67524/batch.json",
+      "examples/313-commons-lang-signed-zero-max/records/finite-proofs/20261120T034454Z-9ad67524/numeric-fix.json",
+      "examples/313-commons-lang-signed-zero-max/records/finite-proofs/20261120T034454Z-9ad67524/numeric-parent.json",
+      "examples/313-commons-lang-signed-zero-max/records/finite-proofs/20261120T034454Z-9ad67524/raw-bits-fix.json",
+      "examples/313-commons-lang-signed-zero-max/records/finite-proofs/20261120T034454Z-9ad67524/raw-bits-parent.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,576 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-032647-native-325-one-label-method-compiled-to",
+  "title": "Native 325 One label method compiled to two bytecode targets",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 8.8s, peak 141.4 MiB (estimated 2m00s, 2.0 GiB); 46 output file(s) changed; signals: example:task-as-expected×3",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-032647-native-325-one-label-method-compiled-to.json",
+    "sha256": "3e3046d03a48b45cfc19deff24fddf4b6fd9aa794b22c2e629a9a656572cbfcb",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-032647-native-325-one-label-method-compiled-to",
+      "title": "Native 325 One label method compiled to two bytecode targets",
+      "description": "The same source lowers to StringBuilder or invokedynamic. A control drops the slash only before a null argument. Run each original claim on its declared subject, preserve all stages and require the independently calibrated observation.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "325"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T03:26:47+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 325 --tasks label-legacy,label-modern,label-changed --checker-seconds 30",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/325-compiler-string-concatenation/receipts/label-legacy",
+        "examples/325-compiler-string-concatenation/receipts/label-modern",
+        "examples/325-compiler-string-concatenation/receipts/label-changed"
+      ]
+    }
+  },
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "startedAt": "2026-11-20T03:45:52+00:00",
+  "finishedAt": "2026-11-20T03:48:53+00:00",
+  "wallSeconds": 181.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 148295680,
+    "wallSeconds": 8.8,
+    "cpuSeconds": 14.1,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 325 --tasks label-legacy,label-modern,label-changed --checker-seconds 30",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 8.823,
+      "cpuSeconds": 14.073,
+      "cpuThrottledSeconds": 0.614,
+      "peakMemoryBytes": 148295680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-obligations-o.log",
+        "lines": 6,
+        "bytes": 707,
+        "sha256": "3fc2af61bb69b91fef7284533416d629d8d6e8d7ed1d4079e4436aac33b08017",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 3
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "325-compiler-string-concatenation: task label-legacy: established (completed; as expected), receipt receipts/label-legacy/20261120T034844Z-6267baa9/result.json",
+          "groups": [
+            "325",
+            "label-legacy",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "325-compiler-string-concatenation: task label-modern: established (completed; as expected), receipt receipts/label-modern/20261120T034846Z-f06ec2cc/result.json",
+          "groups": [
+            "325",
+            "label-modern",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "325-compiler-string-concatenation: task label-changed: refuted (completed; as expected), receipt receipts/label-changed/20261120T034849Z-7460f0f9/result.json",
+          "groups": [
+            "325",
+            "label-changed",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "325-compiler-string-concatenation: running task label-legacy (target route)",
+        "325-compiler-string-concatenation: task label-legacy: established (completed; as expected), receipt receipts/label-legacy/20261120T034844Z-6267baa9/result.json",
+        "325-compiler-string-concatenation: running task label-modern (target route)",
+        "325-compiler-string-concatenation: task label-modern: established (completed; as expected), receipt receipts/label-modern/20261120T034846Z-f06ec2cc/result.json",
+        "325-compiler-string-concatenation: running task label-changed (target route)",
+        "325-compiler-string-concatenation: task label-changed: refuted (completed; as expected), receipt receipts/label-changed/20261120T034849Z-7460f0f9/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "4978df140234d69c9f17f2f01664a61183b40d78bd99d06ebfd1a95ae0221391",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/plan.json",
+      "change": "added",
+      "bytes": 5932,
+      "sha256": "58e0c2aae26bf934f89e547d35eaa1a5f0c92b08a4bc701593905619ca5e6c76",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/records/control-legacy-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/records/control-legacy-jdk21.stdout",
+      "change": "added",
+      "bytes": 675,
+      "sha256": "9822584f58bc4e90b81ab266df915106f1a275ec7df1a6bf2f2dc5582c06eb87",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/records/controls.json",
+      "change": "added",
+      "bytes": 5116,
+      "sha256": "997e53537b2ea5d6c0f2bf45fb74ed7493944f0219a967cb7eb8170304e7e9d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/records/execution.json",
+      "change": "added",
+      "bytes": 19334,
+      "sha256": "3544cb0fbd3495d403b50ab6c1c0482e1bb3e8709a916852e64333b85eac4cf6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "3d544e4eff78a9fdd8c935dde7cc713500db56c16a7148586a5b41b95884e2c8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 284,
+      "sha256": "032e93d482a536369d9b130e844926f1089bec9949018d079e98c473827a5910",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/records/verifier.json",
+      "change": "added",
+      "bytes": 14126,
+      "sha256": "98b9bb55a189dcdd1105d8c56ed6d0274dfa45020ee63193779ad1c886f1a6e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5881,
+      "sha256": "fa49e173136c8306924e85258bc3153fe8be44df0af3b260b71e0913e9bbbad9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/result.json",
+      "change": "added",
+      "bytes": 17751,
+      "sha256": "b4b1c6b55331e3400078773cf5aafe260aad6a362e39e30334809727bf58e4cd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-legacy/executions/20261120T034844Z-6267baa9/attempt.json",
+      "change": "added",
+      "bytes": 10596,
+      "sha256": "245e24ab9dc40163ab6bf621d302d04ae6c79b718a60d28e51ff0607756d4017",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-legacy/executions/20261120T034844Z-6267baa9/checker.json",
+      "change": "added",
+      "bytes": 7208,
+      "sha256": "0e015f0766cd4d5a88121244966196e3d4e327e09b4433d0b643d25304580b0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-legacy/executions/20261120T034844Z-6267baa9/correspondence.json",
+      "change": "added",
+      "bytes": 1085,
+      "sha256": "cb1b3b826ae6db2cb978ac4fb826a76034b31f642f8fbb5d887d8a596f5e56f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "3adb09ddffcde79126d9940d159d7fa3c4e19b863a82165cac92744755239d2b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/plan.json",
+      "change": "added",
+      "bytes": 5772,
+      "sha256": "3823ac90d151428363561090393c0f511695aad27802385d45a5325cc64ca1d2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/records/control-modern-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/records/control-modern-jdk21.stdout",
+      "change": "added",
+      "bytes": 675,
+      "sha256": "9822584f58bc4e90b81ab266df915106f1a275ec7df1a6bf2f2dc5582c06eb87",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/records/controls.json",
+      "change": "added",
+      "bytes": 5116,
+      "sha256": "492500e1e5ce03d9bcd718508f61ea4e0dec0164185b3e79628bf8fa13b398b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/records/execution.json",
+      "change": "added",
+      "bytes": 19332,
+      "sha256": "a902c27cf08a871e8451f35cdbc00d92056daaf876e3ee5c6d0381bea130fcf3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "28b7aa6ed1d1849ff23ff57380f8ae29bac123af45ffee1c8f434d490620eeba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 284,
+      "sha256": "032e93d482a536369d9b130e844926f1089bec9949018d079e98c473827a5910",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/records/verifier.json",
+      "change": "added",
+      "bytes": 14124,
+      "sha256": "c63cb36f55959597e781b2dc25f274c414b69e9dfb86c68205d8f6d528e247a4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5879,
+      "sha256": "5f53294414bc3a0268039e1d587fe3ecf83916c7e6d7c5a8fd13f48745dc059f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/result.json",
+      "change": "added",
+      "bytes": 17748,
+      "sha256": "a92b714d3a7d7e12b3323b06d75e098e2d7d4fbea9f8cadffb3e34a01e9ed1ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-modern/executions/20261120T034846Z-f06ec2cc/attempt.json",
+      "change": "added",
+      "bytes": 10526,
+      "sha256": "d245e13d8b7d6a487098fa905cd00ef4b64f053745206c7715aaad71cba1e584",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-modern/executions/20261120T034846Z-f06ec2cc/checker.json",
+      "change": "added",
+      "bytes": 7206,
+      "sha256": "3394573a62fc7a8c3c3e3494c77dc34e5ff318cd823d7e689ccadd707e657d6f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-modern/executions/20261120T034846Z-f06ec2cc/correspondence.json",
+      "change": "added",
+      "bytes": 1085,
+      "sha256": "06acae45608d4908b142b64b6fb1b272ef4558d0a189683d1d527cc73f6812f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "b3c512c461370ded5a83ee558636da6e8a4995ac70ba5fec76f84dd496c1544c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/plan.json",
+      "change": "added",
+      "bytes": 5787,
+      "sha256": "3c0f422a0371e8176e26a34677ba61367801b5cd282a3843513c15b35ce851ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/records/control-changed-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/records/control-changed-jdk21.stdout",
+      "change": "added",
+      "bytes": 672,
+      "sha256": "6382dd3d3f97bc16b544bff9c7fe65742e9e65f295f80ad537ce4463c193d62c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/records/controls.json",
+      "change": "added",
+      "bytes": 5125,
+      "sha256": "0757dbd9ff800e6cb5f6863259ebc9712d1715de433bbf302a23d218eb21101d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/records/execution.json",
+      "change": "added",
+      "bytes": 22518,
+      "sha256": "2419e4a91863185d2a2ff2c7e6d39ae4b2944241ea718e73aaf9c63104949392",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/records/streams.json",
+      "change": "added",
+      "bytes": 1973,
+      "sha256": "db11436550bfe8893ab6bc44c1952490b1553c9143ea35d4ca8008ec4e27d276",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 576,
+      "sha256": "4e5c3c37f4ae6f005987e2493242b6aa0e75de62579aa231e3b158dafeb9c9d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/records/verifier.json",
+      "change": "added",
+      "bytes": 14938,
+      "sha256": "dfdba5c4aec98c5857f683f629eb8f7118dd8ab82f50445e9667e942dd3fec57",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6585,
+      "sha256": "d90d16fa8853f490ed504b1758c1bb093c65bdea44b7942ce35d7d09ec5d087d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/result.json",
+      "change": "added",
+      "bytes": 19035,
+      "sha256": "d71c4e0ad9a953abb84c0428aa4f2ccca2ff117d0146890824783284be7aacd4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-changed/executions/20261120T034849Z-7460f0f9/attempt.json",
+      "change": "added",
+      "bytes": 10678,
+      "sha256": "e2ec8959cf6d8da526012f121f2cb4e18fe08dfe67fe9f7995582f5770f87254",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-changed/executions/20261120T034849Z-7460f0f9/checker.json",
+      "change": "added",
+      "bytes": 7956,
+      "sha256": "1c0c94401fb957053b0f6aaa3b89982cbe356fdbf966ea67015fa4a4f23d2856",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-changed/executions/20261120T034849Z-7460f0f9/correspondence.json",
+      "change": "added",
+      "bytes": 1087,
+      "sha256": "87d7ee950cfc600f19610c636ac6f1ba7f5c9354d0a28d0942e5526913f78722",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/325-compiler-string-concatenation/receipts/label-changed/executions/20261120T034849Z-7460f0f9/replay.json",
+      "change": "added",
+      "bytes": 1857,
+      "sha256": "e5bc42e271f887014cd37f5674cec8950afb2843276bd18360586fb9e3b4a1b8",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T03:49:24+00:00",
+    "applied": [
+      "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/completion.json",
+      "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/plan.json",
+      "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/records/control-legacy-jdk21.stderr",
+      "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/records/control-legacy-jdk21.stdout",
+      "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/records/controls.json",
+      "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/records/execution.json",
+      "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/records/streams.json",
+      "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/records/verifier-output.txt",
+      "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/records/verifier.json",
+      "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/records/verifier.stderr",
+      "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/records/verifier.stdout",
+      "examples/325-compiler-string-concatenation/receipts/label-legacy/20261120T034844Z-6267baa9/result.json",
+      "examples/325-compiler-string-concatenation/receipts/label-legacy/executions/20261120T034844Z-6267baa9/attempt.json",
+      "examples/325-compiler-string-concatenation/receipts/label-legacy/executions/20261120T034844Z-6267baa9/checker.json",
+      "examples/325-compiler-string-concatenation/receipts/label-legacy/executions/20261120T034844Z-6267baa9/correspondence.json",
+      "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/completion.json",
+      "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/plan.json",
+      "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/records/control-modern-jdk21.stderr",
+      "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/records/control-modern-jdk21.stdout",
+      "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/records/controls.json",
+      "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/records/execution.json",
+      "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/records/streams.json",
+      "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/records/verifier-output.txt",
+      "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/records/verifier.json",
+      "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/records/verifier.stderr",
+      "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/records/verifier.stdout",
+      "examples/325-compiler-string-concatenation/receipts/label-modern/20261120T034846Z-f06ec2cc/result.json",
+      "examples/325-compiler-string-concatenation/receipts/label-modern/executions/20261120T034846Z-f06ec2cc/attempt.json",
+      "examples/325-compiler-string-concatenation/receipts/label-modern/executions/20261120T034846Z-f06ec2cc/checker.json",
+      "examples/325-compiler-string-concatenation/receipts/label-modern/executions/20261120T034846Z-f06ec2cc/correspondence.json",
+      "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/completion.json",
+      "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/plan.json",
+      "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/records/control-changed-jdk21.stderr",
+      "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/records/control-changed-jdk21.stdout",
+      "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/records/controls.json",
+      "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/records/execution.json",
+      "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/records/streams.json",
+      "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/records/verifier-output.txt",
+      "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/records/verifier.json",
+      "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/records/verifier.stderr",
+      "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/records/verifier.stdout",
+      "examples/325-compiler-string-concatenation/receipts/label-changed/20261120T034849Z-7460f0f9/result.json",
+      "examples/325-compiler-string-concatenation/receipts/label-changed/executions/20261120T034849Z-7460f0f9/attempt.json",
+      "examples/325-compiler-string-concatenation/receipts/label-changed/executions/20261120T034849Z-7460f0f9/checker.json",
+      "examples/325-compiler-string-concatenation/receipts/label-changed/executions/20261120T034849Z-7460f0f9/correspondence.json",
+      "examples/325-compiler-string-concatenation/receipts/label-changed/executions/20261120T034849Z-7460f0f9/replay.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "d00ba7c3f52b04a91fea90e43ff5bd4c92983354",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

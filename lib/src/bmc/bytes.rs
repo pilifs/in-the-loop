@@ -423,20 +423,24 @@ impl Engine<'_> {
         (result, self.any(&bad), self.any(&outside))
     }
 
-    /// The decimal digits of the int `value`, as `Integer.toString` writes them: how many units, and the units (a
-    /// cell for each of the eleven the least int has).
+    /// Signed decimal UTF-16 units of an int or long, including the minimum value of each type.
     pub(super) fn decimal(&mut self, value: &Bits) -> (Bits, Vec<Bits>) {
-        const WIDTH: usize = 34;
+        if let Some(n) = self.b.constant_value(value) {
+            let text = n.to_string();
+            return (self.b.constant(text.len() as i64, 32), text.bytes().map(|ch| self.b.constant(i64::from(ch), 16)).collect());
+        }
+        let width = if value.len() == 64 { 64 } else { 34 };
+        let digits_in_type = if value.len() == 64 { 19 } else { 10 };
         let negative = self.b.negative(value);
-        let wide = self.b.sext(value, WIDTH);
+        let wide = self.b.sext(value, width);
         let negated = self.b.neg(&wide);
         let magnitude = self.b.ite_bits(negative, &negated, &wide);
         // The digits from the least: the magnitude's remainders by ten, and how many it has.
-        let ten = self.b.constant(10, WIDTH);
+        let ten = self.b.constant(10, width);
         let mut rest = magnitude;
-        let mut digits: Vec<Bits> = Vec::with_capacity(10);
-        let mut more: Vec<Lit> = Vec::with_capacity(10);
-        for _ in 0..10 {
+        let mut digits: Vec<Bits> = Vec::with_capacity(digits_in_type);
+        let mut more: Vec<Lit> = Vec::with_capacity(digits_in_type);
+        for _ in 0..digits_in_type {
             let (quotient, remainder) = self.b.udivrem(&rest, &ten);
             let digit: Bits = remainder[..4].iter().copied().chain(std::iter::repeat(FALSE)).take(16).collect();
             let character = self.b.constant(i64::from(b'0'), 16);
@@ -447,7 +451,7 @@ impl Engine<'_> {
         }
         // `count`: the digits, at least one.
         let mut count = self.b.constant(1, 32);
-        for (k, &has) in more.iter().enumerate().take(9) {
+        for (k, &has) in more.iter().enumerate().take(digits_in_type - 1) {
             let this = self.b.constant(k as i64 + 2, 32);
             count = self.b.ite_bits(has, &this, &count);
         }
@@ -456,7 +460,7 @@ impl Engine<'_> {
         let length = self.b.ite_bits(negative, &with_sign, &count);
         // The unit at `i`: the sign first, then the digits from the most significant.
         let minus = self.b.constant(i64::from(b'-'), 16);
-        let cells = (0..11)
+        let cells = (0..=digits_in_type)
             .map(|i| {
                 let mut unit = self.b.constant(0, 16);
                 for (k, digit) in digits.iter().enumerate() {

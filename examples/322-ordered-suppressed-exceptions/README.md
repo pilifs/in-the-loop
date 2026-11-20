@@ -7,3 +7,5 @@ The independent JVM oracle covered 8 inputs on each revision. original mismatche
 The table records the direct observations, and each selected adapter field is checked on the full table. The public proof tasks have their own artifact-bound statements and execution histories.
 
 [Frozen inputs and oracle](controls/table.json) · [JVM counts, witnesses and bindings](records/finite-grid.json) · [Required claims](milestones.json) · [Public tasks](target.json)
+
+The first batch could not bind the mask argument to the integer named code in the frozen guard. The corrected adapter exposes that name. Both original JVM calibrations, the refused executions and the fresh-classloader results remain separate.

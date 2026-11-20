@@ -9705,7 +9705,8 @@
       "existingTestsPassed": null,
       "notes": [
         "Each CharSequence operand is an actual String of length zero to three over a and b. The original and altered source builds use the same compiler and flags. The release JAR is a third, independently checked artifact.",
-        "The release and source rebuild each matched 225 expected scores. The shared-row control differed on 44. The public native probe at unwind 18 and array bound 4 reached the multidimensional allocation and reported it outside the fragment. See the probe intention in history and the matching execution in records."
+        "The release and source rebuild each matched 225 expected scores. The shared-row control differed on 44. The public native probe at unwind 18 and array bound 4 reached the multidimensional allocation and reported it outside the fragment. See the probe intention in history and the matching execution in records.",
+        "The original release score claim subsequently passed its strict native check at the original four-cell bound, unwind 18 and 120-second deadline. Bounded multidimensional allocation advanced the first attempt to Integer.valueOf. The next run executed the boxed result and verified the score in 0.726 seconds at 77.8 MiB maximum process RSS. The independent JVM reran all 225 pairs on the release, source rebuild and row-sharing control. [Matrix attempt](records/matrix-transfer.json) · [Boxing transfer](records/boxing-transfer.json)"
       ],
       "source": "https://github.com/apache/commons-text/blob/a70c34e028ab279bb89565606e1ab09011a41bc2/src/main/java/org/apache/commons/text/similarity/LongestCommonSubsequence.java",
       "target": {
@@ -10535,12 +10536,12 @@
           "exceptional-poststate",
           "assignable-poststate"
         ],
-        "readiness": "scaffolded",
+        "readiness": "executable",
         "taskReadiness": {
           "replay": "scaffolded",
-          "exception-class": "scaffolded",
+          "exception-class": "executable",
           "exceptional-poststate": "executable",
-          "assignable-poststate": "scaffolded"
+          "assignable-poststate": "executable"
         },
         "expected": {
           "replay": null,
@@ -10549,9 +10550,9 @@
           "assignable-poststate": "established"
         },
         "claims": {
-          "exception-class": null,
+          "exception-class": "established",
           "exceptional-poststate": "refuted",
-          "assignable-poststate": null
+          "assignable-poststate": "established"
         },
         "receipts": {
           "replay": {
@@ -10562,11 +10563,27 @@
             "expectation": "yes",
             "attempts": 1
           },
+          "exception-class": {
+            "path": "receipts/exception-class/20261120T034903Z-f27a022e/result.json",
+            "attempt": "20261120T034903Z-f27a022e",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
           "exceptional-poststate": {
-            "path": "receipts/exceptional-poststate/20261120T032808Z-02d1dfe7/result.json",
-            "attempt": "20261120T032808Z-02d1dfe7",
+            "path": "receipts/exceptional-poststate/20261120T034909Z-1c1bc422/result.json",
+            "attempt": "20261120T034909Z-1c1bc422",
             "execution": "completed",
             "status": "refuted",
+            "expectation": "yes",
+            "attempts": 2
+          },
+          "assignable-poststate": {
+            "path": "receipts/assignable-poststate/20261120T034910Z-ebda4f36/result.json",
+            "attempt": "20261120T034910Z-ebda4f36",
+            "execution": "completed",
+            "status": "established",
             "expectation": "yes",
             "attempts": 1
           }
@@ -10641,7 +10658,7 @@
         "taskReadiness": {
           "replay": "scaffolded",
           "format-parent": "scaffolded",
-          "format-fix": "scaffolded",
+          "format-fix": "executable",
           "parse-parent": "scaffolded",
           "parse-fix": "scaffolded",
           "round-trip-parent": "scaffolded",
@@ -10658,7 +10675,7 @@
         },
         "claims": {
           "format-parent": null,
-          "format-fix": null,
+          "format-fix": "established",
           "parse-parent": null,
           "parse-fix": null,
           "round-trip-parent": null,
@@ -10670,6 +10687,14 @@
             "attempt": "20261120T023356Z-815f403a",
             "execution": "completed",
             "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "format-fix": {
+            "path": "receipts/format-fix/20261120T034751Z-87d60030/result.json",
+            "attempt": "20261120T034751Z-87d60030",
+            "execution": "completed",
+            "status": "established",
             "expectation": "yes",
             "attempts": 1
           }
@@ -11472,7 +11497,8 @@
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "The independent JVM oracle covered 8 inputs on each revision. original mismatches were 0 for primary, 0 for suppressed, 0 for close. nested mismatches were 0 for primary, 0 for suppressed, 0 for close. reversed mismatches were 1 for primary, 2 for suppressed, 8 for close."
+        "The independent JVM oracle covered 8 inputs on each revision. original mismatches were 0 for primary, 0 for suppressed, 0 for close. nested mismatches were 0 for primary, 0 for suppressed, 0 for close. reversed mismatches were 1 for primary, 2 for suppressed, 8 for close.",
+        "The first batch could not bind the mask argument to the integer named code in the frozen guard. The corrected adapter exposes that name. Both original JVM calibrations, the refused executions and the fresh-classloader results remain separate."
       ],
       "source": null,
       "target": {
@@ -11532,23 +11558,26 @@
         },
         "receipts": {
           "replay": {
-            "path": "receipts/replay/20261120T030517Z-153c582f/result.json",
-            "attempt": "20261120T030517Z-153c582f",
+            "path": "receipts/replay/20261120T034607Z-2215892f/result.json",
+            "attempt": "20261120T034607Z-2215892f",
             "execution": "completed",
             "status": null,
             "expectation": "yes",
             "attempts": 1
           },
           "replay-reversed": {
-            "path": "receipts/replay-reversed/20261120T030520Z-9546e1ad/result.json",
-            "attempt": "20261120T030520Z-9546e1ad",
+            "path": "receipts/replay-reversed/20261120T034614Z-0e58398d/result.json",
+            "attempt": "20261120T034614Z-0e58398d",
             "execution": "completed",
             "status": null,
             "expectation": "yes",
             "attempts": 1
           }
         },
-        "staleReceipts": [],
+        "staleReceipts": [
+          "receipts/replay/20261120T030517Z-153c582f/result.json",
+          "receipts/replay-reversed/20261120T030520Z-9546e1ad/result.json"
+        ],
         "unreadable": [],
         "gaps": [],
         "gapIds": [],
@@ -11616,17 +11645,17 @@
           "typed-agreement-original",
           "typed-agreement-changed"
         ],
-        "readiness": "scaffolded",
+        "readiness": "executable",
         "taskReadiness": {
           "replay": "scaffolded",
-          "value-original": "scaffolded",
-          "value-changed": "scaffolded",
-          "exception-original": "scaffolded",
-          "exception-changed": "scaffolded",
-          "entries-original": "scaffolded",
-          "entries-changed": "scaffolded",
-          "typed-agreement-original": "scaffolded",
-          "typed-agreement-changed": "scaffolded"
+          "value-original": "executable",
+          "value-changed": "executable",
+          "exception-original": "executable",
+          "exception-changed": "executable",
+          "entries-original": "executable",
+          "entries-changed": "executable",
+          "typed-agreement-original": "executable",
+          "typed-agreement-changed": "executable"
         },
         "expected": {
           "replay": null,
@@ -11640,14 +11669,14 @@
           "typed-agreement-changed": "established"
         },
         "claims": {
-          "value-original": null,
-          "value-changed": null,
-          "exception-original": null,
-          "exception-changed": null,
-          "entries-original": null,
-          "entries-changed": null,
-          "typed-agreement-original": null,
-          "typed-agreement-changed": null
+          "value-original": "established",
+          "value-changed": "refuted",
+          "exception-original": "established",
+          "exception-changed": "established",
+          "entries-original": "established",
+          "entries-changed": "established",
+          "typed-agreement-original": "established",
+          "typed-agreement-changed": "established"
         },
         "receipts": {
           "replay": {
@@ -11655,6 +11684,70 @@
             "attempt": "20261120T030856Z-859c175d",
             "execution": "completed",
             "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "value-original": {
+            "path": "receipts/value-original/20261120T034844Z-5e8a9a64/result.json",
+            "attempt": "20261120T034844Z-5e8a9a64",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "value-changed": {
+            "path": "receipts/value-changed/20261120T034846Z-e8b1f408/result.json",
+            "attempt": "20261120T034846Z-e8b1f408",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "exception-original": {
+            "path": "receipts/exception-original/20261120T034850Z-2287fae1/result.json",
+            "attempt": "20261120T034850Z-2287fae1",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "exception-changed": {
+            "path": "receipts/exception-changed/20261120T034850Z-768c8d4a/result.json",
+            "attempt": "20261120T034850Z-768c8d4a",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "entries-original": {
+            "path": "receipts/entries-original/20261120T034850Z-cc6f8ae2/result.json",
+            "attempt": "20261120T034850Z-cc6f8ae2",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "entries-changed": {
+            "path": "receipts/entries-changed/20261120T034851Z-346e7629/result.json",
+            "attempt": "20261120T034851Z-346e7629",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "typed-agreement-original": {
+            "path": "receipts/typed-agreement-original/20261120T034851Z-8ca55c75/result.json",
+            "attempt": "20261120T034851Z-8ca55c75",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "typed-agreement-changed": {
+            "path": "receipts/typed-agreement-changed/20261120T034854Z-1f4e6a8a/result.json",
+            "attempt": "20261120T034854Z-1f4e6a8a",
+            "execution": "completed",
+            "status": "established",
             "expectation": "yes",
             "attempts": 1
           }
@@ -11837,13 +11930,13 @@
           "label-modern",
           "label-changed"
         ],
-        "readiness": "scaffolded",
+        "readiness": "executable",
         "taskReadiness": {
           "replay": "scaffolded",
           "replay-changed": "scaffolded",
-          "label-legacy": "scaffolded",
-          "label-modern": "scaffolded",
-          "label-changed": "scaffolded"
+          "label-legacy": "executable",
+          "label-modern": "executable",
+          "label-changed": "executable"
         },
         "expected": {
           "replay": null,
@@ -11853,9 +11946,9 @@
           "label-changed": "refuted"
         },
         "claims": {
-          "label-legacy": null,
-          "label-modern": null,
-          "label-changed": null
+          "label-legacy": "established",
+          "label-modern": "established",
+          "label-changed": "refuted"
         },
         "receipts": {
           "replay": {
@@ -11871,6 +11964,30 @@
             "attempt": "20261120T030537Z-3cb9a0e3",
             "execution": "completed",
             "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "label-legacy": {
+            "path": "receipts/label-legacy/20261120T034844Z-6267baa9/result.json",
+            "attempt": "20261120T034844Z-6267baa9",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "label-modern": {
+            "path": "receipts/label-modern/20261120T034846Z-f06ec2cc/result.json",
+            "attempt": "20261120T034846Z-f06ec2cc",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "label-changed": {
+            "path": "receipts/label-changed/20261120T034849Z-7460f0f9/result.json",
+            "attempt": "20261120T034849Z-7460f0f9",
+            "execution": "completed",
+            "status": "refuted",
             "expectation": "yes",
             "attempts": 1
           }
@@ -12026,7 +12143,8 @@
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "The independent JVM oracle covered 25 inputs on each revision. parent mismatches were 9 for normal, 17 for days, 0 for reversal. fix mismatches were 0 for normal, 0 for days, 0 for reversal."
+        "The independent JVM oracle covered 25 inputs on each revision. parent mismatches were 9 for normal, 17 for days, 0 for reversal. fix mismatches were 0 for normal, 0 for days, 0 for reversal.",
+        "Two further claims execute both actual directional calls in their Java guard, then test reversal only where both returned. The earlier implication covering all 25 input pairs remains in history."
       ],
       "source": "https://github.com/JodaOrg/joda-time/commit/3a413d7844c22dc6ddd50bf5d0d55ff3589e47ac",
       "target": {
@@ -12042,7 +12160,9 @@
           "reversal-parent",
           "reversal-fix",
           "march-parent",
-          "march-fix"
+          "march-fix",
+          "reversal-on-returns-parent",
+          "reversal-on-returns-fix"
         ],
         "readiness": "scaffolded",
         "taskReadiness": {
@@ -12054,7 +12174,9 @@
           "reversal-parent": "scaffolded",
           "reversal-fix": "scaffolded",
           "march-parent": "scaffolded",
-          "march-fix": "scaffolded"
+          "march-fix": "scaffolded",
+          "reversal-on-returns-parent": "scaffolded",
+          "reversal-on-returns-fix": "scaffolded"
         },
         "expected": {
           "replay": null,
@@ -12065,7 +12187,9 @@
           "reversal-parent": "established",
           "reversal-fix": "established",
           "march-parent": "established",
-          "march-fix": "established"
+          "march-fix": "established",
+          "reversal-on-returns-parent": "established",
+          "reversal-on-returns-fix": "established"
         },
         "claims": {
           "normal-parent": null,
@@ -12075,7 +12199,9 @@
           "reversal-parent": null,
           "reversal-fix": null,
           "march-parent": null,
-          "march-fix": null
+          "march-fix": null,
+          "reversal-on-returns-parent": null,
+          "reversal-on-returns-fix": null
         },
         "receipts": {
           "replay": {
@@ -12181,15 +12307,17 @@
         },
         "receipts": {
           "replay": {
-            "path": "receipts/replay/20261120T031509Z-39eff7e0/result.json",
-            "attempt": "20261120T031509Z-39eff7e0",
+            "path": "receipts/replay/20261120T034708Z-6fa0fe36/result.json",
+            "attempt": "20261120T034708Z-6fa0fe36",
             "execution": "completed",
             "status": null,
             "expectation": "yes",
             "attempts": 1
           }
         },
-        "staleReceipts": [],
+        "staleReceipts": [
+          "receipts/replay/20261120T031509Z-39eff7e0/result.json"
+        ],
         "unreadable": [],
         "gaps": [],
         "gapIds": [],
@@ -12348,13 +12476,13 @@
           "serial-current",
           "serial-saved"
         ],
-        "readiness": "scaffolded",
+        "readiness": "executable",
         "taskReadiness": {
           "replay": "scaffolded",
-          "revision-current": "scaffolded",
-          "revision-saved": "scaffolded",
-          "serial-current": "scaffolded",
-          "serial-saved": "scaffolded"
+          "revision-current": "executable",
+          "revision-saved": "executable",
+          "serial-current": "executable",
+          "serial-saved": "executable"
         },
         "expected": {
           "replay": null,
@@ -12364,10 +12492,10 @@
           "serial-saved": "established"
         },
         "claims": {
-          "revision-current": null,
-          "revision-saved": null,
-          "serial-current": null,
-          "serial-saved": null
+          "revision-current": "established",
+          "revision-saved": "refuted",
+          "serial-current": "established",
+          "serial-saved": "established"
         },
         "receipts": {
           "replay": {
@@ -12375,6 +12503,38 @@
             "attempt": "20261120T031500Z-55c96538",
             "execution": "completed",
             "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "revision-current": {
+            "path": "receipts/revision-current/20261120T034856Z-f133faa5/result.json",
+            "attempt": "20261120T034856Z-f133faa5",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "revision-saved": {
+            "path": "receipts/revision-saved/20261120T034859Z-a91cd714/result.json",
+            "attempt": "20261120T034859Z-a91cd714",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "serial-current": {
+            "path": "receipts/serial-current/20261120T034902Z-c00a3e19/result.json",
+            "attempt": "20261120T034902Z-c00a3e19",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "serial-saved": {
+            "path": "receipts/serial-saved/20261120T034903Z-ccfc17f2/result.json",
+            "attempt": "20261120T034903Z-ccfc17f2",
+            "execution": "completed",
+            "status": "established",
             "expectation": "yes",
             "attempts": 1
           }
@@ -12452,22 +12612,22 @@
           "caller-exact-preservation",
           "caller-parity-preservation"
         ],
-        "readiness": "scaffolded",
+        "readiness": "executable",
         "taskReadiness": {
           "replay": "scaffolded",
           "replay-one-tile": "scaffolded",
           "replay-base-change": "scaffolded",
-          "exact-recursive": "scaffolded",
-          "exact-iterative": "scaffolded",
-          "exact-one-tile": "scaffolded",
-          "exact-base-change": "scaffolded",
-          "parity-recursive": "scaffolded",
-          "parity-iterative": "scaffolded",
-          "parity-one-tile": "scaffolded",
-          "parity-base-change": "scaffolded",
-          "helper-preservation": "scaffolded",
-          "caller-exact-preservation": "scaffolded",
-          "caller-parity-preservation": "scaffolded"
+          "exact-recursive": "executable",
+          "exact-iterative": "executable",
+          "exact-one-tile": "executable",
+          "exact-base-change": "executable",
+          "parity-recursive": "executable",
+          "parity-iterative": "executable",
+          "parity-one-tile": "executable",
+          "parity-base-change": "executable",
+          "helper-preservation": "executable",
+          "caller-exact-preservation": "executable",
+          "caller-parity-preservation": "executable"
         },
         "expected": {
           "replay": null,
@@ -12486,17 +12646,17 @@
           "caller-parity-preservation": "established"
         },
         "claims": {
-          "exact-recursive": null,
-          "exact-iterative": null,
-          "exact-one-tile": null,
-          "exact-base-change": null,
-          "parity-recursive": null,
-          "parity-iterative": null,
-          "parity-one-tile": null,
-          "parity-base-change": null,
-          "helper-preservation": null,
-          "caller-exact-preservation": null,
-          "caller-parity-preservation": null
+          "exact-recursive": "established",
+          "exact-iterative": "established",
+          "exact-one-tile": "refuted",
+          "exact-base-change": "refuted",
+          "parity-recursive": "established",
+          "parity-iterative": "established",
+          "parity-one-tile": "refuted",
+          "parity-base-change": "refuted",
+          "helper-preservation": "established",
+          "caller-exact-preservation": "established",
+          "caller-parity-preservation": "established"
         },
         "receipts": {
           "replay": {
@@ -12520,6 +12680,94 @@
             "attempt": "20261120T031509Z-07933bdd",
             "execution": "completed",
             "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "exact-recursive": {
+            "path": "receipts/exact-recursive/20261120T034901Z-0762e97b/result.json",
+            "attempt": "20261120T034901Z-0762e97b",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "exact-iterative": {
+            "path": "receipts/exact-iterative/20261120T034922Z-23222961/result.json",
+            "attempt": "20261120T034922Z-23222961",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "exact-one-tile": {
+            "path": "receipts/exact-one-tile/20261120T034924Z-331e5dfc/result.json",
+            "attempt": "20261120T034924Z-331e5dfc",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "exact-base-change": {
+            "path": "receipts/exact-base-change/20261120T034926Z-9875af35/result.json",
+            "attempt": "20261120T034926Z-9875af35",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "parity-recursive": {
+            "path": "receipts/parity-recursive/20261120T034940Z-49449625/result.json",
+            "attempt": "20261120T034940Z-49449625",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "parity-iterative": {
+            "path": "receipts/parity-iterative/20261120T034959Z-4ae158ef/result.json",
+            "attempt": "20261120T034959Z-4ae158ef",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "parity-one-tile": {
+            "path": "receipts/parity-one-tile/20261120T035001Z-567a9b7e/result.json",
+            "attempt": "20261120T035001Z-567a9b7e",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "parity-base-change": {
+            "path": "receipts/parity-base-change/20261120T035003Z-b7d30100/result.json",
+            "attempt": "20261120T035003Z-b7d30100",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "helper-preservation": {
+            "path": "receipts/helper-preservation/20261120T035016Z-d28c57a8/result.json",
+            "attempt": "20261120T035016Z-d28c57a8",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "caller-exact-preservation": {
+            "path": "receipts/caller-exact-preservation/20261120T035036Z-62973020/result.json",
+            "attempt": "20261120T035036Z-62973020",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "caller-parity-preservation": {
+            "path": "receipts/caller-parity-preservation/20261120T035056Z-6004d1c1/result.json",
+            "attempt": "20261120T035056Z-6004d1c1",
+            "execution": "completed",
+            "status": "established",
             "expectation": "yes",
             "attempts": 1
           }

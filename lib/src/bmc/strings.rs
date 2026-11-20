@@ -78,7 +78,9 @@ pub fn models_builder(owner: &str, name: &str, descriptor: &str) -> bool {
     owner == BUILDER
         && matches!(
             (name, descriptor),
-            ("<init>", "()V" | "(I)V" | "(Ljava/lang/String;)V") | ("length", "()I") | ("charAt", "(I)C") | ("append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;" | "(Ljava/lang/Object;)Ljava/lang/StringBuilder;" | "(C)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuilder;") | ("appendCodePoint", "(I)Ljava/lang/StringBuilder;") | ("indexOf", "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("substring", "(II)Ljava/lang/String;") | ("delete", "(II)Ljava/lang/StringBuilder;") | ("toString", "()Ljava/lang/String;")
+            ("<init>", "()V" | "(I)V" | "(Ljava/lang/String;)V") | ("length", "()I") | ("charAt", "(I)C") | ("setCharAt", "(IC)V")
+                | ("append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;" | "(Ljava/lang/Object;)Ljava/lang/StringBuilder;" | "(C)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuilder;" | "(J)Ljava/lang/StringBuilder;")
+                | ("appendCodePoint", "(I)Ljava/lang/StringBuilder;") | ("indexOf", "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("substring", "(II)Ljava/lang/String;") | ("delete", "(II)Ljava/lang/StringBuilder;") | ("toString", "()Ljava/lang/String;")
         )
 }
 
@@ -523,6 +525,19 @@ impl Engine<'_> {
                 let value = self.b.zext(&unit, 32);
                 self.branch_throw(path, -inside, "java/lang/StringIndexOutOfBoundsException", Val::I(value))
             }
+            ("setCharAt", [Val::I(index), Val::I(ch)]) => {
+                let inside = self.b.ult(index, &s.length);
+                let unit = self.b.trunc(ch, 16);
+                self.branch_throw_or(path, -inside, "java/lang/StringIndexOutOfBoundsException", |engine, path| {
+                    let buffer = path.objects[o].array.as_mut().expect("the builder's content");
+                    for (i, cell) in buffer.cells.iter_mut().enumerate() {
+                        let at = engine.b.constant(i as i64, 32);
+                        let selected = engine.b.eq(index, &at);
+                        *cell = engine.b.ite_bits(selected, &unit, cell);
+                    }
+                    engine.advance(path);
+                })
+            }
             ("appendCodePoint", [Val::I(ch)]) => {
                 let (valid, units) = self.code_point_units(ch);
                 if valid != FALSE && s.cells.len() + units.cells.len() > MOST_BUILDER_CONTENT {
@@ -550,7 +565,7 @@ impl Engine<'_> {
                         Err(step) => return Some(step),
                     },
                     Val::I(value) if descriptor.starts_with("(C)") => Array { element: Type::Char, length: self.b.constant(1, 32), cells: vec![self.b.trunc(value, 16)], refs: Vec::new() },
-                    Val::I(value) => {
+                    Val::I(value) | Val::J(value) => {
                         let (length, cells) = self.decimal(value);
                         Array { element: Type::Char, length, cells, refs: Vec::new() }
                     }

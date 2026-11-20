@@ -7,3 +7,5 @@ The independent JVM oracle covered 25 inputs on each revision. parent mismatches
 The table records the direct observations, and each selected adapter field is checked on the full table. The public proof tasks have their own artifact-bound statements and execution histories.
 
 [Frozen inputs and oracle](controls/table.json) · [JVM counts, witnesses and bindings](records/finite-grid.json) · [Required claims](milestones.json) · [Public tasks](target.json)
+
+Two further claims execute both actual directional calls in their Java guard, then test reversal only where both returned. The earlier implication covering all 25 input pairs remains in history.

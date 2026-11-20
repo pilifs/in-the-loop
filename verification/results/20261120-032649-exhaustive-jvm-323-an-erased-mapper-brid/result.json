@@ -1,0 +1,238 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-032649-exhaustive-jvm-323-an-erased-mapper-brid",
+  "title": "Exhaustive JVM 323 An erased Mapper bridge rejects the wrong runtime type",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 20.5s, peak 124.7 MiB (estimated 2m00s, 2.0 GiB); 9 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-032649-exhaustive-jvm-323-an-erased-mapper-brid.json",
+    "sha256": "ffa4ef5f34e73e6f06ba57746f14631207ba55fc007568947731f187141bc092",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-032649-exhaustive-jvm-323-an-erased-mapper-brid",
+      "title": "Exhaustive JVM 323 An erased Mapper bridge rejects the wrong runtime type",
+      "description": "The compiler-generated bridge casts its input before the typed method increments the entry counter. Certify the complete integer envelope of each frozen claim, run its actual guard and assertion with fresh application classes at each input, compare the direct data to its oracle, and replay any witness on a separate JVM.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvm:finite-domain",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "323"
+        ]
+      },
+      "expected": "Every admitted point is accounted for and each declared disposition agrees with the independently checked byte-bound certificate.",
+      "submitted": {
+        "at": "2026-11-20T03:26:49+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 8,
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Validate every bounded observation",
+          "run": "python3 examples/tools/build.py 323 --finite-domain --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/323-erased-mapper-bridge/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "startedAt": "2026-11-20T03:44:48+00:00",
+  "finishedAt": "2026-11-20T03:45:14+00:00",
+  "wallSeconds": 26.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 130736128,
+    "wallSeconds": 20.5,
+    "cpuSeconds": 31.2,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.17
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Validate every bounded observation",
+      "run": "python3 examples/tools/build.py 323 --finite-domain --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 20.454,
+      "cpuSeconds": 31.24,
+      "cpuThrottledSeconds": 0.551,
+      "peakMemoryBytes": 130736128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-validate-every-bounded-observa.log",
+        "lines": 8,
+        "bytes": 368,
+        "sha256": "8cf9d5678d29157a816dc29f3b53dcd9e81da1c79b914ad4dc7742364f72d91b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "323 value-original established 5 admitted ",
+        "323 value-changed refuted 5 admitted ",
+        "323 exception-original established 5 admitted ",
+        "323 exception-changed established 5 admitted ",
+        "323 entries-original established 5 admitted ",
+        "323 entries-changed established 5 admitted ",
+        "323 typed-agreement-original established 4 admitted ",
+        "323 typed-agreement-changed established 4 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/323-erased-mapper-bridge/records/finite-proofs/20261120T034454Z-a67ccec8/batch.json",
+      "change": "added",
+      "bytes": 4834,
+      "sha256": "4df56280c6e08ad0ce6cfb6fe227efaae8be04b99f1e97f75afff0d06b5a8f1a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/records/finite-proofs/20261120T034454Z-a67ccec8/entries-changed.json",
+      "change": "added",
+      "bytes": 5287,
+      "sha256": "542d2527234bfcd3b302d385ee307fce9bf3d1632cdf071e3e4780bb5e7b7ace",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/records/finite-proofs/20261120T034454Z-a67ccec8/entries-original.json",
+      "change": "added",
+      "bytes": 5297,
+      "sha256": "d319abd58d06624184264ccc5e8463e826289a7bceb517623ef3e81c860136d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/records/finite-proofs/20261120T034454Z-a67ccec8/exception-changed.json",
+      "change": "added",
+      "bytes": 5297,
+      "sha256": "1b6790fd1610533dcf219c0c2df4fda15a67d9f186ece7800224a265cb317c08",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/records/finite-proofs/20261120T034454Z-a67ccec8/exception-original.json",
+      "change": "added",
+      "bytes": 5307,
+      "sha256": "9878188db6dfbfd43c0addb200af2e07a46edfc520dd45b068f8f883c843a1bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/records/finite-proofs/20261120T034454Z-a67ccec8/typed-agreement-changed.json",
+      "change": "added",
+      "bytes": 4859,
+      "sha256": "52cd85dcce73a06ea11933f85c9ef54c412b43025b55ab17b1dd9b752bd2172d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/records/finite-proofs/20261120T034454Z-a67ccec8/typed-agreement-original.json",
+      "change": "added",
+      "bytes": 4870,
+      "sha256": "e985e8e27483a9155e2a9023c49754eb38e48c2174d467eac0a3e45a6e13daa9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/records/finite-proofs/20261120T034454Z-a67ccec8/value-changed.json",
+      "change": "added",
+      "bytes": 7243,
+      "sha256": "233bc3d2cf3aa6f163b2f4b67b6a5919c0e42927a45e829c6987f40e6ee013b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/323-erased-mapper-bridge/records/finite-proofs/20261120T034454Z-a67ccec8/value-original.json",
+      "change": "added",
+      "bytes": 5287,
+      "sha256": "66ae11a03387a2710d066d42b4c6233db88ef27d7ced41859e7d8dd83ed30950",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T03:48:23+00:00",
+    "applied": [
+      "examples/323-erased-mapper-bridge/records/finite-proofs/20261120T034454Z-a67ccec8/batch.json",
+      "examples/323-erased-mapper-bridge/records/finite-proofs/20261120T034454Z-a67ccec8/entries-changed.json",
+      "examples/323-erased-mapper-bridge/records/finite-proofs/20261120T034454Z-a67ccec8/entries-original.json",
+      "examples/323-erased-mapper-bridge/records/finite-proofs/20261120T034454Z-a67ccec8/exception-changed.json",
+      "examples/323-erased-mapper-bridge/records/finite-proofs/20261120T034454Z-a67ccec8/exception-original.json",
+      "examples/323-erased-mapper-bridge/records/finite-proofs/20261120T034454Z-a67ccec8/typed-agreement-changed.json",
+      "examples/323-erased-mapper-bridge/records/finite-proofs/20261120T034454Z-a67ccec8/typed-agreement-original.json",
+      "examples/323-erased-mapper-bridge/records/finite-proofs/20261120T034454Z-a67ccec8/value-changed.json",
+      "examples/323-erased-mapper-bridge/records/finite-proofs/20261120T034454Z-a67ccec8/value-original.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

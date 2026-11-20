@@ -1,0 +1,238 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-032649-exhaustive-jvm-327-joda-time-distances-b",
+  "title": "Exhaustive JVM 327 Joda-Time distances between leap-year MonthDay values",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 26.0s, peak 228.5 MiB (estimated 2m00s, 2.0 GiB); 9 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-032649-exhaustive-jvm-327-joda-time-distances-b.json",
+    "sha256": "074dea32d9945e7a24829504837999c2554d89031202bbe7a9881833fb85e36f",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-032649-exhaustive-jvm-327-joda-time-distances-b",
+      "title": "Exhaustive JVM 327 Joda-Time distances between leap-year MonthDay values",
+      "description": "Resolving partial dates against a nonleap reference year loses leap day or throws while converting it. Certify the complete integer envelope of each frozen claim, run its actual guard and assertion with fresh application classes at each input, compare the direct data to its oracle, and replay any witness on a separate JVM.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvm:finite-domain",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "327"
+        ]
+      },
+      "expected": "Every admitted point is accounted for and each declared disposition agrees with the independently checked byte-bound certificate.",
+      "submitted": {
+        "at": "2026-11-20T03:26:49+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 8,
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Validate every bounded observation",
+          "run": "python3 examples/tools/build.py 327 --finite-domain --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/327-joda-monthday-distance/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "startedAt": "2026-11-20T03:45:08+00:00",
+  "finishedAt": "2026-11-20T03:45:36+00:00",
+  "wallSeconds": 28.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 239611904,
+    "wallSeconds": 26.0,
+    "cpuSeconds": 41.0,
+    "memoryOfEstimate": 0.11,
+    "durationOfEstimate": 0.22
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Validate every bounded observation",
+      "run": "python3 examples/tools/build.py 327 --finite-domain --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 25.956,
+      "cpuSeconds": 40.956,
+      "cpuThrottledSeconds": 3.459,
+      "peakMemoryBytes": 239611904,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-validate-every-bounded-observa.log",
+        "lines": 8,
+        "bytes": 320,
+        "sha256": "7ed6d3d2f41210cd4e802c598ac4560cdb607c8088d5dbbf412190f7fba4100c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "327 normal-parent refuted 25 admitted ",
+        "327 normal-fix established 25 admitted ",
+        "327 days-parent refuted 25 admitted ",
+        "327 days-fix established 25 admitted ",
+        "327 reversal-parent established 25 admitted ",
+        "327 reversal-fix established 25 admitted ",
+        "327 march-parent established 4 admitted ",
+        "327 march-fix established 4 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/327-joda-monthday-distance/records/finite-proofs/20261120T034511Z-025a4e09/batch.json",
+      "change": "added",
+      "bytes": 4628,
+      "sha256": "f36c42d8c3671eb9afd6dbd104d86db896c69f03de14d50cb9e3d5cb75b1b3a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/records/finite-proofs/20261120T034511Z-025a4e09/days-fix.json",
+      "change": "added",
+      "bytes": 9011,
+      "sha256": "34be4c6a96671b0f27b2306fb9c84bc6575a6bb4dec9079ad3bdbcf7380f38b9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/records/finite-proofs/20261120T034511Z-025a4e09/days-parent.json",
+      "change": "added",
+      "bytes": 11163,
+      "sha256": "27dd113246102ac994eab224d57f093826093454aa8edb9ef566d7e3dbf9dac3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/records/finite-proofs/20261120T034511Z-025a4e09/march-fix.json",
+      "change": "added",
+      "bytes": 6923,
+      "sha256": "7628d1bbe575a04f61f0b8cad9594a3ad54e9f80f16258ee240daad94903a2e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/records/finite-proofs/20261120T034511Z-025a4e09/march-parent.json",
+      "change": "added",
+      "bytes": 6950,
+      "sha256": "9595be1d8d42e341d5341d9f2384b3985d9896b4a1c601c7947b1ff322c93023",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/records/finite-proofs/20261120T034511Z-025a4e09/normal-fix.json",
+      "change": "added",
+      "bytes": 9021,
+      "sha256": "2265fe4be01586cb399eedeb3222b362a51b8f2867c658e746b5ab6b35a0c93e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/records/finite-proofs/20261120T034511Z-025a4e09/normal-parent.json",
+      "change": "added",
+      "bytes": 11170,
+      "sha256": "b45da9f8f784206b7e52a6cf2bb353e5c608ccc00ca1efc8482f55b6fda184d0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/records/finite-proofs/20261120T034511Z-025a4e09/reversal-fix.json",
+      "change": "added",
+      "bytes": 9030,
+      "sha256": "b237e1a3405ed8495367d9063dde0e08bda49fe5888d6a537212a52e5c1ef046",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/records/finite-proofs/20261120T034511Z-025a4e09/reversal-parent.json",
+      "change": "added",
+      "bytes": 9058,
+      "sha256": "6ebbfb237cca19107be7428d02a09ba0ed7a58640354443174386a238d676665",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T03:48:23+00:00",
+    "applied": [
+      "examples/327-joda-monthday-distance/records/finite-proofs/20261120T034511Z-025a4e09/batch.json",
+      "examples/327-joda-monthday-distance/records/finite-proofs/20261120T034511Z-025a4e09/days-fix.json",
+      "examples/327-joda-monthday-distance/records/finite-proofs/20261120T034511Z-025a4e09/days-parent.json",
+      "examples/327-joda-monthday-distance/records/finite-proofs/20261120T034511Z-025a4e09/march-fix.json",
+      "examples/327-joda-monthday-distance/records/finite-proofs/20261120T034511Z-025a4e09/march-parent.json",
+      "examples/327-joda-monthday-distance/records/finite-proofs/20261120T034511Z-025a4e09/normal-fix.json",
+      "examples/327-joda-monthday-distance/records/finite-proofs/20261120T034511Z-025a4e09/normal-parent.json",
+      "examples/327-joda-monthday-distance/records/finite-proofs/20261120T034511Z-025a4e09/reversal-fix.json",
+      "examples/327-joda-monthday-distance/records/finite-proofs/20261120T034511Z-025a4e09/reversal-parent.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

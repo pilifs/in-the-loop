@@ -1,0 +1,301 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-032647-native-328-commons-math-fraction-percent",
+  "title": "Native 328 Commons Math fraction percentages across integer overflow",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 30.7s, peak 470.4 MiB (estimated 2m00s, 2.0 GiB); 6 output file(s) changed; signals: example:not-executed×6",
+  "attention": [
+    "step 1 (Check the frozen obligations on their prepared bytes) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-032647-native-328-commons-math-fraction-percent.json",
+    "sha256": "fbc4ff9bdca5c6027d693905a83ecf1477819be65123e5e4ddcdc1d2c5753a4d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-032647-native-328-commons-math-fraction-percent",
+      "title": "Native 328 Commons Math fraction percentages across integer overflow",
+      "description": "Multiplying a numerator by 100 in its integer representation changes the percentage near the signed 32-bit boundary. Run each original claim on its declared subject, preserve all stages and require the independently calibrated observation.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "328"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T03:26:47+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 328 --tasks bits-parent,bits-fix,normal-parent,normal-fix,small-parent,small-fix --checker-seconds 30",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/328-commons-math-fraction-percentage/receipts/bits-parent",
+        "examples/328-commons-math-fraction-percentage/receipts/bits-fix",
+        "examples/328-commons-math-fraction-percentage/receipts/normal-parent",
+        "examples/328-commons-math-fraction-percentage/receipts/normal-fix",
+        "examples/328-commons-math-fraction-percentage/receipts/small-parent",
+        "examples/328-commons-math-fraction-percentage/receipts/small-fix"
+      ]
+    }
+  },
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "startedAt": "2026-11-20T03:48:53+00:00",
+  "finishedAt": "2026-11-20T03:49:26+00:00",
+  "wallSeconds": 33.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 493203456,
+    "wallSeconds": 30.7,
+    "cpuSeconds": 50.5,
+    "memoryOfEstimate": 0.23,
+    "durationOfEstimate": 0.26
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 328 --tasks bits-parent,bits-fix,normal-parent,normal-fix,small-parent,small-fix --checker-seconds 30",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 30.678,
+      "cpuSeconds": 50.537,
+      "cpuThrottledSeconds": 10.935,
+      "peakMemoryBytes": 493203456,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-obligations-o.log",
+        "lines": 18,
+        "bytes": 1755,
+        "sha256": "76175591c0634adccd5f8bfddd395483c47a2d806993b7bdb2c54789f34a502a",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:not-executed": 6
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "not-executed",
+          "line": 2,
+          "text": "328-commons-math-fraction-percentage: not-executed (task bits-parent: unsupported: prepare (example-targets-runtime): revision parent is failed, not artifacts-ready)",
+          "groups": [
+            "328",
+            "task bits-parent: unsupported: prepare (example-targets-runtime): revision parent is failed, not artifacts-ready"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "not-executed",
+          "line": 5,
+          "text": "328-commons-math-fraction-percentage: not-executed (task bits-fix: unsupported: prepare (example-targets-runtime): revision fix is failed, not artifacts-ready)",
+          "groups": [
+            "328",
+            "task bits-fix: unsupported: prepare (example-targets-runtime): revision fix is failed, not artifacts-ready"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "not-executed",
+          "line": 8,
+          "text": "328-commons-math-fraction-percentage: not-executed (task normal-parent: unsupported: prepare (example-targets-runtime): revision parent is failed, not artifacts-ready)",
+          "groups": [
+            "328",
+            "task normal-parent: unsupported: prepare (example-targets-runtime): revision parent is failed, not artifacts-ready"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "not-executed",
+          "line": 11,
+          "text": "328-commons-math-fraction-percentage: not-executed (task normal-fix: unsupported: prepare (example-targets-runtime): revision fix is failed, not artifacts-ready)",
+          "groups": [
+            "328",
+            "task normal-fix: unsupported: prepare (example-targets-runtime): revision fix is failed, not artifacts-ready"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "not-executed",
+          "line": 14,
+          "text": "328-commons-math-fraction-percentage: not-executed (task small-parent: unsupported: prepare (example-targets-runtime): revision parent is failed, not artifacts-ready)",
+          "groups": [
+            "328",
+            "task small-parent: unsupported: prepare (example-targets-runtime): revision parent is failed, not artifacts-ready"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "not-executed",
+          "line": 17,
+          "text": "328-commons-math-fraction-percentage: not-executed (task small-fix: unsupported: prepare (example-targets-runtime): revision fix is failed, not artifacts-ready)",
+          "groups": [
+            "328",
+            "task small-fix: unsupported: prepare (example-targets-runtime): revision fix is failed, not artifacts-ready"
+          ]
+        }
+      ],
+      "tail": [
+        "328-commons-math-fraction-percentage: running task bits-parent (target route)",
+        "328-commons-math-fraction-percentage: not-executed (task bits-parent: unsupported: prepare (example-targets-runtime): revision parent is failed, not artifacts-ready)",
+        "Not executed: 328-commons-math-fraction-percentage",
+        "328-commons-math-fraction-percentage: running task bits-fix (target route)",
+        "328-commons-math-fraction-percentage: not-executed (task bits-fix: unsupported: prepare (example-targets-runtime): revision fix is failed, not artifacts-ready)",
+        "Not executed: 328-commons-math-fraction-percentage",
+        "328-commons-math-fraction-percentage: running task normal-parent (target route)",
+        "328-commons-math-fraction-percentage: not-executed (task normal-parent: unsupported: prepare (example-targets-runtime): revision parent is failed, not artifacts-ready)",
+        "Not executed: 328-commons-math-fraction-percentage",
+        "328-commons-math-fraction-percentage: running task normal-fix (target route)",
+        "328-commons-math-fraction-percentage: not-executed (task normal-fix: unsupported: prepare (example-targets-runtime): revision fix is failed, not artifacts-ready)",
+        "Not executed: 328-commons-math-fraction-percentage",
+        "328-commons-math-fraction-percentage: running task small-parent (target route)",
+        "328-commons-math-fraction-percentage: not-executed (task small-parent: unsupported: prepare (example-targets-runtime): revision parent is failed, not artifacts-ready)",
+        "Not executed: 328-commons-math-fraction-percentage",
+        "328-commons-math-fraction-percentage: running task small-fix (target route)",
+        "328-commons-math-fraction-percentage: not-executed (task small-fix: unsupported: prepare (example-targets-runtime): revision fix is failed, not artifacts-ready)",
+        "Not executed: 328-commons-math-fraction-percentage"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-parent/executions/20261120T034856Z-14505665/attempt.json",
+      "change": "added",
+      "bytes": 1611,
+      "sha256": "9aae39541dbdadc471e836b3340ee2be5c97095f3603b18c2cf2fb180ba30e03",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/bits-fix/executions/20261120T034901Z-ee3e07a2/attempt.json",
+      "change": "added",
+      "bytes": 1602,
+      "sha256": "bad4583f2a1195fae317b3574da736121de519f2cb05eeb483438e1952ca8039",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-parent/executions/20261120T034907Z-61a64fda/attempt.json",
+      "change": "added",
+      "bytes": 1613,
+      "sha256": "8860cdb6fc10d67476392e45ce1317c2efd7f30ae63de665a6c885946f000906",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/normal-fix/executions/20261120T034912Z-4e984acb/attempt.json",
+      "change": "added",
+      "bytes": 1604,
+      "sha256": "c5aa4a2326330ffab1f88b3d8ff6febaac7e37c9e69e1ef967479edcd8fb0706",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-parent/executions/20261120T034916Z-b3ae2323/attempt.json",
+      "change": "added",
+      "bytes": 1612,
+      "sha256": "9bdb0f79663558ae2ef4298dc357437b3dc12305818150bb632bfc4f0d6ec7ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/receipts/small-fix/executions/20261120T034921Z-27a44bb3/attempt.json",
+      "change": "added",
+      "bytes": 1603,
+      "sha256": "fc3f35ad1a0cf3bdcec675a3378c4c0fdae393413e72201dce0316512cbc9be5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T03:49:54+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/328-commons-math-fraction-percentage/receipts/bits-parent/executions/20261120T034856Z-14505665/attempt.json",
+      "examples/328-commons-math-fraction-percentage/receipts/bits-fix/executions/20261120T034901Z-ee3e07a2/attempt.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-parent/executions/20261120T034907Z-61a64fda/attempt.json",
+      "examples/328-commons-math-fraction-percentage/receipts/normal-fix/executions/20261120T034912Z-4e984acb/attempt.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-parent/executions/20261120T034916Z-b3ae2323/attempt.json",
+      "examples/328-commons-math-fraction-percentage/receipts/small-fix/executions/20261120T034921Z-27a44bb3/attempt.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "d00ba7c3f52b04a91fea90e43ff5bd4c92983354",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-032647-native-328-commons-math-fraction-percent"
+}

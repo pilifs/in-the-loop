@@ -1193,15 +1193,16 @@ def _prepare_slice(plan, revision, locked, workdir):
             # A source file can also declare package-private top-level classes.
             source_name = runtime_jar.source_file(path.read_bytes())
             package = name.rpartition("/")[0]
-            if (name not in companions or not source_name or Path(source_name).name != source_name
-                    or not source_name.endswith(".java") or runtime_jar.class_flags(path.read_bytes()) & 0x0001
+            companion = next((c for c in companions if name == c or name.startswith(c + "$")), None)
+            if (companion not in made or not source_name or Path(source_name).name != source_name
+                    or not source_name.endswith(".java") or runtime_jar.class_flags(made[companion].read_bytes()) & 0x0001
                     or "/".join(filter(None, [package, Path(source_name).stem])) not in tops):
                 stray.append(name)
             else:
                 origins[name] = source_name
         if stray:
             raise Refused("build", f"javac wrote {', '.join(stray)}, which no file of the slice declares")
-        if companions != set(origins):
+        if not companions.issubset(origins):
             raise Refused("build", "a declared companion class was not emitted from an included source")
         # javac may emit no class for a package-info.java containing only documentation.
         missing = sorted(t for t in tops if t not in made and t.rsplit("/", 1)[-1] != "package-info")

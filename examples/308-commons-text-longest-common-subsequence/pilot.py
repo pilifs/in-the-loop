@@ -115,7 +115,10 @@ def main():
     artifacts_from.add_argument("--fetch-locked", action="store_true", help="acquire both Maven JARs by their recorded digests")
     cli.add_argument("--work", type=Path, help="keep the adapter and both source builds for the native check")
     cli.add_argument("--native", type=Path, help="also run this native checker on the release score claim")
+    cli.add_argument("--native-record", type=Path, help="preserve the complete checker JSON from --native")
     args = cli.parse_args()
+    if args.native_record and not args.native:
+        cli.error("--native-record requires --native")
     with tempfile.TemporaryDirectory() as scratch:
         work = (args.work or Path(scratch) / "work").resolve()
         work.mkdir(parents=True, exist_ok=True)
@@ -134,6 +137,11 @@ def main():
         result = run(java_home, artifacts, work)
         if args.native:
             result["native"] = native(args.native.resolve(), java_home, artifacts, work)
+            if args.native_record:
+                raw = (work / "native-outcome.json").read_bytes()
+                if digest(raw) != result["native"]["outcomeSha256"]:
+                    raise ValueError("the saved solver output differs from the measured run")
+                args.native_record.write_bytes(raw)
     print(json.dumps(result, indent=2))
 
 

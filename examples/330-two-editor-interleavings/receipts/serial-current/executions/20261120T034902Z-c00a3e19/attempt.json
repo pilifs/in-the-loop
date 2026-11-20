@@ -1,0 +1,330 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T034902Z-c00a3e19",
+  "task": "serial-current",
+  "claimKey": "8488739123d714ad",
+  "revisions": [
+    "current"
+  ],
+  "startedAt": "2026-11-20T03:49:02.786595+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 30
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-032647-native-330-two-editors-increment-the-sam",
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 0.0018
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 0.0678
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 0.0696
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 0.1135
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 0.927
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 1.0377
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "current": {
+      "revision": "fixture:current",
+      "target": {
+        "class": "editgrid.Editor",
+        "method": "execute",
+        "descriptor": "([I)I",
+        "loadedFrom": "current.jar",
+        "classSha256": "62f86c6a88871daebdc6c56a6118d004d009fe920a0fb90c66537b8a5886279d",
+        "adapterCalls": [
+          "editgrid.Editor#execute([I)I"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "a8d789543603eddd76f5c680b91318bd23295ac36ad7c55da7d63419f2d9b530",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-current.jar",
+          "sha256": "9f4eaad50961e4b1e8a9d456a3d9c41fe2ea6692bad1c8bd06278312980c3680",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "current.jar",
+          "sha256": "011d3fd080b521080904ed6bfbe134ea4a177c02b4315ac16cd9a9573eec96ce",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from current by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "672a87ee614084dbb0c1b90d43be518b20fbd5d7bd7dd836a52084031ea9e14b",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+    "prove",
+    "editgrid.Projection#revision(int)",
+    "--classes",
+    "prepare/current/adapter-current.jar",
+    "--classpath",
+    "prepare/current/current.jar",
+    "--assume",
+    "code >= 0 && code < 6 && (code == 0 || code == 5)",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "4",
+    "--timeout",
+    "30",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "a990d43a599efa7a1b4984bf3be06662596e8c592473bd2ae8c2e19b5082b706",
+    "commit": "a10ab079076ec30343c3ee666712cea363b4e119",
+    "libTree": "d00ba7c3f52b04a91fea90e43ff5bd4c92983354",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 16,
+      "maxArrayLength": 4
+    },
+    "timeout": 30,
+    "scope": {
+      "label": "adapter",
+      "meaning": "Code indexes the six linear extensions of read A before write A and read B before write B. The initial revision is zero. Each read and each write is one explicit transition.",
+      "method": "editgrid.Editor#execute([I)I",
+      "revisions": {
+        "current": {
+          "commit": "fixture:current",
+          "loadedFrom": "current.jar",
+          "classSha256": "62f86c6a88871daebdc6c56a6118d004d009fe920a0fb90c66537b8a5886279d",
+          "origin": "built from current by the fixture recipe",
+          "parameters": {
+            "names": [
+              "schedule"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "editgrid.Projection#revision(I)I",
+        "mapping": "Code indexes the six linear extensions of read A before write A and read B before write B. The initial revision is zero. Each read and each write is one explicit transition.",
+        "correspondence": "finite-oracle",
+        "cases": 6
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "current": [
+        {
+          "path": "adapter-current.jar",
+          "sha256": "9f4eaad50961e4b1e8a9d456a3d9c41fe2ea6692bad1c8bd06278312980c3680",
+          "role": "adapter"
+        },
+        {
+          "path": "current.jar",
+          "sha256": "011d3fd080b521080904ed6bfbe134ea4a177c02b4315ac16cd9a9573eec96ce",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "editgrid.Projection#revision(I)I",
+    "entryBindings": {
+      "current": {
+        "entry": "editgrid.Projection#revision(I)I",
+        "classSha256": "8cd4eacc50d68cf1b674a24c27ce3267772940a498379d70c47a43e0e4b60856",
+        "loadedFrom": "adapter-current.jar",
+        "subject": "editgrid.Editor#execute([I)I",
+        "subjectClassSha256": "62f86c6a88871daebdc6c56a6118d004d009fe920a0fb90c66537b8a5886279d"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "editgrid.Editor#execute([I)I",
+      "checkedEntry": "editgrid.Projection#revision(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 6 && (code == 0 || code == 5)"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "16"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "4"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "editgrid.Projection#revision(I)I",
+        "mapping": "Code indexes the six linear extensions of read A before write A and read B before write B. The initial revision is zero. Each read and each write is one explicit transition.",
+        "correspondence": "finite-oracle",
+        "cases": 6
+      }
+    },
+    "commits": {
+      "current": "fixture:current"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+      "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+      "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "current": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+          "gaps",
+          "--target",
+          "editgrid.Projection#revision(int)",
+          "--classes",
+          "prepare/current/adapter-current.jar",
+          "--classpath",
+          "prepare/current/current.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-current.stdout",
+        "stderr": "verifier/probe-current.stderr",
+        "gaps": []
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.8078,
+      "peakRssBytes": 117198848,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.8078,
+    "peakRssBytes": 117198848,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.811,
+  "missing": [],
+  "receipt": "receipts/serial-current/20261120T034902Z-c00a3e19/result.json",
+  "preparedClaim": "ca4d06206e124a85",
+  "firstBlocker": null,
+  "endedAt": "2026-11-20T03:49:03.824394+00:00"
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-035732-enumerate-reversal-on-normal-monthday-ca",
+  "title": "Enumerate reversal on normal MonthDay calls",
+  "description": "Evaluate both actual directional calls in the guard and require sign reversal only on the inputs where both return. Preserve the earlier material-implication claims and independent exceptional observations.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvm:finite-domain",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "327"
+    ]
+  },
+  "expected": "Retain the actual bounded checker statement, independent results, measurements and any first diagnostic.",
+  "submitted": {
+    "at": "2026-11-20T03:57:32+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "10m"
+  },
+  "steps": [
+    {
+      "name": "Exercise the frozen claims",
+      "run": "python3 examples/tools/build.py 327 --finite-domain --tasks reversal-on-returns-parent,reversal-on-returns-fix --checker-seconds 120",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/327-joda-monthday-distance/records/finite-proofs"
+  ]
+}

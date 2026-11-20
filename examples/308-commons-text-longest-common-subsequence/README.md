@@ -24,3 +24,5 @@ JAR digests, compiles the adapter and the two source variants, disassembles each
 The ordinary replay tasks run the public method on the released and altered artifacts. Their Python oracle checks
 the score for each word pair and rejects duplicated or missing pairs. The immutable receipts and source claim
 are available with `python3 examples/tools/targets/workflow_handoff.py handoff 308` from the repository root.
+
+The original release score claim subsequently passed its strict native check at the original four-cell bound, unwind 18 and 120-second deadline. Bounded multidimensional allocation advanced the first attempt to Integer.valueOf. The next run executed the boxed result and verified the score in 0.726 seconds at 77.8 MiB maximum process RSS. The independent JVM reran all 225 pairs on the release, source rebuild and row-sharing control. [Matrix attempt](records/matrix-transfer.json) · [Boxing transfer](records/boxing-transfer.json)

@@ -1,0 +1,345 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T034846Z-e8b1f408",
+  "task": "value-changed",
+  "claimKey": "ab11d483b6e51946",
+  "revisions": [
+    "changed"
+  ],
+  "startedAt": "2026-11-20T03:48:46.953119+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 30
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-032647-native-323-an-erased-mapper-bridge-rejec",
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 2.293
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 2.3589
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 2.3602
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 2.4064
+    },
+    {
+      "stage": "candidate-recorded",
+      "elapsedSeconds": 2.4705
+    },
+    {
+      "stage": "witness-qualification",
+      "elapsedSeconds": 3.0665
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 3.1695
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "changed": {
+      "revision": "fixture:changed",
+      "target": {
+        "class": "bridgegrid.Plus",
+        "method": "map",
+        "descriptor": "(Ljava/lang/Object;)Ljava/lang/Object;",
+        "loadedFrom": "changed.jar",
+        "classSha256": "72a7eb003bcf14da589c80d0cf9df61e13adbfb1d47bbb6ce74802efa54e1456",
+        "bridgeDispatch": {
+          "receiver": "bridgegrid.Plus",
+          "descriptor": "(Ljava/lang/Object;)Ljava/lang/Object;",
+          "interfaces": [
+            "bridgegrid.Mapper"
+          ],
+          "accessFlags": 4161
+        },
+        "adapterCalls": [
+          "bridgegrid.Mapper#map(Ljava/lang/Object;)Ljava/lang/Object;",
+          "bridgegrid.Plus#<init>()V",
+          "bridgegrid.Plus#map(Ljava/lang/Integer;)Ljava/lang/Integer;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "6f75aeb0e7f687983cdbee8dd7fa83b560f637d3aabbb4a3dc2ec6db586a5445",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-changed.jar",
+          "sha256": "525196bb1cd947b5cc918cf13799d5d32f2830e5f6491a19d63166d4e9a9f9d5",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "changed.jar",
+          "sha256": "2409d202ca6b43fa7273adf14fa5cf9be7f308b709f4034d39d09d4254992131",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from changed by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "4570337b7ff7575ec6e5a69fb4af394a640ebc914ca61fd6001c9a522cd7e964",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+    "prove",
+    "bridgegrid.Projection#value(int)",
+    "--classes",
+    "prepare/changed/adapter-changed.jar",
+    "--classpath",
+    "prepare/changed/changed.jar",
+    "--assume",
+    "code >= 0 && code < 5",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "10",
+    "--timeout",
+    "30",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "a990d43a599efa7a1b4984bf3be06662596e8c592473bd2ae8c2e19b5082b706",
+    "commit": "a10ab079076ec30343c3ee666712cea363b4e119",
+    "libTree": "d00ba7c3f52b04a91fea90e43ff5bd4c92983354",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 16,
+      "maxArrayLength": 10
+    },
+    "timeout": 30,
+    "scope": {
+      "label": "adapter",
+      "meaning": "Code selects null, Integer -1, 0, 1, or String one. Each erased call gets a fresh Plus. The typed-to-erased comparison is restricted to the first four codes.",
+      "method": "bridgegrid.Plus#map(Ljava/lang/Object;)Ljava/lang/Object;",
+      "revisions": {
+        "changed": {
+          "commit": "fixture:changed",
+          "loadedFrom": "changed.jar",
+          "classSha256": "72a7eb003bcf14da589c80d0cf9df61e13adbfb1d47bbb6ce74802efa54e1456",
+          "origin": "built from changed by the fixture recipe",
+          "parameters": {
+            "names": [
+              "n"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "bridgegrid.Projection#value(I)I",
+        "mapping": "Code selects null, Integer -1, 0, 1, or String one. Each erased call gets a fresh Plus. The typed-to-erased comparison is restricted to the first four codes.",
+        "correspondence": "finite-oracle",
+        "cases": 5
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "changed": [
+        {
+          "path": "adapter-changed.jar",
+          "sha256": "525196bb1cd947b5cc918cf13799d5d32f2830e5f6491a19d63166d4e9a9f9d5",
+          "role": "adapter"
+        },
+        {
+          "path": "changed.jar",
+          "sha256": "2409d202ca6b43fa7273adf14fa5cf9be7f308b709f4034d39d09d4254992131",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "bridgegrid.Projection#value(I)I",
+    "entryBindings": {
+      "changed": {
+        "entry": "bridgegrid.Projection#value(I)I",
+        "classSha256": "abf4a8d9446d213304116c73ab4ce36898cde2a5bd0f6ed10e51a15ccebf7942",
+        "loadedFrom": "adapter-changed.jar",
+        "subject": "bridgegrid.Plus#map(Ljava/lang/Object;)Ljava/lang/Object;",
+        "subjectClassSha256": "72a7eb003bcf14da589c80d0cf9df61e13adbfb1d47bbb6ce74802efa54e1456"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "bridgegrid.Plus#map(Ljava/lang/Object;)Ljava/lang/Object;",
+      "checkedEntry": "bridgegrid.Projection#value(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 5"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "16"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "10"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "bridgegrid.Projection#value(I)I",
+        "mapping": "Code selects null, Integer -1, 0, 1, or String one. Each erased call gets a fresh Plus. The typed-to-erased comparison is restricted to the first four codes.",
+        "correspondence": "finite-oracle",
+        "cases": 5
+      }
+    },
+    "commits": {
+      "changed": "fixture:changed"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+      "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+      "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "changed": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+          "gaps",
+          "--target",
+          "bridgegrid.Projection#value(int)",
+          "--classes",
+          "prepare/changed/adapter-changed.jar",
+          "--classpath",
+          "prepare/changed/changed.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-changed.stdout",
+        "stderr": "verifier/probe-changed.stderr",
+        "gaps": []
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0528,
+      "peakRssBytes": 79785984,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0528,
+    "peakRssBytes": 79785984,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.062,
+  "missing": [],
+  "replayEvidence": "replay.json",
+  "receipt": "receipts/value-changed/20261120T034846Z-e8b1f408/result.json",
+  "preparedClaim": "29d8c46a292f60df",
+  "firstBlocker": null,
+  "endedAt": "2026-11-20T03:48:50.122707+00:00"
+}

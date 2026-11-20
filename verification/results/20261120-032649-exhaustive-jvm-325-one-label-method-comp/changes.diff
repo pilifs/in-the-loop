@@ -1,0 +1,682 @@
+--- /dev/null
++++ b/examples/325-compiler-string-concatenation/records/finite-proofs/20261120T034507Z-3e2f5c9c/batch.json
+@@ -0,0 +1,67 @@
++{
++  "schema": "finite-jvm-batch/v1",
++  "id": "20261120T034507Z-3e2f5c9c",
++  "retryOf": null,
++  "order": [
++    "label-legacy",
++    "label-modern",
++    "label-changed"
++  ],
++  "claims": {
++    "label-legacy": {
++      "sourceClaim": "fa6d8638769a3bdd",
++      "inputsKey": "3869f9cd8a61165ec1692d519550dff6de80fac84b7b8cfd3a70aef3999ca0ba",
++      "revisions": [
++        "legacy"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "legacy": "db1ad724c3039002d3d48d8681642a43117580c16c79eb355c5657a4b67f3114"
++      }
++    },
++    "label-modern": {
++      "sourceClaim": "fa6d8638769a3bdd",
++      "inputsKey": "b0ec174d4bf0d8a93dcd5fd7c4a048563ba3c9a92c002a95206ebc7e64af6f46",
++      "revisions": [
++        "modern"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "modern": "6d69b661ead54fbcd59a05da0a7713cd11da9011655252fb5338e43645f4b084"
++      }
++    },
++    "label-changed": {
++      "sourceClaim": "fa6d8638769a3bdd",
++      "inputsKey": "8f044966cc9d7435c79b1256b6307c6204e4f3f30e49933641c18439c1d3ec19",
++      "revisions": [
++        "changed"
++      ],
++      "expected": "refuted",
++      "sourceLocks": {
++        "changed": "a6f9271c9ad12da971098c45ff58bfcb3484658f8c2a307623d2858fb6c6665f"
++      }
++    }
++  },
++  "status": "completed",
++  "completed": [
++    {
++      "task": "label-legacy",
++      "status": "established",
++      "sha256": "891d6776d28a43fb2fd8c3c11315f87a03e6bcfc51a93033c6be7e774eb51e91"
++    },
++    {
++      "task": "label-modern",
++      "status": "established",
++      "sha256": "8a868d6298ac3fcf469b21bee96c8a2a1c63711fca756c97891b13068dee7069"
++    },
++    {
++      "task": "label-changed",
++      "status": "refuted",
++      "sha256": "b060851c1bad396523e084631bbc4a58f75fb9665ffb704013281efe7d54f1f2"
++    }
++  ],
++  "missing": [],
++  "secondsPerJvm": 120,
++  "launcherSha256": "8dd2ea5568ee5f61c0f92ca27a09338ca8c33333cceb04fff6370ad131f2c8f8",
++  "scope": "One JVM per claim and revision. Each integer starts with a fresh application class loader, on the pinned runtime and classpath."
++}
+--- /dev/null
++++ b/examples/325-compiler-string-concatenation/records/finite-proofs/20261120T034507Z-3e2f5c9c/label-changed.json
+@@ -0,0 +1,237 @@
++{
++  "status": "refuted",
++  "entry": "labelgrid.Projection#label(I)I",
++  "inputs": 9,
++  "differences": 3,
++  "sides": {
++    "changed": {
++      "commit": "fixture:changed",
++      "entry": {
++        "entry": "labelgrid.Projection#label(I)I",
++        "classSha256": "53a0bf6166b883c8f8208daa9c8840ff4d7caa6f525a350f7898341abbead595",
++        "loadedFrom": "adapter-changed.jar",
++        "subject": "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;",
++        "subjectClassSha256": "820c80ea7b8cd88be1f4bc2887eb4b98027c3d07f6c3a897b181e758db393ff4"
++      },
++      "classpath": [
++        {
++          "path": "adapter-changed.jar",
++          "sha256": "a7d6fba548ad73069b9c45512c73ef967a6ab65bec94e53b7ab41c7cd0ba025e",
++          "role": "adapter"
++        },
++        {
++          "path": "changed.jar",
++          "sha256": "69eb44bb040af6bccce7d8cf906347dc3e0dcc95d16300c4989a82aebab2b86f",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 9)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = labelgrid.Projection.label(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "1e51ce58c2b9b650799e51add426354871dbaef6aa748488bc3a30516070248d",
++      "stdoutSha256": "40f457b5c6ccd08865ba1b848f18681a7792ebb7a025d5f9affd919e08716a87",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        8
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.109,
++      "cpuSeconds": 0.1434,
++      "peakRssBytes": 61202432,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "changed",
++      "entry": "labelgrid.Projection#label(I)I",
++      "adapterSha256": "a7d6fba548ad73069b9c45512c73ef967a6ab65bec94e53b7ab41c7cd0ba025e",
++      "adapterClassSha256": "53a0bf6166b883c8f8208daa9c8840ff4d7caa6f525a350f7898341abbead595",
++      "subject": {
++        "class": "labelgrid.Label",
++        "method": "label",
++        "descriptor": "(ILjava/lang/String;)Ljava/lang/String;",
++        "loadedFrom": "changed.jar",
++        "classSha256": "820c80ea7b8cd88be1f4bc2887eb4b98027c3d07f6c3a897b181e758db393ff4",
++        "adapterCalls": [
++          "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "For n = -1,0,10 and s = null, empty, x, the returned characters are compared with a nine-entry literal oracle. All builds run on JDK 21.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 9,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 2.6477,
++  "controlSeconds": 0.1725,
++  "replay": {
++    "claimKey": "fa6d8638769a3bdd",
++    "entry": "labelgrid.Projection#label(I)I",
++    "inputs": [
++      {
++        "name": "code",
++        "type": "int",
++        "value": 0
++      }
++    ],
++    "observations": [
++      "result",
++      "exception"
++    ],
++    "by": "jvm",
++    "reproduced": true,
++    "sides": {
++      "changed": {
++        "entryClassSha256": "53a0bf6166b883c8f8208daa9c8840ff4d7caa6f525a350f7898341abbead595",
++        "classpath": [
++          "a7d6fba548ad73069b9c45512c73ef967a6ab65bec94e53b7ab41c7cd0ba025e",
++          "69eb44bb040af6bccce7d8cf906347dc3e0dcc95d16300c4989a82aebab2b86f"
++        ],
++        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 0;\nif (!(code >= 0 && code < 9)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = labelgrid.Projection.label(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++        "admitted": true,
++        "values": [
++          0,
++          null
++        ],
++        "satisfies": false
++      }
++    },
++    "jdkRelease": {
++      "JAVA_VERSION": "21.0.13",
++      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++      "IMPLEMENTOR": "Eclipse Adoptium",
++      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++      "OS_ARCH": "x86_64"
++    },
++    "finiteObservation": {
++      "id": 0,
++      "input": [
++        -1,
++        null
++      ],
++      "field": "label",
++      "direct": {
++        "changed": {
++          "label": "S-1null"
++        }
++      },
++      "tableSha256": "f76ef4e06716d0550b13c766ca53c0763477dc7caa1d8f9453bc7e8c4f08e6d0"
++    }
++  },
++  "wallSeconds": 4.4442,
++  "task": "label-changed",
++  "sourceClaim": "fa6d8638769a3bdd",
++  "inputsKey": "8f044966cc9d7435c79b1256b6307c6204e4f3f30e49933641c18439c1d3ec19",
++  "revisions": [
++    "changed"
++  ],
++  "expected": "refuted",
++  "sourceLocks": {
++    "changed": "a6f9271c9ad12da971098c45ff58bfcb3484658f8c2a307623d2858fb6c6665f"
++  }
++}
+--- /dev/null
++++ b/examples/325-compiler-string-concatenation/records/finite-proofs/20261120T034507Z-3e2f5c9c/label-legacy.json
+@@ -0,0 +1,183 @@
++{
++  "status": "established",
++  "entry": "labelgrid.Projection#label(I)I",
++  "inputs": 9,
++  "differences": 0,
++  "sides": {
++    "legacy": {
++      "commit": "fixture:legacy",
++      "entry": {
++        "entry": "labelgrid.Projection#label(I)I",
++        "classSha256": "53a0bf6166b883c8f8208daa9c8840ff4d7caa6f525a350f7898341abbead595",
++        "loadedFrom": "adapter-legacy.jar",
++        "subject": "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;",
++        "subjectClassSha256": "5ab0eb4c2150c75593a54cda1439dc5114dab60fa91b9b186ba61e18af4ebb76"
++      },
++      "classpath": [
++        {
++          "path": "adapter-legacy.jar",
++          "sha256": "a7d6fba548ad73069b9c45512c73ef967a6ab65bec94e53b7ab41c7cd0ba025e",
++          "role": "adapter"
++        },
++        {
++          "path": "legacy.jar",
++          "sha256": "a662fff12195aca0b49e5fc7a579b2ed99d90c0cd3b75d0b4ac3fefe6dace075",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 9)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = labelgrid.Projection.label(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "1e51ce58c2b9b650799e51add426354871dbaef6aa748488bc3a30516070248d",
++      "stdoutSha256": "5004735e8d80e4da0eb1d67e80d3e924c11f0cf6d5ecca5da95a103edb17bd85",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        8
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.107,
++      "cpuSeconds": 0.1284,
++      "peakRssBytes": 61202432,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "legacy",
++      "entry": "labelgrid.Projection#label(I)I",
++      "adapterSha256": "a7d6fba548ad73069b9c45512c73ef967a6ab65bec94e53b7ab41c7cd0ba025e",
++      "adapterClassSha256": "53a0bf6166b883c8f8208daa9c8840ff4d7caa6f525a350f7898341abbead595",
++      "subject": {
++        "class": "labelgrid.Label",
++        "method": "label",
++        "descriptor": "(ILjava/lang/String;)Ljava/lang/String;",
++        "loadedFrom": "legacy.jar",
++        "classSha256": "5ab0eb4c2150c75593a54cda1439dc5114dab60fa91b9b186ba61e18af4ebb76",
++        "adapterCalls": [
++          "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "For n = -1,0,10 and s = null, empty, x, the returned characters are compared with a nine-entry literal oracle. All builds run on JDK 21.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 9,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 2.8978,
++  "controlSeconds": 0.119,
++  "wallSeconds": 3.946,
++  "task": "label-legacy",
++  "sourceClaim": "fa6d8638769a3bdd",
++  "inputsKey": "3869f9cd8a61165ec1692d519550dff6de80fac84b7b8cfd3a70aef3999ca0ba",
++  "revisions": [
++    "legacy"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "legacy": "db1ad724c3039002d3d48d8681642a43117580c16c79eb355c5657a4b67f3114"
++  }
++}
+--- /dev/null
++++ b/examples/325-compiler-string-concatenation/records/finite-proofs/20261120T034507Z-3e2f5c9c/label-modern.json
+@@ -0,0 +1,183 @@
++{
++  "status": "established",
++  "entry": "labelgrid.Projection#label(I)I",
++  "inputs": 9,
++  "differences": 0,
++  "sides": {
++    "modern": {
++      "commit": "fixture:legacy",
++      "entry": {
++        "entry": "labelgrid.Projection#label(I)I",
++        "classSha256": "53a0bf6166b883c8f8208daa9c8840ff4d7caa6f525a350f7898341abbead595",
++        "loadedFrom": "adapter-modern.jar",
++        "subject": "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;",
++        "subjectClassSha256": "07dff2778df240b0c418e41ca11cbadbaeca38c0d36e6e5bb363d6400e3a5f4b"
++      },
++      "classpath": [
++        {
++          "path": "adapter-modern.jar",
++          "sha256": "a7d6fba548ad73069b9c45512c73ef967a6ab65bec94e53b7ab41c7cd0ba025e",
++          "role": "adapter"
++        },
++        {
++          "path": "modern.jar",
++          "sha256": "3c1585f0faceb2187078129c454de651940244788abc027cea66cdf77a30166d",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 9)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = labelgrid.Projection.label(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "1e51ce58c2b9b650799e51add426354871dbaef6aa748488bc3a30516070248d",
++      "stdoutSha256": "5004735e8d80e4da0eb1d67e80d3e924c11f0cf6d5ecca5da95a103edb17bd85",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        8
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.105,
++      "cpuSeconds": 0.1348,
++      "peakRssBytes": 61202432,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "modern",
++      "entry": "labelgrid.Projection#label(I)I",
++      "adapterSha256": "a7d6fba548ad73069b9c45512c73ef967a6ab65bec94e53b7ab41c7cd0ba025e",
++      "adapterClassSha256": "53a0bf6166b883c8f8208daa9c8840ff4d7caa6f525a350f7898341abbead595",
++      "subject": {
++        "class": "labelgrid.Label",
++        "method": "label",
++        "descriptor": "(ILjava/lang/String;)Ljava/lang/String;",
++        "loadedFrom": "modern.jar",
++        "classSha256": "07dff2778df240b0c418e41ca11cbadbaeca38c0d36e6e5bb363d6400e3a5f4b",
++        "adapterCalls": [
++          "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "For n = -1,0,10 and s = null, empty, x, the returned characters are compared with a nine-entry literal oracle. All builds run on JDK 21.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 9,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 2.6192,
++  "controlSeconds": 0.1187,
++  "wallSeconds": 3.4947,
++  "task": "label-modern",
++  "sourceClaim": "fa6d8638769a3bdd",
++  "inputsKey": "b0ec174d4bf0d8a93dcd5fd7c4a048563ba3c9a92c002a95206ebc7e64af6f46",
++  "revisions": [
++    "modern"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "modern": "6d69b661ead54fbcd59a05da0a7713cd11da9011655252fb5338e43645f4b084"
++  }
++}

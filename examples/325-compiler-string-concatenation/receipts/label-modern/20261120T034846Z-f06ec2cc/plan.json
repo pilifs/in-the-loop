@@ -1,0 +1,204 @@
+{
+  "plan": {
+    "example": "325",
+    "task": "label-modern",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;",
+    "revisions": [
+      "modern"
+    ],
+    "claim": {
+      "task": "label-modern",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;",
+      "file": "claims/label.json",
+      "sha256": "57509729235e71b47ac667cf62e3bd9a12003eed76ac0d76f1c3e304c02a72be",
+      "property": "label",
+      "claimKind": "property",
+      "statement": "The returned sequence of characters equals the frozen nine-entry literal table.",
+      "assume": "code >= 0 && code < 9",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/labelgrid/Cases.java",
+          "sha256": "84c066da84feeddb369adf8a948f31f754c1a6b59241a56799899dcecd946c19"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "f76ef4e06716d0550b13c766ca53c0763477dc7caa1d8f9453bc7e8c4f08e6d0"
+        }
+      ],
+      "adapter": {
+        "entry": "labelgrid.Projection#label(I)I",
+        "mapping": "For n = -1,0,10 and s = null, empty, x, the returned characters are compared with a nine-entry literal oracle. All builds run on JDK 21.",
+        "correspondence": "finite-oracle",
+        "cases": 9
+      },
+      "key": "fa6d8638769a3bdd"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "modern",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "legacy",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-g",
+            "-parameters"
+          ]
+        },
+        "adapters": [
+          "adapter/labelgrid/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/label-modern"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-032647-native-325-one-label-method-compiled-to/examples/325-compiler-string-concatenation",
+    "network": false
+  },
+  "inputs": {
+    "example": "325",
+    "task": "label-modern",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;",
+    "revisions": [
+      "modern"
+    ],
+    "claim": {
+      "task": "label-modern",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "labelgrid.Label#label(ILjava/lang/String;)Ljava/lang/String;",
+      "file": "claims/label.json",
+      "sha256": "57509729235e71b47ac667cf62e3bd9a12003eed76ac0d76f1c3e304c02a72be",
+      "property": "label",
+      "claimKind": "property",
+      "statement": "The returned sequence of characters equals the frozen nine-entry literal table.",
+      "assume": "code >= 0 && code < 9",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/labelgrid/Cases.java",
+          "sha256": "84c066da84feeddb369adf8a948f31f754c1a6b59241a56799899dcecd946c19"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "f76ef4e06716d0550b13c766ca53c0763477dc7caa1d8f9453bc7e8c4f08e6d0"
+        }
+      ],
+      "adapter": {
+        "entry": "labelgrid.Projection#label(I)I",
+        "mapping": "For n = -1,0,10 and s = null, empty, x, the returned characters are compared with a nine-entry literal oracle. All builds run on JDK 21.",
+        "correspondence": "finite-oracle",
+        "cases": 9
+      },
+      "key": "fa6d8638769a3bdd"
+    },
+    "artifacts": [
+      {
+        "revision": "modern",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "legacy",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-g",
+            "-parameters"
+          ]
+        },
+        "adapters": [
+          "adapter/labelgrid/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/labelgrid/Projection.java",
+        "sha256": "02f7d76e19802f1d0b9d63edaaf9052456f941c049a9abf2f1eca5358b17aad2"
+      }
+    ]
+  },
+  "key": "b0ec174d4bf0d8a93dcd5fd7c4a048563ba3c9a92c002a95206ebc7e64af6f46"
+}

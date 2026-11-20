@@ -1,0 +1,632 @@
+{
+  "task": "exception-class",
+  "record": {
+    "kind": "verifier",
+    "revision": null,
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+      "equivalence",
+      "--before",
+      "verifier/classes/reference",
+      "--after",
+      "verifier/classes/precheck",
+      "--target",
+      "copy.Projection#thrown(int)",
+      "--classpath",
+      "prepare/precheck/precheck.jar",
+      "--before-classpath",
+      "prepare/reference/reference.jar",
+      "--assume",
+      "code >= 0 && code < 40",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "10",
+      "--max-array-length",
+      "3",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 0,
+    "seconds": 0.537,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "a990d43a599efa7a1b4984bf3be06662596e8c592473bd2ae8c2e19b5082b706",
+      "commit": "a10ab079076ec30343c3ee666712cea363b4e119",
+      "libTree": "d00ba7c3f52b04a91fea90e43ff5bd4c92983354",
+      "command": "equivalence",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 3
+      },
+      "timeout": 60,
+      "scope": {
+        "label": "adapter",
+        "meaning": "Bijective base three encodes all Object[] inputs of zero to three cells, low digit first: null, String A, boxed Integer 1. Every destination is a fresh String[] initially filled with x. State encodes the final x/null/A cells in base three for the known length, after either exit. Thrown covers exactly ArrayStoreException.",
+        "method": "copy.Copy#transfer([Ljava/lang/Object;[Ljava/lang/String;)V",
+        "revisions": {
+          "reference": {
+            "commit": "fixture:reference",
+            "loadedFrom": "reference.jar",
+            "classSha256": "9d02dc1639ba67a970d431a5391811485c0b3fac7ad8ba374b07b160ca6ac98c",
+            "origin": "built from reference by the fixture recipe",
+            "parameters": {
+              "names": [
+                "source",
+                "destination"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          },
+          "precheck": {
+            "commit": "fixture:precheck",
+            "loadedFrom": "precheck.jar",
+            "classSha256": "8170425c59fdef1b4b1065f36b2b7d3bdffe396333294a2b4e19f8583fe51b69",
+            "origin": "built from precheck by the fixture recipe",
+            "parameters": {
+              "names": [
+                "source",
+                "destination"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "copy.Projection#thrown(I)I",
+          "mapping": "Bijective base three encodes all Object[] inputs of zero to three cells, low digit first: null, String A, boxed Integer 1. Every destination is a fresh String[] initially filled with x. State encodes the final x/null/A cells in base three for the known length, after either exit. Thrown covers exactly ArrayStoreException.",
+          "correspondence": "finite-oracle",
+          "cases": 40
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "reference": [
+          {
+            "path": "adapter-reference.jar",
+            "sha256": "ab42a5d072e99404c26889d48653d768075c1048330d697d6dc0eed90252a0ca",
+            "role": "adapter"
+          },
+          {
+            "path": "reference.jar",
+            "sha256": "978747c97c2cb0c8b440abfe278fb79cd7ceb6ff12204dcddd8a93c6236cadfb",
+            "role": "original"
+          }
+        ],
+        "precheck": [
+          {
+            "path": "adapter-precheck.jar",
+            "sha256": "ab42a5d072e99404c26889d48653d768075c1048330d697d6dc0eed90252a0ca",
+            "role": "adapter"
+          },
+          {
+            "path": "precheck.jar",
+            "sha256": "01c403190988a64969b18075e2846aa130e3e1b7e38714856721e8db60f0ab6b",
+            "role": "original"
+          }
+        ]
+      },
+      "checkedEntry": "copy.Projection#thrown(I)I",
+      "entryBindings": {
+        "reference": {
+          "entry": "copy.Projection#thrown(I)I",
+          "classSha256": "935b07629756be4c089f7eddc6e3976636f94059d30c2f934153407a2f6af191",
+          "loadedFrom": "adapter-reference.jar",
+          "subject": "copy.Copy#transfer([Ljava/lang/Object;[Ljava/lang/String;)V",
+          "subjectClassSha256": "9d02dc1639ba67a970d431a5391811485c0b3fac7ad8ba374b07b160ca6ac98c"
+        },
+        "precheck": {
+          "entry": "copy.Projection#thrown(I)I",
+          "classSha256": "935b07629756be4c089f7eddc6e3976636f94059d30c2f934153407a2f6af191",
+          "loadedFrom": "adapter-precheck.jar",
+          "subject": "copy.Copy#transfer([Ljava/lang/Object;[Ljava/lang/String;)V",
+          "subjectClassSha256": "8170425c59fdef1b4b1065f36b2b7d3bdffe396333294a2b4e19f8583fe51b69"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "equivalence",
+        "subject": "copy.Copy#transfer([Ljava/lang/Object;[Ljava/lang/String;)V",
+        "checkedEntry": "copy.Projection#thrown(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 40"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "10"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "3"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "copy.Projection#thrown(I)I",
+          "mapping": "Bijective base three encodes all Object[] inputs of zero to three cells, low digit first: null, String A, boxed Integer 1. Every destination is a fresh String[] initially filled with x. State encodes the final x/null/A cells in base three for the known length, after either exit. Thrown covers exactly ArrayStoreException.",
+          "correspondence": "finite-oracle",
+          "cases": 40
+        }
+      },
+      "commits": {
+        "reference": "fixture:reference",
+        "precheck": "fixture:precheck"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+        "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+        "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+      },
+      "cwd": "the attempt directory",
+      "classes": {
+        "reference": {
+          "dir": "verifier/classes/reference",
+          "from": "prepare/reference/adapter-reference.jar",
+          "sha256": "ab42a5d072e99404c26889d48653d768075c1048330d697d6dc0eed90252a0ca",
+          "entries": 1
+        },
+        "precheck": {
+          "dir": "verifier/classes/precheck",
+          "from": "prepare/precheck/adapter-precheck.jar",
+          "sha256": "ab42a5d072e99404c26889d48653d768075c1048330d697d6dc0eed90252a0ca",
+          "entries": 1
+        }
+      },
+      "probe": {
+        "reference": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+            "gaps",
+            "--target",
+            "copy.Projection#thrown(int)",
+            "--classes",
+            "prepare/reference/adapter-reference.jar",
+            "--classpath",
+            "prepare/reference/reference.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.032,
+          "stdout": "verifier/probe-reference.stdout",
+          "stderr": "verifier/probe-reference.stderr",
+          "gaps": []
+        },
+        "precheck": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+            "gaps",
+            "--target",
+            "copy.Projection#thrown(int)",
+            "--classes",
+            "prepare/precheck/adapter-precheck.jar",
+            "--classpath",
+            "prepare/precheck/precheck.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.032,
+          "stdout": "verifier/probe-precheck.stdout",
+          "stderr": "verifier/probe-precheck.stderr",
+          "gaps": []
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.962,
+        "peakRssBytes": 86536192,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "copy.Projection#thrown(int)",
+        "domain": "code: int",
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.0 s; loops unwound 10 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/pair/RegressionPair.java",
+        "findings": [],
+        "output": "note: checked as a property of the pair of versions: RegressionPair.agree (verifier/work/pair/RegressionPair.java) calls the previous version's copy.Projection#thrown(int), relocated under `before`, and then the new one's on the same inputs, each on its own dependency closure, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n✓ copy.Projection#thrown(int): the two versions agree on every input where code >= 0 && code < 40 (the pair's property, below)\n✓ RegressionPair#agree satisfies `result` on every input where code >= 0 && code < 40 (jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.0 s; loops unwound 10 times with unwinding assertions)\n  not vacuous: agree(code=0) reaches the calls\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (Bitwuzla)",
+          "seconds": 0.008370319,
+          "properties": 1,
+          "unwind": 10,
+          "max_array_length": 3,
+          "stage": null,
+          "native": {
+            "paths": 41,
+            "merges": 0,
+            "solver_calls": 41,
+            "solving_seconds": 0.000132947,
+            "gates_evaluated": 138,
+            "evaluating_seconds": 5.6557e-05,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "word_operations": 20,
+            "finite_queries": {
+              "diagrams": 41,
+              "bitwuzla": 0
+            },
+            "variables": 306,
+            "clauses": 1,
+            "seconds": 0.00761245,
+            "loading_seconds": 0.00072021,
+            "decoding_seconds": 8.7404e-05,
+            "encoding_seconds": 0.000796483,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.008,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.001,
+                "lowering": 0.0,
+                "symbolic": 0.006,
+                "encoding": 0.001,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 306,
+                "clauses": 1
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 59.992,
+              "seconds": 0.002,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.002,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 11,
+                "clauses": 1
+              }
+            }
+          ]
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 40",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 10,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+            "classes": 38,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (Bitwuzla)",
+            "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+            "fallback": null,
+            "sat": {
+              "solver": "Bitwuzla",
+              "version": "0.8.2",
+              "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+              "configuration": [
+                "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                "sat-solver cadical",
+                "produce-models",
+                "otherwise Bitwuzla's default options",
+                "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                "the run's deadline through Bitwuzla's termination callback",
+                "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found agree(code=0).",
+            "witness": "agree(code=0)"
+          }
+        },
+        "pair": {
+          "verdict": "verified",
+          "target": "RegressionPair#agree",
+          "domain": "code: int",
+          "assume": "code >= 0 && code < 40",
+          "assert": "result",
+          "throws": [],
+          "throws_checked": [],
+          "counterexample": null,
+          "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.0 s; loops unwound 10 times with unwinding assertions",
+          "problem": null,
+          "statement": "verifier/work/pair-work/harness/PropertyHarness.java",
+          "findings": [],
+          "output": "✓ RegressionPair#agree satisfies `result` on every input where code >= 0 && code < 40 (jvmcontract's own checker (Bitwuzla): 1 properties proved over code: int in 0.0 s; loops unwound 10 times with unwinding assertions)\n  not vacuous: agree(code=0) reaches the calls\n",
+          "work": "verifier/work/pair-work",
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (Bitwuzla)",
+            "seconds": 0.008370319,
+            "properties": 1,
+            "unwind": 10,
+            "max_array_length": 3,
+            "stage": null,
+            "native": {
+              "paths": 41,
+              "merges": 0,
+              "solver_calls": 41,
+              "solving_seconds": 0.000132947,
+              "gates_evaluated": 138,
+              "evaluating_seconds": 5.6557e-05,
+              "divisions": 0,
+              "divisions_built": 0,
+              "multiplications": 0,
+              "multiplications_built": 0,
+              "word_operations": 20,
+              "finite_queries": {
+                "diagrams": 41,
+                "bitwuzla": 0
+              },
+              "variables": 306,
+              "clauses": 1,
+              "seconds": 0.00761245,
+              "loading_seconds": 0.00072021,
+              "decoding_seconds": 8.7404e-05,
+              "encoding_seconds": 0.000796483,
+              "witness_seconds": 0.0
+            },
+            "gap_mode": "strict",
+            "deadline_seconds": 60.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budget_seconds": 60.0,
+                "seconds": 0.008,
+                "ended": "verified",
+                "ending": "verified",
+                "phases": {
+                  "loading": 0.001,
+                  "lowering": 0.0,
+                  "symbolic": 0.006,
+                  "encoding": 0.001,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 306,
+                  "clauses": 1
+                }
+              },
+              {
+                "checker": "native",
+                "purpose": "probe",
+                "stage": null,
+                "budget_seconds": 59.992,
+                "seconds": 0.002,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.002,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 11,
+                  "clauses": 1
+                }
+              }
+            ],
+            "phases": {
+              "seconds": 0.037,
+              "setup": 0.001,
+              "harness": 0.0,
+              "gaps": 0.0,
+              "contracts": 0.0,
+              "runs": 0.01,
+              "replay": 0.0,
+              "jvm": 0.0,
+              "other": 0.025
+            }
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "shared_arrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 40",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 10,
+              "max_array_length": null,
+              "complete": true
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+              "classes": 38,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (Bitwuzla)",
+              "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+              "fallback": null,
+              "sat": {
+                "solver": "Bitwuzla",
+                "version": "0.8.2",
+                "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+                "configuration": [
+                  "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                  "sat-solver cadical",
+                  "produce-models",
+                  "otherwise Bitwuzla's default options",
+                  "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                  "the run's deadline through Bitwuzla's termination callback",
+                  "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+                ]
+              }
+            },
+            "gap_mode": "strict",
+            "confirmation": null,
+            "vacuity": {
+              "status": "non-vacuous",
+              "basis": "probe",
+              "text": "Some input in the domain reaches the calls: the tool's own checker found agree(code=0).",
+              "witness": "agree(code=0)"
+            }
+          }
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261120-032650-retry-three-array-copy-claims-with-exact/.build-py/examples-behr6u8k/targets/314/exception-class/20261120T034903Z-f27a022e",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261120-032650-retry-three-array-copy-claims-with-exact/.build-py/examples-behr6u8k/targets/314/exception-class/20261120T034903Z-f27a022e"
+  }
+}

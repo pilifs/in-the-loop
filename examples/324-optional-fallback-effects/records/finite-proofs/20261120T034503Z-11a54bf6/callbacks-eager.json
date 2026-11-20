@@ -1,0 +1,195 @@
+{
+  "status": "refuted",
+  "entry": "optionalgrid.Projection#callbacks(I)I",
+  "inputs": 4,
+  "differences": 3,
+  "sides": {
+    "eager": {
+      "commit": "fixture:eager",
+      "entry": {
+        "entry": "optionalgrid.Projection#callbacks(I)I",
+        "classSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
+        "loadedFrom": "adapter-eager.jar",
+        "subject": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+        "subjectClassSha256": "0f365c993353f1b907bd498dd607378c555c88946e5a19e04c9a0a7ecd576f7c"
+      },
+      "classpath": [
+        {
+          "path": "adapter-eager.jar",
+          "sha256": "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
+          "role": "adapter"
+        },
+        {
+          "path": "eager.jar",
+          "sha256": "4f2d25c1a3ad66d16a75489f0af4e47f0742b6a263c021c94bb153ce9d671a12",
+          "role": "original"
+        }
+      ],
+      "parameter": "code",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 4)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = optionalgrid.Projection.callbacks(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "7eb2bc9d4c00b3383cc5884190d3cf47bc319152d9d07d55dfeb0f36f4872ba1",
+      "stdoutSha256": "f0576682324e40e9589e928889b719470774d7d0449801f8d34ef57ca83aef9e",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC"
+      ],
+      "interval": [
+        0,
+        3
+      ],
+      "rows": [
+        {
+          "value": 0,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 1,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 2,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 3,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        }
+      ],
+      "seconds": 0.077,
+      "cpuSeconds": 0.0865,
+      "peakRssBytes": 61767680,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "correspondence": [
+    {
+      "revision": "eager",
+      "entry": "optionalgrid.Projection#callbacks(I)I",
+      "adapterSha256": "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
+      "adapterClassSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
+      "subject": {
+        "class": "optionalgrid.Choice",
+        "method": "choose",
+        "descriptor": "(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+        "loadedFrom": "eager.jar",
+        "classSha256": "0f365c993353f1b907bd498dd607378c555c88946e5a19e04c9a0a7ecd576f7c",
+        "adapterCalls": [
+          "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
+          "optionalgrid.Fallback#<init>()V"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "Code 0 selects Optional.empty. Codes 1, 2 and 3 select Integer 0, 1 and 2. Fallback implements Supplier<Integer>, records every named invocation, and returns seven.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 4,
+      "disagreements": 0
+    }
+  ],
+  "prepareSeconds": 0.0022,
+  "controlSeconds": 0.0005,
+  "replay": {
+    "claimKey": "fd17da09f7be85db",
+    "entry": "optionalgrid.Projection#callbacks(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 1
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "eager": {
+        "entryClassSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
+        "classpath": [
+          "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
+          "4f2d25c1a3ad66d16a75489f0af4e47f0742b6a263c021c94bb153ce9d671a12"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 1;\nif (!(code >= 0 && code < 4)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = optionalgrid.Projection.callbacks(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 1,
+      "input": {
+        "present": 0
+      },
+      "field": "callbacks",
+      "direct": {
+        "eager": {
+          "value": 0,
+          "callbacks": [
+            "fallback"
+          ]
+        }
+      },
+      "tableSha256": "d8c14334f1b946ada2729005ec3663a188fbf9b1f0d60a42afdb035224190066"
+    }
+  },
+  "wallSeconds": 1.5123,
+  "task": "callbacks-eager",
+  "sourceClaim": "fd17da09f7be85db",
+  "inputsKey": "752916b2ddd0735264a333312278bcba3593732867dd2381a99a8f4f75ab44ba",
+  "revisions": [
+    "eager"
+  ],
+  "expected": "refuted",
+  "sourceLocks": {
+    "eager": "45505765f98489c26299b5a670b62073aba628c15328c901f1100b5bd9be9242"
+  }
+}

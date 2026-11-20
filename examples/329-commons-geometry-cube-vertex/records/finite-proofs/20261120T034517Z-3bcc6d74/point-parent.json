@@ -1,0 +1,253 @@
+{
+  "status": "refuted",
+  "entry": "cubegrid.Projection#point(I)I",
+  "inputs": 6,
+  "differences": 4,
+  "sides": {
+    "parent": {
+      "commit": "f57f82bea38dcf8646edb3c7f5f70818281a4c77",
+      "entry": {
+        "entry": "cubegrid.Projection#point(I)I",
+        "classSha256": "ae36b399e7e87caf4e3368550eb076f436b5584f57a9c6991d0a0555cbf3659b",
+        "loadedFrom": "adapter-parent.jar",
+        "subject": "org.apache.commons.geometry.euclidean.threed.PolyhedronsSet#firstIntersection(Lorg/apache/commons/geometry/euclidean/threed/Vector3D;Lorg/apache/commons/geometry/euclidean/threed/Line;)Lorg/apache/commons/geometry/core/partitioning/SubHyperplane;",
+        "subjectClassSha256": "8786e5c31919ba951e6094c29bcfbda2c3a431eecd2b334f3a759e3e231f325f"
+      },
+      "classpath": [
+        {
+          "path": "adapter-parent.jar",
+          "sha256": "ff99862d479c460cf3ccc95286474376c80b224e5e223a83ff7cfad2cb8c68b7",
+          "role": "adapter"
+        },
+        {
+          "path": "slice/parent.jar",
+          "sha256": "9a0aeca97a85c039fdcf62e90a700036467e609676871162a07e5a6f087a345d",
+          "role": "original"
+        },
+        {
+          "path": "lib/org.apache.commons/commons-numbers-core-1.0-beta1.jar",
+          "sha256": "10fe92bffba4d5d0920967db3f9f317e121bd601a9b8278529be53a68bac09f7",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org.apache.commons/commons-numbers-angle-1.0-beta1.jar",
+          "sha256": "cae25277cb0fbe87496f78b422b5aa8a982130c1ff529da7e28e45de978d277e",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org.apache.commons/commons-numbers-arrays-1.0-beta1.jar",
+          "sha256": "df538a6562c02a9c8dac62f51082ccb171bd8f9f18eeeeca080a2058500d12ab",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org.apache.commons/commons-numbers-quaternion-1.0-beta1.jar",
+          "sha256": "654f45af15e005b42e400349bf59a1eb3d128a5a4a7e140cbb3beb8cf4e83cb5",
+          "role": "dependency"
+        }
+      ],
+      "parameter": "code",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 6)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = cubegrid.Projection.point(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "2570eb9cc5b1fe7e641ad66ba20b348826a7a535d2e264542d83fb80f6f5cc1b",
+      "stdoutSha256": "9408ae98fd9397503535f39acb0b94a84f719e60109b6c40cfe8f8856e71b73c",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC"
+      ],
+      "interval": [
+        0,
+        5
+      ],
+      "rows": [
+        {
+          "value": 0,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 1,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 2,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 3,
+          "admitted": true,
+          "satisfies": false,
+          "observations": [
+            0,
+            null
+          ]
+        },
+        {
+          "value": 4,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 5,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        }
+      ],
+      "seconds": 0.228,
+      "cpuSeconds": 0.3212,
+      "peakRssBytes": 61571072,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "correspondence": [
+    {
+      "revision": "parent",
+      "entry": "cubegrid.Projection#point(I)I",
+      "adapterSha256": "ff99862d479c460cf3ccc95286474376c80b224e5e223a83ff7cfad2cb8c68b7",
+      "adapterClassSha256": "ae36b399e7e87caf4e3368550eb076f436b5584f57a9c6991d0a0555cbf3659b",
+      "subject": {
+        "class": "org.apache.commons.geometry.euclidean.threed.PolyhedronsSet",
+        "method": "firstIntersection",
+        "descriptor": "(Lorg/apache/commons/geometry/euclidean/threed/Vector3D;Lorg/apache/commons/geometry/euclidean/threed/Line;)Lorg/apache/commons/geometry/core/partitioning/SubHyperplane;",
+        "loadedFrom": "slice/parent.jar",
+        "classSha256": "8786e5c31919ba951e6094c29bcfbda2c3a431eecd2b334f3a759e3e231f325f",
+        "adapterCalls": [
+          "org.apache.commons.geometry.euclidean.threed.Line#<init>(Lorg/apache/commons/geometry/euclidean/threed/Vector3D;Lorg/apache/commons/geometry/euclidean/threed/Vector3D;D)V",
+          "org.apache.commons.geometry.euclidean.threed.Line#revert()Lorg/apache/commons/geometry/euclidean/threed/Line;",
+          "org.apache.commons.geometry.euclidean.threed.Plane#intersection(Lorg/apache/commons/geometry/euclidean/threed/Line;)Lorg/apache/commons/geometry/euclidean/threed/Vector3D;",
+          "org.apache.commons.geometry.euclidean.threed.PolyhedronsSet#<init>(DDDDDDD)V",
+          "org.apache.commons.geometry.euclidean.threed.PolyhedronsSet#firstIntersection(Lorg/apache/commons/geometry/euclidean/threed/Vector3D;Lorg/apache/commons/geometry/euclidean/threed/Line;)Lorg/apache/commons/geometry/core/partitioning/SubHyperplane;",
+          "org.apache.commons.geometry.euclidean.threed.SubPlane#getHyperplane()Lorg/apache/commons/geometry/core/partitioning/Hyperplane;",
+          "org.apache.commons.geometry.euclidean.threed.Vector3D#getX()D",
+          "org.apache.commons.geometry.euclidean.threed.Vector3D#getY()D",
+          "org.apache.commons.geometry.euclidean.threed.Vector3D#getZ()D",
+          "org.apache.commons.geometry.euclidean.threed.Vector3D#of(DDD)Lorg/apache/commons/geometry/euclidean/threed/Vector3D;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "Four signed cube diagonals from the upstream repair and two face-center rays, with the unit cube and tolerance 1e-10. Compare the coordinates of the facet-plane intersection by component with absolute tolerance 1e-10. Several different facets may contain the same vertex.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 6,
+      "disagreements": 0
+    }
+  ],
+  "prepareSeconds": 0.0044,
+  "controlSeconds": 0.002,
+  "replay": {
+    "claimKey": "742db80b1d101010",
+    "entry": "cubegrid.Projection#point(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 0
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "ae36b399e7e87caf4e3368550eb076f436b5584f57a9c6991d0a0555cbf3659b",
+        "classpath": [
+          "ff99862d479c460cf3ccc95286474376c80b224e5e223a83ff7cfad2cb8c68b7",
+          "9a0aeca97a85c039fdcf62e90a700036467e609676871162a07e5a6f087a345d",
+          "10fe92bffba4d5d0920967db3f9f317e121bd601a9b8278529be53a68bac09f7",
+          "cae25277cb0fbe87496f78b422b5aa8a982130c1ff529da7e28e45de978d277e",
+          "df538a6562c02a9c8dac62f51082ccb171bd8f9f18eeeeca080a2058500d12ab",
+          "654f45af15e005b42e400349bf59a1eb3d128a5a4a7e140cbb3beb8cf4e83cb5"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 0;\nif (!(code >= 0 && code < 6)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = cubegrid.Projection.point(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 0,
+      "input": {
+        "startTimesTwo": [
+          -2,
+          -2,
+          -2
+        ],
+        "direction": [
+          1,
+          1,
+          1
+        ],
+        "tolerance": "1e-10"
+      },
+      "field": "point",
+      "direct": {
+        "parent": {
+          "hit": false,
+          "point": null
+        }
+      },
+      "tableSha256": "0767b1e1d0f01f0a99e5c726bc0d3d549db3c2a8b1413f4fbbf1e074cbcfde38"
+    }
+  },
+  "wallSeconds": 1.6249,
+  "task": "point-parent",
+  "sourceClaim": "742db80b1d101010",
+  "inputsKey": "6435d52e19abe77f0a9ad01ea53513a7878b00034ba15377a295c8af345f9445",
+  "revisions": [
+    "parent"
+  ],
+  "expected": "refuted",
+  "sourceLocks": {
+    "parent": "b99a26e4e73c5c990fee7a16f3fa35690d6115ea8f582e2112cabd5bc3eb6b8c"
+  }
+}

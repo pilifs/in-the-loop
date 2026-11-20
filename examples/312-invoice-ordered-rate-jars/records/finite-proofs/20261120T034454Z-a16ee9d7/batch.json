@@ -1,0 +1,88 @@
+{
+  "schema": "finite-jvm-batch/v1",
+  "id": "20261120T034454Z-a16ee9d7",
+  "retryOf": null,
+  "order": [
+    "invoice-values",
+    "zero-only",
+    "rate-two-first",
+    "rate-three-first"
+  ],
+  "claims": {
+    "invoice-values": {
+      "sourceClaim": "a3277271b04b82e9",
+      "inputsKey": "f14118ed603b524dd0be29ea967819a35c5b720df665c348f1b52615598092ec",
+      "revisions": [
+        "two-first",
+        "three-first"
+      ],
+      "expected": "refuted",
+      "sourceLocks": {
+        "two-first": "93b02b396b058d6d79c26ed2db16bbf1935fdf8b98e18c8d99b6cbe681a13932",
+        "three-first": "00ae6828d638d5a6d87b933b2d4ba1ca9fe8e52ad84502530e70e33c1da65bbc"
+      }
+    },
+    "zero-only": {
+      "sourceClaim": "653483ee673c9153",
+      "inputsKey": "9bf2d1c48cac8db3302e37f95baa4ecbc446651a38db07f67ba89373810125f7",
+      "revisions": [
+        "two-first",
+        "three-first"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "two-first": "93b02b396b058d6d79c26ed2db16bbf1935fdf8b98e18c8d99b6cbe681a13932",
+        "three-first": "00ae6828d638d5a6d87b933b2d4ba1ca9fe8e52ad84502530e70e33c1da65bbc"
+      }
+    },
+    "rate-two-first": {
+      "sourceClaim": "d0500ccf7426fbf2",
+      "inputsKey": "1eec495b92a979fe8c376a12e62006b798d9a396afca19382fc8532a6d48f9a9",
+      "revisions": [
+        "two-first"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "two-first": "93b02b396b058d6d79c26ed2db16bbf1935fdf8b98e18c8d99b6cbe681a13932"
+      }
+    },
+    "rate-three-first": {
+      "sourceClaim": "53397215b1ac6f04",
+      "inputsKey": "b1a6a5160c65446150c18ef0b805ef269c05ac9e55cd4a6ed072ec7d644a3f70",
+      "revisions": [
+        "three-first"
+      ],
+      "expected": "established",
+      "sourceLocks": {
+        "three-first": "00ae6828d638d5a6d87b933b2d4ba1ca9fe8e52ad84502530e70e33c1da65bbc"
+      }
+    }
+  },
+  "status": "completed",
+  "completed": [
+    {
+      "task": "invoice-values",
+      "status": "refuted",
+      "sha256": "ae347ae46339e671a3600a1918b1b370fed5921d1393fdc255b485a55dea755d"
+    },
+    {
+      "task": "zero-only",
+      "status": "established",
+      "sha256": "1531ca4d9199434eaf3ee41d5f715c85640f873e8d45a143393206f10cb7a442"
+    },
+    {
+      "task": "rate-two-first",
+      "status": "established",
+      "sha256": "951c943cbc71061f8ef83a2810ccb03170087e9a6ca43aaf8cfca0163fae9ebe"
+    },
+    {
+      "task": "rate-three-first",
+      "status": "established",
+      "sha256": "2721c88f39c26f9f129b6ad592dcc6d726d44d9767e260158920793428cf2b77"
+    }
+  ],
+  "missing": [],
+  "secondsPerJvm": 120,
+  "launcherSha256": "8dd2ea5568ee5f61c0f92ca27a09338ca8c33333cceb04fff6370ad131f2c8f8",
+  "scope": "One JVM per claim and revision. Each integer starts with a fresh application class loader, on the pinned runtime and classpath."
+}

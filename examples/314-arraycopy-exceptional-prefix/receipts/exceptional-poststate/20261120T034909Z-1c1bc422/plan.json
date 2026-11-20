@@ -1,0 +1,216 @@
+{
+  "plan": {
+    "example": "314",
+    "task": "exceptional-poststate",
+    "kind": "equivalence",
+    "relation": "preservation",
+    "target": "copy.Copy#transfer([Ljava/lang/Object;[Ljava/lang/String;)V",
+    "revisions": [
+      "reference",
+      "precheck"
+    ],
+    "claim": {
+      "task": "exceptional-poststate",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "copy.Copy#transfer([Ljava/lang/Object;[Ljava/lang/String;)V",
+      "file": "claims/exceptional-poststate.json",
+      "sha256": "aef297e86db92d9e1254aaea6c77c11a413572471cdab130a7f20c9d84fe617a",
+      "property": "exceptional-poststate",
+      "claimKind": "preservation",
+      "statement": "Both calls leave identical destination cells including after a throw.",
+      "assume": "code >= 0 && code < 40",
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 3
+      },
+      "explicitBounds": {
+        "unwind": 10,
+        "maxArrayLength": 3
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/copy/CopyCases.java",
+          "sha256": "eacc0ffbc1ec4dd409e3d19350494f7642c61b8886a599f550dbf7902f1a730d"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "3e45a3502dda068dccc872b35b49ee6a0c65c36972a9824c1dea885bca9b956a"
+        }
+      ],
+      "adapter": {
+        "entry": "copy.Projection#state(I)I",
+        "mapping": "Bijective base three encodes all Object[] inputs of zero to three cells, low digit first: null, String A, boxed Integer 1. Every destination is a fresh String[] initially filled with x. State encodes the final x/null/A cells in base three for the known length, after either exit. Thrown covers exactly ArrayStoreException.",
+        "correspondence": "finite-oracle",
+        "cases": 40
+      },
+      "key": "a6bb3f8cb52ac6cf"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "reference",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "reference",
+        "adapters": [
+          "adapter/copy/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "precheck",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "precheck",
+        "adapters": [
+          "adapter/copy/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/exceptional-poststate"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-032650-retry-three-array-copy-claims-with-exact/examples/314-arraycopy-exceptional-prefix",
+    "network": false
+  },
+  "inputs": {
+    "example": "314",
+    "task": "exceptional-poststate",
+    "kind": "equivalence",
+    "relation": "preservation",
+    "target": "copy.Copy#transfer([Ljava/lang/Object;[Ljava/lang/String;)V",
+    "revisions": [
+      "reference",
+      "precheck"
+    ],
+    "claim": {
+      "task": "exceptional-poststate",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "copy.Copy#transfer([Ljava/lang/Object;[Ljava/lang/String;)V",
+      "file": "claims/exceptional-poststate.json",
+      "sha256": "aef297e86db92d9e1254aaea6c77c11a413572471cdab130a7f20c9d84fe617a",
+      "property": "exceptional-poststate",
+      "claimKind": "preservation",
+      "statement": "Both calls leave identical destination cells including after a throw.",
+      "assume": "code >= 0 && code < 40",
+      "assert": null,
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 3
+      },
+      "explicitBounds": {
+        "unwind": 10,
+        "maxArrayLength": 3
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/copy/CopyCases.java",
+          "sha256": "eacc0ffbc1ec4dd409e3d19350494f7642c61b8886a599f550dbf7902f1a730d"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "3e45a3502dda068dccc872b35b49ee6a0c65c36972a9824c1dea885bca9b956a"
+        }
+      ],
+      "adapter": {
+        "entry": "copy.Projection#state(I)I",
+        "mapping": "Bijective base three encodes all Object[] inputs of zero to three cells, low digit first: null, String A, boxed Integer 1. Every destination is a fresh String[] initially filled with x. State encodes the final x/null/A cells in base three for the known length, after either exit. Thrown covers exactly ArrayStoreException.",
+        "correspondence": "finite-oracle",
+        "cases": 40
+      },
+      "key": "a6bb3f8cb52ac6cf"
+    },
+    "artifacts": [
+      {
+        "revision": "reference",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "reference",
+        "adapters": [
+          "adapter/copy/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "precheck",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "precheck",
+        "adapters": [
+          "adapter/copy/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/copy/Projection.java",
+        "sha256": "315da84c3a0e3472e1bd2c4057122ba9a215c3088626aa9f23758d1d8c4cbd36"
+      }
+    ]
+  },
+  "key": "7369f1c5f5c9a9d5619ad52b508a030fd0f93d8f6ac68ac77d55ca5aa7d93dcd"
+}

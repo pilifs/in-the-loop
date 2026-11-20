@@ -1,0 +1,422 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-032650-measure-checked-tiling-summaries-on-iden",
+  "title": "Measure checked tiling summaries on identical callers",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4m19s, peak 242.3 MiB (estimated 6m00s, 2.0 GiB); 25 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-032650-measure-checked-tiling-summaries-on-iden.json",
+    "sha256": "aaed5ad43f1b3d7b7f04ec0c0ad7c305db5b8a8564567aac987fdd37081a9117",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-032650-measure-checked-tiling-summaries-on-iden",
+      "title": "Measure checked tiling summaries on identical callers",
+      "description": "Measure inlining and a checked recursive helper lemma at identical bounds and budgets on the exact and parity consumers. Measure the independent exact-cache control cold and warm, then change only the helper base case and check both consumers again.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "proof:reuse"
+      ],
+      "links": {
+        "examples": [
+          "331"
+        ]
+      },
+      "expected": "Recorded artifact hashes, costs, non-vacuity or first blocker and cache origin for each caller, strategy, and logical cache condition.",
+      "submitted": {
+        "at": "2026-11-20T03:26:50+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 8,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "6m",
+        "memoryLimit": "4G",
+        "timeout": "22m"
+      },
+      "steps": [
+        {
+          "name": "Measure two dependent proofs and invalidate their helper",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/331-floor-tiling-proof-reuse/benchmark.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/331-floor-tiling-proof-reuse/records/reuse"
+      ]
+    }
+  },
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "startedAt": "2026-11-20T03:45:20+00:00",
+  "finishedAt": "2026-11-20T03:53:03+00:00",
+  "wallSeconds": 463.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1320.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 254058496,
+    "wallSeconds": 259.7,
+    "cpuSeconds": 275.5,
+    "memoryOfEstimate": 0.12,
+    "durationOfEstimate": 0.72
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 200.999,
+      "cpuSeconds": 201.372,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2067120128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "1c87998a9442da02c2aacfacc5285c7c598640c0b648827fe4b6f6247513e4dd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261120-032650-measure-checked-tiling-summaries-on-iden/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 20s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Measure two dependent proofs and invalidate their helper",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/331-floor-tiling-proof-reuse/benchmark.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1320.0,
+      "cancelled": false,
+      "wallSeconds": 259.694,
+      "cpuSeconds": 275.456,
+      "cpuThrottledSeconds": 1.461,
+      "peakMemoryBytes": 254058496,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-measure-two-dependent-proofs-a.log",
+        "lines": 24,
+        "bytes": 1200,
+        "sha256": "9b60e5630fa710c7749df84b42754c5c55aba883293ae97cfeaf7738a0f94d0a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "recursive exact inline cold verified 24.257",
+        "recursive exact inline warm verified 18.44",
+        "recursive exact checked-lemma cold verified 2.001",
+        "recursive exact checked-lemma warm verified 1.905",
+        "recursive exact exact-cache cold verified 17.483",
+        "recursive exact exact-cache warm verified 0.102",
+        "recursive parity inline cold verified 17.749",
+        "recursive parity inline warm verified 17.104",
+        "recursive parity checked-lemma cold verified 1.914",
+        "recursive parity checked-lemma warm verified 1.922",
+        "recursive parity exact-cache cold verified 18.125",
+        "recursive parity exact-cache warm verified 0.132",
+        "base-change exact inline cold violation 13.482",
+        "base-change exact inline warm violation 15.772",
+        "base-change exact checked-lemma cold unverifiable 1.891",
+        "base-change exact checked-lemma warm unverifiable 2.155",
+        "base-change exact exact-cache cold violation 14.562",
+        "base-change exact exact-cache warm violation 14.83",
+        "base-change parity inline cold violation 16.892",
+        "base-change parity inline warm violation 15.843",
+        "base-change parity checked-lemma cold unverifiable 1.416",
+        "base-change parity checked-lemma warm unverifiable 1.639",
+        "base-change parity exact-cache cold violation 19.141",
+        "base-change parity exact-cache warm violation 15.527"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-exact-checked-lemma-cold.json",
+      "change": "added",
+      "bytes": 2670,
+      "sha256": "e60e115eeb5b94b5fcf5041ea23778145aa088ff4e28e16acbe73fa66ba4b81e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-exact-checked-lemma-warm.json",
+      "change": "added",
+      "bytes": 2670,
+      "sha256": "9dbb8cf62b41f73318cd9bbc339b4e63e28663ad39d14abfd734cb517e2e48ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-exact-exact-cache-cold.json",
+      "change": "added",
+      "bytes": 7069,
+      "sha256": "1581b81f5e3c771ded79d2895b8fa136e05f431cf103655b68b971f74e30c584",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-exact-exact-cache-warm.json",
+      "change": "added",
+      "bytes": 7070,
+      "sha256": "ab93fdf31383996a74aeded3911f41ea93d76b9c5f95a968d1c1ed12fa971e04",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-exact-inline-cold.json",
+      "change": "added",
+      "bytes": 7060,
+      "sha256": "b4bc5820ba3763126a62f69a1ab663aa13816ba810685af6c2bb151b82d242cc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-exact-inline-warm.json",
+      "change": "added",
+      "bytes": 7059,
+      "sha256": "1d92ac19d29440caf2f0def0db205eb7ab6c30830f6b580b7f3b87102ba4614c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-parity-checked-lemma-cold.json",
+      "change": "added",
+      "bytes": 2675,
+      "sha256": "b7db732ec726d99eb37ed4e739eb10d03f172094e4da33f529ed833f1340156f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-parity-checked-lemma-warm.json",
+      "change": "added",
+      "bytes": 2675,
+      "sha256": "dbdf2d06c438c47afc4b1bb62ec3bc5840f94182718cdfbf5de9006873706601",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-parity-exact-cache-cold.json",
+      "change": "added",
+      "bytes": 7085,
+      "sha256": "63d94c87832b28dfc4c80d3e391dc1c5c7f9cd5e14386e91741d1fd37014e04e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-parity-exact-cache-warm.json",
+      "change": "added",
+      "bytes": 7085,
+      "sha256": "bc78fabc3e58f16539bc23fe1214cf84ef61a3e3d17170447c80e8aeb6c5dbb7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-parity-inline-cold.json",
+      "change": "added",
+      "bytes": 7076,
+      "sha256": "e7a45303924137ebbd4d7130554c07424b1a086b23107f6fd4ed63f885af7baa",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-parity-inline-warm.json",
+      "change": "added",
+      "bytes": 7074,
+      "sha256": "7e05e1e403ce1988b62991bf118bcc787e6712ff0c4a42456d258b0efb0f0e65",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/comparison.json",
+      "change": "added",
+      "bytes": 25108,
+      "sha256": "4f07c867d7ae45d9540b3e88a2b8a37a9356180426659d3c305fc4be7eceddb2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-exact-checked-lemma-cold.json",
+      "change": "added",
+      "bytes": 7731,
+      "sha256": "975abefcfc95f63b8b864a48dbeeb29dc0a3942b4f94c83b700c9bace3ff5e8a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-exact-checked-lemma-warm.json",
+      "change": "added",
+      "bytes": 7731,
+      "sha256": "e6b8e0564a244496b1bd335a25d1e8340a89a9798e6e19ed23cec85dd31dc6e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-exact-exact-cache-cold.json",
+      "change": "added",
+      "bytes": 6264,
+      "sha256": "9227c6b751be26300afdaa4dd0cb586bfb4e9fcde18e14b0b0455cc781ead13c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-exact-exact-cache-warm.json",
+      "change": "added",
+      "bytes": 4923,
+      "sha256": "38efceec469b100a02150bfcf82ce1a56d1d6d453eed4291543e7d269ce30d80",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-exact-inline-cold.json",
+      "change": "added",
+      "bytes": 6253,
+      "sha256": "189d0da5467cef652398e452a3cc606d039317d8363d116f0789b7c592692130",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-exact-inline-warm.json",
+      "change": "added",
+      "bytes": 6253,
+      "sha256": "23324988d99d66f0432da94b35190dcdb088d3829f53cd2b82de9490de50d47a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-parity-checked-lemma-cold.json",
+      "change": "added",
+      "bytes": 7741,
+      "sha256": "e430ec49865be38e5762be7cea7d2ebc3624a61f981b79c600dde3e03c5c17a2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-parity-checked-lemma-warm.json",
+      "change": "added",
+      "bytes": 7740,
+      "sha256": "9d66d877d379d311d117d58ef616b930aa048b12d9430c117fbe0b272877729a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-parity-exact-cache-cold.json",
+      "change": "added",
+      "bytes": 6273,
+      "sha256": "3a6e7b43f8005f72f5a4f30f1d715f76008f7a18adb720f46bdc7235ac4169af",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-parity-exact-cache-warm.json",
+      "change": "added",
+      "bytes": 4936,
+      "sha256": "8c67f64fbcd7d6ab3157db1be923e1fcb7b726a1b42a4073090e31559783205b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-parity-inline-cold.json",
+      "change": "added",
+      "bytes": 6264,
+      "sha256": "656a6edc691dbd58fb9f7d147ab09d5177a74ad6f202443065f004732a639589",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-parity-inline-warm.json",
+      "change": "added",
+      "bytes": 6260,
+      "sha256": "b3740a9536c14eeea8873df2f863b9f1417fa0666727073624b80637c94bfc73",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T03:53:24+00:00",
+    "applied": [
+      "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-exact-checked-lemma-cold.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-exact-checked-lemma-warm.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-exact-exact-cache-cold.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-exact-exact-cache-warm.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-exact-inline-cold.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-exact-inline-warm.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-parity-checked-lemma-cold.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-parity-checked-lemma-warm.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-parity-exact-cache-cold.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-parity-exact-cache-warm.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-parity-inline-cold.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/base-change-parity-inline-warm.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/comparison.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-exact-checked-lemma-cold.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-exact-checked-lemma-warm.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-exact-exact-cache-cold.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-exact-exact-cache-warm.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-exact-inline-cold.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-exact-inline-warm.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-parity-checked-lemma-cold.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-parity-checked-lemma-warm.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-parity-exact-cache-cold.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-parity-exact-cache-warm.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-parity-inline-cold.json",
+      "examples/331-floor-tiling-proof-reuse/records/reuse/recursive-parity-inline-warm.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "d00ba7c3f52b04a91fea90e43ff5bd4c92983354",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d00ba7c3f52b04a91fea90e43ff5bd4c92983354/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

@@ -122,6 +122,21 @@ public final class T {
         return sb.toString().equals(s.substring(0, b) + s.substring(end));
     }
 
+    public static boolean longBuilder(int selector) {
+        long value = Long.MIN_VALUE + (selector & 1);
+        String expected = (selector & 1) == 0 ? "-9223372036854775808" : "-9223372036854775807";
+        StringBuilder buf = new StringBuilder().append(value);
+        if (!buf.toString().equals(expected)) return false;
+        buf.setCharAt(1, 'X');
+        try {
+            buf.setCharAt(20, 'Y');
+            return false;
+        } catch (StringIndexOutOfBoundsException ex) {
+            return buf.charAt(1) == 'X' && buf.charAt(19) == expected.charAt(19)
+                && new StringBuilder().append(Long.MAX_VALUE).toString().equals("9223372036854775807");
+        }
+    }
+
     /** A call the checker has no model of changes the builder: what it held of the content is no longer so. */
     public static boolean reversed(String s) {
         StringBuilder sb = new StringBuilder(s);

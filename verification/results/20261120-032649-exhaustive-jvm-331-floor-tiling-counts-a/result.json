@@ -1,0 +1,265 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-032649-exhaustive-jvm-331-floor-tiling-counts-a",
+  "title": "Exhaustive JVM 331 Floor tiling counts and two dependent callers",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 31.9s, peak 129.8 MiB (estimated 2m00s, 2.0 GiB); 12 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-032649-exhaustive-jvm-331-floor-tiling-counts-a.json",
+    "sha256": "65e6af77c171fa4619b5146c0d01e29edd11d815da3d553abe965cbd976aa9c6",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-032649-exhaustive-jvm-331-floor-tiling-counts-a",
+      "title": "Exhaustive JVM 331 Floor tiling counts and two dependent callers",
+      "description": "Exact counts and parity share a helper. A changed base case and a discarded two-cell choice exercise both dependents. Certify the complete integer envelope of each frozen claim, run its actual guard and assertion with fresh application classes at each input, compare the direct data to its oracle, and replay any witness on a separate JVM.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvm:finite-domain",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "331"
+        ]
+      },
+      "expected": "Every admitted point is accounted for and each declared disposition agrees with the independently checked byte-bound certificate.",
+      "submitted": {
+        "at": "2026-11-20T03:26:49+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 8,
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Validate every bounded observation",
+          "run": "python3 examples/tools/build.py 331 --finite-domain --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/331-floor-tiling-proof-reuse/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "a10ab079076ec30343c3ee666712cea363b4e119",
+  "startedAt": "2026-11-20T03:45:20+00:00",
+  "finishedAt": "2026-11-20T03:45:54+00:00",
+  "wallSeconds": 34.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 136073216,
+    "wallSeconds": 31.9,
+    "cpuSeconds": 52.2,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.27
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Validate every bounded observation",
+      "run": "python3 examples/tools/build.py 331 --finite-domain --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 31.9,
+      "cpuSeconds": 52.19,
+      "cpuThrottledSeconds": 2.411,
+      "peakMemoryBytes": 136073216,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-validate-every-bounded-observa.log",
+        "lines": 11,
+        "bytes": 510,
+        "sha256": "55eccff802a158a609eada8c24220c027029db99ad8a8dec6f8c291eeca5e9b0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "331 exact-recursive established 19 admitted ",
+        "331 exact-iterative established 19 admitted ",
+        "331 exact-one-tile refuted 19 admitted ",
+        "331 exact-base-change refuted 19 admitted ",
+        "331 parity-recursive established 19 admitted ",
+        "331 parity-iterative established 19 admitted ",
+        "331 parity-one-tile refuted 19 admitted ",
+        "331 parity-base-change refuted 19 admitted ",
+        "331 helper-preservation established 19 admitted ",
+        "331 caller-exact-preservation established 19 admitted ",
+        "331 caller-parity-preservation established 19 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/batch.json",
+      "change": "added",
+      "bytes": 6836,
+      "sha256": "62c475326678b61a9ed2bc464506ce4ab0ccb04e695a631cd76180d73974a2b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/caller-exact-preservation.json",
+      "change": "added",
+      "bytes": 10051,
+      "sha256": "c718d6694defd94603fd5e99d96032b23045206758427e469f49d1f71c3423ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/caller-parity-preservation.json",
+      "change": "added",
+      "bytes": 10012,
+      "sha256": "5e3959e5da53b4070b43fe0ff59cf18bc0280755530a70da596d11e1ebc0dcab",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/exact-base-change.json",
+      "change": "added",
+      "bytes": 7481,
+      "sha256": "5c27f1d8f0c874946b533039fa779ae1976ec213ddc72a44fd301baf2b59a1dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/exact-iterative.json",
+      "change": "added",
+      "bytes": 5976,
+      "sha256": "86f326f8e652c9a8c5f2dd5d7a4b9ecf80405643a4b84b15ce28efd57d43b8ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/exact-one-tile.json",
+      "change": "added",
+      "bytes": 7436,
+      "sha256": "438d58ff0df902e428cbd4e0efb109480ff7b79aebcd702d497b47c208c73734",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/exact-recursive.json",
+      "change": "added",
+      "bytes": 5977,
+      "sha256": "9acc824c88594d4e3f0d7e5cbf97e9ad66b07474a07e58a64b30873e2b221003",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/helper-preservation.json",
+      "change": "added",
+      "bytes": 10040,
+      "sha256": "11202a8bbed587a04cfa491df71d1fbcf306ab05a67c29d90ef4f902a8a293c0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/parity-base-change.json",
+      "change": "added",
+      "bytes": 7465,
+      "sha256": "5ef621d9135fe25894937e24caf7a2ce86cd8dc4d6b8685e04e58e259f1c8374",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/parity-iterative.json",
+      "change": "added",
+      "bytes": 5959,
+      "sha256": "bfdb53e4faf7ad32b55f4598c1d2389b099b20cdda2dc7b635dc0c8d52f66f49",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/parity-one-tile.json",
+      "change": "added",
+      "bytes": 7433,
+      "sha256": "f1c3b62be401c7755a0ce9e8c6b17d7458d828a537fb6fd1a2ccdb98e5d8fb9d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/parity-recursive.json",
+      "change": "added",
+      "bytes": 5959,
+      "sha256": "f83e83e98648ff37b5095c3eb495ff6b736ed797fe4eea9e8628c42939fe74ae",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T03:48:23+00:00",
+    "applied": [
+      "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/batch.json",
+      "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/caller-exact-preservation.json",
+      "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/caller-parity-preservation.json",
+      "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/exact-base-change.json",
+      "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/exact-iterative.json",
+      "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/exact-one-tile.json",
+      "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/exact-recursive.json",
+      "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/helper-preservation.json",
+      "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/parity-base-change.json",
+      "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/parity-iterative.json",
+      "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/parity-one-tile.json",
+      "examples/331-floor-tiling-proof-reuse/records/finite-proofs/20261120T034523Z-3b228fe6/parity-recursive.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

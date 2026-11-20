@@ -1159,6 +1159,16 @@ fn string_builder_method(m: &mut Machine, r: Ref, s: JStr, name: &str, descripto
             text = JStr::from_units(units);
             Some(Value::Ref(r))
         }
+        ("setCharAt", "(IC)V") => {
+            let index = args[0].as_int();
+            if index < 0 || index as usize >= text.len() {
+                return Err(m.throw("java/lang/StringIndexOutOfBoundsException", None));
+            }
+            let mut units = text.into_units();
+            units[index as usize] = args[1].as_int() as u16;
+            text = JStr::from_units(units);
+            None
+        }
         ("setLength", _) => {
             let n = args[0].as_int();
             if n < 0 {

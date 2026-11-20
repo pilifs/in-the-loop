@@ -1,0 +1,1029 @@
+--- /dev/null
++++ b/examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/batch.json
+@@ -0,0 +1,118 @@
++{
++  "schema": "finite-jvm-batch/v1",
++  "id": "20261120T034503Z-11a54bf6",
++  "retryOf": null,
++  "order": [
++    "value-lazy",
++    "value-branch",
++    "value-eager",
++    "callbacks-lazy",
++    "callbacks-branch",
++    "callbacks-eager"
++  ],
++  "claims": {
++    "value-lazy": {
++      "sourceClaim": "c733a973a31e0ee8",
++      "inputsKey": "acef551bb1a0f81abc477e39d463f0ee2715de6f662a767614ba2af939e4c86a",
++      "revisions": [
++        "lazy"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "lazy": "91d259e3462ea085ed50a130d4298a37cc8702b7e424493815ca6c82986962fc"
++      }
++    },
++    "value-branch": {
++      "sourceClaim": "c733a973a31e0ee8",
++      "inputsKey": "7cc4f0bfb17557380b8783cb77161b896ffd4043982649e701561745420980ea",
++      "revisions": [
++        "branch"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "branch": "94cd23af7aa141bab6018e7e8e30adf51e70b26f79e4ed243e04ac9c1d794683"
++      }
++    },
++    "value-eager": {
++      "sourceClaim": "c733a973a31e0ee8",
++      "inputsKey": "470a32c4891a7c291a5612bc9e4d58dab5c5dfbffcca57651c688236f5ce3b58",
++      "revisions": [
++        "eager"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "eager": "45505765f98489c26299b5a670b62073aba628c15328c901f1100b5bd9be9242"
++      }
++    },
++    "callbacks-lazy": {
++      "sourceClaim": "fd17da09f7be85db",
++      "inputsKey": "406c55dec6ffe05f1a3b70df4d798fa51643c8ad47c63ef302ff4defe456f946",
++      "revisions": [
++        "lazy"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "lazy": "91d259e3462ea085ed50a130d4298a37cc8702b7e424493815ca6c82986962fc"
++      }
++    },
++    "callbacks-branch": {
++      "sourceClaim": "fd17da09f7be85db",
++      "inputsKey": "9e90e7bd8bbb02b78f844f8449b6c6ae2eb658fa42d4e35bc3d9a55b5a9082d9",
++      "revisions": [
++        "branch"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "branch": "94cd23af7aa141bab6018e7e8e30adf51e70b26f79e4ed243e04ac9c1d794683"
++      }
++    },
++    "callbacks-eager": {
++      "sourceClaim": "fd17da09f7be85db",
++      "inputsKey": "752916b2ddd0735264a333312278bcba3593732867dd2381a99a8f4f75ab44ba",
++      "revisions": [
++        "eager"
++      ],
++      "expected": "refuted",
++      "sourceLocks": {
++        "eager": "45505765f98489c26299b5a670b62073aba628c15328c901f1100b5bd9be9242"
++      }
++    }
++  },
++  "status": "completed",
++  "completed": [
++    {
++      "task": "value-lazy",
++      "status": "established",
++      "sha256": "9fca212b0fa5d18f0f566b3630045157eb4ffca3afe55c94baac5b066c656018"
++    },
++    {
++      "task": "value-branch",
++      "status": "established",
++      "sha256": "17ddbda86c9c77b1aeea1210c78d131c0148d017d649125903ef0fb87e5dec45"
++    },
++    {
++      "task": "value-eager",
++      "status": "established",
++      "sha256": "594deaa92eb177d0f3a3756b182faf708e30b39b3fc1b23f102df2c2d24f301b"
++    },
++    {
++      "task": "callbacks-lazy",
++      "status": "established",
++      "sha256": "fbc1aa402764c242ddbc56dd721b328e9d48b233e40e15690afc9ed7f09b8c6a"
++    },
++    {
++      "task": "callbacks-branch",
++      "status": "established",
++      "sha256": "688d9cf53e681897c4d6e79a744335955343b292911866bd791a0dd71a8f4eb5"
++    },
++    {
++      "task": "callbacks-eager",
++      "status": "refuted",
++      "sha256": "c05081409b67a5cfbec3707bb7c21e052b87fbaedd308d7dbc85a72fee65151b"
++    }
++  ],
++  "missing": [],
++  "secondsPerJvm": 120,
++  "launcherSha256": "8dd2ea5568ee5f61c0f92ca27a09338ca8c33333cceb04fff6370ad131f2c8f8",
++  "scope": "One JVM per claim and revision. Each integer starts with a fresh application class loader, on the pinned runtime and classpath."
++}
+--- /dev/null
++++ b/examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/callbacks-branch.json
+@@ -0,0 +1,139 @@
++{
++  "status": "established",
++  "entry": "optionalgrid.Projection#callbacks(I)I",
++  "inputs": 4,
++  "differences": 0,
++  "sides": {
++    "branch": {
++      "commit": "fixture:branch",
++      "entry": {
++        "entry": "optionalgrid.Projection#callbacks(I)I",
++        "classSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
++        "loadedFrom": "adapter-branch.jar",
++        "subject": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
++        "subjectClassSha256": "19152af2be123470a61510241076d64a3f7d50c960327b8e46d81d064bf3b51b"
++      },
++      "classpath": [
++        {
++          "path": "adapter-branch.jar",
++          "sha256": "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
++          "role": "adapter"
++        },
++        {
++          "path": "branch.jar",
++          "sha256": "4c8e91c4af4bff44108bfbe0f7b6de8cf53052644582190064cec102b1d0d4cf",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 4)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = optionalgrid.Projection.callbacks(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "7eb2bc9d4c00b3383cc5884190d3cf47bc319152d9d07d55dfeb0f36f4872ba1",
++      "stdoutSha256": "8e35fbee02509e049f9c78f8182bb7a75ae92dbe3cbec9afb5262058ef9b3c3c",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        3
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.103,
++      "cpuSeconds": 0.1077,
++      "peakRssBytes": 61767680,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "branch",
++      "entry": "optionalgrid.Projection#callbacks(I)I",
++      "adapterSha256": "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
++      "adapterClassSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
++      "subject": {
++        "class": "optionalgrid.Choice",
++        "method": "choose",
++        "descriptor": "(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
++        "loadedFrom": "branch.jar",
++        "classSha256": "19152af2be123470a61510241076d64a3f7d50c960327b8e46d81d064bf3b51b",
++        "adapterCalls": [
++          "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
++          "optionalgrid.Fallback#<init>()V"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "Code 0 selects Optional.empty. Codes 1, 2 and 3 select Integer 0, 1 and 2. Fallback implements Supplier<Integer>, records every named invocation, and returns seven.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 4,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 0.0037,
++  "controlSeconds": 0.0008,
++  "wallSeconds": 0.9085,
++  "task": "callbacks-branch",
++  "sourceClaim": "fd17da09f7be85db",
++  "inputsKey": "9e90e7bd8bbb02b78f844f8449b6c6ae2eb658fa42d4e35bc3d9a55b5a9082d9",
++  "revisions": [
++    "branch"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "branch": "94cd23af7aa141bab6018e7e8e30adf51e70b26f79e4ed243e04ac9c1d794683"
++  }
++}
+--- /dev/null
++++ b/examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/callbacks-eager.json
+@@ -0,0 +1,195 @@
++{
++  "status": "refuted",
++  "entry": "optionalgrid.Projection#callbacks(I)I",
++  "inputs": 4,
++  "differences": 3,
++  "sides": {
++    "eager": {
++      "commit": "fixture:eager",
++      "entry": {
++        "entry": "optionalgrid.Projection#callbacks(I)I",
++        "classSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
++        "loadedFrom": "adapter-eager.jar",
++        "subject": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
++        "subjectClassSha256": "0f365c993353f1b907bd498dd607378c555c88946e5a19e04c9a0a7ecd576f7c"
++      },
++      "classpath": [
++        {
++          "path": "adapter-eager.jar",
++          "sha256": "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
++          "role": "adapter"
++        },
++        {
++          "path": "eager.jar",
++          "sha256": "4f2d25c1a3ad66d16a75489f0af4e47f0742b6a263c021c94bb153ce9d671a12",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 4)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = optionalgrid.Projection.callbacks(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "7eb2bc9d4c00b3383cc5884190d3cf47bc319152d9d07d55dfeb0f36f4872ba1",
++      "stdoutSha256": "f0576682324e40e9589e928889b719470774d7d0449801f8d34ef57ca83aef9e",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        3
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            0,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.077,
++      "cpuSeconds": 0.0865,
++      "peakRssBytes": 61767680,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "eager",
++      "entry": "optionalgrid.Projection#callbacks(I)I",
++      "adapterSha256": "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
++      "adapterClassSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
++      "subject": {
++        "class": "optionalgrid.Choice",
++        "method": "choose",
++        "descriptor": "(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
++        "loadedFrom": "eager.jar",
++        "classSha256": "0f365c993353f1b907bd498dd607378c555c88946e5a19e04c9a0a7ecd576f7c",
++        "adapterCalls": [
++          "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
++          "optionalgrid.Fallback#<init>()V"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "Code 0 selects Optional.empty. Codes 1, 2 and 3 select Integer 0, 1 and 2. Fallback implements Supplier<Integer>, records every named invocation, and returns seven.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 4,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 0.0022,
++  "controlSeconds": 0.0005,
++  "replay": {
++    "claimKey": "fd17da09f7be85db",
++    "entry": "optionalgrid.Projection#callbacks(I)I",
++    "inputs": [
++      {
++        "name": "code",
++        "type": "int",
++        "value": 1
++      }
++    ],
++    "observations": [
++      "result",
++      "exception"
++    ],
++    "by": "jvm",
++    "reproduced": true,
++    "sides": {
++      "eager": {
++        "entryClassSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
++        "classpath": [
++          "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
++          "4f2d25c1a3ad66d16a75489f0af4e47f0742b6a263c021c94bb153ce9d671a12"
++        ],
++        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 1;\nif (!(code >= 0 && code < 4)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = optionalgrid.Projection.callbacks(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++        "admitted": true,
++        "values": [
++          0,
++          null
++        ],
++        "satisfies": false
++      }
++    },
++    "jdkRelease": {
++      "JAVA_VERSION": "21.0.13",
++      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++      "IMPLEMENTOR": "Eclipse Adoptium",
++      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++      "OS_ARCH": "x86_64"
++    },
++    "finiteObservation": {
++      "id": 1,
++      "input": {
++        "present": 0
++      },
++      "field": "callbacks",
++      "direct": {
++        "eager": {
++          "value": 0,
++          "callbacks": [
++            "fallback"
++          ]
++        }
++      },
++      "tableSha256": "d8c14334f1b946ada2729005ec3663a188fbf9b1f0d60a42afdb035224190066"
++    }
++  },
++  "wallSeconds": 1.5123,
++  "task": "callbacks-eager",
++  "sourceClaim": "fd17da09f7be85db",
++  "inputsKey": "752916b2ddd0735264a333312278bcba3593732867dd2381a99a8f4f75ab44ba",
++  "revisions": [
++    "eager"
++  ],
++  "expected": "refuted",
++  "sourceLocks": {
++    "eager": "45505765f98489c26299b5a670b62073aba628c15328c901f1100b5bd9be9242"
++  }
++}
+--- /dev/null
++++ b/examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/callbacks-lazy.json
+@@ -0,0 +1,139 @@
++{
++  "status": "established",
++  "entry": "optionalgrid.Projection#callbacks(I)I",
++  "inputs": 4,
++  "differences": 0,
++  "sides": {
++    "lazy": {
++      "commit": "fixture:lazy",
++      "entry": {
++        "entry": "optionalgrid.Projection#callbacks(I)I",
++        "classSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
++        "loadedFrom": "adapter-lazy.jar",
++        "subject": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
++        "subjectClassSha256": "11e6af29408e83a31d75a0be68e9f1b3d8edd424f66281f54710670e7397f210"
++      },
++      "classpath": [
++        {
++          "path": "adapter-lazy.jar",
++          "sha256": "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
++          "role": "adapter"
++        },
++        {
++          "path": "lazy.jar",
++          "sha256": "a070ed7a261b0a8070ae85067fa8049127bac8f22cdfbbc5e9ecf18f63870343",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 4)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = optionalgrid.Projection.callbacks(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "7eb2bc9d4c00b3383cc5884190d3cf47bc319152d9d07d55dfeb0f36f4872ba1",
++      "stdoutSha256": "8e35fbee02509e049f9c78f8182bb7a75ae92dbe3cbec9afb5262058ef9b3c3c",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        3
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.082,
++      "cpuSeconds": 0.0964,
++      "peakRssBytes": 61767680,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "lazy",
++      "entry": "optionalgrid.Projection#callbacks(I)I",
++      "adapterSha256": "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
++      "adapterClassSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
++      "subject": {
++        "class": "optionalgrid.Choice",
++        "method": "choose",
++        "descriptor": "(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
++        "loadedFrom": "lazy.jar",
++        "classSha256": "11e6af29408e83a31d75a0be68e9f1b3d8edd424f66281f54710670e7397f210",
++        "adapterCalls": [
++          "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
++          "optionalgrid.Fallback#<init>()V"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "Code 0 selects Optional.empty. Codes 1, 2 and 3 select Integer 0, 1 and 2. Fallback implements Supplier<Integer>, records every named invocation, and returns seven.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 4,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 0.003,
++  "controlSeconds": 0.0008,
++  "wallSeconds": 0.7735,
++  "task": "callbacks-lazy",
++  "sourceClaim": "fd17da09f7be85db",
++  "inputsKey": "406c55dec6ffe05f1a3b70df4d798fa51643c8ad47c63ef302ff4defe456f946",
++  "revisions": [
++    "lazy"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "lazy": "91d259e3462ea085ed50a130d4298a37cc8702b7e424493815ca6c82986962fc"
++  }
++}
+--- /dev/null
++++ b/examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/value-branch.json
+@@ -0,0 +1,139 @@
++{
++  "status": "established",
++  "entry": "optionalgrid.Projection#value(I)I",
++  "inputs": 4,
++  "differences": 0,
++  "sides": {
++    "branch": {
++      "commit": "fixture:branch",
++      "entry": {
++        "entry": "optionalgrid.Projection#value(I)I",
++        "classSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
++        "loadedFrom": "adapter-branch.jar",
++        "subject": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
++        "subjectClassSha256": "19152af2be123470a61510241076d64a3f7d50c960327b8e46d81d064bf3b51b"
++      },
++      "classpath": [
++        {
++          "path": "adapter-branch.jar",
++          "sha256": "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
++          "role": "adapter"
++        },
++        {
++          "path": "branch.jar",
++          "sha256": "4c8e91c4af4bff44108bfbe0f7b6de8cf53052644582190064cec102b1d0d4cf",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 4)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = optionalgrid.Projection.value(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "ae819cbed46ee6201ce96693bb9eaf44811b47a3e561d828bf35a23a59948f5c",
++      "stdoutSha256": "8e35fbee02509e049f9c78f8182bb7a75ae92dbe3cbec9afb5262058ef9b3c3c",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        3
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.106,
++      "cpuSeconds": 0.1083,
++      "peakRssBytes": 61767680,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "branch",
++      "entry": "optionalgrid.Projection#value(I)I",
++      "adapterSha256": "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
++      "adapterClassSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
++      "subject": {
++        "class": "optionalgrid.Choice",
++        "method": "choose",
++        "descriptor": "(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
++        "loadedFrom": "branch.jar",
++        "classSha256": "19152af2be123470a61510241076d64a3f7d50c960327b8e46d81d064bf3b51b",
++        "adapterCalls": [
++          "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
++          "optionalgrid.Fallback#<init>()V"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "Code 0 selects Optional.empty. Codes 1, 2 and 3 select Integer 0, 1 and 2. Fallback implements Supplier<Integer>, records every named invocation, and returns seven.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 4,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 3.0273,
++  "controlSeconds": 0.0662,
++  "wallSeconds": 3.9659,
++  "task": "value-branch",
++  "sourceClaim": "c733a973a31e0ee8",
++  "inputsKey": "7cc4f0bfb17557380b8783cb77161b896ffd4043982649e701561745420980ea",
++  "revisions": [
++    "branch"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "branch": "94cd23af7aa141bab6018e7e8e30adf51e70b26f79e4ed243e04ac9c1d794683"
++  }
++}
+--- /dev/null
++++ b/examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/value-eager.json
+@@ -0,0 +1,139 @@
++{
++  "status": "established",
++  "entry": "optionalgrid.Projection#value(I)I",
++  "inputs": 4,
++  "differences": 0,
++  "sides": {
++    "eager": {
++      "commit": "fixture:eager",
++      "entry": {
++        "entry": "optionalgrid.Projection#value(I)I",
++        "classSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
++        "loadedFrom": "adapter-eager.jar",
++        "subject": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
++        "subjectClassSha256": "0f365c993353f1b907bd498dd607378c555c88946e5a19e04c9a0a7ecd576f7c"
++      },
++      "classpath": [
++        {
++          "path": "adapter-eager.jar",
++          "sha256": "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
++          "role": "adapter"
++        },
++        {
++          "path": "eager.jar",
++          "sha256": "4f2d25c1a3ad66d16a75489f0af4e47f0742b6a263c021c94bb153ce9d671a12",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 4)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = optionalgrid.Projection.value(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "ae819cbed46ee6201ce96693bb9eaf44811b47a3e561d828bf35a23a59948f5c",
++      "stdoutSha256": "8e35fbee02509e049f9c78f8182bb7a75ae92dbe3cbec9afb5262058ef9b3c3c",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        3
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.105,
++      "cpuSeconds": 0.1078,
++      "peakRssBytes": 61767680,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "eager",
++      "entry": "optionalgrid.Projection#value(I)I",
++      "adapterSha256": "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
++      "adapterClassSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
++      "subject": {
++        "class": "optionalgrid.Choice",
++        "method": "choose",
++        "descriptor": "(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
++        "loadedFrom": "eager.jar",
++        "classSha256": "0f365c993353f1b907bd498dd607378c555c88946e5a19e04c9a0a7ecd576f7c",
++        "adapterCalls": [
++          "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
++          "optionalgrid.Fallback#<init>()V"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "Code 0 selects Optional.empty. Codes 1, 2 and 3 select Integer 0, 1 and 2. Fallback implements Supplier<Integer>, records every named invocation, and returns seven.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 4,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 3.178,
++  "controlSeconds": 0.1176,
++  "wallSeconds": 4.1508,
++  "task": "value-eager",
++  "sourceClaim": "c733a973a31e0ee8",
++  "inputsKey": "470a32c4891a7c291a5612bc9e4d58dab5c5dfbffcca57651c688236f5ce3b58",
++  "revisions": [
++    "eager"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "eager": "45505765f98489c26299b5a670b62073aba628c15328c901f1100b5bd9be9242"
++  }
++}
+--- /dev/null
++++ b/examples/324-optional-fallback-effects/records/finite-proofs/20261120T034503Z-11a54bf6/value-lazy.json
+@@ -0,0 +1,139 @@
++{
++  "status": "established",
++  "entry": "optionalgrid.Projection#value(I)I",
++  "inputs": 4,
++  "differences": 0,
++  "sides": {
++    "lazy": {
++      "commit": "fixture:lazy",
++      "entry": {
++        "entry": "optionalgrid.Projection#value(I)I",
++        "classSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
++        "loadedFrom": "adapter-lazy.jar",
++        "subject": "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
++        "subjectClassSha256": "11e6af29408e83a31d75a0be68e9f1b3d8edd424f66281f54710670e7397f210"
++      },
++      "classpath": [
++        {
++          "path": "adapter-lazy.jar",
++          "sha256": "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
++          "role": "adapter"
++        },
++        {
++          "path": "lazy.jar",
++          "sha256": "a070ed7a261b0a8070ae85067fa8049127bac8f22cdfbbc5e9ecf18f63870343",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 4)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = optionalgrid.Projection.value(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "ae819cbed46ee6201ce96693bb9eaf44811b47a3e561d828bf35a23a59948f5c",
++      "stdoutSha256": "8e35fbee02509e049f9c78f8182bb7a75ae92dbe3cbec9afb5262058ef9b3c3c",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        3
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.094,
++      "cpuSeconds": 0.1101,
++      "peakRssBytes": 61767680,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "lazy",
++      "entry": "optionalgrid.Projection#value(I)I",
++      "adapterSha256": "d743ebcbc63ddcc88228cf54fe1a73385272a0ed0a1f54aca05896bda59e0649",
++      "adapterClassSha256": "ff758cf136cabcb6e9f78f8b92ff94e4519e2c9eac0db4d30819ac70ef249a27",
++      "subject": {
++        "class": "optionalgrid.Choice",
++        "method": "choose",
++        "descriptor": "(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
++        "loadedFrom": "lazy.jar",
++        "classSha256": "11e6af29408e83a31d75a0be68e9f1b3d8edd424f66281f54710670e7397f210",
++        "adapterCalls": [
++          "optionalgrid.Choice#choose(Ljava/util/Optional;Loptionalgrid/Fallback;)I",
++          "optionalgrid.Fallback#<init>()V"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "Code 0 selects Optional.empty. Codes 1, 2 and 3 select Integer 0, 1 and 2. Fallback implements Supplier<Integer>, records every named invocation, and returns seven.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 4,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 2.9469,
++  "controlSeconds": 0.0685,
++  "wallSeconds": 4.2994,
++  "task": "value-lazy",
++  "sourceClaim": "c733a973a31e0ee8",
++  "inputsKey": "acef551bb1a0f81abc477e39d463f0ee2715de6f662a767614ba2af939e4c86a",
++  "revisions": [
++    "lazy"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "lazy": "91d259e3462ea085ed50a130d4298a37cc8702b7e424493815ca6c82986962fc"
++  }
++}
