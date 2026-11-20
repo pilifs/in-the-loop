@@ -3238,6 +3238,12 @@ change `kznutnwvllpm` · [log `794960e78a7c`](https://terminalvalue.net/raw-trac
 
 The external-upgrade-evaluation run's agent found its first blinded builds missing historical Maven plugins and asked about BUMP's 150 GB packaged archive, which doesn't fit on this VM. The user will restart the VM with more storage once no run is under way, and set a note in the run's continue message meanwhile. VF-048 records it, with the agent's open question about fetching public Maven dependencies one at a time. Documentation only.
 
+### Record verification results for 1 job(s)
+
+change `kwopuvyzuups` · [log `794960e78a7c`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/794960e78a7cc22cef361fbfce8484fb11e62eceaf358d9a7514921cf297274d.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261120-232916-compare-stock-compcheck-knowledge-on-aws: passed: 1 passed step(s) in 19.8s, peak 2.8 GiB (estimated 4m00s, 4.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the external-upgrade-evaluation run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/794960e78a7cc22cef361fbfce8484fb11e62eceaf358d9a7514921cf297274d.jsonl.gz) has every step in between: reasoning, tool calls and their results.

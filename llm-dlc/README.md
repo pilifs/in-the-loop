@@ -592,7 +592,7 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 | 2026-11-17 12:56 UTC | [9896d870-fb47-4f3c-ba4d-5b1d3e64719c](traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 151 | 28 | open |
 | 2026-11-17 12:56 UTC | [f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc](traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 163 | 144 | open |
 | 2026-11-17 12:56 UTC | [7ece8184-b148-4351-92d8-d634606b823e](traces/7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 84 | 22 | open |
-| 2026-11-17 12:37 UTC | [/run-brief invocation options](traces/e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 85 | 440 | open |
+| 2026-11-17 12:37 UTC | [/run-brief invocation options](traces/e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 85 | 441 | open |
 | 2026-11-17 02:54 UTC | [a13e8c12-3309-4127-8c89-e4cfdae07ce6](traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 12 | 1 | ended |
 | 2026-11-17 02:26 UTC | [6da9b537-ecce-46cf-99fa-7cae16e7ce99](traces/6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 1 | 2 | ended |
 | 2026-11-17 02:13 UTC | [Window 11 verification loop](traces/b74acbd8-95de-40d7-8793-79948e8c27ae/summary.md) | 11 | 14 | ended |
@@ -615,7 +615,7 @@ Newest first. Each row links to the session summary. The [traces overview](trace
 | 2026-11-15 23:45 UTC | [5399f71b-f38b-4670-8fbe-9aa44d5cd46d](traces/5399f71b-f38b-4670-8fbe-9aa44d5cd46d/summary.md) | 3 | 3 | ended |
 | 2026-11-15 19:24 UTC | [Prove-java-change skill and in-the-loop runtime](traces/3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | 60 | 367 | ended |
 | 2026-11-15 17:34 UTC | [48807e20-0bdb-4031-8ced-d21d16fc3816](traces/48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) | 1 | 6 | ended |
-| 2026-11-15 17:27 UTC | [Moonshot loop status](traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 525 | 595 | open |
+| 2026-11-15 17:27 UTC | [Moonshot loop status](traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 525 | 596 | open |
 | 2026-11-15 16:13 UTC | [a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31](traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) | 41 | 90 | ended |
 | 2026-11-15 14:52 UTC | [Moonshot loop stats backfill](traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/summary.md) | 11 | 12 | ended |
 | 2026-11-15 12:23 UTC | [72d38e75-aae0-402e-9b8a-881beec53824](traces/72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | 61 | 21 | ended |
