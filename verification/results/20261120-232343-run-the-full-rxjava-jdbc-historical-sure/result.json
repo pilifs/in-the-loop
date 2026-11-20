@@ -1,0 +1,167 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-232343-run-the-full-rxjava-jdbc-historical-sure",
+  "title": "Run the full rxjava-jdbc historical Surefire test set on each H2 pin",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 46.3s, peak 419.1 MiB (estimated 2m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-232343-run-the-full-rxjava-jdbc-historical-sure.json",
+    "sha256": "66ffa7b75e8f350434ae84c88d2715df54a3f84ca49316c0f7b9a013d9f47315",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-232343-run-the-full-rxjava-jdbc-historical-sure",
+      "title": "Run the full rxjava-jdbc historical Surefire test set on each H2 pin",
+      "description": "Compile all production and test sources from each exact CompSuite tag with Java 8 and its test dependencies. Reproduce the registry trigger and then run every default JUnit class through Maven 3.6.3’s Surefire 2.12.4 provider. Retain test, skipped, failure and error counts, every failing class/method and exception, full-test duration, and the separate original Maven lifecycle result. This measures the available client CI signal for the public i-87 calibration.",
+      "kind": "other",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "surefire:historical-ci"
+      ],
+      "links": {
+        "examples": [
+          "348"
+        ]
+      },
+      "expected": "Both test sets actually complete and include the exact trigger. Every test failure and error remains visible in the result.",
+      "submitted": {
+        "at": "2026-11-20T23:23:43+00:00",
+        "session": "01a1fb31-b3eb-7231-b464-c3233fd02921"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "paired original test set",
+          "run": "python3 examples/348-rxjava-jdbc-generated-keys/independent/whole_ci.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/348-rxjava-jdbc-generated-keys/records/whole-suite.json"
+      ]
+    }
+  },
+  "sourceCommit": "9f9752c5224582ea692212a11148633e84de30dd",
+  "startedAt": "2026-11-20T23:28:15+00:00",
+  "finishedAt": "2026-11-20T23:29:05+00:00",
+  "wallSeconds": 50.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3468004,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 439451648,
+    "wallSeconds": 46.3,
+    "cpuSeconds": 21.6,
+    "memoryOfEstimate": 0.41,
+    "durationOfEstimate": 0.39
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "paired original test set",
+      "run": "python3 examples/348-rxjava-jdbc-generated-keys/independent/whole_ci.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 46.305,
+      "cpuSeconds": 21.55,
+      "cpuThrottledSeconds": 1.874,
+      "peakMemoryBytes": 439451648,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-paired-original-test-set.log",
+        "lines": 3,
+        "bytes": 267,
+        "sha256": "fb930faf396ec064bc6c8532f6105390aa8316d89653c23a71268fd38afce1d2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Cloning into bare repository '/home/filip/.cache/in-the-loop/tmp/external-upgrade-rxjava/i87-download/subject.git'...",
+        "old {'tests': 454, 'failures': 0, 'errors': 0, 'skipped': 2} 2.178 seconds",
+        "new {'tests': 454, 'failures': 3, 'errors': 0, 'skipped': 2} 3.45 seconds"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/records/whole-suite.json",
+      "change": "added",
+      "bytes": 5633,
+      "sha256": "97539d3787564d23fc417a255f0eb9d2878974bd1af2df6faa2a96e3166cb448",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T23:29:23+00:00",
+    "applied": [
+      "examples/348-rxjava-jdbc-generated-keys/records/whole-suite.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
