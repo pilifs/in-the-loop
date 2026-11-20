@@ -111,6 +111,7 @@
 
 pub mod bitwuzla;
 mod arraycopy;
+mod array_list;
 pub mod bits;
 mod finite_words;
 mod floating;
@@ -980,6 +981,7 @@ enum Literal {
     EmptyMap,
     SuppressedSentinel,
     EmptySuppressedArray,
+    ListEmptyStorage(bool),
     /// `Boolean.TRUE` or `Boolean.FALSE` ([`runtime::truth_constant`]).
     Truth(bool),
     /// A wrapper's mandated cache entry, distinct for each class and small value.
@@ -2469,6 +2471,7 @@ impl<'a> Engine<'a> {
                         Literal::EmptyMap => runtime::EMPTY_MAP,
                         Literal::SuppressedSentinel => throwables::EMPTY_LIST,
                         Literal::EmptySuppressedArray => throwables::THROWABLE_ARRAY,
+                        Literal::ListEmptyStorage(_) => array_list::OBJECT_ARRAY,
                         Literal::Truth(_) => runtime::BOOLEAN,
                         Literal::CachedIntegral(class, _) => class,
                     };
@@ -3011,15 +3014,7 @@ impl<'a> Engine<'a> {
                 let name = frame.class.pool.class_name(*index).map_err(|e| Stop::Unsupported(e.to_string()))?.to_string();
                 let element = if name.starts_with('[') { Type::parse(&name).map_err(|e| Stop::Unsupported(e.to_string()))? } else { Type::Object(name) };
                 let count = self.pop_int(path)?;
-                let cells = self.new_array_cells(path, &count)?;
-                let negative = self.b.negative(&count);
-                self.branch_throw_or(path, negative, "java/lang/NegativeArraySizeException", move |engine, path| {
-                    let class = Type::Array(Box::new(element.clone())).descriptor();
-                    path.objects.push(Obj { array: Some(Array { element, length: count, cells: Vec::new(), refs: vec![Val::R(None); cells] }), ..Obj::new(&class) });
-                    let o = path.objects.len() - 1;
-                    engine.push(path, Val::R(Some(o)));
-                    engine.advance(path);
-                })
+                self.new_reference_array(path, element, count)
             }
             Insn::MultiANewArray(index, rank) => {
                 let frame = path.frames.last().expect("a frame");
@@ -3071,6 +3066,18 @@ impl<'a> Engine<'a> {
         let object = path.objects.len();
         path.objects.push(Obj { array: Some(array), ..Obj::new(&ty.descriptor()) });
         object
+    }
+
+    fn new_reference_array(&mut self, path: &mut Path, element: Type, count: Bits) -> Step {
+        let cells = self.new_array_cells(path, &count)?;
+        let negative = self.b.negative(&count);
+        self.branch_throw_or(path, negative, "java/lang/NegativeArraySizeException", move |engine, path| {
+            let class = Type::Array(Box::new(element.clone())).descriptor();
+            path.objects.push(Obj { array: Some(Array { element, length: count, cells: Vec::new(), refs: vec![Val::R(None); cells] }), ..Obj::new(&class) });
+            let o = path.objects.len() - 1;
+            engine.push(path, Val::R(Some(o)));
+            engine.advance(path);
+        })
     }
 
     /// How many cells a new array of `count` elements has: its size when that is a constant (none when it is
@@ -3832,6 +3839,14 @@ impl<'a> Engine<'a> {
             Insn::GetStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
+                if class.name == "java/util/ArrayList" {
+                    if let Some(default) = array_list::empty_storage(self.cp, &member) {
+                        let object = self.literal(path, Literal::ListEmptyStorage(default), array_list::OBJECT_ARRAY);
+                        self.push(path, Val::R(Some(object)));
+                        self.advance(path);
+                        return Ok(None);
+                    }
+                }
                 if declaring == throwables::THROWABLE && class.name == throwables::THROWABLE {
                     let constant = match (member.name.as_str(), member.descriptor.as_str()) {
                         ("SUPPRESSED_SENTINEL", "Ljava/util/List;") => Some((Literal::SuppressedSentinel, throwables::EMPTY_LIST)),
@@ -4584,9 +4599,10 @@ impl<'a> Engine<'a> {
             }
             Literal::Class(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) | Literal::Level(_) | Literal::Thread | Literal::EmptyMap | Literal::Truth(_) => self.alloc(path, class),
             Literal::SuppressedSentinel => self.alloc(path, class),
-            Literal::EmptySuppressedArray => {
+            Literal::EmptySuppressedArray | Literal::ListEmptyStorage(_) => {
                 let o = self.alloc(path, class);
-                path.objects[o].array = Some(Array { element: Type::object(throwables::THROWABLE), length: self.b.constant(0, 32), cells: Vec::new(), refs: Vec::new() });
+                let element = if literal == Literal::EmptySuppressedArray { throwables::THROWABLE } else { "java/lang/Object" };
+                path.objects[o].array = Some(Array { element: Type::object(element), length: self.b.constant(0, 32), cells: Vec::new(), refs: Vec::new() });
                 o
             }
             Literal::CachedIntegral(_, n) => {
@@ -4789,6 +4805,7 @@ impl<'a> Engine<'a> {
                 return self.call(path, crate::gap_contracts::CLASS, &method, &stub, args);
             }
         }
+        if let Some(step) = self.image_list_static(path, caller, member, &args) { return step; }
         if self.cp.numeric_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
             if let Some(class) = runtime::cached_wrapper(&member.owner, &member.name, &member.descriptor) {
                 if let [Val::I(word) | Val::J(word)] = args.as_slice() {
@@ -4964,7 +4981,7 @@ impl<'a> Engine<'a> {
         let unmodelled = gaps::unmodelled_instance_call(self.cp, &member.owner, &member.name, &member.descriptor);
         let contracted = matches!(&unmodelled, JdkCall::Gap(kind) if self.contracts.contains_key(&Gap { kind: *kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() }));
         if !contracted {
-            if let Some(step) = self.suppression_list(path, o, caller, member, &args) { return step; }
+            if let Some(step) = self.image_list_call(path, o, special, member, &args) { return step; }
             if !special && path.objects[o].class == runtime::BOOLEAN && member.name == "equals" && member.descriptor == "(Ljava/lang/Object;)Z" {
                 if let Some(step) = self.boolean_equals(path, o, &args) { return step; }
             }
@@ -5074,7 +5091,7 @@ impl<'a> Engine<'a> {
                 return step;
             }
         }
-        match if contracted || strings::models_builder(&member.owner, &member.name, &member.descriptor) || runtime::models_logging(&member.owner, &member.name, &member.descriptor) { unmodelled } else { gaps::jdk_instance_call(self.cp, &member.owner, &member.name, &member.descriptor) } {
+        match if contracted || (member.name == "getComponentType" && member.descriptor == "()Ljava/lang/Class;") || strings::models_builder(&member.owner, &member.name, &member.descriptor) || runtime::models_logging(&member.owner, &member.name, &member.descriptor) { unmodelled } else { gaps::jdk_instance_call(self.cp, &member.owner, &member.name, &member.descriptor) } {
             JdkCall::Exact => {}
             JdkCall::Gap(kind) => {
                 // What the call does to a builder is the contract's or the assumption's to say: the engine holds
@@ -5128,6 +5145,7 @@ impl<'a> Engine<'a> {
     /// Enters a bytecode method with the arguments in its locals.
     fn call(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, args: Vec<Val>) -> Step {
         let (cf, m) = self.cp.throwable_image_method(owner, name, descriptor)
+            .or_else(|| self.cp.list_image_method(owner, name, descriptor).filter(|_| !self.cp.runs_model(owner)))
             .or_else(|| self.cp.checker_method(owner, name, descriptor))
             .or_else(|| self.cp.numeric_image_method(owner, name, descriptor))
             .ok_or_else(|| Stop::Unsupported(format!("method not found: {}.{name}{descriptor}", owner.replace('/', "."))))?;
@@ -5175,7 +5193,7 @@ impl<'a> Engine<'a> {
             }
         }
         // A model run on request is what the result then rests on.
-        if let Some(model) = crate::models::on_request(&cf.name).filter(|_| !self.cp.is_application(&cf.name)) {
+        if let Some(model) = crate::models::on_request(&cf.name).filter(|_| self.cp.runs_model(&cf.name) && !self.cp.is_application(&cf.name)) {
             self.assume_model(model);
         }
         path.frames.push(Frame::new(cf.clone(), name.to_string(), code, locals));

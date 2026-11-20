@@ -59,7 +59,7 @@ pub fn charset_constant(owner: &str, name: &str) -> Option<&'static str> {
 pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!(
         (owner, name, descriptor),
-        (INTEGER, "parseInt", "(Ljava/lang/String;)I") | ("java/lang/Long", "parseLong", "(Ljava/lang/String;)J") | (DIGEST, "isEqual", "([B[B)Z") | (ARRAYS, "copyOf", "([ZI)[Z" | "([BI)[B" | "([CI)[C" | "([SI)[S" | "([II)[I" | "([JI)[J" | "([Ljava/lang/Object;I)[Ljava/lang/Object;")
+        (INTEGER, "parseInt", "(Ljava/lang/String;)I") | ("java/lang/Long", "parseLong", "(Ljava/lang/String;)J") | ("java/lang/Long", "toString", "(J)Ljava/lang/String;") | (DIGEST, "isEqual", "([B[B)Z") | (ARRAYS, "copyOf", "([ZI)[Z" | "([BI)[B" | "([CI)[C" | "([SI)[S" | "([II)[I" | "([JI)[J" | "([Ljava/lang/Object;I)[Ljava/lang/Object;")
     )
 }
 
@@ -256,6 +256,13 @@ impl Engine<'_> {
     /// call stays the JDK's.
     pub(super) fn bytes_static(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, args: &[Val]) -> Option<Step> {
         match (owner, name, args) {
+            ("java/lang/Long", "toString", [Val::J(word)]) if self.cp.fresh_long_decimal() => {
+                let (length, cells) = self.decimal(word);
+                let text = self.new_string(path, length, cells, Vec::new());
+                self.push(path, Val::R(Some(text)));
+                self.advance(path);
+                Some(Ok(None))
+            }
             (INTEGER, "parseInt", [Val::R(text)]) | ("java/lang/Long", "parseLong", [Val::R(text)]) => {
                 let Some(text) = *text else { return Some(self.raise(path, "java/lang/NumberFormatException")) };
                 let s = path.objects[text].content().cloned()?;

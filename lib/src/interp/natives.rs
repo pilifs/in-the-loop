@@ -1364,12 +1364,19 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
             None
         }
         ("toArray", "()[Ljava/lang/Object;") => Some(m.new_array_of(Type::object("java/lang/Object"), elements)),
-        ("toArray", _) => {
-            let element = match args[0].as_ref().map(|a| m.heap.get(a).clone()) {
-                Some(Object::Array { element, .. }) => element,
-                _ => Type::object("java/lang/Object"),
-            };
-            Some(m.new_array_of(element, elements))
+        ("toArray", "([Ljava/lang/Object;)[Ljava/lang/Object;") => {
+            let Some(target) = args[0].as_ref() else { return Err(m.npe()) };
+            let Object::Array { element, data } = m.heap.get(target) else { return unsupported("List.toArray requires an array") };
+            let capacity = data.len();
+            let destination = if capacity < len { m.new_array(element.clone(), len as i32)? } else { args[0] };
+            let source = m.new_array_of(Type::object("java/lang/Object"), elements);
+            invoke_static_jdk(m, "java/lang/System", "arraycopy", "(Ljava/lang/Object;ILjava/lang/Object;II)V",
+                vec![source, Value::Int(0), destination, Value::Int(0), Value::Int(len as i32)])?;
+            if capacity > len {
+                m.check_write(target, "an array element")?;
+                if let Object::Array { data, .. } = m.heap.get_mut(target) { data[len] = Value::Null; }
+            }
+            Some(destination)
         }
         ("subList", _) => {
             let (from, to) = (args[0].as_int(), args[1].as_int());

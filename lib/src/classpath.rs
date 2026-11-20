@@ -535,6 +535,51 @@ impl ClassPath {
         Some((class, method))
     }
 
+    /// The decimal spelling is specified. Model a fresh String only if every normal
+    /// return in the image constructs one from its bytes (older images can return a literal).
+    pub(crate) fn fresh_long_decimal(&self) -> bool {
+        use crate::classfile::{Insn, Kind};
+        let Ok(Some(Loaded { class, origin: Origin::Jdk })) = self.load("java/lang/Long") else { return false };
+        let Some(code) = class.method("toString", "(J)Ljava/lang/String;").and_then(|m| m.code.as_ref()) else { return false };
+        let Ok(insns) = code.instructions() else { return false };
+        let mut returns = 0;
+        for (i, (_, insn)) in insns.iter().enumerate() {
+            if !matches!(insn, Insn::Return(Some(Kind::Ref))) { continue; }
+            let Some([(_, Insn::New(c)), (_, Insn::Dup), (_, Insn::Load(Kind::Ref, _)), (_, Insn::IConst(_)), (_, Insn::InvokeSpecial(m))])
+                = i.checked_sub(5).and_then(|start| insns.get(start..i)) else { return false };
+            if class.pool.class_name(*c).ok() != Some("java/lang/String")
+                || !class.pool.member(*m).is_ok_and(|m| m.owner == "java/lang/String" && m.name == "<init>" && m.descriptor == "([BB)V") { return false; }
+            // No branch can jump into the construction sequence and return another reference.
+            let start = insns[i - 5].0;
+            let end = insns[i].0;
+            if !code.exception_table.is_empty() || insns.iter().any(|(_, op)| matches!(op, Insn::Jsr(_) | Insn::Ret(_))
+                || op.targets().iter().any(|pc| *pc > start && *pc <= end)) { return false; }
+            returns += 1;
+        }
+        returns > 0
+    }
+
+    /// List methods and their helpers are entered only on an initialized, exact ArrayList.
+    pub(crate) fn list_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
+        if !matches!((owner, name, descriptor),
+            ("java/util/ArrayList", "<init>", "()V" | "(I)V")
+            | ("java/util/ArrayList", "size", "()I") | ("java/util/ArrayList", "isEmpty", "()Z")
+            | ("java/util/ArrayList", "get" | "elementData", "(I)Ljava/lang/Object;")
+            | ("java/util/ArrayList", "set", "(ILjava/lang/Object;)Ljava/lang/Object;")
+            | ("java/util/ArrayList", "contains", "(Ljava/lang/Object;)Z") | ("java/util/ArrayList", "indexOf", "(Ljava/lang/Object;)I")
+            | ("java/util/ArrayList", "indexOfRange", "(Ljava/lang/Object;II)I")
+            | ("java/util/ArrayList", "add", "(Ljava/lang/Object;)Z" | "(Ljava/lang/Object;[Ljava/lang/Object;I)V")
+            | ("java/util/ArrayList", "grow", "()[Ljava/lang/Object;" | "(I)[Ljava/lang/Object;")
+            | ("java/util/ArrayList", "toArray", "()[Ljava/lang/Object;" | "([Ljava/lang/Object;)[Ljava/lang/Object;")
+            | ("java/util/Arrays", "copyOf", "([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;")
+            | ("jdk/internal/util/ArraysSupport", "newLength", "(III)I")
+            | ("jdk/internal/util/ArraysSupport", "hugeLength", "(II)I")) { return None; }
+        let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
+        let method = class.method(name, descriptor)?.clone();
+        method.code.as_ref()?;
+        Some((class, method))
+    }
+
     /// Numeric code executed from the selected JDK image. Factories follow their actual
     /// allocation and cache branches. The hypot implementation includes the FdLibm helpers
     /// the selected image calls. An additional helper can produce a named refusal.
@@ -789,9 +834,14 @@ impl ClassPath {
                 return true;
             }
             if let Some(sup_elem) = sup.strip_prefix('[') {
-                return match (sub_elem.strip_prefix('L').and_then(|s| s.strip_suffix(';')), sup_elem.strip_prefix('L').and_then(|s| s.strip_suffix(';'))) {
+                // A component can itself be an array, hence an Object, Cloneable and
+                // Serializable. Primitive components are covariant only with themselves.
+                fn reference_component(desc: &str) -> Option<&str> {
+                    if desc.starts_with('[') { Some(desc) } else { desc.strip_prefix('L')?.strip_suffix(';') }
+                }
+                return match (reference_component(sub_elem), reference_component(sup_elem)) {
                     (Some(a), Some(b)) => self.is_subtype(a, b),
-                    _ => sub_elem == sup_elem || (sub_elem.starts_with('[') && sup_elem.starts_with('[') && self.is_subtype(sub_elem, sup_elem)),
+                    _ => sub_elem == sup_elem,
                 };
             }
             return false;

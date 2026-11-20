@@ -192,7 +192,8 @@ pub fn requested_assumption(model: &str) -> String {
 /// `(class, name, descriptor)`, called with the call's receiver, if it has one, and its arguments.
 pub fn entry(owner: &str, name: &str, descriptor: &str) -> Option<(&'static str, &'static str, &'static str)> {
     match (owner, name, descriptor) {
-        ("java/util/Arrays", "stream", "([Ljava/lang/Object;)Ljava/util/stream/Stream;") => Some(("java/util/stream/SequentialArrayStream", "of", "([Ljava/lang/Object;)Ljava/util/stream/Stream;")),
+        ("java/util/Arrays", "stream", "([Ljava/lang/Object;)Ljava/util/stream/Stream;")
+        | ("java/util/stream/Stream", "of", "([Ljava/lang/Object;)Ljava/util/stream/Stream;") => Some(("java/util/stream/SequentialArrayStream", "of", "([Ljava/lang/Object;)Ljava/util/stream/Stream;")),
         ("java/lang/String", "chars", "()Ljava/util/stream/IntStream;") => Some(("java/util/stream/CharsStream", "of", "(Ljava/lang/String;)Ljava/util/stream/IntStream;")),
         ("java/util/stream/IntStream", "range", "(II)Ljava/util/stream/IntStream;") => Some(("java/util/stream/RangeStream", "of", "(II)Ljava/util/stream/IntStream;")),
         ("java/util/Arrays", "stream", "([I)Ljava/util/stream/IntStream;") => Some(("java/util/stream/IntArrayStream", "of", "([I)Ljava/util/stream/IntStream;")),

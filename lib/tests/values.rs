@@ -565,7 +565,7 @@ fn the_list_models_throw_refuse_and_share_as_the_jdks_do() {
     let one_class = list_refuted(&cp, "getThrowsOneClass");
     assert!(one_class[0] == 1 || one_class[0] == 2, "a List12: {one_class:?}");
     // The gap scan agrees: the models' methods are walked, as the engine runs them, and none is a gap; an
-    // `ArrayList` still is one.
+    // `ArrayList` remains a possible gap in the static scan until the receiver is known.
     let scan = |target: &str| bmc::gaps::scan(&cp, &bmc::gaps::roots(&cp, &[format!("values.Lists#{target}")]).unwrap()).unwrap();
     for (target, walked) in [("sizeAndIteration", "java.util.ImmutableCollections$ListItr.next"), ("clearRewritten", "java.util.ImmutableCollections$ListN.get"), ("copyOfIsTheList", "java.util.ImmutableCollections.listCopy")] {
         let s = scan(target);
@@ -573,11 +573,8 @@ fn the_list_models_throw_refuse_and_share_as_the_jdks_do() {
         assert!(s.methods.iter().any(|m| m.starts_with(walked)), "{target}: {:?}", s.methods);
     }
     assert!(scan("copyOfAnotherImplementation").gaps.keys().any(|g| g.owner == "java/util/ArrayList"));
-    let out = list_checked(&cp, "copyOfAnotherImplementation", u64::MAX);
-    assert_eq!(out.verdict, Verdict::Unverifiable);
-    let problem = out.problem.unwrap_or_default();
-    // `new ArrayList()` only makes the object (`bmc::runtime`): what the list holds is its methods', each a gap.
-    assert!(problem.contains("java.util.ArrayList.add(Ljava/lang/Object;)Z"), "{problem}");
+    // The concrete constructor and toArray now execute from the selected image.
+    list_verified(&cp, "copyOfAnotherImplementation");
 }
 
 /// The kernels a check of [`adapted_lists`] compares, by name in `values.Lists`, each taking the list.

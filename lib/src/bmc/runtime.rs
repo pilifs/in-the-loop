@@ -190,7 +190,7 @@ pub fn models_instance(owner: &str, name: &str, descriptor: &str) -> bool {
         (owner, name, descriptor),
         (BOOLEAN, "booleanValue", "()Z") | (BOOLEAN, "equals", "(Ljava/lang/Object;)Z") | (CLASS, "getName" | "getTypeName", "()Ljava/lang/String;")
             | (CLASS, "isArray", "()Z")
-            | (CLASS, "getSuperclass", "()Ljava/lang/Class;")
+            | (CLASS, "getSuperclass" | "getComponentType", "()Ljava/lang/Class;")
             | (CLASS, "getClassLoader", "()Ljava/lang/ClassLoader;")
             | (CLASS, "isAssignableFrom", "(Ljava/lang/Class;)Z")
             | ("java/lang/Object", "getClass", "()Ljava/lang/Class;")
@@ -231,7 +231,7 @@ impl Engine<'_> {
     }
 
     /// The class a class literal's object names, by its internal name.
-    fn class_named(&self, path: &Path, o: usize) -> Option<String> {
+    pub(super) fn class_named(&self, path: &Path, o: usize) -> Option<String> {
         path.literals.iter().find_map(|(l, &at)| match l {
             Literal::Class(name) if at == o => Some(name.clone()),
             _ => None,
@@ -270,7 +270,8 @@ impl Engine<'_> {
             // ([`super::throwables`]).
             let o_ = &path.objects[o];
             let exception = !o_.given && !o_.assumed && (super::throwables::jdk_throwable(self.cp, &class) || (self.cp.loads(&class) && self.cp.is_subtype(&class, "java/lang/Throwable")));
-            if class.starts_with('[') || o_.lambda.is_some() || !(self.cp.is_application(&class) || class == STRING || exception) {
+            let array = o_.is_array() && !o_.assumed && !self.there_before(path, o);
+            if o_.lambda.is_some() || !(array || self.cp.is_application(&class) || class == STRING || exception) {
                 return None;
             }
             let literal = self.literal(path, Literal::Class(class), CLASS);
@@ -308,6 +309,16 @@ impl Engine<'_> {
                 let own = self.previous.as_ref().and_then(|p| p.original(&class)).unwrap_or(&class);
                 let units: Vec<u16> = own.replace('/', ".").encode_utf16().collect();
                 self.literal(path, Literal::Str(units), STRING)
+            }
+            "getComponentType" => {
+                let Some(desc) = class.strip_prefix('[') else {
+                    self.push(path, Val::R(None));
+                    self.advance(path);
+                    return Some(Ok(None));
+                };
+                let component = Type::parse(desc).ok()?;
+                if !holds_references(&component) { return Some(unsupported("Class.getComponentType needs a primitive class mirror for this array")); }
+                self.literal(path, Literal::Class(class_of(&component)), CLASS)
             }
             "getSuperclass" => {
                 let above = if class.starts_with('[') {
@@ -347,10 +358,18 @@ impl Engine<'_> {
         let above = self.class_named(path, o)?;
         let Some(other) = *other else { return Some(self.raise(path, "java/lang/NullPointerException")) };
         let below = self.class_named(path, other)?;
-        // A class or an interface by its internal name, with everything above it at hand: no primitive type
-        // (`int` has no `/`, and neither has a class of the unnamed package, which is left to the JDK with it)
-        // and no array.
-        let known = |cp: &ClassPath, class: &str| class.contains('/') && !class.starts_with('[') && cp.loads(class);
+        // Resolve the leaf of an array literal as well. Primitive array descriptors
+        // determine their type without a primitive Class mirror.
+        let known = |cp: &ClassPath, class: &str| {
+            if class.starts_with('[') {
+                let element = class.trim_start_matches('[');
+                return match element.strip_prefix('L').and_then(|s| s.strip_suffix(';')) {
+                    Some(name) => cp.loads(name),
+                    None => matches!(element, "B" | "S" | "C" | "I" | "J" | "F" | "D" | "Z"),
+                };
+            }
+            class.contains('/') && cp.loads(class)
+        };
         if !known(self.cp, &above) || !known(self.cp, &below) {
             return None;
         }

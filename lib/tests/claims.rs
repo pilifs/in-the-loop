@@ -669,10 +669,10 @@ fn a_class_literal_says_whether_it_is_an_array_class_and_another_class_is_the_jd
     jvmcontract::tool_tier!();
     let Some(classes) = classes() else { return };
     let jvm = Command::new("java").arg("-XX:-UsePerfData").arg("-cp").arg(classes).arg("claims.Arrayed").output().expect("java runs");
-    assert_eq!(String::from_utf8_lossy(&jvm.stdout).trim(), "true true true", "{}", String::from_utf8_lossy(&jvm.stderr));
-    proved(classes, "claims.Arrayed#arrayed", 2);
-    for (method, call) in [("ofAnArray", "java.lang.Class.isArray()"), ("assignableOfAnArray", "java.lang.Class.isAssignableFrom(java.lang.Class)")] {
-        // Under strict the run stops at the array's `getClass()`; under assume that gives a Class the engine holds
+    assert_eq!(String::from_utf8_lossy(&jvm.stdout).trim(), "true true true true true", "{}", String::from_utf8_lossy(&jvm.stderr));
+    for method in ["arrayed", "ofAnArray", "assignableOfAnArray"] { proved(classes, &format!("claims.Arrayed#{method}"), 2); }
+    for (method, call) in [("opaqueIsArray", "java.lang.Class.isArray()"), ("opaqueAssignable", "java.lang.Class.isAssignableFrom(java.lang.Class)")] {
+        // Under strict the run stops at the opaque receiver's `getClass()`; under assume that gives a Class the engine holds
         // no literal of, and the run stops at the call on it.
         for (mode, stop) in [(jvmcontract::bmc::gaps::GapMode::Strict, "java.lang.Object.getClass()"), (jvmcontract::bmc::gaps::GapMode::Assume, call)] {
             let mut o = options(classes, &format!("claims.Arrayed#{method}"), 1, &format!("Arrayed-{method}-{mode:?}"));
@@ -1235,4 +1235,26 @@ fn regex_captures_and_signed_decimal_limits_agree_with_the_jvm() {
     }
     let counter = run(&options(classes, "claims.CapturedNumbers#wrong", 24, "wrong-group"));
     assert_eq!(counter.verdict, Verdict::Violation, "{}", counter.output);
+}
+
+#[test]
+fn selected_jdk_lists_keep_capacity_growth_typed_arrays_and_partial_stores() {
+    jvmcontract::tool_tier!();
+    use jvmcontract::interp::{Machine, Value};
+    let Some(classes) = classes() else { return };
+    let jvm = Command::new("java").arg("-cp").arg(classes).arg("claims.ListConversions").output().unwrap();
+    assert!(jvm.status.success(), "{}", String::from_utf8_lossy(&jvm.stderr));
+    for name in ["snapshots", "storesPrefix", "shortCircuit", "digits"] {
+        let o = run(&options(classes, &format!("claims.ListConversions#{name}"), 4, &format!("list-image-{name}")));
+        assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+        assert!(!o.stated.unwrap().assumptions.iter().any(|a| a.text.contains("java.util.ArrayList is the tool's model")));
+    }
+    let cp = jvmcontract::witness::classpath([classes]).unwrap();
+    let mut machine = Machine::new(&cp);
+    for sized in [0, 1] {
+        assert_eq!(machine.call_static("claims/ListConversions", "snapshots", "(Z)Z", vec![Value::Int(sized)]).unwrap(), Some(Value::Int(1)));
+    }
+    assert_eq!(machine.call_static("claims/ListConversions", "storesPrefix", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
+    let o = run(&options(classes, "claims.ListConversions#wrong", 4, "wrong-typed-copy"));
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
 }

@@ -261,40 +261,6 @@ impl Engine<'_> {
         Some(Ok(None))
     }
 
-    /// The ArrayList allocated privately by the JDK's addSuppressed. Its only consumers
-    /// append a Throwable or copy the references into a detached, typed result array.
-    pub(super) fn suppression_list(&mut self, path: &mut Path, o: usize, caller: &str, member: &crate::classfile::MemberRef, args: &[Val]) -> Option<Step> {
-        if caller != THROWABLE || path.objects[o].class != "java/util/ArrayList" {
-            return None;
-        }
-        match (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str(), args) {
-            ("java/util/ArrayList", "<init>", "(I)V", [Val::I(capacity)]) if self.b.constant_value(capacity).is_some_and(|n| n >= 0) => {
-                path.objects[o].array = Some(Array { element: Type::object(THROWABLE), length: self.b.constant(0, 32), cells: Vec::new(), refs: Vec::new() });
-            }
-            ("java/util/List", "add", "(Ljava/lang/Object;)Z", [value]) if path.objects[o].array.is_some() => {
-                if let Err(stop) = self.keeps(path, Some(o), "appends to a pre-existing suppression list") { return Some(Err(stop)); }
-                let list = path.objects[o].array.as_mut()?;
-                list.refs.push(value.clone());
-                list.length = self.b.constant(list.refs.len() as i64, 32);
-                let added = self.b.constant(1, 32);
-                self.push(path, Val::I(added));
-            }
-            ("java/util/List", "toArray", "([Ljava/lang/Object;)[Ljava/lang/Object;", [Val::R(Some(empty))])
-                if path.literals.get(&Literal::EmptySuppressedArray) == Some(empty) => {
-                let array = path.objects[o].array.clone()?;
-                let result = if array.refs.is_empty() { *empty } else {
-                    let copy = self.alloc(path, THROWABLE_ARRAY);
-                    path.objects[copy].array = Some(array);
-                    copy
-                };
-                self.push(path, Val::R(Some(result)));
-            }
-            _ => return None,
-        }
-        self.advance(path);
-        Some(Ok(None))
-    }
-
     /// The message (`message`) or the cause the engine kept of the exception `o`, read as the JDK's method reads
     /// its field. `None` where it is not one known reference (a merge of paths left a choice), which the JDK call
     /// then stays; `Some(Err)` where the read is refused.

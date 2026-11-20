@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-063346-recheck-all-signed-tai-observations-on-t",
+  "title": "Recheck all signed TAI observations on the shared library checker",
+  "description": "Independently prove or refute formatting, canonical text parsing, and object round trips for both ThreeTen revisions on the original 20 inputs, retaining distinct prepared bindings and a JVM replay for each failing claim.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "315"
+    ]
+  },
+  "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+  "submitted": {
+    "at": "2026-11-20T06:33:46+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "12m"
+  },
+  "steps": [
+    {
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 315 --tasks format-parent,format-fix,parse-parent,parse-fix,round-trip-parent,round-trip-fix --checker-seconds 60",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/315-tai-signed-fraction/receipts/format-parent",
+    "examples/315-tai-signed-fraction/receipts/format-fix",
+    "examples/315-tai-signed-fraction/receipts/parse-parent",
+    "examples/315-tai-signed-fraction/receipts/parse-fix",
+    "examples/315-tai-signed-fraction/receipts/round-trip-parent",
+    "examples/315-tai-signed-fraction/receipts/round-trip-fix"
+  ]
+}
