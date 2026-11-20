@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-195445-344-check-three-single-call-java-workers",
+  "title": "344 check three single-call Java workers after exact two-worker agreement",
+  "description": "The twelve two-worker exhaustive, sleep-set and sequential outcome sets agreed exactly and included 36 JVM histories. Extend only the worker count, to three completed single calls on fixed seat and audit heaps. Collect all labeled returns, owners, response intervals, ordered acknowledgments and per-strategy costs.",
+  "kind": "real-world",
+  "capabilities": [
+    "native:schedule-reduction",
+    "native:monitor-histories"
+  ],
+  "links": {
+    "examples": [
+      "344"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T19:54:45+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "4m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Compare every completed three-worker outcome",
+      "run": "python3 examples/tools/build.py 344 --schedule-reduction --workers 3",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/344-seat-schedule-reduction/records/schedule-reduction/3-workers.json"
+  ]
+}

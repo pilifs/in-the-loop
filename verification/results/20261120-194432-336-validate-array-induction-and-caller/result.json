@@ -1,0 +1,184 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-194432-336-validate-array-induction-and-caller",
+  "title": "336 validate array induction and caller dependencies",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1.8s, peak 124.2 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-194432-336-validate-array-induction-and-caller.json",
+    "sha256": "5f7f21c6074cfee0efaad28e2449c4c456e28515f3acf178c94134fba41db663",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-194432-336-validate-array-induction-and-caller",
+      "title": "336 validate array induction and caller dependencies",
+      "description": "Check the actual compiled transition system over every legal Java int-array length. Range fill additionally sends a changed range through the same proved helper. Require the countermodel to the caller postcondition on that revision and the independent concrete alias replay.",
+      "kind": "real-world",
+      "capabilities": [
+        "native:array-invariant",
+        "proof:reuse"
+      ],
+      "links": {
+        "examples": [
+          "336"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T19:44:32+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac",
+        "z3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "first-any-length",
+          "run": "python3 examples/tools/build.py 336 --array-induction first-any-length --checker-seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/336-guava-first-array-match/records/array-induction/first-any-length"
+      ]
+    }
+  },
+  "sourceCommit": "c122a440b61a332db9bcc4512f938fb2c2792fd4",
+  "startedAt": "2026-11-20T19:51:08+00:00",
+  "finishedAt": "2026-11-20T19:51:14+00:00",
+  "wallSeconds": 6.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1224582,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 130183168,
+    "wallSeconds": 1.8,
+    "cpuSeconds": 2.6,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "first-any-length",
+      "run": "python3 examples/tools/build.py 336 --array-induction first-any-length --checker-seconds 60",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 1.808,
+      "cpuSeconds": 2.554,
+      "cpuThrottledSeconds": 0.057,
+      "peakMemoryBytes": 130183168,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-first-any-length.log",
+        "lines": 1,
+        "bytes": 112,
+        "sha256": "4f7e8b9c5b92538dbe256d2275b0963ae67c3a4c37ef578de7b40922d69d4997",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "first-any-length: established, 10 solver answers, records/array-induction/first-any-length/9e4e84ebc26188156167"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/336-guava-first-array-match/records/array-induction/first-any-length/9e4e84ebc26188156167/class.javap",
+      "change": "added",
+      "bytes": 22934,
+      "sha256": "5fb5491692489ebc76adb6a20d82008f417e4ae372d6ec5c2bd3d601a0fa170c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/records/array-induction/first-any-length/9e4e84ebc26188156167/obligations.smt2",
+      "change": "added",
+      "bytes": 4094,
+      "sha256": "090a95bf986ac98a4815dd8138558aaa837e811df9fc27d1d831a5e1d74627b0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/336-guava-first-array-match/records/array-induction/first-any-length/9e4e84ebc26188156167/result.json",
+      "change": "added",
+      "bytes": 5074,
+      "sha256": "44445f72bcaf4b9b8c2bf8ac1738797a218396c5362ea96ac9ee87600a4b363f",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T19:55:02+00:00",
+    "applied": [
+      "examples/336-guava-first-array-match/records/array-induction/first-any-length/9e4e84ebc26188156167/class.javap",
+      "examples/336-guava-first-array-match/records/array-induction/first-any-length/9e4e84ebc26188156167/obligations.smt2",
+      "examples/336-guava-first-array-match/records/array-induction/first-any-length/9e4e84ebc26188156167/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

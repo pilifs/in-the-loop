@@ -1,0 +1,174 @@
+{
+  "plan": {
+    "example": "337",
+    "task": "caller-64-extra",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "fill.Range#observe([I[IIIII)I",
+    "revisions": [
+      "extra"
+    ],
+    "claim": {
+      "task": "caller-64-extra",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "fill.Range#observe([I[IIIII)I",
+      "file": "claims/caller-64.json",
+      "sha256": "aee22bf06493a388fa3f6009103847b55437ccc11bd2b69af69ee130febaf941",
+      "property": "caller-64",
+      "claimKind": "property",
+      "statement": "The caller reads the entry value of its second root except for cells selected by an aliased write range.",
+      "assume": "0 <= from && from <= to && to <= a.length && 0 <= k && k < other.length",
+      "assert": "result == (a == other && from <= k && k < to ? value : \\old(other[k]))",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [
+        "a,other"
+      ],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 67,
+        "maxArrayLength": 64
+      },
+      "explicitBounds": {
+        "unwind": 67,
+        "maxArrayLength": 64
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/fill/FillCases.java",
+          "sha256": "df934c915b1f69036ec1daff862cf92519f5558f9e65fa8e32aa8d76acb9f2df"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "bcd21cea9fee6568d798f70163f85c458a4db50b7051dea3f48df25b82772653"
+        }
+      ],
+      "key": "29bbeb2c22580443"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "extra",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "extra",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/caller-64-extra"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-193914-337-range-fill-after-linking-arrays-at-6/examples/337-jdk-range-fill-alias",
+    "network": false
+  },
+  "inputs": {
+    "example": "337",
+    "task": "caller-64-extra",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "fill.Range#observe([I[IIIII)I",
+    "revisions": [
+      "extra"
+    ],
+    "claim": {
+      "task": "caller-64-extra",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "fill.Range#observe([I[IIIII)I",
+      "file": "claims/caller-64.json",
+      "sha256": "aee22bf06493a388fa3f6009103847b55437ccc11bd2b69af69ee130febaf941",
+      "property": "caller-64",
+      "claimKind": "property",
+      "statement": "The caller reads the entry value of its second root except for cells selected by an aliased write range.",
+      "assume": "0 <= from && from <= to && to <= a.length && 0 <= k && k < other.length",
+      "assert": "result == (a == other && from <= k && k < to ? value : \\old(other[k]))",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [
+        "a,other"
+      ],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 67,
+        "maxArrayLength": 64
+      },
+      "explicitBounds": {
+        "unwind": 67,
+        "maxArrayLength": 64
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/fill/FillCases.java",
+          "sha256": "df934c915b1f69036ec1daff862cf92519f5558f9e65fa8e32aa8d76acb9f2df"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "bcd21cea9fee6568d798f70163f85c458a4db50b7051dea3f48df25b82772653"
+        }
+      ],
+      "key": "29bbeb2c22580443"
+    },
+    "artifacts": [
+      {
+        "revision": "extra",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "extra",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "08dd6d2be1b5de8996f67625e92bc53a4b757068b137d7eab3cec3fb5cb07307"
+}

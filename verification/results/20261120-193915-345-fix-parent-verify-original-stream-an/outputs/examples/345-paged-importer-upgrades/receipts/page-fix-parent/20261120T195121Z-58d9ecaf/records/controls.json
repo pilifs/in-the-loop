@@ -1,0 +1,3674 @@
+{
+  "task": "page-fix-parent",
+  "records": [
+    {
+      "kind": "jvm-control",
+      "revision": "fix-parent",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-cp",
+        "driver.jar:adapter-fix-parent.jar:fix-parent.jar:libraries/io-fix.jar:libraries/csv-parent.jar:libraries/codec.jar",
+        "importer.ImportCases",
+        "--all"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.165,
+      "stdout": "controls/control-fix-parent-jdk21.stdout",
+      "stderr": "controls/control-fix-parent-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "fixture:client",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "13787ea12201b5ce865e6b816fbb69c721841413ee3ac0c5c28407d22dddd4d2",
+            "role": "driver"
+          },
+          {
+            "path": "adapter-fix-parent.jar",
+            "sha256": "bf22b30bf9d9a5acd671d3c9d7a056b8dcc03fd9b279560d39c49485b5a85319",
+            "role": "adapter"
+          },
+          {
+            "path": "fix-parent.jar",
+            "sha256": "5d0a2eefe440fc7795a177e2fc37c8c1cce0d4c77ce5c08128d3f5e9410713cc",
+            "role": "original"
+          },
+          {
+            "path": "libraries/io-fix.jar",
+            "sha256": "a9c4200fce16a66172da44a6e7ae276099647d4d84770e15825eddcb628523a4",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/csv-parent.jar",
+            "sha256": "13cddf9003b79d639af7541ee36cb700fc2cf46f7becb0f2f045c187bec8dcbe",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/codec.jar",
+            "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4",
+            "role": "dependency"
+          }
+        ],
+        "driver": {
+          "control": "driver",
+          "main": "importer.ImportCases"
+        },
+        "inputs": {
+          "from": "driver_args",
+          "oracle": "controls/table.json",
+          "oracleSha256": "adb9160876b33fc23376fe4c171e138c5ef8a9c90b335c9cab559d325ba248e0"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC"
+        ],
+        "replay": "original-jvm"
+      },
+      "observations": [
+        {
+          "id": 0,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": false,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "a",
+                  "b"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 1,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": false,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 2,
+            "page": [
+              [
+                1,
+                [
+                  "a",
+                  "b"
+                ]
+              ],
+              [
+                2,
+                [
+                  "c",
+                  "d"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 2,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": false,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 3,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": false,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "a",
+                  "b"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 4,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": true,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "a",
+                  "b"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 5,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": true,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 2,
+            "page": [
+              [
+                1,
+                [
+                  "a",
+                  "b"
+                ]
+              ],
+              [
+                2,
+                [
+                  "c",
+                  "d"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 6,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": true,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 7,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": true,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "a",
+                  "b"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 8,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": false,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "a",
+                  "b"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 9,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": false,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 2,
+            "page": [
+              [
+                1,
+                [
+                  "a",
+                  "b"
+                ]
+              ],
+              [
+                2,
+                [
+                  "c",
+                  "d"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 10,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": false,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 11,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": false,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "a",
+                  "b"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 12,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": true,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "a",
+                  "b"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 13,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": true,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 2,
+            "page": [
+              [
+                1,
+                [
+                  "a",
+                  "b"
+                ]
+              ],
+              [
+                2,
+                [
+                  "c",
+                  "d"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 14,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": true,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 15,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": true,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "a",
+                  "b"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 16,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": false,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "a",
+                  "b"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 17,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": false,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 2,
+            "page": [
+              [
+                1,
+                [
+                  "a",
+                  "b"
+                ]
+              ],
+              [
+                2,
+                [
+                  "c",
+                  "d"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 18,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": false,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 19,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": false,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "a",
+                  "b"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 20,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": true,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "a",
+                  "b"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 21,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": true,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 2,
+            "page": [
+              [
+                1,
+                [
+                  "a",
+                  "b"
+                ]
+              ],
+              [
+                2,
+                [
+                  "c",
+                  "d"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 22,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": true,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 23,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": true,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "a",
+                  "b"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 24,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": false,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "a",
+                  "b"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 25,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": false,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 2,
+            "page": [
+              [
+                1,
+                [
+                  "a",
+                  "b"
+                ]
+              ],
+              [
+                2,
+                [
+                  "c",
+                  "d"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 26,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": false,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 27,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": false,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "a",
+                  "b"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 28,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": true,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "a",
+                  "b"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 29,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": true,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 2,
+            "page": [
+              [
+                1,
+                [
+                  "a",
+                  "b"
+                ]
+              ],
+              [
+                2,
+                [
+                  "c",
+                  "d"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 30,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": true,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 31,
+          "input": {
+            "doc": "a,b\nc,d\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": true,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              97,
+              44,
+              98,
+              10,
+              99,
+              44,
+              100,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "a",
+                  "b"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 32,
+          "input": {
+            "doc": "x,y\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": false,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 33,
+          "input": {
+            "doc": "x,y\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": false,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 34,
+          "input": {
+            "doc": "x,y\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": false,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 35,
+          "input": {
+            "doc": "x,y\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": false,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 36,
+          "input": {
+            "doc": "x,y\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": true,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 37,
+          "input": {
+            "doc": "x,y\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": true,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 38,
+          "input": {
+            "doc": "x,y\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": true,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 39,
+          "input": {
+            "doc": "x,y\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": true,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 40,
+          "input": {
+            "doc": "x,y\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": false,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 41,
+          "input": {
+            "doc": "x,y\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": false,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 42,
+          "input": {
+            "doc": "x,y\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": false,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 43,
+          "input": {
+            "doc": "x,y\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": false,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 44,
+          "input": {
+            "doc": "x,y\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": true,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 45,
+          "input": {
+            "doc": "x,y\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": true,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 46,
+          "input": {
+            "doc": "x,y\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": true,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 47,
+          "input": {
+            "doc": "x,y\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": true,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 48,
+          "input": {
+            "doc": "x,y\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": false,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 49,
+          "input": {
+            "doc": "x,y\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": false,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 50,
+          "input": {
+            "doc": "x,y\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": false,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 51,
+          "input": {
+            "doc": "x,y\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": false,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 52,
+          "input": {
+            "doc": "x,y\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": true,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 53,
+          "input": {
+            "doc": "x,y\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": true,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 54,
+          "input": {
+            "doc": "x,y\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": true,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 55,
+          "input": {
+            "doc": "x,y\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": true,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 56,
+          "input": {
+            "doc": "x,y\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": false,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 57,
+          "input": {
+            "doc": "x,y\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": false,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 58,
+          "input": {
+            "doc": "x,y\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": false,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 59,
+          "input": {
+            "doc": "x,y\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": false,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 60,
+          "input": {
+            "doc": "x,y\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": true,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 61,
+          "input": {
+            "doc": "x,y\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": true,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 62,
+          "input": {
+            "doc": "x,y\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": true,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 63,
+          "input": {
+            "doc": "x,y\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": true,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              120,
+              44,
+              121,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "x",
+                  "y"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 64,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": false,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "z",
+                  "1"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 65,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": false,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 2,
+            "page": [
+              [
+                1,
+                [
+                  "z",
+                  "1"
+                ]
+              ],
+              [
+                2,
+                [
+                  "z",
+                  "2"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 66,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": false,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 67,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": false,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "z",
+                  "1"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 68,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": true,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "z",
+                  "1"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 69,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": true,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 2,
+            "page": [
+              [
+                1,
+                [
+                  "z",
+                  "1"
+                ]
+              ],
+              [
+                2,
+                [
+                  "z",
+                  "2"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 70,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": true,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 71,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": false,
+            "oneByte": false,
+            "preview": true,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "z",
+                  "1"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 72,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": false,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "z",
+                  "1"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 73,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": false,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 2,
+            "page": [
+              [
+                1,
+                [
+                  "z",
+                  "1"
+                ]
+              ],
+              [
+                2,
+                [
+                  "z",
+                  "2"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 74,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": false,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 75,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": false,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "z",
+                  "1"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 76,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": true,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "z",
+                  "1"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 77,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": true,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 2,
+            "page": [
+              [
+                1,
+                [
+                  "z",
+                  "1"
+                ]
+              ],
+              [
+                2,
+                [
+                  "z",
+                  "2"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 78,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": true,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 79,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": false,
+            "oneByte": true,
+            "preview": true,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "z",
+                  "1"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 80,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": false,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "z",
+                  "1"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 81,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": false,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 2,
+            "page": [
+              [
+                1,
+                [
+                  "z",
+                  "1"
+                ]
+              ],
+              [
+                2,
+                [
+                  "z",
+                  "2"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 82,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": false,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 83,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": false,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "z",
+                  "1"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 84,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": true,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "z",
+                  "1"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 85,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": true,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 2,
+            "page": [
+              [
+                1,
+                [
+                  "z",
+                  "1"
+                ]
+              ],
+              [
+                2,
+                [
+                  "z",
+                  "2"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 86,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": true,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 87,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": true,
+            "oneByte": false,
+            "preview": true,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "z",
+                  "1"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 88,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": false,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "z",
+                  "1"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 89,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": false,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 2,
+            "page": [
+              [
+                1,
+                [
+                  "z",
+                  "1"
+                ]
+              ],
+              [
+                2,
+                [
+                  "z",
+                  "2"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 90,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": false,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 91,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": false,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "z",
+                  "1"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 92,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": true,
+            "start": 1,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                1,
+                [
+                  "z",
+                  "1"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 93,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": true,
+            "start": 1,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 2,
+            "page": [
+              [
+                1,
+                [
+                  "z",
+                  "1"
+                ]
+              ],
+              [
+                2,
+                [
+                  "z",
+                  "2"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 1,
+            "page": 1
+          }
+        },
+        {
+          "id": 94,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": true,
+            "start": 2,
+            "cap": 1
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 0,
+            "page": []
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        },
+        {
+          "id": 95,
+          "input": {
+            "doc": "z,1\nz,2\nz,3\n",
+            "bom": true,
+            "oneByte": true,
+            "preview": true,
+            "start": 2,
+            "cap": 2
+          },
+          "direct": {
+            "bytes": [
+              122,
+              44,
+              49,
+              10,
+              122,
+              44,
+              50,
+              10,
+              122,
+              44,
+              51,
+              10
+            ],
+            "count": 1,
+            "page": [
+              [
+                2,
+                [
+                  "z",
+                  "1"
+                ]
+              ]
+            ]
+          },
+          "adapter": {
+            "bytes": 1,
+            "count": 0,
+            "page": 0
+          }
+        }
+      ],
+      "control": "driver",
+      "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261120-193915-345-fix-parent-verify-original-stream-an/.build-py/examples-6oqvtrlt/targets/345/page-fix-parent/20261120T195121Z-58d9ecaf",
+      "record": "controls/controls.json",
+      "reason": null,
+      "log": {
+        "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261120-193915-345-fix-parent-verify-original-stream-an/.build-py/examples-6oqvtrlt/targets/345/count-fix-parent/20261120T195116Z-db0be248/prepare/fix-parent"
+      }
+    }
+  ]
+}

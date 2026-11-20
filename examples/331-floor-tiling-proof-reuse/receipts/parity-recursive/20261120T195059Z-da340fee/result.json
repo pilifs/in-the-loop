@@ -1,0 +1,529 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "c6b2f2ff6eb3d35f",
+    "format": 1,
+    "example": "331",
+    "statement": {
+      "approach": "target",
+      "task": "parity-recursive",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tiling.Floor#parity(I)I",
+      "revisions": [
+        "recursive"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "parity-recursive",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "tiling.Floor#parity(I)I",
+        "file": "claims/parity.json",
+        "sha256": "1eb848ea053d9c19af7aadf70a96ce9383720b83af0f568f0fe69103def29933",
+        "property": "parity",
+        "claimKind": "property",
+        "statement": "For n from zero to eighteen the parity caller agrees with the binomial tiling count.",
+        "assume": "n >= 0 && n <= 18",
+        "assert": "result == tiling.Oracle.parity(n)",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 24,
+          "maxArrayLength": 0
+        },
+        "explicitBounds": {
+          "unwind": 24,
+          "maxArrayLength": 0
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/tiling/Cases.java",
+            "sha256": "87fa8673c92d1c74e198012a81c3f1ed0e1811f782ad7edf614849a6538d9e45"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "7ebcdd6e0c43576cd2af52d472cd4fbbf4321a86231c69ba85f9b51aa819feaa"
+          }
+        ],
+        "key": "69f24181ef8dfc59"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 0
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "568dca2a17ea0951b361e0def3712058dc996e8541d50585807ce1df90443b2e",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "parity-recursive",
+      "sidecar": "6dc389dc1412c31e5b128223f07ba175873490af60ffd812197ba6e146650387",
+      "revisions": {
+        "recursive": "06462fa4fc549bac059829d5ffc924b5ab2bb59f"
+      },
+      "dependencies": [
+        {
+          "revision": "recursive",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ec6cbf57fad3dcacd8a5415b841351adef7d466f8bd28df070e10e20bdd9952c"
+        },
+        {
+          "revision": "recursive",
+          "position": 1,
+          "role": "original",
+          "sha256": "d9739bee0045310d4862fce5bdc70008360bd1b233a144199e48b1974228a059"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/parity.json": "1eb848ea053d9c19af7aadf70a96ce9383720b83af0f568f0fe69103def29933",
+        "controls/table.json": "7ebcdd6e0c43576cd2af52d472cd4fbbf4321a86231c69ba85f9b51aa819feaa",
+        "driver/tiling/Cases.java": "87fa8673c92d1c74e198012a81c3f1ed0e1811f782ad7edf614849a6538d9e45"
+      },
+      "claimKey": "69f24181ef8dfc59"
+    }
+  },
+  "attempt": {
+    "id": "20261120T195059Z-da340fee",
+    "claim": "c6b2f2ff6eb3d35f",
+    "startedAt": "2026-11-20T19:50:59+00:00",
+    "seconds": 2.7,
+    "engine": "native",
+    "options": [
+      "prove",
+      "tiling.Floor#parity(int)",
+      "--classes",
+      "prepare/recursive/recursive.jar",
+      "--assume",
+      "n >= 0 && n <= 18",
+      "--assert",
+      "result == tiling.Oracle.parity(n)",
+      "--lemmas",
+      "verifier/checked-lemmas.contract",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "24",
+      "--max-array-length",
+      "0",
+      "--timeout",
+      "25",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "808e0655f897611ccc779592ebbbddfa1f3be5bad18d6fd51f68286ad1233147"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "c7606c5a1d1879c8c860616af243a4345c32850c69cbc50a2fcecd63bb815aab",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-193914-331-recheck-counts-and-both-downstream-c",
+      "sourceCommit": "73db36c75d87a311d3a62abbd8e6d159af101448",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-193914-331-recheck-counts-and-both-downstream-c"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control recursive on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-recursive-jdk21.stdout",
+        "stderr": "records/control-recursive-jdk21.stderr"
+      },
+      {
+        "name": "verifier recursive on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 2.628,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 24,
+      "maxArrayLength": 0,
+      "complete": true
+    }
+  },
+  "conclusion": {
+    "claim": "c6b2f2ff6eb3d35f",
+    "attempt": "20261120T195059Z-da340fee",
+    "status": "established",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == tiling.Oracle.parity(n)",
+        "status": "established",
+        "evidence": {
+          "harness": null,
+          "assert": "result == tiling.Oracle.parity(n)",
+          "assume": "n >= 0 && n <= 18",
+          "verdict": "verified",
+          "domain": "n: int",
+          "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over n: int in 0.0 s; loops unwound 24 times with unwinding assertions",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (Bitwuzla)",
+            "seconds": 0.044,
+            "properties": 1,
+            "unwind": 24,
+            "maxArrayLength": 0,
+            "stage": null,
+            "deadlineSeconds": 25.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 25.0,
+                "seconds": 0.043,
+                "ended": "verified",
+                "ending": "verified",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.008,
+                  "encoding": 0.006,
+                  "solving": 0.028,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 79,
+                  "clauses": 1
+                }
+              },
+              {
+                "checker": "native",
+                "purpose": "probe",
+                "stage": null,
+                "budgetSeconds": 24.956,
+                "seconds": 0.007,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.007,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 10,
+                  "clauses": 1
+                }
+              }
+            ],
+            "native": {
+              "paths": 39,
+              "merges": 0,
+              "solverCalls": 59,
+              "solvingSeconds": 0.028451496,
+              "gatesEvaluated": 96,
+              "evaluatingSeconds": 4.0082e-05,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "wordOperations": 41,
+              "finiteQueries": {
+                "diagrams": 21,
+                "bitwuzla": 38
+              },
+              "variables": 79,
+              "clauses": 1,
+              "seconds": 0.043167319,
+              "loadingSeconds": 0.000128029,
+              "decodingSeconds": 9.1632e-05,
+              "encodingSeconds": 0.006066398,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict"
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "n",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "n: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "n >= 0 && n <= 18",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "summary",
+                "text": "tiling.Ways#tiles satisfies `result == tiling.Oracle.exact(n)` where n >= 0 && n <= 18, on Strings of at most 0 code units, by induction on `n`: proved beside this check, at its bounds, and applied at the method's calls within that; any other call runs the method as written",
+                "basis": "proved"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == tiling.Oracle.parity(n)",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 24,
+              "maxArrayLength": null,
+              "complete": true
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (Bitwuzla)",
+              "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+              "fallback": null,
+              "sat": {
+                "solver": "Bitwuzla",
+                "version": "0.8.2",
+                "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+                "configuration": [
+                  "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+                  "sat-solver cadical",
+                  "produce-models",
+                  "otherwise Bitwuzla's default options",
+                  "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+                  "the run's deadline through Bitwuzla's termination callback",
+                  "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null,
+            "vacuity": {
+              "status": "non-vacuous",
+              "basis": "probe",
+              "text": "Some input in the domain reaches the calls: the tool's own checker found parity(n=0).",
+              "witness": "parity(n=0)"
+            }
+          }
+        }
+      }
+    ],
+    "label": "✓ Verified",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"recursive\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over n: int in 0.0 s; loops unwound 24 times with unwinding assertions",
+    "problem": null,
+    "domain": "n: int",
+    "replay": null,
+    "property": {
+      "assert": "result == tiling.Oracle.parity(n)",
+      "assume": "n >= 0 && n <= 18"
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "n",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "n: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "n >= 0 && n <= 18",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "summary",
+          "text": "tiling.Ways#tiles satisfies `result == tiling.Oracle.exact(n)` where n >= 0 && n <= 18, on Strings of at most 0 code units, by induction on `n`: proved beside this check, at its bounds, and applied at the method's calls within that; any other call runs the method as written",
+          "basis": "proved"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == tiling.Oracle.parity(n)",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 24,
+        "maxArrayLength": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (Bitwuzla)",
+        "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+        "fallback": null,
+        "sat": {
+          "solver": "Bitwuzla",
+          "version": "0.8.2",
+          "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+          "configuration": [
+            "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+            "sat-solver cadical",
+            "produce-models",
+            "otherwise Bitwuzla's default options",
+            "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+            "the run's deadline through Bitwuzla's termination callback",
+            "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found parity(n=0).",
+        "witness": "parity(n=0)"
+      }
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "1932e694bf80142dda9ae2af761502f1a25a2ea3a06ceddb0d9d6a30c02c5331",
+        "bytes": 22197
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "b5e16cec97535011676832a962a6916de2097ff853dc779c6b7a6a6c4f52d1e5",
+        "bytes": 1661
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "4130247b366fb6e8f94d1f6e4b3176144aaf60fc360757eb1df777010ea4ee4f",
+        "bytes": 1991
+      },
+      {
+        "path": "records/control-recursive-jdk21.stdout",
+        "sha256": "c6f72d676bba70979b6ae255dac85e97e8c3fe4c0959e12ef84b3e0f1cbfd109",
+        "bytes": 1372
+      },
+      {
+        "path": "records/control-recursive-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "c6ce6da2292c7026b8cb2fd858a479b81335635054e60eb562a886e3dbb8bf74",
+        "bytes": 6729
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "6b01369a42235322d14e424d62ba1c6158652dfc8569947712af646b99d0a891",
+        "bytes": 7652
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "9471dfa0d71c134cf41de76d9ff5ccacfbeb4e5cb188385d48dece09b8e70f44",
+        "bytes": 15411
+      }
+    ]
+  }
+}

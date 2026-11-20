@@ -580,11 +580,25 @@ impl ClassPath {
             if !body.exception_table.is_empty() { return None; }
             body.instructions().ok()
         };
+        // A factory assignment in these straight-line initializers must be the
+        // unique write of the static final field on every normal return.
+        let factory_write = |cf: &ClassFile, ops: &[(u32, Insn)], field: &str, desc: &str| {
+            let declaration = cf.field(field)?;
+            if !declaration.is_final() || !declaration.is_static() || declaration.descriptor != desc
+                || !matches!(ops.last(), Some((_, Return(None))))
+                || ops[..ops.len() - 1].iter().any(|(_, op)| !op.targets().is_empty() || matches!(op, Return(_) | Ret(_))) {
+                return None;
+            }
+            let mut writes = ops.iter().enumerate().filter(|(_, (_, op))| matches!(op, PutStatic(i) if cf.pool.member(*i)
+                .is_ok_and(|m| m.owner == cf.name && m.name == field && m.descriptor == desc)));
+            let (write, _) = writes.next()?;
+            writes.next().is_none().then_some(write)
+        };
         let charset = "java/nio/charset/Charset";
         let provider = format!("sun/nio/cs/{field}");
         let std = image("java/nio/charset/StandardCharsets")?;
         let init = code(&std, "<clinit>", "()V")?;
-        let write = init.iter().position(|(_, op)| matches!(op, PutStatic(i) if std.pool.member(*i).is_ok_and(|m| m.owner == std.name && m.name == field)))?;
+        let write = factory_write(&std, &init, field, "Ljava/nio/charset/Charset;")?;
         let allocates = |cf: &ClassFile, ops: &[(u32, Insn)], at: usize| {
             matches!(ops.get(at.saturating_sub(3)..at), Some([(_,New(n)),(_,Dup),(_,InvokeSpecial(i))])
                 if cf.pool.class_name(*n).ok() == Some(provider.as_str()) && cf.pool.member(*i).is_ok_and(|m|
@@ -594,9 +608,9 @@ impl ClassPath {
         if !allocates(&std, &init, write) {
             let GetStatic(i) = init.get(write.checked_sub(1)?)?.1 else { return None };
             let m = std.pool.member(i).ok()?;
-            if m.owner != provider || m.name != "INSTANCE" { return None; }
+            if m.owner != provider || m.name != "INSTANCE" || m.descriptor != format!("L{provider};") { return None; }
             let init = code(&implementation, "<clinit>", "()V")?;
-            let idx = init.iter().position(|(_, op)| matches!(op, PutStatic(i) if implementation.pool.member(*i).ok().as_ref() == Some(&m)))?;
+            let idx = factory_write(&implementation, &init, &m.name, &m.descriptor)?;
             if !allocates(&implementation, &init, idx) { return None; }
         }
         let body = code(&implementation, "<init>", "()V")?;
@@ -604,13 +618,14 @@ impl ClassPath {
         let aliases = implementation.pool.member(*aliases).ok()?;
         let call = implementation.pool.member(*call).ok()?;
         let desc = "(Ljava/lang/String;[Ljava/lang/String;)V";
-        if aliases.descriptor != "()[Ljava/lang/String;" || call.name != "<init>" || call.descriptor != desc { return None; }
+        if aliases.descriptor != "()[Ljava/lang/String;" || call.name != "<init>" || call.descriptor != desc
+            || implementation.super_class.as_deref() != Some(&call.owner) { return None; }
         if call.owner != charset {
             let parent = image(&call.owner)?;
             let body = code(&parent, "<init>", desc)?;
             let [(_,Load(Kind::Ref,0)),(_,Load(Kind::Ref,1)),(_,Load(Kind::Ref,2)),(_,InvokeSpecial(i)),(_,Return(None))] = body.as_slice() else { return None };
             let c = parent.pool.member(*i).ok()?;
-            if c.owner != charset || c.name != "<init>" || c.descriptor != desc { return None; }
+            if c.owner != charset || c.name != "<init>" || c.descriptor != desc || parent.super_class.as_deref() != Some(charset) { return None; }
         }
         let cf = image(charset)?;
         let canonical = cf.field("name")?;
@@ -629,6 +644,53 @@ impl ClassPath {
         Some(implementation.pool.loadable(*name).ok()?.string_units()?.into_owned())
     }
 
+    /// Follow the read-only UTF-8 decoder callback to the JavaLangAccess
+    /// implementation installed by System during VM startup in this image.
+    pub(crate) fn utf8_language_access(&self) -> Option<String> {
+        use crate::classfile::{Insn::*, Kind};
+        let image = |owner: &str| match self.load(owner).ok()?? {
+            Loaded { class, origin: Origin::Jdk } => Some(class), _ => None,
+        };
+        let code = |cf: &ClassFile, name: &str, desc: &str| {
+            let body = cf.method(name, desc)?.code.as_ref()?;
+            body.exception_table.is_empty().then(|| body.instructions().ok()).flatten()
+        };
+        let access = "jdk/internal/access/JavaLangAccess";
+        let shared = image("jdk/internal/access/SharedSecrets")?;
+        let getter = code(&shared, "getJavaLangAccess", "()Ljdk/internal/access/JavaLangAccess;")?;
+        let setter = code(&shared, "setJavaLangAccess", "(Ljdk/internal/access/JavaLangAccess;)V")?;
+        let [(_,GetStatic(read)),(_,Return(Some(Kind::Ref)))] = getter.as_slice() else { return None };
+        let [(_,Load(Kind::Ref,0)),(_,PutStatic(write)),(_,Return(None))] = setter.as_slice() else { return None };
+        let field = shared.pool.member(*read).ok()?;
+        if field.owner != shared.name || field.descriptor != "Ljdk/internal/access/JavaLangAccess;"
+            || shared.pool.member(*write).ok()? != field { return None; }
+        let system = image("java/lang/System")?;
+        let install = code(&system, "setJavaLangAccess", "()V")?;
+        let [(_, New(c)), (_, Dup), (_, InvokeSpecial(init)), (_, InvokeStatic(set)), (_, Return(None))] = install.as_slice() else { return None };
+        let provider = system.pool.class_name(*c).ok()?;
+        let ctor = system.pool.member(*init).ok()?;
+        let assign = system.pool.member(*set).ok()?;
+        if ctor.owner != provider || ctor.name != "<init>" || ctor.descriptor != "()V"
+            || assign.owner != shared.name || assign.name != "setJavaLangAccess" || assign.descriptor != "(Ljdk/internal/access/JavaLangAccess;)V" { return None; }
+        let implementation = image(provider)?;
+        if !implementation.interfaces.iter().any(|i| i == access) || implementation.fields.iter().any(|f| !f.is_static()) { return None; }
+        let bootstrap = system.method("initPhase1", "()V")?.code.as_ref()?.instructions().ok()?;
+        if !matches!(bootstrap.first(), Some((_,InvokeStatic(i))) if system.pool.member(*i)
+            .is_ok_and(|m| m.owner == system.name && m.name == "setJavaLangAccess" && m.descriptor == "()V")) { return None; }
+        let utf = image("sun/nio/cs/UTF_8")?;
+        let init = code(&utf, "<clinit>", "()V")?;
+        let final_field = utf.field("JLA")?;
+        if !final_field.is_static() || !final_field.is_final() || final_field.descriptor != field.descriptor
+            || !matches!(init.last(), Some((_, Return(None)))) || init[..init.len()-1].iter().any(|(_, op)| !op.targets().is_empty() || matches!(op, Return(_) | Ret(_))) { return None; }
+        let mut writes = init.iter().enumerate().filter(|(_,(_,op))| matches!(op, PutStatic(i) if utf.pool.member(*i)
+            .is_ok_and(|m| m.owner == utf.name && m.name == "JLA" && m.descriptor == field.descriptor)));
+        let (at, _) = writes.next()?;
+        let InvokeStatic(index) = init[at.checked_sub(1)?].1 else { return None };
+        let get = utf.pool.member(index).ok()?;
+        (writes.next().is_none() && get.owner == shared.name && get.name == "getJavaLangAccess"
+            && get.descriptor == "()Ljdk/internal/access/JavaLangAccess;").then(|| provider.to_owned())
+    }
+
     /// Reference-array comparison and hashing call the actual elements' methods.
     pub(crate) fn collection_static(&self, owner: &str, name: &str, descriptor: &str) -> bool {
         matches!((owner, name, descriptor),
@@ -637,6 +699,12 @@ impl ClassPath {
             | ("java/util/Arrays", "rangeCheck", "(III)V")
             | ("java/util/Arrays", "copyOfRange" | "copyOfRangeByte", "([BII)[B")
             | ("java/util/Arrays", "checkLength", "(II)V")
+            | ("java/nio/ByteBuffer", "allocate", "(I)Ljava/nio/ByteBuffer;")
+            | ("java/nio/CharBuffer", "wrap", "([CII)Ljava/nio/CharBuffer;" | "([C)Ljava/nio/CharBuffer;")
+            | ("java/lang/String", "decodeASCII", "([BI[CII)I")
+            | ("java/lang/StringCoding", "countPositives", "([BII)I")
+            | ("java/lang/StringLatin1", "inflate", "([BI[CII)V")
+            | ("sun/nio/cs/UTF_8", "updatePositions", "(Ljava/nio/Buffer;ILjava/nio/Buffer;I)V")
             | ("java/util/Arrays", "sort" | "legacyMergeSort", "([Ljava/lang/Object;Ljava/util/Comparator;)V" | "([Ljava/lang/Object;)V")
             | ("java/util/Arrays", "mergeSort", "([Ljava/lang/Object;[Ljava/lang/Object;III)V" | "([Ljava/lang/Object;[Ljava/lang/Object;IIILjava/util/Comparator;)V")
             | ("java/util/Collections", "reverseOrder", "(Ljava/util/Comparator;)Ljava/util/Comparator;")
@@ -677,6 +745,24 @@ impl ClassPath {
                 && class.pool.member(*m).is_ok_and(|ctor| (ctor.owner.as_str(), ctor.name.as_str(), ctor.descriptor.as_str()) == (class_name, "<init>", "()V"))))
     }
 
+    pub(crate) fn heap_buffer_owner(name: &str) -> bool {
+        matches!(name, "java/nio/Buffer" | "java/nio/ByteBuffer" | "java/nio/CharBuffer"
+            | "java/nio/HeapByteBuffer" | "java/nio/HeapCharBuffer")
+    }
+
+    /// Methods of an image-backed byte or char buffer with an ordinary Java heap array.
+    /// Foreign segments and native memory operations keep their separate call boundaries.
+    pub(crate) fn heap_buffer_method(&self, owner: &str, name: &str, desc: &str) -> Option<(Rc<ClassFile>, Method)> {
+        if !Self::heap_buffer_owner(owner) || !matches!(name, "<init>" | "position" | "limit" | "capacity" | "remaining"
+            | "hasRemaining" | "flip" | "rewind" | "clear" | "compact" | "discardMark" | "checkScope"
+            | "array" | "hasArray" | "arrayOffset" | "ix" | "isReadOnly" | "isDirect" | "nextGetIndex" | "nextPutIndex"
+            | "get" | "put" | "mark" | "reset") { return None; }
+        let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
+        let method = class.method(name, desc)?.clone();
+        if method.is_static() || method.code.is_none() { return None; }
+        Some((class, method))
+    }
+
     /// Selected collection and text bytecode. Callers qualify the actual receivers and helper arguments.
     pub(crate) fn library_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
         let sublist = matches!(owner, "java/util/ArrayList$SubList" | "java/util/ArrayList$SubList$1");
@@ -690,6 +776,7 @@ impl ClassPath {
             | ("java/util/ArrayList", "subList", "(II)Ljava/util/List;")
             | ("java/util/AbstractList", "subListRangeCheck", "(III)V")
             | ("java/util/AbstractList", "clear", "()V")
+            | ("java/util/AbstractList", "add", "(Ljava/lang/Object;)Z")
             | ("java/util/ArrayList", "removeRange", "(II)V")
             | ("java/util/ArrayList", "shiftTailOverGap", "([Ljava/lang/Object;II)V")
             | ("java/util/ArrayList", "remove", "(I)Ljava/lang/Object;" | "(Ljava/lang/Object;)Z")
@@ -764,7 +851,7 @@ impl ClassPath {
     /// The compiler-generated assertion switch read by these image methods. Both possible values
     /// can be checked without relying on the JVM launcher having enabled or disabled assertions.
     pub(crate) fn numeric_assertion_flag(&self, owner: &str, name: &str, descriptor: &str) -> bool {
-        if name != "$assertionsDisabled" || descriptor != "Z" || !matches!(owner, "java/lang/Math" | "java/lang/FdLibm$Hypot") {
+        if name != "$assertionsDisabled" || descriptor != "Z" || !(Self::heap_buffer_owner(owner) || matches!(owner, "java/lang/Math" | "java/lang/FdLibm$Hypot")) {
             return false;
         }
         let Ok(Some(Loaded { class, origin: Origin::Jdk })) = self.load(owner) else { return false };
@@ -844,6 +931,8 @@ impl ClassPath {
         }
         if !matches!(name, "java/io/Reader" | "java/io/StringReader" | "java/io/Reader$2" | "java/io/BufferedReader" | "java/io/ObjectStreamField"
             | "java/io/InputStream" | "java/io/ByteArrayInputStream" | "java/io/FilterInputStream"
+            | "java/io/InputStreamReader" | "sun/nio/cs/StreamDecoder" | "jdk/internal/misc/InternalLock" | "java/nio/charset/CodingErrorAction" | "java/nio/ByteOrder"
+            | "java/nio/charset/CharsetDecoder" | "java/nio/charset/CoderResult" | "sun/nio/cs/UTF_8$Decoder"
             | "java/util/Comparator" | "java/util/Comparators$NaturalOrderComparator"
             | "java/util/TimSort" | "java/util/ComparableTimSort"
             | "java/util/Collections$ReverseComparator" | "java/util/Collections$ReverseComparator2"

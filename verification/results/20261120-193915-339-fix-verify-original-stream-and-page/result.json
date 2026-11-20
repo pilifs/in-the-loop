@@ -1,0 +1,702 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-193915-339-fix-verify-original-stream-and-page",
+  "title": "339 fix verify original stream and page bytecode",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.7s, peak 113.2 MiB (estimated 8m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×4",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-193915-339-fix-verify-original-stream-and-page.json",
+    "sha256": "b571e46e97694c2df5e1307188caa34d8dacfda7627700458b0bf1c1c19aa243",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-193915-339-fix-verify-original-stream-and-page",
+      "title": "339 fix verify original stream and page bytecode",
+      "description": "Run the strict native checker on the actual pinned application and runtime dependencies after extending Java initialization, sorting, streams and bounded byte operations. Preserve every raw outcome and independently qualify a concrete failure on the JVM.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "339"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T19:39:15+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "8m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Check the original bytecode and observers",
+          "run": "python3 examples/tools/build.py 339 --tasks count-fix,labels-fix,fields-fix,start-one-fix --checker-seconds 90",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/339-commons-csv-page-numbers/receipts/count-fix",
+        "examples/339-commons-csv-page-numbers/receipts/labels-fix",
+        "examples/339-commons-csv-page-numbers/receipts/fields-fix",
+        "examples/339-commons-csv-page-numbers/receipts/start-one-fix"
+      ]
+    }
+  },
+  "sourceCommit": "73db36c75d87a311d3a62abbd8e6d159af101448",
+  "startedAt": "2026-11-20T19:50:55+00:00",
+  "finishedAt": "2026-11-20T19:51:04+00:00",
+  "wallSeconds": 9.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1224582,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 480.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 118706176,
+    "wallSeconds": 4.7,
+    "cpuSeconds": 6.1,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 339 --tasks count-fix,labels-fix,fields-fix,start-one-fix --checker-seconds 90",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 4.681,
+      "cpuSeconds": 6.087,
+      "cpuThrottledSeconds": 0.288,
+      "peakMemoryBytes": 118706176,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-bytecode-an.log",
+        "lines": 8,
+        "bytes": 886,
+        "sha256": "fe395a04597598087cd7d008d3c161319abab5abb94e26ac20e032b666605598",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 4
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "339-commons-csv-page-numbers: task count-fix: established (completed; as expected), receipt receipts/count-fix/20261120T195059Z-d5294592/result.json",
+          "groups": [
+            "339",
+            "count-fix",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "339-commons-csv-page-numbers: task labels-fix: established (completed; as expected), receipt receipts/labels-fix/20261120T195102Z-6734923e/result.json",
+          "groups": [
+            "339",
+            "labels-fix",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "339-commons-csv-page-numbers: task fields-fix: established (completed; as expected), receipt receipts/fields-fix/20261120T195103Z-049f8e99/result.json",
+          "groups": [
+            "339",
+            "fields-fix",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "339-commons-csv-page-numbers: task start-one-fix: established (completed; as expected), receipt receipts/start-one-fix/20261120T195103Z-9329717d/result.json",
+          "groups": [
+            "339",
+            "start-one-fix",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "339-commons-csv-page-numbers: running task count-fix (target route)",
+        "339-commons-csv-page-numbers: task count-fix: established (completed; as expected), receipt receipts/count-fix/20261120T195059Z-d5294592/result.json",
+        "339-commons-csv-page-numbers: running task labels-fix (target route)",
+        "339-commons-csv-page-numbers: task labels-fix: established (completed; as expected), receipt receipts/labels-fix/20261120T195102Z-6734923e/result.json",
+        "339-commons-csv-page-numbers: running task fields-fix (target route)",
+        "339-commons-csv-page-numbers: task fields-fix: established (completed; as expected), receipt receipts/fields-fix/20261120T195103Z-049f8e99/result.json",
+        "339-commons-csv-page-numbers: running task start-one-fix (target route)",
+        "339-commons-csv-page-numbers: task start-one-fix: established (completed; as expected), receipt receipts/start-one-fix/20261120T195103Z-9329717d/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "ace1cdbeab27be7348e45e11bb6da4c65077330e5b43ae651cf298645ad38ea2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/plan.json",
+      "change": "added",
+      "bytes": 6980,
+      "sha256": "36dba5ae8e1e93f91ebee0c7f021060f78e525f1c41c8765a0420cbd971aee37",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 3914,
+      "sha256": "f497cdcbf899837182c9c538376dd5e5a4ff79b91928683a71d399d1fa7c1987",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/records/controls.json",
+      "change": "added",
+      "bytes": 16509,
+      "sha256": "961fcf3c81e9ff85924b72f311eaa5b9d336498d9d7d6453a0b5f3f3bdcf3450",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/records/execution.json",
+      "change": "added",
+      "bytes": 46342,
+      "sha256": "952a52368e8ccc586e92b7d024e27fa5ce5794e4ec4a96a02f7e7c30322a4b39",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/records/streams.json",
+      "change": "added",
+      "bytes": 1945,
+      "sha256": "54830fa8d7627281ea06156ff40cf1c23a9fa4ff4341b048b75a82d12b032c6f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 286,
+      "sha256": "098675b7df94277f235a151603013479981cf01887e6e4e635ca93044d5d06a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/records/verifier.json",
+      "change": "added",
+      "bytes": 29093,
+      "sha256": "68835137f536fd34090ed77c9adc3cba3dff0876aae0c3d09fb2afd388c53054",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5263,
+      "sha256": "44237617291545a89e6e5d0acf7651898468dbd7ac384beb45a657cc74d7fd46",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/result.json",
+      "change": "added",
+      "bytes": 17214,
+      "sha256": "600f4d6bbe16b908c6399db8b301f6fda2a3d65f5905a82c7425481f603a26e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/count-fix/executions/20261120T195059Z-d5294592/attempt.json",
+      "change": "added",
+      "bytes": 27022,
+      "sha256": "0fbf5a8b039c46192900031a737e60ef1d42c76ce70bfdf4ff43390e2666a617",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/count-fix/executions/20261120T195059Z-d5294592/checker.json",
+      "change": "added",
+      "bytes": 6791,
+      "sha256": "9c733a8e5c08c544d45d0c8ea720e22df0a25da4ef03a90abfcda562920afe0b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/count-fix/executions/20261120T195059Z-d5294592/correspondence.json",
+      "change": "added",
+      "bytes": 2284,
+      "sha256": "388053345ad3aecd9ed24ad5548f5f3e030445cb90cfa75e946db58e64572baf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "67cfee6ed705eb5d1851a5dfb56aaca6f16d15fcf05bef2e5517519d22a65de2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/plan.json",
+      "change": "added",
+      "bytes": 7029,
+      "sha256": "a61a1eed7f4d51cbabf33ca85ad1e7b79b4f7fd22e35904427b1b887878bbf12",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 3914,
+      "sha256": "f497cdcbf899837182c9c538376dd5e5a4ff79b91928683a71d399d1fa7c1987",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/records/controls.json",
+      "change": "added",
+      "bytes": 16511,
+      "sha256": "1dd78523cdd3cade7791f9d5534c02b50c5e9f293ce6a8979a6a752a7ec6394e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/records/execution.json",
+      "change": "added",
+      "bytes": 46353,
+      "sha256": "63f5374050a5d112be225df781b990a8dbf4695efde70b8e4b906cfd2dad4458",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/records/streams.json",
+      "change": "added",
+      "bytes": 1945,
+      "sha256": "d5c32f397e862601fe42a307f4dde7dc3f56847a2f3450383ce895a216a85d83",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 288,
+      "sha256": "096e2e74bb3c4dc1465d068392d9b5e8d369d27488d9b7551ca4240024b15770",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/records/verifier.json",
+      "change": "added",
+      "bytes": 29106,
+      "sha256": "7a5d1801ac02f2fee6af94c310e4b0bef58da52630250d552e6d7356ce0b1e11",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5267,
+      "sha256": "e307c17aba169c9e39c7f363a2e471df4f3c36afadc0a796c88a33f7ece3f5bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/result.json",
+      "change": "added",
+      "bytes": 17243,
+      "sha256": "9a99f8cad95d9a295e73f802beab67ff7a02692b455aadd1d5abc3c6dfd5bc82",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/labels-fix/executions/20261120T195102Z-6734923e/attempt.json",
+      "change": "added",
+      "bytes": 27028,
+      "sha256": "9a2b322bbaa3b9cb4cfd26e8f5d326b5214900619aa7dbe3b4079f461653206a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/labels-fix/executions/20261120T195102Z-6734923e/checker.json",
+      "change": "added",
+      "bytes": 6795,
+      "sha256": "1b2e2552ede103713af67214342075da6bb63385b10b34aa817701129e807710",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/labels-fix/executions/20261120T195102Z-6734923e/correspondence.json",
+      "change": "added",
+      "bytes": 2285,
+      "sha256": "28ec1a98e9967848f3b07873737e7e4effed73dd075069ae69b2c2ba398ff1e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "030716b962fc3b6ffcab251214fe71097049fdae08648f6f8366f2dcd1daf735",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/plan.json",
+      "change": "added",
+      "bytes": 6973,
+      "sha256": "df6b6fd15d65a43ca5a1c84895aab7ea73d8c1423ba241fd39f29f8b3f6a0525",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 3914,
+      "sha256": "f497cdcbf899837182c9c538376dd5e5a4ff79b91928683a71d399d1fa7c1987",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/records/controls.json",
+      "change": "added",
+      "bytes": 16511,
+      "sha256": "fc81d87262a25878e57beca053fe413d5d098a4fc9c7f2f5eb7f8606dd0c1249",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/records/execution.json",
+      "change": "added",
+      "bytes": 46354,
+      "sha256": "86d406209318aeb065b6529387141220fe2d591ea707b2d52dfd891678f51054",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/records/streams.json",
+      "change": "added",
+      "bytes": 1945,
+      "sha256": "ceb865e622ef9534a79c3916ba7f270d6adaba59cd4292585714127388b88677",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 288,
+      "sha256": "90579fe2fe17c9e56738b90cea302b0dbec929f98b726d20e334f6171232ff29",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/records/verifier.json",
+      "change": "added",
+      "bytes": 29107,
+      "sha256": "1a154fe7cdf83a722540ac9fbd56f98fa232af8e612c1adf6cdeef9ac8929b60",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5267,
+      "sha256": "add7a024d9ed611dee9d72a3c10e9da3acaf557c6cff76542ee1b0f382ac808d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/result.json",
+      "change": "added",
+      "bytes": 17216,
+      "sha256": "7463f96f419f2281bd51488e4d195a2098309ebb63192505c7fe9c15bf9db7b2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/fields-fix/executions/20261120T195103Z-049f8e99/attempt.json",
+      "change": "added",
+      "bytes": 27031,
+      "sha256": "2a43bd59da677962cec503679e003283277edb900fcc3464bdc9c90f21aa9f2e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/fields-fix/executions/20261120T195103Z-049f8e99/checker.json",
+      "change": "added",
+      "bytes": 6796,
+      "sha256": "abf94cbf94661030902ad0af6d4feaaddaa655a4f3c6ea80f8b3119ffcd0c789",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/fields-fix/executions/20261120T195103Z-049f8e99/correspondence.json",
+      "change": "added",
+      "bytes": 2285,
+      "sha256": "74aaf8517235bf0af78fef2c5ba7ae7f5b95eb59faf2b9bfa5e7627dd661e31a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "04f739d4838e509c3eef163084d56435fb526ad17b1b7573a07f4b7be93c1968",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/plan.json",
+      "change": "added",
+      "bytes": 7098,
+      "sha256": "20e8b9f8f619891f757e1ebf1e658b8725f453068769ea28991c15145725edd8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 3914,
+      "sha256": "f497cdcbf899837182c9c538376dd5e5a4ff79b91928683a71d399d1fa7c1987",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/records/controls.json",
+      "change": "added",
+      "bytes": 16517,
+      "sha256": "b60970c7fd75903cab535b3cbeaedd3f864a3728a4588890172fb8a693375c32",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/records/execution.json",
+      "change": "added",
+      "bytes": 46453,
+      "sha256": "2fe5e0ffe25f817a03d82d11b8fbea0455854ae918f035a78b5ef27a738c347b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/records/streams.json",
+      "change": "added",
+      "bytes": 1945,
+      "sha256": "e899b6a856e258d9fcaa052a09067a408cfaa93bfa9a550eb2444f4b7fdfc28c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 307,
+      "sha256": "e9a38399ce06b0ba66045738604db662080f02ef03664c504e4285949f97b5c4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/records/verifier.json",
+      "change": "added",
+      "bytes": 29212,
+      "sha256": "ce527315e474bb06564266921ac462e75dfefc8e37da699ac2e2d708236d0a18",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5325,
+      "sha256": "e0038210e596222bb7540a8b8e162d0941f600b7b912b30553f106e8dd678506",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/result.json",
+      "change": "added",
+      "bytes": 17379,
+      "sha256": "f7647faee9fd45d35ef15b0e4d7ae3ec72a156683253beb1c1cbb1445f2c80c9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/start-one-fix/executions/20261120T195103Z-9329717d/attempt.json",
+      "change": "added",
+      "bytes": 27075,
+      "sha256": "d4b557e97b7350338eb1739aaf2cc485f7b2554cb984ee950b809e5e10029175",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/start-one-fix/executions/20261120T195103Z-9329717d/checker.json",
+      "change": "added",
+      "bytes": 6873,
+      "sha256": "fe4a7a54088120bf608e16fe4d8c9976df8a856c9c58aba67f5cdc25e2ea9098",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/339-commons-csv-page-numbers/receipts/start-one-fix/executions/20261120T195103Z-9329717d/correspondence.json",
+      "change": "added",
+      "bytes": 2285,
+      "sha256": "74aaf8517235bf0af78fef2c5ba7ae7f5b95eb59faf2b9bfa5e7627dd661e31a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T19:55:01+00:00",
+    "applied": [
+      "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/completion.json",
+      "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/plan.json",
+      "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/records/control-fix-jdk21.stderr",
+      "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/records/control-fix-jdk21.stdout",
+      "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/records/controls.json",
+      "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/records/execution.json",
+      "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/records/streams.json",
+      "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/records/verifier-output.txt",
+      "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/records/verifier.json",
+      "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/records/verifier.stderr",
+      "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/records/verifier.stdout",
+      "examples/339-commons-csv-page-numbers/receipts/count-fix/20261120T195059Z-d5294592/result.json",
+      "examples/339-commons-csv-page-numbers/receipts/count-fix/executions/20261120T195059Z-d5294592/attempt.json",
+      "examples/339-commons-csv-page-numbers/receipts/count-fix/executions/20261120T195059Z-d5294592/checker.json",
+      "examples/339-commons-csv-page-numbers/receipts/count-fix/executions/20261120T195059Z-d5294592/correspondence.json",
+      "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/completion.json",
+      "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/plan.json",
+      "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/records/control-fix-jdk21.stderr",
+      "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/records/control-fix-jdk21.stdout",
+      "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/records/controls.json",
+      "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/records/execution.json",
+      "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/records/streams.json",
+      "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/records/verifier-output.txt",
+      "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/records/verifier.json",
+      "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/records/verifier.stderr",
+      "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/records/verifier.stdout",
+      "examples/339-commons-csv-page-numbers/receipts/labels-fix/20261120T195102Z-6734923e/result.json",
+      "examples/339-commons-csv-page-numbers/receipts/labels-fix/executions/20261120T195102Z-6734923e/attempt.json",
+      "examples/339-commons-csv-page-numbers/receipts/labels-fix/executions/20261120T195102Z-6734923e/checker.json",
+      "examples/339-commons-csv-page-numbers/receipts/labels-fix/executions/20261120T195102Z-6734923e/correspondence.json",
+      "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/completion.json",
+      "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/plan.json",
+      "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/records/control-fix-jdk21.stderr",
+      "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/records/control-fix-jdk21.stdout",
+      "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/records/controls.json",
+      "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/records/execution.json",
+      "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/records/streams.json",
+      "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/records/verifier-output.txt",
+      "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/records/verifier.json",
+      "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/records/verifier.stderr",
+      "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/records/verifier.stdout",
+      "examples/339-commons-csv-page-numbers/receipts/fields-fix/20261120T195103Z-049f8e99/result.json",
+      "examples/339-commons-csv-page-numbers/receipts/fields-fix/executions/20261120T195103Z-049f8e99/attempt.json",
+      "examples/339-commons-csv-page-numbers/receipts/fields-fix/executions/20261120T195103Z-049f8e99/checker.json",
+      "examples/339-commons-csv-page-numbers/receipts/fields-fix/executions/20261120T195103Z-049f8e99/correspondence.json",
+      "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/completion.json",
+      "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/plan.json",
+      "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/records/control-fix-jdk21.stderr",
+      "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/records/control-fix-jdk21.stdout",
+      "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/records/controls.json",
+      "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/records/execution.json",
+      "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/records/streams.json",
+      "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/records/verifier-output.txt",
+      "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/records/verifier.json",
+      "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/records/verifier.stderr",
+      "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/records/verifier.stdout",
+      "examples/339-commons-csv-page-numbers/receipts/start-one-fix/20261120T195103Z-9329717d/result.json",
+      "examples/339-commons-csv-page-numbers/receipts/start-one-fix/executions/20261120T195103Z-9329717d/attempt.json",
+      "examples/339-commons-csv-page-numbers/receipts/start-one-fix/executions/20261120T195103Z-9329717d/checker.json",
+      "examples/339-commons-csv-page-numbers/receipts/start-one-fix/executions/20261120T195103Z-9329717d/correspondence.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "92673c7e0e044fbb29322fefd2ab3d4a6b7f501c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92673c7e0e044fbb29322fefd2ab3d4a6b7f501c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

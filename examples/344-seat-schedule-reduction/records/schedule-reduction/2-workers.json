@@ -1,0 +1,1028 @@
+{
+  "schema": "java-seat-reduction/v1",
+  "sourceKey": "e30a04ce3d535f29c3c2dab88ed681e6efd71d57549b78b5bbc329cb899ae4bb",
+  "workers": 2,
+  "exactOutcomeAgreement": true,
+  "scope": "completed calls under sequential consistency; fixed objects, monitors and audit capacity",
+  "bytecode": {
+    "classes": {
+      "seats/Seat": "d2ef4caf5e15156783e24eb25e07e9dc553c077cfe0170bd77d0ec59f72317f8",
+      "seats/Audit": "58556d5e00dfef0021e404fcb5b05c6a0044b5e04aab40a27b8403b88a228aef",
+      "seats/Handles": "5586a34b74923b3fa52ca8444640a566507c283e07fcf00a111f1c869285a736"
+    },
+    "seat": [
+      {
+        "pc": 0,
+        "op": "aload_0",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 1,
+        "op": "getfield",
+        "arg": "#7",
+        "member": "Field owner:I"
+      },
+      {
+        "pc": 4,
+        "op": "ifeq",
+        "arg": "15",
+        "member": ""
+      },
+      {
+        "pc": 7,
+        "op": "aload_2",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 8,
+        "op": "iload_1",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 9,
+        "op": "ineg",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 10,
+        "op": "invokevirtual",
+        "arg": "#13",
+        "member": "Method seats/Audit.append:(I)V"
+      },
+      {
+        "pc": 13,
+        "op": "iconst_0",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 14,
+        "op": "ireturn",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 15,
+        "op": "aload_0",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 16,
+        "op": "iload_1",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 17,
+        "op": "putfield",
+        "arg": "#7",
+        "member": "Field owner:I"
+      },
+      {
+        "pc": 20,
+        "op": "aload_2",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 21,
+        "op": "iload_1",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 22,
+        "op": "invokevirtual",
+        "arg": "#13",
+        "member": "Method seats/Audit.append:(I)V"
+      },
+      {
+        "pc": 25,
+        "op": "iconst_1",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 26,
+        "op": "ireturn",
+        "arg": "",
+        "member": ""
+      }
+    ],
+    "audit": [
+      {
+        "pc": 0,
+        "op": "aload_0",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 1,
+        "op": "getfield",
+        "arg": "#7",
+        "member": "Field events:[I"
+      },
+      {
+        "pc": 4,
+        "op": "aload_0",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 5,
+        "op": "getfield",
+        "arg": "#13",
+        "member": "Field used:I"
+      },
+      {
+        "pc": 8,
+        "op": "iload_1",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 9,
+        "op": "iastore",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 10,
+        "op": "aload_0",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 11,
+        "op": "dup",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 12,
+        "op": "getfield",
+        "arg": "#13",
+        "member": "Field used:I"
+      },
+      {
+        "pc": 15,
+        "op": "iconst_1",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 16,
+        "op": "iadd",
+        "arg": "",
+        "member": ""
+      },
+      {
+        "pc": 17,
+        "op": "putfield",
+        "arg": "#13",
+        "member": "Field used:I"
+      },
+      {
+        "pc": 20,
+        "op": "return",
+        "arg": "",
+        "member": ""
+      }
+    ],
+    "fact": "The seat stays locked from the first owner read until after the synchronized audit append. Audit methods acquire no seat monitor."
+  },
+  "originalJarSha256": "2e289f59bf2b414e4e48d573b42f926b91366ed645728b34ed2417353ec0cbe8",
+  "jdk": {
+    "feature": "21",
+    "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "release": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  },
+  "checkerSha256": "54a381e59df864cda2e0aedced08e9e5737ed8e1bfcca5bd36eca3225e8b9b9d",
+  "JVMHistoriesMatched": 36,
+  "cases": [
+    {
+      "shape": "distinct",
+      "calls": [
+        1,
+        1
+      ],
+      "measurements": {
+        "exhaustive": {
+          "visitedStates": 163,
+          "transitions": 270,
+          "sleepSetPruned": 0,
+          "outcomes": 6,
+          "outcomesSha256": "4d256b476e4f894c46a340c453d2a8335337360bcfacb05f647cbd229ee79b07",
+          "wallSeconds": 0.001542,
+          "peakProcessKiB": 52628
+        },
+        "identity": {
+          "visitedStates": 163,
+          "transitions": 162,
+          "sleepSetPruned": 108,
+          "outcomes": 6,
+          "outcomesSha256": "4d256b476e4f894c46a340c453d2a8335337360bcfacb05f647cbd229ee79b07",
+          "wallSeconds": 0.002393,
+          "peakProcessKiB": 52628
+        },
+        "sequential": {
+          "visitedStates": 33,
+          "transitions": 40,
+          "outcomes": 6,
+          "outcomesSha256": "4d256b476e4f894c46a340c453d2a8335337360bcfacb05f647cbd229ee79b07",
+          "wallSeconds": 0.000538,
+          "peakProcessKiB": 52628
+        },
+        "by-name": {
+          "visitedStates": 139,
+          "transitions": 138,
+          "sleepSetPruned": 88,
+          "outcomes": 6,
+          "outcomesSha256": "4d256b476e4f894c46a340c453d2a8335337360bcfacb05f647cbd229ee79b07",
+          "wallSeconds": 0.001329,
+          "peakProcessKiB": 52628
+        }
+      },
+      "byNameMissing": 0,
+      "firstMissing": null
+    },
+    {
+      "shape": "distinct",
+      "calls": [
+        1,
+        2
+      ],
+      "measurements": {
+        "exhaustive": {
+          "visitedStates": 487,
+          "transitions": 810,
+          "sleepSetPruned": 0,
+          "outcomes": 15,
+          "outcomesSha256": "a3ac54235225c4d50f65cea1a67be0939267984eab176b8c645b68198864b023",
+          "wallSeconds": 0.005418,
+          "peakProcessKiB": 52628
+        },
+        "identity": {
+          "visitedStates": 487,
+          "transitions": 486,
+          "sleepSetPruned": 324,
+          "outcomes": 15,
+          "outcomesSha256": "a3ac54235225c4d50f65cea1a67be0939267984eab176b8c645b68198864b023",
+          "wallSeconds": 0.00886,
+          "peakProcessKiB": 52628
+        },
+        "sequential": {
+          "visitedStates": 97,
+          "transitions": 120,
+          "outcomes": 15,
+          "outcomesSha256": "a3ac54235225c4d50f65cea1a67be0939267984eab176b8c645b68198864b023",
+          "wallSeconds": 0.000938,
+          "peakProcessKiB": 52628
+        },
+        "by-name": {
+          "visitedStates": 407,
+          "transitions": 406,
+          "sleepSetPruned": 252,
+          "outcomes": 15,
+          "outcomesSha256": "a3ac54235225c4d50f65cea1a67be0939267984eab176b8c645b68198864b023",
+          "wallSeconds": 0.005402,
+          "peakProcessKiB": 52628
+        }
+      },
+      "byNameMissing": 0,
+      "firstMissing": null
+    },
+    {
+      "shape": "distinct",
+      "calls": [
+        2,
+        1
+      ],
+      "measurements": {
+        "exhaustive": {
+          "visitedStates": 487,
+          "transitions": 810,
+          "sleepSetPruned": 0,
+          "outcomes": 15,
+          "outcomesSha256": "7bbab45c82ac8b301fdd4da85951a34138f1014e61b319754f1cc05aca4f9c75",
+          "wallSeconds": 0.005416,
+          "peakProcessKiB": 52628
+        },
+        "identity": {
+          "visitedStates": 487,
+          "transitions": 486,
+          "sleepSetPruned": 324,
+          "outcomes": 15,
+          "outcomesSha256": "7bbab45c82ac8b301fdd4da85951a34138f1014e61b319754f1cc05aca4f9c75",
+          "wallSeconds": 0.007787,
+          "peakProcessKiB": 52628
+        },
+        "sequential": {
+          "visitedStates": 97,
+          "transitions": 120,
+          "outcomes": 15,
+          "outcomesSha256": "7bbab45c82ac8b301fdd4da85951a34138f1014e61b319754f1cc05aca4f9c75",
+          "wallSeconds": 0.001416,
+          "peakProcessKiB": 52628
+        },
+        "by-name": {
+          "visitedStates": 415,
+          "transitions": 414,
+          "sleepSetPruned": 264,
+          "outcomes": 15,
+          "outcomesSha256": "7bbab45c82ac8b301fdd4da85951a34138f1014e61b319754f1cc05aca4f9c75",
+          "wallSeconds": 0.005719,
+          "peakProcessKiB": 52628
+        }
+      },
+      "byNameMissing": 0,
+      "firstMissing": null
+    },
+    {
+      "shape": "distinct",
+      "calls": [
+        2,
+        2
+      ],
+      "measurements": {
+        "exhaustive": {
+          "visitedStates": 2351,
+          "transitions": 3970,
+          "sleepSetPruned": 0,
+          "outcomes": 70,
+          "outcomesSha256": "aa5cae33e7d018851448dd265113d92c3abe84ea607382c10190d683693323df",
+          "wallSeconds": 0.025212,
+          "peakProcessKiB": 52628
+        },
+        "identity": {
+          "visitedStates": 2351,
+          "transitions": 2350,
+          "sleepSetPruned": 1620,
+          "outcomes": 70,
+          "outcomesSha256": "aa5cae33e7d018851448dd265113d92c3abe84ea607382c10190d683693323df",
+          "wallSeconds": 0.028436,
+          "peakProcessKiB": 52628
+        },
+        "sequential": {
+          "visitedStates": 451,
+          "transitions": 570,
+          "outcomes": 70,
+          "outcomesSha256": "aa5cae33e7d018851448dd265113d92c3abe84ea607382c10190d683693323df",
+          "wallSeconds": 0.002596,
+          "peakProcessKiB": 52628
+        },
+        "by-name": {
+          "visitedStates": 1967,
+          "transitions": 1966,
+          "sleepSetPruned": 1284,
+          "outcomes": 70,
+          "outcomesSha256": "aa5cae33e7d018851448dd265113d92c3abe84ea607382c10190d683693323df",
+          "wallSeconds": 0.014808,
+          "peakProcessKiB": 52628
+        }
+      },
+      "byNameMissing": 0,
+      "firstMissing": null
+    },
+    {
+      "shape": "alias",
+      "calls": [
+        1,
+        1
+      ],
+      "measurements": {
+        "exhaustive": {
+          "visitedStates": 123,
+          "transitions": 158,
+          "sleepSetPruned": 0,
+          "outcomes": 10,
+          "outcomesSha256": "96619693d75d036c0193f34232255d146eb5928f5c70df503212ba14af3c2978",
+          "wallSeconds": 0.001434,
+          "peakProcessKiB": 52628
+        },
+        "identity": {
+          "visitedStates": 123,
+          "transitions": 122,
+          "sleepSetPruned": 36,
+          "outcomes": 10,
+          "outcomesSha256": "96619693d75d036c0193f34232255d146eb5928f5c70df503212ba14af3c2978",
+          "wallSeconds": 0.001306,
+          "peakProcessKiB": 52628
+        },
+        "sequential": {
+          "visitedStates": 43,
+          "transitions": 48,
+          "outcomes": 10,
+          "outcomesSha256": "96619693d75d036c0193f34232255d146eb5928f5c70df503212ba14af3c2978",
+          "wallSeconds": 0.000664,
+          "peakProcessKiB": 52628
+        },
+        "by-name": {
+          "visitedStates": 79,
+          "transitions": 78,
+          "sleepSetPruned": 26,
+          "outcomes": 6,
+          "outcomesSha256": "deccdecf6ad8569b94788c28c3c330804968ba1e67671cf410a21d37fcc0cbcd",
+          "wallSeconds": 0.001237,
+          "peakProcessKiB": 52628
+        }
+      },
+      "byNameMissing": 4,
+      "firstMissing": [
+        [
+          1,
+          2,
+          -1,
+          -2
+        ],
+        [
+          [
+            -1
+          ],
+          [
+            1
+          ]
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          [
+            -1
+          ],
+          [
+            2
+          ]
+        ]
+      ]
+    },
+    {
+      "shape": "alias",
+      "calls": [
+        1,
+        2
+      ],
+      "measurements": {
+        "exhaustive": {
+          "visitedStates": 413,
+          "transitions": 536,
+          "sleepSetPruned": 0,
+          "outcomes": 23,
+          "outcomesSha256": "e5f610eca87623f26a412e533fa25609aff4f128f6d4251aa264ebb160684067",
+          "wallSeconds": 0.004963,
+          "peakProcessKiB": 52628
+        },
+        "identity": {
+          "visitedStates": 417,
+          "transitions": 424,
+          "sleepSetPruned": 120,
+          "outcomes": 23,
+          "outcomesSha256": "e5f610eca87623f26a412e533fa25609aff4f128f6d4251aa264ebb160684067",
+          "wallSeconds": 0.005306,
+          "peakProcessKiB": 52628
+        },
+        "sequential": {
+          "visitedStates": 133,
+          "transitions": 156,
+          "outcomes": 23,
+          "outcomesSha256": "e5f610eca87623f26a412e533fa25609aff4f128f6d4251aa264ebb160684067",
+          "wallSeconds": 0.0011,
+          "peakProcessKiB": 52628
+        },
+        "by-name": {
+          "visitedStates": 223,
+          "transitions": 222,
+          "sleepSetPruned": 64,
+          "outcomes": 15,
+          "outcomesSha256": "5eca032051805d68fdf5655dc931d77ac220f1ff4bb2de9179f9e2085c3023c9",
+          "wallSeconds": 0.001993,
+          "peakProcessKiB": 52628
+        }
+      },
+      "byNameMissing": 8,
+      "firstMissing": [
+        [
+          1,
+          2,
+          -1,
+          -2,
+          2,
+          -2
+        ],
+        [
+          [
+            -1
+          ],
+          [
+            1,
+            -1
+          ]
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          [
+            -1
+          ],
+          [
+            2,
+            -2
+          ]
+        ]
+      ]
+    },
+    {
+      "shape": "alias",
+      "calls": [
+        2,
+        1
+      ],
+      "measurements": {
+        "exhaustive": {
+          "visitedStates": 413,
+          "transitions": 536,
+          "sleepSetPruned": 0,
+          "outcomes": 23,
+          "outcomesSha256": "a10e298efb8c1968e373c1f139f377e611253d4793f2f57c64f6d5a21e35b98b",
+          "wallSeconds": 0.002693,
+          "peakProcessKiB": 52628
+        },
+        "identity": {
+          "visitedStates": 417,
+          "transitions": 424,
+          "sleepSetPruned": 120,
+          "outcomes": 23,
+          "outcomesSha256": "a10e298efb8c1968e373c1f139f377e611253d4793f2f57c64f6d5a21e35b98b",
+          "wallSeconds": 0.005088,
+          "peakProcessKiB": 52628
+        },
+        "sequential": {
+          "visitedStates": 133,
+          "transitions": 156,
+          "outcomes": 23,
+          "outcomesSha256": "a10e298efb8c1968e373c1f139f377e611253d4793f2f57c64f6d5a21e35b98b",
+          "wallSeconds": 0.001414,
+          "peakProcessKiB": 52628
+        },
+        "by-name": {
+          "visitedStates": 235,
+          "transitions": 234,
+          "sleepSetPruned": 78,
+          "outcomes": 15,
+          "outcomesSha256": "98d5f3af61a70210169a3fbe1163802ee88c9a664ccb49f10c81f49ad4290f69",
+          "wallSeconds": 0.001817,
+          "peakProcessKiB": 52628
+        }
+      },
+      "byNameMissing": 8,
+      "firstMissing": [
+        [
+          1,
+          2,
+          -1,
+          -2,
+          1,
+          -1
+        ],
+        [
+          [
+            -1,
+            -1
+          ],
+          [
+            1
+          ]
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          [
+            -1,
+            -1
+          ],
+          [
+            2
+          ]
+        ]
+      ]
+    },
+    {
+      "shape": "alias",
+      "calls": [
+        2,
+        2
+      ],
+      "measurements": {
+        "exhaustive": {
+          "visitedStates": 2351,
+          "transitions": 3170,
+          "sleepSetPruned": 0,
+          "outcomes": 110,
+          "outcomesSha256": "51af366ec2e6c66c698ad0d982c6df2bb1b6690d9242bdeedcc8eaaed42f1a08",
+          "wallSeconds": 0.023693,
+          "peakProcessKiB": 52628
+        },
+        "identity": {
+          "visitedStates": 2395,
+          "transitions": 2478,
+          "sleepSetPruned": 780,
+          "outcomes": 110,
+          "outcomesSha256": "51af366ec2e6c66c698ad0d982c6df2bb1b6690d9242bdeedcc8eaaed42f1a08",
+          "wallSeconds": 0.021257,
+          "peakProcessKiB": 52628
+        },
+        "sequential": {
+          "visitedStates": 681,
+          "transitions": 850,
+          "outcomes": 110,
+          "outcomesSha256": "51af366ec2e6c66c698ad0d982c6df2bb1b6690d9242bdeedcc8eaaed42f1a08",
+          "wallSeconds": 0.003788,
+          "peakProcessKiB": 52628
+        },
+        "by-name": {
+          "visitedStates": 1055,
+          "transitions": 1054,
+          "sleepSetPruned": 348,
+          "outcomes": 70,
+          "outcomesSha256": "0a29d8ca964dffe0b91c00ac75411e12fb71116ac550cdafa34fe96a689185ff",
+          "wallSeconds": 0.006948,
+          "peakProcessKiB": 52628
+        }
+      },
+      "byNameMissing": 40,
+      "firstMissing": [
+        [
+          1,
+          2,
+          -1,
+          -2,
+          1,
+          -1,
+          2,
+          -2
+        ],
+        [
+          [
+            -1,
+            -1
+          ],
+          [
+            1,
+            -1
+          ]
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          [
+            -1,
+            -1
+          ],
+          [
+            2,
+            -2
+          ]
+        ]
+      ]
+    },
+    {
+      "shape": "shared-log",
+      "calls": [
+        1,
+        1
+      ],
+      "measurements": {
+        "exhaustive": {
+          "visitedStates": 175,
+          "transitions": 270,
+          "sleepSetPruned": 0,
+          "outcomes": 10,
+          "outcomesSha256": "5444da7f2709ab24922891babee2ab23da16abf77a98e9f1fecbf9e619929a14",
+          "wallSeconds": 0.001529,
+          "peakProcessKiB": 52628
+        },
+        "identity": {
+          "visitedStates": 175,
+          "transitions": 174,
+          "sleepSetPruned": 96,
+          "outcomes": 10,
+          "outcomesSha256": "5444da7f2709ab24922891babee2ab23da16abf77a98e9f1fecbf9e619929a14",
+          "wallSeconds": 0.002212,
+          "peakProcessKiB": 52628
+        },
+        "sequential": {
+          "visitedStates": 43,
+          "transitions": 48,
+          "outcomes": 10,
+          "outcomesSha256": "5444da7f2709ab24922891babee2ab23da16abf77a98e9f1fecbf9e619929a14",
+          "wallSeconds": 0.000629,
+          "peakProcessKiB": 52628
+        },
+        "by-name": {
+          "visitedStates": 119,
+          "transitions": 118,
+          "sleepSetPruned": 68,
+          "outcomes": 6,
+          "outcomesSha256": "5bb696e0546be6fe970d05bdb2b6ab3d353d57c6a7e66ba21516a51250422e8d",
+          "wallSeconds": 0.00118,
+          "peakProcessKiB": 52628
+        }
+      },
+      "byNameMissing": 4,
+      "firstMissing": [
+        [
+          1,
+          2,
+          -1,
+          -2
+        ],
+        [
+          [
+            1
+          ],
+          [
+            1
+          ]
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          [
+            2,
+            1
+          ],
+          [
+            2,
+            1
+          ]
+        ]
+      ]
+    },
+    {
+      "shape": "shared-log",
+      "calls": [
+        1,
+        2
+      ],
+      "measurements": {
+        "exhaustive": {
+          "visitedStates": 605,
+          "transitions": 920,
+          "sleepSetPruned": 0,
+          "outcomes": 31,
+          "outcomesSha256": "e88f55fd94847573395996b6a5f1168709ff151d253359c5c52d9612a620dec3",
+          "wallSeconds": 0.006347,
+          "peakProcessKiB": 52628
+        },
+        "identity": {
+          "visitedStates": 605,
+          "transitions": 604,
+          "sleepSetPruned": 316,
+          "outcomes": 31,
+          "outcomesSha256": "e88f55fd94847573395996b6a5f1168709ff151d253359c5c52d9612a620dec3",
+          "wallSeconds": 0.009724,
+          "peakProcessKiB": 52628
+        },
+        "sequential": {
+          "visitedStates": 153,
+          "transitions": 172,
+          "outcomes": 31,
+          "outcomesSha256": "e88f55fd94847573395996b6a5f1168709ff151d253359c5c52d9612a620dec3",
+          "wallSeconds": 0.00104,
+          "peakProcessKiB": 52628
+        },
+        "by-name": {
+          "visitedStates": 335,
+          "transitions": 334,
+          "sleepSetPruned": 180,
+          "outcomes": 15,
+          "outcomesSha256": "2a5ce3bad79c7ceea26fe063c20d1acc02daf4169ee3037906740bea33cde541",
+          "wallSeconds": 0.002848,
+          "peakProcessKiB": 52628
+        }
+      },
+      "byNameMissing": 16,
+      "firstMissing": [
+        [
+          1,
+          2,
+          -1,
+          -2,
+          2,
+          -2
+        ],
+        [
+          [
+            1
+          ],
+          [
+            1,
+            -1
+          ]
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          [
+            2,
+            1,
+            -2
+          ],
+          [
+            2,
+            1,
+            -2
+          ]
+        ]
+      ]
+    },
+    {
+      "shape": "shared-log",
+      "calls": [
+        2,
+        1
+      ],
+      "measurements": {
+        "exhaustive": {
+          "visitedStates": 605,
+          "transitions": 920,
+          "sleepSetPruned": 0,
+          "outcomes": 31,
+          "outcomesSha256": "40adbf797b98de5a1200c1076a32e8ab2d9cbb4963f9cba2308e1b7253b5bb2f",
+          "wallSeconds": 0.004673,
+          "peakProcessKiB": 52628
+        },
+        "identity": {
+          "visitedStates": 605,
+          "transitions": 604,
+          "sleepSetPruned": 316,
+          "outcomes": 31,
+          "outcomesSha256": "40adbf797b98de5a1200c1076a32e8ab2d9cbb4963f9cba2308e1b7253b5bb2f",
+          "wallSeconds": 0.010287,
+          "peakProcessKiB": 52628
+        },
+        "sequential": {
+          "visitedStates": 153,
+          "transitions": 172,
+          "outcomes": 31,
+          "outcomesSha256": "40adbf797b98de5a1200c1076a32e8ab2d9cbb4963f9cba2308e1b7253b5bb2f",
+          "wallSeconds": 0.001675,
+          "peakProcessKiB": 52628
+        },
+        "by-name": {
+          "visitedStates": 355,
+          "transitions": 354,
+          "sleepSetPruned": 204,
+          "outcomes": 15,
+          "outcomesSha256": "4aa790392257161f8401cd0caf69ac40d4494ff1237186c4c9a2fe89b0575c4a",
+          "wallSeconds": 0.004191,
+          "peakProcessKiB": 52628
+        }
+      },
+      "byNameMissing": 16,
+      "firstMissing": [
+        [
+          1,
+          -1,
+          1,
+          2,
+          -1,
+          -2
+        ],
+        [
+          [
+            1,
+            -1
+          ],
+          [
+            1
+          ]
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          [
+            1,
+            2,
+            -1
+          ],
+          [
+            1,
+            2,
+            -1
+          ]
+        ]
+      ]
+    },
+    {
+      "shape": "shared-log",
+      "calls": [
+        2,
+        2
+      ],
+      "measurements": {
+        "exhaustive": {
+          "visitedStates": 4003,
+          "transitions": 6186,
+          "sleepSetPruned": 0,
+          "outcomes": 206,
+          "outcomesSha256": "36e83b28472de1c9b7a359671656d617433d4974b3617feccaa75540b657fbcb",
+          "wallSeconds": 0.031431,
+          "peakProcessKiB": 52628
+        },
+        "identity": {
+          "visitedStates": 4003,
+          "transitions": 4002,
+          "sleepSetPruned": 2184,
+          "outcomes": 206,
+          "outcomesSha256": "36e83b28472de1c9b7a359671656d617433d4974b3617feccaa75540b657fbcb",
+          "wallSeconds": 0.057493,
+          "peakProcessKiB": 52628
+        },
+        "sequential": {
+          "visitedStates": 985,
+          "transitions": 1122,
+          "outcomes": 206,
+          "outcomesSha256": "36e83b28472de1c9b7a359671656d617433d4974b3617feccaa75540b657fbcb",
+          "wallSeconds": 0.005236,
+          "peakProcessKiB": 52628
+        },
+        "by-name": {
+          "visitedStates": 1631,
+          "transitions": 1630,
+          "sleepSetPruned": 948,
+          "outcomes": 70,
+          "outcomesSha256": "7630ba9fb1d400859e188dc60c21343b6f17786e0bb6bc761b04aa5ac150edc8",
+          "wallSeconds": 0.017402,
+          "peakProcessKiB": 52628
+        }
+      },
+      "byNameMissing": 136,
+      "firstMissing": [
+        [
+          1,
+          -1,
+          1,
+          2,
+          -1,
+          -2,
+          2,
+          -2
+        ],
+        [
+          [
+            1,
+            -1
+          ],
+          [
+            1,
+            -1
+          ]
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          [
+            1,
+            2,
+            -1,
+            -2
+          ],
+          [
+            1,
+            2,
+            -1,
+            -2
+          ]
+        ]
+      ]
+    }
+  ]
+}

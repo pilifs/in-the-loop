@@ -1,0 +1,355 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-194432-337-validate-array-induction-and-caller",
+  "title": "337 validate array induction and caller dependencies",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 8.7s, peak 118.6 MiB (estimated 2m00s, 2.0 GiB); 9 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-194432-337-validate-array-induction-and-caller.json",
+    "sha256": "007d12ca06fee883627bcbd1db0b72eaf3cad144b372bbd07f82aa8c52152a0c",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-194432-337-validate-array-induction-and-caller",
+      "title": "337 validate array induction and caller dependencies",
+      "description": "Check the actual compiled transition system over every legal Java int-array length. Range fill additionally sends a changed range through the same proved helper. Require the countermodel to the caller postcondition on that revision and the independent concrete alias replay.",
+      "kind": "real-world",
+      "capabilities": [
+        "native:array-invariant",
+        "proof:reuse"
+      ],
+      "links": {
+        "examples": [
+          "337"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T19:44:32+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac",
+        "z3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "fill-any-length",
+          "run": "python3 examples/tools/build.py 337 --array-induction fill-any-length --checker-seconds 60",
+          "cwd": "."
+        },
+        {
+          "name": "caller-any-length",
+          "run": "python3 examples/tools/build.py 337 --array-induction caller-any-length --checker-seconds 60",
+          "cwd": "."
+        },
+        {
+          "name": "caller-extra-any-length",
+          "run": "python3 examples/tools/build.py 337 --array-induction caller-extra-any-length --checker-seconds 60 || test \"$?\" -eq 1",
+          "cwd": "."
+        },
+        {
+          "name": "Check the failed postcondition and its concrete alias witness",
+          "run": "python3 -c 'import json,sys;from pathlib import Path;p=Path(sys.argv[1]);rs=[json.loads(f.read_text()) for f in p.glob(\"*/result.json\")];assert any(r[\"status\"]==\"unresolved\" and any(o[\"obtained\"]==\"sat\" and o[\"expected\"]==\"unsat\" and \"caller read\" in o[\"name\"] for o in r[\"obligations\"]) for r in rs);w=json.loads(Path(sys.argv[2]).read_text());assert w[\"status\"]==\"witness-reproduced\"' examples/337-jdk-range-fill-alias/records/array-induction/caller-extra-any-length examples/337-jdk-range-fill-alias/receipts/caller-8-extra/executions/20261120T194040Z-f2a36f64/attempt.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/337-jdk-range-fill-alias/records/array-induction/fill-any-length",
+        "examples/337-jdk-range-fill-alias/records/array-induction/caller-any-length",
+        "examples/337-jdk-range-fill-alias/records/array-induction/caller-extra-any-length"
+      ]
+    }
+  },
+  "sourceCommit": "c122a440b61a332db9bcc4512f938fb2c2792fd4",
+  "startedAt": "2026-11-20T19:51:12+00:00",
+  "finishedAt": "2026-11-20T19:51:25+00:00",
+  "wallSeconds": 13.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1224582,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 124358656,
+    "wallSeconds": 8.7,
+    "cpuSeconds": 13.8,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "fill-any-length",
+      "run": "python3 examples/tools/build.py 337 --array-induction fill-any-length --checker-seconds 60",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 2.84,
+      "cpuSeconds": 4.396,
+      "cpuThrottledSeconds": 0.331,
+      "peakMemoryBytes": 124358656,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-fill-any-length.log",
+        "lines": 1,
+        "bytes": 110,
+        "sha256": "85140c0edd44d02348692084b91ba3b8eceecd06e30b6b2f323652299659f1c2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "fill-any-length: established, 10 solver answers, records/array-induction/fill-any-length/8146bb84ec194af3ded5"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "caller-any-length",
+      "run": "python3 examples/tools/build.py 337 --array-induction caller-any-length --checker-seconds 60",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 2.851,
+      "cpuSeconds": 4.707,
+      "cpuThrottledSeconds": 0.38,
+      "peakMemoryBytes": 111865856,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-caller-any-length.log",
+        "lines": 1,
+        "bytes": 114,
+        "sha256": "c6c72f46f6eddb8eadb27d4812b9303c66063a397e64cdd3a04eb8112b19cba2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "caller-any-length: established, 12 solver answers, records/array-induction/caller-any-length/83c0b56d77a5637e902f"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "caller-extra-any-length",
+      "run": "python3 examples/tools/build.py 337 --array-induction caller-extra-any-length --checker-seconds 60 || test \"$?\" -eq 1",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 2.813,
+      "cpuSeconds": 4.638,
+      "cpuThrottledSeconds": 0.293,
+      "peakMemoryBytes": 108118016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-caller-extra-any-length.log",
+        "lines": 1,
+        "bytes": 125,
+        "sha256": "7b2750172a6a28e4e4c437828d4dafbb831d63869bb761c620d5718a3d4a5c7f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "caller-extra-any-length: unresolved, 14 solver answers, records/array-induction/caller-extra-any-length/a46b7d1d8170df9c6224"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Check the failed postcondition and its concrete alias witness",
+      "run": "python3 -c 'import json,sys;from pathlib import Path;p=Path(sys.argv[1]);rs=[json.loads(f.read_text()) for f in p.glob(\"*/result.json\")];assert any(r[\"status\"]==\"unresolved\" and any(o[\"obtained\"]==\"sat\" and o[\"expected\"]==\"unsat\" and \"caller read\" in o[\"name\"] for o in r[\"obligations\"]) for r in rs);w=json.loads(Path(sys.argv[2]).read_text());assert w[\"status\"]==\"witness-reproduced\"' examples/337-jdk-range-fill-alias/records/array-induction/caller-extra-any-length examples/337-jdk-range-fill-alias/receipts/caller-8-extra/executions/20261120T194040Z-f2a36f64/attempt.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.032,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 5971968,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-check-the-failed-postcondition.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/337-jdk-range-fill-alias/records/array-induction/fill-any-length/8146bb84ec194af3ded5/class.javap",
+      "change": "added",
+      "bytes": 229836,
+      "sha256": "b2a9b66f52713564008d956ce19d3a798e6c7d806f7d6c6792611584da3b4adb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/records/array-induction/fill-any-length/8146bb84ec194af3ded5/obligations.smt2",
+      "change": "added",
+      "bytes": 4034,
+      "sha256": "ce49d79dfbd492a195bbe30e72a25877fdfb2e6997d63f2245c6d03c96824819",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/records/array-induction/fill-any-length/8146bb84ec194af3ded5/result.json",
+      "change": "added",
+      "bytes": 4626,
+      "sha256": "b909b66484d70a693644aea49c56c15ce2211884283348c5c5ea0731ce39bf2f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/records/array-induction/caller-any-length/83c0b56d77a5637e902f/class.javap",
+      "change": "added",
+      "bytes": 230733,
+      "sha256": "c0c8049053c05a16015aeb1e56b2ddfa1f6ccc96840d0c7eab11767b7aa3a596",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/records/array-induction/caller-any-length/83c0b56d77a5637e902f/obligations.smt2",
+      "change": "added",
+      "bytes": 4999,
+      "sha256": "84c2bc9cfe602bcde8564670bbfc72807ec962c815156665687d9d89cc36eff7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/records/array-induction/caller-any-length/83c0b56d77a5637e902f/result.json",
+      "change": "added",
+      "bytes": 5449,
+      "sha256": "2f0a7583d0160e29fa87f77e3e715aa42501566bf857ee0e635b20b314d137fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/records/array-induction/caller-extra-any-length/a46b7d1d8170df9c6224/class.javap",
+      "change": "added",
+      "bytes": 231061,
+      "sha256": "5a0662d860c2c07001f473907b83d62b53039e302dc4b92ecc17483859a6c17d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/records/array-induction/caller-extra-any-length/a46b7d1d8170df9c6224/obligations.smt2",
+      "change": "added",
+      "bytes": 6143,
+      "sha256": "d99835a0d93b55cf99cadb7030385b1095da11771618649f7b771404ba6f572d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/337-jdk-range-fill-alias/records/array-induction/caller-extra-any-length/a46b7d1d8170df9c6224/result.json",
+      "change": "added",
+      "bytes": 5686,
+      "sha256": "75584130fce768f3f55d9d3919bcd60629ac6c866189926e557fc928720c4f96",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T19:55:02+00:00",
+    "applied": [
+      "examples/337-jdk-range-fill-alias/records/array-induction/fill-any-length/8146bb84ec194af3ded5/class.javap",
+      "examples/337-jdk-range-fill-alias/records/array-induction/fill-any-length/8146bb84ec194af3ded5/obligations.smt2",
+      "examples/337-jdk-range-fill-alias/records/array-induction/fill-any-length/8146bb84ec194af3ded5/result.json",
+      "examples/337-jdk-range-fill-alias/records/array-induction/caller-any-length/83c0b56d77a5637e902f/class.javap",
+      "examples/337-jdk-range-fill-alias/records/array-induction/caller-any-length/83c0b56d77a5637e902f/obligations.smt2",
+      "examples/337-jdk-range-fill-alias/records/array-induction/caller-any-length/83c0b56d77a5637e902f/result.json",
+      "examples/337-jdk-range-fill-alias/records/array-induction/caller-extra-any-length/a46b7d1d8170df9c6224/class.javap",
+      "examples/337-jdk-range-fill-alias/records/array-induction/caller-extra-any-length/a46b7d1d8170df9c6224/obligations.smt2",
+      "examples/337-jdk-range-fill-alias/records/array-induction/caller-extra-any-length/a46b7d1d8170df9c6224/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

@@ -1,0 +1,248 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92673c7e0e044fbb29322fefd2ab3d4a6b7f501c/jvmcontract",
+    "prove",
+    "fill.Range#apply(int[], int[], int, int, int)",
+    "--classes",
+    "prepare/original/original.jar",
+    "--assume",
+    "0 <= from && from <= to && to <= a.length",
+    "--assert",
+    "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+    "--may-alias",
+    "a,other",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "11",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "120",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 0,
+  "seconds": 1.878,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "verified",
+      "target": "fill.Range#apply(int[], int[], int, int, int)",
+      "domain": "a: int[] of length ≤ 8, not null × other: int[] of length ≤ 8, not null × from: int × to: int × value: int; a and other may be the same array",
+      "assume": "0 <= from && from <= to && to <= a.length",
+      "assert": "(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over a: int[] of length ≤ 8, not null × other: int[] of length ≤ 8, not null × from: int × to: int × value: int; a and other may be the same array in 1.8 s; loops unwound 11 times with unwinding assertions",
+      "problem": null,
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [],
+      "output": "✓ fill.Range#apply(int[], int[], int, int, int) satisfies `(\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))` on every input where 0 <= from && from <= to && to <= a.length (jvmcontract's own checker (CaDiCaL): 1 properties proved over a: int[] of length ≤ 8, not null × other: int[] of length ≤ 8, not null × from: int × to: int × value: int; a and other may be the same array in 1.8 s; loops unwound 11 times with unwinding assertions)\n  not vacuous: apply(a=[], other=[], from=0, to=0, value=20) reaches the calls\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 1.8481776669999999,
+        "properties": 1,
+        "unwind": 11,
+        "max_array_length": 8,
+        "stage": null,
+        "native": {
+          "paths": 669,
+          "merges": 156,
+          "solver_calls": 4285,
+          "solving_seconds": 1.682815272,
+          "gates_evaluated": 489718,
+          "evaluating_seconds": 0.01127914,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 29546,
+          "clauses": 104588,
+          "seconds": 1.8459254760000001,
+          "loading_seconds": 0.000377947,
+          "decoding_seconds": 0.000216364,
+          "encoding_seconds": 0.082783726,
+          "witness_seconds": 0.0
+        },
+        "gap_mode": "strict",
+        "deadline_seconds": 120.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 120.0,
+            "seconds": 1.846,
+            "ended": "verified",
+            "ending": "verified",
+            "phases": {
+              "loading": 0.0,
+              "lowering": 0.0,
+              "symbolic": 0.08,
+              "encoding": 0.083,
+              "solving": 1.683,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 29546,
+              "clauses": 104588
+            }
+          },
+          {
+            "checker": "native",
+            "purpose": "probe",
+            "stage": null,
+            "budget_seconds": 118.152,
+            "seconds": 0.007,
+            "ended": "violation",
+            "ending": "counterexample",
+            "phases": {
+              "loading": 0.0,
+              "lowering": 0.0,
+              "symbolic": 0.005,
+              "encoding": 0.001,
+              "solving": 0.001,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 3352,
+              "clauses": 9276
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 1.867,
+          "setup": 0.001,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 1.853,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.013
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "a",
+              "type": "int[]",
+              "kind": "array",
+              "null": false,
+              "max_length": 8
+            },
+            {
+              "name": "other",
+              "type": "int[]",
+              "kind": "array",
+              "null": false,
+              "max_length": 8
+            },
+            {
+              "name": "from",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            },
+            {
+              "name": "to",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            },
+            {
+              "name": "value",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": true,
+          "may_alias": [
+            [
+              "a",
+              "other"
+            ]
+          ],
+          "text": "a: int[] of length ≤ 8, not null × other: int[] of length ≤ 8, not null × from: int × to: int × value: int; a and other may be the same array"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "0 <= from && from <= to && to <= a.length",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against (\\forall int i; 0 <= i && i < a.length; a[i] == (from <= i && i < to ? value : \\old(a[i]))) && (\\forall int i; 0 <= i && i < other.length; other[i] == (a == other && from <= i && i < to ? value : \\old(other[i])))",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 11,
+          "max_array_length": 8,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "probe",
+          "text": "Some input in the domain reaches the calls: the tool's own checker found apply(a=[], other=[], from=0, to=0, value=20).",
+          "witness": "apply(a=[], other=[], from=0, to=0, value=20)"
+        }
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 7339,
+    "sha256": "955b50cf33a742073ef3b2976e50324f116f3ce6482c1d6ad8c024a6dec4af2c"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

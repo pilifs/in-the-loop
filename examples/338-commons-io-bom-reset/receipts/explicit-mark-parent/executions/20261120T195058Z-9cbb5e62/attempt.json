@@ -1,0 +1,490 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T195058Z-9cbb5e62",
+  "task": "explicit-mark-parent",
+  "claimKey": "2507076aa471ce42",
+  "revisions": [
+    "parent"
+  ],
+  "startedAt": "2026-11-20T19:50:58.641973+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 90
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-193914-338-parent-verify-original-stream-and-pa",
+  "sourceCommit": "73db36c75d87a311d3a62abbd8e6d159af101448",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 0.0013
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 0.1269
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 0.129
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 0.2059
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 4.0773
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 4.1984
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "parent": {
+      "revision": "16bcc65a493123dfc1eeba7b3943a69acf03e47c",
+      "target": {
+        "class": "org.apache.commons.io.input.BOMInputStream",
+        "method": "reset",
+        "descriptor": "()V",
+        "loadedFrom": "built/commons-io-2.23.0-SNAPSHOT.jar",
+        "classSha256": "c0daa34dc13e55904fac5cad9bda93da20e300380ea720d94968f0895f827a6e",
+        "adapterCalls": [
+          "org.apache.commons.io.input.BOMInputStream#builder()Lorg/apache/commons/io/input/BOMInputStream$Builder;",
+          "org.apache.commons.io.input.BOMInputStream#close()V",
+          "org.apache.commons.io.input.BOMInputStream#mark(I)V",
+          "org.apache.commons.io.input.BOMInputStream#read()I",
+          "org.apache.commons.io.input.BOMInputStream#reset()V",
+          "org.apache.commons.io.input.BOMInputStream$Builder#get()Lorg/apache/commons/io/input/BOMInputStream;",
+          "org.apache.commons.io.input.BOMInputStream$Builder#setByteOrderMarks([Lorg/apache/commons/io/ByteOrderMark;)Lorg/apache/commons/io/input/BOMInputStream$Builder;",
+          "org.apache.commons.io.input.BOMInputStream$Builder#setInclude(Z)Lorg/apache/commons/io/input/BOMInputStream$Builder;",
+          "org.apache.commons.io.input.BOMInputStream$Builder#setInputStream(Ljava/io/InputStream;)Lorg/apache/commons/io/build/AbstractOriginSupplier;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "08c113883258f1b5a576f932570fe6a0a0a2df5ae36e95d03d7bde8b8586261e",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-parent.jar",
+          "sha256": "4735ed92ede27c466ee819e78dc68dca3f17540021d30139bddb84d614f30f49",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "built/commons-io-2.23.0-SNAPSHOT.jar",
+          "sha256": "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built by maven from https://github.com/apache/commons-io at 16bcc65a493123dfc1eeba7b3943a69acf03e47c: target/commons-io-2.23.0-SNAPSHOT.jar"
+        }
+      ]
+    }
+  },
+  "bindingId": "fc88b50f0fb0a282f2b55e42f377d443eb83d740d7653c0d149b9c4f92f670b3",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92673c7e0e044fbb29322fefd2ab3d4a6b7f501c/jvmcontract",
+    "prove",
+    "bom.Projection#bytes(int)",
+    "--classes",
+    "prepare/parent/adapter-parent.jar",
+    "--classpath",
+    "prepare/parent/built/commons-io-2.23.0-SNAPSHOT.jar",
+    "--assume",
+    "code >= 0 && code < 36 && code % 3 == 2",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "96",
+    "--max-array-length",
+    "96",
+    "--timeout",
+    "90",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "808e0655f897611ccc779592ebbbddfa1f3be5bad18d6fd51f68286ad1233147",
+    "commit": "73db36c75d87a311d3a62abbd8e6d159af101448",
+    "libTree": "92673c7e0e044fbb29322fefd2ab3d4a6b7f501c",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 96,
+      "maxArrayLength": 96
+    },
+    "timeout": 90,
+    "scope": {
+      "label": "adapter",
+      "meaning": "Index the ordered product of payload, BOM, inclusion and reset mode. Open distinct wrapper and delegate objects. Read the remaining bytes and then read at EOF.",
+      "method": "org.apache.commons.io.input.BOMInputStream#reset()V",
+      "revisions": {
+        "parent": {
+          "commit": "16bcc65a493123dfc1eeba7b3943a69acf03e47c",
+          "loadedFrom": "built/commons-io-2.23.0-SNAPSHOT.jar",
+          "classSha256": "c0daa34dc13e55904fac5cad9bda93da20e300380ea720d94968f0895f827a6e",
+          "origin": "built by maven from https://github.com/apache/commons-io at 16bcc65a493123dfc1eeba7b3943a69acf03e47c: target/commons-io-2.23.0-SNAPSHOT.jar",
+          "parameters": {
+            "names": [],
+            "recordedIn": "LocalVariableTable"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "bom.Projection#bytes(I)I",
+        "mapping": "Index the ordered product of payload, BOM, inclusion and reset mode. Open distinct wrapper and delegate objects. Read the remaining bytes and then read at EOF.",
+        "cases": 36,
+        "correspondence": "finite-oracle"
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "parent": [
+        {
+          "path": "adapter-parent.jar",
+          "sha256": "4735ed92ede27c466ee819e78dc68dca3f17540021d30139bddb84d614f30f49",
+          "role": "adapter"
+        },
+        {
+          "path": "built/commons-io-2.23.0-SNAPSHOT.jar",
+          "sha256": "5f1fad346ceabd2c670e2a40b844ec80b6c63ec8f2ce03ce3b5debb88850506a",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "bom.Projection#bytes(I)I",
+    "entryBindings": {
+      "parent": {
+        "entry": "bom.Projection#bytes(I)I",
+        "classSha256": "0ae4740086bdf4d93c8bf09796b107cd7124e6c8d84fcbca92b6a4ee5ad53f71",
+        "loadedFrom": "adapter-parent.jar",
+        "subject": "org.apache.commons.io.input.BOMInputStream#reset()V",
+        "subjectClassSha256": "c0daa34dc13e55904fac5cad9bda93da20e300380ea720d94968f0895f827a6e"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "org.apache.commons.io.input.BOMInputStream#reset()V",
+      "checkedEntry": "bom.Projection#bytes(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 36 && code % 3 == 2"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "96"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "96"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "bom.Projection#bytes(I)I",
+        "mapping": "Index the ordered product of payload, BOM, inclusion and reset mode. Open distinct wrapper and delegate objects. Read the remaining bytes and then read at EOF.",
+        "cases": 36,
+        "correspondence": "finite-oracle"
+      }
+    },
+    "commits": {
+      "parent": "16bcc65a493123dfc1eeba7b3943a69acf03e47c"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "parent": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92673c7e0e044fbb29322fefd2ab3d4a6b7f501c/jvmcontract",
+          "gaps",
+          "--target",
+          "bom.Projection#bytes(int)",
+          "--classes",
+          "prepare/parent/adapter-parent.jar",
+          "--classpath",
+          "prepare/parent/built/commons-io-2.23.0-SNAPSHOT.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "verifier/probe-parent.stdout",
+        "stderr": "verifier/probe-parent.stderr",
+        "gaps": [
+          {
+            "id": "jdk-constructor:java.io.IOException.<init>(Ljava/lang/Throwable;)V@jdk-21.0.13",
+            "kind": "jdk-constructor",
+            "call": "java.io.IOException.<init>(java.lang.Throwable)",
+            "sites": [
+              "org.apache.commons.io.IOUtils.close:752"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.io.Closeable.close()V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.io.Closeable.close()",
+            "sites": [
+              "org.apache.commons.io.IOUtils.close:748"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.lang.Throwable.addSuppressed(Ljava/lang/Throwable;)V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.lang.Throwable.addSuppressed(java.lang.Throwable)",
+            "sites": [
+              "bom.Projection.bytes:41"
+            ]
+          },
+          {
+            "id": "jdk-void-method:java.util.List.sort(Ljava/util/Comparator;)V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.util.List.sort(java.util.Comparator)",
+            "sites": [
+              "org.apache.commons.io.input.BOMInputStream.<init>:260"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.lang.Class.getSimpleName()Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.lang.Class.getSimpleName()",
+            "sites": [
+              "org.apache.commons.io.build.AbstractOrigin.getSimpleClassName:1354",
+              "org.apache.commons.io.build.AbstractOrigin.unsupportedOperation:1398"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.nio.charset.Charset.name()Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.nio.charset.Charset.name()",
+            "sites": [
+              "org.apache.commons.io.ByteOrderMark.<clinit>:60",
+              "org.apache.commons.io.ByteOrderMark.<clinit>:71",
+              "org.apache.commons.io.ByteOrderMark.<clinit>:82"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.util.List.stream()Ljava/util/stream/Stream;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.util.List.stream()",
+            "sites": [
+              "org.apache.commons.io.input.BOMInputStream.find:332"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.util.stream.Stream.filter(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.util.stream.Stream.filter(java.util.function.Predicate)",
+            "sites": [
+              "org.apache.commons.io.input.BOMInputStream.find:332"
+            ]
+          },
+          {
+            "id": "jdk-reference-method:java.util.stream.Stream.findFirst()Ljava/util/Optional;@jdk-21.0.13",
+            "kind": "jdk-reference-method",
+            "call": "java.util.stream.Stream.findFirst()",
+            "sites": [
+              "org.apache.commons.io.input.BOMInputStream.find:332"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.Class.desiredAssertionStatus()",
+            "sites": [
+              "java.io.ByteArrayInputStream.<clinit>:46",
+              "java.util.Collections$ReverseComparator2.<clinit>:5620",
+              "java.util.ComparableTimSort.<clinit>:42",
+              "java.util.TimSort.<clinit>:62"
+            ]
+          },
+          {
+            "id": "jdk-primitive-method:java.lang.Comparable.compareTo(Ljava/lang/Object;)I@jdk-21.0.13",
+            "kind": "jdk-primitive-method",
+            "call": "java.lang.Comparable.compareTo(java.lang.Object)",
+            "sites": [
+              "java.util.Arrays.mergeSort:1145",
+              "java.util.Arrays.mergeSort:1161",
+              "java.util.Arrays.mergeSort:1168",
+              "java.util.Collections$ReverseComparator.compare:5565",
+              "java.util.ComparableTimSort.binarySort:262",
+              "java.util.ComparableTimSort.countRunAndMakeAscending:320",
+              "java.util.ComparableTimSort.countRunAndMakeAscending:321",
+              "java.util.ComparableTimSort.countRunAndMakeAscending:325",
+              "java.util.ComparableTimSort.gallopLeft:513",
+              "java.util.ComparableTimSort.gallopLeft:516",
+              "java.util.ComparableTimSort.gallopLeft:531",
+              "java.util.ComparableTimSort.gallopLeft:556",
+              "java.util.ComparableTimSort.gallopRight:583",
+              "java.util.ComparableTimSort.gallopRight:586",
+              "java.util.ComparableTimSort.gallopRight:602",
+              "java.util.ComparableTimSort.gallopRight:626",
+              "java.util.ComparableTimSort.mergeHi:808",
+              "java.util.ComparableTimSort.mergeLo:688",
+              "java.util.Comparators$NaturalOrderComparator.compare:52"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.lang.String.format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.lang.String.format(java.lang.String, java.lang.Object[])",
+            "sites": [
+              "org.apache.commons.io.build.AbstractOrigin.unsupportedOperation:1396",
+              "org.apache.commons.io.build.AbstractStreamBuilder.throwIae:426"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.lang.reflect.Array.newInstance(Ljava/lang/Class;I)Ljava/lang/Object;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.lang.reflect.Array.newInstance(java.lang.Class, int)",
+            "sites": [
+              "java.util.TimSort.<init>:157",
+              "java.util.TimSort.ensureCapacity:933"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.nio.file.Files.newInputStream(Ljava/nio/file/Path;[Ljava/nio/file/OpenOption;)Ljava/io/InputStream;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.nio.file.Files.newInputStream(java.nio.file.Path, java.nio.file.OpenOption[])",
+            "sites": [
+              "org.apache.commons.io.build.AbstractOrigin.getInputStream:1299"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.Arrays.swap([Ljava/lang/Object;II)V@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.Arrays.swap(java.lang.Object[], int, int)",
+            "sites": [
+              "java.util.Arrays.mergeSort:1146",
+              "java.util.Arrays.mergeSort:1341"
+            ]
+          },
+          {
+            "id": "jdk-static-method:java.util.Collections.reverseOrder()Ljava/util/Comparator;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.util.Collections.reverseOrder()",
+            "sites": [
+              "java.util.Comparator.reverseOrder:343"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 3.8665,
+      "peakRssBytes": 81248256,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 3.8665,
+    "peakRssBytes": 81248256,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 3.869,
+  "missing": [],
+  "receipt": "receipts/explicit-mark-parent/20261120T195058Z-9cbb5e62/result.json",
+  "preparedClaim": "a7304b0f9eac64b2",
+  "firstBlocker": null,
+  "endedAt": "2026-11-20T19:51:02.840431+00:00"
+}

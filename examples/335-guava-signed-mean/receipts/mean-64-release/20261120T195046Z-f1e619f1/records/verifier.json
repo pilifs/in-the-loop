@@ -1,0 +1,381 @@
+{
+  "task": "mean-64-release",
+  "record": {
+    "kind": "verifier",
+    "revision": "release",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92673c7e0e044fbb29322fefd2ab3d4a6b7f501c/jvmcontract",
+      "prove",
+      "com.google.common.math.LongMath#mean(long, long)",
+      "--classes",
+      "prepare/release/lib/com.google.guava/guava-33.4.8-jre.jar",
+      "--assume",
+      "true",
+      "--assert",
+      "(result < 0L) == ((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) && result == (((x + y) >>> 1) | (((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) ? 0x8000000000000000L : 0L))",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "8",
+      "--timeout",
+      "90",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 0,
+    "seconds": 0.061,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "808e0655f897611ccc779592ebbbddfa1f3be5bad18d6fd51f68286ad1233147",
+      "commit": "73db36c75d87a311d3a62abbd8e6d159af101448",
+      "libTree": "92673c7e0e044fbb29322fefd2ab3d4a6b7f501c",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "timeout": 90,
+      "scope": {
+        "label": "original-bytecode",
+        "meaning": "the selected method's original bytecode, as published or built from the pinned source, called directly; the adapter and driver are not on the verifier's classpath",
+        "method": "com.google.common.math.LongMath#mean(JJ)J",
+        "revisions": {
+          "release": {
+            "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+            "loadedFrom": "lib/com.google.guava/guava-33.4.8-jre.jar",
+            "classSha256": "d93d609a08a60a6146ee9cfb4fd37fe9a3604e5cf88b8589dd961592764a201d",
+            "origin": "https://repo.maven.apache.org/maven2/com/google/guava/guava/33.4.8-jre/guava-33.4.8-jre.jar",
+            "parameters": {
+              "names": [
+                "x",
+                "y"
+              ],
+              "recordedIn": "MethodParameters"
+            }
+          }
+        },
+        "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "release": [
+          {
+            "path": "lib/com.google.guava/guava-33.4.8-jre.jar",
+            "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+            "role": "original"
+          }
+        ]
+      },
+      "checkedEntry": "com.google.common.math.LongMath#mean(JJ)J",
+      "entryBindings": {
+        "release": {
+          "entry": "com.google.common.math.LongMath#mean(JJ)J",
+          "classSha256": "d93d609a08a60a6146ee9cfb4fd37fe9a3604e5cf88b8589dd961592764a201d",
+          "loadedFrom": "lib/com.google.guava/guava-33.4.8-jre.jar",
+          "subject": "com.google.common.math.LongMath#mean(JJ)J",
+          "subjectClassSha256": "d93d609a08a60a6146ee9cfb4fd37fe9a3604e5cf88b8589dd961592764a201d"
+        }
+      },
+      "recipe": {
+        "kind": "direct-method",
+        "command": "prove",
+        "subject": "com.google.common.math.LongMath#mean(JJ)J",
+        "checkedEntry": "com.google.common.math.LongMath#mean(JJ)J",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "true"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "(result < 0L) == ((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) && result == (((x + y) >>> 1) | (((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) ? 0x8000000000000000L : 0L))"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "16"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "8"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+      },
+      "commits": {
+        "release": "f06690fa3e874f65515e8fd338a74d636e2c792f"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "release": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92673c7e0e044fbb29322fefd2ab3d4a6b7f501c/jvmcontract",
+            "gaps",
+            "--target",
+            "com.google.common.math.LongMath#mean(long, long)",
+            "--classes",
+            "prepare/release/lib/com.google.guava/guava-33.4.8-jre.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.032,
+          "stdout": "verifier/probe-release.stdout",
+          "stderr": "verifier/probe-release.stderr",
+          "gaps": []
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0545,
+        "peakRssBytes": 81014784,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "com.google.common.math.LongMath#mean(long, long)",
+        "domain": "x: long × y: long",
+        "assume": "true",
+        "assert": "(result < 0L) == ((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) && result == (((x + y) >>> 1) | (((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) ? 0x8000000000000000L : 0L))",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over x: long × y: long in 0.0 s; loops unwound 16 times with unwinding assertions",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [],
+        "output": "✓ com.google.common.math.LongMath#mean(long, long) satisfies `(result < 0L) == ((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) && result == (((x + y) >>> 1) | (((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) ? 0x8000000000000000L : 0L))` on every input where true (jvmcontract's own checker (CaDiCaL): 1 properties proved over x: long × y: long in 0.0 s; loops unwound 16 times with unwinding assertions)\n  not vacuous: mean(x=20, y=20) reaches the calls\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.027572135,
+          "properties": 1,
+          "unwind": 16,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 6,
+            "merges": 0,
+            "solver_calls": 19,
+            "solving_seconds": 0.015484183,
+            "gates_evaluated": 7475,
+            "evaluating_seconds": 0.000125788,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 1774,
+            "clauses": 5446,
+            "seconds": 0.025284639,
+            "loading_seconds": 0.000137268,
+            "decoding_seconds": 0.000238017,
+            "encoding_seconds": 0.002751646,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 90.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 90.0,
+              "seconds": 0.025,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.007,
+                "encoding": 0.003,
+                "solving": 0.015,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 1774,
+                "clauses": 5446
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 89.972,
+              "seconds": 0.006,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.005,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 390,
+                "clauses": 910
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.049,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.031,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.017
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "x",
+                "type": "long",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "y",
+                "type": "long",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "x: long × y: long"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "true",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against (result < 0L) == ((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) && result == (((x + y) >>> 1) | (((x < 0L) ^ (y < 0L) ^ (((x + y) ^ 0x8000000000000000L) < (x ^ 0x8000000000000000L))) ? 0x8000000000000000L : 0L))",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 16,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found mean(x=20, y=20).",
+            "witness": "mean(x=20, y=20)"
+          }
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261120-193914-335-recheck-both-full-width-signed-means/.build-py/examples-hm9vurx8/targets/335/mean-64-release/20261120T195046Z-f1e619f1",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261120-193914-335-recheck-both-full-width-signed-means/.build-py/examples-hm9vurx8/targets/335/mean-64-release/20261120T195046Z-f1e619f1"
+  }
+}

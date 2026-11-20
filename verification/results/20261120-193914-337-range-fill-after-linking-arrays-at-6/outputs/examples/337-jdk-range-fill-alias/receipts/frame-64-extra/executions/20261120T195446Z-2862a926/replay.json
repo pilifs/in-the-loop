@@ -1,0 +1,63 @@
+[
+  {
+    "claimKey": "fffda11b80d4522b",
+    "entry": "fill.Range#apply([I[IIII)I",
+    "inputs": [
+      {
+        "name": "a",
+        "type": "int[]",
+        "value": [
+          1
+        ]
+      },
+      {
+        "name": "other",
+        "type": "int[]",
+        "value": []
+      },
+      {
+        "name": "from",
+        "type": "int",
+        "value": 0
+      },
+      {
+        "name": "to",
+        "type": "int",
+        "value": 0
+      },
+      {
+        "name": "value",
+        "type": "int",
+        "value": 0
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "extra": {
+        "entryClassSha256": "b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe",
+        "classpath": [
+          "42aed2685824c3275dd18e76e419f21c7407f87b264dd0fda2b46ebdc4614190"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint[] a = new int[]{1};\nint[] other = new int[]{};\nint from = 0;\nint to = 0;\nint value = 0;\nif (!(0 <= from && from <= to && to <= a.length)) { System.out.println(\"outside\"); return; }\nint[] originalArray0 = a == null ? null : a.clone();\nint[] originalArray1 = other == null ? null : other.clone();\nint returnedValue = 0;\nThrowable failure = null;\ntry { returnedValue = fill.Range.apply(a, other, from, to, value); } catch (Throwable t) { failure = t; }\nfinal int result = returnedValue;\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (((java.util.function.BooleanSupplier) () -> { for (int i = 0; i < a.length; i++) { if (!( a[i] == (from <= i && i < to ? value : originalArray0[i]))) return false; } return true; }).getAsBoolean() && ((java.util.function.BooleanSupplier) () -> { for (int i = 0; i < other.length; i++) { if (!( other[i] == (a == other && from <= i && i < to ? value : originalArray1[i]))) return false; } return true; }).getAsBoolean()));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          1,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  }
+]

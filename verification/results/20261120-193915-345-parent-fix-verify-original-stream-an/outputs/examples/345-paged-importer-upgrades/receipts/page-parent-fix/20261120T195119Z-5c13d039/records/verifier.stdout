@@ -1,0 +1,164 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "importer.Projection#page(int)",
+    "domain": "code: int",
+    "assume": "code >= 0 && code < 96",
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.InputStreamReader.<init>(Ljava/io/InputStream;Ljava/nio/charset/Charset;)V@jdk-21.0.13 (java.io.InputStreamReader.<init>(java.io.InputStream, java.nio.charset.Charset) at importer.PageImporter.page:46). With --gaps assume it assumes instead that java.io.InputStreamReader.<init>(java.io.InputStream, java.nio.charset.Charset) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "importer.Projection#page(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.InputStreamReader.<init>(Ljava/io/InputStream;Ljava/nio/charset/Charset;)V@jdk-21.0.13 (java.io.InputStreamReader.<init>(java.io.InputStream, java.nio.charset.Charset) at importer.PageImporter.page:46). With --gaps assume it assumes instead that java.io.InputStreamReader.<init>(java.io.InputStream, java.nio.charset.Charset) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+        "uri": null,
+        "line": 48
+      }
+    ],
+    "output": "✗ importer.Projection#page(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.InputStreamReader.<init>(Ljava/io/InputStream;Ljava/nio/charset/Charset;)V@jdk-21.0.13 (java.io.InputStreamReader.<init>(java.io.InputStream, java.nio.charset.Charset) at importer.PageImporter.page:46). With --gaps assume it assumes instead that java.io.InputStreamReader.<init>(java.io.InputStream, java.nio.charset.Charset) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 1.103950547,
+      "properties": 1,
+      "unwind": 96,
+      "max_array_length": 96,
+      "stage": null,
+      "native": {
+        "paths": 533,
+        "merges": 16,
+        "solver_calls": 655,
+        "solving_seconds": 0.021987985,
+        "gates_evaluated": 721,
+        "evaluating_seconds": 0.000169277,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 1403,
+        "clauses": 555,
+        "seconds": 1.100414361,
+        "loading_seconds": 0.005660012,
+        "decoding_seconds": 0.001072796,
+        "encoding_seconds": 0.054055351,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "jdk-constructor:java.io.InputStreamReader.<init>(Ljava/io/InputStream;Ljava/nio/charset/Charset;)V@jdk-21.0.13",
+          "kind": "jdk-constructor",
+          "call": "java.io.InputStreamReader.<init>(java.io.InputStream, java.nio.charset.Charset)",
+          "sites": [
+            "importer.PageImporter.page:46"
+          ],
+          "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 90.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 90.0,
+          "seconds": 1.1,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.006,
+            "lowering": 0.001,
+            "symbolic": 1.018,
+            "encoding": 0.054,
+            "solving": 0.022,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 1403,
+            "clauses": 555
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 1.117,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 1.1,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.016
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 96",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 96,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

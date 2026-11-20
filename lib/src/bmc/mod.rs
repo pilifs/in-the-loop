@@ -2960,21 +2960,29 @@ impl<'a> Engine<'a> {
                 if self.there_before(path, o) {
                     self.reads(path, || "reads an array that was there before the call".into())?;
                 }
-                let array = path.objects[o].array.clone().expect("an array");
+                let array = path.objects[o].array.as_ref().expect("an array");
                 check_kind(*kind, &array.element)?;
                 let width = cell_width(&array.element);
                 self.index_used(path, o, &index);
                 // Past a summarized loop a computed index into a large array is not followed ([`loops`]).
-                let loose = path.objects[o].unknown || (path.loose && array.cells.len() > loops::LOOSE_CELLS && self.b.constant_value(&index).is_none());
-                let mut value = if loose { self.loose_read(path, o, &index, width) } else { array.cells.last().cloned().unwrap_or_else(|| self.b.constant(0, width)) };
-                for (i, cell) in array.cells.iter().enumerate().rev().skip(1) {
-                    if loose {
-                        break;
+                let constant = self.b.constant_value(&index);
+                let loose = path.objects[o].unknown || (path.loose && array.cells.len() > loops::LOOSE_CELLS && constant.is_none());
+                let value = if loose {
+                    self.loose_read(path, o, &index, width)
+                } else if let Some(i) = constant {
+                    let Some(cell) = usize::try_from(i).ok().and_then(|i| array.cells.get(i)) else {
+                        return self.raise(path, "java/lang/ArrayIndexOutOfBoundsException");
+                    };
+                    cell.clone()
+                } else {
+                    let mut value = array.cells.last().cloned().unwrap_or_else(|| self.b.constant(0, width));
+                    for (i, cell) in array.cells.iter().enumerate().rev().skip(1) {
+                        let here = self.b.constant(i as i64, 32);
+                        let is = self.b.eq(&index, &here);
+                        value = self.b.ite_bits(is, cell, &value);
                     }
-                    let here = self.b.constant(i as i64, 32);
-                    let is = self.b.eq(&index, &here);
-                    value = self.b.ite_bits(is, cell, &value);
-                }
+                    value
+                };
                 let value = self.b.extend_cell(&array.element, &value);
                 let value = if array.element.slots() == 2 { Val::J(value) } else { Val::I(value) };
                 let in_bounds = self.b.ult(&index, &array.length);
@@ -3002,6 +3010,9 @@ impl<'a> Engine<'a> {
                 if value.len() < width {
                     return unsupported("a store of a narrower value into an array");
                 }
+                if !path.objects[o].unknown && self.b.constant_value(&index).is_some_and(|i| i < 0 || i as usize >= array.cells.len()) {
+                    return self.raise(path, "java/lang/ArrayIndexOutOfBoundsException");
+                }
                 let stored = self.b.trunc(&value, width);
                 let length = array.length.clone();
                 self.index_used(path, o, &index);
@@ -3020,10 +3031,15 @@ impl<'a> Engine<'a> {
                         return;
                     }
                     let cells = &mut path.objects[o].array.as_mut().expect("an array").cells;
-                    for (i, cell) in cells.iter_mut().enumerate() {
-                        let here = engine.b.constant(i as i64, 32);
-                        let is = engine.b.eq(&index, &here);
-                        *cell = engine.b.ite_bits(is, &stored, cell);
+                    if let Some(i) = engine.b.constant_value(&index) {
+                        // This branch is reached only for an in-bounds index.
+                        cells[i as usize] = stored;
+                    } else {
+                        for (i, cell) in cells.iter_mut().enumerate() {
+                            let here = engine.b.constant(i as i64, 32);
+                            let is = engine.b.eq(&index, &here);
+                            *cell = engine.b.ite_bits(is, &stored, cell);
+                        }
                     }
                     engine.advance(path);
                 })
