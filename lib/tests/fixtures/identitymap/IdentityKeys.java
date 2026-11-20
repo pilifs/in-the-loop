@@ -14,6 +14,8 @@ public final class IdentityKeys {
         Key second = n == 0 ? first : new Key();
         Map<Key, Boolean> map = new IdentityHashMap<>();
         Boolean marker = Boolean.valueOf(n != 0);
+        Object erased = marker;
+        if (erased.equals(null) || erased.equals(first) || erased.equals(Boolean.TRUE) != (n != 0)) return -1;
         map.put(first, marker);
         Boolean before = map.put(second, Boolean.FALSE);
         map.put(null, null);

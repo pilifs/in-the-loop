@@ -179,12 +179,16 @@ pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     )
 }
 
+fn canonical_truth(path: &Path, object: usize) -> Option<bool> {
+    [true, false].into_iter().find(|v| path.literals.get(&Literal::Truth(*v)) == Some(&object))
+}
+
 /// Whether the engine models the instance call here, on a class literal, or `getClass()` on an object it made.
 pub fn models_instance(owner: &str, name: &str, descriptor: &str) -> bool {
     if matches!((owner, name, descriptor), ("java/lang/Integer" | "java/lang/Number", "intValue", "()I")) { return true; }
     matches!(
         (owner, name, descriptor),
-        (BOOLEAN, "booleanValue", "()Z") | (CLASS, "getName" | "getTypeName", "()Ljava/lang/String;")
+        (BOOLEAN, "booleanValue", "()Z") | (BOOLEAN, "equals", "(Ljava/lang/Object;)Z") | (CLASS, "getName" | "getTypeName", "()Ljava/lang/String;")
             | (CLASS, "isArray", "()Z")
             | (CLASS, "getSuperclass", "()Ljava/lang/Class;")
             | (CLASS, "getClassLoader", "()Ljava/lang/ClassLoader;")
@@ -209,6 +213,23 @@ pub fn capacity_constructor(owner: &str, descriptor: &str) -> bool {
 }
 
 impl Engine<'_> {
+    /// Boolean.equals also dispatches here when the invocation names Object.equals.
+    /// Untracked Boolean receivers or arguments still require their own evidence.
+    pub(super) fn boolean_equals(&mut self, path: &mut Path, receiver: usize, args: &[Val]) -> Option<Step> {
+        let truth = canonical_truth(path, receiver)?;
+        let [Val::R(other)] = args else { return None };
+        let equal = match *other {
+            None => false,
+            Some(o) if o == receiver => true,
+            Some(o) if path.objects[o].assumed => return None,
+            Some(o) if path.objects[o].class != BOOLEAN => false,
+            Some(o) => canonical_truth(path, o)? == truth,
+        };
+        self.push(path, Val::I(self.b.constant(i64::from(equal), 32)));
+        self.advance(path);
+        Some(Ok(None))
+    }
+
     /// The class a class literal's object names, by its internal name.
     fn class_named(&self, path: &Path, o: usize) -> Option<String> {
         path.literals.iter().find_map(|(l, &at)| match l {
@@ -229,7 +250,7 @@ impl Engine<'_> {
     /// notes. `None` where the call stays the JDK's.
     pub(super) fn class_method(&mut self, path: &mut Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Option<Step> {
         if (owner, name, descriptor) == (BOOLEAN, "booleanValue", "()Z") {
-            let truth = [true, false].into_iter().find(|v| path.literals.get(&Literal::Truth(*v)) == Some(&o))?;
+            let truth = canonical_truth(path, o)?;
             self.push(path, Val::I(self.b.constant(i64::from(truth), 32)));
             self.advance(path);
             return Some(Ok(None));

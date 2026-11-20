@@ -2,7 +2,7 @@
 //! opcode or a method descriptor supplies its interpretation. Integer widening and comparisons are
 //! bit-vector circuits. Arithmetic uses the JVM rounding rules on exhaustively covered operand tuples.
 
-use super::{unsupported, ArithOp, Bits, Blaster, Engine, Kind, Lit, Narrow, Path, Step, Stop, Val, FALSE, TRUE};
+use super::{unsupported, ArithOp, Bits, Blaster, Engine, Kind, Lit, Model, Narrow, Path, Step, Stop, Val, FALSE, TRUE};
 use crate::interp::Value;
 
 fn fraction_width(bits: &Bits) -> usize {
@@ -56,7 +56,8 @@ pub(super) fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
         | ("java/lang/Float", "intBitsToFloat", "(I)F")
         | ("java/lang/Math" | "java/lang/StrictMath", "min" | "max", "(DD)D" | "(FF)F")
         | ("java/lang/Math" | "java/lang/StrictMath", "abs", "(D)D" | "(F)F")
-        | ("java/lang/Math" | "java/lang/StrictMath", "sqrt", "(D)D"))
+        | ("java/lang/Math" | "java/lang/StrictMath", "sqrt" | "floor" | "ceil" | "sin" | "cos", "(D)D")
+        | ("java/lang/Math" | "java/lang/StrictMath", "atan2", "(DD)D"))
 }
 
 impl Engine<'_> {
@@ -80,7 +81,7 @@ impl Engine<'_> {
         Ok(())
     }
 
-    pub(super) fn floating_static(&mut self, path: &mut Path, name: &str, args: &[Val]) -> Step {
+    pub(super) fn floating_static(&mut self, path: &mut Path, owner: &str, name: &str, args: &[Val]) -> Step {
         let Some(Val::I(x) | Val::J(x)) = args.first() else { return unsupported("a floating-point call without its operand") };
         let x_nan = nan(&mut self.b, x);
         let result = match name {
@@ -96,8 +97,10 @@ impl Engine<'_> {
                 *bits.last_mut().expect("a sign bit") = FALSE;
                 bits
             }
-            "sqrt" => self.finite_operation(path, "double sqrt", [x], 64, |[value]| {
-                result_bits(Value::Double(f64::from_bits(value as u64).sqrt()))
+            "sqrt" | "floor" | "ceil" => self.finite_operation(path, name, [x], 64, |[raw]| {
+                let value = f64::from_bits(raw as u64);
+                let result = match name { "floor" => value.floor(), "ceil" => value.ceil(), _ => value.sqrt() };
+                result_bits(Value::Double(result))
             })?,
             "doubleToLongBits" | "floatToIntBits" => {
                 let value = if x.len() == 64 { 0x7ff8_0000_0000_0000 } else { 0x7fc0_0000 };
@@ -107,6 +110,37 @@ impl Engine<'_> {
                 let signaling = self.b.and(x_nan, -x[fraction_width(x) - 1]);
                 self.exclude_float_case(path, signaling, "raw floating-point conversion of a possible signaling NaN")?;
                 x.clone()
+            }
+            "sin" | "cos" => {
+                let zero = self.b.is_zero(&self.b.trunc(x, 63));
+                if zero != TRUE {
+                    let mut outside = path.cond.clone();
+                    outside.push(-zero);
+                    if self.solve(&outside)? {
+                        let mut model = self.b.snapshot();
+                        let bits = raw_in_model(&mut self.b, &mut model, x) as u64;
+                        return unsupported(format!("{}.{name}(D)D beyond signed zero, reachable argument 0x{bits:016x}", owner.replace('/', ".")));
+                    }
+                }
+                if name == "sin" { x.clone() } else { self.b.constant(1.0f64.to_bits() as i64, 64) }
+            }
+            "atan2" => {
+                // Java fixes the angle exactly on each nonzero axis. Math.atan2 can be a
+                // VM intrinsic off the axes, with an implementation-dependent rounding.
+                let Some(Val::J(abscissa)) = args.get(1) else { return unsupported("atan2 without the abscissa") };
+                let y_zero = self.b.is_zero(&self.b.trunc(x, 63));
+                let x_zero = self.b.is_zero(&self.b.trunc(abscissa, 63));
+                let one_zero = self.b.xor(x_zero, y_zero);
+                let abscissa_nan = nan(&mut self.b, abscissa);
+                let either_nan = self.b.or(x_nan, abscissa_nan);
+                let outside = self.b.or(-one_zero, either_nan);
+                self.exclude_float_case(path, outside, "Math.atan2 outside its exact nonzero-axis cases")?;
+                let pi = self.b.constant(std::f64::consts::PI.to_bits() as i64, 64);
+                let half_pi = self.b.constant(std::f64::consts::FRAC_PI_2.to_bits() as i64, 64);
+                let horizontal = self.b.ite_bits(self.b.negative(abscissa), &pi, &self.b.constant(0, 64));
+                let mut bits = self.b.ite_bits(x_zero, &half_pi, &horizontal);
+                bits[63] = self.b.negative(x);
+                bits
             }
             "max" | "min" => {
                 let Some(Val::I(y) | Val::J(y)) = args.get(1) else { return unsupported("floating-point extrema without the second operand") };
@@ -138,6 +172,14 @@ fn int_to_double(b: &mut Blaster, x: &Bits) -> Bits {
     }
     word[63] = sign;
     word
+}
+
+fn raw_in_model(b: &mut Blaster, model: &mut Model, word: &Bits) -> i64 {
+    let mut raw = 0u64;
+    for (bit, &literal) in word.iter().enumerate() {
+        raw |= u64::from(b.holds(model, literal)) << bit;
+    }
+    raw as i64
 }
 
 fn value_of(kind: Kind, raw: i64) -> Value {
@@ -184,13 +226,7 @@ impl Engine<'_> {
                 return unsupported(format!("{operation} with more than {MAX_TUPLES} reachable operand tuples"));
             }
             let mut model = self.b.snapshot();
-            let values = operands.map(|word| {
-                let mut raw = 0u64;
-                for (bit, &literal) in word.iter().enumerate() {
-                    raw |= u64::from(self.b.holds(&mut model, literal)) << bit;
-                }
-                raw as i64
-            });
+            let values = operands.map(|word| raw_in_model(&mut self.b, &mut model, word));
             let mut selected = TRUE;
             for (word, value) in operands.iter().zip(values) {
                 let equal = self.b.eq(word, &self.b.constant(value, word.len()));

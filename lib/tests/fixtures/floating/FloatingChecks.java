@@ -55,6 +55,41 @@ public class FloatingChecks {
         return Double.doubleToRawLongBits(y) == expected && Math.abs(y) >= 0.0 ? 1 : 0;
     }
 
+    public static boolean zeroAngle(int n) {
+        double x = n == 0 ? -0.0 : n == 1 ? +0.0 : 1.0;
+        return Double.doubleToRawLongBits(Math.sin(x)) == Double.doubleToRawLongBits(x) && Math.cos(x) == 1.0;
+    }
+
+    public static boolean integralPart(int n) {
+        double[] x = {-0.0, -0.25, 0.25, Double.POSITIVE_INFINITY};
+        double[] down = {-0.0, -1.0, +0.0, Double.POSITIVE_INFINITY};
+        double[] up = {-0.0, -0.0, 1.0, Double.POSITIVE_INFINITY};
+        return Double.doubleToRawLongBits(Math.floor(x[n])) == Double.doubleToRawLongBits(down[n])
+            && Double.doubleToRawLongBits(Math.ceil(x[n])) == Double.doubleToRawLongBits(up[n]);
+    }
+
+    public static boolean axes(int n) {
+        double[] y = {0.0, -0.0, 0.0, -0.0, 1.0, -1.0};
+        double[] x = {1.0, 1.0, -1.0, -1.0, -0.0, +0.0};
+        double[] answer = {0.0, -0.0, Math.PI, -Math.PI, Math.PI / 2, -Math.PI / 2};
+        return Double.doubleToRawLongBits(Math.atan2(y[n], x[n])) == Double.doubleToRawLongBits(answer[n]);
+    }
+
+    public static boolean diagonalAngle(int n) { return Math.atan2(1.0, n) > 0.0; }
+
+    public static boolean hypot(int n) {
+        double[] a = {-0.0, 3.0, 0x1.8p701, 0x1.8p-699, Double.MIN_VALUE};
+        double[] b = {-0.0, 4.0, 0x1.0p702, 0x1.0p-698, 0.0};
+        double[] expected = {0.0, 5.0, 0x1.4p702, 0x1.4p-698, Double.MIN_VALUE};
+        return Double.doubleToRawLongBits(Math.hypot(a[n], b[n])) == Double.doubleToRawLongBits(expected[n]);
+    }
+
+    public static boolean naiveHypot(int n) {
+        double a = n == 0 ? 3.0 : 0x1.8p701;
+        double b = n == 0 ? 4.0 : 0x1.0p702;
+        return Math.hypot(a, b) == Math.sqrt(a * a + b * b);
+    }
+
     public static boolean boundaries(int n) {
         double[] values = {-0.0, -Double.MIN_VALUE, Double.MAX_VALUE, Double.NaN};
         double x = values[n];
@@ -92,8 +127,12 @@ public class FloatingChecks {
 
     public static void main(String[] args) {
         for (int n = 0; n < 81; n++) if (order(n) != 1) throw new AssertionError(n);
+        for (int n = 0; n < 6; n++) if (!axes(n)) throw new AssertionError(n);
+        for (int n = 0; n < 5; n++) if (!hypot(n)) throw new AssertionError(n);
+        if (!zeroAngle(0) || !zeroAngle(1) || zeroAngle(2)) throw new AssertionError();
+        if (!naiveHypot(0) || naiveHypot(1)) throw new AssertionError();
         for (int n = 0; n < 3; n++) if (root(n) != 1) throw new AssertionError(n);
-        for (int n = 0; n < 4; n++) if (rounded(n) != 1 || !boundaries(n)) throw new AssertionError(n);
+        for (int n = 0; n < 4; n++) if (rounded(n) != 1 || !boundaries(n) || !integralPart(n)) throw new AssertionError(n);
         for (int n = 0; n <= 64; n++) if (correlated(n) != n * (n + 1)) throw new AssertionError(n);
         for (int n : new int[]{Integer.MIN_VALUE, -1, 0, 1, Integer.MAX_VALUE})
             if (!wideningSign(n) || !rotated(n)) throw new AssertionError(n);

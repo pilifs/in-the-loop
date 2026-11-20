@@ -519,11 +519,16 @@ impl ClassPath {
         })
     }
 
-    /// Numeric factories and constructors taken from the selected JDK image. Allocation outside
-    /// a wrapper's mandatory cache follows its actual bytecode, including any other cache read.
-    pub(crate) fn numeric_factory_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
+    /// Numeric code executed from the selected JDK image. Factories follow their actual
+    /// allocation and cache branches. The hypot implementation includes the FdLibm helpers
+    /// the selected image calls. An additional helper can produce a named refusal.
+    pub(crate) fn numeric_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
         if !matches!((owner, name, descriptor),
-            ("java/math/BigInteger", "valueOf", "(J)Ljava/math/BigInteger;")
+            ("java/lang/Math" | "java/lang/StrictMath", "hypot", "(DD)D")
+            | ("java/lang/FdLibm$Hypot", "compute", "(DD)D")
+            | ("java/lang/FdLibm", "__HI" | "__LO", "(D)I" | "(DI)D")
+            | ("java/lang/Math", "powerOfTwoD" | "primPowerOfTwoD", "(I)D")
+            | ("java/math/BigInteger", "valueOf", "(J)Ljava/math/BigInteger;")
             | ("java/math/BigInteger", "<init>", "(J)V")
             | ("java/math/BigInteger", "toMagArray", "(J)[I")
             | ("java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;")
@@ -540,7 +545,21 @@ impl ClassPath {
         let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
         let method = class.method(name, descriptor)?.clone();
         method.code.as_ref()?;
+        if matches!(owner, "java/lang/Math" | "java/lang/StrictMath" | "java/lang/FdLibm" | "java/lang/FdLibm$Hypot")
+            && method.annotations(&class.pool).ok()?.iter().any(|a| matches!(a.type_name.rsplit('/').next(), Some("IntrinsicCandidate" | "HotSpotIntrinsicCandidate"))) {
+            return None;
+        }
         Some((class, method))
+    }
+
+    /// The compiler-generated assertion switch read by these image methods. Both possible values
+    /// can be checked without relying on the JVM launcher having enabled or disabled assertions.
+    pub(crate) fn numeric_assertion_flag(&self, owner: &str, name: &str, descriptor: &str) -> bool {
+        if name != "$assertionsDisabled" || descriptor != "Z" || !matches!(owner, "java/lang/Math" | "java/lang/FdLibm$Hypot") {
+            return false;
+        }
+        let Ok(Some(Loaded { class, origin: Origin::Jdk })) = self.load(owner) else { return false };
+        class.field(name).is_some_and(|f| f.descriptor == "Z" && f.is_static() && f.is_final() && f.access & crate::classfile::flags::SYNTHETIC != 0)
     }
 
     /// Whether the tool's own checker runs the instance methods of the class as bytecode: an application class's,

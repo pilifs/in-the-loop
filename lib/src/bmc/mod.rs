@@ -64,6 +64,7 @@
 //! | `invokestatic` of `Math`/`StrictMath`/`Integer`/`Long`/`Boolean` operations ([`models_jdk_static`]) | modelled in [`Engine::call_jdk_static`], each as its Javadoc specifies, exceptions included |
 //! | `invokestatic` of `Objects.requireNonNull(Object)` and `(Object, String)`, and of `Pattern.compile(String)` ([`models_jdk_reference_static`]) | modelled in [`Engine::call_jdk_static`]: `requireNonNull` returns its argument or throws `NullPointerException`; `compile` throws it for null, returns a new `Pattern` with no content (its methods the JDK calls they name) for a constant regular expression of the plain form ([`crate::jdk_facts::plain_regex`]), which the JDK compiles whatever it is, and is the gap `jdk-static-method` for any other |
 //! | `invokestatic` of `String.valueOf(Object)` | the argument itself for a String, the interned `"null"` for null; for any other object the gap `jdk-static-method` (the object's `toString()`), which the scan names wherever the call is |
+//! | `Math.hypot(double, double)` and `StrictMath.hypot` on a JDK image | runs the selected image's bytecode, including the FdLibm scaling and high-word helpers. Its synthetic assertion flags cover both settings. Floor and ceiling use bounded operand coverage. `atan2` is exact on nonzero axes, preserving signed zero and quadrant. |
 //! | `invokestatic` of `BigInteger.valueOf(long)` with a JDK image | runs the selected JDK's factory and allocation bytecode, including the constructors and the magnitude array. A path reading an initialized JDK cache field stops at that field. Without the image the factory is a `jdk-static-method` gap |
 //! | `invokestatic` of any other JDK method over integers, booleans, arrays and objects ([`gaps::jdk_static_call`]) | gap: `jdk-static-method`, with no assume form |
 //! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
@@ -3827,6 +3828,16 @@ impl<'a> Engine<'a> {
             Insn::GetStatic(index) => {
                 let member = class.pool.member(index).map_err(|e| Stop::Unsupported(e.to_string()))?;
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
+                if self.cp.numeric_assertion_flag(&declaring, &member.name, &member.descriptor) {
+                    let key = (declaring, member.name);
+                    let flag = path.statics.entry(key).or_insert_with(|| {
+                        let bit = self.b.var();
+                        Val::I(self.b.zext(&vec![bit], 32))
+                    }).clone();
+                    self.push(path, flag);
+                    self.advance(path);
+                    return Ok(None);
+                }
                 // The JDK's UTF-8 and US-ASCII charsets are each one object ([`bytes`]).
                 if let Some(name) = bytes::charset_constant(&declaring, &member.name) {
                     let charset = self.literal(path, Literal::Charset(name), bytes::CHARSET);
@@ -4748,7 +4759,7 @@ impl<'a> Engine<'a> {
                 return self.call(path, crate::gap_contracts::CLASS, &method, &stub, args);
             }
         }
-        if self.cp.numeric_factory_method(&member.owner, &member.name, &member.descriptor).is_some() {
+        if self.cp.numeric_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
             if let Some(class) = runtime::cached_wrapper(&member.owner, &member.name, &member.descriptor) {
                 if let [Val::I(word) | Val::J(word)] = args.as_slice() {
                     if let Some(n) = self.b.constant_value(word).and_then(|v| i8::try_from(v).ok()) {
@@ -4923,8 +4934,11 @@ impl<'a> Engine<'a> {
         let unmodelled = gaps::unmodelled_instance_call(self.cp, &member.owner, &member.name, &member.descriptor);
         let contracted = matches!(&unmodelled, JdkCall::Gap(kind) if self.contracts.contains_key(&Gap { kind: *kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() }));
         if !contracted {
+            if !special && path.objects[o].class == runtime::BOOLEAN && member.name == "equals" && member.descriptor == "(Ljava/lang/Object;)Z" {
+                if let Some(step) = self.boolean_equals(path, o, &args) { return step; }
+            }
             if special && member.name == "<init>"
-                && self.cp.numeric_factory_method(&member.owner, &member.name, &member.descriptor).is_some() {
+                && self.cp.numeric_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
                 let mut full = vec![Val::R(Some(o))];
                 full.extend(args);
                 return self.call(path, &member.owner, &member.name, &member.descriptor, full);
@@ -5083,7 +5097,7 @@ impl<'a> Engine<'a> {
     /// Enters a bytecode method with the arguments in its locals.
     fn call(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, args: Vec<Val>) -> Step {
         let (cf, m) = self.cp.checker_method(owner, name, descriptor)
-            .or_else(|| self.cp.numeric_factory_method(owner, name, descriptor))
+            .or_else(|| self.cp.numeric_image_method(owner, name, descriptor))
             .ok_or_else(|| Stop::Unsupported(format!("method not found: {}.{name}{descriptor}", owner.replace('/', "."))))?;
         if m.is_abstract() {
             return unsupported(format!("{}.{name} is abstract", cf.name.replace('/', ".")));
@@ -5450,7 +5464,7 @@ impl<'a> Engine<'a> {
     /// of the integer wrappers, and their `numberOfLeadingZeros`. [`models_jdk_static`] lists the same arms, for the gap scan.
     fn call_jdk_static(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, parsed: &MethodDescriptor, args: Vec<Val>) -> Step {
         if floating::models_static(owner, name, descriptor) {
-            return self.floating_static(path, name, &args);
+            return self.floating_static(path, owner, name, &args);
         }
         // The JVM's own objects ([`runtime`]): a class by name, a logger. Where the arguments are not ones it
         // answers for, the call is the gap it was.

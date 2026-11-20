@@ -1086,6 +1086,7 @@ impl<'a> Walker<'a> {
     /// ([`super::Engine::get_static`]). Initializes the class that declares the field.
     fn static_field(&mut self, owner: &str, name: &str, descriptor: &str, put: bool, site: &Site) {
         let declaring = self.cp.resolve_field(owner, name, descriptor).unwrap_or_else(|| owner.to_string());
+        if !put && self.cp.numeric_assertion_flag(&declaring, name, descriptor) { return; }
         let what = format!("{}.{name}", declaring.replace('/', "."));
         let constant = !put && self.constant(&declaring, name);
         if !self.cp.checker_statics(&declaring) {
@@ -1102,7 +1103,7 @@ impl<'a> Walker<'a> {
 
     fn walk(&mut self, owner: &str, name: &str, descriptor: &str) -> Result<(), Error> {
         let Some((cf, m)) = self.cp.checker_method(owner, name, descriptor)
-            .or_else(|| self.cp.numeric_factory_method(owner, name, descriptor)) else { return Ok(()) };
+            .or_else(|| self.cp.numeric_image_method(owner, name, descriptor)) else { return Ok(()) };
         let label = format!("{}.{name}{descriptor}", cf.name.replace('/', "."));
         if !self.scan.methods.insert(label) {
             return Ok(());
@@ -1165,7 +1166,7 @@ impl<'a> Walker<'a> {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
                     } else if self.cp.model(&member.owner).is_some() && self.cp.bytecode_method(&member.owner, &member.name, &member.descriptor).is_some_and(|(_, m)| m.code.is_some()) {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
-                    } else if self.cp.numeric_factory_method(&member.owner, &member.name, &member.descriptor).is_some() {
+                    } else if self.cp.numeric_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
                         // A class initializer can call the factory on an input for which it reads no cached
                         // object. Execution checks the path it takes. The full scan lists all possible reads.
                         if !self.deciding {
@@ -1196,7 +1197,7 @@ impl<'a> Walker<'a> {
                     let member = cf.pool.member(index).map_err(|e| Error::new(e.to_string()))?;
                     let special = matches!(insn, Insn::InvokeSpecial(_));
                     if special && member.name == "<init>"
-                        && self.cp.numeric_factory_method(&member.owner, &member.name, &member.descriptor).is_some() {
+                        && self.cp.numeric_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
                         self.enqueue(&member.owner, &member.name, &member.descriptor);
                         continue;
                     }
@@ -1270,7 +1271,7 @@ mod tests {
         assert_eq!(jdk_static_call("java/util/Arrays", "fill", "([II)V"), JdkCall::Gap(GapKind::JdkStaticMethod));
         assert_eq!(jdk_static_call("java/lang/Math", "addExact", "(II)I"), JdkCall::Exact);
         assert_eq!(jdk_static_call("java/lang/Math", "sqrt", "(D)D"), JdkCall::Exact);
-        assert_eq!(jdk_static_call("java/lang/Math", "sin", "(D)D"), JdkCall::Refused);
+        assert_eq!(jdk_static_call("java/lang/Math", "exp", "(D)D"), JdkCall::Refused);
         assert_eq!(jdk_static_call("java/util/Arrays", "copyOfRange", "([III)[I"), JdkCall::Refused);
         assert_eq!(jdk_static_call("java/util/Arrays", "copyOf", "([II)[I"), JdkCall::Exact);
         let cp = ClassPath::new().with_default_jdk();

@@ -573,9 +573,11 @@ fn native_ieee_comparisons_and_raw_words_agree_with_the_jvm() {
     jvmcontract::tool_tier!();
     let source = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/floating/FloatingChecks.java");
     let Some(classes) = compile("ieee-comparisons", &[source]) else { return };
-    let direct = Command::new("java").arg("-cp").arg(&classes).arg("fixtures.FloatingChecks").output().unwrap();
-    assert!(direct.status.success(), "{}", String::from_utf8_lossy(&direct.stderr));
-    assert_eq!(String::from_utf8_lossy(&direct.stdout).trim(), "1 2 3 1 2");
+    for system_assertions in ["-dsa", "-esa"] {
+        let direct = Command::new("java").arg(system_assertions).arg("-cp").arg(&classes).arg("fixtures.FloatingChecks").output().unwrap();
+        assert!(direct.status.success(), "{}", String::from_utf8_lossy(&direct.stderr));
+        assert_eq!(String::from_utf8_lossy(&direct.stdout).trim(), "1 2 3 1 2");
+    }
     for (method, guard, assertion, expected) in [
         ("order", "n >= 0 && n < 81", "result == 1", Verdict::Verified),
         ("zeroBits", "n >= 0 && n < 2", "result == n + 1", Verdict::Verified),
@@ -584,6 +586,13 @@ fn native_ieee_comparisons_and_raw_words_agree_with_the_jvm() {
         ("signaling", "n == 2139095041", "result == n", Verdict::Unverifiable),
         ("bucket", "n >= 2 && n <= 7", "result == (n < 4 ? 2 : 4)", Verdict::Verified),
         ("bucket", "n >= 2 && n <= 7", "result == 2", Verdict::Violation),
+        ("zeroAngle", "n >= 0 && n < 2", "result", Verdict::Verified),
+        ("zeroAngle", "n == 2", "result", Verdict::Unverifiable),
+        ("integralPart", "n >= 0 && n < 4", "result", Verdict::Verified),
+        ("axes", "n >= 0 && n < 6", "result", Verdict::Verified),
+        ("diagonalAngle", "n == 1", "result", Verdict::Unverifiable),
+        ("hypot", "n >= 0 && n < 5", "result", Verdict::Verified),
+        ("naiveHypot", "n >= 0 && n < 2", "result", Verdict::Violation),
         ("root", "n >= 0 && n < 3", "result == 1", Verdict::Verified),
         ("boundaries", "n >= 0 && n < 4", "result", Verdict::Verified),
         ("rounded", "n >= 0 && n < 4", "result == 1", Verdict::Verified),
@@ -599,7 +608,12 @@ fn native_ieee_comparisons_and_raw_words_agree_with_the_jvm() {
         let result = property::run(&options).unwrap();
         assert_eq!(result.verdict, expected, "{method}: {}", result.output);
         if expected == Verdict::Unverifiable {
-            let reason = if method == "signaling" { "signaling NaN" } else { "64 reachable operand tuples" };
+            let reason = match method {
+                "zeroAngle" => "reachable argument 0x3ff0000000000000",
+                "signaling" => "signaling NaN",
+                "diagonalAngle" => "outside its exact nonzero-axis cases",
+                _ => "64 reachable operand tuples",
+            };
             assert!(result.problem.unwrap().contains(reason));
         }
     }
