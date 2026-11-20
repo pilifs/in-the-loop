@@ -34,10 +34,6 @@ The unchanged rxjava-jdbc client returned [2] then [1, 2] from one two-row inser
 
 These two disclosed calibrations are excluded from all scores, as are Rocker, AWS and Cucumber Reporting. Both public proof plans are executable. The queue validator found no invalid jobs, the first changed-test run passed 29 groups with an acceptance retry, and the independent reviews reran the actual observations and checked the original test identities. Job 20261120-231316-check-returned-h2-keys-through-the-uncha checks the native generated-key claim. Job 20261120-230733-check-commons-text-pr-586-csv-return-pre checks CSV preservation using the standard route.
 
-### (in progress)
-
-change `oqlpswkwxnxw`, not yet described
-
 ### Bind upgrade references to actual JVM runs and historical CI (verification pending)
 
 change `zxqxmmysqyyn` · [log `045a9e82a1f2`](https://terminalvalue.net/raw-traces/01a1fb30-73ce-7ac0-98ae-14a53e020270/045a9e82a1f24ae3d0cae83ec28ca5e1ef17baacb732c65a9d66d9e99f8db5ff.jsonl.gz)
@@ -45,6 +41,14 @@ change `zxqxmmysqyyn` · [log `045a9e82a1f2`](https://terminalvalue.net/raw-trac
 The separate curator committed a seed, reproduced the pinned CompSuite and CompCheck join of 13/123, and added checks for the named test, ordered classpath, non-vacuity, identical production sources and loaded library in both runs. Signed encrypted reference packets are kept outside the product checkout. Open calibration model calls used 176,898 and 214,213 uncached input plus generated tokens at 15 minutes. Freeze the 250,000-token per-PR cap for both product versions.
 
 On JDK 8, the historical rxjava-jdbc named Surefire assertions ran in four fresh reports. Only the new H2 two-row test failed. The Maven 3.6.3 effective models, unchanged client class hashes, dependency digests and separate whole-suite baseline are replayable. Checked the four actual XML test identities, both effective models and the standard prepared target. The curator exercised signature, tamper, wrong-key and stale-test controls. Verification job 20261120-232343-run-the-full-rxjava-jdbc-historical-sure runs the complete historical Surefire test set on both source tags.
+
+### Measure the CI signal and isolate incident knowledge in CompCheck (verification pending)
+
+change `wzoutloywwrs` · [log `045a9e82a1f2`](https://terminalvalue.net/raw-traces/01a1fb30-73ce-7ac0-98ae-14a53e020270/045a9e82a1f24ae3d0cae83ec28ca5e1ef17baacb732c65a9d66d9e99f8db5ff.jsonl.gz)
+
+The complete historical rxjava-jdbc Surefire set ran 454 tests on each H2 pin with two skips on each side. The upgrade produced three failures in subclasses inheriting the same assertion. All 105 built production classes matched the published client JAR. The original native claim stopped at DriverManager.getConnection. Commons Text stopped during class intake. The retained reports distinguish those limits from the JVM results. Imported all three collector results and verified their original blobs.
+
+The separate curator's neutral export retains ordinary sibling tests, checks original Git blobs and scans nested archives for the excluded compiled trigger. The independent reviewer reproduced the Rocker, AWS and Cucumber outcomes in six JVMs and signed the grades. The CompCheck wrapper exercises the disclosed AWS production parser with all knowledge and again with just the two records for that same incident removed. Verification job 20261120-232916-compare-stock-compcheck-knowledge-on-aws records each tool command and its first actual outcome. The signed grade, 348 artifact hashes, prepared target and queue schema were checked.
 
 ## Conversation
 

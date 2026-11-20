@@ -1,0 +1,318 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-231316-check-returned-h2-keys-through-the-uncha",
+  "title": "Check returned H2 keys through the unchanged rxjava-jdbc subscriber",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.4s, peak 151.0 MiB (estimated 2m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-231316-check-returned-h2-keys-through-the-uncha.json",
+    "sha256": "80daa2cab2db620283edb04d53a2958e8458924892d96a4c3a6ce612a5d9dab4",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-231316-check-returned-h2-keys-through-the-uncha",
+      "title": "Check returned H2 keys through the unchanged rxjava-jdbc subscriber",
+      "description": "Run the public strict native equivalence route on rxjava-jdbc 0.7.15 and its pinned old/new H2 closures. A boolean selects one multi-row statement or two calls, each on a new in-memory database. The adapter returns all integers in subscriber order. Report the first unsupported stage if the database path is open. Separately preserved original-test XML and concrete JVM evidence remain the calibration baseline.",
+      "kind": "example",
+      "capabilities": [
+        "external-upgrade-evaluation",
+        "jvmcontract:equivalence",
+        "h2:generated-keys",
+        "target:equivalence"
+      ],
+      "links": {
+        "claims": [
+          "8a3ffbec57461471"
+        ],
+        "examples": [
+          "348"
+        ]
+      },
+      "expected": "example 348 task generated-keys gives its expected conclusion, unresolved: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-20T23:16:31+00:00",
+        "session": "01a1fb31-b3eb-7231-b464-c3233fd02921"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "example 348 task generated-keys (equivalence)",
+          "run": "python3 examples/tools/build.py 348 --task generated-keys",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys"
+      ]
+    }
+  },
+  "sourceCommit": "19fbb233b928fb822ab3d9e018dccbb2756748cd",
+  "startedAt": "2026-11-20T23:20:57+00:00",
+  "finishedAt": "2026-11-20T23:23:52+00:00",
+  "wallSeconds": 175.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3364785,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 158355456,
+    "wallSeconds": 5.4,
+    "cpuSeconds": 7.4,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "example 348 task generated-keys (equivalence)",
+      "run": "python3 examples/tools/build.py 348 --task generated-keys",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 5.414,
+      "cpuSeconds": 7.362,
+      "cpuThrottledSeconds": 0.406,
+      "peakMemoryBytes": 158355456,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-348-task-generated-key.log",
+        "lines": 2,
+        "bytes": 235,
+        "sha256": "d80243b81b233ad7e9435b6dca88c250f6bf73c31e067a44a36d02f0097dc7cd",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "348-rxjava-jdbc-generated-keys: task generated-keys: unresolved (completed; as expected), receipt receipts/generated-keys/20261120T232346Z-e35e180a/result.json",
+          "groups": [
+            "348",
+            "generated-keys",
+            "unresolved"
+          ]
+        }
+      ],
+      "tail": [
+        "348-rxjava-jdbc-generated-keys: running task generated-keys (target route)",
+        "348-rxjava-jdbc-generated-keys: task generated-keys: unresolved (completed; as expected), receipt receipts/generated-keys/20261120T232346Z-e35e180a/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "88a59f2baa265adbbf45d88c488f152a2230611cca4560495871585f77634721",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/plan.json",
+      "change": "added",
+      "bytes": 18866,
+      "sha256": "a0aacaaaaf7be616a739354153bf942bc02df525befe3097626ff7e0e91e3366",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/control-new-jdk21.stderr",
+      "change": "added",
+      "bytes": 232,
+      "sha256": "ab5825589316112b93ac9c2892a4cec096e8e5c42e1662a6d929f4fa70edfc62",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/control-new-jdk21.stdout",
+      "change": "added",
+      "bytes": 196,
+      "sha256": "63597f2dcb850a54b23298a3cc017b712f28e9afa9f262626a4baf7da1ccfd7d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/control-old-jdk21.stderr",
+      "change": "added",
+      "bytes": 232,
+      "sha256": "ab5825589316112b93ac9c2892a4cec096e8e5c42e1662a6d929f4fa70edfc62",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/control-old-jdk21.stdout",
+      "change": "added",
+      "bytes": 190,
+      "sha256": "7676b5d5a011fbfd00e9a59ded6527bbc671ef878f8c3fef7727d0605e9cb857",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/controls.json",
+      "change": "added",
+      "bytes": 12182,
+      "sha256": "0cc3fdd9c8d78f5e097af9f658956292e09bcb954862dc3c858712ba91e41ff5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/execution.json",
+      "change": "added",
+      "bytes": 244903,
+      "sha256": "b5d611da3203484f1ccb8c82d0db8ac651308269f6fd4e40c9c5cc82235dad9f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/streams.json",
+      "change": "added",
+      "bytes": 2629,
+      "sha256": "8a4f96370e8ebe619d2ce371a70d978e54d721a156d8e3cac130ba330ed16d12",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 518,
+      "sha256": "ead35874f2fac85989b921f9f658485d6e4008cc1393d64c3ff050b29b3e30eb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/verifier.json",
+      "change": "added",
+      "bytes": 224672,
+      "sha256": "2f43b7eba446a23eed5f534d26e3fc44fd3c058716c799cde1cc4d74a68dd028",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6213,
+      "sha256": "6fc2b1a0b0247ce8c223eb3426bcac87a68d1571cfbd5dce478f08a3c2906db5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/result.json",
+      "change": "added",
+      "bytes": 17088,
+      "sha256": "32d4168c210f9ca0d0a9ccd96ef7d57310d17a045c3af8c369babbfdcda96be3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/executions/20261120T232346Z-e35e180a/attempt.json",
+      "change": "added",
+      "bytes": 222229,
+      "sha256": "52031728855b84d93d34b8d99c45718245070c8296d755e3f7c4d2ae29861832",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/executions/20261120T232346Z-e35e180a/checker.json",
+      "change": "added",
+      "bytes": 9402,
+      "sha256": "3140bbf34d8d97eb1262a5bb32364724910c14679c8f549f5a43bc6dacc8afa7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/executions/20261120T232346Z-e35e180a/correspondence.json",
+      "change": "added",
+      "bytes": 3813,
+      "sha256": "15bc3c56e570f7c324ca1b85c3a8fdd9a2363bdb692c9ea876da9a8e8b9ec8b7",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T23:24:14+00:00",
+    "applied": [
+      "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/completion.json",
+      "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/plan.json",
+      "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/control-new-jdk21.stderr",
+      "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/control-new-jdk21.stdout",
+      "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/control-old-jdk21.stderr",
+      "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/control-old-jdk21.stdout",
+      "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/controls.json",
+      "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/execution.json",
+      "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/streams.json",
+      "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/verifier-output.txt",
+      "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/verifier.json",
+      "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/verifier.stderr",
+      "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/records/verifier.stdout",
+      "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/20261120T232346Z-e35e180a/result.json",
+      "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/executions/20261120T232346Z-e35e180a/attempt.json",
+      "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/executions/20261120T232346Z-e35e180a/checker.json",
+      "examples/348-rxjava-jdbc-generated-keys/receipts/generated-keys/executions/20261120T232346Z-e35e180a/correspondence.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6ff6d17a384664aaf02d89881193eef038b86637",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6ff6d17a384664aaf02d89881193eef038b86637/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

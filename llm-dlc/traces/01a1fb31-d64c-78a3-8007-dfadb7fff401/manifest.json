@@ -12,27 +12,28 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-20T23:01:49.787Z",
-  "ended": "2026-11-20T23:25:07.987Z",
-  "duration_seconds": 1398,
+  "ended": "2026-11-20T23:33:47.403Z",
+  "duration_seconds": 1918,
   "stats": {
     "turns": 0,
-    "api_calls": 102,
-    "tool_calls": 252,
+    "api_calls": 127,
+    "tool_calls": 301,
     "tool_errors": 7,
     "compactions": 0,
-    "peak_context_tokens": 245280,
+    "peak_context_tokens": 274715,
     "usage": {
-      "input_tokens": 231045,
-      "output_tokens": 56078,
-      "cache_read_input_tokens": 16494208,
+      "input_tokens": 262167,
+      "output_tokens": 75404,
+      "cache_read_input_tokens": 23031680,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 146,
-    "exec": 82,
-    "send_message": 17,
-    "apply_patch": 7
+    "Bash": 171,
+    "exec": 99,
+    "send_message": 23,
+    "apply_patch": 7,
+    "wait_agent": 1
   },
   "files_touched": [
     "examples/349-commons-text-csv-upgrade/claims/escape-csv.json",
@@ -49,24 +50,24 @@
     {
       "index": 0,
       "started": "2026-11-20T23:01:49.787Z",
-      "ended": "2026-11-20T23:25:07.987Z",
+      "ended": "2026-11-20T23:33:47.403Z",
       "turns": 0,
-      "api_calls": 102,
+      "api_calls": 127,
       "usage": {
-        "input_tokens": 231045,
-        "output_tokens": 56078,
-        "cache_read_input_tokens": 16494208,
+        "input_tokens": 262167,
+        "output_tokens": 75404,
+        "cache_read_input_tokens": 23031680,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 245280
+      "peak_context_tokens": 274715
     }
   ],
   "log": {
-    "sha256": "7ecd7b4892ee09407d3dcf88b366e8b25bf0a341e4e4e2b1f1a7e4206d9cd50e",
-    "bytes": 2803580,
-    "lines": 792,
-    "gzip_bytes": 906048,
-    "path": "llm-dlc/traces/01a1fb31-d64c-78a3-8007-dfadb7fff401/logs/7ecd7b4892ee09407d3dcf88b366e8b25bf0a341e4e4e2b1f1a7e4206d9cd50e.jsonl.gz"
+    "sha256": "5b1ca9e126f4f70d0b00328a533773ff97c072c7179cd9cbdcbe64309bad96ec",
+    "bytes": 3297533,
+    "lines": 984,
+    "gzip_bytes": 1110028,
+    "path": "llm-dlc/traces/01a1fb31-d64c-78a3-8007-dfadb7fff401/logs/5b1ca9e126f4f70d0b00328a533773ff97c072c7179cd9cbdcbe64309bad96ec.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -87,20 +88,28 @@
       "log_sha256": "e238cbcf68a9385a7835f446201fd59f335baf20650f3d60aaa741f03413d8ee"
     },
     {
-      "change_id": "oqlpswkwxnxwxklowrzxwokqnmywnvzx",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "7ecd7b4892ee09407d3dcf88b366e8b25bf0a341e4e4e2b1f1a7e4206d9cd50e"
-    },
-    {
       "change_id": "zxqxmmysqyynmmmttolnyloxmnkswxwz",
       "commit_id": null,
       "immutable": false,
       "summary": "Bind upgrade references to actual JVM runs and historical CI (verification pending)",
       "body": "The separate curator committed a seed, reproduced the pinned CompSuite and CompCheck join of 13/123, and added checks for the named test, ordered classpath, non-vacuity, identical production sources and loaded library in both runs. Signed encrypted reference packets are kept outside the product checkout. Open calibration model calls used 176,898 and 214,213 uncached input plus generated tokens at 15 minutes. Freeze the 250,000-token per-PR cap for both product versions.\n\nOn JDK 8, the historical rxjava-jdbc named Surefire assertions ran in four fresh reports. Only the new H2 two-row test failed. The Maven 3.6.3 effective models, unchanged client class hashes, dependency digests and separate whole-suite baseline are replayable. Checked the four actual XML test identities, both effective models and the standard prepared target. The curator exercised signature, tamper, wrong-key and stale-test controls. Verification job 20261120-232343-run-the-full-rxjava-jdbc-historical-sure runs the complete historical Surefire test set on both source tags.",
       "log_sha256": "7ecd7b4892ee09407d3dcf88b366e8b25bf0a341e4e4e2b1f1a7e4206d9cd50e"
+    },
+    {
+      "change_id": "rntwtoxssolrxuoulqxoklrrryvplptz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "5b1ca9e126f4f70d0b00328a533773ff97c072c7179cd9cbdcbe64309bad96ec"
+    },
+    {
+      "change_id": "wzoutloywwrskzxosmnzszyylrzqtozx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Measure the CI signal and isolate incident knowledge in CompCheck (verification pending)",
+      "body": "The complete historical rxjava-jdbc Surefire set ran 454 tests on each H2 pin with two skips on each side. The upgrade produced three failures in subclasses inheriting the same assertion. All 105 built production classes matched the published client JAR. The original native claim stopped at DriverManager.getConnection. Commons Text stopped during class intake. The retained reports distinguish those limits from the JVM results. Imported all three collector results and verified their original blobs.\n\nThe separate curator's neutral export retains ordinary sibling tests, checks original Git blobs and scans nested archives for the excluded compiled trigger. The independent reviewer reproduced the Rocker, AWS and Cucumber outcomes in six JVMs and signed the grades. The CompCheck wrapper exercises the disclosed AWS production parser with all knowledge and again with just the two records for that same incident removed. Verification job 20261120-232916-compare-stock-compcheck-knowledge-on-aws records each tool command and its first actual outcome. The signed grade, 348 artifact hashes, prepared target and queue schema were checked.",
+      "log_sha256": "5b1ca9e126f4f70d0b00328a533773ff97c072c7179cd9cbdcbe64309bad96ec"
     }
   ],
   "logs": {
@@ -108,6 +117,12 @@
       "bytes": 1722790,
       "lines": 366,
       "gzip_bytes": 531515,
+      "url": null
+    },
+    "5b1ca9e126f4f70d0b00328a533773ff97c072c7179cd9cbdcbe64309bad96ec": {
+      "bytes": 3297533,
+      "lines": 984,
+      "gzip_bytes": 1110028,
       "url": null
     },
     "7ecd7b4892ee09407d3dcf88b366e8b25bf0a341e4e4e2b1f1a7e4206d9cd50e": {

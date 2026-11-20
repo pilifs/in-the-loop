@@ -1,0 +1,44 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-232916-compare-stock-compcheck-knowledge-on-aws",
+  "title": "Compare stock CompCheck knowledge on AWS issue 233",
+  "description": "Run CompCheck at 937d1d1495c4ff5449443183b70f465d1fe0b4d0 twice on its published AWS production call site c15-2, DateUtils.doParseISO8601Date line 104 calling Joda parseMillis. The first process receives all 24 knowledge records and the second receives the same 22 records left after removing only AWS issue 233. Use separate clean Git and offline Maven directories, the pinned JDK 8 and Maven 3.6.3. Record actual stock build, context, match and generated-test stages, even if the wrapper exits successfully before finding the site.",
+  "kind": "real-world",
+  "capabilities": [
+    "baseline:compcheck"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/external-upgrades/baselines/compcheck_aws.py"
+    ]
+  },
+  "expected": "Two scoped status records report how far the original program proceeded. A green wrapper or absent matching API record is not evidence of client safety.",
+  "submitted": {
+    "at": "2026-11-20T23:29:16+00:00",
+    "session": "01a1fb31-d64c-78a3-8007-dfadb7fff401"
+  },
+  "requires": [
+    "bwrap",
+    "git",
+    "python3"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "4m",
+    "memoryLimit": "6G",
+    "timeout": "16m",
+    "notes": "The pinned tool may launch a 4 GiB EvoSuite process with a 60-second search, twice if both treatments qualify; the cold Maven build and Java static-analysis stages are included."
+  },
+  "steps": [
+    {
+      "name": "Paired stock analysis at the original AWS call site",
+      "run": "python3 -I lib/benchmark/external-upgrades/baselines/compcheck_aws.py --output lib/benchmark/external-upgrades/baselines/compcheck-aws-result.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/external-upgrades/baselines/compcheck-aws-result.json"
+  ]
+}

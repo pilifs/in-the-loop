@@ -1,0 +1,169 @@
+{
+  "case_id": "calibration-compsuite-i-87",
+  "cohort": "disclosed opening calibration; excluded from retrospective and transfer",
+  "origin": "benchmark-curated tag pair on real client code",
+  "primaryClaim": "The Rx stream of generated integer keys has the same ordered contents after upgrading H2 for either of two ways of inserting the same two rows.",
+  "scope": "Synchronous Database API; fresh in-memory H2 identity table, fixed text values, natural key generation, separate JVM per source-side observation. The production POM uses H2 only at test scope.",
+  "challengeInput": "one statement, two placeholders, two bound strings",
+  "companion": "one placeholder, two successive inserts",
+  "sourceRevisions": {
+    "old": {
+      "commit": "5e04239e1f831878884972fbf72ab1f529b0647d",
+      "tag": "com.h2database--h2-1.4.192"
+    },
+    "new": {
+      "commit": "735c4108c0ebfd9ad4f350d496e9c74bc0893bb7",
+      "tag": "com.h2database--h2-1.4.200"
+    }
+  },
+  "registry": {
+    "commit": "6e6d738c8b0ca6ecbba6220b1fd549b2ae14a05d",
+    "sha256": "e8e7aa62119590e358a3a59f4f49e223f9b406a525db7fbd12beb7e589708cd6",
+    "test": "DatabaseSyncTest#testReturnGeneratedKeysForMultipleInsertedValuesInOneStatement"
+  },
+  "artifacts": "independent/inputs.json",
+  "sourceJVM": "records/jvm-receipt.json",
+  "originOfNamedXML": "Maven 3.6.3 Surefire 2.12.4 JUnit4 provider and standard XML reporter, invoked directly on independently compiled, unedited upstream tests",
+  "ordinaryCi": {
+    "source": ".travis.yml JDK matrix",
+    "localMavenTest": "Both exact POMs were attempted offline on JDK 8. Each failed to load the uncached Nexus staging build extension before tests.",
+    "historicalHostedRunObserved": false,
+    "triggerInHistoricalSuite": true,
+    "wholeTestSetReference": "records/whole-suite.json",
+    "fullTestSet": {
+      "old": {
+        "totals": {
+          "tests": 454,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 2
+        },
+        "seconds": 2.178,
+        "suiteCount": 22,
+        "trigger": {
+          "classname": "com.github.davidmoten.rx.jdbc.DatabaseSyncTest",
+          "name": "testReturnGeneratedKeysForMultipleInsertedValuesInOneStatement",
+          "time": "0.001"
+        }
+      },
+      "new": {
+        "totals": {
+          "tests": 454,
+          "failures": 3,
+          "errors": 0,
+          "skipped": 2
+        },
+        "seconds": 3.45,
+        "suiteCount": 22,
+        "trigger": {
+          "classname": "com.github.davidmoten.rx.jdbc.DatabaseSyncTest",
+          "name": "testReturnGeneratedKeysForMultipleInsertedValuesInOneStatement",
+          "time": "0.001",
+          "failure": {
+            "message": "expected:<[2]> but was:<[1, 2]>",
+            "type": "java.lang.AssertionError"
+          }
+        }
+      },
+      "job": "20261120-232343-run-the-full-rxjava-jdbc-historical-sure",
+      "sourceCommit": "9f9752c5224582ea692212a11148633e84de30dd",
+      "elapsedWithPreparation": 50.0,
+      "usage": {
+        "peakMemoryBytes": 439451648,
+        "wallSeconds": 46.3,
+        "cpuSeconds": 21.6,
+        "memoryOfEstimate": 0.41,
+        "durationOfEstimate": 0.39
+      },
+      "cache": "Cold on the pipeline runner; pinned dependencies and subject clone acquired in a separate cache."
+    }
+  },
+  "additionalEvidence": "After the subscriber completes, independent SQL reads show the same two stored rows on each side and each shape. The original named test and companion already specify their expected key lists.",
+  "product": {
+    "route": "assisted public strict native equivalence; calibration observer and domain supplied",
+    "configuration": "target.json and claims/generated-keys.json",
+    "sourceCommit": "19fbb233b928fb822ab3d9e018dccbb2756748cd",
+    "libTree": "6ff6d17a384664aaf02d89881193eef038b86637",
+    "binarySha256": "5e56d4e1b9b01d3cb310817866b3ed717f03b9a8971851bdc957356578483c18",
+    "engine": "native",
+    "gapMode": "strict",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "bounds": {
+      "unwind": 16,
+      "maxArrayLength": 16
+    },
+    "solverModel": null,
+    "modelSettings": "No model invocation inside the deterministic pipeline step. Agent/model token usage for curation was unmetered.",
+    "result": "unresolved",
+    "firstUnsupported": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.sql.DriverManager.getConnection(Ljava/lang/String;)Ljava/sql/Connection;@jdk-21.0.13 (java.sql.DriverManager.getConnection(java.lang.String) at before.calibration.GeneratedKeys.keys:13). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+    "nativeReceipt": "receipts/generated-keys/20261120T232346Z-e35e180a/result.json",
+    "job": "20261120-231316-check-returned-h2-keys-through-the-uncha",
+    "limits": {
+      "cpus": 2.0,
+      "memoryLimitBytes": 3221225472,
+      "timeoutSeconds": 480.0
+    },
+    "host": {
+      "host": "vm-1",
+      "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+      "machine": "x86_64",
+      "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+      "cpuCount": 30,
+      "memoryTotalBytes": 112792424448
+    },
+    "attemptSeconds": 0.6,
+    "jobWallSeconds": 175.0,
+    "stepUsage": {
+      "wallSeconds": 5.414,
+      "cpuSeconds": 7.362,
+      "peakMemoryBytes": 158355456
+    },
+    "independentJdk": [
+      "openjdk version \"1.8.0_512\"",
+      "OpenJDK Runtime Environment (Temurin)(build 1.8.0_512-b09)",
+      "OpenJDK 64-Bit Server VM (Temurin)(build 25.512-b09, mixed mode)"
+    ]
+  },
+  "timeAndCost": {
+    "basis": "UTC local filesystem and pipeline timestamps, with dependency fetches cold for this case and all same-side reruns warm",
+    "acquisitionDirectoryCreatedUtc": "2026-11-20T23:02:39Z",
+    "firstDecisiveSurefireXmlUtc": "2026-11-20T23:08:29Z",
+    "secondsFromAcquisitionToFirstDecisiveXml": 350,
+    "atFifteenMinutes": "Historical testcase and both independently observed insert shapes and row queries were known. Native equivalence was pending.",
+    "initialNamedRunIssue": "The first diagnostic provider wrote its XML before a console-summary NullPointerException. Enabling the standard summary reporter yielded the same named assertion without the additional error. The retained final XML came from fresh output directories.",
+    "nativeJobStartedUtc": "2026-11-20T23:20:57+00:00",
+    "nativeJobFinishedUtc": "2026-11-20T23:23:52+00:00",
+    "finalIndependentReceiptUtc": "2026-11-20T23:28:13Z",
+    "humanMinutes": null,
+    "billedTokens": null,
+    "currencyCost": null,
+    "fullClientSuiteFinishedUtc": "2026-11-20T23:29:05+00:00"
+  },
+  "curatorGrade": {
+    "factualChange": "reproduced on exact source builds and the identical published production classes",
+    "nativeEvidenceForPrimaryClaim": "open",
+    "maintainerAction": "review final-key-only assumptions and assertions; two rows persisted in either case",
+    "creditBeyondOriginalCi": "Additional row-state diagnosis from the independent curator observer only"
+  },
+  "referenceSha256": {
+    "records/jvm-receipt.json": "005f6854398fb643fd9b179658e46ef16a6a5d8bf61a59b9edc76f42815cef10",
+    "records/old/companion-surefire.xml": "56db74e8bc4098991cbd824d487914cc47a665b0bd027d3638e14770e68dcea3",
+    "records/old/effective-pom.xml": "42b34f658d16c395bc8df71cc88a55e5755551fe2faffcdff4fe525469c238ae",
+    "records/old/trigger-surefire.xml": "c9b8c7b36820dfcf3ff820387b7a5d885e384d6d423ea125c09ee23ebdbb07f7",
+    "records/new/companion-surefire.xml": "df4abae257eb54b02abcb2d041b64b06f86c7a85881c33e9827c44fbee0edb3d",
+    "records/new/effective-pom.xml": "ae9d94d9badff2ac0860c26cefd7ad75c5283c64d186bb09114bd30c94f65c47",
+    "records/new/trigger-surefire.xml": "9e41332adbbb5fa5940d2de7bc0eb3a503f4d305d7b4ce189d4832f8864e3ff7",
+    "independent/inputs.json": "27dbf2600f05517c3b9d40b25420e0c1b0698767dde9b1864f038deef4b5e47b",
+    "independent/acquire.py": "afc7120a0f58c77d91739c28cdcd9675875f71358fd5375335e4728e81e0cc78",
+    "independent/reproduce.py": "b4bcd381072320604052d4a0acfd4e930e775299bbd39095ae1c755d7a5ac9a4",
+    "independent/EffectivePom.java": "6db0d05edbfcadce0aa805e5198048697c0ac2a168a388c919ac74c454c892c9",
+    "independent/NamedSurefire.java": "3f4fe624fbdadcbfa6a1503f934b0db5bb7910d31c2591947d2c8968f47ed293",
+    "independent/Observe.java": "f0a5fe3601845936cbc8d4e9fab44c1d7bfccf6f19729a2c5cba4681ec5948da",
+    "independent/whole_ci.py": "a265bca2460ee73159bbcfff352e9c15d06d405e01e7e38a05fd4cbf9b4c0137",
+    "target.json": "5620dc1c2a6ab08f125a9f2e7557951b5eb61e9f9cb6e2ec32484e0e8207f891",
+    "claims/generated-keys.json": "145ae8e23010ecf1790b5d30db30d88f124d952678c3a60803234df1073fc38b",
+    "records/whole-suite.json": "97539d3787564d23fc417a255f0eb9d2878974bd1af2df6faa2a96e3166cb448",
+    "workflow-handoff.md": "73514f272672581231bbbdc3acbcbf19a83d17f462d0e722a696df072ae0f098",
+    "records/pipeline-report.json": "5b154db4323c7214ecc8ee8563c5c87595241a8954a1580af32096411e33a5eb"
+  }
+}

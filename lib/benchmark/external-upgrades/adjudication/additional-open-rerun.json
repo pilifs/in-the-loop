@@ -1,0 +1,318 @@
+{
+  "reviewer": "calibration_reviewer",
+  "method": "Fresh JVM for each side, original public observer classes, verified ordered classpath and JDK release hashes. Independently decoded and checked all values, and read the actual matching original test XML for AWS/Rocker.",
+  "result": {
+    "rocker": {
+      "case": "rocker",
+      "referenceDigest": "1fa8e8a6dfdb0b49ed5b521b39ccf814fda7e4bd8b1af012a88aacbce9aa81e2",
+      "sides": {
+        "old": {
+          "startedUtc": "2026-11-20T23:26:18.591+00:00",
+          "seconds": 0.115,
+          "exit": 0,
+          "orderedClasspath": [
+            {
+              "name": "driver",
+              "sha256": "dcbace1a4e15060994a9420609ba807d8c53f995f71d370884ff4f6e64840c00"
+            },
+            {
+              "name": "classes",
+              "sha256": "09f6b0f1d3bbe989a0964fec6a2958c6f79badba21c86b4c70211f4fce5994cb"
+            },
+            {
+              "name": "rocker-runtime-1.2.1.jar",
+              "sha256": "a3ca1d824ca5ed62408d5f07ff499a21f8437236afe66b353da6ff8332b6b26b"
+            },
+            {
+              "name": "antlr4-runtime-4.5.3.jar",
+              "sha256": "93bca08ec995caeaaf60bdf80035a0be8507fcdabd3c2618fd8c5aab4444a752"
+            },
+            {
+              "name": "commons-lang3-3.3.2.jar",
+              "sha256": "6b81d10754dadf184d386011486e6509c2cc0c3d33565ced4fb4402b9413d47d"
+            },
+            {
+              "name": "slf4j-api-1.7.7.jar",
+              "sha256": "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe"
+            }
+          ],
+          "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+          "stdout": [
+            "reject\tcom.fizzed.rocker.runtime.ParserException\t1\t18\ttemplate-path:[1,18] missing ARGUMENT at '<EOF>'",
+            "return\t1\tString\ts\t\"test\""
+          ],
+          "existingTest": {
+            "xmlSha256": "6de792d16d6ca9194e31dc30a41048a4c350011049625dc4dfd53151b9daa08a",
+            "testcase": "endsWithComma",
+            "class": "com.fizzed.rocker.model.WithStatementTest",
+            "run": 1,
+            "status": "passed",
+            "message": null
+          }
+        },
+        "new": {
+          "startedUtc": "2026-11-20T23:26:18.711+00:00",
+          "seconds": 0.117,
+          "exit": 0,
+          "orderedClasspath": [
+            {
+              "name": "driver",
+              "sha256": "dcbace1a4e15060994a9420609ba807d8c53f995f71d370884ff4f6e64840c00"
+            },
+            {
+              "name": "classes",
+              "sha256": "a3f488e8681aef3a084f0b0bbb1e1717b24a015203a56b64c724231a6ce29548"
+            },
+            {
+              "name": "rocker-runtime-1.2.1.jar",
+              "sha256": "a3ca1d824ca5ed62408d5f07ff499a21f8437236afe66b353da6ff8332b6b26b"
+            },
+            {
+              "name": "antlr4-runtime-4.7.2.jar",
+              "sha256": "4c518b87d4bdff8b44cd8cbc1af816e944b62a3fe5b80b781501cf1f4759bbc4"
+            },
+            {
+              "name": "commons-lang3-3.3.2.jar",
+              "sha256": "6b81d10754dadf184d386011486e6509c2cc0c3d33565ced4fb4402b9413d47d"
+            },
+            {
+              "name": "slf4j-api-1.7.7.jar",
+              "sha256": "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe"
+            }
+          ],
+          "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+          "stdout": [
+            "reject\tcom.fizzed.rocker.runtime.ParserException\t1\t18\ttemplate-path:[1,18] extraneous input '<EOF>' expecting {ARGUMENT_COMMA, ARGUMENT}",
+            "return\t1\tString\ts\t\"test\""
+          ],
+          "existingTest": {
+            "xmlSha256": "721a7627225228645e182ad6e3bca4798f3aef55b5ebc445be8fccdbcf509e38",
+            "testcase": "endsWithComma",
+            "class": "com.fizzed.rocker.model.WithStatementTest",
+            "run": 1,
+            "status": "failure",
+            "message": " Expected: a string containing \"template-path:[1,18] missing ARGUMENT at '<EOF>'\"      but: was \"template-path:[1,18] extraneous input '<EOF>' expecting {ARGUMENT_COMMA, ARGUMENT}\""
+          }
+        }
+      }
+    },
+    "aws": {
+      "case": "aws",
+      "referenceDigest": "997d572a0d68fc0b3b4b8ed43868f4b003980d27c1143d733a958a714230445b",
+      "sides": {
+        "old": {
+          "startedUtc": "2026-11-20T23:26:18.831+00:00",
+          "seconds": 0.084,
+          "exit": 0,
+          "orderedClasspath": [
+            {
+              "name": "driver",
+              "sha256": "d704c5fad9b27a10bd05ee24fe8e7832423d0e393e7c94f0cdfdc04b3041e00e"
+            },
+            {
+              "name": "classes",
+              "sha256": "5e1bc85fa3ff0b3c005a4bd7712f577185f5dc084450d50c8c242537f3ba1cd0"
+            },
+            {
+              "name": "aws-java-sdk-core-1.11.664.jar",
+              "sha256": "265a9ecc337eb5c1268d03451f28da87cb3287721024af8b95efcd2264a7a4a5"
+            },
+            {
+              "name": "joda-time-2.8.1.jar",
+              "sha256": "b4670b95f75957c974284c5f3ada966040be2578f643c5c6083d262162061fa2"
+            },
+            {
+              "name": "jackson-core-2.6.7.jar",
+              "sha256": "918c04b9f9043d51dead2192b5d94d9f065870c9f26c8defbe9c6dbc951f304f"
+            }
+          ],
+          "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+          "stdout": [
+            "formatter\t9223372036854775807\t292278994-08-17T07:12:55.807Z\tthrow\torg.joda.time.IllegalFieldValueException\tCannot parse \"292278994-08-17T07:12:55.807Z\": Value 292278994 for year must be in the range [-292275054,292278993]",
+            "sdk\t9223372036854775807\t292278994-08-17T07:12:55.807Z\treturn\t9223372036854775807",
+            "formatter\t946684800123\t2000-01-01T00:00:00.123Z\treturn\t946684800123",
+            "sdk\t946684800123\t2000-01-01T00:00:00.123Z\treturn\t946684800123"
+          ],
+          "existingTest": {
+            "xmlSha256": "ad30d787b60f60466175f5bac772ecdadf35bd0d255fc017137c8be70b4a88e5",
+            "testcase": "testIssue233JodaTimeLimit",
+            "class": "com.amazonaws.util.DateUtilsTest",
+            "run": 1,
+            "status": "passed",
+            "message": null
+          }
+        },
+        "new": {
+          "startedUtc": "2026-11-20T23:26:18.917+00:00",
+          "seconds": 0.081,
+          "exit": 0,
+          "orderedClasspath": [
+            {
+              "name": "driver",
+              "sha256": "d704c5fad9b27a10bd05ee24fe8e7832423d0e393e7c94f0cdfdc04b3041e00e"
+            },
+            {
+              "name": "classes",
+              "sha256": "5e1bc85fa3ff0b3c005a4bd7712f577185f5dc084450d50c8c242537f3ba1cd0"
+            },
+            {
+              "name": "aws-java-sdk-core-1.11.664.jar",
+              "sha256": "265a9ecc337eb5c1268d03451f28da87cb3287721024af8b95efcd2264a7a4a5"
+            },
+            {
+              "name": "joda-time-2.10.5.jar",
+              "sha256": "4ee73e7ff8e2df0d4e3408cf1a1527a59f265dd9fb43fb9b2eb818d87f93759e"
+            },
+            {
+              "name": "jackson-core-2.6.7.jar",
+              "sha256": "918c04b9f9043d51dead2192b5d94d9f065870c9f26c8defbe9c6dbc951f304f"
+            }
+          ],
+          "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+          "stdout": [
+            "formatter\t9223372036854775807\t292278994-08-17T07:12:55.807Z\treturn\t9223372036854775807",
+            "sdk\t9223372036854775807\t292278994-08-17T07:12:55.807Z\treturn\t9223372036854775807",
+            "formatter\t946684800123\t2000-01-01T00:00:00.123Z\treturn\t946684800123",
+            "sdk\t946684800123\t2000-01-01T00:00:00.123Z\treturn\t946684800123"
+          ],
+          "existingTest": {
+            "xmlSha256": "d130bc8f333f71eddfb595ea7c72ebd6e58e7fa16b8ddef79c49bd983a6d0ff5",
+            "testcase": "testIssue233JodaTimeLimit",
+            "class": "com.amazonaws.util.DateUtilsTest",
+            "run": 1,
+            "status": "error",
+            "message": "Unexpected exception, expected<org.joda.time.IllegalFieldValueException> but was<java.lang.AssertionError>"
+          }
+        }
+      }
+    },
+    "cucumber": {
+      "case": "cucumber",
+      "referenceDigest": "fbecfa0e0ffeb6ac701b11544cb16adbacdb39b1b461b825398da1bbd720ba65",
+      "sides": {
+        "old": {
+          "startedUtc": "2026-11-20T23:26:19.003+00:00",
+          "seconds": 0.375,
+          "exit": 0,
+          "orderedClasspath": [
+            {
+              "name": "driver",
+              "sha256": "3e17a029f67179ccfe824d007850a055fa5bfe9a36885b60523746e87a3ba4d3"
+            },
+            {
+              "name": "classes",
+              "sha256": "fda98beff0c2d1f812820932626631d333a8832adf66ac18ddb7d6d561c5a4ac"
+            },
+            {
+              "name": "cucumber-reporting-5.7.8.jar",
+              "sha256": "3fdfb7afd3baa1853ddfcc8ca07cb6aafaa9f1257a17d91f0149ee6e2b032a2d"
+            },
+            {
+              "name": "joda-time-2.12.5.jar",
+              "sha256": "10628411ecb40c4634196c544f34681abdeef826f377096357433d1f9a135bc6"
+            },
+            {
+              "name": "commons-lang3-3.14.0.jar",
+              "sha256": "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c"
+            },
+            {
+              "name": "jackson-databind-2.16.0.jar",
+              "sha256": "8aaf1753823be70b798290e5826ab5bfe015d35b3a36a5d3c2ec9f57d4b0138b"
+            },
+            {
+              "name": "jackson-core-2.16.0.jar",
+              "sha256": "66e2cde4cc7e565d5fce2a2998b64e991777bf9fad4d220735c525fd8d01c31a"
+            },
+            {
+              "name": "jackson-annotations-2.16.0.jar",
+              "sha256": "c4b90ea0c0074da17efdc3aa23973525f25d6f34725692169748f529547334a6"
+            }
+          ],
+          "jdkReleaseSha256": "065d95ec83774b32bf27d20a827c3b934b08ca2e77e80609711c9a77e83d6681",
+          "stdout": [
+            "0\t0\t0.000",
+            "999999\t999999\t0.000",
+            "1000000\t1000000\t0.001",
+            "1999999\t1999999\t0.001",
+            "999000000\t999000000\t0.999",
+            "999999999\t999999999\t0.999",
+            "1000000000\t1000000000\t1.000",
+            "1000999999\t1000999999\t1.000",
+            "1001000000\t1001000000\t1.001",
+            "1001999999\t1001999999\t1.001",
+            "1999000000\t1999000000\t1.999",
+            "1999999999\t1999999999\t1.999",
+            "59000000000\t59000000000\t59.000",
+            "59000999999\t59000999999\t59.000",
+            "59001000000\t59001000000\t59.001",
+            "59001999999\t59001999999\t59.001",
+            "59999000000\t59999000000\t59.999",
+            "59999999999\t59999999999\t59.999"
+          ],
+          "independentMatches": 18
+        },
+        "new": {
+          "startedUtc": "2026-11-20T23:26:19.382+00:00",
+          "seconds": 0.323,
+          "exit": 0,
+          "orderedClasspath": [
+            {
+              "name": "driver",
+              "sha256": "3e17a029f67179ccfe824d007850a055fa5bfe9a36885b60523746e87a3ba4d3"
+            },
+            {
+              "name": "classes",
+              "sha256": "fda98beff0c2d1f812820932626631d333a8832adf66ac18ddb7d6d561c5a4ac"
+            },
+            {
+              "name": "cucumber-reporting-5.7.8.jar",
+              "sha256": "3fdfb7afd3baa1853ddfcc8ca07cb6aafaa9f1257a17d91f0149ee6e2b032a2d"
+            },
+            {
+              "name": "joda-time-2.12.6.jar",
+              "sha256": "f095506881f99d70cfddefd535c8ca0261b44f2ab53530d3adc89a92db9022f9"
+            },
+            {
+              "name": "commons-lang3-3.14.0.jar",
+              "sha256": "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c"
+            },
+            {
+              "name": "jackson-databind-2.16.0.jar",
+              "sha256": "8aaf1753823be70b798290e5826ab5bfe015d35b3a36a5d3c2ec9f57d4b0138b"
+            },
+            {
+              "name": "jackson-core-2.16.0.jar",
+              "sha256": "66e2cde4cc7e565d5fce2a2998b64e991777bf9fad4d220735c525fd8d01c31a"
+            },
+            {
+              "name": "jackson-annotations-2.16.0.jar",
+              "sha256": "c4b90ea0c0074da17efdc3aa23973525f25d6f34725692169748f529547334a6"
+            }
+          ],
+          "jdkReleaseSha256": "065d95ec83774b32bf27d20a827c3b934b08ca2e77e80609711c9a77e83d6681",
+          "stdout": [
+            "0\t0\t0.000",
+            "999999\t999999\t0.000",
+            "1000000\t1000000\t0.001",
+            "1999999\t1999999\t0.001",
+            "999000000\t999000000\t0.999",
+            "999999999\t999999999\t0.999",
+            "1000000000\t1000000000\t1.000",
+            "1000999999\t1000999999\t1.000",
+            "1001000000\t1001000000\t1.001",
+            "1001999999\t1001999999\t1.001",
+            "1999000000\t1999000000\t1.999",
+            "1999999999\t1999999999\t1.999",
+            "59000000000\t59000000000\t59.000",
+            "59000999999\t59000999999\t59.000",
+            "59001000000\t59001000000\t59.001",
+            "59001999999\t59001999999\t59.001",
+            "59999000000\t59999000000\t59.999",
+            "59999999999\t59999999999\t59.999"
+          ],
+          "independentMatches": 18
+        }
+      }
+    }
+  }
+}

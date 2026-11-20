@@ -12,30 +12,31 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-20T23:02:00.548Z",
-  "ended": "2026-11-20T23:25:30.643Z",
-  "duration_seconds": 1410,
+  "ended": "2026-11-20T23:33:51.764Z",
+  "duration_seconds": 1911,
   "stats": {
     "turns": 0,
-    "api_calls": 105,
-    "tool_calls": 170,
-    "tool_errors": 4,
+    "api_calls": 146,
+    "tool_calls": 233,
+    "tool_errors": 6,
     "compactions": 0,
-    "peak_context_tokens": 104540,
+    "peak_context_tokens": 128799,
     "usage": {
-      "input_tokens": 91089,
-      "output_tokens": 56673,
-      "cache_read_input_tokens": 7202304,
+      "input_tokens": 118380,
+      "output_tokens": 76004,
+      "cache_read_input_tokens": 12136192,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "exec": 74,
-    "Bash": 69,
-    "send_message": 20,
-    "apply_patch": 6,
+    "exec": 105,
+    "Bash": 93,
+    "send_message": 27,
+    "apply_patch": 7,
     "list_agents": 1
   },
   "files_touched": [
+    "lib/benchmark/external-upgrades/curation/README.md",
     "lib/benchmark/external-upgrades/curation/registry_overlap.py",
     "lib/benchmark/external-upgrades/curation/screen.py",
     "lib/benchmark/external-upgrades/curation/seal_reference.py"
@@ -44,24 +45,24 @@
     {
       "index": 0,
       "started": "2026-11-20T23:02:00.548Z",
-      "ended": "2026-11-20T23:25:30.643Z",
+      "ended": "2026-11-20T23:33:51.764Z",
       "turns": 0,
-      "api_calls": 105,
+      "api_calls": 146,
       "usage": {
-        "input_tokens": 91089,
-        "output_tokens": 56673,
-        "cache_read_input_tokens": 7202304,
+        "input_tokens": 118380,
+        "output_tokens": 76004,
+        "cache_read_input_tokens": 12136192,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 104540
+      "peak_context_tokens": 128799
     }
   ],
   "log": {
-    "sha256": "c89e36f19d3885ba4660f7601de0eb94708fc8710f33539ac9ffdb422813c7d8",
-    "bytes": 1829735,
-    "lines": 742,
-    "gzip_bytes": 799946,
-    "path": "llm-dlc/traces/01a1fb32-004f-74c3-a26b-3d9588e0df8f/logs/c89e36f19d3885ba4660f7601de0eb94708fc8710f33539ac9ffdb422813c7d8.jsonl.gz"
+    "sha256": "0a84e37ec43599587937d2d1f5a5591a480a1b6f43f2028374536b879b153ee2",
+    "bytes": 2359391,
+    "lines": 1018,
+    "gzip_bytes": 1036261,
+    "path": "llm-dlc/traces/01a1fb32-004f-74c3-a26b-3d9588e0df8f/logs/0a84e37ec43599587937d2d1f5a5591a480a1b6f43f2028374536b879b153ee2.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -82,23 +83,37 @@
       "log_sha256": "65de8cb47dacc856039e2611f5772b209c2df8b619b815f41e63c9737a321348"
     },
     {
-      "change_id": "oqlpswkwxnxwxklowrzxwokqnmywnvzx",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "c89e36f19d3885ba4660f7601de0eb94708fc8710f33539ac9ffdb422813c7d8"
-    },
-    {
       "change_id": "zxqxmmysqyynmmmttolnyloxmnkswxwz",
       "commit_id": null,
       "immutable": false,
       "summary": "Bind upgrade references to actual JVM runs and historical CI (verification pending)",
       "body": "The separate curator committed a seed, reproduced the pinned CompSuite and CompCheck join of 13/123, and added checks for the named test, ordered classpath, non-vacuity, identical production sources and loaded library in both runs. Signed encrypted reference packets are kept outside the product checkout. Open calibration model calls used 176,898 and 214,213 uncached input plus generated tokens at 15 minutes. Freeze the 250,000-token per-PR cap for both product versions.\n\nOn JDK 8, the historical rxjava-jdbc named Surefire assertions ran in four fresh reports. Only the new H2 two-row test failed. The Maven 3.6.3 effective models, unchanged client class hashes, dependency digests and separate whole-suite baseline are replayable. Checked the four actual XML test identities, both effective models and the standard prepared target. The curator exercised signature, tamper, wrong-key and stale-test controls. Verification job 20261120-232343-run-the-full-rxjava-jdbc-historical-sure runs the complete historical Surefire test set on both source tags.",
       "log_sha256": "c89e36f19d3885ba4660f7601de0eb94708fc8710f33539ac9ffdb422813c7d8"
+    },
+    {
+      "change_id": "rntwtoxssolrxuoulqxoklrrryvplptz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "0a84e37ec43599587937d2d1f5a5591a480a1b6f43f2028374536b879b153ee2"
+    },
+    {
+      "change_id": "wzoutloywwrskzxosmnzszyylrzqtozx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Measure the CI signal and isolate incident knowledge in CompCheck (verification pending)",
+      "body": "The complete historical rxjava-jdbc Surefire set ran 454 tests on each H2 pin with two skips on each side. The upgrade produced three failures in subclasses inheriting the same assertion. All 105 built production classes matched the published client JAR. The original native claim stopped at DriverManager.getConnection. Commons Text stopped during class intake. The retained reports distinguish those limits from the JVM results. Imported all three collector results and verified their original blobs.\n\nThe separate curator's neutral export retains ordinary sibling tests, checks original Git blobs and scans nested archives for the excluded compiled trigger. The independent reviewer reproduced the Rocker, AWS and Cucumber outcomes in six JVMs and signed the grades. The CompCheck wrapper exercises the disclosed AWS production parser with all knowledge and again with just the two records for that same incident removed. Verification job 20261120-232916-compare-stock-compcheck-knowledge-on-aws records each tool command and its first actual outcome. The signed grade, 348 artifact hashes, prepared target and queue schema were checked.",
+      "log_sha256": "0a84e37ec43599587937d2d1f5a5591a480a1b6f43f2028374536b879b153ee2"
     }
   ],
   "logs": {
+    "0a84e37ec43599587937d2d1f5a5591a480a1b6f43f2028374536b879b153ee2": {
+      "bytes": 2359391,
+      "lines": 1018,
+      "gzip_bytes": 1036261,
+      "url": null
+    },
     "1a3c120518ef77436be383ae4c815c68b0770104b844fe151c4306b764482a90": {
       "bytes": 944535,
       "lines": 352,
