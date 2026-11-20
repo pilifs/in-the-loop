@@ -12,29 +12,30 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T00:39:44.525Z",
-  "duration_seconds": 10935,
+  "ended": "2026-11-20T01:01:53.948Z",
+  "duration_seconds": 12264,
   "stats": {
-    "turns": 3,
-    "api_calls": 744,
-    "tool_calls": 1989,
-    "tool_errors": 73,
-    "compactions": 2,
-    "peak_context_tokens": 468302,
+    "turns": 4,
+    "api_calls": 819,
+    "tool_calls": 2181,
+    "tool_errors": 76,
+    "compactions": 3,
+    "peak_context_tokens": 478319,
     "usage": {
-      "input_tokens": 1266948,
-      "output_tokens": 359859,
-      "cache_read_input_tokens": 217982080,
+      "input_tokens": 1449805,
+      "output_tokens": 400635,
+      "cache_read_input_tokens": 234105984,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 1205,
-    "exec": 715,
-    "apply_patch": 44,
-    "wait": 25
+    "Bash": 1315,
+    "exec": 781,
+    "apply_patch": 53,
+    "wait": 32
   },
   "files_touched": [
+    "examples/197-shared-int-array-poststates/proofs/overlap.py",
     "examples/310-threeten-complete-hours/README.md",
     "examples/310-threeten-complete-hours/controls/ShortCrossings.java",
     "examples/310-threeten-complete-hours/controls/check_retries.py",
@@ -58,17 +59,23 @@
     "lib/models/README.md",
     "lib/models/build.sh",
     "lib/models/java/util/concurrent/ConcurrentHashMap.java",
+    "lib/src/bmc/bits.rs",
+    "lib/src/bmc/finite_words.rs",
     "lib/src/bmc/gaps.rs",
     "lib/src/bmc/mod.rs",
     "lib/src/bmc/observed.rs",
     "lib/src/bmc/regex.rs",
     "lib/src/bmc/runtime.rs",
+    "lib/src/bmc/sat.rs",
     "lib/src/bmc/strings.rs",
     "lib/src/classpath.rs",
+    "lib/src/harness/expr.rs",
     "lib/src/interp/natives.rs",
     "lib/src/models.rs",
     "lib/src/observed.rs",
     "lib/src/observed/ObservedInitializer.java",
+    "lib/src/pairing/array_roots.rs",
+    "lib/src/property.rs",
     "lib/src/statement.rs",
     "lib/tests/claims.rs",
     "lib/tests/fixtures/claims/claims/EnumOrder.java",
@@ -76,6 +83,7 @@
     "lib/tests/fixtures/claims/claims/Registries.java",
     "lib/tests/fixtures/claims/claims/Samples.java",
     "lib/tests/fixtures/claims/claims/UnicodePoints.java",
+    "lib/tests/paired_array_roots.rs",
     "llm-dlc/tools/test_performance.py",
     "verification/README.md",
     "verification/pipeline.py",
@@ -113,24 +121,38 @@
     {
       "index": 2,
       "started": "2026-11-19T23:41:41.585Z",
-      "ended": "2026-11-20T00:39:44.525Z",
+      "ended": "2026-11-20T00:46:36.695Z",
       "turns": 1,
-      "api_calls": 231,
+      "api_calls": 249,
       "usage": {
-        "input_tokens": 470714,
-        "output_tokens": 115761,
-        "cache_read_input_tokens": 74502016,
+        "input_tokens": 482174,
+        "output_tokens": 126255,
+        "cache_read_input_tokens": 83015040,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 468302
+      "peak_context_tokens": 478319
+    },
+    {
+      "index": 3,
+      "started": "2026-11-20T00:46:36.703Z",
+      "ended": "2026-11-20T01:01:53.948Z",
+      "turns": 1,
+      "api_calls": 57,
+      "usage": {
+        "input_tokens": 171397,
+        "output_tokens": 30282,
+        "cache_read_input_tokens": 7610880,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 180705
     }
   ],
   "log": {
-    "sha256": "bb1c5d731ed81cebfbb3a2fe5a6071ce9054546e9838ec5a5e933efdf6c5086f",
-    "bytes": 18533929,
-    "lines": 5912,
-    "gzip_bytes": 6922993,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/bb1c5d731ed81cebfbb3a2fe5a6071ce9054546e9838ec5a5e933efdf6c5086f.jsonl.gz"
+    "sha256": "0518564ba273b4198889fde576454d69cf1b4340c82881ec214761f8228616ce",
+    "bytes": 21046631,
+    "lines": 6514,
+    "gzip_bytes": 7908279,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/0518564ba273b4198889fde576454d69cf1b4340c82881ec214761f8228616ce.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -469,9 +491,31 @@
       "summary": "Propose the restart watcher decision-number placeholder for trace review",
       "body": "The masked collector context describes its 41-character watcher decision template. Recomputing the finding ID from the public decision numbers with their last digit replaced by N identified finding 1bbaf196. The template joins the two individual decision IDs already proposed for human review. The eleven selected tests passed.",
       "log_sha256": "bb1c5d731ed81cebfbb3a2fe5a6071ce9054546e9838ec5a5e933efdf6c5086f"
+    },
+    {
+      "change_id": "llsuqxpuzorptvsxkkpwqnvwpmltkwlo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "0518564ba273b4198889fde576454d69cf1b4340c82881ec214761f8228616ce"
+    },
+    {
+      "change_id": "lmwyrqvpvwsuwvqwmkzykypmytsryzvu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Qualify both array poststates through throws (verification pending)",
+      "body": "When exception class is outside the selected observer, the pair harness records a normal int or an out-of-range long sentinel for a throw and retains the actual final arrays. The unconditional JVM handler also catches exceptions whose JDK inheritance JBMC stubs. Class-sensitive observations keep the original handler.\n\nJob 20261120-005556-recheck-jbmc-preservation-on-all-71-null runs both revision pairs against the original 71-heap profile and archives the raw checker statements. The capped preserving probe was complete and non-vacuous. Independent JVM tests verified pre-throw writes, both int endpoints and a thrown versus returned outcome. Example 197 replay validation and all 34 changed test groups passed.",
+      "log_sha256": "0518564ba273b4198889fde576454d69cf1b4340c82881ec214761f8228616ce"
     }
   ],
   "logs": {
+    "0518564ba273b4198889fde576454d69cf1b4340c82881ec214761f8228616ce": {
+      "bytes": 21046631,
+      "lines": 6514,
+      "gzip_bytes": 7908279,
+      "url": null
+    },
     "06c62a8ed209911b20366c322c62d051683ce29e05fe2b31c839564585ef83d3": {
       "bytes": 6085576,
       "lines": 1767,

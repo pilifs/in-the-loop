@@ -1,5 +1,6 @@
 """Qualify the integrated JBMC profile on a preserving and a discriminating pair of actual methods."""
 
+import argparse
 import hashlib
 import json
 import os
@@ -13,7 +14,7 @@ sys.path.insert(0, str(HERE.parents[1] / "lib/benchmark"))
 from run import measure
 
 
-def run(work):
+def run(work, records=None):
     exe = os.environ["JVMCONTRACT"]
     builds = {}
     for name in ("baseline", "alternative", "controls/preserving"):
@@ -40,6 +41,10 @@ def run(work):
                 for value in claim[field]:
                     command.extend([flag, json.dumps(value) if isinstance(value, dict) else value])
             measured = measure(command, 120)
+            raw = measured["stdout"].encode()
+            raw_file = f"{profile}-{Path(name).name}.stdout"
+            if records is not None:
+                (records / raw_file).write_bytes(raw)
             try:
                 outcome = json.loads(measured["stdout"])
                 if not isinstance(outcome, dict) or "verdict" not in outcome:
@@ -56,17 +61,26 @@ def run(work):
             results.append(qualified)
             rows.append({"profile": profile, "domainAndObservationSha256": key, "semantics": semantic, "pair": name,
                          "engine": actual_engine, "expected": expected, "verdict": outcome["verdict"], "qualified": qualified,
+                         "argv": command, "statement": stated,
+                         "verifierOutput": raw_file if records is not None else None,
+                         "verifierOutputSha256": hashlib.sha256(raw).hexdigest(),
                          "problem": outcome.get("problem"), "replay": outcome.get("replay"), "witness": witness or None,
                          "seconds": measured["seconds"], "peakMiB": measured["peakMB"]})
         if all(results):
             break
     return {"checkerCommit": os.getenv("VERIFY_SOURCE_COMMIT"), "checkerLibTree": os.getenv("JVMCONTRACT_LIB_TREE"),
+            "checkerSha256": hashlib.sha256(Path(exe).read_bytes()).hexdigest(),
             "classSha256": {name: hashlib.sha256((dest / "arrays/Update.class").read_bytes()).hexdigest() for name, dest in builds.items()},
             "rows": rows, "overlapQualified": all(results)}
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--records", type=Path, help="directory for the checker output of each real execution")
+    args = parser.parse_args()
+    if args.records:
+        args.records.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory() as directory:
-        report = run(Path(directory))
+        report = run(Path(directory), args.records)
     print(json.dumps(report, indent=2))
     sys.exit(0 if report["overlapQualified"] else 1)

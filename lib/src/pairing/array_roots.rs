@@ -156,11 +156,15 @@ impl ArrayRoots {
         out
     }
 
-    fn invocation(&self, prefix: &str, owner: &str, method: &str) -> String {
+    fn invocation(&self, prefix: &str, owner: &str, method: &str, observe_exception: bool) -> String {
         let mut s = self.roots(prefix);
-        writeln!(s, "        int {prefix}Result = 0; Throwable {prefix}Failure = null;").unwrap();
         let args = self.arguments(prefix);
-        writeln!(s, "        try {{ {prefix}Result = {owner}.{method}({args}); }} catch (Throwable e) {{ {prefix}Failure = e; }}").unwrap();
+        if observe_exception {
+            writeln!(s, "        int {prefix}Result = 0; Throwable {prefix}Failure = null;").unwrap();
+            writeln!(s, "        try {{ {prefix}Result = {owner}.{method}({args}); }} catch (Throwable e) {{ {prefix}Failure = e; }}").unwrap();
+        } else {
+            writeln!(s, "        long {prefix}Result = call{prefix}({args});").unwrap();
+        }
         s
     }
 
@@ -176,6 +180,18 @@ impl ArrayRoots {
         }
         s.push_str("            default: return new int[0];\n        }\n    }\n");
         let signature = self.inputs().iter().map(|p| format!("{} {}", p.ty.java_name(), p.name)).collect::<Vec<_>>().join(", ");
+        let observe_exception = options.selected_observations.contains(&Observation::Exception);
+        if !observe_exception {
+            // The poststate is observable even after a throw. A return from finally compiles to a JVM
+            // catch-all, including in JBMC where a stubbed exception's superclass can be missing.
+            // Sign-extending any normal int result to long keeps it distinct from NO_RETURN.
+            s.push_str("    static final long NO_RETURN = 0x100000000L;\n");
+            let params = self.inputs().iter().enumerate().map(|(i, p)| format!("{} p{i}", p.ty.java_name())).collect::<Vec<_>>().join(", ");
+            let args = self.arguments("p");
+            for (prefix, owner) in [("a", format!("before.{class}")), ("b", class.to_string())] {
+                writeln!(s, "    static long call{prefix}({params}) {{\n        long value = NO_RETURN;\n        try {{ value = {owner}.{method}({args}); }} finally {{ return value; }}\n    }}").unwrap();
+            }
+        }
         writeln!(s, "    static boolean accepts({signature}) {{ return {}; }}", options.assume.as_deref().unwrap_or("true")).unwrap();
         writeln!(s, "    public static boolean admitted({flat}) {{").unwrap();
         let invalid = self.inputs().iter().enumerate().filter(|(_, p)| p.ty != Type::Int)
@@ -185,13 +201,14 @@ impl ArrayRoots {
         writeln!(s, "        return accepts({});\n    }}", self.arguments("d")).unwrap();
         s.push_str("    static boolean sameCells(int[] x, int[] y) {\n        if (x == y) return true;\n        if (x == null || y == null || x.length != y.length) return false;\n        for (int i = 0; i < x.length; i++) if (x[i] != y[i]) return false;\n        return true;\n    }\n");
         writeln!(s, "    public static boolean agree({flat}) {{").unwrap();
-        let before = self.invocation("a", &format!("before.{class}"), method);
-        let after = self.invocation("b", class, method);
+        let before = self.invocation("a", &format!("before.{class}"), method, observe_exception);
+        let after = self.invocation("b", class, method, observe_exception);
         s.push_str(&before);
         s.push_str(&after);
         let index = |n: &str| self.names.iter().position(|p| p == n).expect("validated observation");
         let projection = options.selected_observations.iter().map(|observation| match observation {
-            Observation::Result => "(aFailure == null ? bFailure == null && aResult == bResult : bFailure != null)".into(),
+            Observation::Result if observe_exception => "(aFailure == null ? bFailure == null && aResult == bResult : bFailure != null)".into(),
+            Observation::Result => "aResult == bResult".into(),
             Observation::Exception => "(aFailure == null ? bFailure == null : bFailure != null && aFailure.getClass() == bFailure.getClass())".into(),
             Observation::ArrayParameter { parameter } => format!("sameCells(a{0}, b{0})", index(parameter)),
             Observation::Identity { left, right } => format!("((a{0} == a{1}) == (b{0} == b{1}))", index(left), index(right)),
@@ -206,7 +223,8 @@ impl ArrayRoots {
             writeln!(s, "    public static char[] observe{prefix}({flat}) {{").unwrap();
             s.push_str(&call);
             let values = options.selected_observations.iter().map(|obs| match obs {
-                Observation::Result => format!("({prefix}Failure == null ? Integer.toString({prefix}Result) : \"null\")"),
+                Observation::Result if observe_exception => format!("({prefix}Failure == null ? Integer.toString({prefix}Result) : \"null\")"),
+                Observation::Result => format!("({prefix}Result == NO_RETURN ? \"null\" : Long.toString({prefix}Result))"),
                 Observation::Exception => format!("({prefix}Failure == null ? \"null\" : \"\\\"\" + {prefix}Failure.getClass().getName() + \"\\\"\")"),
                 Observation::ArrayParameter { parameter } => format!("java.util.Arrays.toString({prefix}{})", index(parameter)),
                 Observation::Identity { left, right } => format!("({prefix}{} == {prefix}{})", index(left), index(right)),

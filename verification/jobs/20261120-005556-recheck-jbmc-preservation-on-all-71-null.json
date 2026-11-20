@@ -1,0 +1,55 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-005556-recheck-jbmc-preservation-on-all-71-null",
+  "title": "Recheck JBMC preservation on all 71 nullable array heaps",
+  "description": "Compare both final roots for the original maintaining and skipped-write methods, including nulls, shared roots, and distinct arrays with equal cells. The generated observer must preserve writes made before an exception. Compare the semantic and class digests with the previous refusal and retain both raw checker statements and JVM witness evidence.",
+  "kind": "library",
+  "capabilities": [
+    "jbmc:arrays",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "197"
+    ],
+    "jobs": [
+      "20261119-164549-197-integrated-jbmc-preserving-and-discr"
+    ]
+  },
+  "expected": "The full 71-heap profile has a complete non-vacuous JBMC establishment and a JVM-reproduced refutation with both root observers.",
+  "submitted": {
+    "at": "2026-11-20T00:55:56+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "20s",
+    "memoryLimit": "2G",
+    "timeout": "5m"
+  },
+  "steps": [
+    {
+      "name": "Run the preserving and distinguishing pairs",
+      "run": "python3 -I examples/197-shared-int-array-poststates/proofs/overlap.py --records verification/wide-array-checks > verification/wide-array-checks.json",
+      "cwd": "."
+    },
+    {
+      "name": "Require the full frozen profile and both qualified verdicts",
+      "run": "python3 -c \"import json; r=json.load(open('verification/wide-array-checks.json')); assert len(r['rows']) == 2 and all(s['profile'] == 'nullable-shared-binary-length-2' and s['qualified'] for s in r['rows'])\"",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/wide-array-checks",
+    "verification/wide-array-checks.json"
+  ]
+}

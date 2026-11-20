@@ -86,6 +86,54 @@ fn the_both_root_witness_observes_each_requested_projection_on_the_jvm() {
 }
 
 #[test]
+fn a_throw_keeps_earlier_writes_and_differs_from_every_returned_int() {
+    jvmcontract::tool_tier!();
+    if Command::new("javac").arg("-version").output().is_err() { return; }
+    let tmp = tempfile::tempdir().unwrap();
+    let dirs = ["old", "new"].map(|side| {
+        let dir = tmp.path().join(side);
+        std::fs::create_dir(&dir).unwrap();
+        let source = dir.join("Update.java");
+        let write = if side == "old" { 1 } else { 2 };
+        let first = if side == "old" { "Integer.MIN_VALUE" } else { "a[3]" };
+        std::fs::write(&source, format!("public class Update {{
+            public static int apply(int[] a, int op) {{
+                if (op == 0) {{ a[0] = {write}; return a[3]; }}
+                if (op == 1) return {first};
+                return op == 2 ? Integer.MAX_VALUE : -1;
+            }}
+        }}")).unwrap();
+        assert!(Command::new("javac").args(["-g", "-parameters", "-d"]).arg(&dir).arg(source).status().unwrap().success());
+        dir
+    });
+    let mut options = equivalence::Options::new(&dirs[0], &dirs[1], "Update#apply");
+    options.engine = Engine::Native;
+    options.max_array_length = 1;
+    options.assume = Some("a.length == 1 && op >= 0 && op <= 3".into());
+    options.selected_observations = serde_json::from_value(json!([{"kind":"result"}, {"kind":"array-parameter","parameter":"a"}])).unwrap();
+    options.work = Some(tmp.path().join("proof"));
+    let out = equivalence::run(&options).unwrap();
+    assert_eq!(out.verdict, Verdict::Violation, "{}", out.output);
+    let check = tmp.path().join("Check.java");
+    std::fs::write(&check, r#"class Check {
+        public static void main(String[] args) {
+            for (int op = 0; op <= 3; op++) {
+                if (RegressionPair.agree(1, 0, op) != (op >= 2)) throw new AssertionError(op);
+                String old = new String(RegressionPair.observea(1, 0, op));
+                String now = new String(RegressionPair.observeb(1, 0, op));
+                String[] oldValues = {"[null,[1]]", "[-2147483648,[0]]", "[2147483647,[0]]", "[-1,[0]]"};
+                String[] newValues = {"[null,[2]]", "[null,[0]]", "[2147483647,[0]]", "[-1,[0]]"};
+                if (!old.endsWith(oldValues[op] + "}") || !now.endsWith(newValues[op] + "}"))
+                    throw new AssertionError(old + " / " + now);
+            }
+        }
+    }"#).unwrap();
+    let cp = std::env::join_paths([out.work.join("pair"), dirs[1].clone(), out.work.join("before-classes")]).unwrap();
+    let result = Command::new("java").arg("-cp").arg(cp).arg(check).output().unwrap();
+    assert!(result.status.success(), "{}", String::from_utf8_lossy(&result.stderr));
+}
+
+#[test]
 fn a_cloned_alias_dropped_comparison_or_swapped_observer_fails_the_finite_check() {
     jvmcontract::tool_tier!();
     let Some(result) = check("right-root") else { return };
