@@ -2,6 +2,74 @@
   "schema": "verification-results-index/v1",
   "results": [
     {
+      "id": "20261120-000646-prove-the-twelve-sub-hour-crossings-at-t",
+      "title": "Prove the twelve sub-hour crossings at the ThreeTenBP repair",
+      "status": "failed",
+      "summary": "failed: 1 failed step(s) in 0.2s, peak 32.8 MiB (estimated 1m00s, 2.0 GiB)",
+      "attention": [
+        "declared output examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings was not produced",
+        "declared output examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings was not produced",
+        "step 1 (Check introduction of the corrected handling on the two original artifacts) exited 2, expected 0"
+      ],
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "310"
+        ],
+        "jobs": [
+          "20261119-231539-retry-threetenbp-hours-after-exact-jdk-a"
+        ]
+      },
+      "sourceCommit": "194b659c89525da6fbefbff5abba2fb63cc43715",
+      "finishedAt": "2026-11-20T00:11:09+00:00",
+      "wallSeconds": 0.2,
+      "peakMemoryBytes": 34443264,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 60.0,
+        "notes": "The 12-input fixed-clock diagnostic proved the elapsed-minute expression within two seconds. Both tasks run independently on the same pair of pins."
+      },
+      "host": "vm-1",
+      "result": "20261120-000646-prove-the-twelve-sub-hour-crossings-at-t/result.json"
+    },
+    {
+      "id": "20261120-000227-threetenbp-same-day-with-observed-chrono",
+      "title": "ThreeTenBP same-day with observed chronology",
+      "status": "passed",
+      "summary": "passed: 1 passed step(s) in 46.7s, peak 315.6 MiB (estimated 10m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-as-expected×1",
+      "attention": [
+        "step 1 (Check the bound task and publish its own receipt) was held back 23.9s by its 1-CPU quota in 46.7s: it would run faster with more CPUs (a JVM needs 2)"
+      ],
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "310"
+        ],
+        "jobs": [
+          "20261119-231539-retry-threetenbp-hours-after-exact-jdk-a"
+        ]
+      },
+      "sourceCommit": "0dc25164bdb9cfed4170e1050c4edb76fe219b42",
+      "finishedAt": "2026-11-20T00:07:53+00:00",
+      "wallSeconds": 46.7,
+      "peakMemoryBytes": 330973184,
+      "estimate": {
+        "cpus": 1.0,
+        "memoryBytes": 2147483648,
+        "durationSeconds": 600.0,
+        "notes": "Each native solver has a 600-second checker budget. The full parent probe used 2.3 seconds. A fixed-clock probe used all 60 seconds. The shared release checker is built once."
+      },
+      "host": "vm-1",
+      "result": "20261120-000227-threetenbp-same-day-with-observed-chrono/result.json"
+    },
+    {
       "id": "20261120-000226-threetenbp-clock-parent-with-observed-ch",
       "title": "ThreeTenBP clock-parent with observed chronology",
       "status": "passed",

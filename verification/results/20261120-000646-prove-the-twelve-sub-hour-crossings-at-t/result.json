@@ -1,0 +1,171 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-000646-prove-the-twelve-sub-hour-crossings-at-t",
+  "title": "Prove the twelve sub-hour crossings at the ThreeTenBP repair",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 0.2s, peak 32.8 MiB (estimated 1m00s, 2.0 GiB)",
+  "attention": [
+    "declared output examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings was not produced",
+    "declared output examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings was not produced",
+    "step 1 (Check introduction of the corrected handling on the two original artifacts) exited 2, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-000646-prove-the-twelve-sub-hour-crossings-at-t.json",
+    "sha256": "09f645b4c49563231de736f65ab60c644320fe43134740906d4f8a6abe2e9b68",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-000646-prove-the-twelve-sub-hour-crossings-at-t",
+      "title": "Prove the twelve sub-hour crossings at the ThreeTenBP repair",
+      "description": "Check the two pinned libraries on every interval of less than an hour that crosses midnight in the original quarter-hour grid, in both directions. The independent direct JVM control enumerated twelve cases, each wrong by one hour on the parent and correct on the fix. Both public tasks must retain their observed chronology state, registry model, bounds and distinct receipt.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "310"
+        ],
+        "jobs": [
+          "20261119-231539-retry-threetenbp-hours-after-exact-jdk-a"
+        ]
+      },
+      "expected": "The parent clock is refuted with an independently replayed witness. The fixed clock is established non-vacuously on all 12 crossings.",
+      "submitted": {
+        "at": "2026-11-20T00:06:46+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 1,
+        "memory": "2G",
+        "memoryLimit": "4G",
+        "duration": "1m",
+        "timeout": "5m",
+        "notes": "The 12-input fixed-clock diagnostic proved the elapsed-minute expression within two seconds. Both tasks run independently on the same pair of pins."
+      },
+      "steps": [
+        {
+          "name": "Check introduction of the corrected handling on the two original artifacts",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-words JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --tasks clock-parent-short-crossings,clock-fix-short-crossings --checker-seconds 120"
+        }
+      ],
+      "outputs": [
+        "examples/310-threeten-complete-hours/receipts/clock-parent-short-crossings",
+        "examples/310-threeten-complete-hours/receipts/clock-fix-short-crossings"
+      ]
+    }
+  },
+  "sourceCommit": "194b659c89525da6fbefbff5abba2fb63cc43715",
+  "startedAt": "2026-11-20T00:11:08+00:00",
+  "finishedAt": "2026-11-20T00:11:09+00:00",
+  "wallSeconds": 1.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1431944,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 300.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 60.0,
+    "notes": "The 12-input fixed-clock diagnostic proved the elapsed-minute expression within two seconds. Both tasks run independently on the same pair of pins."
+  },
+  "usage": {
+    "peakMemoryBytes": 34443264,
+    "wallSeconds": 0.2,
+    "cpuSeconds": 0.2,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check introduction of the corrected handling on the two original artifacts",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-words JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --tasks clock-parent-short-crossings,clock-fix-short-crossings --checker-seconds 120",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 2,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.162,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 34443264,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-introduction-of-the-corr.log",
+        "lines": 1,
+        "bytes": 70,
+        "sha256": "a7468d3c33e5296da84dc5d0e5ca10bc2db4c7b2a4d5ceed65653e80657f0171",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "usage: build.py ID --tasks TASK,TASK [--retry-of EXECUTION,EXECUTION]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-20T00:11:16+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "e1113f1c2d17615fc5f4afe30ad3deff0d68a08a",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e1113f1c2d17615fc5f4afe30ad3deff0d68a08a/jvmcontract",
+    "built": false
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-000646-prove-the-twelve-sub-hour-crossings-at-t"
+}
