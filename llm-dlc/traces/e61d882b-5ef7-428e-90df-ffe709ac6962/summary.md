@@ -2863,6 +2863,12 @@ change `nzqqsxtvxszv` · [log `08773679ab9a`](https://terminalvalue.net/raw-trac
 
 The long-token review rule flagged every watcher decision id (single-NAME-D001: lower-case words, dashes, then -D and a number) that appears in a session log, so each new decision added a warning and an allow-list proposal: about a hundred warnings after the twenty-example run. The rule now skips a token that is wholly in that shape; a mixed-case key with the same prefix still matches (new unit test in test_review.py). The rules are restamped after a full rescan. Two findings remain open and proposed for the allow list: a placeholder id ending in D00N in a watcher transcript, and the made-up value of the new test as it appears in that transcript. Verified with test_costs.py run --changed (11 of 11).
 
+### Record the user's review of the restart and fast-follow runs
+
+change `tqmksxuxpwlu` · [log `08773679ab9a`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz)
+
+The user ruled on 2026-11-20 that the eighteen native outcomes decided under recorded JVM startup conditions (JFreeChart 321: the observed UTC default time zone and calendar factories; Joda-Time 327: the DateTimeZone provider and DateTimeUtils startup states) count as decided, reported as qualified by those conditions and not as unconditional proofs; the original obligations without them stay open. The ruling is in both examples' notes. The user also accepted the watcher's answers D001-D004 of both single-agent runs (foundation-and-python-restart and twenty-example-fast-follow), the two medium-confidence ones included; the fast-follow D005 waits for a later review. Verified with validate_example.py 321 and 327.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/08773679ab9a3cdacb30c2a2977009964d771d8c6921c2ffc2dda6a0940b8dc0.jsonl.gz) has every step in between: reasoning, tool calls and their results.

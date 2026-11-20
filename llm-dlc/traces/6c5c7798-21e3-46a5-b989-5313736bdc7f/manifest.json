@@ -12,34 +12,36 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-20T16:08:13.540Z",
-  "duration_seconds": 427247,
+  "ended": "2026-11-20T16:15:39.714Z",
+  "duration_seconds": 427693,
   "stats": {
-    "turns": 455,
-    "api_calls": 2417,
-    "tool_calls": 2150,
+    "turns": 458,
+    "api_calls": 2437,
+    "tool_calls": 2168,
     "tool_errors": 34,
     "compactions": 9,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 5730,
-      "output_tokens": 1272432,
-      "cache_read_input_tokens": 610536562,
-      "cache_creation_input_tokens": 3370074
+      "input_tokens": 5778,
+      "output_tokens": 1278338,
+      "cache_read_input_tokens": 612905509,
+      "cache_creation_input_tokens": 3384993
     }
   },
   "tools": {
-    "Bash": 2046,
+    "Bash": 2058,
     "Edit": 28,
     "SendMessage": 18,
-    "ToolSearch": 14,
+    "ToolSearch": 15,
     "TaskStop": 12,
     "Write": 8,
     "ListAgents": 7,
     "Read": 7,
     "AskUserQuestion": 6,
+    "WebFetch": 3,
     "Monitor": 2,
-    "Skill": 2
+    "Skill": 2,
+    "WebSearch": 2
   },
   "files_touched": [
     "CLAUDE.md",
@@ -188,24 +190,24 @@
     {
       "index": 9,
       "started": "2026-11-20T12:22:10.685Z",
-      "ended": "2026-11-20T16:08:13.540Z",
-      "turns": 2,
-      "api_calls": 36,
+      "ended": "2026-11-20T16:15:39.714Z",
+      "turns": 5,
+      "api_calls": 56,
       "usage": {
-        "input_tokens": 74,
-        "output_tokens": 15269,
-        "cache_read_input_tokens": 3178961,
-        "cache_creation_input_tokens": 163409
+        "input_tokens": 122,
+        "output_tokens": 21175,
+        "cache_read_input_tokens": 5547908,
+        "cache_creation_input_tokens": 178328
       },
-      "peak_context_tokens": 110181
+      "peak_context_tokens": 125393
     }
   ],
   "log": {
-    "sha256": "f21473647c8b0c0928e7201165da06d85dcad7d7b2171225b3656b0a785f5640",
-    "bytes": 43010806,
-    "lines": 19801,
-    "gzip_bytes": 7091682,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/f21473647c8b0c0928e7201165da06d85dcad7d7b2171225b3656b0a785f5640.jsonl.gz"
+    "sha256": "0fa7521f20a7f40e1dc3155e18a97479adec10514d6ad9597ffbc2002ac4684d",
+    "bytes": 43370769,
+    "lines": 19969,
+    "gzip_bytes": 7162036,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/0fa7521f20a7f40e1dc3155e18a97479adec10514d6ad9597ffbc2002ac4684d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3458,86 +3460,6 @@
       "log_sha256": "f79187d4fa9148f4cb09661f4808d74ab0626e1e0636ca436e9e81e05b719164"
     },
     {
-      "change_id": "xulyotzsuymvqnsmrzqzzktouzutqknq",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Propose the watcher's two decision ids for the allow list",
-      "body": "The watcher session's logs carry single-foundation-and-python-restart-D001 and -D002, the ids single_run.py gives the watcher's continue answers, which the scan reads as long tokens (10126be8, d5cbb565). Checked masked: each occurs after 'continue recorded as'. Proposed for a person to approve; the run's agent proposed 10126be8 too on its own line. The commit also holds the run's decision record (llm-dlc/decisions/single-foundation-and-python-restart.*).",
-      "log_sha256": "b8ec2664cfbb51985e0f09adfd20e06e214e2ae8d73743b82f4813c723202673"
-    },
-    {
-      "change_id": "slvrxzkqtqvzpkqnktyqvlkvxnkrtozx",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 2 job(s)",
-      "body": "20261120-000227-threetenbp-same-day-with-observed-chrono: passed, its receipt in examples/310-threeten-complete-hours/receipts/same-day-observed. 20261120-000646-prove-the-twelve-sub-hour-crossings-at-t: failed: 1 failed step(s) in 0.2s, peak 32.8 MiB (estimated 1m00s, 2.0 GiB); its outputs were not produced. Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way. Two collections that ran beside a commit of the watcher's were folded into this one commit.",
-      "log_sha256": "246385a361eb11c8da1ffd4f5e8f1277381c67155392b9727966a182ac9c8931"
-    },
-    {
-      "change_id": "xymkkkzururwsqlwttkrryltqwwvyuwt",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Regenerate the traces README after folding two results commits",
-      "body": "Folding two verification-result commits that had raced a watcher commit left llm-dlc/traces/README.md out of step with the manifests; sync.py regenerate brings it back.",
-      "log_sha256": "cc445f07c6abff014ad017d7889da9bb62b5349bb1654cdf7f7323d994aa6ecf"
-    },
-    {
-      "change_id": "wzovxqwloyokvpnnsmptmknrltvkxupu",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 3 job(s)",
-      "body": "Outputs applied for 0 of the 3 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-000226-threetenbp-clock-fix-with-observed-chron: failed: 1 failed step(s) in 10m09s, peak 1.5 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-000226-threetenbp-reversal-fix-with-observed-ch: failed: 1 failed step(s) in 10m10s, peak 1.6 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-000227-threetenbp-reversal-parent-with-observed: failed: 1 failed step(s) in 10m10s, peak 990.8 MiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "5fd57355cb26c0f2a1c5ad335ccbe2f32fdcf33d549c11f9b3067da1e5ae7181"
-    },
-    {
-      "change_id": "nkvunvqknrursqmvyzmyupwxlmvvwzww",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261120-001338-prove-the-twelve-sub-hour-crossings-at-t: passed: 1 passed step(s) in 21.7s, peak 182.5 MiB (estimated 1m00s, 2.0 GiB); 31 output file(s) changed; signals: example:task-as-expected×2 Applied 31 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "7c198109efb86f5e179b9ee2a863473d1eb888e818f15283d544f973789e5b0b"
-    },
-    {
-      "change_id": "mrswtquknywomqmxwsppnvvnvoowopzs",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261120-001502-retry-commons-lang-utf-16-search-on-the: passed: 1 passed step(s) in 15.0s, peak 319.9 MiB (estimated 1m00s, 3.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×5 Applied 78 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "8481d8912521b7e2d2d92138ef19bfb0b655c666c3b6556fbcd002c65d3f6896"
-    },
-    {
-      "change_id": "skzzvykuuootsxvykmxqlwuwvvlossmz",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261120-005556-recheck-jbmc-preservation-on-all-71-null: passed: 2 passed step(s) in 7.2s, peak 74.7 MiB (estimated 20.0s, 1.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "8b3c51b2cf35fe3d9e534e004263588e883b619736e1853a67c6af13f7721f30"
-    },
-    {
-      "change_id": "uotkyzwmrkuzzzssyzzpxltowxvzqkkt",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-010828-retry-all-five-full-grid-threetenbp-regi: failed: 4 failed, 1 passed step(s) in 1m44s, peak 848.8 MiB (estimated 1m00s, 2.0 GiB); 30 output file(s) changed; signals: example:task-as-expected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "c33601fd5a07235ea7aac7c79856d3ff85f21fd2aa5b5f13e7f52502fa6a0da6"
-    },
-    {
-      "change_id": "lyszoznyxllslntslktrkxkvusutstxx",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261120-012520-publish-five-linked-full-grid-threetenbp: passed: 5 passed step(s) in 1m36s, peak 848.5 MiB (estimated 1m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×1 Applied 78 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "ce19ce4e6eb498db5ec95577a2b09563dfdf32ce618a4cd4d3fe1e17981a5753"
-    },
-    {
-      "change_id": "kpmstovlvzwwxyvxxzssryqlpuyrxvyk",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261120-013844-qualify-shared-and-distinct-right-root-p: passed: 3 passed step(s) in 18.0s, peak 75.0 MiB (estimated 20.0s, 1.0 GiB); 9 output file(s) changed Applied 9 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "6c5ba832c82312e26095bd89b58ace1494be5a5cabdca42427be1b6e6ccbd0e3"
-    },
-    {
       "change_id": "oxzsrsuyxpmtknxmssqpnyoqmvmlpxkk",
       "commit_id": null,
       "immutable": false,
@@ -3714,6 +3636,54 @@
       "log_sha256": "efa0b8eb185a40637da097ea6743659a6ccf3c3997368dfa4cb4bc4ab0a3c0b6"
     },
     {
+      "change_id": "xulyotzsuymvqnsmrzqzzktouzutqknq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose the watcher's two decision ids for the allow list",
+      "body": "The watcher session's logs carry single-foundation-and-python-restart-D001 and -D002, the ids single_run.py gives the watcher's continue answers, which the scan reads as long tokens (10126be8, d5cbb565). Checked masked: each occurs after 'continue recorded as'. Proposed for a person to approve; the run's agent proposed 10126be8 too on its own line. The commit also holds the run's decision record (llm-dlc/decisions/single-foundation-and-python-restart.*).",
+      "log_sha256": "b8ec2664cfbb51985e0f09adfd20e06e214e2ae8d73743b82f4813c723202673"
+    },
+    {
+      "change_id": "slvrxzkqtqvzpkqnktyqvlkvxnkrtozx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "20261120-000227-threetenbp-same-day-with-observed-chrono: passed, its receipt in examples/310-threeten-complete-hours/receipts/same-day-observed. 20261120-000646-prove-the-twelve-sub-hour-crossings-at-t: failed: 1 failed step(s) in 0.2s, peak 32.8 MiB (estimated 1m00s, 2.0 GiB); its outputs were not produced. Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way. Two collections that ran beside a commit of the watcher's were folded into this one commit.",
+      "log_sha256": "246385a361eb11c8da1ffd4f5e8f1277381c67155392b9727966a182ac9c8931"
+    },
+    {
+      "change_id": "xymkkkzururwsqlwttkrryltqwwvyuwt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Regenerate the traces README after folding two results commits",
+      "body": "Folding two verification-result commits that had raced a watcher commit left llm-dlc/traces/README.md out of step with the manifests; sync.py regenerate brings it back.",
+      "log_sha256": "cc445f07c6abff014ad017d7889da9bb62b5349bb1654cdf7f7323d994aa6ecf"
+    },
+    {
+      "change_id": "wzovxqwloyokvpnnsmptmknrltvkxupu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 3 job(s)",
+      "body": "Outputs applied for 0 of the 3 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-000226-threetenbp-clock-fix-with-observed-chron: failed: 1 failed step(s) in 10m09s, peak 1.5 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-000226-threetenbp-reversal-fix-with-observed-ch: failed: 1 failed step(s) in 10m10s, peak 1.6 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-000227-threetenbp-reversal-parent-with-observed: failed: 1 failed step(s) in 10m10s, peak 990.8 MiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "5fd57355cb26c0f2a1c5ad335ccbe2f32fdcf33d549c11f9b3067da1e5ae7181"
+    },
+    {
+      "change_id": "nkvunvqknrursqmvyzmyupwxlmvvwzww",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-001338-prove-the-twelve-sub-hour-crossings-at-t: passed: 1 passed step(s) in 21.7s, peak 182.5 MiB (estimated 1m00s, 2.0 GiB); 31 output file(s) changed; signals: example:task-as-expected×2 Applied 31 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "7c198109efb86f5e179b9ee2a863473d1eb888e818f15283d544f973789e5b0b"
+    },
+    {
+      "change_id": "mrswtquknywomqmxwsppnvvnvoowopzs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-001502-retry-commons-lang-utf-16-search-on-the: passed: 1 passed step(s) in 15.0s, peak 319.9 MiB (estimated 1m00s, 3.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×5 Applied 78 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "8481d8912521b7e2d2d92138ef19bfb0b655c666c3b6556fbcd002c65d3f6896"
+    },
+    {
       "change_id": "syymwsotsnnzrywnqtryzmpywpuysvlv",
       "commit_id": null,
       "immutable": false,
@@ -3754,6 +3724,22 @@
       "log_sha256": "efa0b8eb185a40637da097ea6743659a6ccf3c3997368dfa4cb4bc4ab0a3c0b6"
     },
     {
+      "change_id": "skzzvykuuootsxvykmxqlwuwvvlossmz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-005556-recheck-jbmc-preservation-on-all-71-null: passed: 2 passed step(s) in 7.2s, peak 74.7 MiB (estimated 20.0s, 1.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "8b3c51b2cf35fe3d9e534e004263588e883b619736e1853a67c6af13f7721f30"
+    },
+    {
+      "change_id": "uotkyzwmrkuzzzssyzzpxltowxvzqkkt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-010828-retry-all-five-full-grid-threetenbp-regi: failed: 4 failed, 1 passed step(s) in 1m44s, peak 848.8 MiB (estimated 1m00s, 2.0 GiB); 30 output file(s) changed; signals: example:task-as-expected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "c33601fd5a07235ea7aac7c79856d3ff85f21fd2aa5b5f13e7f52502fa6a0da6"
+    },
+    {
       "change_id": "qsopuqyvnpzxvwrovzyvwlmwoswzwuny",
       "commit_id": null,
       "immutable": false,
@@ -3762,12 +3748,28 @@
       "log_sha256": "efa0b8eb185a40637da097ea6743659a6ccf3c3997368dfa4cb4bc4ab0a3c0b6"
     },
     {
+      "change_id": "lyszoznyxllslntslktrkxkvusutstxx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-012520-publish-five-linked-full-grid-threetenbp: passed: 5 passed step(s) in 1m36s, peak 848.5 MiB (estimated 1m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×1 Applied 78 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "ce19ce4e6eb498db5ec95577a2b09563dfdf32ce618a4cd4d3fe1e17981a5753"
+    },
+    {
       "change_id": "tsynttsptnpsotumqolwoxnkzwymsyww",
       "commit_id": null,
       "immutable": false,
       "summary": "Close full-grid calendar deadlines (verification pending)",
       "body": "All five full-grid calendar obligations under the captured registry have published receipts on their original subject bindings. The fixed clock and the two reversal checks completed in 5.365, 6.867 and 14.383 checker seconds at their previous 600-second budgets. The parent witness at ticks 2 and 97 returned 24 instead of 23. Resource gap packets now link to their closing receipts. Four property receipts failed schema validation in the previous batch. Its same-day equivalence published successfully, as this audit and the session correction record.\n\nAll 111 outputs from the wide-array and two calendar batches matched their manifest digests. Both example validators and all 37 changed test groups passed. Job 20261120-013844-qualify-shared-and-distinct-right-root-p separately checks a right-root-only JBMC witness for sharing and both projections on the historical nine-heap domain. The checker statements are checked against nullability, the alias group, input guard, bounds and selected observations.\n\nTrace review proposal e1eb1bc6 matches the third public restart watcher decision. All 67 human-approved entries remain identical.",
       "log_sha256": "efa0b8eb185a40637da097ea6743659a6ccf3c3997368dfa4cb4bc4ab0a3c0b6"
+    },
+    {
+      "change_id": "kpmstovlvzwwxyvxxzssryqlpuyrxvyk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-013844-qualify-shared-and-distinct-right-root-p: passed: 3 passed step(s) in 18.0s, peak 75.0 MiB (estimated 20.0s, 1.0 GiB); 9 output file(s) changed Applied 9 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "6c5ba832c82312e26095bd89b58ace1494be5a5cabdca42427be1b6e6ccbd0e3"
     },
     {
       "change_id": "kxvqvqvszpnkqsplzyykyokvmltwlwlt",
@@ -3794,6 +3796,14 @@
       "log_sha256": "a90e8da76e31170e0cd41386381821b7d3da1d86ebc792ed529a0ec7cb2c4b68"
     },
     {
+      "change_id": "pyrvssmmxplltyrmvpwwzzplwppltlyu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind ordered JARs and finite JVM observations (verification pending)",
+      "body": "The public recipe records explicitly selected duplicate dependency classes, confirms their code source and bytes in a fresh JVM, and rejects the opposite dependency order. A typed finite table qualifies each adapter projection independently against every declared direct JVM input. Example 312 changed four invoice amounts on identical client bytes. Example 314 found twelve poststate differences despite identical exception classes. Example 315 found six formatting and six parsing errors on the historical parent yet every round trip held. The three validators, 42 changed test groups, and the reversed-order negative control passed.\n\nJobs 20261120-023617-check-invoice-values-on-swapped-dependen, 20261120-023617-check-partial-copy-state-through-arrayst and 20261120-023617-check-signed-time-in-each-direction-on-t run the frozen native obligations with their own bindings and JVM controls.",
+      "log_sha256": "aebc91696b52f85babbaf21d65acfc5ca04f1b0cbcaac5103cb4bdd4dec0e0bb"
+    },
+    {
       "change_id": "vwpmlwpnpxwruqzqokklrszzlylsrprq",
       "commit_id": null,
       "immutable": false,
@@ -3802,12 +3812,28 @@
       "log_sha256": "7c10078572d0af9cd301f0ac95e8cfb443ba3cb398292d718ca1c324df08caa3"
     },
     {
+      "change_id": "kzmsmqomutxsquqltlnxytqmzrrlwpsr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Check bounded matrix allocation on real bytecode (verification pending)",
+      "body": "The native checker now allocates independent nested arrays, including symbolic row lengths, partial dimensions and Java negative-size behavior. An independently checked finite JVM report shows seven signed-zero errors among 84 Commons Lang arrays, six incorrect CSV equalities among nine pairs, fifteen shared-row errors among eighteen theatre seats, and forty queue histories versus twenty-eight final queues among 121 command words. The public paired route can qualify a generated harness candidate on both original dependency closures. Eight example validators and all 43 changed test groups passed.\n\nJobs 20261120-025230-check-signed-zero-maximum-on-raw-and-num, 20261120-025230-check-csv-row-limit-equality-hash-implic, 20261120-025230-verify-independently-allocated-and-share and 20261120-025230-verify-bounded-queue-histories-and-final check the frozen subjects. Jobs 20261120-025230-replay-the-paired-invoice-witness-on-eac and 20261120-025231-recheck-the-commons-text-lcs-score-after revisit the original invoice candidates and the released LCS matrix. All three initial solver batches remain archived.",
+      "log_sha256": "aebc91696b52f85babbaf21d65acfc5ca04f1b0cbcaac5103cb4bdd4dec0e0bb"
+    },
+    {
       "change_id": "kulpoouzrmkwmwpmynxoqxsvxuwtuzmk",
       "commit_id": null,
       "immutable": false,
       "summary": "Record verification results for 6 job(s)",
       "body": "Outputs applied for 4 of the 6 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-025230-check-csv-row-limit-equality-hash-implic: failed: 1 failed step(s) in 21.8s, peak 679.9 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 20261120-025230-check-signed-zero-maximum-on-raw-and-num: failed: 1 failed step(s) in 13.1s, peak 298.3 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-025230-replay-the-paired-invoice-witness-on-eac: passed: 1 passed step(s) in 8.8s, peak 122.6 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4 Applied 61 output(s). 20261120-025230-verify-bounded-queue-histories-and-final: passed: 1 passed step(s) in 6.2s, peak 132.0 MiB (estimated 2m00s, 2.0 GiB); 62 output file(s) changed; signals: example:task-as-expected×4 Applied 62 output(s). 20261120-025230-verify-independently-allocated-and-share: passed: 1 passed step(s) in 8.8s, peak 139.6 MiB (estimated 2m00s, 2.0 GiB); 137 output file(s) changed; signals: example:task-as-expected×9 Applied 137 output(s). 20261120-025231-recheck-the-commons-text-lcs-score-after: passed: 1 passed step(s) in 3.8s, peak 93.4 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
       "log_sha256": "1193ce9d2ec1f5e0c136685620f98372210a529ccbc833141b7c55c1d9233534"
+    },
+    {
+      "change_id": "tykvyrvvpvzswsyzwpszurmmrvktpqts",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Check frozen Java domains on fresh class loaders (verification pending)",
+      "body": "The twenty examples now declare 123 separate claim and subject pairs. They include ten historical repairs with parent-checked Git revisions and independent direct JVM calibrations. The public finite-domain strategy exhausts a certified Java integer envelope, runs the complete guard and observer on each revision, records per-input evidence, and separately JVM-replays its first counterexample. Class-loader, bridge, compiler, source-provenance, and concrete operation-history evidence accompanies each relevant packet. Replaying a three-offer queue witness refutes its response history and preserves its final contents.\n\nThe native checker and interpreter now copy the assignable prefix before an ArrayStoreException. Native checks also model required boxed Integer cache identities and unboxing. A full-domain native probe refuted the array poststate as the real JVM did. The checker advanced two preexisting list conformance claims to the expected proof and reproduced exception. The conformance benchmark inventory, complete target acceptance suite, changed Rust regressions, and all twenty example plans and JVM calibrations were checked. The historical JFreeChart build expressly binds its two additional package-private classes.\n\nNative and exhaustive verification, the interrupted batch, the like-for-like tiling benchmark and the two affected proof-tier corpus tests are queued in 20261120-032646-native-319-guava-keeps-the-last-put-acro, 20261120-032646-native-320-commons-collections-views-upd, 20261120-032646-native-321-jfreechart-range-endpoints-wi, 20261120-032646-native-322-resource-close-order-and-supp, 20261120-032647-native-323-an-erased-mapper-bridge-rejec, 20261120-032647-native-324-lazy-optional-fallback-has-ob, 20261120-032647-native-325-one-label-method-compiled-to, 20261120-032647-native-326-commons-lang-duration-fields, 20261120-032647-native-327-joda-time-distances-between-l, 20261120-032647-native-328-commons-math-fraction-percent, 20261120-032647-native-329-commons-geometry-intersects-a, 20261120-032647-native-330-two-editors-increment-the-sam, 20261120-032648-exhaustive-jvm-312-one-invoice-class-wit, 20261120-032648-exhaustive-jvm-313-commons-lang-maximum, 20261120-032648-exhaustive-jvm-314-array-copy-leaves-a-p, 20261120-032648-exhaustive-jvm-315-threeten-extra-format, 20261120-032648-exhaustive-jvm-316-commons-csv-row-limit, 20261120-032648-exhaustive-jvm-317-marking-one-seat-in-a, 20261120-032648-exhaustive-jvm-318-bounded-queue-respons, 20261120-032648-exhaustive-jvm-319-guava-keeps-the-last, 20261120-032648-exhaustive-jvm-320-commons-collections-v, 20261120-032648-native-331-floor-tiling-counts-and-two-d, 20261120-032649-exhaustive-jvm-321-jfreechart-range-endp, 20261120-032649-exhaustive-jvm-322-resource-close-order, 20261120-032649-exhaustive-jvm-323-an-erased-mapper-brid, 20261120-032649-exhaustive-jvm-324-lazy-optional-fallbac, 20261120-032649-exhaustive-jvm-325-one-label-method-comp, 20261120-032649-exhaustive-jvm-326-commons-lang-duration, 20261120-032649-exhaustive-jvm-327-joda-time-distances-b, 20261120-032649-exhaustive-jvm-328-commons-math-fraction, 20261120-032649-exhaustive-jvm-329-commons-geometry-inte, 20261120-032649-exhaustive-jvm-330-two-editors-increment, 20261120-032649-exhaustive-jvm-331-floor-tiling-counts-a, 20261120-032650-interrupt-a-reordered-three-claim-tai-ba, 20261120-032650-measure-checked-tiling-summaries-on-iden, 20261120-032650-recheck-the-lcs-matrix-and-its-boxed-res, 20261120-032650-retry-three-array-copy-claims-with-exact, 20261120-033506-check-the-fast-follow-boxing-change-with, 20261120-033516-confirm-jvm-corpus-results-after-fast-fo.",
+      "log_sha256": "aebc91696b52f85babbaf21d65acfc5ca04f1b0cbcaac5103cb4bdd4dec0e0bb"
     },
     {
       "change_id": "xpmqkupmpqltzqmlotsvwuvqyssstzpv",
@@ -3858,6 +3884,14 @@
       "log_sha256": "da4e755d8d40954c68bee3e31a7dfe05b85868ca27e02bb5a4858d1393f7c2da"
     },
     {
+      "change_id": "yqyxonuzltvnxvpmswyzxttlormzvyww",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Verify signed long text and recover bounded batches (verification pending)",
+      "body": "The native checker renders long decimal values including both extrema and models bounds-checked StringBuilder.setCharAt. The fixed TAI formatting probe established the original claim. The compiler and public qualifiers now handle the original Fraction sources with explicitly declared secondary classes, and the resource adapter exposes its frozen argument name. All independent JVM observations repeated. A separate pair of MonthDay checks explicitly admits only calls that return in both directions. Archived outputs retain the earlier attempts, the full matrix-score transfer and the original interrupted TAI completion.\n\nThe changed Rust and Python tests were exercised. The earlier contract fixture now tests a still-unmodeled boolean overload for its refused-contract diagnostic. That contract test, the StringBuilder boundary proof, the source-closure test, the example validators and the finite-witness tests passed.\n\nJobs 20261120-035022-enumerate-fraction-percentages-with-sour, 20261120-035022-enumerate-resource-closure-after-binding, 20261120-035022-native-retry-fraction-percentages-with-s, 20261120-035022-native-retry-resource-closure-after-bind, 20261120-035022-recover-and-reorder-the-interrupted-tai, 20261120-035022-retry-both-exact-tai-formatting-claims-w, 20261120-035732-archive-the-resolved-commons-text-releas, 20261120-035732-check-natively-reversal-on-normal-monthd, 20261120-035732-enumerate-reversal-on-normal-monthday-ca record the unchanged proof obligations, restricted reversal, full release-score output and the new reordered execution of the interrupted batch.",
+      "log_sha256": "aebc91696b52f85babbaf21d65acfc5ca04f1b0cbcaac5103cb4bdd4dec0e0bb"
+    },
+    {
       "change_id": "mtmnkpqnpklvklpyyrwnpqnxlswuyqkn",
       "commit_id": null,
       "immutable": false,
@@ -3898,310 +3932,6 @@
       "log_sha256": "77755aeeb38dd8d6bd30e50de0e583cab06dbb889f9f50e66ccffef21d42a2ed"
     },
     {
-      "change_id": "oypkvylusrnsuprypnpwywsopqzxsvso",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261120-042933-recheck-both-array-roots-after-the-fast: passed: 1 passed step(s) in 7.0s, peak 126.5 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "e0dbc11f3cc348718c69ed9141ac835476f6849aed7e88814dc923f0203a0ca5"
-    },
-    {
-      "change_id": "vmztxmzqksplromnuqktvuryumqrwxwy",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 2 job(s)",
-      "body": "Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-045612-recheck-cube-intersections-after-native: failed: 1 failed step(s) in 8.4s, peak 187.0 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-045612-verify-both-signed-zero-maxima-with-ieee: passed: 1 passed step(s) in 13.2s, peak 304.2 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4 Applied 61 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "fdfda43f3d812ffc6d5f7905b0b947a60dcdfb214eb79e15401a326f10d388b8"
-    },
-    {
-      "change_id": "qpzmrxkzxmlmlmvpppmpnopnwyknvvoq",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-045612-recheck-guava-map-collisions-after-nativ: failed: 1 failed step(s) in 24.5s, peak 545.5 MiB (estimated 2m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "8cb4fda4498dfc63f31e7b7bf8ac61aeb28091590805b6f56a9d5d99845177b9"
-    },
-    {
-      "change_id": "rrqzpktwksusqyylsomrkrmrqozmsywt",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 3 job(s)",
-      "body": "Outputs applied for 1 of the 3 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-050759-recheck-cube-intersections-after-native: failed: 1 failed step(s) in 8.6s, peak 194.8 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-050759-recheck-guava-map-collisions-after-nativ: failed: 1 failed step(s) in 28.3s, peak 598.1 MiB (estimated 2m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8 20261120-050800-verify-both-signed-zero-maxima-with-ieee: passed: 1 passed step(s) in 13.4s, peak 293.4 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4 Applied 61 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "e82ccda8e87a0b717cc42a4e244322a2d6241a997c5deaaf1beff9be056401b6"
-    },
-    {
-      "change_id": "woyqrqrmoxwqyptwqzlwvwlkzlxtumto",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record the watcher's first answer on the twenty-example-fast-follow run",
-      "body": "D001: continue after cycle 1, since the strict native checker left 70 of the 125 claims open with named blockers, work the agent can do alone.",
-      "log_sha256": "98f73371bc9b526ffc1841ce037a37fd771a872492f9e5f3d90cfe01d7149720"
-    },
-    {
-      "change_id": "txppvxvnnmvsvlsnmkoqxtlklmvzrkzw",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 4 job(s)",
-      "body": "Outputs applied for 1 of the 4 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-051056-repeat-signed-zero-proofs-on-the-bounded: passed: 1 passed step(s) in 13.3s, peak 386.8 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4 Applied 61 output(s). 20261120-051056-verify-cube-hits-through-bounded-vector: failed: 1 failed step(s) in 8.6s, peak 188.3 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-051056-verify-guava-collision-traces-through-it: failed: 1 failed step(s) in 24.2s, peak 653.0 MiB (estimated 2m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-as-expected×2; example:task-unexpected×6 20261120-051057-verify-percentage-overflow-after-bounded: failed: 1 failed step(s) in 14.0s, peak 367.3 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "9ec1cc5f1b040931e71245801ae51906e808c56fcb895ea3f2078d7c29ce03cf"
-    },
-    {
-      "change_id": "usoovloorpuwoqpuvtvnsmvozwomvxnv",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 2 job(s)",
-      "body": "Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-052129-check-cube-hits-through-the-boxed-bsp-tr: failed: 1 failed step(s) in 8.2s, peak 192.0 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-052129-prove-guava-duplicate-entry-handling-wit: passed: 1 passed step(s) in 25.3s, peak 609.6 MiB (estimated 2m00s, 2.0 GiB); 123 output file(s) changed; signals: example:task-as-expected×8 Applied 123 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "c9fce5b9bb70fd2ba44d1e1859bcc7c403aa32a77d031dcdba8c92bb881b07c5"
-    },
-    {
-      "change_id": "tzuqppvnsnwpsqtyuyoyvwssxkurrttq",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 6 job(s)",
-      "body": "Outputs applied for 4 of the 6 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-053726-confirm-every-guava-collision-verdict-on: passed: 1 passed step(s) in 26.3s, peak 585.8 MiB (estimated 2m00s, 2.0 GiB); 123 output file(s) changed; signals: example:task-as-expected×8 Applied 123 output(s). 20261120-053726-confirm-signed-zero-maxima-on-the-final: passed: 1 passed step(s) in 13.7s, peak 295.5 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4 Applied 61 output(s). 20261120-053726-recheck-cube-intersections-with-linked-j: failed: 1 failed step(s) in 8.8s, peak 183.8 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-053726-recheck-fraction-percentages-on-the-fina: failed: 1 failed step(s) in 14.0s, peak 399.9 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 20261120-053727-confirm-both-array-roots-after-the-numer: passed: 1 passed step(s) in 8.4s, peak 125.1 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-053735-confirm-the-published-lcs-score-on-the-f: passed: 2 passed step(s) in 3.8s, peak 87.0 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "8381ae7e808d8bb0621a5c3cb1ad9ac06757ae62ef028bac1376a4bbb5ebb20a"
-    },
-    {
-      "change_id": "mrnlqpqymsymxosvsqxxmoussntlolru",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261120-061145-verify-ordered-resource-failures-with-th: passed: 1 passed step(s) in 8.4s, peak 146.3 MiB (estimated 2m00s, 2.0 GiB); 138 output file(s) changed; signals: example:task-as-expected×9 Applied 138 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "0e05e15c6820aa7692da7a2a068b6d513595f74f54e77bf1eefc1d68c8822c46"
-    },
-    {
-      "change_id": "xonykmoovmmwoyprsqmpowrtwmuqllzt",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 2 job(s)",
-      "body": "Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-061640-prove-fraction-percentages-through-the-o: passed: 1 passed step(s) in 15.8s, peak 374.2 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). 20261120-061640-recheck-partial-dates-through-their-actu: failed: 1 failed step(s) in 16.8s, peak 232.0 MiB (estimated 2m00s, 2.0 GiB); 150 output file(s) changed; signals: example:task-unexpected×10 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "ed1e6570131ec5165db16572960e510f67a5a284a0b02409cfab6b59a668241b"
-    },
-    {
-      "change_id": "lmqqyruunzunvnwnznxoymmnrstplmuu",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261120-062318-verify-canonical-signed-tai-texts-and-in: passed: 1 passed step(s) in 15.6s, peak 502.6 MiB (estimated 2m00s, 2.0 GiB); 92 output file(s) changed; signals: example:task-as-expected×6 Applied 92 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "65b4b1b3e40b5c654172f2f8c62aec05af1d5e3cef94cfe428cc73d3d142c740"
-    },
-    {
-      "change_id": "xlxwnpqooqtmxquqrupppluxsvownlku",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 3 job(s)",
-      "body": "Outputs applied for 3 of the 3 job(s). 20261120-063346-recheck-ordered-resource-failures-on-sha: passed: 1 passed step(s) in 10.6s, peak 138.0 MiB (estimated 2m00s, 2.0 GiB); 138 output file(s) changed; signals: example:task-as-expected×9 Applied 138 output(s). 20261120-063347-recheck-both-array-roots-after-typed-lis: passed: 1 passed step(s) in 9.1s, peak 123.7 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-063347-recheck-the-released-lcs-score-after-typ: passed: 2 passed step(s) in 4.2s, peak 90.7 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "3245654c0a4165ba00a622fd5fd0485a2348c4a7db298ff092936af4d8ae6436"
-    },
-    {
-      "change_id": "przmnzrnullmlzskktlknmsotmryrsrs",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 4 job(s)",
-      "body": "Outputs applied for 2 of the 4 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-063346-recheck-all-signed-tai-observations-on-t: passed: 1 passed step(s) in 19.2s, peak 500.5 MiB (estimated 2m00s, 2.0 GiB); 92 output file(s) changed; signals: example:task-as-expected×6 Applied 92 output(s). 20261120-063346-verify-both-historical-duration-tokenize: failed: 1 failed step(s) in 35.3s, peak 313.8 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×3; example:task-unexpected×3 20261120-063346-verify-partial-dates-past-the-shared-lis: failed: 1 failed step(s) in 17.6s, peak 236.9 MiB (estimated 2m00s, 2.0 GiB); 150 output file(s) changed; signals: example:task-unexpected×10 20261120-063347-repeat-fraction-overflow-checks-on-the-s: passed: 1 passed step(s) in 16.6s, peak 354.1 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "e39918fe3e1f150a8658fa65406936f404a9d7cfd63a43a3b6648a39aaaf4a76"
-    },
-    {
-      "change_id": "utttqwmpooxlqosozxpywwtyoqksukxv",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-063726-compare-bounded-arraylist-claims-across: passed: 1 passed step(s) in 14m29s, peak 2.2 GiB (estimated 12m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "41994d481b69e9edaa42f2ac92dcf3069094de33bba2beb47a4fe2a1b0c19707"
-    },
-    {
-      "change_id": "unwwwmrtrnywmymlntoxrwsropluowqo",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 3 job(s)",
-      "body": "Outputs applied for 3 of the 3 job(s). 20261120-065325-confirm-commons-text-lcs-after-character: passed: 2 passed step(s) in 3.6s, peak 93.9 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261120-065325-confirm-shared-array-poststates-after-ch: passed: 1 passed step(s) in 8.2s, peak 127.0 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-065325-verify-raw-duration-patterns-through-utf: passed: 1 passed step(s) in 36.7s, peak 338.0 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "35be85f4a494faa05dc6a88bc95a3462b25a3ef2536bac6da878bc816634d8d2"
-    },
-    {
-      "change_id": "nwtuyoprummyyvptwomznwxkkzsorknx",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-063726-confirm-jvm-corpus-verdicts-after-select: passed: 1 passed step(s) in 24m06s, peak 2.2 GiB (estimated 12m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "7eed6c054910de59dbf748798ef9daba49b735d404665cb1238db476477d2273"
-    },
-    {
-      "change_id": "uozxzqnlvukskqourkswozmsmpqmlkvv",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-073837-check-immutable-csv-formats-through-boxe: failed: 1 failed step(s) in 28.7s, peak 672.8 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×2; example:task-unexpected×4 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "27e3b4e92e46c54bcdf5565ed61b1496910dc58f1ea8228280129478c3f48938"
-    },
-    {
-      "change_id": "klxwpqxurmntvrxukkuowovxtosmpnpl",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-074513-verify-the-csv-equality-and-hash-contrac: failed: 1 failed step(s) in 30.7s, peak 674.1 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×4; example:task-unexpected×2 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "4b8e9b9aaf932b036d8ba562a74869976b738664eb0e64c8b4f897089365a12a"
-    },
-    {
-      "change_id": "skoqyrnqxmtxxqpouxsrkvyzqpvnwvpk",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261120-075403-verify-both-live-multiset-views-on-the-s: passed: 1 passed step(s) in 13.0s, peak 320.1 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "3e7d743631d71eeee506090986abce897c45fab760200cba7e9c02bc9340034e"
-    },
-    {
-      "change_id": "pmylxlntzrzkwqwvvsvqvzotzyszuuto",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-075435-check-map-and-wrapper-conformance-under: passed: 1 passed step(s) in 14m30s, peak 2.1 GiB (estimated 17m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "c35eec7a1d04426e216b75168e4c7138185145f4fe78df550a3130a9ce936bf7"
-    },
-    {
-      "change_id": "uqnlpwmkystywynuwoypprqxywkllqpr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 3 job(s)",
-      "body": "Outputs applied for 3 of the 3 job(s). 20261120-081135-confirm-aliased-array-roots-after-librar: passed: 1 passed step(s) in 8.6s, peak 124.5 MiB (estimated 3m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-081135-confirm-the-released-lcs-after-library-e: passed: 2 passed step(s) in 3.8s, peak 96.7 MiB (estimated 3m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261120-081743-recheck-ordered-suppression-against-the: passed: 1 passed step(s) in 9.9s, peak 139.0 MiB (estimated 2m00s, 2.0 GiB); 138 output file(s) changed; signals: example:task-as-expected×9 Applied 138 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "245758fdca648df6fe33eed89342501791d33e236a5a5b4488438bbe4e7c4d58"
-    },
-    {
-      "change_id": "poykvqlrwvnrklyorkunwnlrxqmprkkz",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 4 job(s)",
-      "body": "Outputs applied for 0 of the 4 job(s); 1 declared or produced none; 3 kept under outputs/, not applied (the job didn't pass). 20261120-075443-confirm-jvm-corpus-hashes-and-map-outcom: passed: 1 passed step(s) in 24m10s, peak 2.2 GiB (estimated 25m00s, 2.0 GiB); signals: cargo:tests×1 20261120-081134-trace-both-csv-limit-readers-from-string: failed: 1 failed step(s) in 24.8s, peak 670.1 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×4; example:task-unexpected×2 20261120-081134-trace-historical-chart-ranges-through-re: failed: 1 failed step(s) in 20.8s, peak 395.3 MiB (estimated 2m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8 20261120-081743-recheck-both-partial-date-revisions-alon: failed: 1 failed step(s) in 17.2s, peak 248.5 MiB (estimated 2m00s, 2.0 GiB); 150 output file(s) changed; signals: example:task-unexpected×10 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "2988eb89da8412b96b06912768511f270be7e4672f86cee3332e968c5585ce5e"
-    },
-    {
-      "change_id": "wvxqzlrovrypymrmooknrypqpsotnmpl",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 5 job(s)",
-      "body": "Outputs applied for 5 of the 5 job(s). 20261120-083146-recheck-the-two-array-roots-after-sequen: passed: 1 passed step(s) in 8.2s, peak 126.4 MiB (estimated 3m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-083146-repeat-lazy-optional-callback-and-eager: passed: 1 passed step(s) in 7.8s, peak 141.8 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). 20261120-083146-repeat-live-multiset-iterator-verdicts-o: passed: 1 passed step(s) in 13.8s, peak 287.6 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). 20261120-083146-verify-all-csv-equality-hash-and-row-lim: passed: 1 passed step(s) in 23.4s, peak 677.4 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). 20261120-083147-recheck-published-lcs-source-and-release: passed: 2 passed step(s) in 3.6s, peak 91.3 MiB (estimated 3m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "b249d47ca8a18113c5012c713c6e420ebb3f3f20891fe7999d5117cd1a5025e5"
-    },
-    {
-      "change_id": "plotpqlplxsukpvmuqlntqsykskvtquo",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261120-083146-repeat-the-real-duration-lexer-and-callb: passed: 1 passed step(s) in 31.5s, peak 354.3 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "81d5221b55df94e537d07e2f713922fa715c959ea92f95135404ee45ffcf05ab"
-    },
-    {
-      "change_id": "pqzmvyvlskvmtompnkzvrpwwqyzxtxpr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-091126-trace-cube-intersections-across-certifie: failed: 1 failed step(s) in 10.4s, peak 194.9 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "059e575eb7e0505df790323f327207a006f4dc199ed48ea747c673439d214ecf"
-    },
-    {
-      "change_id": "wowlxnkptnnmvvwttzuqmnruqukkztls",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 3 job(s)",
-      "body": "Outputs applied for 3 of the 3 job(s). 20261120-091739-verify-both-original-cube-repairs-throug: passed: 1 passed step(s) in 17.6s, peak 213.3 MiB (estimated 2m00s, 2.0 GiB); 62 output file(s) changed; signals: example:task-as-expected×4 Applied 62 output(s). 20261120-092415-recheck-released-lcs-after-geometry-supp: passed: 2 passed step(s) in 3.6s, peak 93.0 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261120-092415-recheck-the-two-array-roots-after-geomet: passed: 1 passed step(s) in 7.4s, peak 126.8 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "ac67193fbaeccd0a384b88706d41904e609d2fef2a7d5f1711127f1f24ee259e"
-    },
-    {
-      "change_id": "zryrlqymrzxwnywqzypkwvlyomvvzlrx",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-094050-verify-monthday-distances-on-observed-ut: failed: 1 failed step(s) in 32.9s, peak 290.2 MiB (estimated 2m00s, 2.0 GiB); 151 output file(s) changed; signals: example:task-as-expected×7; example:task-unexpected×3 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "19a82277a5865234a13575ee60f876d6152ab372adbf0018147d8cdb610fb43f"
-    },
-    {
-      "change_id": "qvyttlxlqolmpzwpqvxvsoznxwxmpsvn",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261120-100118-verify-all-partial-date-claims-through-b: passed: 1 passed step(s) in 33.3s, peak 249.7 MiB (estimated 2m00s, 2.0 GiB); 152 output file(s) changed; signals: example:task-as-expected×10 Applied 152 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "d236368f4901241cfa95e05d0da99bdb4579a3c13ef727d3016cbacdf80c5342"
-    },
-    {
-      "change_id": "vwpyrpttktxsqvyqlvzyutvkusskrouz",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 2 job(s)",
-      "body": "Outputs applied for 2 of the 2 job(s). 20261120-100812-confirm-array-root-observations-on-the-c: passed: 1 passed step(s) in 8.4s, peak 129.3 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-100812-recheck-released-lcs-on-the-calendar-che: passed: 2 passed step(s) in 3.8s, peak 93.9 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "e2012db8853adab4139426e2dc30b058b96a6586af0644e1aa00569d2a3eeeba"
-    },
-    {
-      "change_id": "nnzyqnokyuuzvvztrtvysxpmypyzvsst",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 2 job(s)",
-      "body": "Outputs applied for 2 of the 2 job(s). 20261120-100439-verify-chart-ranges-on-observed-calendar: passed: 1 passed step(s) in 31.7s, peak 448.9 MiB (estimated 2m00s, 2.0 GiB); 122 output file(s) changed; signals: example:task-as-expected×8 Applied 122 output(s). 20261120-101603-check-earlier-threeten-chronology-bindin: passed: 5 passed step(s) in 1m49s, peak 848.1 MiB (estimated 2m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×1 Applied 78 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "c19fc093361dd37bdcbbbfae0024cb903da61b15a4cc934eca2b4f22da0daf43"
-    },
-    {
-      "change_id": "nnwvvzkqpupmpwxzqwutxlsunrvuknnx",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-100759-check-array-view-and-platform-conformanc: passed: 1 passed step(s) in 14m33s, peak 2.2 GiB (estimated 17m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "0d132640acc6b75c548722faec1e617f5a28d7cc1d6aee4f97322ffff660f72b"
-    },
-    {
-      "change_id": "rxkwlxtuozunsqtopsqzmstvopqplyst",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 2 job(s)",
-      "body": "Outputs applied for 2 of the 2 job(s). 20261120-103714-check-chart-startup-without-a-captured-c: passed: 2 passed step(s) in 19.9s, peak 466.1 MiB (estimated 1m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8 Applied 120 output(s). 20261120-103714-check-partial-dates-without-captured-pro: passed: 2 passed step(s) in 16.4s, peak 256.3 MiB (estimated 1m00s, 2.0 GiB); 150 output file(s) changed; signals: example:task-unexpected×10 Applied 150 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "917a8f90a717d955a02341f7f8ee768bd775dc4f1b2fdfe00f4161d3521ab233"
-    },
-    {
-      "change_id": "ulrrmwowwosntqvqkxlzyspkppzokqrt",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-100812-confirm-jvm-corpus-results-on-the-calend: passed: 1 passed step(s) in 24m11s, peak 2.2 GiB (estimated 25m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
-      "log_sha256": "456e1565da7272a3751c28657e3228aae5bf8b1207b8cdee8aeefeeaa6a0e1de"
-    },
-    {
-      "change_id": "uorwvunulqxvzqxytxztpvzzzwpkopsm",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record the watcher's answers on the twenty-example-fast-follow run",
-      "body": "D002 to D005: continue after cycles 2, 3 and 4 (D004 at medium confidence, flagged), and stop after cycle 5, when every one of the 125 claims had a native result agreeing with the JVM outcomes, 18 of them under recorded JVM startup conditions, which is a question for the user.",
-      "log_sha256": "aebc91696b52f85babbaf21d65acfc5ca04f1b0cbcaac5103cb4bdd4dec0e0bb"
-    },
-    {
-      "change_id": "pyrvssmmxplltyrmvpwwzzplwppltlyu",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Bind ordered JARs and finite JVM observations (verification pending)",
-      "body": "The public recipe records explicitly selected duplicate dependency classes, confirms their code source and bytes in a fresh JVM, and rejects the opposite dependency order. A typed finite table qualifies each adapter projection independently against every declared direct JVM input. Example 312 changed four invoice amounts on identical client bytes. Example 314 found twelve poststate differences despite identical exception classes. Example 315 found six formatting and six parsing errors on the historical parent yet every round trip held. The three validators, 42 changed test groups, and the reversed-order negative control passed.\n\nJobs 20261120-023617-check-invoice-values-on-swapped-dependen, 20261120-023617-check-partial-copy-state-through-arrayst and 20261120-023617-check-signed-time-in-each-direction-on-t run the frozen native obligations with their own bindings and JVM controls.",
-      "log_sha256": "aebc91696b52f85babbaf21d65acfc5ca04f1b0cbcaac5103cb4bdd4dec0e0bb"
-    },
-    {
-      "change_id": "kzmsmqomutxsquqltlnxytqmzrrlwpsr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Check bounded matrix allocation on real bytecode (verification pending)",
-      "body": "The native checker now allocates independent nested arrays, including symbolic row lengths, partial dimensions and Java negative-size behavior. An independently checked finite JVM report shows seven signed-zero errors among 84 Commons Lang arrays, six incorrect CSV equalities among nine pairs, fifteen shared-row errors among eighteen theatre seats, and forty queue histories versus twenty-eight final queues among 121 command words. The public paired route can qualify a generated harness candidate on both original dependency closures. Eight example validators and all 43 changed test groups passed.\n\nJobs 20261120-025230-check-signed-zero-maximum-on-raw-and-num, 20261120-025230-check-csv-row-limit-equality-hash-implic, 20261120-025230-verify-independently-allocated-and-share and 20261120-025230-verify-bounded-queue-histories-and-final check the frozen subjects. Jobs 20261120-025230-replay-the-paired-invoice-witness-on-eac and 20261120-025231-recheck-the-commons-text-lcs-score-after revisit the original invoice candidates and the released LCS matrix. All three initial solver batches remain archived.",
-      "log_sha256": "aebc91696b52f85babbaf21d65acfc5ca04f1b0cbcaac5103cb4bdd4dec0e0bb"
-    },
-    {
-      "change_id": "tykvyrvvpvzswsyzwpszurmmrvktpqts",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Check frozen Java domains on fresh class loaders (verification pending)",
-      "body": "The twenty examples now declare 123 separate claim and subject pairs. They include ten historical repairs with parent-checked Git revisions and independent direct JVM calibrations. The public finite-domain strategy exhausts a certified Java integer envelope, runs the complete guard and observer on each revision, records per-input evidence, and separately JVM-replays its first counterexample. Class-loader, bridge, compiler, source-provenance, and concrete operation-history evidence accompanies each relevant packet. Replaying a three-offer queue witness refutes its response history and preserves its final contents.\n\nThe native checker and interpreter now copy the assignable prefix before an ArrayStoreException. Native checks also model required boxed Integer cache identities and unboxing. A full-domain native probe refuted the array poststate as the real JVM did. The checker advanced two preexisting list conformance claims to the expected proof and reproduced exception. The conformance benchmark inventory, complete target acceptance suite, changed Rust regressions, and all twenty example plans and JVM calibrations were checked. The historical JFreeChart build expressly binds its two additional package-private classes.\n\nNative and exhaustive verification, the interrupted batch, the like-for-like tiling benchmark and the two affected proof-tier corpus tests are queued in 20261120-032646-native-319-guava-keeps-the-last-put-acro, 20261120-032646-native-320-commons-collections-views-upd, 20261120-032646-native-321-jfreechart-range-endpoints-wi, 20261120-032646-native-322-resource-close-order-and-supp, 20261120-032647-native-323-an-erased-mapper-bridge-rejec, 20261120-032647-native-324-lazy-optional-fallback-has-ob, 20261120-032647-native-325-one-label-method-compiled-to, 20261120-032647-native-326-commons-lang-duration-fields, 20261120-032647-native-327-joda-time-distances-between-l, 20261120-032647-native-328-commons-math-fraction-percent, 20261120-032647-native-329-commons-geometry-intersects-a, 20261120-032647-native-330-two-editors-increment-the-sam, 20261120-032648-exhaustive-jvm-312-one-invoice-class-wit, 20261120-032648-exhaustive-jvm-313-commons-lang-maximum, 20261120-032648-exhaustive-jvm-314-array-copy-leaves-a-p, 20261120-032648-exhaustive-jvm-315-threeten-extra-format, 20261120-032648-exhaustive-jvm-316-commons-csv-row-limit, 20261120-032648-exhaustive-jvm-317-marking-one-seat-in-a, 20261120-032648-exhaustive-jvm-318-bounded-queue-respons, 20261120-032648-exhaustive-jvm-319-guava-keeps-the-last, 20261120-032648-exhaustive-jvm-320-commons-collections-v, 20261120-032648-native-331-floor-tiling-counts-and-two-d, 20261120-032649-exhaustive-jvm-321-jfreechart-range-endp, 20261120-032649-exhaustive-jvm-322-resource-close-order, 20261120-032649-exhaustive-jvm-323-an-erased-mapper-brid, 20261120-032649-exhaustive-jvm-324-lazy-optional-fallbac, 20261120-032649-exhaustive-jvm-325-one-label-method-comp, 20261120-032649-exhaustive-jvm-326-commons-lang-duration, 20261120-032649-exhaustive-jvm-327-joda-time-distances-b, 20261120-032649-exhaustive-jvm-328-commons-math-fraction, 20261120-032649-exhaustive-jvm-329-commons-geometry-inte, 20261120-032649-exhaustive-jvm-330-two-editors-increment, 20261120-032649-exhaustive-jvm-331-floor-tiling-counts-a, 20261120-032650-interrupt-a-reordered-three-claim-tai-ba, 20261120-032650-measure-checked-tiling-summaries-on-iden, 20261120-032650-recheck-the-lcs-matrix-and-its-boxed-res, 20261120-032650-retry-three-array-copy-claims-with-exact, 20261120-033506-check-the-fast-follow-boxing-change-with, 20261120-033516-confirm-jvm-corpus-results-after-fast-fo.",
-      "log_sha256": "aebc91696b52f85babbaf21d65acfc5ca04f1b0cbcaac5103cb4bdd4dec0e0bb"
-    },
-    {
-      "change_id": "yqyxonuzltvnxvpmswyzxttlormzvyww",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Verify signed long text and recover bounded batches (verification pending)",
-      "body": "The native checker renders long decimal values including both extrema and models bounds-checked StringBuilder.setCharAt. The fixed TAI formatting probe established the original claim. The compiler and public qualifiers now handle the original Fraction sources with explicitly declared secondary classes, and the resource adapter exposes its frozen argument name. All independent JVM observations repeated. A separate pair of MonthDay checks explicitly admits only calls that return in both directions. Archived outputs retain the earlier attempts, the full matrix-score transfer and the original interrupted TAI completion.\n\nThe changed Rust and Python tests were exercised. The earlier contract fixture now tests a still-unmodeled boolean overload for its refused-contract diagnostic. That contract test, the StringBuilder boundary proof, the source-closure test, the example validators and the finite-witness tests passed.\n\nJobs 20261120-035022-enumerate-fraction-percentages-with-sour, 20261120-035022-enumerate-resource-closure-after-binding, 20261120-035022-native-retry-fraction-percentages-with-s, 20261120-035022-native-retry-resource-closure-after-bind, 20261120-035022-recover-and-reorder-the-interrupted-tai, 20261120-035022-retry-both-exact-tai-formatting-claims-w, 20261120-035732-archive-the-resolved-commons-text-releas, 20261120-035732-check-natively-reversal-on-normal-monthd, 20261120-035732-enumerate-reversal-on-normal-monthday-ca record the unchanged proof obligations, restricted reversal, full release-score output and the new reordered execution of the interrupted batch.",
-      "log_sha256": "aebc91696b52f85babbaf21d65acfc5ca04f1b0cbcaac5103cb4bdd4dec0e0bb"
-    },
-    {
       "change_id": "xxzwmmztolqywwpmnlryykslkyuurvkk",
       "commit_id": null,
       "immutable": false,
@@ -4216,6 +3946,14 @@
       "summary": "Report all 125 Java claim dispositions and their independent evidence (verification pending)",
       "body": "Across examples 312–331, the certified finite JVM route established 92 claim/subject pairs and refuted 33, each on an independent JVM witness. All agreed with the direct input tables. Strict native checking independently decided 55 of the 125 and the report links the other 70 to their actual diagnostics and scopes. It preserves the interrupted ThreeTen batch, controlled tiling measurements, all 60 collected jobs and their original outcomes. The public handoff now shows results across routes, disputes and manifest-checked archived attempts. Four serialized forms of published decision names are proposed for human review.\n\nValidated all 20 cases plus regression examples 197 and 308 on a stable tree. The 43 changed test files passed, the cost inventory lint passed, 306 report links resolved, and a fresh capped native check verified the helper file digest and proved statement. The original 197 array witness receipts and oracle remain valid. Job 20261120-042933-recheck-both-array-roots-after-the-fast repeats all three native claims at their original array, unwind and time bounds against the finished engine.",
       "log_sha256": "aebc91696b52f85babbaf21d65acfc5ca04f1b0cbcaac5103cb4bdd4dec0e0bb"
+    },
+    {
+      "change_id": "oypkvylusrnsuprypnpwywsopqzxsvso",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-042933-recheck-both-array-roots-after-the-fast: passed: 1 passed step(s) in 7.0s, peak 126.5 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "e0dbc11f3cc348718c69ed9141ac835476f6849aed7e88814dc923f0203a0ca5"
     },
     {
       "change_id": "uotvrnxpwvkwroynqlrpluxplylnkvpm",
@@ -4490,6 +4228,270 @@
       "log_sha256": "aebc91696b52f85babbaf21d65acfc5ca04f1b0cbcaac5103cb4bdd4dec0e0bb"
     },
     {
+      "change_id": "vmztxmzqksplromnuqktvuryumqrwxwy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-045612-recheck-cube-intersections-after-native: failed: 1 failed step(s) in 8.4s, peak 187.0 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-045612-verify-both-signed-zero-maxima-with-ieee: passed: 1 passed step(s) in 13.2s, peak 304.2 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4 Applied 61 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "fdfda43f3d812ffc6d5f7905b0b947a60dcdfb214eb79e15401a326f10d388b8"
+    },
+    {
+      "change_id": "qpzmrxkzxmlmlmvpppmpnopnwyknvvoq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-045612-recheck-guava-map-collisions-after-nativ: failed: 1 failed step(s) in 24.5s, peak 545.5 MiB (estimated 2m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "8cb4fda4498dfc63f31e7b7bf8ac61aeb28091590805b6f56a9d5d99845177b9"
+    },
+    {
+      "change_id": "rrqzpktwksusqyylsomrkrmrqozmsywt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 3 job(s)",
+      "body": "Outputs applied for 1 of the 3 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-050759-recheck-cube-intersections-after-native: failed: 1 failed step(s) in 8.6s, peak 194.8 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-050759-recheck-guava-map-collisions-after-nativ: failed: 1 failed step(s) in 28.3s, peak 598.1 MiB (estimated 2m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8 20261120-050800-verify-both-signed-zero-maxima-with-ieee: passed: 1 passed step(s) in 13.4s, peak 293.4 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4 Applied 61 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "e82ccda8e87a0b717cc42a4e244322a2d6241a997c5deaaf1beff9be056401b6"
+    },
+    {
+      "change_id": "woyqrqrmoxwqyptwqzlwvwlkzlxtumto",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the watcher's first answer on the twenty-example-fast-follow run",
+      "body": "D001: continue after cycle 1, since the strict native checker left 70 of the 125 claims open with named blockers, work the agent can do alone.",
+      "log_sha256": "98f73371bc9b526ffc1841ce037a37fd771a872492f9e5f3d90cfe01d7149720"
+    },
+    {
+      "change_id": "txppvxvnnmvsvlsnmkoqxtlklmvzrkzw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 4 job(s)",
+      "body": "Outputs applied for 1 of the 4 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-051056-repeat-signed-zero-proofs-on-the-bounded: passed: 1 passed step(s) in 13.3s, peak 386.8 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4 Applied 61 output(s). 20261120-051056-verify-cube-hits-through-bounded-vector: failed: 1 failed step(s) in 8.6s, peak 188.3 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-051056-verify-guava-collision-traces-through-it: failed: 1 failed step(s) in 24.2s, peak 653.0 MiB (estimated 2m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-as-expected×2; example:task-unexpected×6 20261120-051057-verify-percentage-overflow-after-bounded: failed: 1 failed step(s) in 14.0s, peak 367.3 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "9ec1cc5f1b040931e71245801ae51906e808c56fcb895ea3f2078d7c29ce03cf"
+    },
+    {
+      "change_id": "usoovloorpuwoqpuvtvnsmvozwomvxnv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-052129-check-cube-hits-through-the-boxed-bsp-tr: failed: 1 failed step(s) in 8.2s, peak 192.0 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-052129-prove-guava-duplicate-entry-handling-wit: passed: 1 passed step(s) in 25.3s, peak 609.6 MiB (estimated 2m00s, 2.0 GiB); 123 output file(s) changed; signals: example:task-as-expected×8 Applied 123 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "c9fce5b9bb70fd2ba44d1e1859bcc7c403aa32a77d031dcdba8c92bb881b07c5"
+    },
+    {
+      "change_id": "tzuqppvnsnwpsqtyuyoyvwssxkurrttq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 6 job(s)",
+      "body": "Outputs applied for 4 of the 6 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-053726-confirm-every-guava-collision-verdict-on: passed: 1 passed step(s) in 26.3s, peak 585.8 MiB (estimated 2m00s, 2.0 GiB); 123 output file(s) changed; signals: example:task-as-expected×8 Applied 123 output(s). 20261120-053726-confirm-signed-zero-maxima-on-the-final: passed: 1 passed step(s) in 13.7s, peak 295.5 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4 Applied 61 output(s). 20261120-053726-recheck-cube-intersections-with-linked-j: failed: 1 failed step(s) in 8.8s, peak 183.8 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-053726-recheck-fraction-percentages-on-the-fina: failed: 1 failed step(s) in 14.0s, peak 399.9 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 20261120-053727-confirm-both-array-roots-after-the-numer: passed: 1 passed step(s) in 8.4s, peak 125.1 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-053735-confirm-the-published-lcs-score-on-the-f: passed: 2 passed step(s) in 3.8s, peak 87.0 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "8381ae7e808d8bb0621a5c3cb1ad9ac06757ae62ef028bac1376a4bbb5ebb20a"
+    },
+    {
+      "change_id": "mrnlqpqymsymxosvsqxxmoussntlolru",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-061145-verify-ordered-resource-failures-with-th: passed: 1 passed step(s) in 8.4s, peak 146.3 MiB (estimated 2m00s, 2.0 GiB); 138 output file(s) changed; signals: example:task-as-expected×9 Applied 138 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "0e05e15c6820aa7692da7a2a068b6d513595f74f54e77bf1eefc1d68c8822c46"
+    },
+    {
+      "change_id": "xonykmoovmmwoyprsqmpowrtwmuqllzt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-061640-prove-fraction-percentages-through-the-o: passed: 1 passed step(s) in 15.8s, peak 374.2 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). 20261120-061640-recheck-partial-dates-through-their-actu: failed: 1 failed step(s) in 16.8s, peak 232.0 MiB (estimated 2m00s, 2.0 GiB); 150 output file(s) changed; signals: example:task-unexpected×10 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "ed1e6570131ec5165db16572960e510f67a5a284a0b02409cfab6b59a668241b"
+    },
+    {
+      "change_id": "lmqqyruunzunvnwnznxoymmnrstplmuu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-062318-verify-canonical-signed-tai-texts-and-in: passed: 1 passed step(s) in 15.6s, peak 502.6 MiB (estimated 2m00s, 2.0 GiB); 92 output file(s) changed; signals: example:task-as-expected×6 Applied 92 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "65b4b1b3e40b5c654172f2f8c62aec05af1d5e3cef94cfe428cc73d3d142c740"
+    },
+    {
+      "change_id": "xlxwnpqooqtmxquqrupppluxsvownlku",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 3 job(s)",
+      "body": "Outputs applied for 3 of the 3 job(s). 20261120-063346-recheck-ordered-resource-failures-on-sha: passed: 1 passed step(s) in 10.6s, peak 138.0 MiB (estimated 2m00s, 2.0 GiB); 138 output file(s) changed; signals: example:task-as-expected×9 Applied 138 output(s). 20261120-063347-recheck-both-array-roots-after-typed-lis: passed: 1 passed step(s) in 9.1s, peak 123.7 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-063347-recheck-the-released-lcs-score-after-typ: passed: 2 passed step(s) in 4.2s, peak 90.7 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "3245654c0a4165ba00a622fd5fd0485a2348c4a7db298ff092936af4d8ae6436"
+    },
+    {
+      "change_id": "przmnzrnullmlzskktlknmsotmryrsrs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 4 job(s)",
+      "body": "Outputs applied for 2 of the 4 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261120-063346-recheck-all-signed-tai-observations-on-t: passed: 1 passed step(s) in 19.2s, peak 500.5 MiB (estimated 2m00s, 2.0 GiB); 92 output file(s) changed; signals: example:task-as-expected×6 Applied 92 output(s). 20261120-063346-verify-both-historical-duration-tokenize: failed: 1 failed step(s) in 35.3s, peak 313.8 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×3; example:task-unexpected×3 20261120-063346-verify-partial-dates-past-the-shared-lis: failed: 1 failed step(s) in 17.6s, peak 236.9 MiB (estimated 2m00s, 2.0 GiB); 150 output file(s) changed; signals: example:task-unexpected×10 20261120-063347-repeat-fraction-overflow-checks-on-the-s: passed: 1 passed step(s) in 16.6s, peak 354.1 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "e39918fe3e1f150a8658fa65406936f404a9d7cfd63a43a3b6648a39aaaf4a76"
+    },
+    {
+      "change_id": "utttqwmpooxlqosozxpywwtyoqksukxv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-063726-compare-bounded-arraylist-claims-across: passed: 1 passed step(s) in 14m29s, peak 2.2 GiB (estimated 12m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "41994d481b69e9edaa42f2ac92dcf3069094de33bba2beb47a4fe2a1b0c19707"
+    },
+    {
+      "change_id": "unwwwmrtrnywmymlntoxrwsropluowqo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 3 job(s)",
+      "body": "Outputs applied for 3 of the 3 job(s). 20261120-065325-confirm-commons-text-lcs-after-character: passed: 2 passed step(s) in 3.6s, peak 93.9 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261120-065325-confirm-shared-array-poststates-after-ch: passed: 1 passed step(s) in 8.2s, peak 127.0 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-065325-verify-raw-duration-patterns-through-utf: passed: 1 passed step(s) in 36.7s, peak 338.0 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "35be85f4a494faa05dc6a88bc95a3462b25a3ef2536bac6da878bc816634d8d2"
+    },
+    {
+      "change_id": "nwtuyoprummyyvptwomznwxkkzsorknx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-063726-confirm-jvm-corpus-verdicts-after-select: passed: 1 passed step(s) in 24m06s, peak 2.2 GiB (estimated 12m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "7eed6c054910de59dbf748798ef9daba49b735d404665cb1238db476477d2273"
+    },
+    {
+      "change_id": "uozxzqnlvukskqourkswozmsmpqmlkvv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-073837-check-immutable-csv-formats-through-boxe: failed: 1 failed step(s) in 28.7s, peak 672.8 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×2; example:task-unexpected×4 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "27e3b4e92e46c54bcdf5565ed61b1496910dc58f1ea8228280129478c3f48938"
+    },
+    {
+      "change_id": "klxwpqxurmntvrxukkuowovxtosmpnpl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-074513-verify-the-csv-equality-and-hash-contrac: failed: 1 failed step(s) in 30.7s, peak 674.1 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×4; example:task-unexpected×2 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "4b8e9b9aaf932b036d8ba562a74869976b738664eb0e64c8b4f897089365a12a"
+    },
+    {
+      "change_id": "skoqyrnqxmtxxqpouxsrkvyzqpvnwvpk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-075403-verify-both-live-multiset-views-on-the-s: passed: 1 passed step(s) in 13.0s, peak 320.1 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "3e7d743631d71eeee506090986abce897c45fab760200cba7e9c02bc9340034e"
+    },
+    {
+      "change_id": "pmylxlntzrzkwqwvvsvqvzotzyszuuto",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-075435-check-map-and-wrapper-conformance-under: passed: 1 passed step(s) in 14m30s, peak 2.1 GiB (estimated 17m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "c35eec7a1d04426e216b75168e4c7138185145f4fe78df550a3130a9ce936bf7"
+    },
+    {
+      "change_id": "uqnlpwmkystywynuwoypprqxywkllqpr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 3 job(s)",
+      "body": "Outputs applied for 3 of the 3 job(s). 20261120-081135-confirm-aliased-array-roots-after-librar: passed: 1 passed step(s) in 8.6s, peak 124.5 MiB (estimated 3m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-081135-confirm-the-released-lcs-after-library-e: passed: 2 passed step(s) in 3.8s, peak 96.7 MiB (estimated 3m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261120-081743-recheck-ordered-suppression-against-the: passed: 1 passed step(s) in 9.9s, peak 139.0 MiB (estimated 2m00s, 2.0 GiB); 138 output file(s) changed; signals: example:task-as-expected×9 Applied 138 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "245758fdca648df6fe33eed89342501791d33e236a5a5b4488438bbe4e7c4d58"
+    },
+    {
+      "change_id": "poykvqlrwvnrklyorkunwnlrxqmprkkz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 4 job(s)",
+      "body": "Outputs applied for 0 of the 4 job(s); 1 declared or produced none; 3 kept under outputs/, not applied (the job didn't pass). 20261120-075443-confirm-jvm-corpus-hashes-and-map-outcom: passed: 1 passed step(s) in 24m10s, peak 2.2 GiB (estimated 25m00s, 2.0 GiB); signals: cargo:tests×1 20261120-081134-trace-both-csv-limit-readers-from-string: failed: 1 failed step(s) in 24.8s, peak 670.1 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×4; example:task-unexpected×2 20261120-081134-trace-historical-chart-ranges-through-re: failed: 1 failed step(s) in 20.8s, peak 395.3 MiB (estimated 2m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8 20261120-081743-recheck-both-partial-date-revisions-alon: failed: 1 failed step(s) in 17.2s, peak 248.5 MiB (estimated 2m00s, 2.0 GiB); 150 output file(s) changed; signals: example:task-unexpected×10 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "2988eb89da8412b96b06912768511f270be7e4672f86cee3332e968c5585ce5e"
+    },
+    {
+      "change_id": "wvxqzlrovrypymrmooknrypqpsotnmpl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 5 job(s)",
+      "body": "Outputs applied for 5 of the 5 job(s). 20261120-083146-recheck-the-two-array-roots-after-sequen: passed: 1 passed step(s) in 8.2s, peak 126.4 MiB (estimated 3m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-083146-repeat-lazy-optional-callback-and-eager: passed: 1 passed step(s) in 7.8s, peak 141.8 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). 20261120-083146-repeat-live-multiset-iterator-verdicts-o: passed: 1 passed step(s) in 13.8s, peak 287.6 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). 20261120-083146-verify-all-csv-equality-hash-and-row-lim: passed: 1 passed step(s) in 23.4s, peak 677.4 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). 20261120-083147-recheck-published-lcs-source-and-release: passed: 2 passed step(s) in 3.6s, peak 91.3 MiB (estimated 3m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "b249d47ca8a18113c5012c713c6e420ebb3f3f20891fe7999d5117cd1a5025e5"
+    },
+    {
+      "change_id": "plotpqlplxsukpvmuqlntqsykskvtquo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-083146-repeat-the-real-duration-lexer-and-callb: passed: 1 passed step(s) in 31.5s, peak 354.3 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "81d5221b55df94e537d07e2f713922fa715c959ea92f95135404ee45ffcf05ab"
+    },
+    {
+      "change_id": "pqzmvyvlskvmtompnkzvrpwwqyzxtxpr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-091126-trace-cube-intersections-across-certifie: failed: 1 failed step(s) in 10.4s, peak 194.9 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "059e575eb7e0505df790323f327207a006f4dc199ed48ea747c673439d214ecf"
+    },
+    {
+      "change_id": "wowlxnkptnnmvvwttzuqmnruqukkztls",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 3 job(s)",
+      "body": "Outputs applied for 3 of the 3 job(s). 20261120-091739-verify-both-original-cube-repairs-throug: passed: 1 passed step(s) in 17.6s, peak 213.3 MiB (estimated 2m00s, 2.0 GiB); 62 output file(s) changed; signals: example:task-as-expected×4 Applied 62 output(s). 20261120-092415-recheck-released-lcs-after-geometry-supp: passed: 2 passed step(s) in 3.6s, peak 93.0 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261120-092415-recheck-the-two-array-roots-after-geomet: passed: 1 passed step(s) in 7.4s, peak 126.8 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "ac67193fbaeccd0a384b88706d41904e609d2fef2a7d5f1711127f1f24ee259e"
+    },
+    {
+      "change_id": "zryrlqymrzxwnywqzypkwvlyomvvzlrx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-094050-verify-monthday-distances-on-observed-ut: failed: 1 failed step(s) in 32.9s, peak 290.2 MiB (estimated 2m00s, 2.0 GiB); 151 output file(s) changed; signals: example:task-as-expected×7; example:task-unexpected×3 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "19a82277a5865234a13575ee60f876d6152ab372adbf0018147d8cdb610fb43f"
+    },
+    {
+      "change_id": "qvyttlxlqolmpzwpqvxvsoznxwxmpsvn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-100118-verify-all-partial-date-claims-through-b: passed: 1 passed step(s) in 33.3s, peak 249.7 MiB (estimated 2m00s, 2.0 GiB); 152 output file(s) changed; signals: example:task-as-expected×10 Applied 152 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "d236368f4901241cfa95e05d0da99bdb4579a3c13ef727d3016cbacdf80c5342"
+    },
+    {
+      "change_id": "vwpyrpttktxsqvyqlvzyutvkusskrouz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 2 of the 2 job(s). 20261120-100812-confirm-array-root-observations-on-the-c: passed: 1 passed step(s) in 8.4s, peak 129.3 MiB (estimated 2m00s, 2.0 GiB); 50 output file(s) changed; signals: example:task-as-expected×3 Applied 50 output(s). 20261120-100812-recheck-released-lcs-on-the-calendar-che: passed: 2 passed step(s) in 3.8s, peak 93.9 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "e2012db8853adab4139426e2dc30b058b96a6586af0644e1aa00569d2a3eeeba"
+    },
+    {
+      "change_id": "nnzyqnokyuuzvvztrtvysxpmypyzvsst",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 2 of the 2 job(s). 20261120-100439-verify-chart-ranges-on-observed-calendar: passed: 1 passed step(s) in 31.7s, peak 448.9 MiB (estimated 2m00s, 2.0 GiB); 122 output file(s) changed; signals: example:task-as-expected×8 Applied 122 output(s). 20261120-101603-check-earlier-threeten-chronology-bindin: passed: 5 passed step(s) in 1m49s, peak 848.1 MiB (estimated 2m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×1 Applied 78 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "c19fc093361dd37bdcbbbfae0024cb903da61b15a4cc934eca2b4f22da0daf43"
+    },
+    {
+      "change_id": "nnwvvzkqpupmpwxzqwutxlsunrvuknnx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-100759-check-array-view-and-platform-conformanc: passed: 1 passed step(s) in 14m33s, peak 2.2 GiB (estimated 17m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "0d132640acc6b75c548722faec1e617f5a28d7cc1d6aee4f97322ffff660f72b"
+    },
+    {
+      "change_id": "rxkwlxtuozunsqtopsqzmstvopqplyst",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 2 of the 2 job(s). 20261120-103714-check-chart-startup-without-a-captured-c: passed: 2 passed step(s) in 19.9s, peak 466.1 MiB (estimated 1m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-unexpected×8 Applied 120 output(s). 20261120-103714-check-partial-dates-without-captured-pro: passed: 2 passed step(s) in 16.4s, peak 256.3 MiB (estimated 1m00s, 2.0 GiB); 150 output file(s) changed; signals: example:task-unexpected×10 Applied 150 output(s). Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "917a8f90a717d955a02341f7f8ee768bd775dc4f1b2fdfe00f4161d3521ab233"
+    },
+    {
+      "change_id": "ulrrmwowwosntqvqkxlzyspkppzokqrt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261120-100812-confirm-jvm-corpus-results-on-the-calend: passed: 1 passed step(s) in 24m11s, peak 2.2 GiB (estimated 25m00s, 2.0 GiB); signals: cargo:tests×1 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "456e1565da7272a3751c28657e3228aae5bf8b1207b8cdee8aeefeeaa6a0e1de"
+    },
+    {
+      "change_id": "uorwvunulqxvzqxytxztpvzzzwpkopsm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the watcher's answers on the twenty-example-fast-follow run",
+      "body": "D002 to D005: continue after cycles 2, 3 and 4 (D004 at medium confidence, flagged), and stop after cycle 5, when every one of the 125 claims had a native result agreeing with the JVM outcomes, 18 of them under recorded JVM startup conditions, which is a question for the user.",
+      "log_sha256": "aebc91696b52f85babbaf21d65acfc5ca04f1b0cbcaac5103cb4bdd4dec0e0bb"
+    },
+    {
       "change_id": "szuutkxuoxuoknzmxonzowwzqmwpnuyt",
       "commit_id": null,
       "immutable": false,
@@ -4504,6 +4506,22 @@
       "summary": "Stop reading decision ids as long tokens",
       "body": "The long-token review rule flagged every watcher decision id (single-NAME-D001: lower-case words, dashes, then -D and a number) that appears in a session log, so each new decision added a warning and an allow-list proposal: about a hundred warnings after the twenty-example run. The rule now skips a token that is wholly in that shape; a mixed-case key with the same prefix still matches (new unit test in test_review.py). The rules are restamped after a full rescan. Two findings remain open and proposed for the allow list: a placeholder id ending in D00N in a watcher transcript, and the made-up value of the new test as it appears in that transcript. Verified with test_costs.py run --changed (11 of 11).",
       "log_sha256": "f21473647c8b0c0928e7201165da06d85dcad7d7b2171225b3656b0a785f5640"
+    },
+    {
+      "change_id": "zvmmqzvorpmmtpylynvkoypysmsrunow",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "0fa7521f20a7f40e1dc3155e18a97479adec10514d6ad9597ffbc2002ac4684d"
+    },
+    {
+      "change_id": "tqmksxuxpwluptvrqpysuxpmkqqsnlqo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the user's review of the restart and fast-follow runs",
+      "body": "The user ruled on 2026-11-20 that the eighteen native outcomes decided under recorded JVM startup conditions (JFreeChart 321: the observed UTC default time zone and calendar factories; Joda-Time 327: the DateTimeZone provider and DateTimeUtils startup states) count as decided, reported as qualified by those conditions and not as unconditional proofs; the original obligations without them stay open. The ruling is in both examples' notes. The user also accepted the watcher's answers D001-D004 of both single-agent runs (foundation-and-python-restart and twenty-example-fast-follow), the two medium-confidence ones included; the fast-follow D005 waits for a later review. Verified with validate_example.py 321 and 327.",
+      "log_sha256": "0fa7521f20a7f40e1dc3155e18a97479adec10514d6ad9597ffbc2002ac4684d"
     }
   ],
   "logs": {
@@ -4613,6 +4631,12 @@
       "bytes": 37694974,
       "lines": 16308,
       "gzip_bytes": 6339146,
+      "url": null
+    },
+    "0fa7521f20a7f40e1dc3155e18a97479adec10514d6ad9597ffbc2002ac4684d": {
+      "bytes": 43370769,
+      "lines": 19969,
+      "gzip_bytes": 7162036,
       "url": null
     },
     "1193ce9d2ec1f5e0c136685620f98372210a529ccbc833141b7c55c1d9233534": {
