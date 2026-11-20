@@ -1,0 +1,345 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T064855Z-8c8692cf",
+  "task": "suppressed-reversed",
+  "claimKey": "c16432554ab2233a",
+  "revisions": [
+    "reversed"
+  ],
+  "startedAt": "2026-11-20T06:48:55.575593+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 60
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-063346-recheck-ordered-resource-failures-on-sha",
+  "sourceCommit": "c938ffc598f7cd20489b9edb557285a3229dc1e7",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 0.0016
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 0.068
+    },
+    {
+      "stage": "adapter-correspondence",
+      "elapsedSeconds": 0.0696
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 0.1125
+    },
+    {
+      "stage": "candidate-recorded",
+      "elapsedSeconds": 0.1759
+    },
+    {
+      "stage": "witness-qualification",
+      "elapsedSeconds": 0.6383
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 0.7432
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "reversed": {
+      "revision": "fixture:reversed",
+      "target": {
+        "class": "paint.Paint",
+        "method": "run",
+        "descriptor": "(I)Lpaint/Outcome;",
+        "loadedFrom": "reversed.jar",
+        "classSha256": "a0051c0c3f13569c760d1fe118e783e06348d11231f2ffecdaa57db4e369a7e1",
+        "adapterCalls": [
+          "paint.Paint#run(I)Lpaint/Outcome;",
+          "paint.Tagged#getSuppressed()[Ljava/lang/Throwable;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "a807f3569f867b84654b5a309197f135666199eb467598bf24aee951dd78c356",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-reversed.jar",
+          "sha256": "b32227a05cdc8d1e2034930e35a6daa419526f3c74e741db3703b37a28918a5d",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "reversed.jar",
+          "sha256": "9f038d83cc48f78cb9678b76351261bd96f46d82e88a517f7ef6ffb2a52f2c53",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from reversed by the fixture recipe"
+        }
+      ]
+    }
+  },
+  "bindingId": "2dfbf19b20d8666ad8f867a9dc99351f802d57042e8cd515a177aaeeab5d45fd",
+  "correspondenceEvidence": "correspondence.json",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/335a22e6e80e41aa92a70769dbe0c550df5af0e1/jvmcontract",
+    "prove",
+    "paint.Projection#suppressed(int)",
+    "--classes",
+    "prepare/reversed/adapter-reversed.jar",
+    "--classpath",
+    "prepare/reversed/reversed.jar",
+    "--assume",
+    "code >= 0 && code < 8",
+    "--assert",
+    "result == 1",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "10",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "0ff976342fcca72a1260b9e143eb70376e4139e3f5080ea62f2aa69e2a164eb0",
+    "commit": "c938ffc598f7cd20489b9edb557285a3229dc1e7",
+    "libTree": "335a22e6e80e41aa92a70769dbe0c550df5af0e1",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 16,
+      "maxArrayLength": 10
+    },
+    "timeout": 60,
+    "scope": {
+      "label": "adapter",
+      "meaning": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+      "method": "paint.Paint#run(I)Lpaint/Outcome;",
+      "revisions": {
+        "reversed": {
+          "commit": "fixture:reversed",
+          "loadedFrom": "reversed.jar",
+          "classSha256": "a0051c0c3f13569c760d1fe118e783e06348d11231f2ffecdaa57db4e369a7e1",
+          "origin": "built from reversed by the fixture recipe",
+          "parameters": {
+            "names": [
+              "mask"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": {
+        "entry": "paint.Projection#suppressed(I)I",
+        "mapping": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+        "correspondence": "finite-oracle",
+        "cases": 8
+      },
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "reversed": [
+        {
+          "path": "adapter-reversed.jar",
+          "sha256": "b32227a05cdc8d1e2034930e35a6daa419526f3c74e741db3703b37a28918a5d",
+          "role": "adapter"
+        },
+        {
+          "path": "reversed.jar",
+          "sha256": "9f038d83cc48f78cb9678b76351261bd96f46d82e88a517f7ef6ffb2a52f2c53",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "paint.Projection#suppressed(I)I",
+    "entryBindings": {
+      "reversed": {
+        "entry": "paint.Projection#suppressed(I)I",
+        "classSha256": "4331440adb1cd29279a26d56d9fb144af87fe0faf5bbfe1f834736ee4b66329f",
+        "loadedFrom": "adapter-reversed.jar",
+        "subject": "paint.Paint#run(I)Lpaint/Outcome;",
+        "subjectClassSha256": "a0051c0c3f13569c760d1fe118e783e06348d11231f2ffecdaa57db4e369a7e1"
+      }
+    },
+    "recipe": {
+      "kind": "adapter",
+      "command": "prove",
+      "subject": "paint.Paint#run(I)Lpaint/Outcome;",
+      "checkedEntry": "paint.Projection#suppressed(I)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "code >= 0 && code < 8"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result == 1"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "16"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "10"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+      "correspondence": {
+        "entry": "paint.Projection#suppressed(I)I",
+        "mapping": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+        "correspondence": "finite-oracle",
+        "cases": 8
+      }
+    },
+    "commits": {
+      "reversed": "fixture:reversed"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m",
+      "JVMCONTRACT_SOLVER": "bitwuzla-finite",
+      "JVMCONTRACT_BITWUZLA": "/home/filip/tools/bitwuzla/current"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "reversed": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/335a22e6e80e41aa92a70769dbe0c550df5af0e1/jvmcontract",
+          "gaps",
+          "--target",
+          "paint.Projection#suppressed(int)",
+          "--classes",
+          "prepare/reversed/adapter-reversed.jar",
+          "--classpath",
+          "prepare/reversed/reversed.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-reversed.stdout",
+        "stderr": "verifier/probe-reversed.stderr",
+        "gaps": [
+          {
+            "id": "jdk-void-method:java.lang.Throwable.addSuppressed(Ljava/lang/Throwable;)V@jdk-21.0.13",
+            "kind": "jdk-void-method",
+            "call": "java.lang.Throwable.addSuppressed(java.lang.Throwable)",
+            "sites": [
+              "paint.Paint.run:7"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0551,
+      "peakRssBytes": 80003072,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0551,
+    "peakRssBytes": 80003072,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.061,
+  "missing": [],
+  "replayEvidence": "replay.json",
+  "receipt": "receipts/suppressed-reversed/20261120T064855Z-8c8692cf/result.json",
+  "preparedClaim": "01f697765486b30e",
+  "firstBlocker": null,
+  "endedAt": "2026-11-20T06:48:56.318948+00:00"
+}

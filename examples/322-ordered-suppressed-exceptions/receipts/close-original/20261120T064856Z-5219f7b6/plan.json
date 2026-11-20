@@ -1,0 +1,190 @@
+{
+  "plan": {
+    "example": "322",
+    "task": "close-original",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "paint.Paint#run(I)Lpaint/Outcome;",
+    "revisions": [
+      "original"
+    ],
+    "claim": {
+      "task": "close-original",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "paint.Paint#run(I)Lpaint/Outcome;",
+      "file": "claims/close.json",
+      "sha256": "a74e7648ed14ccd5a03598fa2424d7695b5591ea53ffdbaeea17b8634e17d439",
+      "property": "close",
+      "claimKind": "property",
+      "statement": "Resources close in reverse order of the two declared acquisitions.",
+      "assume": "code >= 0 && code < 8",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/paint/Cases.java",
+          "sha256": "0f24398b5f8260d88ed3056c5958668fccf72c9fa979e6077709f6281e1f6de6"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "be125f3b4a6d5503e9e9ba4b8b627c73885eb77673f7f4a14848a937a5265a36"
+        }
+      ],
+      "adapter": {
+        "entry": "paint.Projection#close(I)I",
+        "mapping": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+        "correspondence": "finite-oracle",
+        "cases": 8
+      },
+      "key": "e66308467b6fb8ad"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "original",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "original",
+        "adapters": [
+          "adapter/paint/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/close-original"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-063346-recheck-ordered-resource-failures-on-sha/examples/322-ordered-suppressed-exceptions",
+    "network": false
+  },
+  "inputs": {
+    "example": "322",
+    "task": "close-original",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "paint.Paint#run(I)Lpaint/Outcome;",
+    "revisions": [
+      "original"
+    ],
+    "claim": {
+      "task": "close-original",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "paint.Paint#run(I)Lpaint/Outcome;",
+      "file": "claims/close.json",
+      "sha256": "a74e7648ed14ccd5a03598fa2424d7695b5591ea53ffdbaeea17b8634e17d439",
+      "property": "close",
+      "claimKind": "property",
+      "statement": "Resources close in reverse order of the two declared acquisitions.",
+      "assume": "code >= 0 && code < 8",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 10
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/paint/Cases.java",
+          "sha256": "0f24398b5f8260d88ed3056c5958668fccf72c9fa979e6077709f6281e1f6de6"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "be125f3b4a6d5503e9e9ba4b8b627c73885eb77673f7f4a14848a937a5265a36"
+        }
+      ],
+      "adapter": {
+        "entry": "paint.Projection#close(I)I",
+        "mapping": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+        "correspondence": "finite-oracle",
+        "cases": 8
+      },
+      "key": "e66308467b6fb8ad"
+    },
+    "artifacts": [
+      {
+        "revision": "original",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "original",
+        "adapters": [
+          "adapter/paint/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/paint/Projection.java",
+        "sha256": "1dc7486d3575dba08461409313d698f48842817f3fc174671d1daf00713376ef"
+      }
+    ]
+  },
+  "key": "f7dd86ea29b1742469388a10390a844e475bf314b3067f414e9490928f7b5215"
+}

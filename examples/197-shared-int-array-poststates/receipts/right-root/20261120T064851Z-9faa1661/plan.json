@@ -1,0 +1,206 @@
+{
+  "plan": {
+    "example": "197",
+    "task": "right-root",
+    "kind": "equivalence",
+    "relation": "preservation",
+    "target": "arrays.Update#apply([I[I)I",
+    "revisions": [
+      "reference",
+      "skipped-write"
+    ],
+    "claim": {
+      "task": "right-root",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "arrays.Update#apply([I[I)I",
+      "file": "claims/right-root.json",
+      "sha256": "4b0105968ea10858733eeae13a1b7576df73d8a8c1d5029f1a1c81171dd1bc1a",
+      "property": "right-root",
+      "claimKind": "preservation",
+      "statement": "Both versions agree on the final contents of the right root for every admitted input heap.",
+      "assume": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
+      "assert": null,
+      "throws": [],
+      "nullable": [
+        "left",
+        "right"
+      ],
+      "mayAlias": [
+        "left,right"
+      ],
+      "observations": [
+        {
+          "kind": "array-parameter",
+          "parameter": "right"
+        }
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 2
+      },
+      "explicitBounds": {
+        "maxArrayLength": 2,
+        "unwind": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "root-driver",
+          "kind": "driver",
+          "path": "driver/arrays/RootCases.java",
+          "sha256": "aa08a4dab75223b756d23790de1ad2db8f5422ff54690da47baa6b37436e33d4"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "1d51111027fe71a83ec413f8a23b63655dc33c0b35c2d8a23c38373aebd20b82"
+        }
+      ],
+      "key": "e67571d87352995c"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "reference",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "baseline",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "skipped-write",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "alternative",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/right-root"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-063347-recheck-both-array-roots-after-typed-lis/examples/197-shared-int-array-poststates",
+    "network": false
+  },
+  "inputs": {
+    "example": "197",
+    "task": "right-root",
+    "kind": "equivalence",
+    "relation": "preservation",
+    "target": "arrays.Update#apply([I[I)I",
+    "revisions": [
+      "reference",
+      "skipped-write"
+    ],
+    "claim": {
+      "task": "right-root",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "arrays.Update#apply([I[I)I",
+      "file": "claims/right-root.json",
+      "sha256": "4b0105968ea10858733eeae13a1b7576df73d8a8c1d5029f1a1c81171dd1bc1a",
+      "property": "right-root",
+      "claimKind": "preservation",
+      "statement": "Both versions agree on the final contents of the right root for every admitted input heap.",
+      "assume": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
+      "assert": null,
+      "throws": [],
+      "nullable": [
+        "left",
+        "right"
+      ],
+      "mayAlias": [
+        "left,right"
+      ],
+      "observations": [
+        {
+          "kind": "array-parameter",
+          "parameter": "right"
+        }
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 2
+      },
+      "explicitBounds": {
+        "maxArrayLength": 2,
+        "unwind": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "root-driver",
+          "kind": "driver",
+          "path": "driver/arrays/RootCases.java",
+          "sha256": "aa08a4dab75223b756d23790de1ad2db8f5422ff54690da47baa6b37436e33d4"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "1d51111027fe71a83ec413f8a23b63655dc33c0b35c2d8a23c38373aebd20b82"
+        }
+      ],
+      "key": "e67571d87352995c"
+    },
+    "artifacts": [
+      {
+        "revision": "reference",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "baseline",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      },
+      {
+        "revision": "skipped-write",
+        "route": "fixture",
+        "repository": "https://github.com/pilifs/in-the-loop",
+        "fixture": "alternative",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "c8bc0090a8bc55727d40546485b405101eb1d0bded4f2a8bbfe83949ef4215cf"
+}
