@@ -12,7 +12,7 @@ offset 18. The source JAR and the pinned upstream file have the same Git blob. [
 | Same build with the second row sharing the first | 44 / 225 | 2 |
 
 The native baseline stopped at the multidimensional allocation after 0.446 seconds, at 84.3 MiB peak RSS.
-Its score claim remains open. The bound is four cells per array, unwind 18, with the same two input selectors
+That baseline left the score claim open. The bound is four cells per array, unwind 18, with the same two input selectors
 and Java oracle used for the JVM run. [Measured run](records/690f0383-3b2c-42fd-9dc3-bcf95393f5db/result.json)
 
 `python3 -I pilot.py --java-home "$JDK21_HOME" --artifacts "$ARTIFACT_DIR"` from this folder checks both pinned
@@ -26,3 +26,5 @@ the score for each word pair and rejects duplicated or missing pairs. The immuta
 are available with `python3 examples/tools/targets/workflow_handoff.py handoff 308` from the repository root.
 
 The original release score claim subsequently passed its strict native check at the original four-cell bound, unwind 18 and 120-second deadline. Bounded multidimensional allocation advanced the first attempt to Integer.valueOf. The next run executed the boxed result and verified the score in 0.726 seconds at 77.8 MiB maximum process RSS. The independent JVM reran all 225 pairs on the release, source rebuild and row-sharing control. [Matrix attempt](records/matrix-transfer.json) · [Boxing transfer](records/boxing-transfer.json)
+
+A second strict release run took 0.997 seconds and 78.7 MiB. The complete checker statement records the guard, asserted score, complete unwind and non-vacuity witness. [Full checker output](records/release-score-native.json) · [Release and independent comparisons](records/release-score-transfer.json)

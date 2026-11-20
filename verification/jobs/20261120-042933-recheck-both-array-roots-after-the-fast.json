@@ -1,0 +1,54 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-042933-recheck-both-array-roots-after-the-fast",
+  "title": "Recheck both array roots after the fast-follow engine changes",
+  "description": "Repeat example 197 on the two original nullable, possibly aliased int array roots with binary cells, array bound two, unwind eight, the original checker budget and ordered fixture artifacts. Check return preservation and reproduce each failing poststate on the JVM. The original jobs predate execution journals and are linked as the comparison.",
+  "kind": "real-world",
+  "capabilities": [
+    "native:array-alias",
+    "target:equivalence"
+  ],
+  "links": {
+    "examples": [
+      "197",
+      "314",
+      "317"
+    ],
+    "jobs": [
+      "20261119-164548-197-paired-array-observation-return-only",
+      "20261119-164549-197-paired-array-observation-right-root",
+      "20261119-164549-197-paired-array-observation-both-roots"
+    ]
+  },
+  "expected": "The return-only property is established, the right-root and both-root properties are refuted with qualified JVM witnesses, and every public task exits as expected.",
+  "submitted": {
+    "at": "2026-11-20T04:29:33+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "Check the three original array observations",
+      "run": "python3 examples/tools/build.py 197 --tasks return-only,right-root,both-roots --checker-seconds 600",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/197-shared-int-array-poststates/receipts/return-only",
+    "examples/197-shared-int-array-poststates/receipts/right-root",
+    "examples/197-shared-int-array-poststates/receipts/both-roots"
+  ]
+}

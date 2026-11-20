@@ -15,7 +15,7 @@ import tempfile
 import time
 
 from targets import executions, interfaces, qualification, recipes, replay_candidate, route, runtime, runtime_jar, workflow, workflow_ingest
-from targets.finite_oracle import Table, project
+from targets.finite_oracle import Table, canonical, project
 
 LAUNCHER = Path(__file__).with_name("java") / "IsolatedCases.java"
 LIMIT = 4096
@@ -133,7 +133,8 @@ def run_claim(plan, work, shared, launcher_classes, seconds):
     jdk = runtime._verifier_jdk(plan, prepared)
     invocation = recipe.bind(plan, "jvmcontract", built, "verifier", seconds)
     prep_seconds = time.monotonic() - started
-    control_key = workflow.canonical_digest([[(a.path, a.sha256) for a in built[r][2]] for r in plan.revisions] + [list(plan.revisions)])
+    control_key = workflow.canonical_digest({"controls": claim["controls"], "revisions": [
+        (r, [(a.path, a.sha256) for a in built[r][2]]) for r in plan.revisions]})
     if control_key not in shared["controls"]:
         controls = runtime.run_controls(plan, prepared, work / "controls")
         if isinstance(controls, interfaces.Unsupported):
@@ -358,30 +359,76 @@ def validate_record(plan, record):
                     or actual["classpath"] != [a["sha256"] for a in side["classpath"]]
                     or actual["entryClassSha256"] != side["entry"]["classSha256"]):
                 raise ValueError("the fresh JVM replay differs from the enumerated observation or bytes")
+        adapter = plan.claim.get("adapter")
+        oracle = next((c for c in plan.claim["controls"] if adapter and c["id"] == adapter["correspondence"]), None)
+        if oracle and oracle["path"].endswith(".json"):
+            table = Table(Path(plan.folder) / oracle["path"])
+            joined = replay.get("finiteObservation") or {}
+            case = table.cases[failed[0]]
+            field = joined.get("field")
+            if (field not in table.fields or table.fields[field].get("entry") != recipe.entry
+                    or type(joined.get("id")) is not int or joined["id"] != case["id"]
+                    or canonical(joined.get("input")) != canonical(case["input"])
+                    or joined.get("tableSha256") != oracle["sha256"] or set(joined.get("direct", {})) != set(plan.revisions)):
+                raise ValueError("the witness does not identify the frozen direct observation and semantic input")
+            for rev, direct in joined["direct"].items():
+                expected = table.expected(case, {"direct": direct}, field)
+                if replay["sides"][rev]["values"] != [project(direct[field], expected, table.fields[field]), None]:
+                    raise ValueError("the decoded direct witness differs from the fresh JVM replay")
 
 
-def evidence(folder, plan):
+def recorded_batches(folder):
+    """Collect live journals and manifest-checked archives from unsuccessful pipeline jobs."""
+    from targets.claim_history import evidence_folders, has_evidence, read_json
+    folder = Path(folder).resolve()
+    root = folder.parent.parent
+    relative = folder.relative_to(root)
+    batches = []
+    for directory, manifest in evidence_folders(root, folder):
+        for path in sorted((directory / "records/finite-proofs").glob("*/batch.json")):
+            if not has_evidence(directory, manifest, relative, path):
+                continue
+            batch = read_json(path)
+            if isinstance(batch, dict) and batch.get("schema") == "finite-jvm-batch/v1" and batch.get("id") == path.parent.name:
+                batches.append((path, batch, directory, manifest))
+    return batches
+
+
+def evidence(folder, plan, batches=None):
     """Read linked finite results without treating them as native symbolic results."""
+    from targets.claim_history import has_evidence
+    folder = Path(folder).resolve()
+    relative = folder.relative_to(folder.parent.parent)
     found = []
-    for path in sorted((Path(folder) / "records/finite-proofs").glob("*/batch.json")):
-        batch = json.loads(path.read_text())
+    seen = set()
+    if batches is None:
+        batches = recorded_batches(folder)
+    for path, batch, directory, manifest in batches:
         item = next((r for r in batch["completed"] if r["task"] == plan.task), None)
         if item is None:
             continue
         file = path.parent / (plan.task + ".json")
-        proof = {"batch": batch["id"], "retryOf": batch["retryOf"], "receipt": str(file.relative_to(folder))}
+        identity = (batch["id"], item["sha256"])
+        if identity in seen or not has_evidence(directory, manifest, relative, file):
+            continue
+        proof = {"batch": batch["id"], "retryOf": batch["retryOf"], "receipt": os.path.relpath(file, folder)}
         try:
-            if workflow.file_sha256(file) != item["sha256"] or batch["claims"][plan.task] != claim_identity(plan):
-                raise ValueError("receipt digest or source binding differs")
+            if workflow.file_sha256(file) != item["sha256"]:
+                raise ValueError("receipt digest differs")
+            seen.add(identity)
             record = json.loads(file.read_text())
+            if record.get("reason"):
+                proof["recordedReason"] = record["reason"]
+            if batch["claims"][plan.task] != claim_identity(plan):
+                raise ValueError("the recorded claim or source binding differs")
             validate_record(plan, record)
             proof.update(status=record["status"], inputs=record.get("inputs"), differences=record.get("differences"), scope=batch["scope"])
             if record.get("reason"):
                 proof["reason"] = record["reason"]
-        except (KeyError, TypeError, ValueError, OSError) as error:
+        except (KeyError, TypeError, ValueError, OSError, StopIteration) as error:
             proof.update(status="ineligible", reason=str(error))
         found.append(proof)
-    return found
+    return sorted(found, key=lambda r: r["batch"])
 
 
 def main(argv):

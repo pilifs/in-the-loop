@@ -9706,7 +9706,8 @@
       "notes": [
         "Each CharSequence operand is an actual String of length zero to three over a and b. The original and altered source builds use the same compiler and flags. The release JAR is a third, independently checked artifact.",
         "The release and source rebuild each matched 225 expected scores. The shared-row control differed on 44. The public native probe at unwind 18 and array bound 4 reached the multidimensional allocation and reported it outside the fragment. See the probe intention in history and the matching execution in records.",
-        "The original release score claim subsequently passed its strict native check at the original four-cell bound, unwind 18 and 120-second deadline. Bounded multidimensional allocation advanced the first attempt to Integer.valueOf. The next run executed the boxed result and verified the score in 0.726 seconds at 77.8 MiB maximum process RSS. The independent JVM reran all 225 pairs on the release, source rebuild and row-sharing control. [Matrix attempt](records/matrix-transfer.json) · [Boxing transfer](records/boxing-transfer.json)"
+        "The original release score claim subsequently passed its strict native check at the original four-cell bound, unwind 18 and 120-second deadline. Bounded multidimensional allocation advanced the first attempt to Integer.valueOf. The next run executed the boxed result and verified the score in 0.726 seconds at 77.8 MiB maximum process RSS. The independent JVM reran all 225 pairs on the release, source rebuild and row-sharing control. [Matrix attempt](records/matrix-transfer.json) · [Boxing transfer](records/boxing-transfer.json)",
+        "A second strict release run took 0.997 seconds and 78.7 MiB. The complete checker statement records the guard, asserted score, complete unwind and non-vacuity witness. [Full checker output](records/release-score-native.json) · [Release and independent comparisons](records/release-score-transfer.json)"
       ],
       "source": "https://github.com/apache/commons-text/blob/a70c34e028ab279bb89565606e1ab09011a41bc2/src/main/java/org/apache/commons/text/similarity/LongestCommonSubsequence.java",
       "target": {
@@ -10638,7 +10639,8 @@
       "existingTestsPassed": null,
       "notes": [
         "On the 20 pinned TAI instants the parent failed six exact formatting and six independent parsing cases. Every object round trip passed. The fix passed all three comparisons on every input.",
-        "At negative half a second the parent prints -1.500000000s(TAI) and reads the canonical -0.500000000s(TAI) as positive half a second. Both directions use separately supplied oracle inputs."
+        "At negative half a second the parent prints -1.500000000s(TAI) and reads the canonical -0.500000000s(TAI) as positive half a second. Both directions use separately supplied oracle inputs.",
+        "The native formatter refuted the parent and proved the fix. Both native parsers and both round trips reach Matcher.group(int). The exhaustive JVM decided all six frozen claims. An interrupted three-claim batch retained the completed round trip and the two missing stages. A reordered retry in a fresh checkout reproduced the same bytes and observations. [Batch recovery](records/batch-recovery.json)"
       ],
       "source": "https://github.com/ThreeTen/threeten-extra/commit/1a51a1dc391ddbcbcb20eb7b9d13ceedf6a47c3c",
       "target": {
@@ -11055,7 +11057,8 @@
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "The independent JVM oracle covered 121 inputs on each revision. reject mismatches were 0 for history, 0 for contents. evict mismatches were 40 for history, 28 for contents."
+        "The independent JVM oracle covered 121 inputs on each revision. reject mismatches were 0 for history, 0 for contents. evict mismatches were 40 for history, 28 for contents.",
+        "Each observer first differs at length three. All 13 shorter words passed. Three offers of A refute the response history while preserving the contents. At length three eight words change the responses and six change the contents. [Shortest traces and raw JVM streams](records/finite-grid.json)"
       ],
       "source": null,
       "target": {
@@ -11181,7 +11184,8 @@
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
-        "The independent JVM oracle covered 121 inputs on each revision. parent mismatches were 2 for size, 10 for lookup, 2 for entries. fix mismatches were 0 for size, 0 for lookup, 0 for entries."
+        "The independent JVM oracle covered 121 inputs on each revision. parent mismatches were 2 for size, 10 for lookup, 2 for entries. fix mismatches were 0 for size, 0 for lookup, 0 for entries.",
+        "The parent first differs at length four for each observer. All 40 shorter put traces passed. At length four two traces change the size and entry set, and ten change lookup. [Minimum traces and ordered classpaths](records/finite-grid.json)"
       ],
       "source": "https://github.com/google/guava/commit/87d550f3fe7dc22540b1b6dba21179a1b2b92658",
       "target": {
@@ -11810,7 +11814,8 @@
       "existingTestsPassed": null,
       "notes": [
         "The independent JVM oracle covered 4 inputs on each revision. lazy mismatches were 0 for value, 0 for callbacks. branch mismatches were 0 for value, 0 for callbacks. eager mismatches were 0 for value, 3 for callbacks.",
-        "The concrete Fallback class implements Supplier<Integer>. The lazy and explicit-branch subjects each call it once for empty. The eager subject makes one extra call for each of the three present inputs. The prepared class disassembly identifies the Optional entry and supplier. [Bytecode evidence](records/bytecode.json)"
+        "The concrete Fallback class implements Supplier<Integer>. The lazy and explicit-branch subjects each call it once for empty. The eager subject makes one extra call for each of the three present inputs. The prepared class disassembly identifies the Optional entry and supplier. [Bytecode evidence](records/bytecode.json)",
+        "Strict native checking ran the selected JDK's Optional bytecode, including its empty singleton and the call to the application Supplier. All three value claims and the lazy and explicit-branch callback claims were established. The eager callback claim was refuted and replayed on a present value."
       ],
       "source": null,
       "target": {
@@ -11827,16 +11832,16 @@
           "callbacks-branch",
           "callbacks-eager"
         ],
-        "readiness": "scaffolded",
+        "readiness": "executable",
         "taskReadiness": {
           "replay": "scaffolded",
           "replay-eager": "scaffolded",
-          "value-lazy": "scaffolded",
-          "value-branch": "scaffolded",
-          "value-eager": "scaffolded",
-          "callbacks-lazy": "scaffolded",
-          "callbacks-branch": "scaffolded",
-          "callbacks-eager": "scaffolded"
+          "value-lazy": "executable",
+          "value-branch": "executable",
+          "value-eager": "executable",
+          "callbacks-lazy": "executable",
+          "callbacks-branch": "executable",
+          "callbacks-eager": "executable"
         },
         "expected": {
           "replay": null,
@@ -11849,12 +11854,12 @@
           "callbacks-eager": "refuted"
         },
         "claims": {
-          "value-lazy": null,
-          "value-branch": null,
-          "value-eager": null,
-          "callbacks-lazy": null,
-          "callbacks-branch": null,
-          "callbacks-eager": null
+          "value-lazy": "established",
+          "value-branch": "established",
+          "value-eager": "established",
+          "callbacks-lazy": "established",
+          "callbacks-branch": "established",
+          "callbacks-eager": "refuted"
         },
         "receipts": {
           "replay": {
@@ -11872,6 +11877,54 @@
             "status": null,
             "expectation": "yes",
             "attempts": 1
+          },
+          "value-lazy": {
+            "path": "receipts/value-lazy/20261120T042026Z-0dd02a5f/result.json",
+            "attempt": "20261120T042026Z-0dd02a5f",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "value-branch": {
+            "path": "receipts/value-branch/20261120T042028Z-2596ad8f/result.json",
+            "attempt": "20261120T042028Z-2596ad8f",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "value-eager": {
+            "path": "receipts/value-eager/20261120T042029Z-ee7994dc/result.json",
+            "attempt": "20261120T042029Z-ee7994dc",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "callbacks-lazy": {
+            "path": "receipts/callbacks-lazy/20261120T042031Z-bf90af17/result.json",
+            "attempt": "20261120T042031Z-bf90af17",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "callbacks-branch": {
+            "path": "receipts/callbacks-branch/20261120T042032Z-08f1a411/result.json",
+            "attempt": "20261120T042032Z-08f1a411",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "callbacks-eager": {
+            "path": "receipts/callbacks-eager/20261120T042032Z-4451747b/result.json",
+            "attempt": "20261120T042032Z-4451747b",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 2
           }
         },
         "staleReceipts": [],
@@ -12597,7 +12650,8 @@
       "existingTestsPassed": null,
       "notes": [
         "The independent JVM oracle covered 19 inputs on each revision. recursive mismatches were 0 for exact, 0 for parity. iterative mismatches were 0 for exact, 0 for parity. one-tile mismatches were 17 for exact, 6 for parity. base-change mismatches were 18 for exact, 13 for parity.",
-        "The oracle sums binomial coefficients. It gives 4,181 tilings of length 18. Dropping the two-cell choice first fails at length 2. The benchmark compares two consumers on the same compiled caller and captures cold and warm results when the helper's base case changes."
+        "The oracle sums binomial coefficients. It gives 4,181 tilings of length 18. Dropping the two-cell choice first fails at length 2. The benchmark compares two consumers on the same compiled caller and captures cold and warm results when the helper's base case changes.",
+        "At the same 25-second budget the first recursive exact check took 24.257 seconds inlined and 2.001 seconds with the bounded helper proof. Parity took 17.749 and 1.914 seconds. Changing the helper's base case kept the callers byte-identical and invalidated the helper proof. Both recursive caller tasks now use the checked lemma on 0 through 18. [Measurements and 24 raw checks](records/reuse/comparison.json)"
       ],
       "source": null,
       "target": {
@@ -12692,12 +12746,12 @@
             "attempts": 1
           },
           "exact-recursive": {
-            "path": "receipts/exact-recursive/20261120T034901Z-0762e97b/result.json",
-            "attempt": "20261120T034901Z-0762e97b",
+            "path": "receipts/exact-recursive/20261120T042205Z-ea69413b/result.json",
+            "attempt": "20261120T042205Z-ea69413b",
             "execution": "completed",
             "status": "established",
             "expectation": "yes",
-            "attempts": 1
+            "attempts": 3
           },
           "exact-iterative": {
             "path": "receipts/exact-iterative/20261120T034922Z-23222961/result.json",
@@ -12724,12 +12778,12 @@
             "attempts": 1
           },
           "parity-recursive": {
-            "path": "receipts/parity-recursive/20261120T034940Z-49449625/result.json",
-            "attempt": "20261120T034940Z-49449625",
+            "path": "receipts/parity-recursive/20261120T042029Z-46548055/result.json",
+            "attempt": "20261120T042029Z-46548055",
             "execution": "completed",
             "status": "established",
             "expectation": "yes",
-            "attempts": 1
+            "attempts": 2
           },
           "parity-iterative": {
             "path": "receipts/parity-iterative/20261120T034959Z-4ae158ef/result.json",

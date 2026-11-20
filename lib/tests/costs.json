@@ -33,6 +33,7 @@
    "log:7ebf2c29fcceed1c": "log:7ebf2c29fcceed1cbbce8e9ec5d6c6d686f807ff996a2009d81e9158ee1f0271",
    "log:7fa887ec7a80e4ed": "log:7fa887ec7a80e4ed057c5cabe566e3113ea66b64a9b63598870226f0f53552fc",
    "log:9a4c7376723a063b": "log:9a4c7376723a063bbe8d554629ec7593fb6464570becfffed3745912318daaa2",
+   "log:a7404eb085f9c2ae": "log:a7404eb085f9c2ae8bfcf8d516d2fdd299307eae6d7d052c575ba62a9db81f37",
    "log:a8c5fb5ca78285a8": "log:a8c5fb5ca78285a89f619489ed8f5d46cd2ca2939e3062ab1a6a4bfe2cf43057",
    "log:b08ea89759d5649b": "log:b08ea89759d5649b7818b2275e6b734ae4ae7c55ac67d66fee6484ae9fb7230d",
    "log:b38cb00ee8e399df": "log:b38cb00ee8e399df658a029f6c5f27883260d8a5bdaeb066de451cd7b1f2e2ba",
@@ -179,7 +180,7 @@
   },
   "python": {
    "examples/tools/targets/test_acceptance.py": {"unit": 15, "tool": 0, "proof": 0, "estimated": 15, "retier pending": 0},
-   "examples/tools/targets/test_claim_history.py": {"unit": 0, "tool": 2, "proof": 0, "estimated": 2, "retier pending": 0},
+   "examples/tools/targets/test_claim_history.py": {"unit": 0, "tool": 3, "proof": 0, "estimated": 2, "retier pending": 0},
    "examples/tools/targets/test_fixtures.py": {"unit": 6, "tool": 0, "proof": 0, "estimated": 6, "retier pending": 0},
    "examples/tools/targets/test_gap_inventory.py": {"unit": 11, "tool": 1, "proof": 0, "estimated": 11, "retier pending": 0},
    "examples/tools/targets/test_interfaces.py": {"unit": 4, "tool": 0, "proof": 0, "estimated": 4, "retier pending": 0},
@@ -1073,6 +1074,9 @@
   {"file": "lib/tests/values.rs", "name": "a_claims_value_domains_are_resolved_before_its_key_and_its_checks", "tier": "unit", "calls": [], "cost": {"seconds": 0.06, "kind": "run alone", "runs": 1, "max_seconds": 0.06, "sources": ["log:7fa887ec7a80e4ed"]}, "why": "nothing outside the process"}
  ],
  "python": [
+  {"file": "examples/tools/targets/test_claim_history.py", "name": "ClaimHistoryTest.test_exhaustive_routes_keep_the_native_diagnostic_and_the_interrupted_history", "tier": "tool", "calls": ["process"], "cost": {"seconds": 0.59, "kind": "at most", "sources": ["log:a7404eb085f9c2ae"]}, "why": "spawns process"},
+  {"file": "examples/tools/targets/test_claim_history.py", "name": "ClaimHistoryTest.test_286_groups_shared_claims_and_keeps_the_subjects_and_replays", "tier": "tool", "calls": ["process"], "cost": {"seconds": null, "kind": "estimated", "sources": [], "estimated": "no past run names it: the tier is from what it calls"}, "why": "spawns process"},
+  {"file": "examples/tools/targets/test_claim_history.py", "name": "ClaimHistoryTest.test_288_trials_link_back_to_the_open_frozen_claim", "tier": "tool", "calls": ["process"], "cost": {"seconds": null, "kind": "estimated", "sources": [], "estimated": "no past run names it: the tier is from what it calls"}, "why": "spawns process"},
   {"file": "examples/tools/targets/test_recipes.py", "name": "RecipesTest.test_finite_observations_require_complete_inputs_and_the_selected_projection", "tier": "unit", "calls": [], "cost": {"seconds": 0.04, "kind": "at most", "sources": ["log:093c9fdeb97f0dcc"]}, "why": "nothing outside the process"},
   {"file": "examples/tools/targets/test_recipes.py", "name": "RecipesTest.test_invoice_preparation_rejects_the_other_order_with_identical_client_bytes", "tier": "unit", "calls": [], "cost": {"seconds": 0.04, "kind": "at most", "sources": ["log:093c9fdeb97f0dcc"]}, "why": "nothing outside the process"},
   {"file": "examples/tools/targets/test_recipes.py", "name": "RecipesTest.test_frozen_gradebook_claims_have_different_arguments_on_the_same_bytes", "tier": "unit", "calls": [], "cost": {"seconds": null, "kind": "estimated", "sources": [], "estimated": "no past run names it: the tier is from what it calls"}, "why": "nothing outside the process"},
@@ -1424,8 +1428,6 @@
   {"file": "examples/tools/targets/test_interfaces.py", "name": "InterfacesTest.test_fields", "tier": "unit", "calls": [], "cost": {"seconds": null, "kind": "estimated", "sources": [], "estimated": "no past run names it: the tier is from what it calls"}, "why": "nothing outside the process"},
   {"file": "examples/tools/targets/test_interfaces.py", "name": "InterfacesTest.test_the_types_are_frozen_and_serialisable", "tier": "unit", "calls": [], "cost": {"seconds": null, "kind": "estimated", "sources": [], "estimated": "no past run names it: the tier is from what it calls"}, "why": "nothing outside the process"},
   {"file": "examples/tools/targets/test_interfaces.py", "name": "InterfacesTest.test_a_preparations_directory_and_blocker_are_fields_of_their_own", "tier": "unit", "calls": [], "cost": {"seconds": null, "kind": "estimated", "sources": [], "estimated": "no past run names it: the tier is from what it calls"}, "why": "nothing outside the process"},
-  {"file": "examples/tools/targets/test_claim_history.py", "name": "ClaimHistoryTest.test_286_groups_shared_claims_and_keeps_the_subjects_and_replays", "tier": "tool", "calls": ["process"], "cost": {"seconds": null, "kind": "estimated", "sources": [], "estimated": "no past run names it: the tier is from what it calls"}, "why": "spawns process"},
-  {"file": "examples/tools/targets/test_claim_history.py", "name": "ClaimHistoryTest.test_288_trials_link_back_to_the_open_frozen_claim", "tier": "tool", "calls": ["process"], "cost": {"seconds": null, "kind": "estimated", "sources": [], "estimated": "no past run names it: the tier is from what it calls"}, "why": "spawns process"},
   {"file": "examples/tools/targets/test_packets.py", "name": "PacketMutantTest.test_discovery_finds_every_packet_with_a_mutant_and_its_reference_task", "tier": "unit", "calls": [], "cost": {"seconds": 0.45, "kind": "at most", "sources": ["log:695892eef314b559"]}, "why": "nothing outside the process"},
   {"file": "examples/tools/targets/test_packets.py", "name": "PacketMutantTest.test_each_packet_declares_its_mutant_as_a_revision_in_a_mutation_pair", "tier": "unit", "calls": [], "cost": {"seconds": 0.45, "kind": "at most", "sources": ["log:695892eef314b559"]}, "why": "nothing outside the process"},
   {"file": "examples/tools/targets/test_packets.py", "name": "PacketMutantTest.test_each_packet_plans_its_mutant_replay", "tier": "unit", "calls": [], "cost": {"seconds": 0.45, "kind": "at most", "sources": ["log:695892eef314b559"]}, "why": "nothing outside the process"},

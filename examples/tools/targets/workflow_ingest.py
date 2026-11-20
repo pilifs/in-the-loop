@@ -566,7 +566,7 @@ def verifier_outcome(plan, bound, records):
                 fields.update({"counterexamples": witnesses if verdict == "violation" else [], "domain": outcome.get("domain"),
                                "proof": outcome.get("proof"), "problem": outcome.get("problem"),
                                "replay": {"by": replay["by"], "reproduced": replay["reproduced"]} if replay else None})
-    if verdict in ("verified", "violation") and (v.identities.get("recipe") or plan.claim.get("boundEnvironment")
+    if verdict in ("verified", "violation") and (v.identities.get("recipe") or plan.checkedLemmas or plan.claim.get("boundEnvironment")
             or any(isinstance(o, dict) for o in plan.claim.get("observations", []))):
         from targets import qualification
         classpaths = {}
@@ -603,6 +603,13 @@ def verifier_outcome(plan, bound, records):
         if lemmas != plan.checkedLemmas or bool(lemmas) != ("--lemmas" in v.argv):
             artifact_problem = "the verifier used different checked lemma declarations"
         elif lemmas:
+            copied = Path(v.record).parent / "checked-lemmas.contract" if v.record else None
+            at = v.argv.index("--lemmas") + 1
+            if (v.argv.count("--lemmas") != 1 or not v.directory or copied is None or copied.is_absolute()
+                    or ".." in copied.parts or list(v.argv[at:at+1]) != [copied.as_posix()]
+                    or not (Path(v.directory) / copied).is_file()
+                    or workflow.file_sha256(Path(v.directory) / copied) != lemmas["sha256"]):
+                artifact_problem = "the invoked helper declarations differ from their prepared digest"
             for outcome in outcomes:
                 assumptions = (outcome.get("stated") or {}).get("assumptions") or []
                 if not any(a.get("kind") == "summary" and a.get("basis") == "proved" for a in assumptions):

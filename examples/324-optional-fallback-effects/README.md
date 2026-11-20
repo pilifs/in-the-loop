@@ -9,3 +9,5 @@ The table records the direct observations, and each selected adapter field is ch
 [Frozen inputs and oracle](controls/table.json) · [JVM counts, witnesses and bindings](records/finite-grid.json) · [Required claims](milestones.json) · [Public tasks](target.json)
 
 The concrete Fallback class implements Supplier<Integer>. The lazy and explicit-branch subjects each call it once for empty. The eager subject makes one extra call for each of the three present inputs. The prepared class disassembly identifies the Optional entry and supplier. [Bytecode evidence](records/bytecode.json)
+
+Strict native checking ran the selected JDK's Optional bytecode, including its empty singleton and the call to the application Supplier. All three value claims and the lazy and explicit-branch callback claims were established. The eager callback claim was refuted and replayed on a present value.

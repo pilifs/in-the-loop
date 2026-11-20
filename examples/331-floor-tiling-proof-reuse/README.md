@@ -9,3 +9,5 @@ The table records the direct observations, and each selected adapter field is ch
 [Frozen inputs and oracle](controls/table.json) · [JVM counts, witnesses and bindings](records/finite-grid.json) · [Required claims](milestones.json) · [Public tasks](target.json)
 
 The oracle sums binomial coefficients. It gives 4,181 tilings of length 18. Dropping the two-cell choice first fails at length 2. The benchmark compares two consumers on the same compiled caller and captures cold and warm results when the helper's base case changes.
+
+At the same 25-second budget the first recursive exact check took 24.257 seconds inlined and 2.001 seconds with the bounded helper proof. Parity took 17.749 and 1.914 seconds. Changing the helper's base case kept the callers byte-identical and invalidated the helper proof. Both recursive caller tasks now use the checked lemma on 0 through 18. [Measurements and 24 raw checks](records/reuse/comparison.json)

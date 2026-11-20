@@ -29,9 +29,11 @@ riscv64 binary is not documented publicly. That open question shapes several app
 
 ## Exhaustive integer domains on a JVM
 
-`python3 examples/tools/build.py ID --finite-domain` checks a frozen static entry with one integral input, an int or long result and a bounded integer guard. It extracts a covering interval from mandatory top-level comparisons, then runs the full Java guard and assertion at every point. Each point gets a fresh application class loader on the revision's ordered dependencies. The execution records the exact JDK and the process-wide settings. An adapter also needs agreement with independent direct JVM observations across its declared table.
+`python3 examples/tools/build.py ID --finite-domain` checks a frozen static entry with one Java int parameter, an int or long result and a bounded integer guard. It extracts a covering interval of up to 4,096 values from mandatory top-level comparisons, then runs the full Java guard and assertion at every point. Each point gets a fresh application class loader on the revision's ordered dependencies. The execution records the exact JDK and the process-wide settings. An adapter also needs agreement with independent direct JVM observations across its declared table.
 
 Each task writes its own observations, timings and byte identities under the batch in `records/finite-proofs`. A separate fresh JVM must reproduce a refutation on the named entry. `python3 examples/tools/targets/workflow_handoff.py handoff ID --markdown` shows this bounded JVM evidence alongside the native search. Examples 314, 319 and 325 exercise exceptional array state, operation histories and compiler lowering.
+
+For a native property task, `checkedLemmas` names a local helper contract. The run binds its digest and checks the helper at the caller's bounds. A caller proof using it must state the proved summary. This permits comparing strategies for the same source claim and revision. [Measured recursive callers](331-floor-tiling-proof-reuse/records/reuse/comparison.json)
 
 ## What "crash" means for Java
 

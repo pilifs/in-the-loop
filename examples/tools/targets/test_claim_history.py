@@ -21,6 +21,20 @@ def handoff(*args):
 
 class ClaimHistoryTest(unittest.TestCase):
     @cost("tool")
+    def test_exhaustive_routes_keep_the_native_diagnostic_and_the_interrupted_history(self):
+        history = handoff("315", "--claim", "claims/round-trip.json", "--revision", "fix")
+        self.assertEqual(history["coverage"]["exhaustiveJvm"], {"established": 1, "refuted": 0, "open": 0, "disputed": 0})
+        proofs = history["claims"][0]["subjects"][0]["finiteJvm"]
+        self.assertTrue(any(r["retryOf"] and any(p["batch"] == r["retryOf"] for p in proofs) for r in proofs))
+        parser = handoff("315", "--claim", "claims/parse.json", "--revision", "parent")["claims"][0]["subjects"][0]
+        self.assertEqual(parser["overallConclusion"], "refuted")
+        self.assertTrue(any("Matcher.group" in (e.get("firstBlocker") or "") for e in parser["executions"]))
+        sys.path.insert(0, str(HERE.parent))
+        from targets.claim_history import disposition
+        self.assertEqual(disposition({"ineligible", "open", "refuted"}), "refuted")
+        self.assertEqual(disposition({"established", "refuted"}), "disputed")
+
+    @cost("tool")
     def test_286_groups_shared_claims_and_keeps_the_subjects_and_replays(self):
         history = handoff("286")
         claims = {c["file"]: c for c in history["claims"]}

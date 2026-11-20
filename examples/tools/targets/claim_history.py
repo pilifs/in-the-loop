@@ -169,6 +169,8 @@ def inventory(folder, example, target, claim_filter=None, revision=None):
     root = folder.parent.parent
     claims, replays = {}, []
     receipts, journals = recorded_evidence(root, folder)
+    from targets import finite_check
+    finite_batches = finite_check.recorded_batches(folder)
     jobs, other_jobs = job_history(root, folder, example["id"])
     history = [read_json(path) for path in sorted((folder / "history").glob("*.json"))]
     source = accept.Source(root)
@@ -258,9 +260,10 @@ def inventory(folder, example, target, claim_filter=None, revision=None):
         row["latestEligible"] = row["evidence"][-1] if row["evidence"] else None
         answers = {e["answer"] for e in row["evidence"]}
         row["conclusion"] = "disputed" if len(answers) > 1 else next(iter(answers), "open")
-        if not isinstance(plan, Unsupported) and (folder / "records/finite-proofs").is_dir():
-            from targets import finite_check
-            row["finiteJvm"] = finite_check.evidence(folder, plan)
+        if finite_batches and not isinstance(plan, Unsupported):
+            row["finiteJvm"] = finite_check.evidence(folder, plan, finite_batches)
+            finite_answers = {r["status"] for r in row["finiteJvm"]}
+            row["overallConclusion"] = disposition(answers | finite_answers)
         # Unplannable tasks cannot share a key by virtue of both missing it.
         group = claims.setdefault(key or (file, name), {"claimKey": key, "file": file, "subjects": []})
         if isinstance(plan, Unsupported):
@@ -269,15 +272,35 @@ def inventory(folder, example, target, claim_filter=None, revision=None):
     if claim_filter and not claims and not replays:
         raise ValueError(f"no claim {claim_filter!r} matches the selected revision of {example['id']}")
     required = {}
+    finite = defaultdict(set)
     for group in claims.values():
         for subject in group["subjects"]:
             if subject.get("expected") and group["claimKey"]:
                 pair = group["claimKey"], tuple(subject["revisions"])
                 required.setdefault(pair, set()).add(subject["conclusion"])
+                finite[pair].update(r["status"] for r in subject.get("finiteJvm", []))
+    coverage = {"requiredClaimSubjects": len(required), "decidedClaimSubjects": sum(
+        len(answers) == 1 and bool(answers & {"established", "refuted"}) for answers in required.values())}
+    if finite_batches:
+        coverage["exhaustiveJvm"] = disposition_counts(finite.values())
+        coverage["allRoutes"] = disposition_counts(required[pair] | finite[pair] for pair in required)
     return {"schema": "example-claim-history/v1", "example": example["id"], "claims": list(claims.values()),
-            "coverage": {"requiredClaimSubjects": len(required), "decidedClaimSubjects": sum(
-                len(answers) == 1 and bool(answers & {"established", "refuted"}) for answers in required.values())},
+            "coverage": coverage,
             "replays": replays, "otherExampleJobs": other_jobs}
+
+
+def disposition(answers):
+    decided = answers & {"established", "refuted"}
+    if "disputed" in answers or len(decided) > 1:
+        return "disputed"
+    return next(iter(decided), "open")
+
+
+def disposition_counts(groups):
+    counts = dict.fromkeys(("established", "refuted", "open", "disputed"), 0)
+    for group in groups:
+        counts[disposition(group)] += 1
+    return counts
 
 
 def markdown(value):
@@ -294,6 +317,8 @@ def markdown(value):
                 if last.get("missing"):
                     lines.append("Missing evidence: " + ", ".join(last["missing"]) + ".")
             lines.append("")
+            if "overallConclusion" in subject:
+                lines.extend([f"Across the checked routes this claim is **{subject['overallConclusion']}**.", ""])
             for proof in subject.get("finiteJvm", []):
                 lines.append(f"- Exhaustive JVM {proof['status']} on {proof.get('inputs') or 0} admitted inputs "
                              f"([finite evidence]({proof['receipt']})).")

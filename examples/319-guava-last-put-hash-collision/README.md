@@ -7,3 +7,5 @@ The independent JVM oracle covered 121 inputs on each revision. parent mismatche
 The table records the direct observations, and each selected adapter field is checked on the full table. The public proof tasks have their own artifact-bound statements and execution histories.
 
 [Frozen inputs and oracle](controls/table.json) · [JVM counts, witnesses and bindings](records/finite-grid.json) · [Required claims](milestones.json) · [Public tasks](target.json)
+
+The parent first differs at length four for each observer. All 40 shorter put traces passed. At length four two traces change the size and entry set, and ten change lookup. [Minimum traces and ordered classpaths](records/finite-grid.json)

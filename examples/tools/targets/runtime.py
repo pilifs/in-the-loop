@@ -1606,8 +1606,8 @@ def _claim_file(plan, part):
     folder = Path(plan.folder).resolve()
     path = _inside(folder, ref.get("path"), f"the claim's {part}")
     if sha256(path) != ref.get("sha256"):
-        raise Refused("claim", f"the claim's {part} {ref.get('path')} is {sha256(path)}, not the frozen "
-                               f"{ref.get('sha256')}: a changed file is a different claim")
+        raise Refused("claim", f"the {part} file {ref.get('path')} has digest {sha256(path)}. "
+                               f"The frozen plan requires {ref.get('sha256')}.")
     return path
 
 

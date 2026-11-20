@@ -41,6 +41,14 @@ class RecipesTest(unittest.TestCase):
                           [{**rows[0], "input": {"source": []}}, *rows[1:]]):
             with self.assertRaises(ValueError):
                 table.problems(malformed)
+        from targets import finite_check
+        plan = self.plan("314", "exceptional-poststate")
+        path = Path(plan.folder) / "records/finite-proofs/20261120T034454Z-9a227db3/exceptional-poststate.json"
+        record = json.loads(path.read_text())
+        finite_check.validate_record(plan, record)
+        record["replay"]["finiteObservation"]["input"] = {"source": []}
+        with self.assertRaisesRegex(ValueError, "semantic input"):
+            finite_check.validate_record(plan, record)
 
     def test_invoice_preparation_rejects_the_other_order_with_identical_client_bytes(self):
         from targets import runtime, workflow_ingest

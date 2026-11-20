@@ -1,0 +1,33 @@
+[
+  {
+    "revision": "fix",
+    "entry": "taigrid.Projection#roundTrip(I)I",
+    "adapterSha256": "e5a1196dbe5ead43aa433ddc281283f422ae5d3177029670632bb6a420517ef1",
+    "adapterClassSha256": "a660eb6780fe7be33f7135b99d0ef67213401970506cfd136d74b4863be82253",
+    "subject": {
+      "class": "org.threeten.extra.scale.TaiInstant",
+      "method": "toString",
+      "descriptor": "()Ljava/lang/String;",
+      "loadedFrom": "slice/fix.jar",
+      "classSha256": "18ec95331a96c1984b2b1cf5300b104a27f8be8ee0c48e3ba6d075a28bc9f562",
+      "adapterCalls": [
+        "org.threeten.extra.scale.TaiInstant#getNano()I",
+        "org.threeten.extra.scale.TaiInstant#getTaiSeconds()J",
+        "org.threeten.extra.scale.TaiInstant#ofTaiSeconds(JJ)Lorg/threeten/extra/scale/TaiInstant;",
+        "org.threeten.extra.scale.TaiInstant#parse(Ljava/lang/CharSequence;)Lorg/threeten/extra/scale/TaiInstant;",
+        "org.threeten.extra.scale.TaiInstant#toString()Ljava/lang/String;"
+      ],
+      "adapterCallsTarget": true
+    },
+    "mapping": "With code 0 to 19, floor(code/4)-2 is the TAI seconds field. The remainder selects nanos 0, 1, 500000000 or 999999999. Formatting compares exact characters with a canonical decimal literal. Parsing starts from that literal. Round-trip starts from the object.",
+    "jdk": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "cases": 20,
+    "disagreements": 0
+  }
+]
