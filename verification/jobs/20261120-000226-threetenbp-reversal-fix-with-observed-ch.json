@@ -1,0 +1,49 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-000226-threetenbp-reversal-fix-with-observed-ch",
+  "title": "ThreeTenBP reversal-fix with observed chronology",
+  "description": "Check reversal symmetry on the fix at the public HOURS adapter on the pinned ThreeTenBP artifacts for June 15–16, 2012. Both JVM-observed registry maps must be empty and distinct. The native checker must report the named model, initializer class and state identities, and unwind 32. The independent adapter correspondence is checked on each of the 36,864 tick pairs per revision. Each registered task has its own receipt and execution journal.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "310"
+    ],
+    "jobs": [
+      "20261119-231539-retry-threetenbp-hours-after-exact-jdk-a"
+    ]
+  },
+  "expected": "The receipt supports reversal symmetry on the fix under its recorded JVM initialization and single-threaded registry model. A solver deadline leaves the obligation open.",
+  "submitted": {
+    "at": "2026-11-20T00:03:24+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "revision": "0dc25164bdb9cfed4170e1050c4edb76fe219b42",
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 1,
+    "memory": "2G",
+    "memoryLimit": "4G",
+    "duration": "10m",
+    "timeout": "15m",
+    "notes": "Each native solver has a 600-second checker budget. The full parent probe used 2.3 seconds. A fixed-clock probe used all 60 seconds. The shared release checker is built once."
+  },
+  "steps": [
+    {
+      "name": "Check the bound task and publish its own receipt",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-words JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task reversal-fix-observed --checker-seconds 600"
+    }
+  ],
+  "outputs": [
+    "examples/310-threeten-complete-hours/receipts/reversal-fix-observed"
+  ]
+}
