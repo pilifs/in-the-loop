@@ -1,0 +1,639 @@
+{
+  "wire_version": 1,
+  "verdict": "violation",
+  "target": "arrays.Update#apply",
+  "domain": "left: int[] of length ≤ 2, or null × right: int[] of length ≤ 2, or null; left and right may be the same array",
+  "counterexample": {
+    "input": "apply(left=[0], right={\"same\":0})",
+    "before": "array:right=[1]",
+    "after": "array:right=[0]",
+    "values": [
+      "left=[0]",
+      "right={\"same\":0}"
+    ],
+    "found": "agree(len0=1, cell0_0=0, cell0_1=2, len1=1, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=true)",
+    "shrink_runs": 6,
+    "inputs": [
+      {
+        "name": "left",
+        "type": "int[]",
+        "value": [
+          0
+        ]
+      },
+      {
+        "name": "right",
+        "type": "int[]",
+        "value": {
+          "same": 0
+        }
+      }
+    ],
+    "found_inputs": [
+      {
+        "name": "left",
+        "type": "int[]",
+        "value": [
+          0
+        ]
+      },
+      {
+        "name": "right",
+        "type": "int[]",
+        "value": {
+          "same": 0
+        }
+      }
+    ],
+    "call": {
+      "class": "arrays.Update",
+      "class_file": "arrays/Update.class",
+      "classes": "after",
+      "method": "apply",
+      "descriptor": "([I[I)I",
+      "static": true,
+      "arguments": [
+        {
+          "name": "left",
+          "type": "int[]",
+          "value": [
+            0
+          ]
+        },
+        {
+          "name": "right",
+          "type": "int[]",
+          "value": {
+            "same": 0
+          }
+        }
+      ]
+    },
+    "previous_call": {
+      "class": "arrays.Update",
+      "class_file": "arrays/Update.class",
+      "classes": "before",
+      "method": "apply",
+      "descriptor": "([I[I)I",
+      "static": true,
+      "arguments": [
+        {
+          "name": "left",
+          "type": "int[]",
+          "value": [
+            0
+          ]
+        },
+        {
+          "name": "right",
+          "type": "int[]",
+          "value": {
+            "same": 0
+          }
+        }
+      ]
+    },
+    "differs": [
+      "array:right"
+    ],
+    "replay_observations": [
+      {
+        "kind": "array-parameter",
+        "parameter": "right"
+      }
+    ],
+    "jvm": "25.0.5"
+  },
+  "proof": "found by JBMC 6.11.0 in 0.2 s as agree(len0=1, cell0_0=0, cell0_1=2, len1=1, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=true), shrunk to the input above in 6 interpreter runs, replayed in the interpreter; domain len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean",
+  "problem": null,
+  "statement": "/tmp/tmp3z7mfg5f/nullable-shared-binary-length-2/alternative/pair/RegressionPair.java",
+  "findings": [
+    {
+      "rule_id": "property-violated",
+      "message": "Property of RegressionPair#agree violated: `result` where RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4):\n  agree(len0=1, cell0_0=0, cell0_1=0, len1=0, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=true)\n    outcome: false",
+      "uri": null,
+      "line": 32
+    }
+  ],
+  "output": "Compared array:right on two fresh heaps with the same length, cell, null and sharing choices (/tmp/tmp3z7mfg5f/nullable-shared-binary-length-2/alternative/pair/RegressionPair.java)\n✗ arrays.Update#apply: the two versions differ on apply(left=[0], right={\"same\":0}) (the pair's property, below, returns false on it)\n  JVM before: array:right=[1]\n  JVM after: array:right=[0]\nnote: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"RegressionPair\"; the names are len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✗ Property of RegressionPair#agree violated: `result` where RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4):\n  agree(len0=1, cell0_0=0, cell0_1=0, len1=0, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=true)\n    outcome: false\n  (found by JBMC 6.11.0 in 0.2 s as agree(len0=1, cell0_0=0, cell0_1=2, len1=1, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=true), shrunk to the input above in 6 interpreter runs, replayed in the interpreter; domain len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+  "work": "/tmp/tmp3z7mfg5f/nullable-shared-binary-length-2/alternative",
+  "search": {
+    "engine": "jbmc",
+    "checker": "JBMC 6.11.0",
+    "seconds": 0.163120916,
+    "properties": 2,
+    "unwind": 8,
+    "max_array_length": 2,
+    "stage": null,
+    "staging": "full-range",
+    "gap_mode": "strict",
+    "deadline_seconds": 90.0,
+    "runs": [
+      {
+        "checker": "jbmc",
+        "purpose": "proof",
+        "stage": null,
+        "budget_seconds": 89.942,
+        "seconds": 0.101,
+        "ended": "violation",
+        "ending": "counterexample",
+        "phases": {
+          "loading": 0.004,
+          "lowering": 0.002,
+          "symbolic": 0.027,
+          "encoding": 0.005,
+          "solving": 0.013,
+          "trace": 0.002,
+          "other": 0.049
+        },
+        "formula": {
+          "steps": 1822,
+          "conditions": 2,
+          "variables": 12810,
+          "clauses": 14708
+        }
+      }
+    ]
+  },
+  "replay": {
+    "by": "jvm",
+    "reproduced": true
+  },
+  "stated": {
+    "kind": "regression",
+    "domain": {
+      "parameters": [
+        {
+          "name": "left",
+          "type": "int[]",
+          "kind": "array",
+          "null": true,
+          "max_length": 2
+        },
+        {
+          "name": "right",
+          "type": "int[]",
+          "kind": "array",
+          "null": true,
+          "max_length": 2
+        }
+      ],
+      "shared_arrays": true,
+      "may_alias": [
+        [
+          "left",
+          "right"
+        ]
+      ],
+      "text": "left: int[] of length ≤ 2, or null × right: int[] of length ≤ 2, or null; left and right may be the same array"
+    },
+    "assumptions": [
+      {
+        "kind": "precondition",
+        "text": "(left == null || ((left.length < 1 || (left[0] >= 0 && left[0] <= 1)) && (left.length < 2 || (left[1] >= 0 && left[1] <= 1)))) && (right == null || ((right.length < 1 || (right[0] >= 0 && right[0] <= 1)) && (right.length < 2 || (right[1] >= 0 && right[1] <= 1))))",
+        "basis": "stated"
+      },
+      {
+        "kind": "library",
+        "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+        "basis": "engine"
+      }
+    ],
+    "observations": {
+      "result": "unselected",
+      "exceptions": "unselected",
+      "arrays": [
+        "right"
+      ]
+    },
+    "bounds": {
+      "unwind": 8,
+      "max_array_length": 2,
+      "complete": false
+    },
+    "models": {
+      "used": true,
+      "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+      "classes": 38,
+      "jdk": "25.0.5"
+    },
+    "checker": {
+      "engine": "jbmc",
+      "name": "JBMC 6.11.0",
+      "solver": "cadical",
+      "fallback": null,
+      "sat": {
+        "solver": "CaDiCaL",
+        "version": "3.0.0",
+        "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+        "configuration": [
+          "--trace",
+          "--throw-runtime-exceptions",
+          "--unwinding-assertions",
+          "--json-ui",
+          "--timestamp",
+          "monotonic",
+          "--no-refine-strings",
+          "--sat-solver",
+          "cadical"
+        ]
+      }
+    },
+    "gap_mode": "strict",
+    "confirmation": null,
+    "spec": {
+      "contract": {
+        "subject": "arrays.Update#apply",
+        "inputs": [
+          {
+            "name": "left",
+            "type": "int[]",
+            "derivation": {
+              "kind": "identity"
+            }
+          },
+          {
+            "name": "right",
+            "type": "int[]",
+            "derivation": {
+              "kind": "identity"
+            }
+          }
+        ],
+        "required": [
+          "array:right"
+        ]
+      },
+      "observations": [
+        {
+          "kind": "array-parameter",
+          "parameter": "right"
+        }
+      ]
+    }
+  },
+  "pair": {
+    "verdict": "violation",
+    "target": "RegressionPair#agree",
+    "domain": "len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean",
+    "assume": "RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4)",
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": {
+      "input": "agree(len0=1, cell0_0=0, cell0_1=0, len1=0, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=true)",
+      "outcome": "false",
+      "values": [
+        "1",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "false",
+        "false",
+        "true"
+      ],
+      "found": "agree(len0=1, cell0_0=0, cell0_1=2, len1=1, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=true)",
+      "shrink_runs": 6,
+      "inputs": [
+        {
+          "name": "len0",
+          "type": "int",
+          "value": 1
+        },
+        {
+          "name": "cell0_0",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "name": "cell0_1",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "name": "len1",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "name": "cell1_0",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "name": "cell1_1",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "name": "flag2",
+          "type": "boolean",
+          "value": false
+        },
+        {
+          "name": "flag3",
+          "type": "boolean",
+          "value": false
+        },
+        {
+          "name": "flag4",
+          "type": "boolean",
+          "value": true
+        }
+      ],
+      "found_inputs": [
+        {
+          "name": "len0",
+          "type": "int",
+          "value": 1
+        },
+        {
+          "name": "cell0_0",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "name": "cell0_1",
+          "type": "int",
+          "value": 2
+        },
+        {
+          "name": "len1",
+          "type": "int",
+          "value": 1
+        },
+        {
+          "name": "cell1_0",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "name": "cell1_1",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "name": "flag2",
+          "type": "boolean",
+          "value": false
+        },
+        {
+          "name": "flag3",
+          "type": "boolean",
+          "value": false
+        },
+        {
+          "name": "flag4",
+          "type": "boolean",
+          "value": true
+        }
+      ],
+      "call": {
+        "class": "RegressionPair",
+        "class_file": "RegressionPair.class",
+        "classes": "after",
+        "method": "agree",
+        "descriptor": "(IIIIIIZZZ)Z",
+        "static": true,
+        "arguments": [
+          {
+            "name": "len0",
+            "type": "int",
+            "value": 1,
+            "from": "len0"
+          },
+          {
+            "name": "cell0_0",
+            "type": "int",
+            "value": 0,
+            "from": "cell0_0"
+          },
+          {
+            "name": "cell0_1",
+            "type": "int",
+            "value": 0,
+            "from": "cell0_1"
+          },
+          {
+            "name": "len1",
+            "type": "int",
+            "value": 0,
+            "from": "len1"
+          },
+          {
+            "name": "cell1_0",
+            "type": "int",
+            "value": 0,
+            "from": "cell1_0"
+          },
+          {
+            "name": "cell1_1",
+            "type": "int",
+            "value": 0,
+            "from": "cell1_1"
+          },
+          {
+            "name": "flag2",
+            "type": "boolean",
+            "value": false,
+            "from": "flag2"
+          },
+          {
+            "name": "flag3",
+            "type": "boolean",
+            "value": false,
+            "from": "flag3"
+          },
+          {
+            "name": "flag4",
+            "type": "boolean",
+            "value": true,
+            "from": "flag4"
+          }
+        ]
+      }
+    },
+    "proof": "found by JBMC 6.11.0 in 0.2 s as agree(len0=1, cell0_0=0, cell0_1=2, len1=1, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=true), shrunk to the input above in 6 interpreter runs, replayed in the interpreter; domain len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean",
+    "problem": null,
+    "statement": "/tmp/tmp3z7mfg5f/nullable-shared-binary-length-2/alternative/pair-work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "property-violated",
+        "message": "Property of RegressionPair#agree violated: `result` where RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4):\n  agree(len0=1, cell0_0=0, cell0_1=0, len1=0, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=true)\n    outcome: false",
+        "uri": null,
+        "line": 32
+      }
+    ],
+    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"RegressionPair\"; the names are len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4); javac 25.0.5 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✗ Property of RegressionPair#agree violated: `result` where RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4):\n  agree(len0=1, cell0_0=0, cell0_1=0, len1=0, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=true)\n    outcome: false\n  (found by JBMC 6.11.0 in 0.2 s as agree(len0=1, cell0_0=0, cell0_1=2, len1=1, cell1_0=0, cell1_1=0, flag2=false, flag3=false, flag4=true), shrunk to the input above in 6 interpreter runs, replayed in the interpreter; domain len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+    "work": "/tmp/tmp3z7mfg5f/nullable-shared-binary-length-2/alternative/pair-work",
+    "search": {
+      "engine": "jbmc",
+      "checker": "JBMC 6.11.0",
+      "seconds": 0.163120916,
+      "properties": 2,
+      "unwind": 8,
+      "max_array_length": 2,
+      "stage": null,
+      "staging": "full-range",
+      "gap_mode": "strict",
+      "deadline_seconds": 90.0,
+      "runs": [
+        {
+          "checker": "jbmc",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 89.942,
+          "seconds": 0.101,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.004,
+            "lowering": 0.002,
+            "symbolic": 0.027,
+            "encoding": 0.005,
+            "solving": 0.013,
+            "trace": 0.002,
+            "other": 0.049
+          },
+          "formula": {
+            "steps": 1822,
+            "conditions": 2,
+            "variables": 12810,
+            "clauses": 14708
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.961,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.058,
+        "contracts": 0.0,
+        "runs": 0.101,
+        "replay": 0.007,
+        "jvm": 0.0,
+        "other": 0.794
+      }
+    },
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "len0",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "cell0_0",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "cell0_1",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "len1",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "cell1_0",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "cell1_1",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "flag2",
+            "type": "boolean",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "flag3",
+            "type": "boolean",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "flag4",
+            "type": "boolean",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "len0: int × cell0_0: int × cell0_1: int × len1: int × cell1_0: int × cell1_1: int × flag2: boolean × flag3: boolean × flag4: boolean"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "RegressionPair.admitted(len0, cell0_0, cell0_1, len1, cell1_0, cell1_1, flag2, flag3, flag4)",
+          "basis": "stated"
+        },
+        {
+          "kind": "library",
+          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 8,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+        "classes": 38,
+        "jdk": "25.0.5"
+      },
+      "checker": {
+        "engine": "jbmc",
+        "name": "JBMC 6.11.0",
+        "solver": "cadical",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "3.0.0",
+          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+          "configuration": [
+            "--trace",
+            "--throw-runtime-exceptions",
+            "--unwinding-assertions",
+            "--json-ui",
+            "--timestamp",
+            "monotonic",
+            "--no-refine-strings",
+            "--sat-solver",
+            "cadical"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+}
