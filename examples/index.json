@@ -9931,7 +9931,9 @@
       "notes": [
         "Both revisions agree with direct JVM calls through the hours adapter. The pinned parent returns 1 hour from 23:30 to 00:15 the next day and -1 in reverse. The fix returns zero in both directions. Same-day and sign-reversal checks pass on both.",
         "Both the correct hours adapter and its wrong-unit control ran on both pinned artifacts. The hours adapter agreed with all 36,864 independently constructed calls in each revision. The MINUTES control differed on 36,672 pairs per revision. The first five strict attempts stopped at BigInteger.valueOf(long) in Duration.<clinit>. Their collected attempt bundles are discoverable from workflow_handoff.py.",
-        "Five linked retries on the original bindings now pass Duration initialization and stop at java.util.ServiceLoader.load in Chronology.<clinit> at line 148. All five strict proof obligations remain open. The public JVM review of ticks 94 and 97 refutes the parent clock claim, satisfies the fixed clock claim and rejects the same-day witness on domain membership. The two observed-initializer diagnostics and the intermediate local checker outputs are recorded in records/initialization-probes.json."
+        "Five linked retries on the original bindings now pass Duration initialization and stop at java.util.ServiceLoader.load in Chronology.<clinit> at line 148. The five tasks with fully symbolic initialization remain open. The public JVM review of ticks 94 and 97 refutes the parent clock claim, satisfies the fixed clock claim and rejects the same-day witness on domain membership. The two observed-initializer diagnostics and the intermediate local checker outputs are recorded in records/initialization-probes.json.",
+        "On JDK 21.0.13 the two observed Chronology registries were distinct empty ConcurrentHashMap objects. Separate native claims bind that state, the single-threaded String-key model and unwind 32. The parent clock was refuted at ticks 74 and 125. Same-day preservation was established across 18,432 pairs. The fixed clock and both reversal claims exhausted their 600-second budgets on the full grid.",
+        "The independent JVM driver identified all twelve sub-hour crossings in the quarter-hour grid. On this subset, the native checker established the fixed zero-hour result and refuted the parent with a JVM-replayed witness. The first batch job exited in argument parsing. Its superseding job published both receipts."
       ],
       "source": "https://github.com/ThreeTen/threetenbp/commit/f0b2eaf1856b7fb5fdf78de3cedc9781b6619b88",
       "target": {
@@ -9961,13 +9963,13 @@
           "reversal-parent": "blocked",
           "reversal-fix": "blocked",
           "same-day": "blocked",
-          "clock-parent-observed": "scaffolded",
-          "clock-fix-observed": "scaffolded",
-          "reversal-parent-observed": "scaffolded",
-          "reversal-fix-observed": "scaffolded",
-          "same-day-observed": "scaffolded",
-          "clock-parent-short-crossings": "scaffolded",
-          "clock-fix-short-crossings": "scaffolded"
+          "clock-parent-observed": "executable",
+          "clock-fix-observed": "blocked",
+          "reversal-parent-observed": "blocked",
+          "reversal-fix-observed": "blocked",
+          "same-day-observed": "executable",
+          "clock-parent-short-crossings": "executable",
+          "clock-fix-short-crossings": "executable"
         },
         "expected": {
           "replay": null,
@@ -9990,13 +9992,13 @@
           "reversal-parent": "unresolved",
           "reversal-fix": "unresolved",
           "same-day": "unresolved",
-          "clock-parent-observed": null,
+          "clock-parent-observed": "refuted",
           "clock-fix-observed": null,
           "reversal-parent-observed": null,
           "reversal-fix-observed": null,
-          "same-day-observed": null,
-          "clock-parent-short-crossings": null,
-          "clock-fix-short-crossings": null
+          "same-day-observed": "established",
+          "clock-parent-short-crossings": "refuted",
+          "clock-fix-short-crossings": "established"
         },
         "receipts": {
           "replay": {
@@ -10046,15 +10048,49 @@
             "status": "unresolved",
             "expectation": "no",
             "attempts": 1
+          },
+          "clock-parent-observed": {
+            "path": "receipts/clock-parent-observed/20261120T000707Z-4cb75a77/result.json",
+            "attempt": "20261120T000707Z-4cb75a77",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "same-day-observed": {
+            "path": "receipts/same-day-observed/20261120T000707Z-4ca562e1/result.json",
+            "attempt": "20261120T000707Z-4ca562e1",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "clock-parent-short-crossings": {
+            "path": "receipts/clock-parent-short-crossings/20261120T001840Z-d3b45559/result.json",
+            "attempt": "20261120T001840Z-d3b45559",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "clock-fix-short-crossings": {
+            "path": "receipts/clock-fix-short-crossings/20261120T001851Z-e0f10b94/result.json",
+            "attempt": "20261120T001851Z-e0f10b94",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
           }
         },
         "staleReceipts": [],
         "unreadable": [],
         "gaps": [
-          "java-semantics"
+          "java-semantics",
+          "resources"
         ],
         "gapIds": [
-          "jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13"
+          "jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;@jdk-21.0.13",
+          "resources:checker-deadline"
         ],
         "unevidencedGaps": [],
         "predictedGaps": [],
@@ -10097,13 +10133,14 @@
       "severity": "medium",
       "changeKind": "bug-fix",
       "verdict": null,
-      "verdictLabel": "Finite UTF-16 search calibration",
+      "verdictLabel": "Native last-match repair and preservation on the 160-input UTF-16 grid",
       "vacuous": false,
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
         "The adapter and the independent direct driver each construct a StringBuilder. The forty sequences contain at most three tokens. Both a and b, the supplementary character U+2070E, and the absent control z are searched.",
-        "The finite JVM grid gives 25 incorrect parent searches and zero after the repair. All 85 absent-character cases and all 120 ordinary single-code-unit cases agree on both artifacts. All five native claims remain open; the strict gap inventory includes StringBuilder.appendCodePoint and Pattern.compile."
+        "The finite JVM grid gives 25 incorrect parent searches and zero after the repair. All 85 absent-character cases and all 120 ordinary single-code-unit cases agree on both artifacts.",
+        "The original five strict attempts stopped at StringBuilder.appendCodePoint and the Pattern compiled by StringUtils. Their linked retries on the same prepared bytes and budgets decided all five tasks. Searching a one-token StringBuilder containing U+2070E returned minus one on the parent instead of offset zero. The fixed last-match property, both absent-character properties and ordinary single-unit preservation were established."
       ],
       "source": "https://github.com/apache/commons-lang/commit/bdd674f7c64dbc2c8ff043ee995fcd9f6f59a13b",
       "target": {
@@ -10118,14 +10155,14 @@
           "absent-fix",
           "single-unit"
         ],
-        "readiness": "scaffolded",
+        "readiness": "executable",
         "taskReadiness": {
           "replay": "scaffolded",
-          "last-match-parent": "scaffolded",
-          "last-match-fix": "scaffolded",
-          "absent-parent": "scaffolded",
-          "absent-fix": "scaffolded",
-          "single-unit": "scaffolded"
+          "last-match-parent": "executable",
+          "last-match-fix": "executable",
+          "absent-parent": "executable",
+          "absent-fix": "executable",
+          "single-unit": "executable"
         },
         "expected": {
           "replay": null,
@@ -10136,11 +10173,11 @@
           "single-unit": "established"
         },
         "claims": {
-          "last-match-parent": null,
-          "last-match-fix": null,
-          "absent-parent": null,
-          "absent-fix": null,
-          "single-unit": null
+          "last-match-parent": "refuted",
+          "last-match-fix": "established",
+          "absent-parent": "established",
+          "absent-fix": "established",
+          "single-unit": "established"
         },
         "receipts": {
           "replay": {
@@ -10148,6 +10185,46 @@
             "attempt": "20261119T222037Z-18b5cd66",
             "execution": "completed",
             "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "last-match-parent": {
+            "path": "receipts/last-match-parent/20261120T002343Z-1f7d505f/result.json",
+            "attempt": "20261120T002343Z-1f7d505f",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "last-match-fix": {
+            "path": "receipts/last-match-fix/20261120T002349Z-6f7122a0/result.json",
+            "attempt": "20261120T002349Z-6f7122a0",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "absent-parent": {
+            "path": "receipts/absent-parent/20261120T002355Z-63593802/result.json",
+            "attempt": "20261120T002355Z-63593802",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "absent-fix": {
+            "path": "receipts/absent-fix/20261120T002356Z-2d091533/result.json",
+            "attempt": "20261120T002356Z-2d091533",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "single-unit": {
+            "path": "receipts/single-unit/20261120T002356Z-e472bb13/result.json",
+            "attempt": "20261120T002356Z-e472bb13",
+            "execution": "completed",
+            "status": "established",
             "expectation": "yes",
             "attempts": 1
           }
@@ -10159,7 +10236,7 @@
         "unevidencedGaps": [],
         "predictedGaps": [],
         "historical": {
-          "verdictLabel": "Finite UTF-16 search calibration",
+          "verdictLabel": "Native last-match repair and preservation on the 160-input UTF-16 grid",
           "source": "https://github.com/apache/commons-lang/commit/bdd674f7c64dbc2c8ff043ee995fcd9f6f59a13b",
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },

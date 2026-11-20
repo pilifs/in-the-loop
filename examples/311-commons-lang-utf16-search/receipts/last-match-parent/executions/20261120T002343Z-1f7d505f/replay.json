@@ -1,0 +1,47 @@
+[
+  {
+    "claimKey": "4fe4f53da8e3b3a8",
+    "entry": "utfgrid.Search#last(II)I",
+    "inputs": [
+      {
+        "name": "encoding",
+        "type": "int",
+        "value": 3
+      },
+      {
+        "name": "needle",
+        "type": "int",
+        "value": 2
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "28bb71c0a91ab9cf65c07907989fb3818ca14bd59bb446158c9b463f950b2827",
+        "classpath": [
+          "1a0e7b60e4a5fa25b0f4954702d0525a6d3e60913a3856745aab1f44a0c94a3a",
+          "b87e5b65fde8fae50cc1e23b73a9d8f0c263db49f78937888bea183ef6d060ef"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint encoding = 3;\nint needle = 2;\nif (!(encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = utfgrid.Search.last(encoding, needle); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == utfgrid.Search.expected(encoding, needle)));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          -1,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  }
+]

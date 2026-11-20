@@ -1,0 +1,322 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-000227-threetenbp-same-day-with-observed-chrono",
+  "title": "ThreeTenBP same-day with observed chronology",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 46.7s, peak 315.6 MiB (estimated 10m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [
+    "step 1 (Check the bound task and publish its own receipt) was held back 23.9s by its 1-CPU quota in 46.7s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-000227-threetenbp-same-day-with-observed-chrono.json",
+    "sha256": "8e405d3c66ee394ed29a17baf5a90cc5b351b813c30e39aebbe0d997faf15a94",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-000227-threetenbp-same-day-with-observed-chrono",
+      "title": "ThreeTenBP same-day with observed chronology",
+      "description": "Check same-day preservation across revisions at the public HOURS adapter on the pinned ThreeTenBP artifacts for June 15–16, 2012. Both JVM-observed registry maps must be empty and distinct. The native checker must report the named model, initializer class and state identities, and unwind 32. The independent adapter correspondence is checked on each of the 36,864 tick pairs per revision. Each registered task has its own receipt and execution journal.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "310"
+        ],
+        "jobs": [
+          "20261119-231539-retry-threetenbp-hours-after-exact-jdk-a"
+        ]
+      },
+      "expected": "The receipt supports same-day preservation across revisions under its recorded JVM initialization and single-threaded registry model. A solver deadline leaves the obligation open.",
+      "submitted": {
+        "at": "2026-11-20T00:03:25+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "revision": "0dc25164bdb9cfed4170e1050c4edb76fe219b42",
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 1,
+        "memory": "2G",
+        "memoryLimit": "4G",
+        "duration": "10m",
+        "timeout": "15m",
+        "notes": "Each native solver has a 600-second checker budget. The full parent probe used 2.3 seconds. A fixed-clock probe used all 60 seconds. The shared release checker is built once."
+      },
+      "steps": [
+        {
+          "name": "Check the bound task and publish its own receipt",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-words JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task same-day-observed --checker-seconds 600"
+        }
+      ],
+      "outputs": [
+        "examples/310-threeten-complete-hours/receipts/same-day-observed"
+      ]
+    }
+  },
+  "sourceCommit": "0dc25164bdb9cfed4170e1050c4edb76fe219b42",
+  "startedAt": "2026-11-20T00:04:25+00:00",
+  "finishedAt": "2026-11-20T00:07:53+00:00",
+  "wallSeconds": 208.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1431944,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 600.0,
+    "notes": "Each native solver has a 600-second checker budget. The full parent probe used 2.3 seconds. A fixed-clock probe used all 60 seconds. The shared release checker is built once."
+  },
+  "usage": {
+    "peakMemoryBytes": 330973184,
+    "wallSeconds": 46.7,
+    "cpuSeconds": 45.8,
+    "memoryOfEstimate": 0.15,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the bound task and publish its own receipt",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-words JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task same-day-observed --checker-seconds 600",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 46.697,
+      "cpuSeconds": 45.803,
+      "cpuThrottledSeconds": 23.911,
+      "peakMemoryBytes": 330973184,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-bound-task-and-publi.log",
+        "lines": 2,
+        "bytes": 239,
+        "sha256": "2f7a97a46e772c897643105084138fdbb8bb3533f2cc2f657c31006cf5aa4141",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "310-threeten-complete-hours: task same-day-observed: established (completed; as expected), receipt receipts/same-day-observed/20261120T000707Z-4ca562e1/result.json",
+          "groups": [
+            "310",
+            "same-day-observed",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "310-threeten-complete-hours: running task same-day-observed (target route)",
+        "310-threeten-complete-hours: task same-day-observed: established (completed; as expected), receipt receipts/same-day-observed/20261120T000707Z-4ca562e1/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "d2d4995a797b20cc82bf58abb3b777c6dc7b2f2f511cb054499ea0861a645bf7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/plan.json",
+      "change": "added",
+      "bytes": 34748,
+      "sha256": "d27bd53e792f0d36ca3481f02e2dbf2345023101536df9d8f99b9bbe05c94574",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 15661,
+      "sha256": "9a41a5fd7b9a5932e6937a5633bacb300e7086c59219381b533c990fa3de4012",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 15828,
+      "sha256": "b8a4776a604612bbc47417c80ceac0eba56a5788096bd49b3708e8704e2c7aae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/controls.json",
+      "change": "added",
+      "bytes": 72320,
+      "sha256": "6f7b7ab5bf8e72b6b81eef6a56f898fb921644a4dea5e1c3967234e497cbfd50",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/execution.json",
+      "change": "added",
+      "bytes": 135085,
+      "sha256": "792c5dbd76027ca4947e895e05c3c5b518d1c301ed16928574a773a61b3e5b35",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/streams.json",
+      "change": "added",
+      "bytes": 2647,
+      "sha256": "2730015702d314b7e02e2e93942d28f8c1c833e171b01f6c78c06a63a0011de3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1374,
+      "sha256": "f597b9f92f1ca974eadc627801ff6bb5d06d01cb0f39568660be7efadced4a94",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/verifier.json",
+      "change": "added",
+      "bytes": 61774,
+      "sha256": "392b89775535e20bd3c0001cee25fe6e27aeac67ffe97c91310252d52d0e1e1b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/verifier.stdout",
+      "change": "added",
+      "bytes": 20771,
+      "sha256": "c38754e2841489d12d906015eca1479ca09a187ffa49b9c69063b6e92a9919dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/result.json",
+      "change": "added",
+      "bytes": 16265,
+      "sha256": "527cf987350db1746d77efa488c3fbf7719591f1fde8b97362ddeab3552f0eb2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/executions/20261120T000707Z-4ca562e1/attempt.json",
+      "change": "added",
+      "bytes": 53243,
+      "sha256": "cefc57275585ab0c7f04f980cefeb1b4cb86184693064283ec7543b9ca9a88d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/executions/20261120T000707Z-4ca562e1/checker.json",
+      "change": "added",
+      "bytes": 23609,
+      "sha256": "90d479372ad360eb40b7605edc27365d4380b5e3292c1734a6d4739cec19cf59",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/same-day-observed/executions/20261120T000707Z-4ca562e1/correspondence.json",
+      "change": "added",
+      "bytes": 2603,
+      "sha256": "8ab8de3c02a569ce12832e8635dbb92c3c20b5b5d2b6b6ab64c3e926b3a31df5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T00:11:06+00:00",
+    "applied": [
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/completion.json",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/plan.json",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/control-fix-jdk21.stderr",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/control-fix-jdk21.stdout",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/control-parent-jdk21.stderr",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/control-parent-jdk21.stdout",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/controls.json",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/execution.json",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/streams.json",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/verifier-output.txt",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/verifier.json",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/verifier.stderr",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/records/verifier.stdout",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/20261120T000707Z-4ca562e1/result.json",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/executions/20261120T000707Z-4ca562e1/attempt.json",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/executions/20261120T000707Z-4ca562e1/checker.json",
+      "examples/310-threeten-complete-hours/receipts/same-day-observed/executions/20261120T000707Z-4ca562e1/correspondence.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "e1113f1c2d17615fc5f4afe30ad3deff0d68a08a",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e1113f1c2d17615fc5f4afe30ad3deff0d68a08a/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

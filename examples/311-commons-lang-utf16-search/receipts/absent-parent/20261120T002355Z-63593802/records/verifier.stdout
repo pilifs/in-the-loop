@@ -1,0 +1,179 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "verified",
+    "target": "utfgrid.Search#last(int, int)",
+    "domain": "encoding: int × needle: int",
+    "assume": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4 && utfgrid.Search.expected(encoding, needle) == -1",
+    "assert": "result == -1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over encoding: int × needle: int in 0.1 s; loops unwound 12 times with unwinding assertions",
+    "problem": null,
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: unknown name \"utfgrid\"; the names are encoding, needle); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ utfgrid.Search#last(int, int) satisfies `result == -1` on every input where encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4 && utfgrid.Search.expected(encoding, needle) == -1 (jvmcontract's own checker (CaDiCaL): 1 properties proved over encoding: int × needle: int in 0.1 s; loops unwound 12 times with unwinding assertions)\n  not vacuous: last(encoding=0, needle=0) reaches the calls\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.076954708,
+      "properties": 1,
+      "unwind": 12,
+      "max_array_length": 6,
+      "stage": null,
+      "native": {
+        "paths": 125,
+        "merges": 0,
+        "solver_calls": 328,
+        "solving_seconds": 0.052038419,
+        "gates_evaluated": 26072,
+        "evaluating_seconds": 0.000652839,
+        "divisions": 3,
+        "divisions_built": 2,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 12215,
+        "clauses": 41849,
+        "seconds": 0.075220278,
+        "loading_seconds": 0.000773196,
+        "decoding_seconds": 0.000078266,
+        "encoding_seconds": 0.008388488,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 600.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 600.0,
+          "seconds": 0.075,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.001,
+            "lowering": 0.0,
+            "symbolic": 0.014,
+            "encoding": 0.008,
+            "solving": 0.052,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 12215,
+            "clauses": 41849
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budget_seconds": 599.923,
+          "seconds": 0.004,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.003,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 396,
+            "clauses": 1113
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.509,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.079,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.428
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "encoding",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "needle",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "encoding: int × needle: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4 && utfgrid.Search.expected(encoding, needle) == -1",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == -1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 12,
+        "max_array_length": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+        "classes": 38,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found last(encoding=0, needle=0).",
+        "witness": "last(encoding=0, needle=0)"
+      }
+    }
+  }
+]

@@ -1,0 +1,314 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-000226-threetenbp-clock-parent-with-observed-ch",
+  "title": "ThreeTenBP clock-parent with observed chronology",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 13.0s, peak 154.4 MiB (estimated 1m00s, 2.0 GiB); 16 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [
+    "step 1 (Check the bound task and publish its own receipt) was held back 12.0s by its 1-CPU quota in 13.0s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-000226-threetenbp-clock-parent-with-observed-ch.json",
+    "sha256": "242c560695641ebd03376946e22749ace9763cad32a697876f3a099d01ba5f1d",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-000226-threetenbp-clock-parent-with-observed-ch",
+      "title": "ThreeTenBP clock-parent with observed chronology",
+      "description": "Check refutation of the parent clock oracle at the public HOURS adapter on the pinned ThreeTenBP artifacts for June 15–16, 2012. Both JVM-observed registry maps must be empty and distinct. The native checker must report the named model, initializer class and state identities, and unwind 32. The independent adapter correspondence is checked on each of the 36,864 tick pairs per revision. Each registered task has its own receipt and execution journal.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "310"
+        ],
+        "jobs": [
+          "20261119-231539-retry-threetenbp-hours-after-exact-jdk-a"
+        ]
+      },
+      "expected": "The receipt supports refutation of the parent clock oracle under its recorded JVM initialization and single-threaded registry model. A solver deadline leaves the obligation open.",
+      "submitted": {
+        "at": "2026-11-20T00:03:24+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "revision": "0dc25164bdb9cfed4170e1050c4edb76fe219b42",
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 1,
+        "memory": "2G",
+        "memoryLimit": "4G",
+        "duration": "1m",
+        "timeout": "15m",
+        "notes": "Each native solver has a 600-second checker budget. The full parent probe used 2.3 seconds. A fixed-clock probe used all 60 seconds. The shared release checker is built once."
+      },
+      "steps": [
+        {
+          "name": "Check the bound task and publish its own receipt",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-words JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task clock-parent-observed --checker-seconds 600"
+        }
+      ],
+      "outputs": [
+        "examples/310-threeten-complete-hours/receipts/clock-parent-observed"
+      ]
+    }
+  },
+  "sourceCommit": "0dc25164bdb9cfed4170e1050c4edb76fe219b42",
+  "startedAt": "2026-11-20T00:04:25+00:00",
+  "finishedAt": "2026-11-20T00:07:20+00:00",
+  "wallSeconds": 175.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1431944,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 60.0,
+    "notes": "Each native solver has a 600-second checker budget. The full parent probe used 2.3 seconds. A fixed-clock probe used all 60 seconds. The shared release checker is built once."
+  },
+  "usage": {
+    "peakMemoryBytes": 161869824,
+    "wallSeconds": 13.0,
+    "cpuSeconds": 12.5,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.22
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the bound task and publish its own receipt",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-words JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task clock-parent-observed --checker-seconds 600",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 13.026,
+      "cpuSeconds": 12.471,
+      "cpuThrottledSeconds": 11.969,
+      "peakMemoryBytes": 161869824,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-bound-task-and-publi.log",
+        "lines": 2,
+        "bytes": 247,
+        "sha256": "c853a8e2e120d9e157a4d83f8cfe0821018bc48699c56aad4bf417ff9c1154d1",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "310-threeten-complete-hours: task clock-parent-observed: refuted (completed; as expected), receipt receipts/clock-parent-observed/20261120T000707Z-4cb75a77/result.json",
+          "groups": [
+            "310",
+            "clock-parent-observed",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "310-threeten-complete-hours: running task clock-parent-observed (target route)",
+        "310-threeten-complete-hours: task clock-parent-observed: refuted (completed; as expected), receipt receipts/clock-parent-observed/20261120T000707Z-4cb75a77/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "7e0cf6122094f8c7d11956052bddc5f205bd4ea8ac3ec89e0a794a0bcde47335",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/plan.json",
+      "change": "added",
+      "bytes": 20354,
+      "sha256": "b0061ced8ac99c840ab615509f5755d19c056df0d778510d7a78ee3077bb51da",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/records/control-parent-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/records/control-parent-jdk21.stdout",
+      "change": "added",
+      "bytes": 15828,
+      "sha256": "b8a4776a604612bbc47417c80ceac0eba56a5788096bd49b3708e8704e2c7aae",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/records/controls.json",
+      "change": "added",
+      "bytes": 36294,
+      "sha256": "7d9f96ea9fa48a4721955c0974556af42e3eccc401b95ab402b344f9512c3f14",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/records/execution.json",
+      "change": "added",
+      "bytes": 71921,
+      "sha256": "7367e9b4639c7f383a447c0ad65d9f3d50c2a9b84854445c9a7f3d26ae2455e4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "61f7cf18f7e1d397cdd525532fc3f545f82d25286d417e8d86453d11eaf999d0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 688,
+      "sha256": "e02ddd66393cdcd70072388b4e4a968106c74a8f87cb435efa04f69968df9201",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/records/verifier.json",
+      "change": "added",
+      "bytes": 32945,
+      "sha256": "3f72b67a02d987cb11c5ea9dded921014bf0c078f8d00f722ae2c91f3472fd39",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/records/verifier.stdout",
+      "change": "added",
+      "bytes": 9629,
+      "sha256": "1bdf43fa2103f9a23f723b35fd4ffcee7b58398f48075ab2a62101ebaae8c155",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/result.json",
+      "change": "added",
+      "bytes": 24636,
+      "sha256": "3c6607a794b5b7000a36cb8dc931afec9118a592eda707f3f0fd2a4e78a9ea10",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/executions/20261120T000707Z-4cb75a77/attempt.json",
+      "change": "added",
+      "bytes": 30208,
+      "sha256": "dab9835a7eca0c8aeb9f3fe55ae59e8c79b241e61816c459b4a40d5539e64ae7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/executions/20261120T000707Z-4cb75a77/checker.json",
+      "change": "added",
+      "bytes": 11263,
+      "sha256": "f637fc9bc87141e05362d29e3a1f3b143fbbdf32a3f83565ae40d3f25993f62a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/executions/20261120T000707Z-4cb75a77/correspondence.json",
+      "change": "added",
+      "bytes": 1306,
+      "sha256": "f9c9faf75bea6dac3c996b76afd6e98ed5e6ca8cb7c6068db26ac951c64f0a42",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent-observed/executions/20261120T000707Z-4cb75a77/replay.json",
+      "change": "added",
+      "bytes": 1771,
+      "sha256": "46760c16ffd05d2180da2041f1734cedd2256eb998c85dc762fd6f4c838e038c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T00:07:36+00:00",
+    "applied": [
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/completion.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/plan.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/records/control-parent-jdk21.stderr",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/records/control-parent-jdk21.stdout",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/records/controls.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/records/execution.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/records/streams.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/records/verifier-output.txt",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/records/verifier.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/records/verifier.stderr",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/records/verifier.stdout",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/20261120T000707Z-4cb75a77/result.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/executions/20261120T000707Z-4cb75a77/attempt.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/executions/20261120T000707Z-4cb75a77/checker.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/executions/20261120T000707Z-4cb75a77/correspondence.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent-observed/executions/20261120T000707Z-4cb75a77/replay.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "e1113f1c2d17615fc5f4afe30ad3deff0d68a08a",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e1113f1c2d17615fc5f4afe30ad3deff0d68a08a/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

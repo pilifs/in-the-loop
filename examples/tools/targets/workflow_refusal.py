@@ -21,10 +21,14 @@ Anything else fails, with what differed: a verdict, another refusal, a crash. Wh
 fails too, which is the point: the task then needs its ordinary attempt, its claim unchanged. The claim's `expected`
 conclusion is never touched, and a refusal is never a verdict.
 
+A resource packet can record the checker deadline and the selected native solver. Its rerun uses that policy and
+checks the new execution journal for the same solver, deadline and exhaustion.
+
 Run as `python3 examples/tools/targets/workflow_refusal.py ID TASK` from the repository root.
 """
 
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -60,8 +64,17 @@ def predictions(folder, target, task_id):
             raise PredictionError(f"{b['packet']}: refusal needs a stage ({' or '.join(STAGES)}) and a text")
         if not document.get("claimKey"):
             raise PredictionError(f"{b['packet']}: a predicted refusal names the claim key it was observed under")
-        out.append({"packet": b["packet"], "kind": b["kind"], "finding": b.get("finding"),
-                    "stage": refusal["stage"], "text": refusal["text"], "claimKey": document["claimKey"]})
+        prediction = {"packet": b["packet"], "kind": b["kind"], "finding": b.get("finding"),
+                      "stage": refusal["stage"], "text": refusal["text"], "claimKey": document["claimKey"]}
+        if b["kind"] == "resources" and "budget" in document:
+            budget, env = document["budget"], document.get("environment", {})
+            if not isinstance(budget, dict) or not isinstance(env, dict):
+                raise PredictionError(f"{b['packet']}: invalid recorded checker budget or environment")
+            seconds, solver = budget.get("checkerSeconds"), env.get("JVMCONTRACT_SOLVER")
+            if type(seconds) is not int or seconds <= 0 or solver is not None and (not isinstance(solver, str) or not solver):
+                raise PredictionError(f"{b['packet']}: invalid recorded checker deadline or solver")
+            prediction["policy"] = {"checkerSeconds": seconds, "solver": solver}
+        out.append(prediction)
     return out
 
 
@@ -71,13 +84,20 @@ def receipt_dirs(folder, task_id):
     return {p.parent.name for p in root.glob("*/result.json")} if root.is_dir() else set()
 
 
-def read_receipt(folder, task_id, name):
+def read_receipt(folder, task_id, name, with_policy=False):
     """What the judgement reads of one receipt: execution, conclusion status and problem."""
     raw = json.loads((Path(folder) / RECEIPTS / task_id / name / "result.json").read_text())
     conclusion = raw.get("conclusion") or {}
     evidence = raw.get("evidence") or {}
     attempt = raw.get("attempt") or {}
-    return {"path": f"{RECEIPTS}/{task_id}/{name}", "status": conclusion.get("status"),
+    recorded = {}
+    if with_policy:
+        journal = Path(folder) / RECEIPTS / task_id / "executions" / name / "attempt.json"
+        run = json.loads(journal.read_text()) if journal.is_file() else {}
+        recorded = {"budgetExhausted": run.get("budgetExhausted"), "policy": {
+            "checkerSeconds": (run.get("budget") or {}).get("checkerSeconds"),
+            "solver": (run.get("checker") or {}).get("environment", {}).get("JVMCONTRACT_SOLVER")}}
+    return {**recorded, "path": f"{RECEIPTS}/{task_id}/{name}", "status": conclusion.get("status"),
             "execution": (attempt.get("execution") or {}).get("status"), "problem": evidence.get("problem") or "",
             "claim": attempt.get("claim")}
 
@@ -106,12 +126,14 @@ def judge(prediction, plan_key, code, output, receipts):
         return False, f"the receipt {r['path']} concludes {r['status']}, not unresolved: a verdict, not the refusal"
     if r["execution"] != "completed":
         return False, f"the attempt {r['path']} is {r['execution']}, not completed"
+    if "policy" in prediction and (prediction["policy"] != r.get("policy") or r.get("budgetExhausted") is not True):
+        return False, f"{r['path']} did not exhaust the recorded checker deadline with the recorded solver"
     if prediction["text"] not in r["problem"]:
         return False, f"another refusal in {r['path']}: {r['problem'] or 'none recorded'}"
     return True, f"unresolved at the recorded refusal, receipt {r['path']}"
 
 
-def check(folder, example, target, task_id, run):
+def check(folder, example, target, task_id, run=None):
     """Runs the task once through `run` (a callable returning (exit code, output lines)) and judges it against each
     predicted refusal: (ok, line). The task must have exactly one prediction."""
     folder = Path(folder)
@@ -123,13 +145,31 @@ def check(folder, example, target, task_id, run):
     if isinstance(plan, Unsupported):
         return False, f"the task no longer plans ({plan.describe()})"
     before = receipt_dirs(folder, task_id)
-    code, output = run()
+    code, output = run() if run is not None else rerun(folder.parent.parent, example["id"], task_id, prediction.get("policy"))
     new = sorted(receipt_dirs(folder, task_id) - before)
-    receipts = [read_receipt(folder, task_id, name) for name in new]
+    receipts = [read_receipt(folder, task_id, name, with_policy="policy" in prediction) for name in new]
     ok, how = judge(prediction, plan.claim.get("key"), code, output, receipts)
     tag = f"{prediction['finding'] or prediction['kind']}; {prediction['stage']}; {prediction['packet']}"
     return ok, (f"{folder.name}: task {task_id}: refused as predicted ({tag}): {how}" if ok else
                 f"{folder.name}: task {task_id}: NOT AS PREDICTED: {how} ({tag})")
+
+
+def rerun(root, example, task, policy):
+    argv = [sys.executable, str(root / "examples/tools/build.py"), example, "--task", task]
+    env = os.environ.copy()
+    if policy:
+        argv.extend(["--checker-seconds", str(policy["checkerSeconds"])])
+        if policy["solver"]:
+            env["JVMCONTRACT_SOLVER"] = policy["solver"]
+            if policy["solver"].startswith("bitwuzla"):
+                env.setdefault("JVMCONTRACT_BITWUZLA", str(Path.home() / "tools/bitwuzla/current"))
+        else:
+            env.pop("JVMCONTRACT_SOLVER", None)
+    p = subprocess.run(argv, cwd=root, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
+    lines = p.stdout.splitlines()
+    for line in lines:
+        print(INDENT + line, flush=True)
+    return p.returncode, lines
 
 
 def main(argv=None):
@@ -148,18 +188,8 @@ def main(argv=None):
     target = sidecar.load(folder, example)
     if target is None or args.task not in [t["id"] for t in target["tasks"]]:
         sys.exit(f"example {args.example} has no task {args.task!r}")
-    root = build.EXAMPLES.parent
-
-    def run():
-        p = subprocess.run([sys.executable, str(root / "examples/tools/build.py"), args.example, "--task", args.task],
-                           cwd=root, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True)
-        lines = p.stdout.splitlines()
-        for line in lines:
-            print(INDENT + line, flush=True)
-        return p.returncode, lines
-
     try:
-        ok, line = check(folder, example, target, args.task, run)
+        ok, line = check(folder, example, target, args.task)
     except PredictionError as e:
         sys.exit(str(e))
     print(line)

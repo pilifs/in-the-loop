@@ -12,19 +12,19 @@
     "codex-auto-review"
   ],
   "started": "2026-11-19T23:41:42.230Z",
-  "ended": "2026-11-20T00:13:40.484Z",
-  "duration_seconds": 1918,
+  "ended": "2026-11-20T00:32:36.907Z",
+  "duration_seconds": 3055,
   "stats": {
-    "turns": 9,
-    "api_calls": 13,
+    "turns": 12,
+    "api_calls": 19,
     "tool_calls": 0,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 111506,
+    "peak_context_tokens": 150390,
     "usage": {
-      "input_tokens": 141258,
-      "output_tokens": 1202,
-      "cache_read_input_tokens": 713088,
+      "input_tokens": 181210,
+      "output_tokens": 1930,
+      "cache_read_input_tokens": 1498496,
       "cache_creation_input_tokens": 0
     }
   },
@@ -34,24 +34,24 @@
     {
       "index": 0,
       "started": "2026-11-19T23:41:42.230Z",
-      "ended": "2026-11-20T00:13:40.484Z",
-      "turns": 9,
-      "api_calls": 13,
+      "ended": "2026-11-20T00:32:36.907Z",
+      "turns": 12,
+      "api_calls": 19,
       "usage": {
-        "input_tokens": 141258,
-        "output_tokens": 1202,
-        "cache_read_input_tokens": 713088,
+        "input_tokens": 181210,
+        "output_tokens": 1930,
+        "cache_read_input_tokens": 1498496,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 111506
+      "peak_context_tokens": 150390
     }
   ],
   "log": {
-    "sha256": "052ea65a63701704ad83909d97d2a818485e56b9e83faa1235bd9a4fef2446bb",
-    "bytes": 936279,
-    "lines": 164,
-    "gzip_bytes": 280394,
-    "path": "llm-dlc/traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/logs/052ea65a63701704ad83909d97d2a818485e56b9e83faa1235bd9a4fef2446bb.jsonl.gz"
+    "sha256": "d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d",
+    "bytes": 1181819,
+    "lines": 233,
+    "gzip_bytes": 340431,
+    "path": "llm-dlc/traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/logs/d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -94,6 +94,70 @@
       "summary": "Verify supplementary code points and StringBuilder search in native bytecode (verification pending)",
       "body": "Share the UTF-16 encoding of a Java code point between String search, Character.toChars and StringBuilder.appendCodePoint. Invalid input throws before the builder changes. Model the Basic Latin and Combining Diacritical Marks regex blocks used in library initialization. A symbolic test checks the conversion and exception classes, a JVM checks all 65,536 BMP units and supplementary boundary controls, and interpreter replay checks the same units. The strict fixed Commons Lang probe established the original last-match property. The 27 selected test groups passed. Job 20261120-001502-retry-commons-lang-utf-16-search-on-the retries all five original claims with their original execution references, source artifacts and budgets.",
       "log_sha256": "052ea65a63701704ad83909d97d2a818485e56b9e83faa1235bd9a4fef2446bb"
+    },
+    {
+      "change_id": "zqmtmlosvpxvzuszlvkoztuwoyvuksqy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-000226-threetenbp-clock-parent-with-observed-ch: passed: 1 passed step(s) in 13.0s, peak 154.4 MiB (estimated 1m00s, 2.0 GiB); 16 output file(s) changed; signals: example:task-as-expected×1 Applied 16 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d"
+    },
+    {
+      "change_id": "xulyotzsuymvqnsmrzqzzktouzutqknq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose the watcher's two decision ids for the allow list",
+      "body": "The watcher session's logs carry single-foundation-and-python-restart-D001 and -D002, the ids single_run.py gives the watcher's continue answers, which the scan reads as long tokens (10126be8, d5cbb565). Checked masked: each occurs after 'continue recorded as'. Proposed for a person to approve; the run's agent proposed 10126be8 too on its own line. The commit also holds the run's decision record (llm-dlc/decisions/single-foundation-and-python-restart.*).",
+      "log_sha256": "d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d"
+    },
+    {
+      "change_id": "slvrxzkqtqvzpkqnktyqvlkvxnkrtozx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "20261120-000227-threetenbp-same-day-with-observed-chrono: passed, its receipt in examples/310-threeten-complete-hours/receipts/same-day-observed. 20261120-000646-prove-the-twelve-sub-hour-crossings-at-t: failed: 1 failed step(s) in 0.2s, peak 32.8 MiB (estimated 1m00s, 2.0 GiB); its outputs were not produced. Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way. Two collections that ran beside a commit of the watcher's were folded into this one commit.",
+      "log_sha256": "d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d"
+    },
+    {
+      "change_id": "xymkkkzururwsqlwttkrryltqwwvyuwt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Regenerate the traces README after folding two results commits",
+      "body": "Folding two verification-result commits that had raced a watcher commit left llm-dlc/traces/README.md out of step with the manifests; sync.py regenerate brings it back.",
+      "log_sha256": "d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d"
+    },
+    {
+      "change_id": "wzovxqwloyokvpnnsmptmknrltvkxupu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 3 job(s)",
+      "body": "Outputs applied for 0 of the 3 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-000226-threetenbp-clock-fix-with-observed-chron: failed: 1 failed step(s) in 10m09s, peak 1.5 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-000226-threetenbp-reversal-fix-with-observed-ch: failed: 1 failed step(s) in 10m10s, peak 1.6 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-000227-threetenbp-reversal-parent-with-observed: failed: 1 failed step(s) in 10m10s, peak 990.8 MiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d"
+    },
+    {
+      "change_id": "nkvunvqknrursqmvyzmyupwxlmvvwzww",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-001338-prove-the-twelve-sub-hour-crossings-at-t: passed: 1 passed step(s) in 21.7s, peak 182.5 MiB (estimated 1m00s, 2.0 GiB); 31 output file(s) changed; signals: example:task-as-expected×2 Applied 31 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d"
+    },
+    {
+      "change_id": "mrswtquknywomqmxwsppnvvnvoowopzs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-001502-retry-commons-lang-utf-16-search-on-the: passed: 1 passed step(s) in 15.0s, peak 319.9 MiB (estimated 1m00s, 3.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×5 Applied 78 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d"
+    },
+    {
+      "change_id": "syymwsotsnnzrywnqtryzmpywpuysvlv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Integrate the native calendar and UTF-16 results with their qualification evidence",
+      "body": "The five original Commons Lang retries are decided. With the JVM-observed chronology registries, the native checker refuted the parent clock on the full grid, established same-day preservation, refuted the parent on sub-hour crossings and proved the fix on all twelve. Three full-grid temporal searches exhausted their 600-second budgets. Record the original and derived claim scopes, independent witnesses, class and state bindings, and per-task budgets in the handoff. Resource reproductions restore the recorded solver and deadline and check exhaustion in the execution journal. Both packet validators and all 39 selected test groups passed. The eight job manifests account for 187 verified output digests.\n\nThe collector merge retained all 67 human-approved allow-list entries and both pending proposals using the repository proposal workflow. The earlier batch parsing failure remains linked to the successful run. The final public handoff distinguishes the original strict chronology refusals from the subsequently qualified results.",
+      "log_sha256": "d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d"
     }
   ],
   "logs": {
@@ -119,6 +183,12 @@
       "bytes": 653045,
       "lines": 105,
       "gzip_bytes": 215974,
+      "url": null
+    },
+    "d33e76fed0aae2fbce73e6516f751c8c2860fbb5132782273f7242455b2ce91d": {
+      "bytes": 1181819,
+      "lines": 233,
+      "gzip_bytes": 340431,
       "url": null
     }
   },

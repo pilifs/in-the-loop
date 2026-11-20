@@ -13,7 +13,8 @@ Phase 5 step 4 of [`example-targets.md`](../llm-dlc/loops/example-targets.md) (d
 | 3 | `verifier-interface:two-dependency-closures` | verifier-interface | 2: bcrypt-input-limit, spring-data-binding | 3 | yes | examples/tools/targets/runtime.py (the refusal); lib/src/main.rs (equivalence's --classpath) and lib/src/equivalence.rs | VF-027 |
 | 4 | `jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader;` | java-semantics | 1: threeten-complete-hours | 5 | no | lib/src/bmc/gaps.rs; lib/src/bmc/runtime.rs |  |
 | 5 | `input-construction:interface-parameter` | input-construction | 1: boot-method-metrics | 4 | no | lib/src/construction.rs; lib/src/environment.rs | VF-027 |
-| 6 | `jdk-constructor:java.lang.StringBuilder.<init>()V` | java-semantics | 1: commons-numbers-pow | 1 | no | lib/src/models.rs | VF-027 |
+| 6 | `resources:checker-deadline` | resources | 1: threeten-complete-hours | 3 | no | lib/src/bmc/bitwuzla.rs; lib/src/bmc/mod.rs |  |
+| 7 | `jdk-constructor:java.lang.StringBuilder.<init>()V` | java-semantics | 1: commons-numbers-pow | 1 | no | lib/src/models.rs | VF-027 |
 
 ### 1. `input-construction:receiver-of-several-constructors`
 
@@ -55,7 +56,15 @@ Phase 5 step 4 of [`example-targets.md`](../llm-dlc/loops/example-targets.md) (d
 - **Owner modules**: lib/src/construction.rs; lib/src/environment.rs.
 - **Closure test** (each obligation's, here the reproducer's): the unchanged claim 46b0bb5f1f51a112 rerun on the same artifacts with the extended checker: its receipt decides it (established or refuted, not vacuous) and its reasons name none of this packet's gaps; a narrower task's receipt doesn't close it.
 
-### 6. `jdk-constructor:java.lang.StringBuilder.<init>()V`
+### 6. `resources:checker-deadline`
+
+- **Blocks**: [310](310-threeten-complete-hours/README.md) `clock-fix-observed` (6ca649b8cb1ca55f), `reversal-parent-observed` (9a6c8b5c2f2e3a4d), `reversal-fix-observed` (863ca5659df1ae5c).
+- **Smallest reproducer**: [310](310-threeten-complete-hours/records/refusals/clock-fix-observed.json) `clock-fix-observed`, observed by job `20261120-000226-threetenbp-clock-fix-with-observed-chron`, 600.858 s. Rerun it, predicting the refusal: `python3 examples/tools/targets/workflow_refusal.py 310 clock-fix-observed`.
+- **Missing semantics** (from that packet): The checked entry converts two quarter-hour ticks to LocalDateTime and calls until with HOURS. The proof must cover all 36,864 inputs under the observed registry and the original signed arithmetic.
+- **Owner modules**: lib/src/bmc/bitwuzla.rs; lib/src/bmc/mod.rs.
+- **Closure test** (each obligation's, here the reproducer's): the unchanged claim 6ca649b8cb1ca55f rerun on the same artifacts with the extended checker: its receipt decides it (established or refuted, not vacuous) and its reasons name none of this packet's gaps; a narrower task's receipt doesn't close it.
+
+### 7. `jdk-constructor:java.lang.StringBuilder.<init>()V`
 
 - **Blocks**: [105](105-commons-numbers-223-pow-of-minus-two-to-the-31/README.md) `confined-change` (6bef0dff1140dc6d).
 - **Smallest reproducer**: [105](105-commons-numbers-223-pow-of-minus-two-to-the-31/records/refusals/confined-change.json) `confined-change`, observed by job `20261114-234214-example-105-confined-change-phase-5-step`, 217.6 s. Rerun it, predicting the refusal: `python3 examples/tools/targets/workflow_refusal.py 105 confined-change`.

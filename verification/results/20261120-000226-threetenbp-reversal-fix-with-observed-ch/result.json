@@ -1,0 +1,308 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-000226-threetenbp-reversal-fix-with-observed-ch",
+  "title": "ThreeTenBP reversal-fix with observed chronology",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 10m10s, peak 1.6 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1",
+  "attention": [
+    "step 1 (Check the bound task and publish its own receipt) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-000226-threetenbp-reversal-fix-with-observed-ch.json",
+    "sha256": "ee85cdb58bbf4573550ca87d19418d4a05996579d9c8565c95de0bbc9fc054d5",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-000226-threetenbp-reversal-fix-with-observed-ch",
+      "title": "ThreeTenBP reversal-fix with observed chronology",
+      "description": "Check reversal symmetry on the fix at the public HOURS adapter on the pinned ThreeTenBP artifacts for June 15–16, 2012. Both JVM-observed registry maps must be empty and distinct. The native checker must report the named model, initializer class and state identities, and unwind 32. The independent adapter correspondence is checked on each of the 36,864 tick pairs per revision. Each registered task has its own receipt and execution journal.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "310"
+        ],
+        "jobs": [
+          "20261119-231539-retry-threetenbp-hours-after-exact-jdk-a"
+        ]
+      },
+      "expected": "The receipt supports reversal symmetry on the fix under its recorded JVM initialization and single-threaded registry model. A solver deadline leaves the obligation open.",
+      "submitted": {
+        "at": "2026-11-20T00:03:24+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "revision": "0dc25164bdb9cfed4170e1050c4edb76fe219b42",
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 1,
+        "memory": "2G",
+        "memoryLimit": "4G",
+        "duration": "10m",
+        "timeout": "15m",
+        "notes": "Each native solver has a 600-second checker budget. The full parent probe used 2.3 seconds. A fixed-clock probe used all 60 seconds. The shared release checker is built once."
+      },
+      "steps": [
+        {
+          "name": "Check the bound task and publish its own receipt",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-words JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task reversal-fix-observed --checker-seconds 600"
+        }
+      ],
+      "outputs": [
+        "examples/310-threeten-complete-hours/receipts/reversal-fix-observed"
+      ]
+    }
+  },
+  "sourceCommit": "0dc25164bdb9cfed4170e1050c4edb76fe219b42",
+  "startedAt": "2026-11-20T00:04:25+00:00",
+  "finishedAt": "2026-11-20T00:17:17+00:00",
+  "wallSeconds": 772.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1431944,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 600.0,
+    "notes": "Each native solver has a 600-second checker budget. The full parent probe used 2.3 seconds. A fixed-clock probe used all 60 seconds. The shared release checker is built once."
+  },
+  "usage": {
+    "peakMemoryBytes": 1752895488,
+    "wallSeconds": 610.6,
+    "cpuSeconds": 609.8,
+    "memoryOfEstimate": 0.82,
+    "durationOfEstimate": 1.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the bound task and publish its own receipt",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-words JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task reversal-fix-observed --checker-seconds 600",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 610.648,
+      "cpuSeconds": 609.827,
+      "cpuThrottledSeconds": 16.01,
+      "peakMemoryBytes": 1752895488,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-bound-task-and-publi.log",
+        "lines": 2,
+        "bytes": 268,
+        "sha256": "de8dfe66adf7f8b85fc46bf98948984627cc76b52dcba4cfebbcda6f9f655167",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "310-threeten-complete-hours: task reversal-fix-observed: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/result.json",
+          "groups": [
+            "310",
+            "reversal-fix-observed",
+            "unresolved",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "310-threeten-complete-hours: running task reversal-fix-observed (target route)",
+        "310-threeten-complete-hours: task reversal-fix-observed: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "607162192c060f9f905104d6ca2a5cd2c47e8048e3f4eb04d807be560a86fe16",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/plan.json",
+      "change": "added",
+      "bytes": 20442,
+      "sha256": "0dac1a7b7de1450428ed6755f554c070c7f9f4c4244c8c05821442a512510f69",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/records/control-fix-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/records/control-fix-jdk21.stdout",
+      "change": "added",
+      "bytes": 15661,
+      "sha256": "9a41a5fd7b9a5932e6937a5633bacb300e7086c59219381b533c990fa3de4012",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/records/controls.json",
+      "change": "added",
+      "bytes": 36103,
+      "sha256": "ee91d2809ebed08c24384313d4ebc16ca69328039967fe9068843b062d575b27",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/records/execution.json",
+      "change": "added",
+      "bytes": 67744,
+      "sha256": "fc60a9cc9b2c7479c7015581a8ce2c45330e53d05958567aac928ea9f0619214",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/records/streams.json",
+      "change": "added",
+      "bytes": 1947,
+      "sha256": "86fddfc3902765220830205860ec197ec469ec77ac9aae965a5d9e823cb6861a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 381,
+      "sha256": "15e88db6cd38d147d42c6293cea1c386fc4337ca9396b05ecbae9bfedced4ba2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/records/verifier.json",
+      "change": "added",
+      "bytes": 31215,
+      "sha256": "696bc0ae1f792ee8521da5ecec4f8ac0385d6e9ee5f258d08cd79378f69007c0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/records/verifier.stdout",
+      "change": "added",
+      "bytes": 8052,
+      "sha256": "90b07759dca8507c20e693e0ccdf33137d4c5eb864df1bbab2babd88bdf698d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/result.json",
+      "change": "added",
+      "bytes": 17673,
+      "sha256": "2eeb4082c0472403aa5187c8f4a23e508e286679d0b4c29e6825073d074fa292",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/executions/20261120T000707Z-4de6fd45/attempt.json",
+      "change": "added",
+      "bytes": 30182,
+      "sha256": "62bd822e77986238641c5bc602691e969d753dd0d8b781b24a759caeaed4b912",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/executions/20261120T000707Z-4de6fd45/checker.json",
+      "change": "added",
+      "bytes": 9597,
+      "sha256": "71e8eb3dff8249999c3564975979ce944f574b8bd8f27fb7c97e359e006a1e9a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/executions/20261120T000707Z-4de6fd45/correspondence.json",
+      "change": "added",
+      "bytes": 1300,
+      "sha256": "7b4d959c41413173e7183cc5c68e6c695cd73dfd8bb88a73185e4885d0ddfcd0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T00:17:21+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/completion.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/plan.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/records/control-fix-jdk21.stderr",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/records/control-fix-jdk21.stdout",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/records/controls.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/records/execution.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/records/streams.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/records/verifier-output.txt",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/records/verifier.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/records/verifier.stderr",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/records/verifier.stdout",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/20261120T000707Z-4de6fd45/result.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/executions/20261120T000707Z-4de6fd45/attempt.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/executions/20261120T000707Z-4de6fd45/checker.json",
+      "examples/310-threeten-complete-hours/receipts/reversal-fix-observed/executions/20261120T000707Z-4de6fd45/correspondence.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "e1113f1c2d17615fc5f4afe30ad3deff0d68a08a",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e1113f1c2d17615fc5f4afe30ad3deff0d68a08a/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-000226-threetenbp-reversal-fix-with-observed-ch"
+}

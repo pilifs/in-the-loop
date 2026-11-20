@@ -1,0 +1,408 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "a1ee96515f499ea8",
+    "format": 1,
+    "example": "311",
+    "statement": {
+      "approach": "target",
+      "task": "single-unit",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "org.apache.commons.lang3.StringUtils#lastIndexOf(Ljava/lang/CharSequence;I)I",
+      "revisions": [
+        "parent",
+        "fix"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "single-unit",
+        "kind": "equivalence",
+        "relation": "preservation",
+        "target": "org.apache.commons.lang3.StringUtils#lastIndexOf(Ljava/lang/CharSequence;I)I",
+        "file": "claims/single-unit.json",
+        "sha256": "4ece725b148864021d8b6b9a67b2fad415ef50da7865b0a627cb07b8f4e1ebb6",
+        "property": "single-unit",
+        "claimKind": "preservation",
+        "statement": "Preserve the public result for a single-code-unit search character.",
+        "assume": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4 && needle != 2",
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 12,
+          "maxArrayLength": 6
+        },
+        "explicitBounds": {
+          "unwind": 12,
+          "maxArrayLength": 6
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "search-driver",
+            "kind": "driver",
+            "path": "driver/utfgrid/SearchCases.java",
+            "sha256": "042df6c984374cd3ce02f382a962dc066ae1838323e1639912050b12ee6ba503"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "439dbb62f69aa8b41dd22ff305fc17b821eacd65612ace0f2454c8260de78f26"
+          }
+        ],
+        "adapter": {
+          "entry": "utfgrid.Search#last(II)I",
+          "mapping": "Encoding 0 through 39 enumerates zero to three tokens from a, b and U+2070E in bijective base three, least significant token first. Needle 0, 1, 2 or 3 selects a, b, U+2070E or z. The runtime receiver argument is a StringBuilder.",
+          "correspondence": "finite-oracle",
+          "cases": 160
+        },
+        "key": "b8040405bad6d92d"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 6,
+      "intendedInputs": null
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": null,
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "single-unit",
+      "sidecar": "8038aff1f54c37a243b1ce3c49bdb12f4648028de23e6485f33c9a743394e6c2",
+      "revisions": {
+        "parent": "2d2e68560fb001c7fa8f8d6f7475f3b800acd995",
+        "fix": "bdd674f7c64dbc2c8ff043ee995fcd9f6f59a13b"
+      },
+      "dependencies": [
+        {
+          "revision": "parent",
+          "position": 0,
+          "role": "driver",
+          "sha256": "f570f62a6703475646e7229e583ccfcbba3ff977eb86ba69e1fc97d4b69588db"
+        },
+        {
+          "revision": "parent",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "1a0e7b60e4a5fa25b0f4954702d0525a6d3e60913a3856745aab1f44a0c94a3a"
+        },
+        {
+          "revision": "parent",
+          "position": 2,
+          "role": "original",
+          "sha256": "b87e5b65fde8fae50cc1e23b73a9d8f0c263db49f78937888bea183ef6d060ef"
+        },
+        {
+          "revision": "fix",
+          "position": 0,
+          "role": "driver",
+          "sha256": "f570f62a6703475646e7229e583ccfcbba3ff977eb86ba69e1fc97d4b69588db"
+        },
+        {
+          "revision": "fix",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "1a0e7b60e4a5fa25b0f4954702d0525a6d3e60913a3856745aab1f44a0c94a3a"
+        },
+        {
+          "revision": "fix",
+          "position": 2,
+          "role": "original",
+          "sha256": "7cb316f82a3948c50d82112e027f533d29e4528f09f4ea491424065c004ffa60"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/utfgrid/Search.java": "b11c25ac0bfaee78649397b682de6fb5c5a07d91905c1d5cff93dda8633c0d80",
+        "claims/single-unit.json": "4ece725b148864021d8b6b9a67b2fad415ef50da7865b0a627cb07b8f4e1ebb6",
+        "controls/oracle.py": "439dbb62f69aa8b41dd22ff305fc17b821eacd65612ace0f2454c8260de78f26",
+        "driver/utfgrid/SearchCases.java": "042df6c984374cd3ce02f382a962dc066ae1838323e1639912050b12ee6ba503"
+      },
+      "claimKey": "b8040405bad6d92d",
+      "scopes": {
+        "parent": "extracted-source-slice",
+        "fix": "extracted-source-slice"
+      }
+    }
+  },
+  "attempt": {
+    "id": "20261120T002356Z-e472bb13",
+    "claim": "a1ee96515f499ea8",
+    "startedAt": "2026-11-20T00:23:56+00:00",
+    "seconds": 0.7,
+    "engine": "native",
+    "options": [
+      "equivalence",
+      "--before",
+      "verifier/classes/parent",
+      "--after",
+      "verifier/classes/fix",
+      "--target",
+      "utfgrid.Search#last(int, int)",
+      "--classpath",
+      "prepare/fix/slice/fix.jar",
+      "--before-classpath",
+      "prepare/parent/slice/parent.jar",
+      "--assume",
+      "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4 && needle != 2",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "12",
+      "--max-array-length",
+      "6",
+      "--timeout",
+      "600",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "b96d93d918896ce1abbd0ebc22e65f6523ad8184a88d724f5cf152fc24b1fec4"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "8796cc60824364db8b7903282860a873178583130751c43941b3fa71bb3243c1",
+        "files": 1
+      },
+      "after": {
+        "sha256": "c290d6f656be0c17ac67a110c049ef589d8556e20476c295c84ac283ff333b0c",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-001502-retry-commons-lang-utf-16-search-on-the",
+      "sourceCommit": "20abed834c15ec4d7c613c174a39bb8193cd9721",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-001502-retry-commons-lang-utf-16-search-on-the"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control parent on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-parent-jdk21.stdout",
+        "stderr": "records/control-parent-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control fix on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-fix-jdk21.stdout",
+        "stderr": "records/control-fix-jdk21.stderr"
+      },
+      {
+        "name": "verifier pair on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.538,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 12,
+      "maxArrayLength": 6,
+      "complete": true
+    }
+  },
+  "conclusion": {
+    "claim": "a1ee96515f499ea8",
+    "attempt": "20261120T002356Z-e472bb13",
+    "status": "established",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "✓ Verified",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"parent\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"fix\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over encoding: int × needle: int in 0.1 s; loops unwound 12 times with unwinding assertions",
+    "problem": null,
+    "domain": "encoding: int × needle: int",
+    "replay": null,
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "encoding",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "needle",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "sharedArrays": false,
+        "text": "encoding: int × needle: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4 && needle != 2",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 12,
+        "maxArrayLength": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+        "classes": 38,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found agree(encoding=20, needle=0).",
+        "witness": "agree(encoding=20, needle=0)"
+      }
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "dca378652bacad2e8519a20a47a53c5ac45c2ba375203ec93f54d370b49c58d4",
+        "bytes": 112648
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "beb5c3c56b469d1c5b6c6ff80d8426b1c153269422daabb529c98366fbf32422",
+        "bytes": 1299
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "7037f0ef6f98ae2e901c11cf2da86400c91dcd76a56ec2a982fc7d13a9deff8e",
+        "bytes": 2647
+      },
+      {
+        "path": "records/control-parent-jdk21.stdout",
+        "sha256": "629f8d2530ff869771d0baa088b082ac768d32b07d8c48addd490f5ae3b50964",
+        "bytes": 10345
+      },
+      {
+        "path": "records/control-parent-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "5ccdc80ff49b4f13b62a6f39e1d0582278b955ae6c1c7a733daf0fbc845e0d64",
+        "bytes": 51778
+      },
+      {
+        "path": "records/control-fix-jdk21.stdout",
+        "sha256": "4e4d1ea0051c8c2470a2bcae0f59fdaaf83f6ef4c5208b8f64cdcf4654443961",
+        "bytes": 10295
+      },
+      {
+        "path": "records/control-fix-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "ddb498f65516158f1a5e70072081b360eff038721e56741dd939714c96e83b9e",
+        "bytes": 11523
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "15e0d8f7aa613cd2a2d0bea21f3697ae1ce126491d757d7c25a645a5ec608371",
+        "bytes": 60566
+      }
+    ]
+  }
+}

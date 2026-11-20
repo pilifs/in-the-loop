@@ -30,6 +30,25 @@ def receipt(status="unresolved", execution="completed", problem=TEXT, path="rece
 
 
 class JudgeTest(unittest.TestCase):
+    def test_resource_rerun_requires_the_recorded_solver_deadline_and_exhaustion(self):
+        folder = next(EXAMPLES.glob("310-*"))
+        task = "clock-fix-observed"
+        target = {"handoff": {"blockers": [{"task": task, "observed": True, "kind": "resources",
+                                            "packet": f"records/refusals/{task}.json"}]}}
+        predicted, = workflow_refusal.predictions(folder, target, task)
+        policy = predicted["policy"]
+        self.assertEqual(policy, {"checkerSeconds": 600, "solver": "bitwuzla-words"})
+        packet = json.loads((folder / predicted["packet"]).read_text())
+        archived = ROOT / packet["observed"]["receipt"]
+        receipt = workflow_refusal.read_receipt(archived.parents[3], task, archived.parent.name, with_policy=True)
+        for altered, want in [(receipt, True), ({**receipt, "budgetExhausted": False}, False),
+                              ({**receipt, "policy": {**policy, "solver": "cadical"}}, False)]:
+            self.assertEqual(workflow_refusal.judge(predicted, predicted["claimKey"], 1, [], [altered])[0], want)
+        with mock.patch.object(workflow_refusal.subprocess, "run", return_value=mock.Mock(returncode=1, stdout="")) as command:
+            self.assertEqual(workflow_refusal.rerun(ROOT, "310", task, policy), (1, []))
+        self.assertEqual(command.call_args.args[0][-2:], ["--checker-seconds", "600"])
+        self.assertEqual(command.call_args.kwargs["env"]["JVMCONTRACT_SOLVER"], "bitwuzla-words")
+
     def test_the_recorded_refusal_on_the_same_claim_passes(self):
         ok, how = workflow_refusal.judge(prediction(), "k1", 1, ["x: task t: unresolved (completed; NOT AS EXPECTED "
                                                                    "(refuted)), receipt receipts/t/a/result.json"],

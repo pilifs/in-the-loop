@@ -1,0 +1,7 @@
+note: the expressions are Java beyond the tool's own expression compiler (in the assertion: unknown name "utfgrid"; the names are encoding, needle, result); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target
+✗ Property of utfgrid.Search#last(int, int) violated: `result == utfgrid.Search.expected(encoding, needle)` where encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4:
+  last(encoding=3, needle=2)
+    outcome: -1
+  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain encoding: int × needle: int)
+
+The input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.

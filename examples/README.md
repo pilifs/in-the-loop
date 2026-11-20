@@ -318,7 +318,7 @@ it was produced. Its `example.json` holds what the router needs, with its notes.
 | 308 | [Apache Commons Text longest common subsequence on two distinct score rows](308-commons-text-longest-common-subsequence/README.md) | real-world | Apache Commons Text | B11 | JVM oracle agrees on 225 release inputs and disagrees on 44 control inputs |  | open-source-libraries, aliasing, external-target, own-checker |
 | 309 | [Apache Commons Math GCD on nonzero factors with a zero product](309-commons-math-238-gcd/README.md) | real-world | Apache Commons Math | B11 | 45 power-pair discrepancies before the repair, zero after on the JVM |  | open-source-libraries, integer-overflow, external-target, own-checker |
 | 310 | [ThreeTenBP complete hours across midnight](310-threeten-complete-hours/README.md) | real-world | ThreeTenBP | B11 | 6,912 clock discrepancies before the fix on 36,864 ordered JVM calls |  | open-source-libraries, off-by-one, external-target, own-checker |
-| 311 | [Apache Commons Lang searches for a supplementary character on a StringBuilder](311-commons-lang-utf16-search/README.md) | real-world | Apache Commons Lang | B11 | Finite UTF-16 search calibration |  | open-source-libraries, text-encoding, off-by-one, external-target, own-checker |
+| 311 | [Apache Commons Lang searches for a supplementary character on a StringBuilder](311-commons-lang-utf16-search/README.md) | real-world | Apache Commons Lang | B11 | Native last-match repair and preservation on the 160-input UTF-16 grid |  | open-source-libraries, text-encoding, off-by-one, external-target, own-checker |
 <!-- examples:end -->
 
 ## Examples by tag

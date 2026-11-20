@@ -84,6 +84,12 @@ change `yymsymovkxsl` · [log `df7cc669cf22`](https://terminalvalue.net/raw-trac
 
 Two archived collector logs contain the same long-token finding. Masked context and an independent digest check identify the value as the ID of the watcher’s recorded continue decision. The allow-list entry remains proposed for a person to review. All 11 test selections for the proposal passed.
 
+### Twenty Java verification examples as a fast-follow brief for one agent's run
+
+change `onuzmoonrylt` · [log `a2195785f93e`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/a2195785f93e4270b816a485d7754ab39045bc42395ce08e7db032088832d57e.jsonl.gz)
+
+llm-dlc/loops/twenty-example-fast-follow.md is the user's brief for the run after foundation-and-python-restart: 20 new cases, ten historical upstream repairs (Commons Lang, ThreeTen-Extra, Commons CSV, Guava, Commons Collections, JFreeChart, Joda-Time, Commons Math, Commons Geometry) and ten controlled Java examples, in four waves (artifacts and observations; heaps and sequences; language and library boundaries; transfer and cost), each with a frozen subject, domain, observation, independent oracle and expected discriminator. Copied unchanged.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/a2195785f93e4270b816a485d7754ab39045bc42395ce08e7db032088832d57e.jsonl.gz) has every step in between: reasoning, tool calls and their results.

@@ -1,0 +1,204 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "violation",
+    "target": "utfgrid.Search#last(int, int)",
+    "domain": "encoding: int × needle: int",
+    "assume": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4",
+    "assert": "result == utfgrid.Search.expected(encoding, needle)",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": {
+      "input": "last(encoding=3, needle=2)",
+      "outcome": "-1",
+      "values": [
+        "3",
+        "2"
+      ],
+      "shrink_runs": 0,
+      "inputs": [
+        {
+          "name": "encoding",
+          "type": "int",
+          "value": 3
+        },
+        {
+          "name": "needle",
+          "type": "int",
+          "value": 2
+        }
+      ],
+      "call": {
+        "class": "utfgrid.Search",
+        "class_file": "utfgrid/Search.class",
+        "classes": "after",
+        "method": "last",
+        "descriptor": "(II)I",
+        "static": true,
+        "arguments": [
+          {
+            "name": "encoding",
+            "type": "int",
+            "value": 3,
+            "from": "encoding"
+          },
+          {
+            "name": "needle",
+            "type": "int",
+            "value": 2,
+            "from": "needle"
+          }
+        ]
+      }
+    },
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain encoding: int × needle: int",
+    "problem": null,
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "property-violated",
+        "message": "Property of utfgrid.Search#last(int, int) violated: `result == utfgrid.Search.expected(encoding, needle)` where encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4:\n  last(encoding=3, needle=2)\n    outcome: -1",
+        "uri": null,
+        "line": 11
+      }
+    ],
+    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assertion: unknown name \"utfgrid\"; the names are encoding, needle, result); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✗ Property of utfgrid.Search#last(int, int) violated: `result == utfgrid.Search.expected(encoding, needle)` where encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4:\n  last(encoding=3, needle=2)\n    outcome: -1\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain encoding: int × needle: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.011521566,
+      "properties": 1,
+      "unwind": 12,
+      "max_array_length": 6,
+      "stage": "[0:20]",
+      "native": {
+        "paths": 10,
+        "merges": 0,
+        "solver_calls": 20,
+        "solving_seconds": 0.001324163,
+        "gates_evaluated": 1004,
+        "evaluating_seconds": 0.000030888,
+        "divisions": 1,
+        "divisions_built": 1,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 5744,
+        "clauses": 19652,
+        "seconds": 0.010204839,
+        "loading_seconds": 0.001188846,
+        "decoding_seconds": 0.000079998,
+        "encoding_seconds": 0.002997649,
+        "witness_seconds": 0.000023303
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 600.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 600.0,
+          "seconds": 0.01,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.001,
+            "lowering": 0.0,
+            "symbolic": 0.005,
+            "encoding": 0.003,
+            "solving": 0.001,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 5744,
+            "clauses": 19652
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.483,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.01,
+        "replay": 0.003,
+        "jvm": 0.054,
+        "other": 0.415
+      }
+    },
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "encoding",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "needle",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "encoding: int × needle: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "encoding >= 0 && encoding < 40 && needle >= 0 && needle < 4",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == utfgrid.Search.expected(encoding, needle)",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 12,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+        "classes": 38,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]
