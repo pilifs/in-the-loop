@@ -34,6 +34,19 @@ def digest(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
+def source_manifest(revision):
+    listing = subprocess.check_output(["git", "ls-tree", "-rz", revision, "--", *PINNED_PATHS], cwd=ROOT)
+    entries = {}
+    for record in listing.split(b"\0"):
+        if record:
+            header, path = record.split(b"\t", 1)
+            mode, kind, blob = header.decode().split()
+            if kind != "blob":
+                raise ValueError("unexpected non-file product entry " + path.decode())
+            entries[path.decode()] = [mode, blob]
+    return (json.dumps({"revision": revision, "files": entries}, separators=(",", ":")) + "\n").encode()
+
+
 def snapshot(args, revision):
     revision = output("git", "rev-parse", "--verify", f"{revision}^{{commit}}")
     changed = output("git", "diff", "--name-only", revision, "--", *PINNED_PATHS)
@@ -51,6 +64,7 @@ def snapshot(args, revision):
         raise ValueError("jbmc and z3 are required on PATH")
     return {
         "schema": "external-upgrade-product/v1", "revision": revision, "gitObjects": objects,
+        "sourceManifestSha256": hashlib.sha256(source_manifest(revision)).hexdigest(),
         "sha256": {name: digest(path) for name, path in binaries.items()},
         "architecture": platform.machine(),
         "build": ["cargo", "build", "--offline", "--locked", "--manifest-path", "lib/Cargo.toml",

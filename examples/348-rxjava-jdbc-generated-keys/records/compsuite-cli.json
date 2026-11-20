@@ -1,0 +1,101 @@
+{
+  "case_id": "calibration-compsuite-i-87",
+  "runFinishedUtc": "2026-11-20T23:33:49Z",
+  "repository": "https://github.com/compsuite-team/compsuite",
+  "commit": "6e6d738c8b0ca6ecbba6220b1fd549b2ae14a05d",
+  "registryProjection": "Exactly the i-87 object extracted from the pinned public incompatibilities.json; the entry fields were preserved.",
+  "setup": "Unmodified common CompSuite sources, fresh local clone from the verified subject mirror in repos/rxjava-jdbc, Python 3.14.4, Temurin 8u512-b09 and Maven 3.6.3. A local untracked .mvn/maven.config made Maven offline and selected the prewarmed parent-POM repository; all original CLI flags were preserved. The CompSuite reference Python is 3.11.",
+  "invocations": {
+    "--info": {
+      "argv": [
+        "python3",
+        "main.py",
+        "--info",
+        "i-87"
+      ],
+      "exit": 0,
+      "seconds": 0.033,
+      "output": [
+        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-rxjava/stock-compsuite/methods.py:246: SyntaxWarning: \"\\<\" is an invalid escape sequence. Such sequences will not work in the future. Did you mean \"\\\\<\"? A raw string is also an option.",
+        "  version = re.findall('\\<version\\>(.*?)\\<\\/version\\>', lines[i + 2])",
+        "/home/filip/.cache/in-the-loop/agent-tmp/0cea9d0e-0fe8-427e-8e71-96614b084e11/external-upgrade-rxjava/stock-compsuite/methods.py:267: SyntaxWarning: \"\\<\" is an invalid escape sequence. Such sequences will not work in the future. Did you mean \"\\\\<\"? A raw string is also an option.",
+        "  lines[i + 2] = re.sub('\\<version\\>.*\\<\\/version\\>',",
+        "===> Display Incompatibility Information --- id i-87",
+        "client: rxjava-jdbc, ",
+        "sha: 5e04239e1f831878884972fbf72ab1f529b0647d, ",
+        "url: https://github.com/compsuite-team/rxjava-jdbc, ",
+        "lib: com.h2database:h2, ",
+        "old version: 1.4.192, ",
+        "new version: 1.4.200, ",
+        "test: DatabaseSyncTest#testReturnGeneratedKeysForMultipleInsertedValuesInOneStatement"
+      ]
+    },
+    "--incompat": {
+      "argv": [
+        "python3",
+        "main.py",
+        "--incompat",
+        "i-87"
+      ],
+      "exit": 0,
+      "seconds": 1.991,
+      "output": [
+        "Current Branch: com.h2database--h2",
+        "SHA of Base Version: 5e04239e1f831878884972fbf72ab1f529b0647d",
+        "===> Compile Target Client --- id i-87",
+        "===> Client Info --- id i-87",
+        "Compilation Failure",
+        "===> Test Target Client --- id i-87",
+        "===> Old Test Information --- id i-87 ===>",
+        "Client: rxjava-jdbc; Library: com.h2database:h2 1.4.192; Test: DatabaseSyncTest#testReturnGeneratedKeysForMultipleInsertedValuesInOneStatement",
+        "Result: ",
+        "TEST SUCCESS!",
+        "===> New Test Information --- id i-87 ===>",
+        "Client: rxjava-jdbc; Library: com.h2database:h2 1.4.200; Test: DatabaseSyncTest#testReturnGeneratedKeysForMultipleInsertedValuesInOneStatement",
+        "Result: ",
+        "TEST SUCCESS!"
+      ]
+    }
+  },
+  "realDisposition": "Both sides blocked in Maven project loading, before tests. Zero fresh named XML files on either side. CompSuite reported TEST SUCCESS! for both and exited 0. The separately executed pinned Surefire provider produced the actual old pass and new assertion failure.",
+  "freshSurefireXmlCount": 0,
+  "mavenLogs": {
+    "logs/rxjava-jdbc/com.h2database:h2/1.4.192.log": {
+      "sha256": "63830d10032077d4b2329622f37c9bebacd96f63394f5cc839e1ce59b0f3cbcf",
+      "firstError": "[ERROR] Unresolveable build extension: Plugin org.sonatype.plugins:nexus-staging-maven-plugin:1.6.5 or one of its dependencies could not be resolved: The following artifacts could not be resolved: org.sonatype.plugins:nexus-staging-maven-plugin:jar:1.6.5, org.codehaus.plexus:plexus-utils:jar:1.1: Cannot access central (https://repo.maven.apache.org/maven2) in offline mode and the artifact org.sonatype.plugins:nexus-staging-maven-plugin:jar:1.6.5 has not been downloaded from it before. @ ",
+      "failureMarker": false
+    },
+    "logs/rxjava-jdbc/com.h2database:h2/1.4.200.log": {
+      "sha256": "63830d10032077d4b2329622f37c9bebacd96f63394f5cc839e1ce59b0f3cbcf",
+      "firstError": "[ERROR] Unresolveable build extension: Plugin org.sonatype.plugins:nexus-staging-maven-plugin:1.6.5 or one of its dependencies could not be resolved: The following artifacts could not be resolved: org.sonatype.plugins:nexus-staging-maven-plugin:jar:1.6.5, org.codehaus.plexus:plexus-utils:jar:1.1: Cannot access central (https://repo.maven.apache.org/maven2) in offline mode and the artifact org.sonatype.plugins:nexus-staging-maven-plugin:jar:1.6.5 has not been downloaded from it before. @ ",
+      "failureMarker": false
+    },
+    "logs/rxjava-jdbc/install.log": {
+      "sha256": "63830d10032077d4b2329622f37c9bebacd96f63394f5cc839e1ce59b0f3cbcf",
+      "firstError": "[ERROR] Unresolveable build extension: Plugin org.sonatype.plugins:nexus-staging-maven-plugin:1.6.5 or one of its dependencies could not be resolved: The following artifacts could not be resolved: org.sonatype.plugins:nexus-staging-maven-plugin:jar:1.6.5, org.codehaus.plexus:plexus-utils:jar:1.1: Cannot access central (https://repo.maven.apache.org/maven2) in offline mode and the artifact org.sonatype.plugins:nexus-staging-maven-plugin:jar:1.6.5 has not been downloaded from it before. @ ",
+      "failureMarker": false
+    }
+  },
+  "unchangedScriptSources": [
+    {
+      "file": "main.py",
+      "url": "https://raw.githubusercontent.com/compsuite-team/compsuite/6e6d738c8b0ca6ecbba6220b1fd549b2ae14a05d/main.py",
+      "sha256": "739f0b4145ab44cae879acfd26ef5b7212f9de660f9d85383e7f3102bf8b6fe8"
+    },
+    {
+      "file": "methods.py",
+      "url": "https://raw.githubusercontent.com/compsuite-team/compsuite/6e6d738c8b0ca6ecbba6220b1fd549b2ae14a05d/methods.py",
+      "sha256": "855357e27805d39317c735d915db84a80e3507d05db8b1ec5732f88d967adac8"
+    },
+    {
+      "file": "utils.py",
+      "url": "https://raw.githubusercontent.com/compsuite-team/compsuite/6e6d738c8b0ca6ecbba6220b1fd549b2ae14a05d/utils.py",
+      "sha256": "e154bc4e9a538a7cc287902179672bdcd889abb58a42dc6ebc75834b3b5f24e0"
+    },
+    {
+      "file": "macros.py",
+      "url": "https://raw.githubusercontent.com/compsuite-team/compsuite/6e6d738c8b0ca6ecbba6220b1fd549b2ae14a05d/macros.py",
+      "sha256": "ab119b9a87e587d04318ea0c36255bca71d546a819f0e6238f96718479abadea"
+    }
+  ]
+}

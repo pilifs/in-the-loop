@@ -1,0 +1,118 @@
+{
+  "case": "open-aws-issue-233",
+  "toolRevision": "937d1d1495c4ff5449443183b70f465d1fe0b4d0",
+  "sourceArchiveSha256": "bf657aa970fbd87ac98f086aea7628492f0d6b84a17c694ef4a5176b4a3871f8",
+  "subjectRevision": "28f5c5f31ae04a20d9256f05bb306ecda5196867",
+  "subjectJdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
+  "mavenVersion": "3.6.3",
+  "searchBudgetSeconds": 60,
+  "strategy": "relax_prim_poly",
+  "threshold": 0.7,
+  "clientInputs": "Stock registry c15-2; cached upstream AWS Git source, original unmodified published analyzer and per-treatment cold Maven repository with both real Joda-Time JARs. Maven works offline. All user files except named run inputs are outside the sandbox.",
+  "treatments": [
+    {
+      "startedUtc": "2026-11-20T23:34:35.683+00:00",
+      "elapsedSecondsIncludingSetup": 8.562,
+      "toolStartedUtc": "2026-11-20T23:34:41.405+00:00",
+      "toolSeconds": 2.839,
+      "exit": 1,
+      "treatment": "normal",
+      "knowledge": {
+        "before": 24,
+        "after": 24,
+        "bytes": 29727,
+        "sha256": "81b2f6d2327df2cbac7c59de66842f682892b74bc0f4f9e7f12e74dc33674240",
+        "applicableApiRecords": 1
+      },
+      "site": {
+        "id": "c15-2",
+        "API": "org.joda.time.format.DateTimeFormatter.parseMillis(Ljava/lang/String;)J",
+        "lib": "joda-time:joda-time",
+        "version": "2.8.1",
+        "client": "aws-sdk-java",
+        "sha": "28f5c5f31ae04a20d9256f05bb306ecda5196867",
+        "url": "https://github.com/aws/aws-sdk-java",
+        "submodule": "aws-java-sdk-core",
+        "caller": "com.amazonaws.util.DateUtils.doParseISO8601Date(Ljava/lang/String;)Ljava/util/Date;",
+        "line": "104"
+      },
+      "clientTree": "618fcf904d287008d94ed503f8188ea0cb3fe4b5",
+      "sourceLine": "final long milliLess365Days = iso8601DateFormat.parseMillis(temp);",
+      "argv": [
+        "python3",
+        "main.py",
+        "--check",
+        "--id",
+        "c15-2"
+      ],
+      "stages": [
+        "Extracting Call Site Context",
+        "Call site found"
+      ],
+      "mavenBuildFailed": true,
+      "mavenDiagnostics": [
+        "[ERROR] Plugin org.apache.maven.plugins:maven-resources-plugin:2.6 or one of its dependencies could not be resolved: Cannot access central (https://repo.maven.apache.org/maven2) in offline mode and the artifact org.apache.maven.plugins:maven-resources-plugin:jar:2.6 has not been downloaded from it before. -> [Help 1]",
+        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException"
+      ],
+      "mavenLogSha256": "51498f81e56111cba68b78c864bed8f80a9b591065becbfa876242859cf7c82a",
+      "staticContextGenerated": true,
+      "match": null,
+      "generatedJUnitLogFiles": 0,
+      "toolStdoutSha256": "b4f6131cb2ff6ab6769d94889146af3ab8f4a1c6bba18c72034bf587a410d1f9",
+      "toolStderrSha256": "6d4c765c4003f46b79c2052a9090d72967aa4c23903c33bd89c642e3391533d8",
+      "contextSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    },
+    {
+      "startedUtc": "2026-11-20T23:34:44.245+00:00",
+      "elapsedSecondsIncludingSetup": 9.532,
+      "toolStartedUtc": "2026-11-20T23:34:49.850+00:00",
+      "toolSeconds": 3.927,
+      "exit": 1,
+      "treatment": "leave-issue-233-out",
+      "knowledge": {
+        "before": 24,
+        "after": 22,
+        "bytes": 27783,
+        "sha256": "6fa3a92bc3d13069a7c3cb7fc1cfc78a77eb44dac3a859ad8c10d45f8655b3bc",
+        "applicableApiRecords": 0
+      },
+      "site": {
+        "id": "c15-2",
+        "API": "org.joda.time.format.DateTimeFormatter.parseMillis(Ljava/lang/String;)J",
+        "lib": "joda-time:joda-time",
+        "version": "2.8.1",
+        "client": "aws-sdk-java",
+        "sha": "28f5c5f31ae04a20d9256f05bb306ecda5196867",
+        "url": "https://github.com/aws/aws-sdk-java",
+        "submodule": "aws-java-sdk-core",
+        "caller": "com.amazonaws.util.DateUtils.doParseISO8601Date(Ljava/lang/String;)Ljava/util/Date;",
+        "line": "104"
+      },
+      "clientTree": "618fcf904d287008d94ed503f8188ea0cb3fe4b5",
+      "sourceLine": "final long milliLess365Days = iso8601DateFormat.parseMillis(temp);",
+      "argv": [
+        "python3",
+        "main.py",
+        "--check",
+        "--id",
+        "c15-2"
+      ],
+      "stages": [
+        "Extracting Call Site Context",
+        "Call site found"
+      ],
+      "mavenBuildFailed": true,
+      "mavenDiagnostics": [
+        "[ERROR] Plugin org.apache.maven.plugins:maven-resources-plugin:2.6 or one of its dependencies could not be resolved: Cannot access central (https://repo.maven.apache.org/maven2) in offline mode and the artifact org.apache.maven.plugins:maven-resources-plugin:jar:2.6 has not been downloaded from it before. -> [Help 1]",
+        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/PluginResolutionException"
+      ],
+      "mavenLogSha256": "f59fbde15d32626f2bd9e6a6d0bca222c0fd4f0c8fe8d7d438bb968dacbc62a3",
+      "staticContextGenerated": true,
+      "match": null,
+      "generatedJUnitLogFiles": 0,
+      "toolStdoutSha256": "b4f6131cb2ff6ab6769d94889146af3ab8f4a1c6bba18c72034bf587a410d1f9",
+      "toolStderrSha256": "6d4c765c4003f46b79c2052a9090d72967aa4c23903c33bd89c642e3391533d8",
+      "contextSha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+    }
+  ]
+}

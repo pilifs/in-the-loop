@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a1fb31-d657-7ac2-8f3a-78b5e79cb745` (open) |
+| Session | `01a1fb31-d657-7ac2-8f3a-78b5e79cb745` (ended) |
 | When | 2026-11-20 23:13 UTC to 2026-11-20 23:29 UTC (16 min) |
 | Models | `codex-auto-review` |
 | Client | codex 0.170.0 |
@@ -33,10 +33,6 @@ change `zxqxmmysqyyn` · [log `d52e422a7031`](https://terminalvalue.net/raw-trac
 The separate curator committed a seed, reproduced the pinned CompSuite and CompCheck join of 13/123, and added checks for the named test, ordered classpath, non-vacuity, identical production sources and loaded library in both runs. Signed encrypted reference packets are kept outside the product checkout. Open calibration model calls used 176,898 and 214,213 uncached input plus generated tokens at 15 minutes. Freeze the 250,000-token per-PR cap for both product versions.
 
 On JDK 8, the historical rxjava-jdbc named Surefire assertions ran in four fresh reports. Only the new H2 two-row test failed. The Maven 3.6.3 effective models, unchanged client class hashes, dependency digests and separate whole-suite baseline are replayable. Checked the four actual XML test identities, both effective models and the standard prepared target. The curator exercised signature, tamper, wrong-key and stale-test controls. Verification job 20261120-232343-run-the-full-rxjava-jdbc-historical-sure runs the complete historical Surefire test set on both source tags.
-
-### (in progress)
-
-change `rntwtoxssolr`, not yet described
 
 ### Measure the CI signal and isolate incident knowledge in CompCheck (verification pending)
 

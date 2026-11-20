@@ -1,0 +1,170 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-232916-compare-stock-compcheck-knowledge-on-aws",
+  "title": "Compare stock CompCheck knowledge on AWS issue 233",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 19.8s, peak 2.8 GiB (estimated 4m00s, 4.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (Paired stock analysis at the original AWS call site) was held back 28.2s by its 2-CPU quota in 19.8s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-232916-compare-stock-compcheck-knowledge-on-aws.json",
+    "sha256": "9864067a8d57a253d4658e6f31e9c9b5b278c1fc173c5f77f31395ac53d16a22",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-232916-compare-stock-compcheck-knowledge-on-aws",
+      "title": "Compare stock CompCheck knowledge on AWS issue 233",
+      "description": "Run CompCheck at 937d1d1495c4ff5449443183b70f465d1fe0b4d0 twice on its published AWS production call site c15-2, DateUtils.doParseISO8601Date line 104 calling Joda parseMillis. The first process receives all 24 knowledge records and the second receives the same 22 records left after removing only AWS issue 233. Use separate clean Git and offline Maven directories, the pinned JDK 8 and Maven 3.6.3. Record actual stock build, context, match and generated-test stages, even if the wrapper exits successfully before finding the site.",
+      "kind": "real-world",
+      "capabilities": [
+        "baseline:compcheck"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/external-upgrades/baselines/compcheck_aws.py"
+        ]
+      },
+      "expected": "Two scoped status records report how far the original program proceeded. A green wrapper or absent matching API record is not evidence of client safety.",
+      "submitted": {
+        "at": "2026-11-20T23:29:16+00:00",
+        "session": "01a1fb31-d64c-78a3-8007-dfadb7fff401"
+      },
+      "requires": [
+        "bwrap",
+        "git",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "4m",
+        "memoryLimit": "6G",
+        "timeout": "16m",
+        "notes": "The pinned tool may launch a 4 GiB EvoSuite process with a 60-second search, twice if both treatments qualify; the cold Maven build and Java static-analysis stages are included."
+      },
+      "steps": [
+        {
+          "name": "Paired stock analysis at the original AWS call site",
+          "run": "python3 -I lib/benchmark/external-upgrades/baselines/compcheck_aws.py --output lib/benchmark/external-upgrades/baselines/compcheck-aws-result.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/external-upgrades/baselines/compcheck-aws-result.json"
+      ]
+    }
+  },
+  "sourceCommit": "042dab428ba3fc17ca6c190f220cbe8d33114856",
+  "startedAt": "2026-11-20T23:34:31+00:00",
+  "finishedAt": "2026-11-20T23:34:55+00:00",
+  "wallSeconds": 24.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3502134,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 240.0,
+    "notes": "The pinned tool may launch a 4 GiB EvoSuite process with a 60-second search, twice if both treatments qualify; the cold Maven build and Java static-analysis stages are included."
+  },
+  "usage": {
+    "peakMemoryBytes": 3025485824,
+    "wallSeconds": 19.8,
+    "cpuSeconds": 27.8,
+    "memoryOfEstimate": 0.7,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Paired stock analysis at the original AWS call site",
+      "run": "python3 -I lib/benchmark/external-upgrades/baselines/compcheck_aws.py --output lib/benchmark/external-upgrades/baselines/compcheck-aws-result.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 19.838,
+      "cpuSeconds": 27.794,
+      "cpuThrottledSeconds": 28.162,
+      "peakMemoryBytes": 3025485824,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-paired-stock-analysis-at-the-o.log",
+        "lines": 2,
+        "bytes": 121,
+        "sha256": "bd3a4a772d778c17b97e77bddc2a704e9d3d76cc6565a9c5b862b8c7249bedac",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "normal CLI exit 1 context True match None test logs 0",
+        "leave-issue-233-out CLI exit 1 context True match None test logs 0"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/external-upgrades/baselines/compcheck-aws-result.json",
+      "change": "added",
+      "bytes": 5376,
+      "sha256": "88084dbba22ef77cffb711326caf8d1551160c9189e1b8f453f72890519a3896",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T23:37:57+00:00",
+    "applied": [
+      "lib/benchmark/external-upgrades/baselines/compcheck-aws-result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

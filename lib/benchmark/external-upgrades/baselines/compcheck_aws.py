@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -24,6 +25,13 @@ INCIDENT = {"k14-1": "DateUtilsTest#testIssue233JodaTimeLimit", "k15-1": "DateUt
 MAVEN_ARCHIVE = "26ad91d751b3a9a53087aefa743f4e16a17741d3915b219cf74112bf87a438c5"
 JODA = {"2.8.1": "b4670b95f75957c974284c5f3ada966040be2578f643c5c6083d262162061fa2",
         "2.10.5": "4ee73e7ff8e2df0d4e3408cf1a1527a59f265dd9fb43fb9b2eb818d87f93759e"}
+ASSISTED_JARS = {
+    "aws-java-sdk-core-1.11.664.jar": "265a9ecc337eb5c1268d03451f28da87cb3287721024af8b95efcd2264a7a4a5",
+    "jackson-core-2.6.7.jar": "918c04b9f9043d51dead2192b5d94d9f065870c9f26c8defbe9c6dbc951f304f",
+    "junit-4.12.jar": "59721f0805e223d84b90677887d9ff567dc534d7c502ca903c0c2b17f05c116a",
+    "hamcrest-core-1.3.jar": "66fdef91e9739348df7a096aa384a5685f4e875584cce89386a7a47251c4d8e9",
+}
+TARGET_CLASS = "31ba90a7565da9195a4b60905c60f2e538605b8d35ed23b1582ac61fdd05ecab"
 JDK_RELEASE = "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e"
 
 
@@ -67,6 +75,31 @@ def knowledge(path, treatment):
             "applicableApiRecords": sum(k["API"] == API for k in data)}
 
 
+def prepare_client(args, source):
+    """Put original bytecode on the Maven path the stock analyzer inspects, without supplying a call context."""
+    module = source / "aws-java-sdk-core"
+    target = module / "target"
+    classes, deps = target / "classes", target / "dependency"
+    classes.mkdir(parents=True)
+    deps.mkdir()
+    for name, digest in ASSISTED_JARS.items():
+        jar = args.inputs / name
+        verify(jar, digest)
+        shutil.copyfile(jar, deps / name)
+    # As in the independent JVM replay, compile the pinned source and use the published core JAR for sibling types.
+    unit = module / "src/main/java/com/amazonaws/util/DateUtils.java"
+    joda = args.inputs / "joda-time-2.8.1.jar"
+    verify(joda, JODA["2.8.1"])
+    libs = [deps / "aws-java-sdk-core-1.11.664.jar", joda, deps / "jackson-core-2.6.7.jar"]
+    command = [args.jdk / "bin/javac", "-encoding", "UTF-8", "-g", "-source", "1.8", "-target", "1.8",
+               "-cp", os.pathsep.join(map(str, libs)), "-d", classes, unit]
+    run(command, check=True)
+    produced = classes / "com/amazonaws/util/DateUtils.class"
+    verify(produced, TARGET_CLASS)
+    return {"sourceSha256": sha(unit), "classSha256": sha(produced), "dependencyJars": ASSISTED_JARS,
+            "method": "Recompiled original DateUtils.java; published AWS core supplies sibling types. No test or call-context fixture supplied."}
+
+
 def one(args, root, maven, treatment):
     started, clock = stamp(), time.monotonic()
     root.mkdir()
@@ -91,6 +124,7 @@ def one(args, root, maven, treatment):
     mapped = run(["git", "-C", source, "show", "HEAD:aws-java-sdk-core/src/main/java/com/amazonaws/util/DateUtils.java"], check=True).stdout.splitlines()[103].strip()
     if "iso8601DateFormat.parseMillis(temp)" not in mapped:
         raise ValueError("line 104 does not call the registered dependency API")
+    assisted = prepare_client(args, source) if args.prepared_client else None
     scratch, m2 = root / "tmp", root / "m2"
     scratch.mkdir()
     m2.mkdir()
@@ -144,6 +178,24 @@ def one(args, root, maven, treatment):
               "toolStderrSha256": hashlib.sha256(process.stderr.encode()).hexdigest()}
     if ctx.is_file():
         report["contextSha256"] = sha(ctx)
+        context = json.loads(ctx.read_bytes())
+        report["contextCount"] = sum(len(v) for v in context.values() if isinstance(v, list))
+    report["terminalPythonError"] = next((line.strip() for line in reversed(process.stderr.splitlines())
+        if line.startswith(("IndexError: ", "TypeError: ")) and len(line) < 145), None)
+    report["generatedTestRuns"] = {}
+    for version in ("old", "new"):
+        path = testlogs / (version + ".log")
+        if path.is_file():
+            text = path.read_text(errors="replace")
+            counts = re.search(r"Tests run: (\d+),\s*Failures: (\d+)", text)
+            passed = re.search(r"OK \((\d+) tests?\)", text)
+            report["generatedTestRuns"][version] = {
+                "sha256": sha(path), "tests": int((counts or passed).group(1)) if counts or passed else None,
+                "failures": int(counts.group(2)) if counts else (0 if passed else None),
+                "runnerCouldNotFindClass": "Could not find or load main class" in text,
+            }
+    if assisted:
+        report["caseSpecificPreparation"] = assisted
     return report
 
 
@@ -152,6 +204,7 @@ def main():
     parser.add_argument("--inputs", type=Path, help="directory containing the pinned tool and Maven archives, aws.git, and the two Joda JARs")
     parser.add_argument("--jdk", type=Path, default=Path.home() / ".sdkman/candidates/java/8.0.512.0+9-tem")
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--prepared-client", action="store_true", help="assisted experiment with recompiled original DateUtils.class and runtime/test dependencies")
     args = parser.parse_args()
     if args.inputs is None:
         root = Path.home() / ".cache/in-the-loop/agent-tmp"
@@ -174,7 +227,7 @@ def main():
                   "subjectRevision": SUBJECT, "subjectJdkReleaseSha256": JDK_RELEASE,
                   "mavenVersion": "3.6.3", "searchBudgetSeconds": 60, "strategy": "relax_prim_poly", "threshold": 0.7,
                   "clientInputs": "Stock registry c15-2; cached upstream AWS Git source, original unmodified published analyzer and per-treatment cold Maven repository with both real Joda-Time JARs. Maven works offline. All user files except named run inputs are outside the sandbox.",
-                  "treatments": []}
+                  "route": "assisted original bytecode" if args.prepared_client else "stock cold build", "treatments": []}
         for treatment in ("normal", "leave-issue-233-out"):
             row = one(args, work / treatment, mvn, treatment)
             result["treatments"].append(row)
