@@ -297,6 +297,13 @@ fn native_equals(m: &mut Machine, r: Ref, other: Value) -> Exec<bool> {
     if r == o {
         return Ok(true);
     }
+    if let (Object::Native(Native::Map { entries, .. }), Object::Instance { class, .. }) = (m.heap.get(r), m.heap.get(o)) {
+        if class == "java/util/HashMap" {
+            let entries = entries.clone();
+            let other = map_entries(m, other)?;
+            return equal_map_entries(m, &entries, &other);
+        }
+    }
     let (a, b) = match (m.heap.get(r), m.heap.get(o)) {
         (Object::Native(a), Object::Native(b)) => (a.clone(), b.clone()),
         _ => return Ok(false),
@@ -340,24 +347,7 @@ fn native_equals(m: &mut Machine, r: Ref, other: Value) -> Exec<bool> {
             }
             true
         }
-        (Native::Map { entries: x, .. }, Native::Map { entries: y, .. }) => {
-            if x.len() != y.len() {
-                return Ok(false);
-            }
-            for (k, v) in &x {
-                let mut found = false;
-                for (k2, v2) in &y {
-                    if equals(m, *k, *k2)? {
-                        found = equals(m, *v, *v2)?;
-                        break;
-                    }
-                }
-                if !found {
-                    return Ok(false);
-                }
-            }
-            true
-        }
+        (Native::Map { entries: x, .. }, Native::Map { entries: y, .. }) => equal_map_entries(m, &x, &y)?,
         (Native::Class(x), Native::Class(y)) => x == y,
         (Native::Optional(x), Native::Optional(y)) => match (x, y) {
             (None, None) => true,
@@ -730,6 +720,14 @@ fn collection_elements(m: &mut Machine, v: Value) -> Exec<Vec<Value>> {
     let Some(r) = v.as_ref() else { return Err(m.npe()) };
     match m.heap.get(r) {
         Object::Native(Native::List { elements, .. }) | Object::Native(Native::Set { elements, .. }) => Ok(elements.clone()),
+        Object::Instance { class, .. } if matches!(class.as_str(), "java/util/HashMap$KeySet" | "java/util/HashMap$EntrySet") => {
+            let it = m.call_virtual(v, "java/util/Set", "iterator", "()Ljava/util/Iterator;", vec![])?.expect("iterator reference");
+            let mut elements = Vec::new();
+            while m.call_virtual(it, "java/util/Iterator", "hasNext", "()Z", vec![])?.expect("hasNext result").as_int() != 0 {
+                elements.push(m.call_virtual(it, "java/util/Iterator", "next", "()Ljava/lang/Object;", vec![])?.expect("next reference"));
+            }
+            Ok(elements)
+        }
         Object::Array { data, .. } => Ok(data.clone()),
         _ => unsupported(format!("iterating a {}", m.class_of(r).replace('/', "."))),
     }
@@ -739,8 +737,31 @@ fn map_entries(m: &mut Machine, v: Value) -> Exec<Vec<(Value, Value)>> {
     let Some(r) = v.as_ref() else { return Err(m.npe()) };
     match m.heap.get(r) {
         Object::Native(Native::Map { entries, .. }) => Ok(entries.clone()),
+        Object::Instance { class, .. } if class == "java/util/HashMap" => {
+            let set = m.call_virtual(v, "java/util/Map", "entrySet", "()Ljava/util/Set;", vec![])?.expect("entry set");
+            collection_elements(m, set)?.into_iter().map(|node| {
+                let key = m.call_virtual(node, "java/util/Map$Entry", "getKey", "()Ljava/lang/Object;", vec![])?.expect("entry key");
+                let value = m.call_virtual(node, "java/util/Map$Entry", "getValue", "()Ljava/lang/Object;", vec![])?.expect("entry value");
+                Ok((key, value))
+            }).collect()
+        }
         _ => unsupported(format!("{} is not a modelled Map", m.class_of(r).replace('/', "."))),
     }
+}
+
+fn equal_map_entries(m: &mut Machine, left: &[(Value, Value)], right: &[(Value, Value)]) -> Exec<bool> {
+    if left.len() != right.len() { return Ok(false); }
+    for &(key, value) in left {
+        let mut found = false;
+        for &(other_key, other_value) in right {
+            if equals(m, key, other_key)? {
+                found = equals(m, value, other_value)?;
+                break;
+            }
+        }
+        if !found { return Ok(false); }
+    }
+    Ok(true)
 }
 
 fn contains(m: &mut Machine, elements: &[Value], v: Value) -> Exec<bool> {

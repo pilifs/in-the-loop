@@ -343,7 +343,7 @@ pub fn list_model() -> ModelEvidence {
 
 /// The `HashMap` model's identity, to be bumped whenever its semantics change outside the model's bytecode (the
 /// interpreter's natives, which replay); [`map_model`] adds the digest of the bytecode itself.
-pub const MAP_MODEL: &str = "jvmcontract HashMap model 1: lib/models (java.util.HashMap and its Node, run by the own checker and JBMC), lib/src/interp (the HashMap natives, which replay)";
+pub const MAP_MODEL: &str = "jvmcontract HashMap profile 2: the selected JDK bytecode for freshly constructed default maps and their live views, with the portable lib/models HashMap and Node for other model-backed maps and JBMC";
 
 /// The JDK whose `java.util.HashMap` the model was written after and sampled against (`lib/tests/values.rs`).
 pub const MAP_MODEL_JDK: &str = "25.0.5";
@@ -375,7 +375,7 @@ pub fn map_model() -> ModelEvidence {
         level: EvidenceLevel::Tested,
         leaves_out: vec![
             "every Map but a java.util.HashMap made by HashMap() or HashMap(int): another map's constructor (TreeMap, HashMap(int, float), HashMap(Map)) is the JDK call it names. The own checker alone also has a java.util.LinkedHashMap made by LinkedHashMap(), with its values in insertion order (lib/models/java/util/LinkedHashMap.java, whose evidence is claims.M in lib/tests/claims.rs)".into(),
-            "every method but put, get, containsKey, size and isEmpty: the model has no other (remove, clear, putAll, keySet, values, entrySet, the compute family), so each is the JDK call it names, a gap (values() of the own checker's LinkedHashMap apart)".into(),
+            "the portable model implements put, get, containsKey, size and isEmpty. For an exact fresh HashMap() with a JDK image, the native checker executes the JDK table, entries, keySet and entrySet views and iterators on one heap. An observed or model-backed map needs its own view evidence.".into(),
             "a key whose hashCode or equals the own checker doesn't run: a String is hashed and compared by content and null is a key, and a key of an application class runs its own hashCode and equals, but Object's hashCode (an identity) is a named gap".into(),
             "the table: the order in which the entries of one hash are compared, and resizing, which a key whose equals and hashCode only compute does not observe".into(),
             "a map as an input: no adapter makes one, so a map parameter or a map inside an object is refused".into(),
@@ -793,7 +793,7 @@ const LOCALE_SOURCE: &str = "the own checker: bmc::strings and bmc::locale, a fo
 const BYTES_SOURCE: &str = "the own checker: bmc::bytes (Engine::string_bytes), a formula over the String's content; the interpreter: none, a witness is run on a JVM; JBMC: its own String model, not this one";
 const STREAM_SOURCE: &str = "the stream models' bytecode (lib/models/java/util/stream/CharsStream.java, IntStream.java), run by the own checker alone; the interpreter: none, a witness is run on a JVM; JBMC: not given the models";
 const STRING_SOURCE: &str = "the own checker: bmc::Engine::string_method on the String's content; the interpreter: interp::JStr; JBMC: its own String model, not this one";
-const MAP_SOURCE: &str = "the HashMap model's bytecode (lib/models/java/util/HashMap.java), run by the own checker and JBMC; the interpreter: its HashMap natives";
+const MAP_SOURCE: &str = "selected JDK map bytecode in the interpreter and for fresh default HashMaps in the native checker; the portable HashMap model in JBMC and for model-backed maps";
 const CALLS_SOURCE: &str = "the own checker: bmc::Engine::call_jdk_static; the interpreter: interp::natives; JBMC: the JDK's own bytecode, or its stub";
 const IAE: &str = "java.lang.IllegalArgumentException";
 const LIST_SOURCE: &str = "the list models' bytecode (lib/models/java/util/List.java, ImmutableCollections.java), run by the own checker and JBMC; the interpreter: interp::ImmutableList";

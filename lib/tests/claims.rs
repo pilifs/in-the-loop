@@ -1306,3 +1306,26 @@ fn boxed_characters_and_array_observations_match_the_jvm() {
         assert!(o.output.contains("initial line separator"), "{}", o.output);
     }
 }
+
+#[test]
+fn live_hash_map_views_share_bucket_order_nodes_and_iterator_removal() {
+    jvmcontract::tool_tier!();
+    use jvmcontract::interp::{Machine, Value};
+    let Some(classes) = classes() else { return };
+    assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.LiveMapViews").status().unwrap().success());
+    let cp = jvmcontract::witness::classpath([classes]).unwrap();
+    let mut machine = Machine::new(&cp);
+    for mode in [0, 1] {
+        assert_eq!(machine.call_static("claims/LiveMapViews", "remove", "(Z)Z", vec![Value::Int(mode)]).unwrap(), Some(Value::Int(1)));
+    }
+    assert_eq!(machine.call_static("claims/LiveMapViews", "collisions", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
+    assert_eq!(machine.call_static("claims/LiveMapViews", "copies", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
+    for name in ["remove", "collisions", "mixed"] {
+        let mut options = options(classes, &format!("claims.LiveMapViews#{name}"), 3, name);
+        options.unwind = 30;
+        let o = run(&options);
+        assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    }
+    let o = run(&options(classes, "claims.LiveMapViews#insertionOrder", 3, "unordered-hashmap"));
+    assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
+}

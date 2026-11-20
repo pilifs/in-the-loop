@@ -70,7 +70,7 @@
 //! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
 //! | `java.lang.Enum` construction, accessors and ordering ([`ClassPath::checker_method`]) | The Enum model sets and reads the name and ordinal. The native checker runs the selected JDK image's `compareTo` and `getDeclaringClass` bytecode, including type checks for constants with their own class bodies. For hashCode the JDK cache reads one universally quantified int per object. A potential violation on a path that used a JVM-chosen identity hash stays open. |
 //! | `invokestatic` of `List.of` (its fixed forms, up to ten elements) and `List.copyOf`, and `invokevirtual`/`invokeinterface` of the immutable lists' methods an evidence record of `values::OPERATIONS` samples (`size`, `isEmpty`, `get`, `iterator`, the iterator's `hasNext` and `next`, and the changes `add`, `set`, `remove(int)`, `clear` and the iterator's `remove`) ([`ClassPath::checker_runs`]); a call from outside the models of any other method they implement (`contains`, `indexOf`, `equals`, `hashCode`, `toArray`, `addAll`, `sort` …, and `List.of(E...)`) is the JDK call it names, a gap or a refusal as any JDK call is ([`gaps::outside_the_list_records`]) | modelled: the models' bytecode (`lib/models/java/util/`, which JBMC runs too: `List12` for one or two elements, `ListN` over an array of its own otherwise, one empty list), `ImmutableCollections`' initializer run as an application class's ([`ClassPath::checker_class`]); order, duplicates and aliases between elements are the elements' references, null rejected, every change `UnsupportedOperationException`, `get` out of range an `IndexOutOfBoundsException` from a `List12` and an `ArrayIndexOutOfBoundsException` from a `ListN`. The interpreter's natives do the same. `copyOf` of another implementation meets its methods as JDK calls |
-//! | `new HashMap()` and `new HashMap(int)`, and `invokevirtual`/`invokeinterface` of `put`, `get`, `containsKey`, `size` and `isEmpty` on the map ([`ClassPath::checker_runs`]) | modelled: the model's bytecode (`lib/models/java/util/HashMap.java`, which JBMC runs too), a map's entries one chain of objects, a key found by its `hashCode` and `equals` as the JDK finds one; each call has an evidence record of `values::OPERATIONS`. The model has no other method: any other (`remove`, `keySet`, `Map`'s default methods) is the JDK call it names |
+//! | Exact, freshly constructed `new HashMap()` and its key and entry views with a JDK image | Runs the runtime's table, collision chains, entry nodes, iterators and removal on one heap ([`map_views`]). Model-backed and observed maps keep the portable HashMap and its own fields. |
 //! | `invokespecial` of `Object.<init>()`, `Record.<init>()`, and a JDK exception's `()`, `(String)` or `(String, Throwable)` constructor that only passes its arguments up to `Throwable`'s ([`gaps::exact_jdk_call`]) | modelled exactly: the first two change nothing a proof observes, and an exception's keeps its message and cause ([`throwables`]), refused on a class whose application override of `fillInStackTrace()` the constructor would run |
 //! | `getMessage()`, `getCause()`, `getLocalizedMessage()` and `toString()` of `Throwable` on an exception whose message and cause the engine kept, `getClass()` of an exception of a JDK class no JDK call returned ([`throwables`]) | modelled as `Throwable`'s, where the method the JVM runs is `Throwable`'s own; `getLocalizedMessage()` calls an application's `getMessage()`; the JDK call (a gap) elsewhere |
 //! | `invokespecial` of any other JDK constructor, `invokevirtual`/`invokeinterface` of a JDK method returning `void` or an object | gap: `jdk-constructor`, `jdk-void-method`, `jdk-reference-method` |
@@ -112,6 +112,7 @@
 pub mod bitwuzla;
 mod arraycopy;
 mod array_list;
+mod map_views;
 pub mod bits;
 mod finite_words;
 mod floating;
@@ -1081,7 +1082,7 @@ fn frames_alike(a: &Path, b: &Path) -> bool {
     };
     a.frames.len() == b.frames.len()
         && a.frames.iter().zip(&b.frames).all(|(f, g)| f.locals.len() == g.locals.len() && f.locals.iter().zip(&g.locals).all(|(x, y)| slots(x, y)) && f.stack.len() == g.stack.len() && f.stack.iter().zip(&g.stack).all(|(x, y)| mergeable(x, y)))
-        && a.frames.iter().zip(&b.frames).all(|(f, g)| f.initializes == g.initializes && f.entered == g.entered && f.summarized == g.summarized)
+        && a.frames.iter().zip(&b.frames).all(|(f, g)| Rc::ptr_eq(&f.code, &g.code) && f.initializes == g.initializes && f.entered == g.entered && f.summarized == g.summarized)
         && a.classes == b.classes
         && a.statics.len() == b.statics.len()
         && a.statics.iter().zip(&b.statics).all(|((k, x), (l, y))| k == l && mergeable(x, y))
@@ -1372,7 +1373,7 @@ struct Engine<'a> {
     effects: std::sync::Arc<Vec<Effect>>,
     stand_ins: std::sync::Arc<Vec<StandIn>>,
     b: Blaster,
-    codes: HashMap<(String, String, String), Rc<Decoded>>,
+    codes: HashMap<(String, String, String, bool), Rc<Decoded>>,
     pending: Vec<Path>,
     /// The paths the solver did not decide in time, taken up when `pending` is empty.
     deferred: Vec<Path>,
@@ -1895,7 +1896,7 @@ impl ClassFile {
 
 impl<'a> Engine<'a> {
     fn code(&mut self, class: &Rc<ClassFile>, name: &str, descriptor: &str) -> Result<Rc<Decoded>, Stop> {
-        let key = (class.name.clone(), name.to_string(), descriptor.to_string());
+        let key = (class.name.clone(), name.to_string(), descriptor.to_string(), self.cp.is_map_image(class));
         if let Some(c) = self.codes.get(&key) {
             return Ok(c.clone());
         }
@@ -4771,6 +4772,12 @@ impl<'a> Engine<'a> {
             self.advance(path);
             return Ok(None);
         }
+        if self.cp.is_map_image(&path.frames.last().expect("a frame").class) {
+            if let Some((cf, m)) = self.cp.map_image_method(&member.owner, &member.name, &member.descriptor).filter(|(_, m)| m.is_static()) {
+                let args = self.pop_args(path, descriptor.params.len())?;
+                return self.enter_method(path, &member.owner, cf, m, args);
+            }
+        }
         // A model only for JBMC's class path that the checker runs all the same ([`ClassPath::checker_runs`]:
         // `List.of`, `List.copyOf` and the immutable lists' helpers) is called as an application method, unless
         // no evidence record samples the call (`List.of(E...)`), which is then the JDK call it names
@@ -5052,6 +5059,7 @@ impl<'a> Engine<'a> {
             if special && (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str()) == (STRING, "<init>", "([C)V") {
                 if let [Val::R(source)] = args.as_slice() { return self.string_from_chars(path, o, *source); }
             }
+            if let Some(step) = self.image_map_call(path, o, special, member, &args) { return step; }
             if let Some(step) = self.image_list_call(path, o, special, member, &args) { return step; }
             // Only a box whose value was initialized by its constructor or the JVM cache.
             let wrapper = path.objects[o].class.as_str();
@@ -5229,6 +5237,11 @@ impl<'a> Engine<'a> {
             .or_else(|| self.cp.checker_method(owner, name, descriptor))
             .or_else(|| self.cp.numeric_image_method(owner, name, descriptor))
             .ok_or_else(|| Stop::Unsupported(format!("method not found: {}.{name}{descriptor}", owner.replace('/', "."))))?;
+        self.enter_method(path, owner, cf, m, args)
+    }
+
+    fn enter_method(&mut self, path: &mut Path, owner: &str, cf: Rc<ClassFile>, m: crate::classfile::Method, args: Vec<Val>) -> Step {
+        let (name, descriptor) = (m.name.as_str(), m.descriptor.as_str());
         if m.is_abstract() {
             return unsupported(format!("{}.{name} is abstract", cf.name.replace('/', ".")));
         }

@@ -1276,6 +1276,8 @@ fn an_operation_outside_the_values_models_is_a_named_gap_under_strict() {
     jvmcontract::tool_tier!();
     let Some(cp) = checker_classes() else { return };
     let class = cp.application(OUTSIDE).unwrap().expect("the checks");
+    let mut without_image = ClassPath::new();
+    without_image.add(compiled().unwrap()).unwrap();
     let lines: Vec<String> = OUTSIDE_THE_MODELS
         .iter()
         .map(|(method, _)| {
@@ -1289,7 +1291,13 @@ fn an_operation_outside_the_values_models_is_a_named_gap_under_strict() {
     for ((method, expected), on_jvm) in OUTSIDE_THE_MODELS.iter().zip(&jvm) {
         assert_eq!(on_jvm, "null", "{method}: its claim holds on the JVM");
         for merge_after in [0, u64::MAX] {
-            let out = bmc::check(&cp, OUTSIDE, method, &Options { parameters: bounded(3), merge_after, ..Options::default() }).unwrap();
+            let options = Options { parameters: bounded(3), merge_after, ..Options::default() };
+            let image_map = matches!(*method, "mapRemove" | "mapGetOrDefault");
+            if image_map {
+                let on_image = bmc::check(&cp, OUTSIDE, method, &options).unwrap();
+                assert_eq!(on_image.verdict, Verdict::Verified, "{method}: {:?}", on_image.problem);
+            }
+            let out = bmc::check(if image_map { &without_image } else { &cp }, OUTSIDE, method, &options).unwrap();
             let problem = out.problem.clone().unwrap_or_default();
             let named = if expected.starts_with("outside") { problem.contains(expected) } else { out.gaps.iter().any(|g| g.id.starts_with(&format!("{expected}@")) && g.treatment == Some(bmc::gaps::GapTreatment::Refused)) };
             if out.verdict != Verdict::Unverifiable || !named {

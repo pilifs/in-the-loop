@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T07:50:24.806Z",
-  "duration_seconds": 36775,
+  "ended": "2026-11-20T07:57:13.489Z",
+  "duration_seconds": 37184,
   "stats": {
     "turns": 9,
-    "api_calls": 2236,
-    "tool_calls": 5685,
+    "api_calls": 2268,
+    "tool_calls": 5760,
     "tool_errors": 172,
     "compactions": 8,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 4282688,
-      "output_tokens": 1085882,
-      "cache_read_input_tokens": 659145984,
+      "input_tokens": 4319755,
+      "output_tokens": 1097158,
+      "cache_read_input_tokens": 668513920,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 3291,
-    "exec": 2139,
-    "apply_patch": 175,
+    "Bash": 3332,
+    "exec": 2172,
+    "apply_patch": 176,
     "wait": 44,
     "sleep": 36
   },
@@ -133,6 +133,7 @@
     "lib/tests/fixtures/restart-qualification/check.py",
     "lib/tests/integration.rs",
     "lib/tests/paired_array_roots.rs",
+    "lib/tests/values.rs",
     "llm-dlc/loops/foundation-and-python-results.md",
     "llm-dlc/session-notes/01a1f5be-43bd-7532-a80c-5b4f5c304590.md",
     "llm-dlc/tools/test_performance.py",
@@ -256,24 +257,24 @@
     {
       "index": 8,
       "started": "2026-11-20T07:25:36.655Z",
-      "ended": "2026-11-20T07:50:24.806Z",
+      "ended": "2026-11-20T07:57:13.489Z",
       "turns": 1,
-      "api_calls": 96,
+      "api_calls": 128,
       "usage": {
-        "input_tokens": 260560,
-        "output_tokens": 45104,
-        "cache_read_input_tokens": 16799488,
+        "input_tokens": 297627,
+        "output_tokens": 56380,
+        "cache_read_input_tokens": 26167424,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 267363
+      "peak_context_tokens": 301702
     }
   ],
   "log": {
-    "sha256": "43ac1d1f57a7a5f506e847a0b95a6bb280818495d2c52a66a3f65c4695157b04",
-    "bytes": 53363018,
-    "lines": 17352,
-    "gzip_bytes": 20107830,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/43ac1d1f57a7a5f506e847a0b95a6bb280818495d2c52a66a3f65c4695157b04.jsonl.gz"
+    "sha256": "c9ed671d2b426e1434dd770aadb1ff1fc89e39c5667051637d5e53c7d826cb18",
+    "bytes": 53932376,
+    "lines": 17592,
+    "gzip_bytes": 20312072,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/c9ed671d2b426e1434dd770aadb1ff1fc89e39c5667051637d5e53c7d826cb18.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1022,20 +1023,28 @@
       "log_sha256": "5a5de1d8fd5186d79d40a41807675ca82496e8bcf27e6525950396b39619805e"
     },
     {
-      "change_id": "qnuzszvpoprmlrltwquytupkmxmxsymr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "43ac1d1f57a7a5f506e847a0b95a6bb280818495d2c52a66a3f65c4695157b04"
-    },
-    {
       "change_id": "kvntruqvtzoxwqvxqowlnpnspxyxozsw",
       "commit_id": null,
       "immutable": false,
       "summary": "Prove hash contracts across JVM identity choices (verification pending)",
       "body": "Keep one unconstrained 32-bit identity hash per enum object while running the selected JDK hashCode cache. Equal objects keep their hash and different objects may collide. A possible assertion failure on a path that used an unspecified hash stays open. Execute Boolean and Long hashes from the image and resolve bounded symbolic integral factories only within their mandated cache.\n\nDirect JVM, interpreter and native controls passed on Temurin 21 and 25. The native proof accepts stable hashes and refuses a demand for collision freedom. The changed suite exposed a static scan that still described the enum identity read as an unsupported call. Its focused interface test passed after the scan was aligned. A capped probe proved the original, nonvacuous CSV fix hash implication for all nine ordered pairs. Job 20261120-074513-verify-the-csv-equality-and-hash-contrac repeats all six original claims.",
       "log_sha256": "43ac1d1f57a7a5f506e847a0b95a6bb280818495d2c52a66a3f65c4695157b04"
+    },
+    {
+      "change_id": "svrovvwpwpkpnrttpsqotzrlwkkmnqut",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "c9ed671d2b426e1434dd770aadb1ff1fc89e39c5667051637d5e53c7d826cb18"
+    },
+    {
+      "change_id": "qryxuryrkxnrxwzyzvvwwqontorutspy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Execute live HashMap views on one JDK heap (verification pending)",
+      "body": "Execute fresh default HashMap instances, entry nodes, key and entry views, and iterators from the selected runtime. Each view observes the same backing table and modification count. Keep observed and model-backed maps on their original layout and distinguish both bytecode bodies in cached frames. The interpreter also copies entries through the live iterator when a library method requests another map.\n\nTemurin 21 and 25, the interpreter and native checker agreed on real bucket order opposite to insertion, colliding and null keys, replacement without invalidation, live setValue, remove, exhaustion and fail-fast behavior. A mixed HashMap and LinkedHashMap fixture exercised both representations. Strict probes proved the fixed original total and reproduced the parent defect on the 18-input domain. The changed tier passed 4/4 after one transient stand-in failure passed its automatic retry. Jobs 20261120-075403-verify-both-live-multiset-views-on-the-s, 20261120-075435-check-map-and-wrapper-conformance-under and 20261120-075443-confirm-jvm-corpus-hashes-and-map-outcom run the original packet and two cross-engine corpora.",
+      "log_sha256": "c9ed671d2b426e1434dd770aadb1ff1fc89e39c5667051637d5e53c7d826cb18"
     }
   ],
   "logs": {
@@ -1307,6 +1316,12 @@
       "bytes": 36270242,
       "lines": 11821,
       "gzip_bytes": 13811245,
+      "url": null
+    },
+    "c9ed671d2b426e1434dd770aadb1ff1fc89e39c5667051637d5e53c7d826cb18": {
+      "bytes": 53932376,
+      "lines": 17592,
+      "gzip_bytes": 20312072,
       "url": null
     },
     "cc31d75a915fc8ebac47ae85aae9b1639a9ed2f4d8c60d65ab92f283c36bea9a": {

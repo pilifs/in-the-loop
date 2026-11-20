@@ -476,13 +476,13 @@ impl ClassPath {
         class
     }
 
-    /// The class whose bytecode the interpreter runs for a name: an application class, else a model. `None` for
-    /// a JDK class without a model, whose behaviour is the interpreter's natives'.
+    /// Classes the interpreter executes as bytecode: application classes, selected JDK
+    /// collection classes and registered models. Other JDK calls use its natives.
     pub fn bytecode(&self, name: &str) -> Result<Option<Rc<ClassFile>>, Error> {
         if let Some(class) = self.application(name)? {
             return Ok(Some(class));
         }
-        Ok(self.model(name))
+        Ok(self.map_image_class(name).or_else(|| self.model(name)))
     }
 
     /// Whether [`bytecode`](Self::bytecode) has a class for the name.
@@ -662,6 +662,25 @@ impl ClassPath {
         if name != "java/util/Optional" { return None; }
         let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
         Some(class)
+    }
+
+    /// HashMap and the ordinary JDK classes that implement its live entry and key views.
+    /// A future runtime that adds a static initializer needs its state qualified first.
+    pub(crate) fn map_image_class(&self, name: &str) -> Option<Rc<ClassFile>> {
+        if !matches!(name, "java/util/HashMap" | "java/util/HashMap$Node" | "java/util/HashMap$EntrySet" | "java/util/HashMap$KeySet"
+            | "java/util/HashMap$HashIterator" | "java/util/HashMap$EntryIterator" | "java/util/HashMap$KeyIterator"
+            | "java/util/AbstractMap" | "java/util/AbstractSet" | "java/util/AbstractCollection") { return None; }
+        let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
+        class.method("<clinit>", "()V").is_none().then_some(class)
+    }
+
+    pub(crate) fn map_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
+        let (cf, m) = self.method_in(owner, name, descriptor, &|c| self.map_image_class(c))?;
+        (m.code.is_some() && (name != "<init>" || cf.name == owner)).then_some((cf, m))
+    }
+
+    pub(crate) fn is_map_image(&self, cf: &Rc<ClassFile>) -> bool {
+        self.map_image_class(&cf.name).is_some_and(|image| Rc::ptr_eq(cf, &image))
     }
 
     /// The class whose static fields and initializer the tool's own checker holds and runs (JVMS §5.5): an

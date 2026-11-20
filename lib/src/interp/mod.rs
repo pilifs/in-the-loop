@@ -1054,7 +1054,7 @@ impl<'a> Machine<'a> {
                     self.statics.retain(|c, _| c == crate::pairing::CLASS);
                     self.init.retain(|c, _| c == crate::pairing::CLASS);
                     None
-                } else if self.cp.is_application(&member.owner) {
+                } else if self.cp.is_application(&member.owner) || self.cp.map_image_class(&member.owner).is_some() {
                     self.call_static(&member.owner, &member.name, &member.descriptor, args)?
                 } else {
                     self.call_static_jdk(&member.owner, &member.name, &member.descriptor, args)?

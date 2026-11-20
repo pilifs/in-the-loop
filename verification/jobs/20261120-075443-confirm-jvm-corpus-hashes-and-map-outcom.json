@@ -1,0 +1,47 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-075443-confirm-jvm-corpus-hashes-and-map-outcom",
+  "title": "Confirm JVM corpus hashes and map outcomes across engines",
+  "description": "Compare the auto-confirm proof-tier corpus to the direct JVM, including the original map capacity and exception cases, on the selected JDK and checker.",
+  "kind": "library",
+  "capabilities": [
+    "tests:proof",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/conformance.rs"
+    ],
+    "jobs": [
+      "20261120-063726-confirm-jvm-corpus-verdicts-after-select"
+    ]
+  },
+  "expected": "All auto-confirm checks match each concrete JVM calibration and recorded scope.",
+  "submitted": {
+    "at": "2026-11-20T07:54:43+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 8,
+  "requires": [
+    "cargo",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "25m",
+    "memoryLimit": "5G",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "Check the corpus with auto-confirm",
+      "run": "cargo test --manifest-path lib/Cargo.toml --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --exact --test-threads=1",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

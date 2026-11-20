@@ -46,7 +46,7 @@ as a class path entry for any other tool.
   default).
 - **The tool's own checker** (`--engine native`/`auto`, [`src/bmc`](../src/bmc/mod.rs)) runs a model's bytecode symbolically for the static methods it defines, as JBMC does from the class path.
 - **Models marked JBMC only** (`Model::jbmc_only` in [`src/models.rs`](../src/models.rs): `Enum`, `List`, the
-  immutable lists and `HashMap`) are on JBMC's class path and nowhere else. The interpreter keeps its natives for these classes,
+  immutable lists and `HashMap`) are on JBMC's class path and nowhere else. The interpreter uses the selected JDK bytecode for HashMap and its live views. It keeps its natives for the other classes,
   because the state they stand for (an enum's name and ordinal, a list's elements) is part of every object it
   allocates. The tool's own checker runs all of them as bytecode (`CHECKER_RUNS` in `src/models.rs`,
   `ClassPath::checker_method`): `Enum`'s for an enum's constructor and accessors, since an enum's name and ordinal are
@@ -66,7 +66,7 @@ as a class path entry for any other tool.
   2026-11-15 it runs the `HashMap` model too, a map's entries being fields of its objects: every method the model
   has is one an evidence record samples (`values::OPERATIONS`, the same corpus), its keys' `hashCode` and `equals`
   are the keys' own (a String's on its content, whatever class the call names), and a key hashed by `Object`'s
-  identity is a named gap. A list
+  identity is a named gap. On a selected JDK image a freshly constructed exact `HashMap()` instead executes the runtime's bucket table and entry nodes. Its key and entry views share that map, including iterator removal, replacement of an existing value and fail-fast checks. The portable representation remains available for map subclasses, pre-sized maps and maps restored from initializer observations. See example 320 for the two live views of a multiset. A list
   value's domain (`values::ListAdapter`) states these models as its evidence (`values::list_model`), with the SHA-256
   of their bytecode (`values::list_model_digest`), so that changing a model changes the identity of the evidence
   that rests on it. The conformance
