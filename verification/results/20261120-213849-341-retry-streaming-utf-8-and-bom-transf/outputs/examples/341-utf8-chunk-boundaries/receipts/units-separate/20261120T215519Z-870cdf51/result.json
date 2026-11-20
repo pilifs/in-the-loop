@@ -1,0 +1,423 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "6a30885af0f1731d",
+    "format": 1,
+    "example": "341",
+    "statement": {
+      "approach": "target",
+      "task": "units-separate",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "chunks.Inputs#units(I)I",
+      "revisions": [
+        "separate"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "units-separate",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "chunks.Inputs#units(I)I",
+        "file": "claims/units.json",
+        "sha256": "46a06368d84ac3f45baff3b7bbc0d2c54f53984567628bb7b87ef5a19c8a16ee",
+        "property": "units",
+        "claimKind": "property",
+        "statement": "The reader returns the original UTF-16 code units exactly for every cut partition.",
+        "assume": "code >= 0 && code < 5578",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 160,
+          "maxArrayLength": 48
+        },
+        "explicitBounds": {
+          "unwind": 160,
+          "maxArrayLength": 48
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/chunks/DecodeCases.java",
+            "sha256": "840a63d9274060afbd7f41c27c8160afff3265cd92c73a3995094e1d0d802a2e"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "f0d82181d3f3317b5e07dbbe2c05fd70e3fa88fba3a5f96d6723f8a142d88987"
+          }
+        ],
+        "key": "729b5e29b253f054"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 48
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "5277fb5ee7f98e35f148c833ae9a153c48e3b387cb080578e639fc400359c0bb",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "units-separate",
+      "sidecar": "bc770d4ab0f8365caa81207f01d66b6a8ba76d7883ad1e7ee9df75cbfd80aec8",
+      "revisions": {
+        "separate": "3cda2446f5ee0b9f085f5621e6976a05d6a99221"
+      },
+      "dependencies": [
+        {
+          "revision": "separate",
+          "position": 0,
+          "role": "driver",
+          "sha256": "02818b97eef048130069f81534c81d1c03ae4a5dae46645799d101c822831013"
+        },
+        {
+          "revision": "separate",
+          "position": 1,
+          "role": "original",
+          "sha256": "b537544cdd230b309de2ba2ab224306c3e45453c1d9e6cba4c73a3e1ff3f584d"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/units.json": "46a06368d84ac3f45baff3b7bbc0d2c54f53984567628bb7b87ef5a19c8a16ee",
+        "controls/oracle.py": "f0d82181d3f3317b5e07dbbe2c05fd70e3fa88fba3a5f96d6723f8a142d88987",
+        "driver/chunks/DecodeCases.java": "840a63d9274060afbd7f41c27c8160afff3265cd92c73a3995094e1d0d802a2e"
+      },
+      "claimKey": "729b5e29b253f054"
+    }
+  },
+  "attempt": {
+    "id": "20261120T215519Z-870cdf51",
+    "claim": "6a30885af0f1731d",
+    "startedAt": "2026-11-20T21:55:19+00:00",
+    "seconds": 0.3,
+    "engine": "native",
+    "options": [
+      "prove",
+      "chunks.Inputs#units(int)",
+      "--classes",
+      "prepare/separate/separate.jar",
+      "--assume",
+      "code >= 0 && code < 5578",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "160",
+      "--max-array-length",
+      "48",
+      "--timeout",
+      "90",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "a8c156fbd999555d80f338e97eaa9eaba9bc51d436877725a1234e654585c4e6"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "b41a4503e6326d83246e708d666c1cc2c32578ec97d8de7ba7fb484311f0caf9",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-213849-341-retry-streaming-utf-8-and-bom-transf",
+      "sourceCommit": "5f3dce59d006db57845c7207de8aeae4ec154622",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-213849-341-retry-streaming-utf-8-and-bom-transf"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control separate on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.215,
+        "stdout": "records/control-separate-jdk21.stdout",
+        "stderr": "records/control-separate-jdk21.stderr"
+      },
+      {
+        "name": "verifier separate on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.082,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 160,
+      "maxArrayLength": 48,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "6a30885af0f1731d",
+    "attempt": "20261120T215519Z-870cdf51",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 5578",
+          "verdict": "unverifiable",
+          "domain": "code: int",
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.String.<init>([BIILjava/nio/charset/Charset;)V@jdk-21.0.13 (java.lang.String.<init>(byte[], int, int, java.nio.charset.Charset) at chunks.Decoder.decode:9). With --gaps assume it assumes instead that java.lang.String.<init>(byte[], int, int, java.nio.charset.Charset) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.059,
+            "properties": 1,
+            "unwind": 160,
+            "maxArrayLength": 48,
+            "stage": null,
+            "deadlineSeconds": 90.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 90.0,
+                "seconds": 0.058,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.001,
+                  "lowering": 0.0,
+                  "symbolic": 0.021,
+                  "encoding": 0.008,
+                  "solving": 0.028,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 3238,
+                  "clauses": 10687
+                }
+              }
+            ],
+            "native": {
+              "paths": 241,
+              "merges": 0,
+              "solverCalls": 241,
+              "solvingSeconds": 0.028105556,
+              "gatesEvaluated": 67480,
+              "evaluatingSeconds": 0.000876587,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 3238,
+              "clauses": 10687,
+              "seconds": 0.057803785,
+              "loadingSeconds": 0.000822747,
+              "decodingSeconds": 0.000113933,
+              "encodingSeconds": 0.008002111,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-constructor:java.lang.String.<init>([BIILjava/nio/charset/Charset;)V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.lang.String.<init>(byte[], int, int, java.nio.charset.Charset)",
+                "sites": [
+                  "chunks.Decoder.decode:9"
+                ],
+                "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                "treatment": "refused"
+              }
+            ]
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 5578",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 160,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:71ab1037806a455d2e2ae824f7e45fbb3d405b7f30e4d6bcf3aecd50156241f5",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"separate\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.String.<init>([BIILjava/nio/charset/Charset;)V@jdk-21.0.13 (java.lang.String.<init>(byte[], int, int, java.nio.charset.Charset) at chunks.Decoder.decode:9). With --gaps assume it assumes instead that java.lang.String.<init>(byte[], int, int, java.nio.charset.Charset) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 5578"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "fd61467a48eee784b1e2364e08656dc06bfb6e0aa00477e4a6e33a83e8cf7a92",
+        "bytes": 686698
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "e93de981a8c2a6ad1b92e27b09b09974189fc03f253d6cb01719588165e8a73f",
+        "bytes": 596
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "c38dce04b5b6294405f4be84da69af322ab47abadc5172109511e6570ccb07ff",
+        "bytes": 1990
+      },
+      {
+        "path": "records/control-separate-jdk21.stdout",
+        "sha256": "490d86a79c108abfc8af339d6e4cffc3fb654d214238123a8d51f8173512a52e",
+        "bytes": 368182
+      },
+      {
+        "path": "records/control-separate-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "7d738abdd60b923058c29b9598edf87854f867e37793f79f2ed9b3e380c00e61",
+        "bytes": 524288
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "54874fbaf476839a4650187cbe61e66c75cfbaa9101c364ab82af1be7589f184",
+        "bytes": 6419
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "83adddf95ee394baf6eeef8a90dbb300fa4ab1c8851234701919a4ca79edaba8",
+        "bytes": 14382
+      }
+    ]
+  }
+}

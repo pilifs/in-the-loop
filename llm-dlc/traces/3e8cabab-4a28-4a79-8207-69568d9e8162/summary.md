@@ -2814,6 +2814,12 @@ change `uvkkxznpntpm` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-trac
 
 Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-213850-345-fix-fix-recheck-monolithic-native-im: failed: 1 failed step(s) in 4m42s, peak 1.9 GiB (estimated 7m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
 
+### Record verification results for 4 job(s)
+
+change `myqlyywxzvwr` · [log `6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz)
+
+Outputs applied for 0 of the 4 job(s); 4 kept under outputs/, not applied (the job didn't pass). 20261120-213849-341-retry-streaming-utf-8-and-bom-transf: failed: 1 failed step(s) in 6m17s, peak 1.9 GiB (estimated 12m00s, 2.0 GiB); 84 output file(s) changed; signals: example:task-unexpected×6 20261120-213850-345-fix-parent-recheck-monolithic-native: failed: 1 failed step(s) in 4m42s, peak 2.0 GiB (estimated 7m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 20261120-213850-345-parent-fix-recheck-monolithic-native: failed: 1 failed step(s) in 4m42s, peak 1.9 GiB (estimated 7m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 20261120-213850-345-parent-parent-recheck-monolithic-nat: failed: 1 failed step(s) in 4m41s, peak 2.0 GiB (estimated 7m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×1; example:task-unexpected×3 Collected by the watcher of the next-proof-campaign run, which keeps the queue while the run is under way.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz) has every step in between: reasoning, tool calls and their results.
