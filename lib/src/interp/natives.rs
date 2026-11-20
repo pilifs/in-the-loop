@@ -284,10 +284,45 @@ pub fn equals(m: &mut Machine, a: Value, b: Value) -> Exec<bool> {
     }
 }
 
+/// The image-backed Arrays.asList and the interpreter's lists share the List
+/// equality contract. Compare in receiver order, dispatching each element's equals.
+pub(super) fn array_list_equality(m: &mut Machine, r: Ref, other: Value) -> Option<Exec<bool>> {
+    let s = other.as_ref()?;
+    let view = |v| matches!(m.heap.get(v), Object::Instance { class, .. } if class == "java/util/Arrays$ArrayList")
+        || matches!(m.heap.get(v), Object::Native(Native::ArrayListSubList { .. }));
+    let native = |v| matches!(m.heap.get(v), Object::Native(Native::List { .. }));
+    if !((view(r) && (native(s) || view(s))) || (native(r) && view(s))) { return None; }
+    if r == s { return Some(Ok(true)); }
+    let version = match m.heap.get(r) {
+        Object::Native(Native::ArrayListSubList { root, expected_mod_count, .. }) => Some((*root, *expected_mod_count)),
+        _ => m.array_list_mod_count.get(&r).map(|count| (r, *count)),
+    };
+    Some((|| {
+        let mut it = |v| m.call_virtual(Value::Ref(v), "java/util/List", "iterator", "()Ljava/util/Iterator;", vec![]);
+        let left = it(r)?.expect("list iterator");
+        let right = it(s)?.expect("list iterator");
+        let equal = loop {
+            let mut has = |v| m.call_virtual(v, "java/util/Iterator", "hasNext", "()Z", vec![]).map(|v| v.expect("boolean").as_int() != 0);
+            let (a, b) = (has(left)?, has(right)?);
+            if !a || !b { break a == b; }
+            let mut next = |v| m.call_virtual(v, "java/util/Iterator", "next", "()Ljava/lang/Object;", vec![]).map(|v| v.expect("element"));
+            let (a, b) = (next(left)?, next(right)?);
+            if !equals(m, a, b)? { break false; }
+        };
+        if version.is_some_and(|(root, count)| m.array_list_mod_count.get(&root) != Some(&count)) {
+            return Err(m.throw("java/util/ConcurrentModificationException", None));
+        }
+        Ok(equal)
+    })())
+}
+
 fn native_equals(m: &mut Machine, r: Ref, other: Value) -> Exec<bool> {
     let Value::Ref(o) = other else { return Ok(false) };
     if r == o {
         return Ok(true);
+    }
+    if matches!(m.heap.get(r), Object::Native(Native::ArrayListSubList { .. })) && m.cp.is_subtype(&m.class_of(o), "java/util/List") {
+        return unsupported("comparing a live sublist with this List implementation");
     }
     if let (Object::Native(Native::Map { entries, .. }), Object::Instance { class, .. }) = (m.heap.get(r), m.heap.get(o)) {
         if class == "java/util/HashMap" {
@@ -721,8 +756,8 @@ fn collection_elements(m: &mut Machine, v: Value) -> Exec<Vec<Value>> {
             let Object::Native(Native::List { elements, .. }) = m.heap.get(*root) else { return unsupported("sublist without its root"); };
             Ok(elements[*offset..*offset + *length].to_vec())
         }
-        Object::Instance { class, .. } if matches!(class.as_str(), "java/util/HashMap$KeySet" | "java/util/HashMap$EntrySet") => {
-            let it = m.call_virtual(v, "java/util/Set", "iterator", "()Ljava/util/Iterator;", vec![])?.expect("iterator reference");
+        Object::Instance { class, .. } if matches!(class.as_str(), "java/util/HashMap$KeySet" | "java/util/HashMap$EntrySet" | "java/util/Arrays$ArrayList") => {
+            let it = m.call_virtual(v, "java/lang/Iterable", "iterator", "()Ljava/util/Iterator;", vec![])?.expect("iterator reference");
             let mut elements = Vec::new();
             while m.call_virtual(it, "java/util/Iterator", "hasNext", "()Z", vec![])?.expect("hasNext result").as_int() != 0 {
                 elements.push(m.call_virtual(it, "java/util/Iterator", "next", "()Ljava/lang/Object;", vec![])?.expect("next reference"));
@@ -903,6 +938,9 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
                 return Ok(value);
             }
             match (name, descriptor) {
+                ("iterator", "()Ljava/util/Iterator;") => Ok(Some(Value::Ref(m.alloc_native(Native::ArrayListIterator {
+                    list: r, view: true, cursor: 0, last: None, expected_mod_count,
+                })))),
                 ("size", "()I") => Ok(Some(Value::Int(length as i32))),
                 ("isEmpty", "()Z") => Ok(Some(Value::bool(length == 0))),
                 ("toArray", "()[Ljava/lang/Object;" | "([Ljava/lang/Object;)[Ljava/lang/Object;") => {
@@ -912,25 +950,30 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
                 _ => unsupported(format!("ArrayList sublist.{name}{descriptor}")),
             }
         }
-        Native::ArrayListIterator { list, cursor, last, expected_mod_count } => {
-            let Some(&current) = m.array_list_mod_count.get(&list) else { return unsupported("ArrayList iterator lost its list"); };
-            let Object::Native(Native::List { elements, .. }) = m.heap.get(list) else { return unsupported("ArrayList iterator without list storage"); };
+        Native::ArrayListIterator { list, view, cursor, last, expected_mod_count } => {
+            let (root, offset, length) = match m.heap.get(list) {
+                Object::Native(Native::ArrayListSubList { root, offset, length, .. }) => (*root, *offset, *length),
+                Object::Native(Native::List { elements, .. }) => (list, 0, elements.len()),
+                _ => return unsupported("ArrayList iterator without a list"),
+            };
+            let Some(&current) = m.array_list_mod_count.get(&root) else { return unsupported("ArrayList iterator lost its list"); };
+            let Object::Native(Native::List { elements, .. }) = m.heap.get(root) else { return unsupported("ArrayList iterator without list storage"); };
             match (name, descriptor) {
-                ("hasNext", "()Z") => Ok(Some(Value::bool(cursor != elements.len()))),
+                ("hasNext", "()Z") => Ok(Some(Value::bool(cursor != length))),
                 ("remove", "()V") if last.is_none() => Err(m.throw("java/lang/IllegalStateException", None)),
                 ("next", "()Ljava/lang/Object;") | ("remove", "()V") if current != expected_mod_count =>
                     Err(m.throw("java/util/ConcurrentModificationException", None)),
                 ("next", "()Ljava/lang/Object;") => {
-                    let Some(&element) = elements.get(cursor) else { return Err(m.throw("java/util/NoSuchElementException", None)); };
+                    let Some(&element) = elements.get(offset + cursor).filter(|_| cursor < length) else { return Err(m.throw("java/util/NoSuchElementException", None)); };
                     m.check_write(r, "an iterator cursor")?;
-                    *m.heap.get_mut(r) = Object::Native(Native::ArrayListIterator { list, cursor: cursor + 1, last: Some(cursor), expected_mod_count });
+                    *m.heap.get_mut(r) = Object::Native(Native::ArrayListIterator { list, view, cursor: cursor + 1, last: Some(cursor), expected_mod_count });
                     Ok(Some(element))
                 }
                 ("remove", "()V") => {
                     m.check_write(r, "an iterator cursor")?;
                     let i = last.expect("remove checked the last returned index");
-                    m.call_virtual(Value::Ref(list), "java/util/ArrayList", "remove", "(I)Ljava/lang/Object;", vec![Value::Int(i as i32)])?;
-                    *m.heap.get_mut(r) = Object::Native(Native::ArrayListIterator { list, cursor: i, last: None, expected_mod_count: m.array_list_mod_count[&list] });
+                    m.call_virtual(Value::Ref(list), "java/util/List", "remove", "(I)Ljava/lang/Object;", vec![Value::Int(i as i32)])?;
+                    *m.heap.get_mut(r) = Object::Native(Native::ArrayListIterator { list, view, cursor: i, last: None, expected_mod_count: m.array_list_mod_count[&root] });
                     Ok(None)
                 }
                 _ => unsupported(format!("ArrayList iterator.{name}{descriptor}")),
@@ -1479,7 +1522,7 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
         }
         ("iterator", _) => {
             let iterator = match m.array_list_mod_count.get(&r) {
-                Some(&expected_mod_count) => Native::ArrayListIterator { list: r, cursor: 0, last: None, expected_mod_count },
+                Some(&expected_mod_count) => Native::ArrayListIterator { list: r, view: false, cursor: 0, last: None, expected_mod_count },
                 None => Native::Iterator { elements, position: 0, immutable: !mutable },
             };
             Some(Value::Ref(m.alloc_native(iterator)))

@@ -384,8 +384,38 @@ public final class ObservedInitializer {
         System.out.println("@observed {\"jdk\":" + text(jdk) + "," + state + ",\"on\":{\"sha256\":" + text(sha256(app, internal))
                 + ",\"from\":" + (from == null ? "null" : text(from)) + ",\"classpath\":[" + entries + "],\"vendor\":" + text(vendor)
                 + ",\"home\":" + text(home) + ",\"locale\":{\"default\":" + text(locale) + ",\"format\":" + text(format) + ",\"display\":"
-                + text(display) + "},\"zone\":" + text(zone) + ",\"properties\":[" + properties + "],\"allProperties\":"
+                + text(display) + "},\"zone\":" + text(zone) + ",\"utcGregorian\":" + utcGregorian(c) + ",\"properties\":[" + properties + "],\"allProperties\":"
                 + (recording.whole == null ? "null" : text(recording.whole)) + ",\"changed\":[" + changes + "],\"initialized\":[" + initialized + "]}}");
+    }
+
+    /** A class with calendar state can qualify the factory environment for later calls.
+     * The initialized application's own objects have already been recorded. */
+    private static boolean utcGregorian(Class<?> observed) {
+        try {
+            if (java.util.Arrays.stream(observed.getDeclaredFields()).noneMatch(f -> Modifier.isStatic(f.getModifiers())
+                    && (f.getType() == java.util.Calendar.class || f.getType() == java.util.TimeZone.class))) return false;
+            if (System.getProperty("java.locale.providers") != null || System.getProperty("java.time.zone.DefaultZoneRulesProvider") != null) return false;
+            ClassLoader loader = ClassLoader.getSystemClassLoader();
+            for (String service : new String[]{"sun.util.spi.CalendarProvider", "java.util.spi.CalendarDataProvider", "java.time.zone.ZoneRulesProvider"}) {
+                if (loader.getResources("META-INF/services/" + service).hasMoreElements()) return false;
+            }
+            java.util.TimeZone zone = java.util.TimeZone.getTimeZone("UTC");
+            java.util.TimeZone defaultZone = java.util.TimeZone.getDefault();
+            java.util.Calendar calendar = java.util.Calendar.getInstance();
+            java.util.Calendar explicit = java.util.Calendar.getInstance(zone);
+            if (zone == java.util.TimeZone.getTimeZone("UTC") || defaultZone == java.util.TimeZone.getDefault()
+                    || calendar == explicit || calendar == java.util.Calendar.getInstance()) return false;
+            for (java.util.Calendar c : new java.util.Calendar[]{calendar, explicit}) {
+                if (c.getClass() != java.util.GregorianCalendar.class || !c.isLenient() || c.get(java.util.Calendar.ERA) != java.util.GregorianCalendar.AD
+                        || ((java.util.GregorianCalendar)c).getGregorianChange().getTime() != -12219292800000L) return false;
+            }
+            for (java.util.TimeZone z : new java.util.TimeZone[]{zone, defaultZone, calendar.getTimeZone(), explicit.getTimeZone()}) {
+                if (!z.getClass().getName().equals("sun.util.calendar.ZoneInfo") || !(z.getID().equals("UTC") || z.getID().equals("Etc/UTC"))
+                        || z.getRawOffset() != 0 || z.useDaylightTime() || !z.toZoneId().getRules().isFixedOffset()) return false;
+            }
+            return true;
+        }
+        catch (java.io.IOException | RuntimeException | LinkageError | java.util.ServiceConfigurationError e) { return false; }
     }
 
     /** The sha256 of the class file the loader reads of the class, or "" where it reads none. */

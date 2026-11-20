@@ -74,6 +74,18 @@ public class FloatingChecks {
         return Math.sin(n == 0 ? -Math.PI / 2 : -9.0) == -1.0;
     }
 
+    public static boolean nanExtrema(int n) {
+        Number boxed = Double.valueOf(n == 0 ? -0.0 : 2.5);
+        double x = boxed.doubleValue();
+        double nan = Double.longBitsToDouble(0x7ff8000000000042L);
+        return Double.doubleToLongBits(Math.min(x, nan)) == 0x7ff8000000000000L && Double.isNaN(Math.max(nan, x))
+                && Double.doubleToRawLongBits(x) == (n == 0 ? Long.MIN_VALUE : 0x4004000000000000L);
+    }
+
+    public static long rawNaN(int n) {
+        return Double.doubleToRawLongBits(Math.max(Double.longBitsToDouble(0x7ff8000000000042L), (double)n));
+    }
+
     public static boolean integralPart(int n) {
         double[] x = {-0.0, -0.25, 0.25, Double.POSITIVE_INFINITY};
         double[] down = {-0.0, -1.0, +0.0, Double.POSITIVE_INFINITY};
@@ -145,6 +157,7 @@ public class FloatingChecks {
         for (int n = 0; n < 5; n++) if (!hypot(n)) throw new AssertionError(n);
         if (!zeroAngle(0) || !zeroAngle(1) || zeroAngle(2)) throw new AssertionError();
         if (!cosineBracket(0) || !cosineBracket(1) || exactSine(1)) throw new AssertionError();
+        if (!nanExtrema(0) || !nanExtrema(1)) throw new AssertionError();
         double nearMinusOne = Math.sin(-Math.PI / 2);
         if (!(nearMinusOne >= -1.0 && nearMinusOne <= -0x1.fffffffffffffp-1)) throw new AssertionError();
         if (!naiveHypot(0) || naiveHypot(1)) throw new AssertionError();

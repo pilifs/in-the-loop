@@ -230,7 +230,7 @@ pub enum Native {
     /// `Set.of`), whose `remove` throws `UnsupportedOperationException` as the JDK's does.
     Iterator { elements: Vec<Value>, position: usize, immutable: bool },
     /// The cursor and last returned index of an iterator into a particular mutable ArrayList.
-    ArrayListIterator { list: Ref, cursor: usize, last: Option<usize>, expected_mod_count: i32 },
+    ArrayListIterator { list: Ref, view: bool, cursor: usize, last: Option<usize>, expected_mod_count: i32 },
     ArrayListSubList { root: Ref, parent: Option<Ref>, offset: usize, length: usize, expected_mod_count: i32 },
     /// An exception of a JDK class: `java.lang.ArithmeticException`, say.
     Throwable { class: String, message: Option<Ref>, cause: Option<Ref>, suppressed: Option<Value> },
@@ -276,7 +276,8 @@ impl Native {
             Native::Boxed { class, .. } => class,
             Native::Class(_) => "java/lang/Class",
             Native::Iterator { .. } => "java/util/Iterator",
-            Native::ArrayListIterator { .. } => "java/util/ArrayList$Itr",
+            Native::ArrayListIterator { view: false, .. } => "java/util/ArrayList$Itr",
+            Native::ArrayListIterator { view: true, .. } => "java/util/ArrayList$SubList$1",
             Native::ArrayListSubList { .. } => "java/util/ArrayList$SubList",
             Native::Throwable { class, .. } => class,
             Native::Lambda { interface, .. } => interface,

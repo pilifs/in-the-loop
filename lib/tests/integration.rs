@@ -589,6 +589,8 @@ fn native_ieee_comparisons_and_raw_words_agree_with_the_jvm() {
         ("zeroAngle", "n >= 0 && n < 2", "result", Verdict::Verified),
         ("zeroAngle", "n == 2", "result", Verdict::Violation),
         ("cosineBracket", "n >= 0 && n < 2", "result", Verdict::Verified),
+        ("nanExtrema", "n >= 0 && n < 2", "result", Verdict::Verified),
+        ("rawNaN", "n == 0", "result == 0", Verdict::Unverifiable),
         ("exactSine", "n == 0", "result", Verdict::Unverifiable),
         ("exactSine", "n == 1", "result", Verdict::Unverifiable),
         ("integralPart", "n >= 0 && n < 4", "result", Verdict::Verified),
@@ -617,7 +619,7 @@ fn native_ieee_comparisons_and_raw_words_agree_with_the_jvm() {
             let reason = match method {
                 "exactSine" if guard == "n == 0" => "permitted trigonometric rounding",
                 "exactSine" => "without a certified rounding bracket",
-                "signaling" => "signaling NaN",
+                "signaling" | "rawNaN" => "signaling NaN",
                 "diagonalAngle" => "outside its exact nonzero-axis cases",
                 _ => "64 reachable operand tuples",
             };

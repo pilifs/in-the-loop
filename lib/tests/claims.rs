@@ -727,6 +727,11 @@ fn an_object_a_jdk_call_returns_under_assume_is_of_a_class_the_engine_does_not_k
     jvmcontract::tool_tier!();
     let Some(classes) = classes() else { return };
     let jvm = Command::new("java").arg("-cp").arg(classes).arg("claims.Cloned").output().expect("java runs");
+    let strict = run(&options(classes, "claims.Cloned#shallow", 2, "Cloned-shallow"));
+    assert_eq!(strict.verdict, Verdict::Verified, "{}", strict.output);
+    let strict = run(&options(classes, "claims.Cloned#printsNothing", 2, "Cloned-callback"));
+    assert_eq!(strict.verdict, Verdict::Violation, "{}", strict.output);
+    assert!(strict.replay.is_some_and(|r| r.reproduced));
     assert_eq!(String::from_utf8_lossy(&jvm.stdout).trim(), "printsNothing=false notCloneable=false anObject=true", "{}", String::from_utf8_lossy(&jvm.stderr));
     let assumed = |method: &str| {
         let mut o = options(classes, &format!("claims.Cloned#{method}"), 2, &format!("Cloned-{method}"));
@@ -1244,7 +1249,7 @@ fn selected_jdk_lists_keep_capacity_growth_typed_arrays_and_partial_stores() {
     let Some(classes) = classes() else { return };
     let jvm = Command::new("java").arg("-cp").arg(classes).arg("claims.ListConversions").output().unwrap();
     assert!(jvm.status.success(), "{}", String::from_utf8_lossy(&jvm.stderr));
-    for name in ["snapshots", "storesPrefix", "shortCircuit", "digits", "liveIterator", "nestedView"] {
+    for name in ["snapshots", "storesPrefix", "shortCircuit", "digits", "liveIterator", "nestedView", "arrayView"] {
         let o = run(&options(classes, &format!("claims.ListConversions#{name}"), 4, &format!("list-image-{name}")));
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
         assert!(!o.stated.unwrap().assumptions.iter().any(|a| a.text.contains("java.util.ArrayList is the tool's model")));
@@ -1257,6 +1262,8 @@ fn selected_jdk_lists_keep_capacity_growth_typed_arrays_and_partial_stores() {
         assert_eq!(machine.call_static("claims/ListConversions", "nestedView", "(Z)Z", vec![Value::Int(sized)]).unwrap(), Some(Value::Int(1)));
     }
     assert_eq!(machine.call_static("claims/ListConversions", "storesPrefix", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
+    assert_eq!(machine.call_static("claims/ListConversions", "arrayView", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
+    assert_eq!(machine.call_static("claims/ListConversions", "viewEquality", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
     let o = run(&options(classes, "claims.ListConversions#wrong", 4, "wrong-typed-copy"));
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
     let snapshot = run(&options(classes, "claims.ListConversions#snapshotIterator", 4, "wrong-snapshot-iterator"));

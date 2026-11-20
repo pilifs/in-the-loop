@@ -157,6 +157,8 @@ pub struct On {
     pub display: String,
     /// The default time zone's id (`Asia/Tokyo`).
     pub zone: String,
+    /// Both standard calendar factories met the fixed-UTC Gregorian profile on the observed JVM.
+    pub utc_gregorian: bool,
     /// Each system property the initialization read, in the order it first did, and the value it had.
     pub properties: Vec<(String, Option<String>)>,
     /// The first class of the class path that read the system properties as a whole, if one did.
@@ -642,6 +644,7 @@ pub fn parse(binary: &str, line: &str) -> Result<Observed, Error> {
         format: text(locale, "format")?,
         display: text(locale, "display")?,
         zone: text(on, "zone")?,
+        utc_gregorian: on.get("utcGregorian").and_then(|v| v.as_bool()).unwrap_or(false),
         properties: list("properties")?.iter().map(|p| Ok((text(p, "name")?, p.get("value").and_then(|v| v.as_str()).map(String::from)))).collect::<Result<_, Error>>()?,
         all_properties: match on.get("allProperties") {
             Some(serde_json::Value::Null) => None,

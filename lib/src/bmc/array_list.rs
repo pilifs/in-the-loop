@@ -100,7 +100,7 @@ impl Engine<'_> {
                 };
                 Some(self.new_reference_array(path, element, count.clone()))
             }
-            (LIST, _, _, _, _) | ("jdk/internal/util/ArraysSupport", _, _, _, _)
+            (LIST | "java/util/Arrays$ArrayList" | "jdk/internal/util/ArraysSupport", _, _, _, _)
                 if m.owner != LIST && self.cp.library_image_method(&m.owner, &m.name, &m.descriptor).is_some() => {
                 Some(self.call(path, &m.owner, &m.name, &m.descriptor, args.to_vec()))
             }

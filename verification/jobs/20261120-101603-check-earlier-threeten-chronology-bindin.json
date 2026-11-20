@@ -1,0 +1,69 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-101603-check-earlier-threeten-chronology-bindin",
+  "title": "Check earlier ThreeTen chronology bindings on the richer observer",
+  "description": "Repeat all five full-grid ThreeTenBP tasks with their original Chronology state digest, both revision classpaths and 36,864 time pairs. This checks that restoring final application values and identifying UTC calendars preserve an earlier public observed-initializer claim.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "310"
+    ],
+    "jobs": [
+      "20261120-012520-publish-five-linked-full-grid-threetenbp"
+    ]
+  },
+  "expected": "The parent clock is refuted with an independently reproduced JVM witness. The fixed clock, both reversal properties and relational same-day preservation are non-vacuously established. Solver counts, timings and memory remain attached to each execution.",
+  "submitted": {
+    "at": "2026-11-20T10:16:03+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 1,
+    "memory": "2G",
+    "memoryLimit": "4G",
+    "duration": "2m",
+    "timeout": "16m",
+    "notes": "The last five original checks took 96 seconds together after checker compilation. Preserve one CPU and the prior memory and checker limits."
+  },
+  "steps": [
+    {
+      "name": "Check clock-parent-observed",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task clock-parent-observed --checker-seconds 600"
+    },
+    {
+      "name": "Check clock-fix-observed",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task clock-fix-observed --checker-seconds 600"
+    },
+    {
+      "name": "Check reversal-parent-observed",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task reversal-parent-observed --checker-seconds 600"
+    },
+    {
+      "name": "Check reversal-fix-observed",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task reversal-fix-observed --checker-seconds 600"
+    },
+    {
+      "name": "Check same-day-observed",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 310 --task same-day-observed --checker-seconds 600"
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/310-threeten-complete-hours/receipts/clock-parent-observed",
+    "examples/310-threeten-complete-hours/receipts/clock-fix-observed",
+    "examples/310-threeten-complete-hours/receipts/reversal-parent-observed",
+    "examples/310-threeten-complete-hours/receipts/reversal-fix-observed",
+    "examples/310-threeten-complete-hours/receipts/same-day-observed"
+  ]
+}

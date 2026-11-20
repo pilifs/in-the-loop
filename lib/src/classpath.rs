@@ -571,6 +571,7 @@ impl ClassPath {
     pub(crate) fn collection_static(&self, owner: &str, name: &str, descriptor: &str) -> bool {
         matches!((owner, name, descriptor),
             ("java/util/Arrays", "fill", "([CC)V")
+            | ("java/util/Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;")
             | ("java/util/Collections", "unmodifiableSet", "(Ljava/util/Set;)Ljava/util/Set;")
             | ("java/util/Objects", "equals", "(Ljava/lang/Object;Ljava/lang/Object;)Z")
             | ("java/util/Objects", "toString", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;")
@@ -652,6 +653,10 @@ impl ClassPath {
     pub(crate) fn numeric_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
         if !matches!((owner, name, descriptor),
             ("java/lang/Math" | "java/lang/StrictMath", "hypot", "(DD)D")
+            | ("java/lang/Byte" | "java/lang/Short" | "java/lang/Integer" | "java/lang/Long" | "java/lang/Float" | "java/lang/Double",
+               "doubleValue", "()D")
+            | ("java/lang/Byte" | "java/lang/Short" | "java/lang/Integer" | "java/lang/Long" | "java/lang/Float" | "java/lang/Double",
+               "floatValue", "()F")
             | ("java/lang/FdLibm$Hypot", "compute", "(DD)D")
             | ("java/lang/FdLibm", "__HI" | "__LO", "(D)I" | "(DI)D")
             | ("java/lang/Math", "powerOfTwoD" | "primPowerOfTwoD", "(I)D")
@@ -760,8 +765,14 @@ impl ClassPath {
     /// Ordinary single-threaded JDK objects whose instance and static fields both engines
     /// execute from the image. Reader$2 is the CharSequence reader used by newer runtimes.
     pub(crate) fn state_image_class(&self, name: &str) -> Option<Rc<ClassFile>> {
+        if name == "java/util/EventObject" {
+            if self.runs_model(name) { return None; }
+            let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
+            return Some(class);
+        }
         if !matches!(name, "java/io/Reader" | "java/io/StringReader" | "java/io/Reader$2" | "java/io/BufferedReader" | "java/io/ObjectStreamField"
-            | "java/util/Collections$EmptyList" | "java/util/Spliterators" | "java/util/Spliterators$IteratorSpliterator"
+            | "java/util/Collections$EmptyList" | "java/util/Arrays$ArrayList" | "java/util/Arrays$ArrayItr"
+            | "java/util/Spliterators" | "java/util/Spliterators$IteratorSpliterator"
             | "java/util/Spliterators$EmptySpliterator" | "java/util/Spliterators$EmptySpliterator$OfRef" | "java/util/Spliterators$EmptySpliterator$OfInt"
             | "java/util/Spliterators$EmptySpliterator$OfLong" | "java/util/Spliterators$EmptySpliterator$OfDouble"
             | "java/util/Collections$EmptySet" | "java/util/Collections$UnmodifiableSet" | "java/util/Collections$UnmodifiableCollection"
@@ -979,6 +990,14 @@ impl ClassPath {
             out.push(c);
         }
         out
+    }
+
+    /// Every instance field, including inherited fields, belongs to a class the
+    /// checker executes. A native base such as Throwable may carry additional state.
+    pub(crate) fn application_object(&self, name: &str) -> bool {
+        if !self.is_application(name) { return false; }
+        let chain = self.superclasses(name);
+        chain.split_last().is_some_and(|(base, rest)| base == "java/lang/Object" && rest.iter().all(|c| self.is_application(c)))
     }
 
     /// Whether `sub` is `sup`, extends it, or implements it (transitively). Arrays are subtypes of `Object`,

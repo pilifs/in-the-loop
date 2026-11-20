@@ -8,6 +8,18 @@ package claims;
  */
 public final class Cloned implements Cloneable {
     static int printed;
+    int number;
+    int[] cell;
+
+    public static boolean shallow() {
+        Cloned first = new Cloned();
+        first.number = 3;
+        first.cell = new int[]{1};
+        Cloned second = (Cloned) first.copy();
+        second.number++;
+        second.cell[0] = 7;
+        return second != first && second.number == 4 && first.number == 3 && second.cell == first.cell && first.cell[0] == 7;
+    }
 
     @Override
     public String toString() {
@@ -42,6 +54,7 @@ public final class Cloned implements Cloneable {
     }
 
     public static void main(String[] args) {
+        if (!shallow()) throw new AssertionError();
         System.out.println("printsNothing=" + printsNothing() + " notCloneable=" + notCloneable() + " anObject=" + anObject());
     }
 }

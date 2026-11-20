@@ -49,6 +49,10 @@ const DOTLESS: &str = "\u{3bb}dotless";
 /// The static "field" that holds the default locale a path set, beside the application's static fields.
 const DEFAULT: &str = "\u{3bb}default";
 
+pub(super) fn has_override(path: &Path) -> bool {
+    path.statics.contains_key(&(LOCALE.into(), DEFAULT.into()))
+}
+
 /// Whether `declaring.name` is one of `Locale`'s constants, which the engine reads ([`CONSTANTS`]).
 pub fn constant(declaring: &str, name: &str) -> bool {
     declaring == LOCALE && CONSTANTS.contains(&name)

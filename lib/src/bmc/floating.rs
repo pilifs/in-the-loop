@@ -70,8 +70,8 @@ impl Engine<'_> {
         Ok(cmp(&mut self.b, &x, &y, unordered))
     }
 
-    /// NaN payloads returned by Math.min/max and a signaling NaN's raw bits after a
-    /// Java value transfer are not portable. Refuse when that case is reachable.
+    /// A raw conversion of a signaling NaN or an unspecified NaN sign may have
+    /// platform-specific bits. Refuse when such an observation is reachable.
     fn exclude_float_case(&mut self, path: &Path, condition: Lit, why: &str) -> Result<(), Stop> {
         if condition != FALSE {
             let mut assumptions = path.cond.clone();
@@ -157,9 +157,20 @@ impl Engine<'_> {
                 let Some(Val::I(y) | Val::J(y)) = args.get(1) else { return unsupported("floating-point extrema without the second operand") };
                 let y_nan = nan(&mut self.b, y);
                 let either_nan = self.b.or(x_nan, y_nan);
-                self.exclude_float_case(path, either_nan, "floating-point extrema with a possible NaN payload")?;
                 let less = ordered_less(&mut self.b, x, y);
-                if name == "min" { self.b.ite_bits(less, x, y) } else { self.b.ite_bits(less, y, x) }
+                let ordered = if name == "min" { self.b.ite_bits(less, x, y) } else { self.b.ite_bits(less, y, x) };
+                if either_nan == FALSE { ordered } else {
+                    // Math specifies NaN without specifying a raw payload. Cover both
+                    // signs and every nonzero fraction, including signaling encodings.
+                    let width = fraction_width(x);
+                    let mut word = self.b.fresh(width);
+                    let empty = self.b.is_zero(&word);
+                    word[0] = self.b.or(word[0], empty);
+                    word.resize(x.len() - 1, TRUE);
+                    word.push(self.b.var());
+                    path.unbound_platform_value = Some("an unspecified NaN payload");
+                    self.b.ite_bits(either_nan, &word, &ordered)
+                }
             }
             _ => unreachable!("a classified floating-point intrinsic"),
         };
@@ -229,7 +240,7 @@ impl Engine<'_> {
         })
     }
 
-    fn finite_words<const N: usize>(&mut self, path: &Path, operation: &str, operands: [&Bits; N], width: usize,
+    pub(super) fn finite_words<const N: usize>(&mut self, path: &Path, operation: &str, operands: [&Bits; N], width: usize,
         mut evaluate: impl FnMut(&mut Self, [i64; N]) -> Result<Bits, Stop>) -> Result<Bits, Stop> {
         const MAX_TUPLES: usize = 64;
         if operands.iter().all(|word| self.b.constant_value(word).is_some()) {

@@ -659,6 +659,11 @@ impl<'a> Machine<'a> {
     pub fn call_virtual(&mut self, receiver: Value, owner: &str, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
         let Some(r) = receiver.as_ref() else { return Err(self.npe()) };
         let class = self.class_of(r);
+        if (name, descriptor) == ("equals", "(Ljava/lang/Object;)Z") {
+            if let Some(answer) = natives::array_list_equality(self, r, args[0]) {
+                return answer.map(|equal| Some(Value::bool(equal)));
+            }
+        }
         match self.heap.get(r) {
             Object::Instance { .. } => {
                 // The most specific application (or model) implementation, else the JDK method it inherits.
@@ -1206,6 +1211,17 @@ impl<'a> Machine<'a> {
     /// `invokespecial`: constructors, private methods and `super.` calls go to the named class, not the receiver's.
     fn call_special(&mut self, receiver: Value, owner: &str, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
         let Some(r) = receiver.as_ref() else { return Err(self.npe()) };
+        if (owner, name, descriptor) == ("java/lang/Object", "clone", "()Ljava/lang/Object;") {
+            if let Object::Instance { class, base: Base::Object, .. } = self.heap.get(r) {
+                if self.cp.application_object(class) {
+                    if !self.cp.is_subtype(class, "java/lang/Cloneable") {
+                        return Err(self.throw("java/lang/CloneNotSupportedException", Some(&class.replace('/', "."))));
+                    }
+                    let copy = self.heap.get(r).clone();
+                    return Ok(Some(Value::Ref(self.alloc(copy))));
+                }
+            }
+        }
         if let Ok(Some(_)) = self.cp.bytecode(owner) {
             if let Some((cf, m)) = self.cp.bytecode_method(owner, name, descriptor) {
                 if m.code.is_some() {

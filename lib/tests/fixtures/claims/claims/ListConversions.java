@@ -1,6 +1,7 @@
 package claims;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
@@ -106,9 +107,30 @@ public final class ListConversions {
         try { root.subList(1, 0); return false; } catch (IllegalArgumentException expected) { return true; }
     }
 
+    public static boolean arrayView() {
+        String[] backing = {"a", "b"};
+        List<String> list = Arrays.asList(backing);
+        Iterator<String> it = list.iterator();
+        backing[0] = "updated";
+        if (it.next() != "updated" || list.set(1, "tail") != "b" || it.next() != "tail") return false;
+        try { it.next(); return false; } catch (NoSuchElementException expected) { return backing[1] == "tail"; }
+    }
+
+    public static boolean viewEquality() {
+        List<String> fixed = Arrays.asList("ab", "cd");
+        List<String> list = new ArrayList<>(3);
+        list.add("unused"); list.add("ab"); list.add("cd");
+        List<String> view = list.subList(1, 3);
+        if (!view.equals(fixed) || !fixed.equals(view) || !fixed.equals(List.of("ab", "cd"))) return false;
+        Iterator<String> it = view.iterator();
+        it.next();
+        it.remove();
+        return list.size() == 2 && view.size() == 1 && it.next() == "cd" && !fixed.equals(view) && !view.equals(fixed);
+    }
+
     public static void main(String[] args) {
         if (!snapshots(false) || !snapshots(true) || !storesPrefix() || !shortCircuit(false) || !shortCircuit(true)
                 || !digits(false) || !digits(true) || !liveIterator(false) || !liveIterator(true) || !nestedView(false) || !nestedView(true)
-                || snapshotIterator() || wrong()) throw new AssertionError();
+                || !arrayView() || !viewEquality() || snapshotIterator() || wrong()) throw new AssertionError();
     }
 }

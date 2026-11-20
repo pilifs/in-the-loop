@@ -66,6 +66,7 @@
 //! | `invokestatic` of `String.valueOf(Object)` | the argument itself for a String, the interned `"null"` for null; for any other object the gap `jdk-static-method` (the object's `toString()`), which the scan names wherever the call is |
 //! | `Math.hypot(double, double)` and `StrictMath.hypot` on a JDK image | runs the selected image's bytecode, including the FdLibm scaling and high-word helpers. Its synthetic assertion flags cover both settings. Floor and ceiling use bounded operand coverage. `atan2` is exact on nonzero axes, preserving signed zero and quadrant. |
 //! | `Math.sin/cos` and `StrictMath.sin/cos` on finite operand sets | Signed zero follows the specified special cases. For nonzero angles up to eight radians in magnitude, exact rational Taylor bounds certify adjacent binary64 endpoints. Every call covers both permitted roundings independently; the counterexample qualifier requires failure for every choice. A missing bracket leaves the claim open. |
+//! | Calendar factories after an observed UTC Gregorian startup | The JVM qualifies its default and explicit UTC calendars, cutover, era, leniency and zone rules. The checker converts complete canonical civil fields to epoch milliseconds and returns a fresh Date on each getTime. A receipt states the startup assumption. |
 //! | `invokestatic` of `BigInteger.valueOf(long)` with a JDK image | runs the selected JDK's factory and allocation bytecode, including the constructors and the magnitude array. A path reading an initialized JDK cache field stops at that field. Without the image the factory is a `jdk-static-method` gap |
 //! | `invokestatic` of any other JDK method over integers, booleans, arrays and objects ([`gaps::jdk_static_call`]) | gap: `jdk-static-method`, with no assume form |
 //! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
@@ -82,7 +83,7 @@
 //! | `invokedynamic` of `LambdaMetafactory.metafactory` | an object of the interface that holds what the site captured ([`Lambda`]); a call of the interface's method on it runs the lambda's method or the method a method reference names, its arguments cast as the JVM casts them ([`Engine::lambda_call`]); a call that would box or unbox is refused |
 //! | `invokespecial`, `invokevirtual` and `invokeinterface` of the constructors and methods of `java.util.ArrayList`, `java.util.ArrayDeque`, `java.util.HashSet`, `java.util.LinkedHashSet` (with the `HashSet` model), `java.util.StringJoiner` or `java.beans.PropertyChangeEvent` (with `java.util.EventObject`), in a check that asks for the class's model (`--model java.util.ArrayList`, [`crate::models::ON_REQUEST`]) | enter the model ([`ClassPath::runs_model`]) for what it keeps, and the run states it ([`Outcome::assumed`]); a method it does not keep, and every call in a check that did not ask, is the JDK call it was |
 //! | `invokestatic` of `Arrays.stream(Object[])`, `Arrays.stream(int[])` and `IntStream.range(int, int)`, and `invokevirtual` of `String.chars()` | enter the stream models only the checker runs ([`crate::models::entry`]) |
-//! | `invokestatic` of `Arrays.asList(T...)`, and the list's `size()`, `get(int)` and `toArray()` | modelled, for the checker alone: the model's bytecode (`lib/models/java/util/lists/ArrayAsList.java`), a view of the array. Any other method is the JDK's `AbstractList`'s, the JDK call it names |
+//! | `Arrays.asList(T...)` and its fixed-size view | Strict checking on an image executes the JDK's array-backed list and iterator. The portable model supplies size, get and toArray when the image is unavailable. |
 //! | `new LinkedHashMap()`, and `values()` on the map with the collection's `size()` and `iterator()` and the iterator's `hasNext()` and `next()` | modelled, for the checker alone: the model's bytecode (`lib/models/java/util/LinkedHashMap.java`) over the `HashMap` model's chain of entries, which is in insertion order; the iterator fails fast as the JDK's. Any other method is the JDK call it names |
 //! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Character.isLetter(char)` of an ASCII unit ([`strings`]); `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers or of references and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `getstatic` of `Locale`'s constants, `Locale.forLanguageTag(String)` and `Locale.setDefault(Locale)` as far as [`locale`] says; `Class.getName()`, `Class.getTypeName()`, `Class.getClassLoader()`, `Object.getClass()` of a String, `Proxy.isProxyClass(Class)`, `Class.forName(String, boolean, ClassLoader)`, `Class.forName(String)` with its initialization, `Class.isAssignableFrom(Class)`, `Thread.currentThread()` and its `getContextClassLoader()`, `Collections.emptyMap()`, `Logger.getLogger(String)`, `getstatic` of a `java.util.logging.Level` other than `OFF`, `getstatic` of `Boolean.TRUE` and `Boolean.FALSE`, `Logger.isLoggable(Level)`, `Logger.log(LogRecord)` and what a library calls to make the record, `new ArrayList()`, `new ConcurrentHashMap()` and `new ConcurrentHashMap(int)` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
 //! | `ldc` of a string or a class | implemented: one object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class, a String with its content, its code units as the class file holds them, an isolated surrogate included (`BootstrapArg::Units`) |
@@ -113,6 +114,7 @@
 pub mod bitwuzla;
 mod arraycopy;
 mod array_list;
+mod calendar;
 mod map_views;
 mod enum_universe;
 pub mod bits;
@@ -4902,6 +4904,11 @@ impl<'a> Engine<'a> {
             return self.intrinsic(path, &member.name, args);
         }
         // A JDK call that enters a model by the model's own method (`Arrays.stream`, [`crate::models::entry`]).
+        if self.gap_mode == GapMode::Strict && member.owner == "java/util/Arrays" && member.name == "asList" {
+            if let Some((cf, method)) = self.cp.library_image_method(&member.owner, &member.name, &member.descriptor) {
+                return self.enter_method(path, &member.owner, cf, method, args);
+            }
+        }
         if let Some((class, method, entry)) = crate::models::entry(&member.owner, &member.name, &member.descriptor) {
             return self.call(path, class, method, entry, args);
         }
@@ -4957,6 +4964,7 @@ impl<'a> Engine<'a> {
             if let Some(step) = self.concat_strings(path, member, &args) { return step; }
         }
         if let Some(step) = self.image_list_static(path, caller, member, &args) { return step; }
+        if let Some(step) = self.utc_calendar_factory(path, member, &args) { return step; }
         if self.cp.numeric_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
             if let Some(class) = runtime::cached_wrapper(&member.owner, &member.name, &member.descriptor) {
                 if let [Val::I(word) | Val::J(word)] = args.as_slice() {
@@ -5129,6 +5137,17 @@ impl<'a> Engine<'a> {
         let unmodelled = gaps::unmodelled_instance_call(self.cp, &member.owner, &member.name, &member.descriptor);
         let contracted = matches!(&unmodelled, JdkCall::Gap(kind) if self.contracts.contains_key(&Gap { kind: *kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() }));
         if !contracted {
+            if special && self.gap_mode == GapMode::Strict && (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str()) == ("java/lang/Object", "clone", "()Ljava/lang/Object;")
+                && !path.objects[o].assumed && !path.objects[o].unknown && self.cp.application_object(&path.objects[o].class) {
+                let class = path.objects[o].class.clone();
+                if !self.cp.is_subtype(&class, "java/lang/Cloneable") { return self.raise(path, "java/lang/CloneNotSupportedException"); }
+                if self.there_before(path, o) { self.reads(path, || "Object.clone reads all fields of its receiver".into())?; }
+                let copy = self.alloc(path, &class);
+                path.objects[copy].fields = path.objects[o].fields.clone();
+                self.push(path, Val::R(Some(copy)));
+                self.advance(path);
+                return Ok(None);
+            }
             if special && member.owner == STRING && member.name == "<init>" && matches!(member.descriptor.as_str(), "([C)V" | "(Ljava/lang/String;)V") {
                 if let [Val::R(source)] = args.as_slice() { return self.initialize_string(path, o, *source, &member.descriptor); }
             }
@@ -5141,9 +5160,12 @@ impl<'a> Engine<'a> {
             }
             if let Some(step) = self.image_map_call(path, o, special, member, &args) { return step; }
             if let Some(step) = self.image_list_call(path, o, special, member, &args) { return step; }
+            if !special {
+                if let Some(step) = self.utc_calendar_method(path, o, member, &args) { return step; }
+            }
             // Only a box whose value was initialized by its constructor or the JVM cache.
             let wrapper = path.objects[o].class.as_str();
-            if !special && matches!(wrapper, "java/lang/Character" | "java/lang/Boolean" | "java/lang/Long") && path.objects[o].fields.contains_key("value")
+            if !special && matches!(wrapper, "java/lang/Character" | "java/lang/Boolean" | "java/lang/Byte" | "java/lang/Short" | "java/lang/Integer" | "java/lang/Long" | "java/lang/Float" | "java/lang/Double") && path.objects[o].fields.contains_key("value")
                 && self.cp.numeric_image_method(wrapper, &member.name, &member.descriptor).is_some_and(|(_, m)| !m.is_static()) {
                 let wrapper = wrapper.to_owned();
                 let mut full = vec![Val::R(Some(o))];
