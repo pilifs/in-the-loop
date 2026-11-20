@@ -554,7 +554,7 @@ def verifier_outcome(plan, bound, records):
                                             **({"throws": lead["throws"]} if lead.get("throws") else {})}})
         else:
             outcome = outcomes[0]
-            witnesses = wire.equivalence_counterexamples(outcome)
+            witnesses = wire.equivalence_counterexamples(outcome, replay=v.identities.get("independentReplay"), revisions=plan.revisions)
             execution, verdict = wire.conclude_outcome(v.exitCode, output, outcome, witnesses, True)
             if verdict is not None:
                 replay = outcome.get("replay")
@@ -600,7 +600,7 @@ def verifier_outcome(plan, bound, records):
             if replay_candidate.supported(entry, plan.claim):
                 artifact_problem = "the candidate lacks independent JVM qualification"
         if independent is not None:
-            candidates = [o["counterexample"] for o in outcomes if o.get("counterexample")]
+            candidates = [candidate for o in outcomes if (candidate := wire.solver_candidate(o))]
             if len(independent) != len(candidates) or not candidates:
                 artifact_problem = "missing independent replay for a candidate"
             else:

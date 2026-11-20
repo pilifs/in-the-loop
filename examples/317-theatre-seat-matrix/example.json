@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "317",
+  "title": "Marking one seat in a rectangular theatre",
+  "summary": "Independent rows preserve one marked coordinate. Sharing one row makes seats in other rows appear marked.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "array-utilities",
+    "aliasing",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Marking one seat in a rectangular theatre",
+    "file": "matrix/seats/Seats.java",
+    "symbol": "seats.Seats#mark(IIII)[[I"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "Independent rows preserve one marked coordinate. Sharing one row makes seats in other rows appear marked."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The independent JVM oracle covered 18 inputs on each revision. matrix mismatches were 0 for shape, 0 for cells, 0 for identity. separate mismatches were 0 for shape, 0 for cells, 0 for identity. shared mismatches were 0 for shape, 15 for cells, 15 for identity."
+  ]
+}

@@ -40,6 +40,7 @@ class Table:
         if spec["schema"] != "finite-jvm-observations/v1":
             raise ValueError("unknown finite JVM observation format")
         self.fields = spec["fields"]
+        self.selectors = {field["selection"] for field in self.fields.values() if "selection" in field}
         self.cases = {case["id"]: case for case in spec["cases"]}
         if (not self.fields or not self.cases or len(self.cases) != len(spec["cases"])
                 or any(type(case["id"]) is not int or set(case["expected"]) != set(self.fields)
@@ -52,6 +53,12 @@ class Table:
     def driver_args(self):
         return ["--all"]
 
+    def expected(self, case, row, name):
+        value = case["expected"][name]
+        if selector := self.fields[name].get("selection"):
+            value = value[row["direct"][selector]]
+        return value
+
     def observations(self, rows):
         pending = dict(self.cases)
         for row in rows:
@@ -59,7 +66,7 @@ class Table:
             if type(index) is not int or index not in pending:
                 raise ValueError(f"unknown or duplicate input ID {index!r}")
             case = pending.pop(index)
-            if canonical(row["input"]) != canonical(case["input"]) or set(row["direct"]) != set(self.fields):
+            if canonical(row["input"]) != canonical(case["input"]) or set(row["direct"]) != set(self.fields) | self.selectors:
                 raise ValueError(f"input or observation descriptors differ at {index}")
             yield case, row
         if pending:
@@ -67,7 +74,7 @@ class Table:
 
     def problems(self, rows):
         return [[case["id"], name] for case, row in self.observations(rows) for name in self.fields
-                if canonical(row["direct"][name]) != canonical(case["expected"][name])]
+                if canonical(row["direct"][name]) != canonical(self.expected(case, row, name))]
 
     def correspondence(self, rows, entry):
         fields = [(name, field) for name, field in self.fields.items() if field.get("entry") == entry]
@@ -77,6 +84,6 @@ class Table:
         mismatches = 0
         for case, row in self.observations(rows):
             value = row["adapter"][name]
-            direct = project(row["direct"][name], case["expected"][name], field)
+            direct = project(row["direct"][name], self.expected(case, row, name), field)
             mismatches += type(value) is not int or value != direct
         return {"cases": len(self.cases), "disagreements": mismatches}

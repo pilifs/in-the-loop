@@ -10361,6 +10361,100 @@
       }
     },
     {
+      "id": "313",
+      "path": "examples/313-commons-lang-signed-zero-max",
+      "title": "Commons Lang maximum distinguishes negative and positive zero",
+      "summary": "The historical parent can retain negative zero when a later positive zero is the greater IEEE value.",
+      "origin": "real-world",
+      "system": "Apache Commons Lang",
+      "symbol": "org.apache.commons.lang3.math.NumberUtils#max([D)D",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "special-values"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The independent JVM oracle covered 84 inputs on each revision. parent mismatches were 0 for numeric, 7 for rawBits. fix mismatches were 0 for numeric, 0 for rawBits."
+      ],
+      "source": "https://github.com/apache/commons-lang/commit/aafee70bfdfc7617ed509b54e3971441a3a5f57d",
+      "target": {
+        "family": "commons-lang-signed-zero-max",
+        "role": "calibration",
+        "case": "commons-lang-signed-zero-max",
+        "tasks": [
+          "replay",
+          "numeric-parent",
+          "numeric-fix",
+          "raw-bits-parent",
+          "raw-bits-fix"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "numeric-parent": "scaffolded",
+          "numeric-fix": "scaffolded",
+          "raw-bits-parent": "scaffolded",
+          "raw-bits-fix": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "numeric-parent": "established",
+          "numeric-fix": "established",
+          "raw-bits-parent": "refuted",
+          "raw-bits-fix": "established"
+        },
+        "claims": {
+          "numeric-parent": null,
+          "numeric-fix": null,
+          "raw-bits-parent": null,
+          "raw-bits-fix": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T024318Z-006b87cb/result.json",
+            "attempt": "20261120T024318Z-006b87cb",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": "https://github.com/apache/commons-lang/commit/aafee70bfdfc7617ed509b54e3971441a3a5f57d",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 313 TASK"
+      }
+    },
+    {
       "id": "314",
       "path": "examples/314-arraycopy-exceptional-prefix",
       "title": "Array copy leaves a prefix before an incompatible element",
@@ -10552,6 +10646,327 @@
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 315 TASK"
+      }
+    },
+    {
+      "id": "316",
+      "path": "examples/316-commons-csv-row-limit-equality",
+      "title": "Commons CSV row limits distinguish format equality",
+      "summary": "Two formats with different maxRows can read different numbers of records while the parent compares them equal.",
+      "origin": "real-world",
+      "system": "Apache Commons CSV",
+      "symbol": "org.apache.commons.csv.CSVFormat#equals(Ljava/lang/Object;)Z",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The independent JVM oracle covered 9 inputs on each revision. parent mismatches were 6 for equal, 0 for hashContract, 0 for rows. fix mismatches were 0 for equal, 0 for hashContract, 0 for rows."
+      ],
+      "source": "https://github.com/apache/commons-csv/commit/6d5993cb89f4f723ae416123b20f361bd863c484",
+      "target": {
+        "family": "commons-csv-row-limit-equality",
+        "role": "calibration",
+        "case": "commons-csv-row-limit-equality",
+        "tasks": [
+          "replay",
+          "equals-parent",
+          "equals-fix",
+          "hash-contract-parent",
+          "hash-contract-fix",
+          "rows-parent",
+          "rows-fix"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "equals-parent": "scaffolded",
+          "equals-fix": "scaffolded",
+          "hash-contract-parent": "scaffolded",
+          "hash-contract-fix": "scaffolded",
+          "rows-parent": "scaffolded",
+          "rows-fix": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "equals-parent": "refuted",
+          "equals-fix": "established",
+          "hash-contract-parent": "established",
+          "hash-contract-fix": "established",
+          "rows-parent": "established",
+          "rows-fix": "established"
+        },
+        "claims": {
+          "equals-parent": null,
+          "equals-fix": null,
+          "hash-contract-parent": null,
+          "hash-contract-fix": null,
+          "rows-parent": null,
+          "rows-fix": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T024327Z-96e8802a/result.json",
+            "attempt": "20261120T024327Z-96e8802a",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": "https://github.com/apache/commons-csv/commit/6d5993cb89f4f723ae416123b20f361bd863c484",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 316 TASK"
+      }
+    },
+    {
+      "id": "317",
+      "path": "examples/317-theatre-seat-matrix",
+      "title": "Marking one seat in a rectangular theatre",
+      "summary": "Independent rows preserve one marked coordinate. Sharing one row makes seats in other rows appear marked.",
+      "origin": "constructed",
+      "system": "Marking one seat in a rectangular theatre",
+      "symbol": "seats.Seats#mark(IIII)[[I",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The independent JVM oracle covered 18 inputs on each revision. matrix mismatches were 0 for shape, 0 for cells, 0 for identity. separate mismatches were 0 for shape, 0 for cells, 0 for identity. shared mismatches were 0 for shape, 15 for cells, 15 for identity."
+      ],
+      "source": null,
+      "target": {
+        "family": "theatre-seat-matrix",
+        "role": "control",
+        "case": "theatre-seat-matrix",
+        "tasks": [
+          "replay",
+          "replay-shared",
+          "shape-matrix",
+          "shape-separate",
+          "shape-shared",
+          "cells-matrix",
+          "cells-separate",
+          "cells-shared",
+          "identity-matrix",
+          "identity-separate",
+          "identity-shared"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "replay-shared": "scaffolded",
+          "shape-matrix": "scaffolded",
+          "shape-separate": "scaffolded",
+          "shape-shared": "scaffolded",
+          "cells-matrix": "scaffolded",
+          "cells-separate": "scaffolded",
+          "cells-shared": "scaffolded",
+          "identity-matrix": "scaffolded",
+          "identity-separate": "scaffolded",
+          "identity-shared": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "replay-shared": null,
+          "shape-matrix": "established",
+          "shape-separate": "established",
+          "shape-shared": "established",
+          "cells-matrix": "established",
+          "cells-separate": "established",
+          "cells-shared": "refuted",
+          "identity-matrix": "established",
+          "identity-separate": "established",
+          "identity-shared": "refuted"
+        },
+        "claims": {
+          "shape-matrix": null,
+          "shape-separate": null,
+          "shape-shared": null,
+          "cells-matrix": null,
+          "cells-separate": null,
+          "cells-shared": null,
+          "identity-matrix": null,
+          "identity-separate": null,
+          "identity-shared": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T024928Z-5ffeccb1/result.json",
+            "attempt": "20261120T024928Z-5ffeccb1",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "replay-shared": {
+            "path": "receipts/replay-shared/20261120T024932Z-25257cbf/result.json",
+            "attempt": "20261120T024932Z-25257cbf",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 317 TASK"
+      }
+    },
+    {
+      "id": "318",
+      "path": "examples/318-bounded-queue-histories",
+      "title": "Bounded queue responses and final contents",
+      "summary": "Accepting a full offer by evicting the oldest value can change the acknowledgment while preserving the final queue.",
+      "origin": "constructed",
+      "system": "Bounded queue responses and final contents",
+      "symbol": "queuegrid.BoundedQueue#apply(I)I",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "messaging"
+        ],
+        "defect": [
+          "lost-committed-data"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The independent JVM oracle covered 121 inputs on each revision. reject mismatches were 0 for history, 0 for contents. evict mismatches were 40 for history, 28 for contents."
+      ],
+      "source": null,
+      "target": {
+        "family": "bounded-queue-histories",
+        "role": "control",
+        "case": "bounded-queue-histories",
+        "tasks": [
+          "replay",
+          "history-reject",
+          "history-evict",
+          "contents-reject",
+          "contents-evict"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "history-reject": "scaffolded",
+          "history-evict": "scaffolded",
+          "contents-reject": "scaffolded",
+          "contents-evict": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "history-reject": "established",
+          "history-evict": "refuted",
+          "contents-reject": "established",
+          "contents-evict": "refuted"
+        },
+        "claims": {
+          "history-reject": null,
+          "history-evict": null,
+          "contents-reject": null,
+          "contents-evict": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T024935Z-98aac8d3/result.json",
+            "attempt": "20261120T024935Z-98aac8d3",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 318 TASK"
       }
     }
   ]

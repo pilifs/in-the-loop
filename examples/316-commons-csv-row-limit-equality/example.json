@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "316",
+  "title": "Commons CSV row limits distinguish format equality",
+  "summary": "Two formats with different maxRows can read different numbers of records while the parent compares them equal.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "configuration-drift",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Commons CSV",
+    "file": "src/main/java/org/apache/commons/csv/CSVFormat.java",
+    "symbol": "org.apache.commons.csv.CSVFormat#equals(Ljava/lang/Object;)Z"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Two formats with different maxRows can read different numbers of records while the parent compares them equal."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The independent JVM oracle covered 9 inputs on each revision. parent mismatches were 6 for equal, 0 for hashContract, 0 for rows. fix mismatches were 0 for equal, 0 for hashContract, 0 for rows."
+  ],
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/apache/commons-csv",
+    "url": "https://github.com/apache/commons-csv/commit/6d5993cb89f4f723ae416123b20f361bd863c484"
+  }
+}

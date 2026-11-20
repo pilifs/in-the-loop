@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "numeric",
+  "statement": "The returned maximum agrees numerically with the ranked input table.",
+  "assume": "code >= 0 && code < 84",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 24,
+    "maxArrayLength": 12
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "maxgrid.Projection#numeric(I)I",
+    "mapping": "Code plus one uses bijective base four, least significant digit first, to construct a nonempty double[] of length 1 to 3. Digits select -1.0, -0.0, +0.0 and +1.0 in that order. Numeric equality treats the two zeroes as equal. Raw bits use a 16-digit hexadecimal word.",
+    "correspondence": "finite-oracle",
+    "cases": 84
+  }
+}

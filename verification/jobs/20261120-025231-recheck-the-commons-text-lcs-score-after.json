@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-025231-recheck-the-commons-text-lcs-score-after",
+  "title": "Recheck the Commons Text LCS score after matrix allocation",
+  "description": "Use the existing score claim, original adapter, byte digests, 225-input independent oracle and 120-second budget. Record the release, rebuilt source and row-sharing control along with the native verdict.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "native:arrays"
+  ],
+  "links": {
+    "examples": [
+      "308",
+      "317"
+    ]
+  },
+  "expected": "Retain the actual bounded checker statement, independent results, measurements and any first diagnostic.",
+  "submitted": {
+    "at": "2026-11-20T02:52:31+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "10m"
+  },
+  "steps": [
+    {
+      "name": "Exercise the frozen claims",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/308-commons-text-longest-common-subsequence/pilot.py --java-home \"$HOME/.sdkman/candidates/java/21.0.13.0+9-tem\" --fetch-locked --native \"$JVMCONTRACT\" > examples/308-commons-text-longest-common-subsequence/records/matrix-transfer.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/308-commons-text-longest-common-subsequence/records/matrix-transfer.json"
+  ]
+}

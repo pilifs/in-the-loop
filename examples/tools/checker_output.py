@@ -144,12 +144,33 @@ def witness_record(c, classes):
             **({"previousCall": typed_call(c["previous_call"], classes)} if c.get("previous_call") else {})}
 
 
-def equivalence_counterexamples(outcome, classes=None):
+def solver_candidate(outcome):
+    """A candidate for qualification. A failed generated pair supplies inputs for both actual target calls."""
+    if outcome.get("counterexample"):
+        return outcome["counterexample"]
+    pair = outcome.get("pair") or {}
+    if (outcome.get("verdict") == pair.get("verdict") == "violation" and pair.get("target") == "RegressionPair#agree"
+            and pair.get("assert") == "result"):
+        witness = pair.get("counterexample") or {}
+        if isinstance(witness.get("inputs"), list):
+            return witness
+    return None
+
+
+def equivalence_counterexamples(outcome, classes=None, *, replay=None, revisions=()):
     """The outcome's witness as the result's counterexample: the input, what the version before did (`contract`)
     and what the patched one does (`actual`), with the input the checker found before it was shrunk, and the
     witness as data (`witness`) with the class files' digests from `classes`."""
     c = (outcome or {}).get("counterexample")
     if not c:
+        c = solver_candidate(outcome or {})
+        if c and replay and len(replay) == 1 and len(revisions) == 2:
+            review = replay[0]
+            sides = review.get("sides", {})
+            if (review.get("reproduced") is True and review.get("inputs") == c["inputs"]
+                    and all(isinstance(sides.get(r, {}).get("values"), list) for r in revisions)):
+                return [{"input": json.dumps(c["inputs"], sort_keys=True),
+                         "contract": json.dumps(sides[revisions[0]]["values"]), "actual": json.dumps(sides[revisions[1]]["values"])}]
         return []
     witness = witness_record(c, classes or {})
     return [{"input": c["input"], "contract": c["before"], "actual": c["after"],

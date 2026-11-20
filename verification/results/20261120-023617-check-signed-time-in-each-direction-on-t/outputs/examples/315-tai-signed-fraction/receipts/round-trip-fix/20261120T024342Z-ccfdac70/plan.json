@@ -1,0 +1,251 @@
+{
+  "plan": {
+    "example": "315",
+    "task": "round-trip-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.threeten.extra.scale.TaiInstant#toString()Ljava/lang/String;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "round-trip-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.threeten.extra.scale.TaiInstant#toString()Ljava/lang/String;",
+      "file": "claims/round-trip.json",
+      "sha256": "8243fd71150073fdf7ad16da0415a37a442cc0da743670cbc35be4ccc18bacb7",
+      "property": "round-trip",
+      "claimKind": "property",
+      "statement": "Parsing the object's own text recovers both original fields.",
+      "assume": "code >= 0 && code < 20",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 24,
+        "maxArrayLength": 20
+      },
+      "explicitBounds": {
+        "unwind": 24,
+        "maxArrayLength": 20
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/taigrid/TaiCases.java",
+          "sha256": "ffb4e8e9d60a1b68fdfb57f0497b71ded7fe140f8a6684e72c864013f37e6b6b"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "3885109e61de5b838afed3a25451084b9ea0db66807c4dee5fdaae422d71da04"
+        }
+      ],
+      "adapter": {
+        "entry": "taigrid.Projection#roundTrip(I)I",
+        "mapping": "With code 0 to 19, floor(code/4)-2 is the TAI seconds field. The remainder selects nanos 0, 1, 500000000 or 999999999. Formatting compares exact characters with a canonical decimal literal. Parsing starts from that literal. Round-trip starts from the object.",
+        "correspondence": "finite-oracle",
+        "cases": 20
+      },
+      "key": "429bf8873db162ec"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "source-slice",
+        "repository": "https://github.com/ThreeTen/threeten-extra",
+        "commit": "1a51a1dc391ddbcbcb20eb7b9d13ceedf6a47c3c",
+        "parent": "5361f0d32889e1a5104743429c3716e5de0937ce",
+        "published": [
+          {
+            "coordinates": "org.joda:joda-convert:2.2.4",
+            "url": "https://repo.maven.apache.org/maven2/org/joda/joda-convert/2.2.4/joda-convert-2.2.4.jar",
+            "sha256": "c5ddb12bbfe57a69280114ec1c4da08db8c95070c478c6f495fa2cc081d62373"
+          },
+          {
+            "coordinates": "org.jspecify:jspecify:1.0.1",
+            "url": "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.jar",
+            "sha256": "070d75f261fe4c5b8202508366715f7f2d4660f88c8ef7e6d3575e48c9683b66"
+          }
+        ],
+        "slice": {
+          "files": [
+            "src/main/java/org/threeten/extra/scale/SystemUtcRules.java",
+            "src/main/java/org/threeten/extra/scale/TaiInstant.java",
+            "src/main/java/org/threeten/extra/scale/TimeSource.java",
+            "src/main/java/org/threeten/extra/scale/UtcInstant.java",
+            "src/main/java/org/threeten/extra/scale/UtcRules.java",
+            "src/main/java/org/threeten/extra/scale/package-info.java"
+          ],
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "21",
+            "-g",
+            "-parameters"
+          ]
+        },
+        "adapters": [
+          "adapter/taigrid/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/round-trip-fix"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-023617-check-signed-time-in-each-direction-on-t/examples/315-tai-signed-fraction",
+    "network": true
+  },
+  "inputs": {
+    "example": "315",
+    "task": "round-trip-fix",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.threeten.extra.scale.TaiInstant#toString()Ljava/lang/String;",
+    "revisions": [
+      "fix"
+    ],
+    "claim": {
+      "task": "round-trip-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.threeten.extra.scale.TaiInstant#toString()Ljava/lang/String;",
+      "file": "claims/round-trip.json",
+      "sha256": "8243fd71150073fdf7ad16da0415a37a442cc0da743670cbc35be4ccc18bacb7",
+      "property": "round-trip",
+      "claimKind": "property",
+      "statement": "Parsing the object's own text recovers both original fields.",
+      "assume": "code >= 0 && code < 20",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 24,
+        "maxArrayLength": 20
+      },
+      "explicitBounds": {
+        "unwind": 24,
+        "maxArrayLength": 20
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/taigrid/TaiCases.java",
+          "sha256": "ffb4e8e9d60a1b68fdfb57f0497b71ded7fe140f8a6684e72c864013f37e6b6b"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "3885109e61de5b838afed3a25451084b9ea0db66807c4dee5fdaae422d71da04"
+        }
+      ],
+      "adapter": {
+        "entry": "taigrid.Projection#roundTrip(I)I",
+        "mapping": "With code 0 to 19, floor(code/4)-2 is the TAI seconds field. The remainder selects nanos 0, 1, 500000000 or 999999999. Formatting compares exact characters with a canonical decimal literal. Parsing starts from that literal. Round-trip starts from the object.",
+        "correspondence": "finite-oracle",
+        "cases": 20
+      },
+      "key": "429bf8873db162ec"
+    },
+    "artifacts": [
+      {
+        "revision": "fix",
+        "route": "source-slice",
+        "repository": "https://github.com/ThreeTen/threeten-extra",
+        "commit": "1a51a1dc391ddbcbcb20eb7b9d13ceedf6a47c3c",
+        "parent": "5361f0d32889e1a5104743429c3716e5de0937ce",
+        "published": [
+          {
+            "coordinates": "org.joda:joda-convert:2.2.4",
+            "url": "https://repo.maven.apache.org/maven2/org/joda/joda-convert/2.2.4/joda-convert-2.2.4.jar",
+            "sha256": "c5ddb12bbfe57a69280114ec1c4da08db8c95070c478c6f495fa2cc081d62373"
+          },
+          {
+            "coordinates": "org.jspecify:jspecify:1.0.1",
+            "url": "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.1/jspecify-1.0.1.jar",
+            "sha256": "070d75f261fe4c5b8202508366715f7f2d4660f88c8ef7e6d3575e48c9683b66"
+          }
+        ],
+        "slice": {
+          "files": [
+            "src/main/java/org/threeten/extra/scale/SystemUtcRules.java",
+            "src/main/java/org/threeten/extra/scale/TaiInstant.java",
+            "src/main/java/org/threeten/extra/scale/TimeSource.java",
+            "src/main/java/org/threeten/extra/scale/UtcInstant.java",
+            "src/main/java/org/threeten/extra/scale/UtcRules.java",
+            "src/main/java/org/threeten/extra/scale/package-info.java"
+          ],
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "21",
+            "-g",
+            "-parameters"
+          ]
+        },
+        "adapters": [
+          "adapter/taigrid/Projection.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/taigrid/Projection.java",
+        "sha256": "cdef632edbe4ec49d4098e420ae5c345bbc6e01d10660eb4de977ca6582fcb3e"
+      }
+    ]
+  },
+  "key": "08546f542e5e4031c110bb388ec4edb678e5bb24e50c6aa36f39c85bc9b7b3f1"
+}

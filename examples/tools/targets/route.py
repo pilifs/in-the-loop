@@ -8,6 +8,7 @@ from dataclasses import replace
 from pathlib import Path
 
 from targets import executions, interfaces, recipes, runtime, workflow
+from checker_output import solver_candidate
 from targets.interfaces import Unsupported
 
 
@@ -138,9 +139,9 @@ def run(folder, example, target, task, workdir, *, retry_of=None, interrupt_afte
             from targets import replay_candidate
             entry = verifier.identities.get("checkedEntry") or p.target
             if replay_candidate.supported(entry, p.claim):
-                qualified = [replay_candidate.check(p, prepared, o["counterexample"].get("inputs"),
+                qualified = [replay_candidate.check(p, prepared, witness.get("inputs"),
                                                     workdir / "qualification" / str(i), entry)
-                             for i, o in enumerate(verifier.observations) if o.get("counterexample")]
+                             for i, o in enumerate(verifier.observations) if (witness := solver_candidate(o))]
                 verifier = replace(verifier, identities={**verifier.identities, "independentReplay": qualified})
                 executions.save(execution.directory / "replay.json", qualified)
                 execution.stage("witness-qualification", replayEvidence="replay.json", missing=["receipt"])

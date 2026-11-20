@@ -75,6 +75,15 @@ class RecipesTest(unittest.TestCase):
             bad, why = checker_output.decode(json.dumps([{**outcomes[0], "wire_version": value}]), "prove")
             self.assertIsNone(bad)
             self.assertIn("wire version", why)
+        inputs = [{"name": "q", "type": "int", "value": 1}]
+        pair = {"verdict": "violation", "target": "RegressionPair#agree", "assert": "result", "counterexample": {"inputs": inputs}}
+        outcome = {"verdict": "violation", "pair": pair}
+        self.assertEqual(checker_output.solver_candidate(outcome)["inputs"], inputs)
+        self.assertFalse(checker_output.equivalence_counterexamples(outcome))
+        replay = {"inputs": inputs, "reproduced": True, "sides": {"two": {"values": [2, None]}, "three": {"values": [3, None]}}}
+        result = checker_output.equivalence_counterexamples(outcome, replay=[replay], revisions=["two", "three"])
+        self.assertEqual((result[0]["contract"], result[0]["actual"]), ("[2, null]", "[3, null]"))
+        self.assertIsNone(checker_output.solver_candidate({**outcome, "pair": {**pair, "target": "Other#check"}}))
 
     def test_observed_states_bind_each_revision_and_the_executed_model(self):
         plan = self.plan("310", "same-day-observed")

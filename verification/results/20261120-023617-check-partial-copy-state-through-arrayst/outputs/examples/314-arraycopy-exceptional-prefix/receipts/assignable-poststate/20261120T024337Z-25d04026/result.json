@@ -1,0 +1,337 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "ef1211cb27a4e0d9",
+    "format": 1,
+    "example": "314",
+    "statement": {
+      "approach": "target",
+      "task": "assignable-poststate",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "copy.Copy#transfer([Ljava/lang/Object;[Ljava/lang/String;)V",
+      "revisions": [
+        "reference",
+        "precheck"
+      ],
+      "expected": "established",
+      "gaps": "strict",
+      "claim": {
+        "task": "assignable-poststate",
+        "kind": "equivalence",
+        "relation": "preservation",
+        "target": "copy.Copy#transfer([Ljava/lang/Object;[Ljava/lang/String;)V",
+        "file": "claims/assignable-poststate.json",
+        "sha256": "cd13118f44dab9ea92db73355ecc1157ae044f4411e7cb9e54e491f541bfcdb9",
+        "property": "assignable-poststate",
+        "claimKind": "preservation",
+        "statement": "Both calls leave the same destination on source arrays assignable to String[].",
+        "assume": "code >= 0 && code < 40 && copy.Projection.assignable(code)",
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 10,
+          "maxArrayLength": 3
+        },
+        "explicitBounds": {
+          "unwind": 10,
+          "maxArrayLength": 3
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/copy/CopyCases.java",
+            "sha256": "eacc0ffbc1ec4dd409e3d19350494f7642c61b8886a599f550dbf7902f1a730d"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/table.json",
+            "sha256": "3e45a3502dda068dccc872b35b49ee6a0c65c36972a9824c1dea885bca9b956a"
+          }
+        ],
+        "adapter": {
+          "entry": "copy.Projection#state(I)I",
+          "mapping": "Bijective base three encodes all Object[] inputs of zero to three cells, low digit first: null, String A, boxed Integer 1. Every destination is a fresh String[] initially filled with x. State encodes the final x/null/A cells in base three for the known length, after either exit. Thrown covers exactly ArrayStoreException.",
+          "correspondence": "finite-oracle",
+          "cases": 40
+        },
+        "key": "9414822dc57fa73d"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 3,
+      "intendedInputs": null
+    },
+    "inputs": {
+      "patch": null,
+      "before": {
+        "sha256": "13fe2de34f8d60bafa4e26a096e6d7fec21b3496dae8897b4711cf7a9e7a1b73",
+        "files": 1
+      },
+      "after": {
+        "sha256": "801b8cca2e883d5a90a990b3373d9d7edf7276575c2441e1106952d95da3801a",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "assignable-poststate",
+      "sidecar": "dd62f0854aa7455448e827d3efef219ee565311b2b52dc4ed9e5bb3cbb80c6fc",
+      "revisions": {
+        "reference": "e229cf4b1160cd60296030b9098ba961b76edc34",
+        "precheck": "8b7b055bfe7a97b25b3b5cb7a5a127b0b1536877"
+      },
+      "dependencies": [
+        {
+          "revision": "reference",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ca78590d88fb4f993eba5666c51679623a265d9017cecec2cbc484d4953fda65"
+        },
+        {
+          "revision": "reference",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "ab42a5d072e99404c26889d48653d768075c1048330d697d6dc0eed90252a0ca"
+        },
+        {
+          "revision": "reference",
+          "position": 2,
+          "role": "original",
+          "sha256": "978747c97c2cb0c8b440abfe278fb79cd7ceb6ff12204dcddd8a93c6236cadfb"
+        },
+        {
+          "revision": "precheck",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ca78590d88fb4f993eba5666c51679623a265d9017cecec2cbc484d4953fda65"
+        },
+        {
+          "revision": "precheck",
+          "position": 1,
+          "role": "adapter",
+          "sha256": "ab42a5d072e99404c26889d48653d768075c1048330d697d6dc0eed90252a0ca"
+        },
+        {
+          "revision": "precheck",
+          "position": 2,
+          "role": "original",
+          "sha256": "01c403190988a64969b18075e2846aa130e3e1b7e38714856721e8db60f0ab6b"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "adapter/copy/Projection.java": "315da84c3a0e3472e1bd2c4057122ba9a215c3088626aa9f23758d1d8c4cbd36",
+        "claims/assignable-poststate.json": "cd13118f44dab9ea92db73355ecc1157ae044f4411e7cb9e54e491f541bfcdb9",
+        "controls/table.json": "3e45a3502dda068dccc872b35b49ee6a0c65c36972a9824c1dea885bca9b956a",
+        "driver/copy/CopyCases.java": "eacc0ffbc1ec4dd409e3d19350494f7642c61b8886a599f550dbf7902f1a730d"
+      },
+      "claimKey": "9414822dc57fa73d"
+    }
+  },
+  "attempt": {
+    "id": "20261120T024337Z-25d04026",
+    "claim": "ef1211cb27a4e0d9",
+    "startedAt": "2026-11-20T02:43:37+00:00",
+    "seconds": 1.3,
+    "engine": "native",
+    "options": [
+      "equivalence",
+      "--before",
+      "verifier/classes/reference",
+      "--after",
+      "verifier/classes/precheck",
+      "--target",
+      "copy.Projection#state(int)",
+      "--classpath",
+      "prepare/precheck/precheck.jar",
+      "--before-classpath",
+      "prepare/reference/reference.jar",
+      "--assume",
+      "code >= 0 && code < 40 && copy.Projection.assignable(code)",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "10",
+      "--max-array-length",
+      "3",
+      "--timeout",
+      "60",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "c2dd914e701f54bac1690aa01b4eea9800282c81a0f58526fa321ec126909658"
+    },
+    "bytecode": {
+      "before": {
+        "sha256": "30eb2af8234dfbcc549d917eb252b997bc0878db7c13d6401d350baf453b61b2",
+        "files": 1
+      },
+      "after": {
+        "sha256": "b182c4dd1615bf5ace1aadfb2ed1f6240569497c997666ad354985bfd6b94893",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-023617-check-partial-copy-state-through-arrayst",
+      "sourceCommit": "1dbedf86dfb5de3f953482f8d2e2d8234e7adaf7",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-023617-check-partial-copy-state-through-arrayst"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control reference on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-reference-jdk21.stdout",
+        "stderr": "records/control-reference-jdk21.stderr"
+      },
+      {
+        "name": "jvm-control precheck on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-precheck-jdk21.stdout",
+        "stderr": "records/control-precheck-jdk21.stderr"
+      },
+      {
+        "name": "verifier pair on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 1.082,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 10,
+      "maxArrayLength": 3,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "ef1211cb27a4e0d9",
+    "attempt": "20261120T024337Z-25d04026",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"reference\": {"
+    },
+    "after": {
+      "file": "target.json",
+      "startLine": 16,
+      "code": "\"precheck\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.arraycopy(Ljava/lang/Object;ILjava/lang/Object;II)V@jdk-21.0.13 (java.lang.System.arraycopy(java.lang.Object, int, java.lang.Object, int, int) at before.copy.Copy.transfer:5). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+    "domain": "code: int",
+    "replay": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "2fd8c802d4e9c3621476c4246b8de27c5d3de0fb48ec54021b78efaa646056ef",
+        "bytes": 76207
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "c763f8940d87d0ea7dec9a7e4ee222c457e55db22c1b87eadc827d281b244813",
+        "bytes": 1606
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "d420c95bb90cc26784218b544b46af17fac55a76c50a0e42bd1b284b785fed39",
+        "bytes": 2691
+      },
+      {
+        "path": "records/control-reference-jdk21.stdout",
+        "sha256": "a23d3c0edc9ee6e05e347878f3190f92fb30ddb00897d93caca600e46230b107",
+        "bytes": 8689
+      },
+      {
+        "path": "records/control-reference-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "5df2e6bba30a8dc15bf525ce6a3829324040fa89fe45ac7ddf90f6e4f06dc401",
+        "bytes": 47426
+      },
+      {
+        "path": "records/control-precheck-jdk21.stdout",
+        "sha256": "2cb3bc4b5e7bc117f44d5ad215c114695c3422d68f8c08dc8a57534e637756d1",
+        "bytes": 8674
+      },
+      {
+        "path": "records/control-precheck-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "f1d5716d5d1b1d82d73c65a6ebbfc48e5f633515041766e60ada399697eb8640",
+        "bytes": 14524
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "6b65d0a1f88294a1dfe47937728cf5b23967e7f1125038cde62c0d7340db42fe",
+        "bytes": 28603
+      }
+    ]
+  }
+}

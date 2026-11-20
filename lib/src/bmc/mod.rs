@@ -51,6 +51,7 @@
 //! | `iadd` … `lxor` (arithmetic, shifts, bitwise), `i2l`, `l2i`, `i2b`, `i2c`, `i2s`, `lcmp` | implemented bit for bit; `idiv`, `irem`, `ldiv`, `lrem` throw `ArithmeticException` on zero |
 //! | `ifeq` …, `if_icmpeq` …, `if_acmpeq`/`if_acmpne`, `ifnull`, `ifnonnull`, `goto`, `tableswitch`, `lookupswitch`, `ireturn` … `return` | implemented; a loop's back edge counts against the unwinding bound, per entry of the loop (an outer loop's back edge or a new call starts an inner loop's count again), and a path that needs another iteration goes on from an invariant of the loop where the engine finds one ([`loops`], [`Options::invariants`]); `if_acmp`, `ifnull` and `ifnonnull` on a symbolic reference are formulas over its guards |
 //! | `newarray`, `arraylength`, `iaload` … `saload`, `iastore` … `sastore` on arrays of primitives | implemented, up to [`Options::max_array_length`] cells; `ArrayIndexOutOfBoundsException`, `NegativeArraySizeException`, and `NullPointerException` on null |
+//! | `multianewarray` | implemented for bounded shapes with integral or reference cells. Each allocated row has a fresh identity, trailing unspecified dimensions stay null, and any negative dimension throws before allocation. |
 //! | `anewarray`, `aaload`/`aastore` on arrays of references, and an array's `clone()` | implemented as for primitives, a cell holding an object or null; an `aaload` at an index that is not a constant gives a symbolic reference, the reference of each cell under `index == i` ([`Choice`]), and splits no path; an `aastore` at such an index splits the path per cell ([`Engine::concrete_index`]); a cell may hold a symbolic reference, which an `aastore` stores as it is when every object it may be is of the element type (as `List.of`'s varargs array holds a harness's picks), and splits per object otherwise; `clone()` a new array of the same class and elements; an `aastore` of an object not of the element type (`ArrayStoreException`) is refused |
 //! | `new`, `getfield`, `putfield`, `invokestatic`, `invokespecial`, `invokevirtual`, `invokeinterface` of the application's own methods | implemented: objects with fields, calls inlined, a virtual call dispatched on its receiver's class, `NullPointerException` on a null receiver; a field resolved as the JVM resolves it (JVMS §5.4.3.2), so a field a subclass declares again is a second one. Through a symbolic reference, `getfield` chooses among its objects' fields by the guards and `putfield` writes each under its guard, `NullPointerException` where it is null; a call on one, or any other instruction that needs its object (`checkcast`, `athrow`, a monitor, an array instruction, a JDK call's argument), splits the path per object first ([`Engine::concrete_ref`]) |
 //! | `athrow`, exception handlers, `checkcast`, `instanceof` | implemented, a handler matched by subclass; `instanceof` on a symbolic reference a formula over its guards |
@@ -82,7 +83,7 @@
 //! | `new LinkedHashMap()`, and `values()` on the map with the collection's `size()` and `iterator()` and the iterator's `hasNext()` and `next()` | modelled, for the checker alone: the model's bytecode (`lib/models/java/util/LinkedHashMap.java`) over the `HashMap` model's chain of entries, which is in insertion order; the iterator fails fast as the JDK's. Any other method is the JDK call it names |
 //! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Character.isLetter(char)` of an ASCII unit ([`strings`]); `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers or of references and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `getstatic` of `Locale`'s constants, `Locale.forLanguageTag(String)` and `Locale.setDefault(Locale)` as far as [`locale`] says; `Class.getName()`, `Class.getTypeName()`, `Class.getClassLoader()`, `Object.getClass()` of a String, `Proxy.isProxyClass(Class)`, `Class.forName(String, boolean, ClassLoader)`, `Class.forName(String)` with its initialization, `Class.isAssignableFrom(Class)`, `Thread.currentThread()` and its `getContextClassLoader()`, `Collections.emptyMap()`, `Logger.getLogger(String)`, `getstatic` of a `java.util.logging.Level` other than `OFF`, `getstatic` of `Boolean.TRUE` and `Boolean.FALSE`, `Logger.isLoggable(Level)`, `Logger.log(LogRecord)` and what a library calls to make the record, `new ArrayList()`, `new ConcurrentHashMap()` and `new ConcurrentHashMap(int)` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
 //! | `ldc` of a string or a class | implemented: one object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class, a String with its content, its code units as the class file holds them, an isolated surrogate included (`BootstrapArg::Units`) |
-//! | floating point (`fconst`, `dconst`, `fadd` …, `fcmpl` …, `f2i` …), `jsr`/`ret`, `putstatic` of a JDK field, any other `getstatic` of one, a static field of a class taken to be initialized other than a constant, `multianewarray`, any other `invokedynamic`, a JDK method with a floating-point parameter or result or an array result, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
+//! | floating point (`fconst`, `dconst`, `fadd` …, `fcmpl` …, `f2i` …), `jsr`/`ret`, `putstatic` of a JDK field, any other `getstatic` of one, a static field of a class taken to be initialized other than a constant, any other `invokedynamic`, a JDK method with a floating-point parameter or result or an array result, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
 //! | under JBMC, not this engine ([`crate::jbmc_gaps`]): a method with no bytecode on JBMC's class path, or an `invokedynamic` JBMC does not link, or a monitor instruction, which JBMC drops | JBMC's gaps: its stub of a JDK method is one of the JDK kinds above, any other is `missing-body`, an unlinked call site is `invokedynamic`, and a method that synchronizes is `monitor`; this engine refuses the first two and implements monitors |
 //!
 //! A gap is refused by name under [`gaps::GapMode::Strict`], the default: the path ends there, and a run that met
@@ -3005,8 +3006,57 @@ impl<'a> Engine<'a> {
                     engine.advance(path);
                 })
             }
-            _ => unsupported("a multi-dimensional array"),
+            Insn::MultiANewArray(index, rank) => {
+                let frame = path.frames.last().expect("a frame");
+                let name = frame.class.pool.class_name(*index).map_err(|e| Stop::Unsupported(e.to_string()))?;
+                let ty = Type::parse(name).map_err(|e| Stop::Unsupported(e.to_string()))?;
+                let mut element = &ty;
+                if *rank == 0 { return unsupported("multianewarray without a dimension"); }
+                let mut sizes = Vec::new();
+                let mut negative = FALSE;
+                for _ in 0..*rank {
+                    let Type::Array(inner) = element else { return unsupported("multianewarray rank exceeds its descriptor") };
+                    element = inner;
+                    let size = self.pop_int(path)?;
+                    let sign = self.b.negative(&size);
+                    negative = self.b.or(negative, sign);
+                    sizes.push(size);
+                }
+                if negative == TRUE { return self.raise(path, "java/lang/NegativeArraySizeException"); }
+                if matches!(element, Type::Float | Type::Double) { return unsupported("floating point array cells"); }
+                let mut shape = Vec::new();
+                let (mut arrays, mut total) = (1usize, 0usize);
+                for size in sizes.into_iter().rev() {
+                    let capacity = if arrays == 0 { 0 } else { self.new_array_cells(path, &size)? };
+                    arrays = arrays.saturating_mul(capacity);
+                    total = total.saturating_add(arrays);
+                    if total > 1 << 16 { return unsupported("a multidimensional allocation exceeding 65536 bounded cells"); }
+                    shape.push((size, capacity));
+                }
+                self.branch_throw_or(path, negative, "java/lang/NegativeArraySizeException", move |engine, path| {
+                    let object = engine.make_rectangular_array(path, &ty, &shape);
+                    engine.push(path, Val::R(Some(object)));
+                    engine.advance(path);
+                })
+            }
+            _ => unreachable!("array instruction"),
         }
+    }
+
+    fn make_rectangular_array(&mut self, path: &mut Path, ty: &Type, shape: &[(Bits, usize)]) -> usize {
+        let Type::Array(element) = ty else { unreachable!("validated array rank") };
+        let (length, capacity) = &shape[0];
+        let mut array = Array { element: (**element).clone(), length: length.clone(), cells: Vec::new(), refs: Vec::new() };
+        if shape.len() > 1 {
+            array.refs = (0..*capacity).map(|_| Val::R(Some(self.make_rectangular_array(path, element, &shape[1..])))).collect();
+        } else if holds_references(element) {
+            array.refs = vec![Val::R(None); *capacity];
+        } else {
+            array.cells = vec![self.b.constant(0, cell_width(element)); *capacity];
+        }
+        let object = path.objects.len();
+        path.objects.push(Obj { array: Some(array), ..Obj::new(&ty.descriptor()) });
+        object
     }
 
     /// How many cells a new array of `count` elements has: its size when that is a constant (none when it is
@@ -6937,6 +6987,28 @@ mod tests {
 
     #[test]
     fn a_new_array_is_within_the_bound_or_beyond_the_engine_and_cells_are_as_wide_as_their_elements() {
+        // new int[2][1] gives each row a different identity and independent zeroed cells.
+        let matrix = harness("()V", |code, w, fail| {
+            let ty = w.pool.class("[[I");
+            code.iconst(2);
+            code.iconst(1);
+            code.op_u16(0xc5, ty);
+            code.op(2);
+            code.store(Kind::Ref, 0);
+            code.load(Kind::Ref, 0);
+            code.iconst(0);
+            code.op(0x32);
+            code.iconst(0);
+            code.iconst(1);
+            code.op(0x4f);
+            code.load(Kind::Ref, 0);
+            code.iconst(1);
+            code.op(0x32);
+            code.iconst(0);
+            code.op(0x2e);
+            code.if_zero(Cond::Ne, fail);
+        });
+        assert_eq!(run(&matrix).verdict, Verdict::Verified);
         // A copy as long as the parameter, filled by the harness's loop, reads back the same: the size is the
         // parameter's length, which the first path's condition bounds.
         let cp = harness("([I)V", |code, _, fail| {

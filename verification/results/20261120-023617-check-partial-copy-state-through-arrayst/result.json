@@ -1,0 +1,622 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-023617-check-partial-copy-state-through-arrayst",
+  "title": "Check partial copy state through ArrayStoreException",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 6.6s, peak 145.1 MiB (estimated 2m00s, 2.0 GiB); 51 output file(s) changed; signals: example:task-unexpected×3",
+  "attention": [
+    "step 1 (Check the frozen obligations on their prepared bytes) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-023617-check-partial-copy-state-through-arrayst.json",
+    "sha256": "0538e7cd754c99d4787c265de247eca0831ab1887e46f629998622ad0ff7d1f5",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-023617-check-partial-copy-state-through-arrayst",
+      "title": "Check partial copy state through ArrayStoreException",
+      "description": "Compare both functions on the original forty nullable and heterogeneous reference arrays. Observe throw class, destination cells after either exit and the completely assignable subset independently.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "314"
+        ]
+      },
+      "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+      "submitted": {
+        "at": "2026-11-20T02:36:17+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen obligations on their prepared bytes",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 314 --tasks exception-class,exceptional-poststate,assignable-poststate --checker-seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/314-arraycopy-exceptional-prefix/receipts/exception-class",
+        "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate",
+        "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate"
+      ]
+    }
+  },
+  "sourceCommit": "1dbedf86dfb5de3f953482f8d2e2d8234e7adaf7",
+  "startedAt": "2026-11-20T02:40:51+00:00",
+  "finishedAt": "2026-11-20T02:43:38+00:00",
+  "wallSeconds": 167.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3702167,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 152104960,
+    "wallSeconds": 6.6,
+    "cpuSeconds": 10.9,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 314 --tasks exception-class,exceptional-poststate,assignable-poststate --checker-seconds 60",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 6.611,
+      "cpuSeconds": 10.864,
+      "cpuThrottledSeconds": 0.618,
+      "peakMemoryBytes": 152104960,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-obligations-o.log",
+        "lines": 6,
+        "bytes": 809,
+        "sha256": "b074cb8adeb34468de261bce7d9302dee8fe2a3ddbbd9dd506e71faff342885e",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 3
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "314-arraycopy-exceptional-prefix: task exception-class: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/exception-class/20261120T024332Z-321a69ab/result.json",
+          "groups": [
+            "314",
+            "exception-class",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 4,
+          "text": "314-arraycopy-exceptional-prefix: task exceptional-poststate: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/exceptional-poststate/20261120T024336Z-5aace6c3/result.json",
+          "groups": [
+            "314",
+            "exceptional-poststate",
+            "unresolved",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 6,
+          "text": "314-arraycopy-exceptional-prefix: task assignable-poststate: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/assignable-poststate/20261120T024337Z-25d04026/result.json",
+          "groups": [
+            "314",
+            "assignable-poststate",
+            "unresolved",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "314-arraycopy-exceptional-prefix: running task exception-class (target route)",
+        "314-arraycopy-exceptional-prefix: task exception-class: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/exception-class/20261120T024332Z-321a69ab/result.json",
+        "314-arraycopy-exceptional-prefix: running task exceptional-poststate (target route)",
+        "314-arraycopy-exceptional-prefix: task exceptional-poststate: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/exceptional-poststate/20261120T024336Z-5aace6c3/result.json",
+        "314-arraycopy-exceptional-prefix: running task assignable-poststate (target route)",
+        "314-arraycopy-exceptional-prefix: task assignable-poststate: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/assignable-poststate/20261120T024337Z-25d04026/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "b68e84f63b02ed1b70391014e91a1db9d1866644877fff336f8e4939b58104a2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/plan.json",
+      "change": "added",
+      "bytes": 6514,
+      "sha256": "ff754b8558e9839934721f12bb850865ac6da77778c4a6a5c112d17d2113b2b1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/control-precheck-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/control-precheck-jdk21.stdout",
+      "change": "added",
+      "bytes": 8674,
+      "sha256": "2cb3bc4b5e7bc117f44d5ad215c114695c3422d68f8c08dc8a57534e637756d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/control-reference-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/control-reference-jdk21.stdout",
+      "change": "added",
+      "bytes": 8689,
+      "sha256": "a23d3c0edc9ee6e05e347878f3190f92fb30ddb00897d93caca600e46230b107",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/controls.json",
+      "change": "added",
+      "bytes": 47411,
+      "sha256": "d6edcc2476db69efa32956b0b5fa998e5026d543ee00d845ae8ca1ef567d338f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/execution.json",
+      "change": "added",
+      "bytes": 77508,
+      "sha256": "44d259169eaf740b2fcc7014b0ef02b61de7edceb9bb8314279ceaf6708d7afc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/streams.json",
+      "change": "added",
+      "bytes": 2691,
+      "sha256": "4c94a24550670d20d7d7c7ede178c66cc1f7306c13863f4a85f1d753bdeeab17",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1513,
+      "sha256": "7f5f8fb613e957917bd219232fa755b171e6dd3814c1009c38eec5265813467a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/verifier.json",
+      "change": "added",
+      "bytes": 29858,
+      "sha256": "00d38d952c66a5bf7262994c7fd167665d13ff5c4a18e321c31076980908dbc5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/verifier.stdout",
+      "change": "added",
+      "bytes": 15749,
+      "sha256": "3ee8c920adb4b64e6b7d61e7444b1e5557cd20e86c8bf2b8448b1562f2ea6321",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/result.json",
+      "change": "added",
+      "bytes": 11098,
+      "sha256": "1946008b470a31d08af487573757942bd65c080da2ffdd41a76d2180556c26e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/executions/20261120T024332Z-321a69ab/attempt.json",
+      "change": "added",
+      "bytes": 16735,
+      "sha256": "a4c6a1acf5494a98779e473d7646b7dc97c62896d0d943009e64ecaff7eb3549",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/executions/20261120T024332Z-321a69ab/checker.json",
+      "change": "added",
+      "bytes": 18189,
+      "sha256": "47ff32b21d8d27e28abaad62aa427be39a668fc6cd969ec0f4ce0c1e38e79c54",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/executions/20261120T024332Z-321a69ab/correspondence.json",
+      "change": "added",
+      "bytes": 2539,
+      "sha256": "49c5e47190c2b0028de68b783019058aa0dd73aa7604a28ca75468572b7ee619",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "2fe5aa601576167afc2ee78fdc1bb93e265c55ba8ef3c6415965770be4c006da",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/plan.json",
+      "change": "added",
+      "bytes": 6566,
+      "sha256": "eeb9a0388ee8c5e3b3bf2a68954d43b8d8d7da1770d464d3438a1dd272a3bd67",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/control-precheck-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/control-precheck-jdk21.stdout",
+      "change": "added",
+      "bytes": 8674,
+      "sha256": "2cb3bc4b5e7bc117f44d5ad215c114695c3422d68f8c08dc8a57534e637756d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/control-reference-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/control-reference-jdk21.stdout",
+      "change": "added",
+      "bytes": 8689,
+      "sha256": "a23d3c0edc9ee6e05e347878f3190f92fb30ddb00897d93caca600e46230b107",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/controls.json",
+      "change": "added",
+      "bytes": 47429,
+      "sha256": "9211d7ad89ade30dcb256101b8c560b18b0d0b351dc3829828152769a00fd7e1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/execution.json",
+      "change": "added",
+      "bytes": 77508,
+      "sha256": "6ae39290c05f28fd7cb50c8bb4afec6b4dabbf0206860a168fa0fdada36f28bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/streams.json",
+      "change": "added",
+      "bytes": 2691,
+      "sha256": "8eb672ae8a3967d547c9e0c00adcbe9b19f70edc22ec352e4e363b49e968f7dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1511,
+      "sha256": "c10ac3aa59784532d6be90f46532d6d61c580d0e3a19f76f27efd5e571d9e9b7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/verifier.json",
+      "change": "added",
+      "bytes": 29870,
+      "sha256": "b6afd1958840f76a4b114afa3c34c71026f23f579dabae164952fc3b5cf0fa1d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/verifier.stdout",
+      "change": "added",
+      "bytes": 15752,
+      "sha256": "65941e9bea08c1a4061d7f2039bd55816e706e15576d8624d3976c878c28142c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/result.json",
+      "change": "added",
+      "bytes": 11130,
+      "sha256": "002a2dc80d180d0bf84c5749fb7d27819b515251800b2bccfcdf0bbe942f49a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/executions/20261120T024336Z-5aace6c3/attempt.json",
+      "change": "added",
+      "bytes": 16742,
+      "sha256": "5a2020c106fd3a571691b37f12e7f2f55e48b7c3ac0697dae8f7e6ac625ebdee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/executions/20261120T024336Z-5aace6c3/checker.json",
+      "change": "added",
+      "bytes": 18191,
+      "sha256": "bb33922dba91b4e11073df116b825d8381ba252ad06f91c84b4bf49cafab6041",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/executions/20261120T024336Z-5aace6c3/correspondence.json",
+      "change": "added",
+      "bytes": 2537,
+      "sha256": "655ce48ec20b5fbfe00b1421580170fe14a607b9e9f9c0bcbe6bea94c75d1abf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "699ca419152a5141b8b8718f65a4c65cd7920b0fff7c53c12063215f412245c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/plan.json",
+      "change": "added",
+      "bytes": 6651,
+      "sha256": "47ced447cfaa16f311353042ae6cbdd267ffc61da3f9f99743fd5e69b944601f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/control-precheck-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/control-precheck-jdk21.stdout",
+      "change": "added",
+      "bytes": 8674,
+      "sha256": "2cb3bc4b5e7bc117f44d5ad215c114695c3422d68f8c08dc8a57534e637756d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/control-reference-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/control-reference-jdk21.stdout",
+      "change": "added",
+      "bytes": 8689,
+      "sha256": "a23d3c0edc9ee6e05e347878f3190f92fb30ddb00897d93caca600e46230b107",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/controls.json",
+      "change": "added",
+      "bytes": 47426,
+      "sha256": "5df2e6bba30a8dc15bf525ce6a3829324040fa89fe45ac7ddf90f6e4f06dc401",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/execution.json",
+      "change": "added",
+      "bytes": 76207,
+      "sha256": "2fd8c802d4e9c3621476c4246b8de27c5d3de0fb48ec54021b78efaa646056ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/streams.json",
+      "change": "added",
+      "bytes": 2691,
+      "sha256": "d420c95bb90cc26784218b544b46af17fac55a76c50a0e42bd1b284b785fed39",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 1606,
+      "sha256": "c763f8940d87d0ea7dec9a7e4ee222c457e55db22c1b87eadc827d281b244813",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/verifier.json",
+      "change": "added",
+      "bytes": 28603,
+      "sha256": "6b65d0a1f88294a1dfe47937728cf5b23967e7f1125038cde62c0d7340db42fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/verifier.stdout",
+      "change": "added",
+      "bytes": 14524,
+      "sha256": "f1d5716d5d1b1d82d73c65a6ebbfc48e5f633515041766e60ada399697eb8640",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/result.json",
+      "change": "added",
+      "bytes": 11053,
+      "sha256": "880c9bf97aa18d4f12c73ddcc7a4c79bc9562377f3e7224d574ce19ec6178d28",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/executions/20261120T024337Z-25d04026/attempt.json",
+      "change": "added",
+      "bytes": 16655,
+      "sha256": "c2edd0fcc2cca64b917608e6fc9fb26ddd67609ac1e05c1b06dc3f74081301e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/executions/20261120T024337Z-25d04026/checker.json",
+      "change": "added",
+      "bytes": 16927,
+      "sha256": "ed1c77c5622770bf7cc5dbb2e2d51acae80f1fed79b7aca41a9e45a18c70c885",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/executions/20261120T024337Z-25d04026/correspondence.json",
+      "change": "added",
+      "bytes": 2537,
+      "sha256": "655ce48ec20b5fbfe00b1421580170fe14a607b9e9f9c0bcbe6bea94c75d1abf",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T02:44:07+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/completion.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/plan.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/control-precheck-jdk21.stderr",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/control-precheck-jdk21.stdout",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/control-reference-jdk21.stderr",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/control-reference-jdk21.stdout",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/controls.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/execution.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/streams.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/verifier-output.txt",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/verifier.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/verifier.stderr",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/records/verifier.stdout",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/20261120T024332Z-321a69ab/result.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/executions/20261120T024332Z-321a69ab/attempt.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/executions/20261120T024332Z-321a69ab/checker.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exception-class/executions/20261120T024332Z-321a69ab/correspondence.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/completion.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/plan.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/control-precheck-jdk21.stderr",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/control-precheck-jdk21.stdout",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/control-reference-jdk21.stderr",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/control-reference-jdk21.stdout",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/controls.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/execution.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/streams.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/verifier-output.txt",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/verifier.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/verifier.stderr",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/records/verifier.stdout",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/20261120T024336Z-5aace6c3/result.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/executions/20261120T024336Z-5aace6c3/attempt.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/executions/20261120T024336Z-5aace6c3/checker.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/exceptional-poststate/executions/20261120T024336Z-5aace6c3/correspondence.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/completion.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/plan.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/control-precheck-jdk21.stderr",
+      "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/control-precheck-jdk21.stdout",
+      "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/control-reference-jdk21.stderr",
+      "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/control-reference-jdk21.stdout",
+      "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/controls.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/execution.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/streams.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/verifier-output.txt",
+      "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/verifier.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/verifier.stderr",
+      "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/records/verifier.stdout",
+      "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/20261120T024337Z-25d04026/result.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/executions/20261120T024337Z-25d04026/attempt.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/executions/20261120T024337Z-25d04026/checker.json",
+      "examples/314-arraycopy-exceptional-prefix/receipts/assignable-poststate/executions/20261120T024337Z-25d04026/correspondence.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "7ba17ac074cbcdb92a76f2c540a4773d803df672",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7ba17ac074cbcdb92a76f2c540a4773d803df672/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-023617-check-partial-copy-state-through-arrayst"
+}

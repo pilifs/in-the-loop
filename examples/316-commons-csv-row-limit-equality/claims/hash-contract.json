@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "hash-contract",
+  "statement": "Every pair of equal formats has equal hashes.",
+  "assume": "code >= 0 && code < 9",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 24,
+    "maxArrayLength": 12
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "csvgrid.Projection#hashContract(I)I",
+    "mapping": "The quotient and remainder of code divided by three select independent left and right maxRows values 1, 2 and 10. Each builds from CSVFormat.DEFAULT. The fixed text contains three one-field rows. Hash implication is checked only for objects equal according to the actual equals call.",
+    "correspondence": "finite-oracle",
+    "cases": 9
+  }
+}

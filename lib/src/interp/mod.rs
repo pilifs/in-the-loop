@@ -1072,6 +1072,10 @@ impl<'a> Machine<'a> {
                     sizes.push(pop!().as_int());
                 }
                 sizes.reverse();
+                // All supplied dimensions are checked, even those below an empty outer dimension.
+                if let Some(&negative) = sizes.iter().find(|&&size| size < 0) {
+                    return Err(self.throw("java/lang/NegativeArraySizeException", Some(&negative.to_string())));
+                }
                 let v = self.multi_array(&t, &sizes)?;
                 stack.push(v);
             }

@@ -1128,7 +1128,12 @@ impl<'a> Walker<'a> {
                     let member = cf.pool.member(index).map_err(|e| Error::new(e.to_string()))?;
                     self.static_field(&member.owner, &member.name, &member.descriptor, matches!(insn, Insn::PutStatic(_)), &site);
                 }
-                Insn::MultiANewArray(..) => self.refuse("multi-dimensional arrays", "a new multi-dimensional array".into(), &site),
+                Insn::MultiANewArray(index, dims) => {
+                    let name = cf.pool.class_name(index).map_err(|e| Error::new(e.to_string()))?;
+                    if name.get(usize::from(dims)..).is_some_and(|leaf| matches!(leaf, "F" | "D")) {
+                        self.refuse("floating point", "a multidimensional array of floating-point cells".into(), &site);
+                    }
+                }
                 Insn::Ldc(index) => {
                     if let Ok(BootstrapArg::Float(_) | BootstrapArg::Double(_)) = cf.pool.loadable(index) {
                         self.refuse("floating point", "a floating-point constant".into(), &site);

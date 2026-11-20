@@ -110,13 +110,27 @@ def native(checker, java_home, artifacts, work):
 def main():
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument("--java-home", type=Path, required=True)
-    cli.add_argument("--artifacts", type=Path, required=True, help="the two JARs in sources.lock.json")
+    artifacts_from = cli.add_mutually_exclusive_group(required=True)
+    artifacts_from.add_argument("--artifacts", type=Path, help="the two JARs in sources.lock.json")
+    artifacts_from.add_argument("--fetch-locked", action="store_true", help="acquire both Maven JARs by their recorded digests")
     cli.add_argument("--work", type=Path, help="keep the adapter and both source builds for the native check")
     cli.add_argument("--native", type=Path, help="also run this native checker on the release score claim")
     args = cli.parse_args()
     with tempfile.TemporaryDirectory() as scratch:
-        work = (args.work or Path(scratch)).resolve()
-        java_home, artifacts = args.java_home.resolve(), args.artifacts.resolve()
+        work = (args.work or Path(scratch) / "work").resolve()
+        work.mkdir(parents=True, exist_ok=True)
+        java_home = args.java_home.resolve()
+        if args.fetch_locked:
+            sys.path.insert(0, str(HERE.parent / "tools"))
+            from targets.runtime_maven import acquire
+            lock = json.loads((HERE / "sources.lock.json").read_text())
+            artifacts = Path(scratch) / "artifacts"
+            artifacts.mkdir()
+            for name, sha in lock["files"].items():
+                acquire({"coordinates": "org.apache.commons:commons-text:" + lock["version"], "url": lock["repository"] + name,
+                         "sha256": sha}, artifacts / name)
+        else:
+            artifacts = args.artifacts.resolve()
         result = run(java_home, artifacts, work)
         if args.native:
             result["native"] = native(args.native.resolve(), java_home, artifacts, work)

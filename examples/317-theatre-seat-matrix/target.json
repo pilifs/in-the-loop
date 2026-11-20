@@ -1,0 +1,201 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "theatre-seat-matrix",
+    "family": "theatre-seat-matrix",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "matrix": {
+        "fixture": "matrix"
+      },
+      "separate": {
+        "fixture": "separate"
+      },
+      "shared": {
+        "fixture": "shared"
+      }
+    },
+    "pairs": [
+      {
+        "name": "separate",
+        "kind": "positive",
+        "before": "matrix",
+        "after": "separate"
+      },
+      {
+        "name": "shared",
+        "kind": "introduction",
+        "before": "matrix",
+        "after": "shared"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/seats/Projection.java"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "separate",
+      "target": "seats.Seats#mark(IIII)[[I"
+    },
+    {
+      "id": "replay-shared",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "shared",
+      "target": "seats.Seats#mark(IIII)[[I"
+    },
+    {
+      "id": "shape-matrix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "seats.Seats#mark(IIII)[[I",
+      "claim": "claims/shape.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "matrix"
+    },
+    {
+      "id": "shape-separate",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "seats.Seats#mark(IIII)[[I",
+      "claim": "claims/shape.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "separate"
+    },
+    {
+      "id": "shape-shared",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "seats.Seats#mark(IIII)[[I",
+      "claim": "claims/shape.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-shared"
+      ],
+      "expected": "established",
+      "revision": "shared"
+    },
+    {
+      "id": "cells-matrix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "seats.Seats#mark(IIII)[[I",
+      "claim": "claims/cells.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "matrix"
+    },
+    {
+      "id": "cells-separate",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "seats.Seats#mark(IIII)[[I",
+      "claim": "claims/cells.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "separate"
+    },
+    {
+      "id": "cells-shared",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "seats.Seats#mark(IIII)[[I",
+      "claim": "claims/cells.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-shared"
+      ],
+      "expected": "refuted",
+      "revision": "shared"
+    },
+    {
+      "id": "identity-matrix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "seats.Seats#mark(IIII)[[I",
+      "claim": "claims/identity.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "matrix"
+    },
+    {
+      "id": "identity-separate",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "seats.Seats#mark(IIII)[[I",
+      "claim": "claims/identity.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "separate"
+    },
+    {
+      "id": "identity-shared",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "seats.Seats#mark(IIII)[[I",
+      "claim": "claims/identity.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay-shared"
+      ],
+      "expected": "refuted",
+      "revision": "shared"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/seats/Cases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

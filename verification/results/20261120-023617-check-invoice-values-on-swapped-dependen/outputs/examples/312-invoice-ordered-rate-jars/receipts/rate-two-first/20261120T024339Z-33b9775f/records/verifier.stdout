@@ -1,0 +1,181 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "verified",
+    "target": "invoice.Invoice#total(int)",
+    "domain": "q: int",
+    "assume": "q >= -2 && q <= 2",
+    "assert": "result == q * 2",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (Bitwuzla): 1 properties proved over q: int in 0.2 s; loops unwound 10 times with unwinding assertions",
+    "problem": null,
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "✓ invoice.Invoice#total(int) satisfies `result == q * 2` on every input where q >= -2 && q <= 2 (jvmcontract's own checker (Bitwuzla): 1 properties proved over q: int in 0.2 s; loops unwound 10 times with unwinding assertions)\n  not vacuous: total(q=0) reaches the calls\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (Bitwuzla)",
+      "seconds": 0.23107298,
+      "properties": 1,
+      "unwind": 10,
+      "max_array_length": 3,
+      "stage": null,
+      "native": {
+        "paths": 3,
+        "merges": 0,
+        "solver_calls": 2,
+        "solving_seconds": 0.000528551,
+        "gates_evaluated": 34,
+        "evaluating_seconds": 7.173e-6,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "word_operations": 3,
+        "finite_queries": {
+          "diagrams": 0,
+          "bitwuzla": 2
+        },
+        "variables": 67,
+        "clauses": 1,
+        "seconds": 0.230405809,
+        "loading_seconds": 0.00006906,
+        "decoding_seconds": 0.000039384,
+        "encoding_seconds": 0.225609494,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 60.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 60.0,
+          "seconds": 0.23,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.004,
+            "encoding": 0.226,
+            "solving": 0.001,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 67,
+            "clauses": 1
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budget_seconds": 59.769,
+          "seconds": 0.231,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.004,
+            "encoding": 0.226,
+            "solving": 0.001,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 38,
+            "clauses": 1
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.486,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.461,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.024
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "q",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "q: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "q >= -2 && q <= 2",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == q * 2",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 10,
+        "max_array_length": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+        "classes": 38,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (Bitwuzla)",
+        "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+        "fallback": null,
+        "sat": {
+          "solver": "Bitwuzla",
+          "version": "0.8.2",
+          "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+          "configuration": [
+            "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+            "sat-solver cadical",
+            "produce-models",
+            "otherwise Bitwuzla's default options",
+            "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+            "the run's deadline through Bitwuzla's termination callback",
+            "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found total(q=0).",
+        "witness": "total(q=0)"
+      }
+    }
+  }
+]

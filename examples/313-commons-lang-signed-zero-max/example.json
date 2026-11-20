@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "313",
+  "title": "Commons Lang maximum distinguishes negative and positive zero",
+  "summary": "The historical parent can retain negative zero when a later positive zero is the greater IEEE value.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "numeric-code",
+    "special-values",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Apache Commons Lang",
+    "file": "src/main/java/org/apache/commons/lang3/math/NumberUtils.java",
+    "symbol": "org.apache.commons.lang3.math.NumberUtils#max([D)D"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The historical parent can retain negative zero when a later positive zero is the greater IEEE value."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The independent JVM oracle covered 84 inputs on each revision. parent mismatches were 0 for numeric, 7 for rawBits. fix mismatches were 0 for numeric, 0 for rawBits."
+  ],
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/apache/commons-lang",
+    "url": "https://github.com/apache/commons-lang/commit/aafee70bfdfc7617ed509b54e3971441a3a5f57d"
+  }
+}

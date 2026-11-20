@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from targets import workflow
+from checker_output import solver_candidate
 from targets.interfaces import RUNTIME, Unsupported
 
 ID = re.compile(r"[0-9]{8}T[0-9]{6}Z-[0-9a-f]{8}")
@@ -132,7 +133,7 @@ class Execution:
                             stream.seek(0)
                             snapshot[name]["excerpt"] = stream.read(4096).decode(errors="replace")
         save(self.directory / "checker.json", snapshot)
-        candidate = any(o.get("counterexample") for o in outcomes)
+        candidate = any(solver_candidate(o) for o in outcomes)
         exhausted = record.status == "timed-out" or any(
             o.get("verdict") == "unverifiable" and ((o.get("search") or {}).get("runs") or [{}])[-1].get("ending") == "timeout"
             for o in outcomes)

@@ -1,0 +1,23 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "cells",
+  "statement": "Exactly the requested coordinate contains one.",
+  "assume": "code >= 0 && code < 18",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 16,
+    "maxArrayLength": 4
+  },
+  "assert": "result == 1",
+  "adapter": {
+    "entry": "seats.Projection#cells(I)I",
+    "mapping": "Code enumerates shapes in row-count then column-count order and coordinates in row-major order. Each of the eighteen calls returns the actual int[][] to the caller.",
+    "correspondence": "finite-oracle",
+    "cases": 18
+  }
+}

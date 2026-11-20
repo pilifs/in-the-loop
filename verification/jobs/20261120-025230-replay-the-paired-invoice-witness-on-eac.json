@@ -1,0 +1,51 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-025230-replay-the-paired-invoice-witness-on-eac",
+  "title": "Replay the paired invoice witness on each ordered classpath",
+  "description": "Run the four original claims with linked executions. The generated pair supplies its typed counterexample to the independent JVM qualifier for the actual invoice and the actual dependency order.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "312"
+    ],
+    "jobs": [
+      "20261120-023617-check-invoice-values-on-swapped-dependen"
+    ]
+  },
+  "expected": "Retain the actual bounded checker statement, independent results, measurements and any first diagnostic.",
+  "submitted": {
+    "at": "2026-11-20T02:52:30+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "10m"
+  },
+  "steps": [
+    {
+      "name": "Exercise the frozen claims",
+      "run": "python3 examples/tools/build.py 312 --tasks invoice-values,zero-only,rate-two-first,rate-three-first --retry-of 20261120T024332Z-33024846,20261120T024338Z-576e4a40,20261120T024339Z-33b9775f,20261120T024339Z-dc65caa2 --checker-seconds 60",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/312-invoice-ordered-rate-jars/receipts/invoice-values",
+    "examples/312-invoice-ordered-rate-jars/receipts/zero-only",
+    "examples/312-invoice-ordered-rate-jars/receipts/rate-two-first",
+    "examples/312-invoice-ordered-rate-jars/receipts/rate-three-first"
+  ]
+}

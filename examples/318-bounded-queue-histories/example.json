@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "318",
+  "title": "Bounded queue responses and final contents",
+  "summary": "Accepting a full offer by evicting the oldest value can change the acknowledgment while preserving the final queue.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "messaging",
+    "lost-committed-data",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Bounded queue responses and final contents",
+    "file": "reject/queuegrid/BoundedQueue.java",
+    "symbol": "queuegrid.BoundedQueue#apply(I)I"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "Accepting a full offer by evicting the oldest value can change the acknowledgment while preserving the final queue."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen bounded proof obligations",
+  "notes": [
+    "The independent JVM oracle covered 121 inputs on each revision. reject mismatches were 0 for history, 0 for contents. evict mismatches were 40 for history, 28 for contents."
+  ]
+}

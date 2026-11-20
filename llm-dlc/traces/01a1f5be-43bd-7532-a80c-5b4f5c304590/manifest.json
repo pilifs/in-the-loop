@@ -12,32 +12,33 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T02:40:06.578Z",
-  "duration_seconds": 18157,
+  "ended": "2026-11-20T02:58:06.005Z",
+  "duration_seconds": 19236,
   "stats": {
     "turns": 6,
-    "api_calls": 1113,
-    "tool_calls": 2865,
-    "tool_errors": 95,
+    "api_calls": 1180,
+    "tool_calls": 3025,
+    "tool_errors": 97,
     "compactions": 4,
     "peak_context_tokens": 478319,
     "usage": {
-      "input_tokens": 2093691,
-      "output_tokens": 535178,
-      "cache_read_input_tokens": 304530048,
+      "input_tokens": 2193300,
+      "output_tokens": 569572,
+      "cache_read_input_tokens": 324008320,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 1668,
-    "exec": 1062,
-    "apply_patch": 93,
+    "Bash": 1750,
+    "exec": 1129,
+    "apply_patch": 104,
     "wait": 42
   },
   "files_touched": [
     "examples/197-shared-int-array-poststates/README.md",
     "examples/197-shared-int-array-poststates/example.json",
     "examples/197-shared-int-array-poststates/proofs/overlap.py",
+    "examples/308-commons-text-longest-common-subsequence/pilot.py",
     "examples/310-threeten-complete-hours/README.md",
     "examples/310-threeten-complete-hours/controls/ShortCrossings.java",
     "examples/310-threeten-complete-hours/controls/check_correspondence.py",
@@ -58,9 +59,11 @@
     "examples/schema/target-claim.schema.json",
     "examples/schema/target.schema.json",
     "examples/tools/build.py",
+    "examples/tools/checker_output.py",
     "examples/tools/targets/claim_history.py",
     "examples/tools/targets/executions.py",
     "examples/tools/targets/finite_oracle.py",
+    "examples/tools/targets/finite_report.py",
     "examples/tools/targets/java/LoadedClasses.java",
     "examples/tools/targets/java/org/intheloop/controls/Grid.java",
     "examples/tools/targets/qualification.py",
@@ -90,6 +93,7 @@
     "lib/src/bmc/strings.rs",
     "lib/src/classpath.rs",
     "lib/src/harness/expr.rs",
+    "lib/src/interp/mod.rs",
     "lib/src/interp/natives.rs",
     "lib/src/models.rs",
     "lib/src/observed.rs",
@@ -172,24 +176,24 @@
     {
       "index": 4,
       "started": "2026-11-20T01:54:43.523Z",
-      "ended": "2026-11-20T02:40:06.578Z",
+      "ended": "2026-11-20T02:58:06.005Z",
       "turns": 2,
-      "api_calls": 65,
+      "api_calls": 132,
       "usage": {
-        "input_tokens": 232604,
-        "output_tokens": 49924,
-        "cache_read_input_tokens": 10567296,
+        "input_tokens": 332213,
+        "output_tokens": 84318,
+        "cache_read_input_tokens": 30045568,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 242859
+      "peak_context_tokens": 338024
     }
   ],
   "log": {
-    "sha256": "1cba1eb7b4b8718a6109d74ba05cc7df57e3d7ebf5077a0329bace970bf21fc3",
-    "bytes": 27321097,
-    "lines": 8702,
-    "gzip_bytes": 10291893,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/1cba1eb7b4b8718a6109d74ba05cc7df57e3d7ebf5077a0329bace970bf21fc3.jsonl.gz"
+    "sha256": "0ed873a51089ed9f1e90506fc1af029351b9cfa8e7daefaf7ae8ce8f970e936e",
+    "bytes": 28825165,
+    "lines": 9201,
+    "gzip_bytes": 10815383,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/0ed873a51089ed9f1e90506fc1af029351b9cfa8e7daefaf7ae8ce8f970e936e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -632,6 +636,22 @@
       "summary": "Bind ordered JARs and finite JVM observations (verification pending)",
       "body": "The public recipe records explicitly selected duplicate dependency classes, confirms their code source and bytes in a fresh JVM, and rejects the opposite dependency order. A typed finite table qualifies each adapter projection independently against every declared direct JVM input. Example 312 changed four invoice amounts on identical client bytes. Example 314 found twelve poststate differences despite identical exception classes. Example 315 found six formatting and six parsing errors on the historical parent yet every round trip held. The three validators, 42 changed test groups, and the reversed-order negative control passed.\n\nJobs 20261120-023617-check-invoice-values-on-swapped-dependen, 20261120-023617-check-partial-copy-state-through-arrayst and 20261120-023617-check-signed-time-in-each-direction-on-t run the frozen native obligations with their own bindings and JVM controls.",
       "log_sha256": "1cba1eb7b4b8718a6109d74ba05cc7df57e3d7ebf5077a0329bace970bf21fc3"
+    },
+    {
+      "change_id": "vwpmlwpnpxwruqzqokklrszzlylsrprq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 3 job(s)",
+      "body": "Outputs applied for 0 of the 3 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-023617-check-invoice-values-on-swapped-dependen: failed: 1 failed step(s) in 8.8s, peak 167.7 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-as-expected×3; example:task-unexpected×1 20261120-023617-check-partial-copy-state-through-arrayst: failed: 1 failed step(s) in 6.6s, peak 145.1 MiB (estimated 2m00s, 2.0 GiB); 51 output file(s) changed; signals: example:task-unexpected×3 20261120-023617-check-signed-time-in-each-direction-on-t: failed: 1 failed step(s) in 11.2s, peak 191.4 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "0ed873a51089ed9f1e90506fc1af029351b9cfa8e7daefaf7ae8ce8f970e936e"
+    },
+    {
+      "change_id": "kzmsmqomutxsquqltlnxytqmzrrlwpsr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Check bounded matrix allocation on real bytecode (verification pending)",
+      "body": "The native checker now allocates independent nested arrays, including symbolic row lengths, partial dimensions and Java negative-size behavior. An independently checked finite JVM report shows seven signed-zero errors among 84 Commons Lang arrays, six incorrect CSV equalities among nine pairs, fifteen shared-row errors among eighteen theatre seats, and forty queue histories versus twenty-eight final queues among 121 command words. The public paired route can qualify a generated harness candidate on both original dependency closures. Eight example validators and all 43 changed test groups passed.\n\nJobs 20261120-025230-check-signed-zero-maximum-on-raw-and-num, 20261120-025230-check-csv-row-limit-equality-hash-implic, 20261120-025230-verify-independently-allocated-and-share and 20261120-025230-verify-bounded-queue-histories-and-final check the frozen subjects. Jobs 20261120-025230-replay-the-paired-invoice-witness-on-eac and 20261120-025231-recheck-the-commons-text-lcs-score-after revisit the original invoice candidates and the released LCS matrix. All three initial solver batches remain archived.",
+      "log_sha256": "0ed873a51089ed9f1e90506fc1af029351b9cfa8e7daefaf7ae8ce8f970e936e"
     }
   ],
   "logs": {
@@ -663,6 +683,12 @@
       "bytes": 22832709,
       "lines": 7306,
       "gzip_bytes": 8637546,
+      "url": null
+    },
+    "0ed873a51089ed9f1e90506fc1af029351b9cfa8e7daefaf7ae8ce8f970e936e": {
+      "bytes": 28825165,
+      "lines": 9201,
+      "gzip_bytes": 10815383,
       "url": null
     },
     "18bd87b5a53dbd7c9b924a89100e17328fca36f977cbdbd5eb08ba109cbcf94c": {

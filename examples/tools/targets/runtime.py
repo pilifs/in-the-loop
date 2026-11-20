@@ -1163,7 +1163,8 @@ def _prepare_slice(plan, revision, locked, workdir):
         stray = sorted(n for n in made if not any(n == t or n.startswith(t + "$") for t in tops))
         if stray:
             raise Refused("build", f"javac wrote {', '.join(stray)}, which no file of the slice declares")
-        missing = sorted(t for t in tops if t not in made)
+        # javac may emit no class for a package-info.java containing only documentation.
+        missing = sorted(t for t in tops if t not in made and t.rsplit("/", 1)[-1] != "package-info")
         if missing:
             raise Refused("build", f"the slice's files give no class {', '.join(missing)}: a file's name or package "
                                    f"doesn't match the class it declares")

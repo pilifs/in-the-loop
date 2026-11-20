@@ -1,0 +1,212 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "commons-csv-row-limit-equality",
+    "family": "commons-csv-row-limit-equality",
+    "role": "calibration",
+    "sourceConfidence": "checked-upstream"
+  },
+  "history": {
+    "repository": "https://github.com/apache/commons-csv",
+    "revisions": {
+      "parent": {
+        "commit": "69248ba0bed03c71454b71ec0c79805f48f5c447"
+      },
+      "fix": {
+        "commit": "6d5993cb89f4f723ae416123b20f361bd863c484",
+        "parent": "69248ba0bed03c71454b71ec0c79805f48f5c447"
+      }
+    },
+    "pairs": [
+      {
+        "name": "fixed",
+        "kind": "exact-fix",
+        "before": "parent",
+        "after": "fix"
+      }
+    ],
+    "introduction": {
+      "status": "unknown"
+    }
+  },
+  "preparation": {
+    "route": "source-slice",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/csvgrid/Projection.java"
+    ],
+    "slice": {
+      "jdk": "21",
+      "flags": [
+        "--release",
+        "21",
+        "-g",
+        "-parameters"
+      ],
+      "files": {
+        "parent": [
+          "src/main/java/org/apache/commons/csv/CSVException.java",
+          "src/main/java/org/apache/commons/csv/CSVFormat.java",
+          "src/main/java/org/apache/commons/csv/CSVParser.java",
+          "src/main/java/org/apache/commons/csv/CSVPrinter.java",
+          "src/main/java/org/apache/commons/csv/CSVRecord.java",
+          "src/main/java/org/apache/commons/csv/Constants.java",
+          "src/main/java/org/apache/commons/csv/DuplicateHeaderMode.java",
+          "src/main/java/org/apache/commons/csv/ExtendedBufferedReader.java",
+          "src/main/java/org/apache/commons/csv/Lexer.java",
+          "src/main/java/org/apache/commons/csv/QuoteMode.java",
+          "src/main/java/org/apache/commons/csv/Token.java",
+          "src/main/java/org/apache/commons/csv/package-info.java"
+        ],
+        "fix": [
+          "src/main/java/org/apache/commons/csv/CSVException.java",
+          "src/main/java/org/apache/commons/csv/CSVFormat.java",
+          "src/main/java/org/apache/commons/csv/CSVParser.java",
+          "src/main/java/org/apache/commons/csv/CSVPrinter.java",
+          "src/main/java/org/apache/commons/csv/CSVRecord.java",
+          "src/main/java/org/apache/commons/csv/Constants.java",
+          "src/main/java/org/apache/commons/csv/DuplicateHeaderMode.java",
+          "src/main/java/org/apache/commons/csv/ExtendedBufferedReader.java",
+          "src/main/java/org/apache/commons/csv/Lexer.java",
+          "src/main/java/org/apache/commons/csv/QuoteMode.java",
+          "src/main/java/org/apache/commons/csv/Token.java",
+          "src/main/java/org/apache/commons/csv/package-info.java"
+        ]
+      }
+    },
+    "artifacts": [
+      {
+        "revision": "parent",
+        "coordinates": "commons-io:commons-io:2.22.0",
+        "url": "https://repo.maven.apache.org/maven2/commons-io/commons-io/2.22.0/commons-io-2.22.0.jar",
+        "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758"
+      },
+      {
+        "revision": "parent",
+        "coordinates": "commons-codec:commons-codec:1.22.0",
+        "url": "https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar",
+        "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
+      },
+      {
+        "revision": "fix",
+        "coordinates": "commons-io:commons-io:2.22.0",
+        "url": "https://repo.maven.apache.org/maven2/commons-io/commons-io/2.22.0/commons-io-2.22.0.jar",
+        "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758"
+      },
+      {
+        "revision": "fix",
+        "coordinates": "commons-codec:commons-codec:1.22.0",
+        "url": "https://repo.maven.apache.org/maven2/commons-codec/commons-codec/1.22.0/commons-codec-1.22.0.jar",
+        "sha256": "d164fe79f262c32d9b18a0b5b2d317d1c27653d5e98fd2b998c24bf901c72ce4"
+      }
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "fixed",
+      "target": "org.apache.commons.csv.CSVFormat#equals(Ljava/lang/Object;)Z"
+    },
+    {
+      "id": "equals-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.csv.CSVFormat#equals(Ljava/lang/Object;)Z",
+      "claim": "claims/equals.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "revision": "parent"
+    },
+    {
+      "id": "equals-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.csv.CSVFormat#equals(Ljava/lang/Object;)Z",
+      "claim": "claims/equals.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "hash-contract-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.csv.CSVFormat#hashCode()I",
+      "claim": "claims/hash-contract.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "parent"
+    },
+    {
+      "id": "hash-contract-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.csv.CSVFormat#hashCode()I",
+      "claim": "claims/hash-contract.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    },
+    {
+      "id": "rows-parent",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.csv.CSVFormat#parse(Ljava/io/Reader;)Lorg/apache/commons/csv/CSVParser;",
+      "claim": "claims/rows.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "parent"
+    },
+    {
+      "id": "rows-fix",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.csv.CSVFormat#parse(Ljava/io/Reader;)Lorg/apache/commons/csv/CSVParser;",
+      "claim": "claims/rows.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "fix"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/csvgrid/CsvCases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}
