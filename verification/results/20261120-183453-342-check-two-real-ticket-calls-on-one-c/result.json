@@ -1,0 +1,931 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-183453-342-check-two-real-ticket-calls-on-one-c",
+  "title": "342 check two real ticket calls on one counter",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 7.0s, peak 141.3 MiB (estimated 4m00s, 2.0 GiB); 84 output file(s) changed; signals: example:task-unexpected×6",
+  "attention": [
+    "step 1 (Check the original bytecode and observers) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-183453-342-check-two-real-ticket-calls-on-one-c.json",
+    "sha256": "c11b1b92c7ff26620620448db83d510545ce2db347ef7ab2502251e994f03f17",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-183453-342-check-two-real-ticket-calls-on-one-c",
+      "title": "342 check two real ticket calls on one counter",
+      "description": "Run the frozen two-thread linearizability and serial controls against the synchronized method, synchronized block and split critical sections. Keep original strict refusals and the independent real-thread histories.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "342"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T18:34:53+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "4m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Check the original bytecode and observers",
+          "run": "python3 examples/tools/build.py 342 --tasks histories-method,serial-method,histories-block,serial-block,histories-split,serial-split --checker-seconds 90",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/342-two-thread-tickets/receipts/histories-method",
+        "examples/342-two-thread-tickets/receipts/serial-method",
+        "examples/342-two-thread-tickets/receipts/histories-block",
+        "examples/342-two-thread-tickets/receipts/serial-block",
+        "examples/342-two-thread-tickets/receipts/histories-split",
+        "examples/342-two-thread-tickets/receipts/serial-split"
+      ]
+    }
+  },
+  "sourceCommit": "85f81cad26a2d7e474f0d38e2376fcda431d79f4",
+  "startedAt": "2026-11-20T18:51:55+00:00",
+  "finishedAt": "2026-11-20T18:52:12+00:00",
+  "wallSeconds": 17.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 701952,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 148209664,
+    "wallSeconds": 7.0,
+    "cpuSeconds": 10.3,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 342 --tasks histories-method,serial-method,histories-block,serial-block,histories-split,serial-split --checker-seconds 90",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 7.011,
+      "cpuSeconds": 10.252,
+      "cpuThrottledSeconds": 0.402,
+      "peakMemoryBytes": 148209664,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-bytecode-an.log",
+        "lines": 12,
+        "bytes": 1415,
+        "sha256": "83ff3dd1a1499c4cf41358d8fbf6d259f0dddf4eb7a739d9572698027e3719dd",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-unexpected": 6
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 2,
+          "text": "342-two-thread-tickets: task histories-method: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/histories-method/20261120T185205Z-415b7d1e/result.json",
+          "groups": [
+            "342",
+            "histories-method",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 4,
+          "text": "342-two-thread-tickets: task serial-method: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/serial-method/20261120T185207Z-5ba9245d/result.json",
+          "groups": [
+            "342",
+            "serial-method",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 6,
+          "text": "342-two-thread-tickets: task histories-block: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/histories-block/20261120T185207Z-b9a738c5/result.json",
+          "groups": [
+            "342",
+            "histories-block",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 8,
+          "text": "342-two-thread-tickets: task serial-block: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/serial-block/20261120T185209Z-72c03279/result.json",
+          "groups": [
+            "342",
+            "serial-block",
+            "unresolved",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 10,
+          "text": "342-two-thread-tickets: task histories-split: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/histories-split/20261120T185209Z-c093e295/result.json",
+          "groups": [
+            "342",
+            "histories-split",
+            "unresolved",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 12,
+          "text": "342-two-thread-tickets: task serial-split: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/serial-split/20261120T185211Z-7f1fcdd3/result.json",
+          "groups": [
+            "342",
+            "serial-split",
+            "unresolved",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "342-two-thread-tickets: running task histories-method (target route)",
+        "342-two-thread-tickets: task histories-method: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/histories-method/20261120T185205Z-415b7d1e/result.json",
+        "342-two-thread-tickets: running task serial-method (target route)",
+        "342-two-thread-tickets: task serial-method: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/serial-method/20261120T185207Z-5ba9245d/result.json",
+        "342-two-thread-tickets: running task histories-block (target route)",
+        "342-two-thread-tickets: task histories-block: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/histories-block/20261120T185207Z-b9a738c5/result.json",
+        "342-two-thread-tickets: running task serial-block (target route)",
+        "342-two-thread-tickets: task serial-block: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/serial-block/20261120T185209Z-72c03279/result.json",
+        "342-two-thread-tickets: running task histories-split (target route)",
+        "342-two-thread-tickets: task histories-split: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/histories-split/20261120T185209Z-c093e295/result.json",
+        "342-two-thread-tickets: running task serial-split (target route)",
+        "342-two-thread-tickets: task serial-split: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/serial-split/20261120T185211Z-7f1fcdd3/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "555711104ab445db42f6b32ee9b9b2e3b98757be4bb1024bdd2416f4d64bc546",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/plan.json",
+      "change": "added",
+      "bytes": 4710,
+      "sha256": "b742b7863990f28632f5e3e867f116319dd496629a34c82768e68bafa3f3b4fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/records/control-method-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/records/control-method-jdk21.stdout",
+      "change": "added",
+      "bytes": 219,
+      "sha256": "efe3c5c20a7bc63640f36472f9af37e40cb5a0066b8fc3d19361ee91c18a36d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/records/controls.json",
+      "change": "added",
+      "bytes": 3662,
+      "sha256": "c631b6224e6969d601aa47985cb17543e22bff2013b2fb758480ca8d121f1698",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/records/execution.json",
+      "change": "added",
+      "bytes": 18902,
+      "sha256": "74f2ac6893e70f754e0b084e25a85aaaffb04d97c154d05b78a71f8377fafc26",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "dad85b7838b65a63e6629866295ff06c5cc30781ee9a0db19234331223d6ba97",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 561,
+      "sha256": "0aa4b9a4ad88647657f611d5cae6291898621caf342cf3f6ba1b53f7a4b9fa86",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/records/verifier.json",
+      "change": "added",
+      "bytes": 15164,
+      "sha256": "c04d5e48c7af9d3072a36e965a15ece49d7c21735a7cb2b55d9ad667056750bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6256,
+      "sha256": "e39d8e6ac610f45776d8be4874d3d59416cc85069ca0c32bf8a02c061977572b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/result.json",
+      "change": "added",
+      "bytes": 14099,
+      "sha256": "b221ac39ffdbc8f915d8dd40c159ad1dadc305b67484d8472f73b68c59fbea9e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-method/executions/20261120T185205Z-415b7d1e/attempt.json",
+      "change": "added",
+      "bytes": 10616,
+      "sha256": "c1d3ebcf0a18bd5893d3bdb68c9012148aa1d7ad29d0b098dd9e678af38551de",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-method/executions/20261120T185205Z-415b7d1e/checker.json",
+      "change": "added",
+      "bytes": 7493,
+      "sha256": "fa549a562306ded287632cdd8880d46f7e0d67daa8d25e842790ea63af614e35",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "26b4025957c10325f4381a59e501c7ce65eb21e591ac5431e33f15888c9ff703",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/plan.json",
+      "change": "added",
+      "bytes": 4683,
+      "sha256": "b2589cebc7ef7cba7d92e590f389f2bfe53daffe95c66efedee0e839215fb2ea",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/records/control-method-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/records/control-method-jdk21.stdout",
+      "change": "added",
+      "bytes": 219,
+      "sha256": "efe3c5c20a7bc63640f36472f9af37e40cb5a0066b8fc3d19361ee91c18a36d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/records/controls.json",
+      "change": "added",
+      "bytes": 3656,
+      "sha256": "a2dc87bd3c4cbc386f1f1afb940faf61ab87b87a5dfdd9c613dbebb70a2c67c8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/records/execution.json",
+      "change": "added",
+      "bytes": 18900,
+      "sha256": "e23902195041346161b6cecaafb9cd5bc8b58ec154b73cf380f1b1c916c3b941",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/records/streams.json",
+      "change": "added",
+      "bytes": 1965,
+      "sha256": "5ebdd5562e4110d120d12556664f7a87b61a443e53e9e7230c20c3000e1f9315",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 561,
+      "sha256": "0aa4b9a4ad88647657f611d5cae6291898621caf342cf3f6ba1b53f7a4b9fa86",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/records/verifier.json",
+      "change": "added",
+      "bytes": 15156,
+      "sha256": "a4ed6b5c00eb96bc992c1a46352697aee9384cefc1c4cfdc39f31e63313154a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6257,
+      "sha256": "38813e850105929437353a9ab5958a59b02aa263d1e274cf62a106f40828cec0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/result.json",
+      "change": "added",
+      "bytes": 14082,
+      "sha256": "e9a67a4f667212134f36ceb7b98c94989e6420999d1be3acd99af7c5269d7d3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-method/executions/20261120T185207Z-5ba9245d/attempt.json",
+      "change": "added",
+      "bytes": 10609,
+      "sha256": "4b94c1fd834ef46bf73f8aa4199d5d6e6978f91e127996d389b72ae77b273336",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-method/executions/20261120T185207Z-5ba9245d/checker.json",
+      "change": "added",
+      "bytes": 7494,
+      "sha256": "e125e016beb47f6e9a0560a31ad5a4e6d87860227bdce5f255bfe7f84975b675",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "303ccf78f0c602c8510a2d7f639adcc3b4561bde6f5f0a6c95ecea2c48f5fcfb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/plan.json",
+      "change": "added",
+      "bytes": 4699,
+      "sha256": "344cefb18d86fcfad983b68a2adb74f9a83783c3765c4f1d4b75888a5e563398",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/records/control-block-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/records/control-block-jdk21.stdout",
+      "change": "added",
+      "bytes": 219,
+      "sha256": "efe3c5c20a7bc63640f36472f9af37e40cb5a0066b8fc3d19361ee91c18a36d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/records/controls.json",
+      "change": "added",
+      "bytes": 3652,
+      "sha256": "36f037e57003022b22c5eede1a3b630fed699ebb15b34fe701dd8a8d20bd13fc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/records/execution.json",
+      "change": "added",
+      "bytes": 18877,
+      "sha256": "b14f9433540424bca80872d5d91e98cf2f98fe7cd3b946ae27bea5fa6f60be2a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/records/streams.json",
+      "change": "added",
+      "bytes": 1957,
+      "sha256": "49d6e90ccfb4973630b7b28f158fcceaa86f47a2f1e62ea25d282f98fd171daf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 561,
+      "sha256": "0aa4b9a4ad88647657f611d5cae6291898621caf342cf3f6ba1b53f7a4b9fa86",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/records/verifier.json",
+      "change": "added",
+      "bytes": 15143,
+      "sha256": "f18f85e3e9ec43403dea6b3da14bf02948d873c4bb0af79ac577fcf43fb17192",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6256,
+      "sha256": "b487e680cb47f9095f6720e1e0c563b72f89469b19d6c9dfb451df9f555a6a43",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/result.json",
+      "change": "added",
+      "bytes": 14084,
+      "sha256": "e49d448a946b0558a00e2d383f486d08f781abfe5176c102c19731cbd99c8c83",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-block/executions/20261120T185207Z-b9a738c5/attempt.json",
+      "change": "added",
+      "bytes": 10591,
+      "sha256": "af4a7465a4224ed0f5dbbb4c1cec47394c3a6025d3b09795bde7b07187f596cd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-block/executions/20261120T185207Z-b9a738c5/checker.json",
+      "change": "added",
+      "bytes": 7491,
+      "sha256": "3a75fa7d4d30779d81343b1109284d019d0d23defc7235ebbe92ff10f5b409e2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "abaf0758235e18d9be99e939cc3a05ccf3363d220afca73367a1728c78af270a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/plan.json",
+      "change": "added",
+      "bytes": 4672,
+      "sha256": "71fa44e4d0a60a059a6f8c5a3be5b7aa67845edb076e82ad60f815f10976b95b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/records/control-block-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/records/control-block-jdk21.stdout",
+      "change": "added",
+      "bytes": 219,
+      "sha256": "efe3c5c20a7bc63640f36472f9af37e40cb5a0066b8fc3d19361ee91c18a36d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/records/controls.json",
+      "change": "added",
+      "bytes": 3646,
+      "sha256": "efb6e00a3dc69aae3296132a0a4b4f589fe14f71ba52ff804fd79b2540aeda4a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/records/execution.json",
+      "change": "added",
+      "bytes": 18873,
+      "sha256": "cb5b7427cd7c91cfca2fa084885652a030093a5ec73009f3bff6cb34dd8debe5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/records/streams.json",
+      "change": "added",
+      "bytes": 1957,
+      "sha256": "e073b6be26586983ebd8425208401bece307dd4bf11a15841edd907f720a9897",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 561,
+      "sha256": "0aa4b9a4ad88647657f611d5cae6291898621caf342cf3f6ba1b53f7a4b9fa86",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/records/verifier.json",
+      "change": "added",
+      "bytes": 15133,
+      "sha256": "6854e650165700440eba1cf5f76872876d49cc8bc493c3945d7d0e70a7ca84f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6256,
+      "sha256": "b957e0c7e3b9647d7c0f813c7f67c37b40e5620d40ee5b57ca81c034c337fcbc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/result.json",
+      "change": "added",
+      "bytes": 14065,
+      "sha256": "747ff6b2aaa237226283cfa6ab2cfacde463f0794120ccfe9d414138a66fe22e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-block/executions/20261120T185209Z-72c03279/attempt.json",
+      "change": "added",
+      "bytes": 10585,
+      "sha256": "5b75ec0ff5a4e6f997d64f83bdf21da6333ae076c602d971d3e20fa74a934fc3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-block/executions/20261120T185209Z-72c03279/checker.json",
+      "change": "added",
+      "bytes": 7490,
+      "sha256": "96868c3126e5e3c15b57000505d874204e953537805e43d79b22101dfad40acf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "05ee66c91a7f41219cd0698e8ba173d6b5c7be4c475f26a39ff513acd32d9d4c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/plan.json",
+      "change": "added",
+      "bytes": 4701,
+      "sha256": "58848265d2839c0b2c03b57cb21429115a4a5626c82dc2e6a6d8974b8e723e60",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/records/control-split-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/records/control-split-jdk21.stdout",
+      "change": "added",
+      "bytes": 219,
+      "sha256": "982c79e0687144fbbee9b1a8b477c566edfa1b634fb613d72b3d7a15c724f94c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/records/controls.json",
+      "change": "added",
+      "bytes": 3652,
+      "sha256": "7cd19c9fa1a5415218f5b02570a436c94e299075cc2bc7c59a5e946d8f16ebee",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/records/execution.json",
+      "change": "added",
+      "bytes": 19347,
+      "sha256": "b77140fe4e7f4d07554e1036ae6004aeb3d2768e3ca10bbbfc785208a0a2383b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/records/streams.json",
+      "change": "added",
+      "bytes": 1957,
+      "sha256": "1ac91ee3cae28e384a6d09213cddc700e7603d049d21a8f4e2c2d0d19b1b7ebb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 561,
+      "sha256": "0aa4b9a4ad88647657f611d5cae6291898621caf342cf3f6ba1b53f7a4b9fa86",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/records/verifier.json",
+      "change": "added",
+      "bytes": 15595,
+      "sha256": "e928c3671792c870171e99ff064fd61177c21f69c488ec45ff81f3012052e26b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6257,
+      "sha256": "f182123a2108d8b51b72fe772b548e49891f74b796c5de129b5a64fb0fb6dced",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/result.json",
+      "change": "added",
+      "bytes": 14079,
+      "sha256": "f43e7e9e3d733b5e5c1395080dad3ad71d4aa10b985b0cc4ad2b117eca856228",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-split/executions/20261120T185209Z-c093e295/attempt.json",
+      "change": "added",
+      "bytes": 11025,
+      "sha256": "80683b7102e964dde7dc7a4774e951846b53c895755f44e197f3b4dfac09b1b9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/histories-split/executions/20261120T185209Z-c093e295/checker.json",
+      "change": "added",
+      "bytes": 7491,
+      "sha256": "1348a75e0adcdbb077d2b517939c7ac6503b60848172cd74345341d754710e5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "e2565960b0e49e6ce5fa9b2fd05de4449b36004df9cc3551f445cb43f89829c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/plan.json",
+      "change": "added",
+      "bytes": 4678,
+      "sha256": "9b7d4ec811ee023ca4697814a0973314e6a57cac52bae1ccc6bfa070dca36c9f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/records/control-split-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/records/control-split-jdk21.stdout",
+      "change": "added",
+      "bytes": 219,
+      "sha256": "982c79e0687144fbbee9b1a8b477c566edfa1b634fb613d72b3d7a15c724f94c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/records/controls.json",
+      "change": "added",
+      "bytes": 3646,
+      "sha256": "7dc8b9c5ee9d8b849d4929a7c92f2e3e44af3070bc47e83548b2eedec61009c8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/records/execution.json",
+      "change": "added",
+      "bytes": 19346,
+      "sha256": "ebb827f6cbbf08eb626a45c6b64d963114051cd804ae8da0df3ab29859d52907",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/records/streams.json",
+      "change": "added",
+      "bytes": 1957,
+      "sha256": "2da6ffe776fe68d4ad544fb54808a9a0403e126637d8f7ec96a75650e98bb95e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 561,
+      "sha256": "0aa4b9a4ad88647657f611d5cae6291898621caf342cf3f6ba1b53f7a4b9fa86",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/records/verifier.json",
+      "change": "added",
+      "bytes": 15588,
+      "sha256": "1707617a83d22215dd2d9cf4f34833a57dc6044e147da3e8a873e496df3c38e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6257,
+      "sha256": "d4db7118b3a6d1befebac4b6515d0d46ee464663867c34ac2178ae28f0744536",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/result.json",
+      "change": "added",
+      "bytes": 14067,
+      "sha256": "41d8757f4ff238fddf7731371fc8069be12dfa36d10b08ebb98d1f4340438884",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-split/executions/20261120T185211Z-7f1fcdd3/attempt.json",
+      "change": "added",
+      "bytes": 11019,
+      "sha256": "5e5111f52039fb8b992e808e0bb74fa2b870c276b4dea37fab9a3ad96e55e3ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/receipts/serial-split/executions/20261120T185211Z-7f1fcdd3/checker.json",
+      "change": "added",
+      "bytes": 7493,
+      "sha256": "13a4256d785abca54efd93a7fc1914afd44d6615410adc9deeb9fd7c835e1228",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T18:52:32+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/completion.json",
+      "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/plan.json",
+      "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/records/control-method-jdk21.stderr",
+      "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/records/control-method-jdk21.stdout",
+      "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/records/controls.json",
+      "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/records/execution.json",
+      "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/records/streams.json",
+      "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/records/verifier-output.txt",
+      "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/records/verifier.json",
+      "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/records/verifier.stderr",
+      "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/records/verifier.stdout",
+      "examples/342-two-thread-tickets/receipts/histories-method/20261120T185205Z-415b7d1e/result.json",
+      "examples/342-two-thread-tickets/receipts/histories-method/executions/20261120T185205Z-415b7d1e/attempt.json",
+      "examples/342-two-thread-tickets/receipts/histories-method/executions/20261120T185205Z-415b7d1e/checker.json",
+      "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/completion.json",
+      "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/plan.json",
+      "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/records/control-method-jdk21.stderr",
+      "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/records/control-method-jdk21.stdout",
+      "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/records/controls.json",
+      "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/records/execution.json",
+      "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/records/streams.json",
+      "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/records/verifier-output.txt",
+      "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/records/verifier.json",
+      "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/records/verifier.stderr",
+      "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/records/verifier.stdout",
+      "examples/342-two-thread-tickets/receipts/serial-method/20261120T185207Z-5ba9245d/result.json",
+      "examples/342-two-thread-tickets/receipts/serial-method/executions/20261120T185207Z-5ba9245d/attempt.json",
+      "examples/342-two-thread-tickets/receipts/serial-method/executions/20261120T185207Z-5ba9245d/checker.json",
+      "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/completion.json",
+      "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/plan.json",
+      "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/records/control-block-jdk21.stderr",
+      "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/records/control-block-jdk21.stdout",
+      "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/records/controls.json",
+      "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/records/execution.json",
+      "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/records/streams.json",
+      "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/records/verifier-output.txt",
+      "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/records/verifier.json",
+      "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/records/verifier.stderr",
+      "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/records/verifier.stdout",
+      "examples/342-two-thread-tickets/receipts/histories-block/20261120T185207Z-b9a738c5/result.json",
+      "examples/342-two-thread-tickets/receipts/histories-block/executions/20261120T185207Z-b9a738c5/attempt.json",
+      "examples/342-two-thread-tickets/receipts/histories-block/executions/20261120T185207Z-b9a738c5/checker.json",
+      "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/completion.json",
+      "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/plan.json",
+      "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/records/control-block-jdk21.stderr",
+      "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/records/control-block-jdk21.stdout",
+      "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/records/controls.json",
+      "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/records/execution.json",
+      "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/records/streams.json",
+      "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/records/verifier-output.txt",
+      "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/records/verifier.json",
+      "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/records/verifier.stderr",
+      "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/records/verifier.stdout",
+      "examples/342-two-thread-tickets/receipts/serial-block/20261120T185209Z-72c03279/result.json",
+      "examples/342-two-thread-tickets/receipts/serial-block/executions/20261120T185209Z-72c03279/attempt.json",
+      "examples/342-two-thread-tickets/receipts/serial-block/executions/20261120T185209Z-72c03279/checker.json",
+      "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/completion.json",
+      "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/plan.json",
+      "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/records/control-split-jdk21.stderr",
+      "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/records/control-split-jdk21.stdout",
+      "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/records/controls.json",
+      "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/records/execution.json",
+      "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/records/streams.json",
+      "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/records/verifier-output.txt",
+      "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/records/verifier.json",
+      "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/records/verifier.stderr",
+      "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/records/verifier.stdout",
+      "examples/342-two-thread-tickets/receipts/histories-split/20261120T185209Z-c093e295/result.json",
+      "examples/342-two-thread-tickets/receipts/histories-split/executions/20261120T185209Z-c093e295/attempt.json",
+      "examples/342-two-thread-tickets/receipts/histories-split/executions/20261120T185209Z-c093e295/checker.json",
+      "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/completion.json",
+      "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/plan.json",
+      "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/records/control-split-jdk21.stderr",
+      "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/records/control-split-jdk21.stdout",
+      "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/records/controls.json",
+      "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/records/execution.json",
+      "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/records/streams.json",
+      "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/records/verifier-output.txt",
+      "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/records/verifier.json",
+      "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/records/verifier.stderr",
+      "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/records/verifier.stdout",
+      "examples/342-two-thread-tickets/receipts/serial-split/20261120T185211Z-7f1fcdd3/result.json",
+      "examples/342-two-thread-tickets/receipts/serial-split/executions/20261120T185211Z-7f1fcdd3/attempt.json",
+      "examples/342-two-thread-tickets/receipts/serial-split/executions/20261120T185211Z-7f1fcdd3/checker.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "5e111c93a18cb156557b63327fb84339d19b2fe3",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-183453-342-check-two-real-ticket-calls-on-one-c"
+}

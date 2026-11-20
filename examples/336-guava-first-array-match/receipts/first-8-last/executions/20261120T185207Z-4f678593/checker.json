@@ -1,0 +1,278 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+    "prove",
+    "com.google.common.primitives.Ints#indexOf(int[], int)",
+    "--classes",
+    "prepare/mutant/mutant/guava-33.4.8-jre.jar",
+    "--classpath",
+    "prepare/mutant/lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
+    "--classpath",
+    "prepare/mutant/lib/org.jspecify/jspecify-1.0.0.jar",
+    "--assume",
+    "true",
+    "--assert",
+    "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "10",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "120",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 1,
+  "seconds": 0.061,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "violation",
+      "target": "com.google.common.primitives.Ints#indexOf(int[], int)",
+      "domain": "array: int[] of length ≤ 8, not null × target: int",
+      "assume": "true",
+      "assert": "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": {
+        "input": "indexOf(array=[0, 0], target=0)",
+        "outcome": "1",
+        "values": [
+          "[0, 0]",
+          "0"
+        ],
+        "found": "indexOf(array=[16, 16, 20, 20, 20, 20, 20, 20], target=16)",
+        "shrink_runs": 28,
+        "inputs": [
+          {
+            "name": "array",
+            "type": "int[]",
+            "value": [
+              0,
+              0
+            ]
+          },
+          {
+            "name": "target",
+            "type": "int",
+            "value": 0
+          }
+        ],
+        "found_inputs": [
+          {
+            "name": "array",
+            "type": "int[]",
+            "value": [
+              16,
+              16,
+              20,
+              20,
+              20,
+              20,
+              20,
+              20
+            ]
+          },
+          {
+            "name": "target",
+            "type": "int",
+            "value": 16
+          }
+        ],
+        "call": {
+          "class": "com.google.common.primitives.Ints",
+          "class_file": "com/google/common/primitives/Ints.class",
+          "classes": "after",
+          "method": "indexOf",
+          "descriptor": "([II)I",
+          "static": true,
+          "arguments": [
+            {
+              "name": "array",
+              "type": "int[]",
+              "value": [
+                0,
+                0
+              ],
+              "from": "array"
+            },
+            {
+              "name": "target",
+              "type": "int",
+              "value": 0,
+              "from": "target"
+            }
+          ]
+        }
+      },
+      "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as indexOf(array=[16, 16, 20, 20, 20, 20, 20, 20], target=16), shrunk to the input above in 28 interpreter runs, replayed in the interpreter; domain array: int[] of length ≤ 8, not null × target: int",
+      "problem": null,
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [
+        {
+          "rule_id": "property-violated",
+          "message": "Property of com.google.common.primitives.Ints#indexOf(int[], int) violated: `(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))` where true:\n  indexOf(array=[0, 0], target=0)\n    outcome: 1",
+          "uri": null,
+          "line": 154
+        }
+      ],
+      "output": "✗ Property of com.google.common.primitives.Ints#indexOf(int[], int) violated: `(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))` where true:\n  indexOf(array=[0, 0], target=0)\n    outcome: 1\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as indexOf(array=[16, 16, 20, 20, 20, 20, 20, 20], target=16), shrunk to the input above in 28 interpreter runs, replayed in the interpreter; domain array: int[] of length ≤ 8, not null × target: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 0.031254479,
+        "properties": 1,
+        "unwind": 10,
+        "max_array_length": 8,
+        "stage": "[0:20]",
+        "native": {
+          "paths": 13,
+          "merges": 0,
+          "solver_calls": 152,
+          "solving_seconds": 0.018100513,
+          "gates_evaluated": 10404,
+          "evaluating_seconds": 0.000209992,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 8227,
+          "clauses": 27425,
+          "seconds": 0.02838954,
+          "loading_seconds": 0.000183144,
+          "decoding_seconds": 9.1622e-05,
+          "encoding_seconds": 0.004897732,
+          "witness_seconds": 7.0678e-05
+        },
+        "gap_mode": "strict",
+        "deadline_seconds": 120.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 120.0,
+            "seconds": 0.028,
+            "ended": "violation",
+            "ending": "counterexample",
+            "phases": {
+              "loading": 0.0,
+              "lowering": 0.0,
+              "symbolic": 0.005,
+              "encoding": 0.005,
+              "solving": 0.018,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 8227,
+              "clauses": 27425
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.053,
+          "setup": 0.001,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.028,
+          "replay": 0.007,
+          "jvm": 0.0,
+          "other": 0.017
+        }
+      },
+      "replay": {
+        "by": "interpreter",
+        "reproduced": true
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "array",
+              "type": "int[]",
+              "kind": "array",
+              "null": false,
+              "max_length": 8
+            },
+            {
+              "name": "target",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "array: int[] of length ≤ 8, not null × target: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "true",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against (result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 10,
+          "max_array_length": 8,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 7907,
+    "sha256": "c3c8eae6eff20f3b07439ec892d1f1ebecf262921ef786dfb041cd383904cbd9"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

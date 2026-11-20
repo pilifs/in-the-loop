@@ -1,0 +1,215 @@
+{
+  "plan": {
+    "example": "335",
+    "task": "mean-32-mutant",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.common.math.IntMath#mean(II)I",
+    "revisions": [
+      "mutant"
+    ],
+    "claim": {
+      "task": "mean-32-mutant",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.math.IntMath#mean(II)I",
+      "file": "claims/mean-32.json",
+      "sha256": "36e15ab6e772e623ddbd5334d7dbadc713f0b60269179cdd40cbe47028db3e9d",
+      "property": "mean-32",
+      "claimKind": "property",
+      "statement": "For all ordered pairs of signed 32-bit values the sign-extended result is the arithmetic half of their exact signed sum at width 33.",
+      "assume": "true",
+      "assert": "((long) result) == ((((long) x) + ((long) y)) >> 1)",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/mean/MeanCases.java",
+          "sha256": "856f38d6ea7b4d0e4a019e2bd93c2c60dfa853b9fc32080bf47451c25a8ea7c2"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "fbc40143056b08edb4c2bc0dfb02bddbf6e41c25cac3d1b0cd64fbdf3168a0b1"
+        },
+        {
+          "id": "altered-implementation",
+          "kind": "mutation",
+          "path": "controls/overflow.patch",
+          "sha256": "103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8"
+        }
+      ],
+      "key": "225347f592b923ea"
+    },
+    "prerequisites": [
+      "mutant-replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "mutant",
+        "route": "published-artifact",
+        "repository": "https://github.com/google/guava",
+        "mutant": {
+          "base": {
+            "revision": "release",
+            "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+            "published": [
+              {
+                "coordinates": "com.google.guava:guava:33.4.8-jre",
+                "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+              }
+            ]
+          },
+          "patch": {
+            "path": "controls/overflow.patch",
+            "sha256": "103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8"
+          },
+          "description": "Replace both released mean implementations with same-width addition and division by two."
+        },
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "refuted",
+    "outputs": {
+      "receipts": "receipts/mean-32-mutant"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-183452-335-prove-guava-signed-means-over-both-e/examples/335-guava-signed-mean",
+    "network": true
+  },
+  "inputs": {
+    "example": "335",
+    "task": "mean-32-mutant",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.common.math.IntMath#mean(II)I",
+    "revisions": [
+      "mutant"
+    ],
+    "claim": {
+      "task": "mean-32-mutant",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.math.IntMath#mean(II)I",
+      "file": "claims/mean-32.json",
+      "sha256": "36e15ab6e772e623ddbd5334d7dbadc713f0b60269179cdd40cbe47028db3e9d",
+      "property": "mean-32",
+      "claimKind": "property",
+      "statement": "For all ordered pairs of signed 32-bit values the sign-extended result is the arithmetic half of their exact signed sum at width 33.",
+      "assume": "true",
+      "assert": "((long) result) == ((((long) x) + ((long) y)) >> 1)",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/mean/MeanCases.java",
+          "sha256": "856f38d6ea7b4d0e4a019e2bd93c2c60dfa853b9fc32080bf47451c25a8ea7c2"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "fbc40143056b08edb4c2bc0dfb02bddbf6e41c25cac3d1b0cd64fbdf3168a0b1"
+        },
+        {
+          "id": "altered-implementation",
+          "kind": "mutation",
+          "path": "controls/overflow.patch",
+          "sha256": "103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8"
+        }
+      ],
+      "key": "225347f592b923ea"
+    },
+    "artifacts": [
+      {
+        "revision": "mutant",
+        "route": "published-artifact",
+        "repository": "https://github.com/google/guava",
+        "mutant": {
+          "base": {
+            "revision": "release",
+            "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+            "published": [
+              {
+                "coordinates": "com.google.guava:guava:33.4.8-jre",
+                "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+              }
+            ]
+          },
+          "patch": {
+            "path": "controls/overflow.patch",
+            "sha256": "103d4ee1f587f6bd70a6fc6577649ab903ae1905550c583300023e55a2eeb3c8"
+          },
+          "description": "Replace both released mean implementations with same-width addition and division by two."
+        },
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "58a95ecea54a9bd52201e126a67c682807edea74b764a2fb03b4a515796143c6"
+}

@@ -1,0 +1,293 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T185205Z-3964cdd3",
+  "task": "mean-32-release",
+  "claimKey": "225347f592b923ea",
+  "revisions": [
+    "release"
+  ],
+  "startedAt": "2026-11-20T18:52:05.235084+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 90
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-183452-335-prove-guava-signed-means-over-both-e",
+  "sourceCommit": "85f81cad26a2d7e474f0d38e2376fcda431d79f4",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 0.8598
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 1.0663
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 1.1259
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 1.1828
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 1.3929
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "release": {
+      "revision": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+      "target": {
+        "class": "com.google.common.math.IntMath",
+        "method": "mean",
+        "descriptor": "(II)I",
+        "loadedFrom": "lib/com.google.guava/guava-33.4.8-jre.jar",
+        "classSha256": "494d0fa7e75237bb11ca9a05f7610fea4a8dc775728627d9d090f2e26730dcfe"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "ccde79b194e7dc4c2708415ed128e7e19481b96b359c6fa2ba3fb90db72acacf",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "lib/com.google.guava/guava-33.4.8-jre.jar",
+          "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+          "role": "original",
+          "coordinates": "com.google.guava:guava:33.4.8-jre",
+          "origin": "https://repo.maven.apache.org/maven2/com/google/guava/guava/33.4.8-jre/guava-33.4.8-jre.jar"
+        }
+      ]
+    }
+  },
+  "bindingId": "2bbb59f754036cb9b3fd54639f54839ab0e14bcdc8ae7217e05ca68c3854f47b",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+    "prove",
+    "com.google.common.math.IntMath#mean(int, int)",
+    "--classes",
+    "prepare/release/lib/com.google.guava/guava-33.4.8-jre.jar",
+    "--assume",
+    "true",
+    "--assert",
+    "((long) result) == ((((long) x) + ((long) y)) >> 1)",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "16",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "90",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af",
+    "commit": "85f81cad26a2d7e474f0d38e2376fcda431d79f4",
+    "libTree": "5e111c93a18cb156557b63327fb84339d19b2fe3",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 16,
+      "maxArrayLength": 8
+    },
+    "timeout": 90,
+    "scope": {
+      "label": "original-bytecode",
+      "meaning": "the selected method's original bytecode, as published or built from the pinned source, called directly; the adapter and driver are not on the verifier's classpath",
+      "method": "com.google.common.math.IntMath#mean(II)I",
+      "revisions": {
+        "release": {
+          "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+          "loadedFrom": "lib/com.google.guava/guava-33.4.8-jre.jar",
+          "classSha256": "494d0fa7e75237bb11ca9a05f7610fea4a8dc775728627d9d090f2e26730dcfe",
+          "origin": "https://repo.maven.apache.org/maven2/com/google/guava/guava/33.4.8-jre/guava-33.4.8-jre.jar",
+          "parameters": {
+            "names": [
+              "x",
+              "y"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "release": [
+        {
+          "path": "lib/com.google.guava/guava-33.4.8-jre.jar",
+          "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+          "role": "original"
+        }
+      ]
+    },
+    "checkedEntry": "com.google.common.math.IntMath#mean(II)I",
+    "entryBindings": {
+      "release": {
+        "entry": "com.google.common.math.IntMath#mean(II)I",
+        "classSha256": "494d0fa7e75237bb11ca9a05f7610fea4a8dc775728627d9d090f2e26730dcfe",
+        "loadedFrom": "lib/com.google.guava/guava-33.4.8-jre.jar",
+        "subject": "com.google.common.math.IntMath#mean(II)I",
+        "subjectClassSha256": "494d0fa7e75237bb11ca9a05f7610fea4a8dc775728627d9d090f2e26730dcfe"
+      }
+    },
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "com.google.common.math.IntMath#mean(II)I",
+      "checkedEntry": "com.google.common.math.IntMath#mean(II)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "true"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "((long) result) == ((((long) x) + ((long) y)) >> 1)"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "16"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "8"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "release": "f06690fa3e874f65515e8fd338a74d636e2c792f"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "3584",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx2457m"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "release": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+          "gaps",
+          "--target",
+          "com.google.common.math.IntMath#mean(int, int)",
+          "--classes",
+          "prepare/release/lib/com.google.guava/guava-33.4.8-jre.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.035,
+        "stdout": "verifier/probe-release.stdout",
+        "stderr": "verifier/probe-release.stderr",
+        "gaps": []
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0483,
+      "peakRssBytes": 68571136,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0483,
+    "peakRssBytes": 68571136,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.054,
+  "missing": [],
+  "receipt": "receipts/mean-32-release/20261120T185205Z-3964cdd3/result.json",
+  "preparedClaim": "bac1f8ff2f7b64de",
+  "firstBlocker": null,
+  "endedAt": "2026-11-20T18:52:06.628075+00:00"
+}

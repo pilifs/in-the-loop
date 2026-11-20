@@ -1,0 +1,268 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-184923-342-explore-compiled-ticket-monitors-wit",
+  "title": "342 explore compiled ticket monitors with two JVM workers",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 6.9s, peak 119.2 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed",
+  "attention": [
+    "1 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-184923-342-explore-compiled-ticket-monitors-wit.json",
+    "sha256": "3763fbd4e5d7ce45547df9f871d6324fdb644f53d7ee90681a151bd58537932a",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-184923-342-explore-compiled-ticket-monitors-wit",
+      "title": "342 explore compiled ticket monitors with two JVM workers",
+      "description": "Explore every enabled instruction of each compiled counter, the invocation and return intervals, monitor ownership and both Thread starts and joins. Compare the full labeled history with the sequential oracle. Require the duplicate ticket and terminal state to occur on a real JVM execution.",
+      "kind": "real-world",
+      "capabilities": [
+        "native:monitor-histories",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "342"
+        ]
+      },
+      "expected": "Both correct counters are linearizable for all completed two-thread histories. The split counter has an admissible real JVM history with both tickets and the final counter equal to one.",
+      "submitted": {
+        "at": "2026-11-20T18:49:23+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "tickets-method",
+          "run": "python3 examples/tools/build.py 342 --monitor-histories tickets-method",
+          "cwd": "."
+        },
+        {
+          "name": "tickets-block",
+          "run": "python3 examples/tools/build.py 342 --monitor-histories tickets-block",
+          "cwd": "."
+        },
+        {
+          "name": "tickets-split",
+          "run": "python3 examples/tools/build.py 342 --monitor-histories tickets-split",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/342-two-thread-tickets/records/monitor-histories"
+      ]
+    }
+  },
+  "sourceCommit": "85f81cad26a2d7e474f0d38e2376fcda431d79f4",
+  "startedAt": "2026-11-20T18:51:55+00:00",
+  "finishedAt": "2026-11-20T18:52:11+00:00",
+  "wallSeconds": 16.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 701952,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 124960768,
+    "wallSeconds": 6.9,
+    "cpuSeconds": 10.6,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "tickets-method",
+      "run": "python3 examples/tools/build.py 342 --monitor-histories tickets-method",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 2.451,
+      "cpuSeconds": 3.644,
+      "cpuThrottledSeconds": 0.145,
+      "peakMemoryBytes": 124960768,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-tickets-method.log",
+        "lines": 1,
+        "bytes": 93,
+        "sha256": "ee3e508709e4d2eb20ace02d75d29afc2b866f65c5a1014d9550e561044ca80f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "tickets-method established {'ab': (27, 26, 1), 'ba': (27, 26, 1), 'overlap': (237, 334, 10)}"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "tickets-block",
+      "run": "python3 examples/tools/build.py 342 --monitor-histories tickets-block",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 2.204,
+      "cpuSeconds": 3.406,
+      "cpuThrottledSeconds": 0.193,
+      "peakMemoryBytes": 111271936,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-tickets-block.log",
+        "lines": 1,
+        "bytes": 92,
+        "sha256": "6c64ad5ad2272ae6c6f7bb930f63622de67b79665069ec893a810f953879e4c2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "tickets-block established {'ab': (37, 36, 1), 'ba': (37, 36, 1), 'overlap': (525, 872, 10)}"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "tickets-split",
+      "run": "python3 examples/tools/build.py 342 --monitor-histories tickets-split",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 2.205,
+      "cpuSeconds": 3.524,
+      "cpuThrottledSeconds": 0.148,
+      "peakMemoryBytes": 106774528,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-tickets-split.log",
+        "lines": 1,
+        "bytes": 90,
+        "sha256": "5eac6bcd0683abaf99c96e144e9b0a03691fa4f6b14dfd76a62dca289ed9cfd0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "tickets-split refuted {'ab': (61, 60, 1), 'ba': (61, 60, 1), 'overlap': (1703, 2992, 14)}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/342-two-thread-tickets/records/monitor-histories/tickets-block/result.json",
+      "change": "added",
+      "bytes": 47380,
+      "sha256": "11a15957cd5c7812dc078acc4aefe7455e081f3fe3f1bc46f52ce97f0953545a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/records/monitor-histories/tickets-method/result.json",
+      "change": "added",
+      "bytes": 36946,
+      "sha256": "9179971ec1b253242b1db04aa82a373b74b71c0f66b62f550dea54e64c71d549",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/342-two-thread-tickets/records/monitor-histories/tickets-split/result.json",
+      "change": "modified",
+      "bytes": 93094,
+      "sha256": "093213be636fc041ad50480508fa93613e3de992333a47e53bf7c24e78dc18ca",
+      "sourceSha256": "e0a82c5b3655a79ec3ff6986041cdc0a6b839b2dd4f38c598ae0e8b7149d3169"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T18:52:33+00:00",
+    "applied": [
+      "examples/342-two-thread-tickets/records/monitor-histories/tickets-block/result.json",
+      "examples/342-two-thread-tickets/records/monitor-histories/tickets-method/result.json"
+    ],
+    "conflicts": [
+      "examples/342-two-thread-tickets/records/monitor-histories/tickets-split/result.json"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}

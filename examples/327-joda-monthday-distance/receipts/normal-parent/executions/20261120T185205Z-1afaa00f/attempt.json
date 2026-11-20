@@ -1,0 +1,115 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261120T185205Z-1afaa00f",
+  "task": "normal-parent",
+  "claimKey": "d1dec15eb0ac8d00",
+  "revisions": [
+    "parent"
+  ],
+  "startedAt": "2026-11-20T18:52:05.110506+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "jvmSecondsPerRevision": 30
+  },
+  "strategy": {
+    "engine": "jvm",
+    "operation": "review-witness"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261120-184235-327-test-native-counterexamples-on-unmod",
+  "sourceCommit": "85f81cad26a2d7e474f0d38e2376fcda431d79f4",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "witness-supplied",
+      "elapsedSeconds": 0.0002
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 5.3199
+    },
+    {
+      "stage": "witness-replayed",
+      "elapsedSeconds": 6.0156
+    }
+  ],
+  "status": "witness-reproduced",
+  "lastCompletedStage": "witness-replayed",
+  "witnessFile": "native-candidate.json",
+  "witnessSha256": "c1126c9f3d1def0f179e974e1b44ba42920303397d8cd9822f659666f1435aad",
+  "bindings": {
+    "parent": {
+      "revision": "efce99164f0bbd2c70e7f9d71884a32473e02c6d",
+      "target": {
+        "class": "org.joda.time.Days",
+        "method": "daysBetween",
+        "descriptor": "(Lorg/joda/time/ReadablePartial;Lorg/joda/time/ReadablePartial;)Lorg/joda/time/Days;",
+        "loadedFrom": "slice/parent.jar",
+        "classSha256": "6a31ae2203fa1de13205857b4525c8a44a5834b4880a525ba2b5b333e38c48c9",
+        "adapterCalls": [
+          "org.joda.time.Days#daysBetween(Lorg/joda/time/ReadablePartial;Lorg/joda/time/ReadablePartial;)Lorg/joda/time/Days;",
+          "org.joda.time.Days#getDays()I",
+          "org.joda.time.MonthDay#<init>(IILorg/joda/time/Chronology;)V",
+          "org.joda.time.chrono.ISOChronology#getInstanceUTC()Lorg/joda/time/chrono/ISOChronology;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "493abd7e27ac201e4ebb281fb637a0d9d84d0e68a093bae8b3d06f1bee40b183",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "adapter-parent.jar",
+          "sha256": "c8af8c1de3c6bc77567967049ab591c285ba3ef303573d61f25339e52be6d0e8",
+          "role": "adapter",
+          "coordinates": null,
+          "origin": "built from adapter"
+        },
+        {
+          "path": "slice/parent.jar",
+          "sha256": "05c63f4c83da31556ff6564838c89b47b61be3629bb155b56aa797d30e0a8e31",
+          "role": "original",
+          "coordinates": null,
+          "origin": "an extracted source slice of efce99164f0bbd2c70e7f9d71884a32473e02c6d: src/main/java/org/joda/time/Chronology.java, src/main/java/org/joda/time/DateMidnight.java, src/main/java/org/joda/time/DateTime.java, src/main/java/org/joda/time/DateTimeComparator.java, src/main/java/org/joda/time/DateTimeConstants.java, src/main/java/org/joda/time/DateTimeField.java, src/main/java/org/joda/time/DateTimeFieldType.java, src/main/java/org/joda/time/DateTimeUtils.java, src/main/java/org/joda/time/DateTimeZone.java, src/main/java/org/joda/time/Days.java, src/main/java/org/joda/time/Duration.java, src/main/java/org/joda/time/DurationField.java, src/main/java/org/joda/time/DurationFieldType.java, src/main/java/org/joda/time/Hours.java, src/main/java/org/joda/time/IllegalFieldValueException.java, src/main/java/org/joda/time/IllegalInstantException.java, src/main/java/org/joda/time/Instant.java, src/main/java/org/joda/time/Interval.java, src/main/java/org/joda/time/JodaTimePermission.java, src/main/java/org/joda/time/LocalDate.java, src/main/java/org/joda/time/LocalDateTime.java, src/main/java/org/joda/time/LocalTime.java, src/main/java/org/joda/time/Minutes.java, src/main/java/org/joda/time/MonthDay.java, src/main/java/org/joda/time/Months.java, src/main/java/org/joda/time/MutableDateTime.java, src/main/java/org/joda/time/MutableInterval.java, src/main/java/org/joda/time/MutablePeriod.java, src/main/java/org/joda/time/Partial.java, src/main/java/org/joda/time/Period.java, src/main/java/org/joda/time/PeriodType.java, src/main/java/org/joda/time/ReadWritableDateTime.java, src/main/java/org/joda/time/ReadWritableInstant.java, src/main/java/org/joda/time/ReadWritableInterval.java, src/main/java/org/joda/time/ReadWritablePeriod.java, src/main/java/org/joda/time/ReadableDateTime.java, src/main/java/org/joda/time/ReadableDuration.java, src/main/java/org/joda/time/ReadableInstant.java, src/main/java/org/joda/time/ReadableInterval.java, src/main/java/org/joda/time/ReadablePartial.java, src/main/java/org/joda/time/ReadablePeriod.java, src/main/java/org/joda/time/Seconds.java, src/main/java/org/joda/time/TimeOfDay.java, src/main/java/org/joda/time/Weeks.java, src/main/java/org/joda/time/YearMonth.java, src/main/java/org/joda/time/YearMonthDay.java, src/main/java/org/joda/time/Years.java, src/main/java/org/joda/time/base/AbstractDateTime.java, src/main/java/org/joda/time/base/AbstractDuration.java, src/main/java/org/joda/time/base/AbstractInstant.java, src/main/java/org/joda/time/base/AbstractInterval.java, src/main/java/org/joda/time/base/AbstractPartial.java, src/main/java/org/joda/time/base/AbstractPeriod.java, src/main/java/org/joda/time/base/BaseDateTime.java, src/main/java/org/joda/time/base/BaseDuration.java, src/main/java/org/joda/time/base/BaseInterval.java, src/main/java/org/joda/time/base/BaseLocal.java, src/main/java/org/joda/time/base/BasePartial.java, src/main/java/org/joda/time/base/BasePeriod.java, src/main/java/org/joda/time/base/BaseSingleFieldPeriod.java, src/main/java/org/joda/time/chrono/AssembledChronology.java, src/main/java/org/joda/time/chrono/BaseChronology.java, src/main/java/org/joda/time/chrono/BasicChronology.java, src/main/java/org/joda/time/chrono/BasicDayOfMonthDateTimeField.java, src/main/java/org/joda/time/chrono/BasicDayOfYearDateTimeField.java, src/main/java/org/joda/time/chrono/BasicFixedMonthChronology.java, src/main/java/org/joda/time/chrono/BasicGJChronology.java, src/main/java/org/joda/time/chrono/BasicMonthOfYearDateTimeField.java, src/main/java/org/joda/time/chrono/BasicSingleEraDateTimeField.java, src/main/java/org/joda/time/chrono/BasicWeekOfWeekyearDateTimeField.java, src/main/java/org/joda/time/chrono/BasicWeekyearDateTimeField.java, src/main/java/org/joda/time/chrono/BasicYearDateTimeField.java, src/main/java/org/joda/time/chrono/BuddhistChronology.java, src/main/java/org/joda/time/chrono/CopticChronology.java, src/main/java/org/joda/time/chrono/EthiopicChronology.java, src/main/java/org/joda/time/chrono/GJChronology.java, src/main/java/org/joda/time/chrono/GJDayOfWeekDateTimeField.java, src/main/java/org/joda/time/chrono/GJEraDateTimeField.java, src/main/java/org/joda/time/chrono/GJLocaleSymbols.java, src/main/java/org/joda/time/chrono/GJMonthOfYearDateTimeField.java, src/main/java/org/joda/time/chrono/GJYearOfEraDateTimeField.java, src/main/java/org/joda/time/chrono/GregorianChronology.java, src/main/java/org/joda/time/chrono/ISOChronology.java, src/main/java/org/joda/time/chrono/ISOYearOfEraDateTimeField.java, src/main/java/org/joda/time/chrono/IslamicChronology.java, src/main/java/org/joda/time/chrono/JulianChronology.java, src/main/java/org/joda/time/chrono/LenientChronology.java, src/main/java/org/joda/time/chrono/LimitChronology.java, src/main/java/org/joda/time/chrono/StrictChronology.java, src/main/java/org/joda/time/chrono/ZonedChronology.java, src/main/java/org/joda/time/convert/AbstractConverter.java, src/main/java/org/joda/time/convert/CalendarConverter.java, src/main/java/org/joda/time/convert/Converter.java, src/main/java/org/joda/time/convert/ConverterManager.java, src/main/java/org/joda/time/convert/ConverterSet.java, src/main/java/org/joda/time/convert/DateConverter.java, src/main/java/org/joda/time/convert/DurationConverter.java, src/main/java/org/joda/time/convert/InstantConverter.java, src/main/java/org/joda/time/convert/IntervalConverter.java, src/main/java/org/joda/time/convert/LongConverter.java, src/main/java/org/joda/time/convert/NullConverter.java, src/main/java/org/joda/time/convert/PartialConverter.java, src/main/java/org/joda/time/convert/PeriodConverter.java, src/main/java/org/joda/time/convert/ReadableDurationConverter.java, src/main/java/org/joda/time/convert/ReadableInstantConverter.java, src/main/java/org/joda/time/convert/ReadableIntervalConverter.java, src/main/java/org/joda/time/convert/ReadablePartialConverter.java, src/main/java/org/joda/time/convert/ReadablePeriodConverter.java, src/main/java/org/joda/time/convert/StringConverter.java, src/main/java/org/joda/time/field/AbstractPartialFieldProperty.java, src/main/java/org/joda/time/field/AbstractReadableInstantFieldProperty.java, src/main/java/org/joda/time/field/BaseDateTimeField.java, src/main/java/org/joda/time/field/BaseDurationField.java, src/main/java/org/joda/time/field/DecoratedDateTimeField.java, src/main/java/org/joda/time/field/DecoratedDurationField.java, src/main/java/org/joda/time/field/DelegatedDateTimeField.java, src/main/java/org/joda/time/field/DelegatedDurationField.java, src/main/java/org/joda/time/field/DividedDateTimeField.java, src/main/java/org/joda/time/field/FieldUtils.java, src/main/java/org/joda/time/field/ImpreciseDateTimeField.java, src/main/java/org/joda/time/field/LenientDateTimeField.java, src/main/java/org/joda/time/field/MillisDurationField.java, src/main/java/org/joda/time/field/OffsetDateTimeField.java, src/main/java/org/joda/time/field/PreciseDateTimeField.java, src/main/java/org/joda/time/field/PreciseDurationDateTimeField.java, src/main/java/org/joda/time/field/PreciseDurationField.java, src/main/java/org/joda/time/field/RemainderDateTimeField.java, src/main/java/org/joda/time/field/ScaledDurationField.java, src/main/java/org/joda/time/field/SkipDateTimeField.java, src/main/java/org/joda/time/field/SkipUndoDateTimeField.java, src/main/java/org/joda/time/field/StrictDateTimeField.java, src/main/java/org/joda/time/field/UnsupportedDateTimeField.java, src/main/java/org/joda/time/field/UnsupportedDurationField.java, src/main/java/org/joda/time/field/ZeroIsMaxDateTimeField.java, src/main/java/org/joda/time/format/DateTimeFormat.java, src/main/java/org/joda/time/format/DateTimeFormatter.java, src/main/java/org/joda/time/format/DateTimeFormatterBuilder.java, src/main/java/org/joda/time/format/DateTimeParser.java, src/main/java/org/joda/time/format/DateTimeParserBucket.java, src/main/java/org/joda/time/format/DateTimePrinter.java, src/main/java/org/joda/time/format/FormatUtils.java, src/main/java/org/joda/time/format/ISODateTimeFormat.java, src/main/java/org/joda/time/format/ISOPeriodFormat.java, src/main/java/org/joda/time/format/PeriodFormat.java, src/main/java/org/joda/time/format/PeriodFormatter.java, src/main/java/org/joda/time/format/PeriodFormatterBuilder.java, src/main/java/org/joda/time/format/PeriodParser.java, src/main/java/org/joda/time/format/PeriodPrinter.java, src/main/java/org/joda/time/tz/CachedDateTimeZone.java, src/main/java/org/joda/time/tz/DateTimeZoneBuilder.java, src/main/java/org/joda/time/tz/DefaultNameProvider.java, src/main/java/org/joda/time/tz/FixedDateTimeZone.java, src/main/java/org/joda/time/tz/NameProvider.java, src/main/java/org/joda/time/tz/Provider.java, src/main/java/org/joda/time/tz/UTCProvider.java, src/main/java/org/joda/time/tz/ZoneInfoCompiler.java, src/main/java/org/joda/time/tz/ZoneInfoProvider.java, compiled by JDK 21 with --release 8 -g -parameters"
+        },
+        {
+          "path": "lib/org.joda/joda-convert-1.2.jar",
+          "sha256": "5703e1a2ac1969fe90f87076c1f1136822bf31d8948252159c86e6d0535c81a8",
+          "role": "dependency",
+          "coordinates": "org.joda:joda-convert:1.2",
+          "origin": "https://repo.maven.apache.org/maven2/org/joda/joda-convert/1.2/joda-convert-1.2.jar"
+        }
+      ]
+    }
+  },
+  "bindingId": "4588dc276cfe6c1d59c5a5afeba71e874b483f8768905d1d1079f704ae75f94e",
+  "firstBlocker": null,
+  "replayEvidence": "replay.json",
+  "endedAt": "2026-11-20T18:52:11.126251+00:00",
+  "missing": []
+}

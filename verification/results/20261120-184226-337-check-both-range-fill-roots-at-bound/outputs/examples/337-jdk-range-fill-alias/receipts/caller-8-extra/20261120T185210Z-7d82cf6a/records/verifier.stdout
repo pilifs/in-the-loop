@@ -1,0 +1,202 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "fill.Range#observe(int[], int[], int, int, int, int)",
+    "domain": "a: int[] of length ≤ 8, not null × other: int[] of length ≤ 8, not null × from: int × to: int × value: int × k: int; a and other may be the same array",
+    "assume": "0 <= from && from <= to && to <= a.length && 0 <= k && k < other.length",
+    "assert": "result == (a == other && from <= k && k < to ? value : \\old(other[k]))",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([IIII)V@jdk-21.0.13 (java.util.Arrays.fill(int[], int, int, int) at fill.Range.observe:12). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "fill.Range#observe(int[], int[], int, int, int, int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([IIII)V@jdk-21.0.13 (java.util.Arrays.fill(int[], int, int, int) at fill.Range.observe:12). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "uri": null,
+        "line": 12
+      }
+    ],
+    "output": "✗ fill.Range#observe(int[], int[], int, int, int, int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([IIII)V@jdk-21.0.13 (java.util.Arrays.fill(int[], int, int, int) at fill.Range.observe:12). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.009014402,
+      "properties": 1,
+      "unwind": 11,
+      "max_array_length": 8,
+      "stage": null,
+      "native": {
+        "paths": 38,
+        "merges": 0,
+        "solver_calls": 97,
+        "solving_seconds": 0.001881029,
+        "gates_evaluated": 4465,
+        "evaluating_seconds": 0.000077832,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 2616,
+        "clauses": 6571,
+        "seconds": 0.008248918,
+        "loading_seconds": 0.000279343,
+        "decoding_seconds": 0.000074579,
+        "encoding_seconds": 0.00120441,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "jdk-static-method:java.util.Arrays.fill([IIII)V@jdk-21.0.13",
+          "kind": "jdk-static-method",
+          "call": "java.util.Arrays.fill(int[], int, int, int)",
+          "sites": [
+            "fill.Range.observe:12"
+          ],
+          "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 120.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 120.0,
+          "seconds": 0.008,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.005,
+            "encoding": 0.001,
+            "solving": 0.002,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 2616,
+            "clauses": 6571
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.018,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.008,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.009
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "a",
+            "type": "int[]",
+            "kind": "array",
+            "null": false,
+            "max_length": 8
+          },
+          {
+            "name": "other",
+            "type": "int[]",
+            "kind": "array",
+            "null": false,
+            "max_length": 8
+          },
+          {
+            "name": "from",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "to",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "value",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "k",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": true,
+        "may_alias": [
+          [
+            "a",
+            "other"
+          ]
+        ],
+        "text": "a: int[] of length ≤ 8, not null × other: int[] of length ≤ 8, not null × from: int × to: int × value: int × k: int; a and other may be the same array"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "0 <= from && from <= to && to <= a.length && 0 <= k && k < other.length",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == (a == other && from <= k && k < to ? value : \\old(other[k]))",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 11,
+        "max_array_length": 8,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

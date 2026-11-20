@@ -1,0 +1,691 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-183452-335-prove-guava-signed-means-over-both-e",
+  "title": "335 prove Guava signed means over both entire primitive domains",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 12.4s, peak 277.6 MiB (estimated 4m00s, 2.0 GiB); 58 output file(s) changed; signals: example:task-as-expected×3; example:task-unexpected×1",
+  "attention": [
+    "step 1 (Check the original bytecode and observers) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-183452-335-prove-guava-signed-means-over-both-e.json",
+    "sha256": "e32b87700a71fdc3f9c276b49597e2c8f6fd3cfc49a74ffbb8edf0322f383561",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-183452-335-prove-guava-signed-means-over-both-e",
+      "title": "335 prove Guava signed means over both entire primitive domains",
+      "description": "Check the released IntMath.mean and LongMath.mean on all signed input pairs, together with the deliberately overflow-prone control. The 65-bit reference includes the carry from bit 63, and the external boundary check uses BigInteger.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "335"
+        ]
+      },
+      "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+      "submitted": {
+        "at": "2026-11-20T18:34:52+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "4m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Check the original bytecode and observers",
+          "run": "python3 examples/tools/build.py 335 --tasks mean-32-release,mean-32-mutant,mean-64-release,mean-64-mutant --checker-seconds 90",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/335-guava-signed-mean/receipts/mean-32-release",
+        "examples/335-guava-signed-mean/receipts/mean-32-mutant",
+        "examples/335-guava-signed-mean/receipts/mean-64-release",
+        "examples/335-guava-signed-mean/receipts/mean-64-mutant"
+      ]
+    }
+  },
+  "sourceCommit": "85f81cad26a2d7e474f0d38e2376fcda431d79f4",
+  "startedAt": "2026-11-20T18:51:55+00:00",
+  "finishedAt": "2026-11-20T18:52:17+00:00",
+  "wallSeconds": 22.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 701952,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 291078144,
+    "wallSeconds": 12.4,
+    "cpuSeconds": 16.7,
+    "memoryOfEstimate": 0.14,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the original bytecode and observers",
+      "run": "python3 examples/tools/build.py 335 --tasks mean-32-release,mean-32-mutant,mean-64-release,mean-64-mutant --checker-seconds 90",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 12.422,
+      "cpuSeconds": 16.719,
+      "cpuThrottledSeconds": 1.333,
+      "peakMemoryBytes": 291078144,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-bytecode-an.log",
+        "lines": 8,
+        "bytes": 886,
+        "sha256": "d087cdd7bc7aaac6fcbf946a179be838de9a4217cdcf9c447e534cfd13ea6f5d",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 3,
+        "example:task-unexpected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "335-guava-signed-mean: task mean-32-release: established (completed; as expected), receipt receipts/mean-32-release/20261120T185205Z-3964cdd3/result.json",
+          "groups": [
+            "335",
+            "mean-32-release",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "335-guava-signed-mean: task mean-32-mutant: refuted (completed; as expected), receipt receipts/mean-32-mutant/20261120T185206Z-9f6ae767/result.json",
+          "groups": [
+            "335",
+            "mean-32-mutant",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "335-guava-signed-mean: task mean-64-release: established (completed; as expected), receipt receipts/mean-64-release/20261120T185211Z-d47e264d/result.json",
+          "groups": [
+            "335",
+            "mean-64-release",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-unexpected",
+          "line": 8,
+          "text": "335-guava-signed-mean: task mean-64-mutant: none (invalid-output; NOT AS EXPECTED (refuted)), receipt receipts/mean-64-mutant/20261120T185213Z-01577d64/result.json",
+          "groups": [
+            "335",
+            "mean-64-mutant",
+            "none",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "335-guava-signed-mean: running task mean-32-release (target route)",
+        "335-guava-signed-mean: task mean-32-release: established (completed; as expected), receipt receipts/mean-32-release/20261120T185205Z-3964cdd3/result.json",
+        "335-guava-signed-mean: running task mean-32-mutant (target route)",
+        "335-guava-signed-mean: task mean-32-mutant: refuted (completed; as expected), receipt receipts/mean-32-mutant/20261120T185206Z-9f6ae767/result.json",
+        "335-guava-signed-mean: running task mean-64-release (target route)",
+        "335-guava-signed-mean: task mean-64-release: established (completed; as expected), receipt receipts/mean-64-release/20261120T185211Z-d47e264d/result.json",
+        "335-guava-signed-mean: running task mean-64-mutant (target route)",
+        "335-guava-signed-mean: task mean-64-mutant: none (invalid-output; NOT AS EXPECTED (refuted)), receipt receipts/mean-64-mutant/20261120T185213Z-01577d64/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "1bbcabe1e7c16ef113828f74aa25b795043eff029a177bf735bb9150b82e5346",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/plan.json",
+      "change": "added",
+      "bytes": 5511,
+      "sha256": "ba57b246074b89d3269661b8ee413286b0cbee2b99471bc4417f98ea88f757a7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/records/control-release-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/records/control-release-jdk21.stdout",
+      "change": "added",
+      "bytes": 19256,
+      "sha256": "8b98fb9d2424af7934f85c46080fff1f981c0896ae9167fa2edb044b6dc4e6d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/records/controls.json",
+      "change": "added",
+      "bytes": 41099,
+      "sha256": "42c00689789e0a766e19741e4809f605e1fbe09a43531b5adc910a07459769e1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/records/execution.json",
+      "change": "added",
+      "bytes": 54300,
+      "sha256": "856fa6819156ae89875de9aad2aad343f03f4718562c1cba3ce8195d14b32f92",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/records/streams.json",
+      "change": "added",
+      "bytes": 1979,
+      "sha256": "0e7c28795d2ff19c84dbdfbb4a02764ca647321a52cd57dcf2447cf4e59c505e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 330,
+      "sha256": "81a163626c76b7376749bd47f958378cb7e8ce02b7c4ee4774b5e13a8235408a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/records/verifier.json",
+      "change": "added",
+      "bytes": 13177,
+      "sha256": "c931569c523c9b018391c3c5162a5388cc0711717f81499da2a3ef290060566d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/records/verifier.stdout",
+      "change": "added",
+      "bytes": 5509,
+      "sha256": "446d1ece9112fba8f04580d0bfa9d4ac73054b21cb088da71bf561861e063ba0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/result.json",
+      "change": "added",
+      "bytes": 16424,
+      "sha256": "7252890408ed7d4c4032af6bbb3e5c7abc162b9804454f004dc5a6d395728e65",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-release/executions/20261120T185205Z-3964cdd3/attempt.json",
+      "change": "added",
+      "bytes": 9053,
+      "sha256": "d8f55f8c5440af924fde4d22c572a5c1bdd93ee564f55f966331c4791b7be546",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-release/executions/20261120T185205Z-3964cdd3/checker.json",
+      "change": "added",
+      "bytes": 6841,
+      "sha256": "13f9bb829709f200f825c96dca1a2e0bca988985868618636af383ef886961e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "9eba51ff284cc973417314962c20e8365e875ff94a77181fbc8c03bc75f98731",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/plan.json",
+      "change": "added",
+      "bytes": 6502,
+      "sha256": "d6fe36994cf22be81bb1ac7360cb776680db412712f065029858dcdbe4f46560",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/records/control-mutant-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/records/control-mutant-jdk21.stdout",
+      "change": "added",
+      "bytes": 19018,
+      "sha256": "f0e7805ea077066300da6ff26b87dac122dc617517534ee4ffcdafe6f6793b27",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/records/controls.json",
+      "change": "added",
+      "bytes": 40898,
+      "sha256": "c0c859d3c20b4a3f6928fb6fe4a5ff28370fa705a761a313e4cea794f7140b84",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/records/execution.json",
+      "change": "added",
+      "bytes": 58361,
+      "sha256": "d1cc13e46f0abe87d04f7278dbb563c00b98b549d2a262d862fe3f59d56d0012",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "d62677afebae240dc41ef2a4733b20c1632f1a22c14e28f2db41c5edf9ed4d75",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 638,
+      "sha256": "2da85bbe496a970693b92e01dcd369cd501d6e616f0eaa8900fa97fbff545ddb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/records/verifier.json",
+      "change": "added",
+      "bytes": 15334,
+      "sha256": "12b0ca487c1cd3259be8d632c11936a44340b7e2b19d85696c02d3b7c0136468",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6632,
+      "sha256": "989c397d8d01b1ac9776f8e4442b64d1e67c8cc9e06893b444ee3e0afd5e69d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/result.json",
+      "change": "added",
+      "bytes": 18899,
+      "sha256": "0d90bea99dc53e3ec49b581ed6ca9848e7061a355292197a9da1ec9125985634",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-mutant/executions/20261120T185206Z-9f6ae767/attempt.json",
+      "change": "added",
+      "bytes": 10294,
+      "sha256": "3419ec1e50f4726f29c43f9d8e9d95d1b2dbbac250cf737b643c1f93b7ee2581",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-mutant/executions/20261120T185206Z-9f6ae767/checker.json",
+      "change": "added",
+      "bytes": 8024,
+      "sha256": "6821d52916b7c8882ddcf9008471588432f9e6d8c3df16942b5375a62e003f43",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-32-mutant/executions/20261120T185206Z-9f6ae767/replay.json",
+      "change": "added",
+      "bytes": 1609,
+      "sha256": "e202305ea16b909c31004793e83c903b38d642ec86cbb2d7dc2f4efed2deaf41",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "f31a6dd566b1472cad9fd2a31e70f0a81d71b064bcf0f79dedff6a0fb6af99e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/plan.json",
+      "change": "added",
+      "bytes": 5913,
+      "sha256": "e7ee96f7348643e48ab4ee3f723aacfba9ace299b46b9f23bee59eb2e5cc8195",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/records/control-release-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/records/control-release-jdk21.stdout",
+      "change": "added",
+      "bytes": 19256,
+      "sha256": "8b98fb9d2424af7934f85c46080fff1f981c0896ae9167fa2edb044b6dc4e6d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/records/controls.json",
+      "change": "added",
+      "bytes": 41099,
+      "sha256": "38a68d76f073936871c195a75ea578e0eec0104d3fd1f45db38ef98c4312490f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/records/execution.json",
+      "change": "added",
+      "bytes": 55328,
+      "sha256": "2d737326271db50d9d9b9c4ccc0e8030ddb48abed1cbd1678a73fdd2632cdb98",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/records/streams.json",
+      "change": "added",
+      "bytes": 1979,
+      "sha256": "bd9714cc84de2b17a0b7155b81ac2919578f5ab6605cb99ce0391e2e682a686c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 534,
+      "sha256": "3eff7fe1c877e3d91a298779583eaa089f4c6dc52f3e2e85b373b67f970d40b0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/records/verifier.json",
+      "change": "added",
+      "bytes": 14205,
+      "sha256": "d6363243e3b51480c0a85713c43bcc7aae3e34d70977cb71238c981e8d34f483",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6126,
+      "sha256": "9c85a160fd3025f2de2bc78e9367423c8534e9419bc21c036381da77f58d1ff4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/result.json",
+      "change": "added",
+      "bytes": 17842,
+      "sha256": "e6225df1b50234e37bbae6cc803c0ffe98e537ce6247272df384f870099542c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-release/executions/20261120T185211Z-d47e264d/attempt.json",
+      "change": "added",
+      "bytes": 9464,
+      "sha256": "fd0b292f8237ecfbeba7e80fd7204f0a3bc2aba16ac39fe7bfe8a5f73bf1e3da",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-release/executions/20261120T185211Z-d47e264d/checker.json",
+      "change": "added",
+      "bytes": 7661,
+      "sha256": "d336a34a63173b6ab430f259078f18159dc2a141867020991e5830a5d117234f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "422199fbb63dbce4d60695324d827d9a5f07f3f44e028a4d19d2edef35fd7ad7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/plan.json",
+      "change": "added",
+      "bytes": 6904,
+      "sha256": "eb0070c4b1197b3b0ac8a5c8cc692d710d7bc794ec25e74bfc246961ec2946a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/records/control-mutant-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/records/control-mutant-jdk21.stdout",
+      "change": "added",
+      "bytes": 19018,
+      "sha256": "f0e7805ea077066300da6ff26b87dac122dc617517534ee4ffcdafe6f6793b27",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/records/controls.json",
+      "change": "added",
+      "bytes": 40898,
+      "sha256": "7f5ec0fe229a060424fe7bc275262ac74c431a627ebe676cdaa6da2e466bdf7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/records/execution.json",
+      "change": "added",
+      "bytes": 58634,
+      "sha256": "4308e12526c3282ecab4bf29cb1002f3ebcfd0aa844089de3e4989c9190a7de7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/records/streams.json",
+      "change": "added",
+      "bytes": 1971,
+      "sha256": "b44af4e577622fddab3a27f3af94ca2dd77e2bacd84ae5a61da2058e28d11f28",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 847,
+      "sha256": "c1b48e4a5e886ce18b99a5899d6c4e4e4078aa8bc27bffeddb2a2c1316f433b1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/records/verifier.json",
+      "change": "added",
+      "bytes": 16609,
+      "sha256": "ab703f7ec4b6c7e7813f8dc3d32d33e43dad8feafc7bf838e14fda85b4f6fd8f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/records/verifier.stdout",
+      "change": "added",
+      "bytes": 7495,
+      "sha256": "fe609f77787500dc48d75bf081287fee6d53a7f1febfb77c645a0696ee17a86a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/result.json",
+      "change": "added",
+      "bytes": 20743,
+      "sha256": "542d4c8ca37011bc9fdcee5d61bad0b1ded1d678b4205a449ae313f1e7c50d83",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-mutant/executions/20261120T185213Z-01577d64/attempt.json",
+      "change": "added",
+      "bytes": 10789,
+      "sha256": "b5bf10fe325bc117a371c42e10988a5e139deeeb1ff972e6052d2c7038fc2d35",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-mutant/executions/20261120T185213Z-01577d64/checker.json",
+      "change": "added",
+      "bytes": 9091,
+      "sha256": "edf84c9ed473d18a49c5309ec65ec56e6363c5d9058ca6c82686a3b9ad06230d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/335-guava-signed-mean/receipts/mean-64-mutant/executions/20261120T185213Z-01577d64/replay.json",
+      "change": "added",
+      "bytes": 711,
+      "sha256": "d33f43b5bef18a28ac34a44566ae48d540ba332e55b66b8175d0a2213b2a1ef2",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T18:52:32+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/completion.json",
+      "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/plan.json",
+      "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/records/control-release-jdk21.stderr",
+      "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/records/control-release-jdk21.stdout",
+      "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/records/controls.json",
+      "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/records/execution.json",
+      "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/records/streams.json",
+      "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/records/verifier-output.txt",
+      "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/records/verifier.json",
+      "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/records/verifier.stderr",
+      "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/records/verifier.stdout",
+      "examples/335-guava-signed-mean/receipts/mean-32-release/20261120T185205Z-3964cdd3/result.json",
+      "examples/335-guava-signed-mean/receipts/mean-32-release/executions/20261120T185205Z-3964cdd3/attempt.json",
+      "examples/335-guava-signed-mean/receipts/mean-32-release/executions/20261120T185205Z-3964cdd3/checker.json",
+      "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/completion.json",
+      "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/plan.json",
+      "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/records/control-mutant-jdk21.stderr",
+      "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/records/control-mutant-jdk21.stdout",
+      "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/records/controls.json",
+      "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/records/execution.json",
+      "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/records/streams.json",
+      "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/records/verifier-output.txt",
+      "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/records/verifier.json",
+      "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/records/verifier.stderr",
+      "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/records/verifier.stdout",
+      "examples/335-guava-signed-mean/receipts/mean-32-mutant/20261120T185206Z-9f6ae767/result.json",
+      "examples/335-guava-signed-mean/receipts/mean-32-mutant/executions/20261120T185206Z-9f6ae767/attempt.json",
+      "examples/335-guava-signed-mean/receipts/mean-32-mutant/executions/20261120T185206Z-9f6ae767/checker.json",
+      "examples/335-guava-signed-mean/receipts/mean-32-mutant/executions/20261120T185206Z-9f6ae767/replay.json",
+      "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/completion.json",
+      "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/plan.json",
+      "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/records/control-release-jdk21.stderr",
+      "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/records/control-release-jdk21.stdout",
+      "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/records/controls.json",
+      "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/records/execution.json",
+      "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/records/streams.json",
+      "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/records/verifier-output.txt",
+      "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/records/verifier.json",
+      "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/records/verifier.stderr",
+      "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/records/verifier.stdout",
+      "examples/335-guava-signed-mean/receipts/mean-64-release/20261120T185211Z-d47e264d/result.json",
+      "examples/335-guava-signed-mean/receipts/mean-64-release/executions/20261120T185211Z-d47e264d/attempt.json",
+      "examples/335-guava-signed-mean/receipts/mean-64-release/executions/20261120T185211Z-d47e264d/checker.json",
+      "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/completion.json",
+      "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/plan.json",
+      "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/records/control-mutant-jdk21.stderr",
+      "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/records/control-mutant-jdk21.stdout",
+      "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/records/controls.json",
+      "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/records/execution.json",
+      "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/records/streams.json",
+      "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/records/verifier-output.txt",
+      "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/records/verifier.json",
+      "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/records/verifier.stderr",
+      "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/records/verifier.stdout",
+      "examples/335-guava-signed-mean/receipts/mean-64-mutant/20261120T185213Z-01577d64/result.json",
+      "examples/335-guava-signed-mean/receipts/mean-64-mutant/executions/20261120T185213Z-01577d64/attempt.json",
+      "examples/335-guava-signed-mean/receipts/mean-64-mutant/executions/20261120T185213Z-01577d64/checker.json",
+      "examples/335-guava-signed-mean/receipts/mean-64-mutant/executions/20261120T185213Z-01577d64/replay.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "5e111c93a18cb156557b63327fb84339d19b2fe3",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5e111c93a18cb156557b63327fb84339d19b2fe3/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-183452-335-prove-guava-signed-means-over-both-e"
+}

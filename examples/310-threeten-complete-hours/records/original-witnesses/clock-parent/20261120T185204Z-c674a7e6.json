@@ -1,0 +1,59 @@
+{
+  "schema": "original-jvm-counterexample/v1",
+  "status": "refuted",
+  "task": "clock-parent",
+  "sourceKey": "0cab770b1b39f331",
+  "planKey": "f4f473220128d4b48db95657c0545cddc276ffe01ab1dab1c59dd25b2edda200",
+  "subject": "org.threeten.bp.LocalDateTime#until(Lorg/threeten/bp/temporal/Temporal;Lorg/threeten/bp/temporal/TemporalUnit;)J",
+  "revisions": [
+    "parent"
+  ],
+  "entry": "civil.Hours#completeHours(II)J",
+  "inputs": [
+    {
+      "name": "startTick",
+      "type": "int",
+      "value": 2
+    },
+    {
+      "name": "endTick",
+      "type": "int",
+      "value": 97
+    }
+  ],
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "nativeSource": {
+    "task": "clock-parent-observed",
+    "sourceKey": "28248e72756510a9",
+    "receipt": "receipts/clock-parent-observed/20261120T102132Z-a76e3155/result.json",
+    "receiptSha256": "3c315d08737a28d9f22d5c6e40983a29277451130355049fd58394b0cdeea878",
+    "checkerSha256": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af",
+    "observedInitializers": {
+      "org.threeten.bp.chrono.Chronology": "111c7fb5b516548660320f01bbff6980bf0b7c69bd7fbe068970753268e312b6"
+    },
+    "bounds": {
+      "unwind": 32,
+      "maxArrayLength": 8
+    }
+  },
+  "original": {
+    "replay": "receipts/clock-parent/executions/20261120T185204Z-c674a7e6/replay.json",
+    "sha256": "5a6a170866fa04e04a70b7eb4d8b87ac25a88a9bd25fed1bbf60d5c338b8d4e0",
+    "execution": "20261120T185204Z-c674a7e6",
+    "observedInitializers": [],
+    "bounds": {
+      "unwind": 16,
+      "maxArrayLength": 8
+    },
+    "values": {
+      "parent": [
+        24,
+        null
+      ]
+    }
+  },
+  "derivation": "An admitted input violates the original assertion on original JVM bytecode. The native companion supplied the candidate. Its startup assumptions are unnecessary for this existential refutation."
+}

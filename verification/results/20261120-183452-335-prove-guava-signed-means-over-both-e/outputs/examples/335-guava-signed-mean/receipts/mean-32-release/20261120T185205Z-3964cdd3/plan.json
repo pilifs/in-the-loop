@@ -1,0 +1,186 @@
+{
+  "plan": {
+    "example": "335",
+    "task": "mean-32-release",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.common.math.IntMath#mean(II)I",
+    "revisions": [
+      "release"
+    ],
+    "claim": {
+      "task": "mean-32-release",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.math.IntMath#mean(II)I",
+      "file": "claims/mean-32.json",
+      "sha256": "36e15ab6e772e623ddbd5334d7dbadc713f0b60269179cdd40cbe47028db3e9d",
+      "property": "mean-32",
+      "claimKind": "property",
+      "statement": "For all ordered pairs of signed 32-bit values the sign-extended result is the arithmetic half of their exact signed sum at width 33.",
+      "assume": "true",
+      "assert": "((long) result) == ((((long) x) + ((long) y)) >> 1)",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/mean/MeanCases.java",
+          "sha256": "856f38d6ea7b4d0e4a019e2bd93c2c60dfa853b9fc32080bf47451c25a8ea7c2"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "fbc40143056b08edb4c2bc0dfb02bddbf6e41c25cac3d1b0cd64fbdf3168a0b1"
+        }
+      ],
+      "key": "225347f592b923ea"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "release",
+        "route": "published-artifact",
+        "repository": "https://github.com/google/guava",
+        "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+        "published": [
+          {
+            "coordinates": "com.google.guava:guava:33.4.8-jre",
+            "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+          }
+        ],
+        "coordinates": "com.google.guava:guava:33.4.8-jre",
+        "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/mean-32-release"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-183452-335-prove-guava-signed-means-over-both-e/examples/335-guava-signed-mean",
+    "network": true
+  },
+  "inputs": {
+    "example": "335",
+    "task": "mean-32-release",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.common.math.IntMath#mean(II)I",
+    "revisions": [
+      "release"
+    ],
+    "claim": {
+      "task": "mean-32-release",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.math.IntMath#mean(II)I",
+      "file": "claims/mean-32.json",
+      "sha256": "36e15ab6e772e623ddbd5334d7dbadc713f0b60269179cdd40cbe47028db3e9d",
+      "property": "mean-32",
+      "claimKind": "property",
+      "statement": "For all ordered pairs of signed 32-bit values the sign-extended result is the arithmetic half of their exact signed sum at width 33.",
+      "assume": "true",
+      "assert": "((long) result) == ((((long) x) + ((long) y)) >> 1)",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/mean/MeanCases.java",
+          "sha256": "856f38d6ea7b4d0e4a019e2bd93c2c60dfa853b9fc32080bf47451c25a8ea7c2"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "fbc40143056b08edb4c2bc0dfb02bddbf6e41c25cac3d1b0cd64fbdf3168a0b1"
+        }
+      ],
+      "key": "225347f592b923ea"
+    },
+    "artifacts": [
+      {
+        "revision": "release",
+        "route": "published-artifact",
+        "repository": "https://github.com/google/guava",
+        "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+        "published": [
+          {
+            "coordinates": "com.google.guava:guava:33.4.8-jre",
+            "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+          }
+        ],
+        "coordinates": "com.google.guava:guava:33.4.8-jre",
+        "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "c374e71c400555ad62ab057a47b26c40d5bc951de1a8129ca0dd9f6a9919c3fe"
+}

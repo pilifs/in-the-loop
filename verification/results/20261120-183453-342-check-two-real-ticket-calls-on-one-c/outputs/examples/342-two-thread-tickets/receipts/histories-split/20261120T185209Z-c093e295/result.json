@@ -1,0 +1,423 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "577f0ca061cc4e94",
+    "format": 1,
+    "example": "342",
+    "statement": {
+      "approach": "target",
+      "task": "histories-split",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "tickets.Projection#linearizable(I)I",
+      "revisions": [
+        "split"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "histories-split",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "tickets.Projection#linearizable(I)I",
+        "file": "claims/histories.json",
+        "sha256": "915a6510d99489bc88162e7f5a9aac5694f76fbdbfcc6ea5aeb0a64f7494587c",
+        "property": "histories",
+        "claimKind": "property",
+        "statement": "Every completed two-call history refines consecutive ticket issuance in an order consistent with invocation intervals, and leaves two issued tickets.",
+        "assume": "code >= 0 && code < 3",
+        "assert": "result == 1",
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 16,
+          "maxArrayLength": 4
+        },
+        "explicitBounds": {
+          "unwind": 16,
+          "maxArrayLength": 4
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver",
+            "kind": "driver",
+            "path": "driver/tickets/TicketCases.java",
+            "sha256": "9c6853b924ab2c89e94eedbae04e643e946a8a961b3410dbd3c4195f6a6aca98"
+          },
+          {
+            "id": "finite-oracle",
+            "kind": "oracle",
+            "path": "controls/oracle.py",
+            "sha256": "a7e6d3146c16eb149c745f38bbbdd8822bb96b00bea9a4ace53f16d387c8eb4c"
+          }
+        ],
+        "key": "f481d41da07c8b89"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 4
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "4063e60a082c672a27e5025f8b8f1c8cee759adb0a442e0dd9b1a98422c7a41e",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "histories-split",
+      "sidecar": "45dd5d73eba21f8930ab46062e181945c95015c9a834b8a1f47234f84c7e707c",
+      "revisions": {
+        "split": "4344cd7af504cf9d128dd60c0e4f2814ed42f3d7"
+      },
+      "dependencies": [
+        {
+          "revision": "split",
+          "position": 0,
+          "role": "driver",
+          "sha256": "2570001ca2894daa015dad375ebbdf5f1079c3349016c5d1237fc8f66bf45a01"
+        },
+        {
+          "revision": "split",
+          "position": 1,
+          "role": "original",
+          "sha256": "8eee029ebf72ef362a3f195145d1d546803da7c481ce8661117c43cd0624b8ab"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/histories.json": "915a6510d99489bc88162e7f5a9aac5694f76fbdbfcc6ea5aeb0a64f7494587c",
+        "controls/oracle.py": "a7e6d3146c16eb149c745f38bbbdd8822bb96b00bea9a4ace53f16d387c8eb4c",
+        "driver/tickets/TicketCases.java": "9c6853b924ab2c89e94eedbae04e643e946a8a961b3410dbd3c4195f6a6aca98"
+      },
+      "claimKey": "f481d41da07c8b89"
+    }
+  },
+  "attempt": {
+    "id": "20261120T185209Z-c093e295",
+    "claim": "577f0ca061cc4e94",
+    "startedAt": "2026-11-20T18:52:09+00:00",
+    "seconds": 0.1,
+    "engine": "native",
+    "options": [
+      "prove",
+      "tickets.Projection#linearizable(int)",
+      "--classes",
+      "prepare/split/split.jar",
+      "--assume",
+      "code >= 0 && code < 3",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--max-array-length",
+      "4",
+      "--timeout",
+      "90",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "jvmcontract": "bd14a0af15e362235ae53157abd1f7fe7fe0113af560eccaf160ce9483efa5af"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "d544530967a356548f0f50fc84b9b14417f3d0b51d64a2b7a06e3f780252443e",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261120-183453-342-check-two-real-ticket-calls-on-one-c",
+      "sourceCommit": "85f81cad26a2d7e474f0d38e2376fcda431d79f4",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-183453-342-check-two-real-ticket-calls-on-one-c"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control split on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-split-jdk21.stdout",
+        "stderr": "records/control-split-jdk21.stderr"
+      },
+      {
+        "name": "verifier split on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.021,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 16,
+      "maxArrayLength": 4,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "577f0ca061cc4e94",
+    "attempt": "20261120T185209Z-c093e295",
+    "status": "unresolved",
+    "vacuous": false,
+    "expectation": "no",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result == 1",
+        "status": "unresolved",
+        "evidence": {
+          "harness": null,
+          "assert": "result == 1",
+          "assume": "code >= 0 && code < 3",
+          "verdict": "unverifiable",
+          "domain": "code: int",
+          "proof": null,
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.CyclicBarrier.<init>(I)V@jdk-21.0.13 (java.util.concurrent.CyclicBarrier.<init>(int) at tickets.Projection.history:14). With --gaps assume it assumes instead that java.util.concurrent.CyclicBarrier.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "vacuous": null,
+          "counterexample": null,
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.005,
+            "properties": 1,
+            "unwind": 16,
+            "maxArrayLength": 4,
+            "stage": null,
+            "deadlineSeconds": 90.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 90.0,
+                "seconds": 0.004,
+                "ended": "no-verdict",
+                "ending": "no-verdict",
+                "phases": {
+                  "loading": 0.0,
+                  "lowering": 0.0,
+                  "symbolic": 0.004,
+                  "encoding": 0.0,
+                  "solving": 0.0,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 124,
+                  "clauses": 305
+                }
+              }
+            ],
+            "native": {
+              "paths": 3,
+              "merges": 0,
+              "solverCalls": 2,
+              "solvingSeconds": 3.2039e-05,
+              "gatesEvaluated": 92,
+              "evaluatingSeconds": 3.397e-06,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 124,
+              "clauses": 305,
+              "seconds": 0.003952196,
+              "loadingSeconds": 7.7585e-05,
+              "decodingSeconds": 6.2667e-05,
+              "encodingSeconds": 4.4914e-05,
+              "witnessSeconds": 0.0
+            },
+            "gapMode": "strict",
+            "gaps": [
+              {
+                "id": "jdk-constructor:java.util.concurrent.CyclicBarrier.<init>(I)V@jdk-21.0.13",
+                "kind": "jdk-constructor",
+                "call": "java.util.concurrent.CyclicBarrier.<init>(int)",
+                "sites": [
+                  "tickets.Projection.history:14"
+                ],
+                "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                "treatment": "refused"
+              }
+            ]
+          },
+          "replay": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "code",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "sharedArrays": false,
+              "text": "code: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "code >= 0 && code < 3",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result == 1",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 16,
+              "maxArrayLength": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:2dc4d7113d4e4efa6fa50cae8cfa02ecaf1c949b48b476f0a13a6833421c4fb3",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "⚠ Unverifiable",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 19,
+      "code": "\"split\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [],
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.CyclicBarrier.<init>(I)V@jdk-21.0.13 (java.util.concurrent.CyclicBarrier.<init>(int) at tickets.Projection.history:14). With --gaps assume it assumes instead that java.util.concurrent.CyclicBarrier.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+    "domain": "code: int",
+    "replay": null,
+    "property": {
+      "assert": "result == 1",
+      "assume": "code >= 0 && code < 3"
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "b77140fe4e7f4d07554e1036ae6004aeb3d2768e3ca10bbbfc785208a0a2383b",
+        "bytes": 19347
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "0aa4b9a4ad88647657f611d5cae6291898621caf342cf3f6ba1b53f7a4b9fa86",
+        "bytes": 561
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "1ac91ee3cae28e384a6d09213cddc700e7603d049d21a8f4e2c2d0d19b1b7ebb",
+        "bytes": 1957
+      },
+      {
+        "path": "records/control-split-jdk21.stdout",
+        "sha256": "982c79e0687144fbbee9b1a8b477c566edfa1b634fb613d72b3d7a15c724f94c",
+        "bytes": 219
+      },
+      {
+        "path": "records/control-split-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "7cd19c9fa1a5415218f5b02570a436c94e299075cc2bc7c59a5e946d8f16ebee",
+        "bytes": 3652
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "f182123a2108d8b51b72fe772b548e49891f74b796c5de129b5a64fb0fb6dced",
+        "bytes": 6257
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "e928c3671792c870171e99ff064fd61177c21f69c488ec45ff81f3012052e26b",
+        "bytes": 15595
+      }
+    ]
+  }
+}

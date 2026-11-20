@@ -1,0 +1,198 @@
+{
+  "plan": {
+    "example": "336",
+    "task": "first-8-release",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.common.primitives.Ints#indexOf([II)I",
+    "revisions": [
+      "release"
+    ],
+    "claim": {
+      "task": "first-8-release",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.primitives.Ints#indexOf([II)I",
+      "file": "claims/first-8.json",
+      "sha256": "980fb27afc7a8d87d1cc43302e955fcdae99ad112cb98bc11972fe62a972b8bc",
+      "property": "first-8",
+      "claimKind": "property",
+      "statement": "The result identifies the first matching cell or proves none exists.",
+      "assume": "true",
+      "assert": "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 10,
+        "maxArrayLength": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/search/SearchCases.java",
+          "sha256": "ca3f33f95280b2ad59e0dbc7e20a5d4be90d491acfa4f1b4944965d0ae041aaf"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "115202974bd45259790b9f9795ef772fc6802ea283324b5f3abc2542b843f42c"
+        }
+      ],
+      "key": "772a32e954534704"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "release",
+        "route": "published-artifact",
+        "repository": "https://github.com/google/guava",
+        "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+        "published": [
+          {
+            "coordinates": "com.google.guava:guava:33.4.8-jre",
+            "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+          },
+          {
+            "coordinates": "com.google.errorprone:error_prone_annotations:2.36.0",
+            "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5"
+          },
+          {
+            "coordinates": "org.jspecify:jspecify:1.0.0",
+            "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
+          }
+        ],
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "python3",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/first-8-release"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261120-183452-336-check-first-match-and-preservation-a/examples/336-guava-first-array-match",
+    "network": true
+  },
+  "inputs": {
+    "example": "336",
+    "task": "first-8-release",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.common.primitives.Ints#indexOf([II)I",
+    "revisions": [
+      "release"
+    ],
+    "claim": {
+      "task": "first-8-release",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "com.google.common.primitives.Ints#indexOf([II)I",
+      "file": "claims/first-8.json",
+      "sha256": "980fb27afc7a8d87d1cc43302e955fcdae99ad112cb98bc11972fe62a972b8bc",
+      "property": "first-8",
+      "claimKind": "property",
+      "statement": "The result identifies the first matching cell or proves none exists.",
+      "assume": "true",
+      "assert": "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 8
+      },
+      "explicitBounds": {
+        "unwind": 10,
+        "maxArrayLength": 8
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/search/SearchCases.java",
+          "sha256": "ca3f33f95280b2ad59e0dbc7e20a5d4be90d491acfa4f1b4944965d0ae041aaf"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/oracle.py",
+          "sha256": "115202974bd45259790b9f9795ef772fc6802ea283324b5f3abc2542b843f42c"
+        }
+      ],
+      "key": "772a32e954534704"
+    },
+    "artifacts": [
+      {
+        "revision": "release",
+        "route": "published-artifact",
+        "repository": "https://github.com/google/guava",
+        "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+        "published": [
+          {
+            "coordinates": "com.google.guava:guava:33.4.8-jre",
+            "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+          },
+          {
+            "coordinates": "com.google.errorprone:error_prone_annotations:2.36.0",
+            "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5"
+          },
+          {
+            "coordinates": "org.jspecify:jspecify:1.0.0",
+            "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
+          }
+        ],
+        "adapters": [],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": []
+  },
+  "key": "69ea0675ccf6ac0531919642967e4525d3767dbf76bc5540861fe0c6eeef0de2"
+}

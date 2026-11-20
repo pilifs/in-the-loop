@@ -1,0 +1,201 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-184235-310-test-native-counterexamples-on-unmod",
+  "title": "310 test native counterexamples on unmodified startup",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6.4s, peak 200.6 MiB (estimated 2m00s, 2.0 GiB); 5 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-184235-310-test-native-counterexamples-on-unmod.json",
+    "sha256": "d9d98f7e1fabdc3c1386998c298e2a1700bfdc98380a3f29bc43436497008157",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-184235-310-test-native-counterexamples-on-unmod",
+      "title": "310 test native counterexamples on unmodified startup",
+      "description": "For each native counterexample found under observed initialization, construct its concrete input on the original ordered classpath without injecting startup state. Require the original guard, false assertion, identical observed value, class bytes and JDK. Preserve both scope identities.",
+      "kind": "real-world",
+      "capabilities": [
+        "target:history",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "310"
+        ]
+      },
+      "expected": "Each submitted witness is an admitted refutation of the original assertion in a fresh JVM and is linked to its qualifying native source.",
+      "submitted": {
+        "at": "2026-11-20T18:42:35+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "clock-parent on original bytecode",
+          "run": "python3 examples/tools/build.py 310 --original-witness clock-parent --from-task clock-parent-observed",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/310-threeten-complete-hours/records/original-witnesses",
+        "examples/310-threeten-complete-hours/receipts/clock-parent/executions"
+      ]
+    }
+  },
+  "sourceCommit": "85f81cad26a2d7e474f0d38e2376fcda431d79f4",
+  "startedAt": "2026-11-20T18:51:55+00:00",
+  "finishedAt": "2026-11-20T18:52:10+00:00",
+  "wallSeconds": 15.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 701952,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 210358272,
+    "wallSeconds": 6.4,
+    "cpuSeconds": 10.5,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "clock-parent on original bytecode",
+      "run": "python3 examples/tools/build.py 310 --original-witness clock-parent --from-task clock-parent-observed",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 6.4,
+      "cpuSeconds": 10.545,
+      "cpuThrottledSeconds": 1.664,
+      "peakMemoryBytes": 210358272,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-clock-parent-on-original-bytec.log",
+        "lines": 1,
+        "bytes": 192,
+        "sha256": "293034ba6dc31eb22249ee320f714f9c48f60597dd66028a23666455f66c3714",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "clock-parent refuted [{'name': 'startTick', 'type': 'int', 'value': 2}, {'name': 'endTick', 'type': 'int', 'value': 97}] receipts/clock-parent/executions/20261120T185204Z-c674a7e6/replay.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/310-threeten-complete-hours/records/original-witnesses/clock-parent/20261120T185204Z-c674a7e6.json",
+      "change": "added",
+      "bytes": 1854,
+      "sha256": "716336ef35ac9d84a93611168fed65fba1e2cd5bc429e11d9287620bb26542bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent/executions/20261120T185204Z-c674a7e6/attempt.json",
+      "change": "added",
+      "bytes": 8734,
+      "sha256": "29f18263da96263bc5d5a77f49b6d6fd0372526e2f1916e265a6547bde10be27",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent/executions/20261120T185204Z-c674a7e6/candidate.json",
+      "change": "added",
+      "bytes": 269,
+      "sha256": "926dbf7fa4861138c10d83a788f110fe0e00852a6673ba026a978b36494276c3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent/executions/20261120T185204Z-c674a7e6/correspondence.json",
+      "change": "added",
+      "bytes": 1306,
+      "sha256": "f9c9faf75bea6dac3c996b76afd6e98ed5e6ca8cb7c6068db26ac951c64f0a42",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/310-threeten-complete-hours/receipts/clock-parent/executions/20261120T185204Z-c674a7e6/replay.json",
+      "change": "added",
+      "bytes": 1673,
+      "sha256": "5a6a170866fa04e04a70b7eb4d8b87ac25a88a9bd25fed1bbf60d5c338b8d4e0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T18:52:32+00:00",
+    "applied": [
+      "examples/310-threeten-complete-hours/records/original-witnesses/clock-parent/20261120T185204Z-c674a7e6.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent/executions/20261120T185204Z-c674a7e6/attempt.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent/executions/20261120T185204Z-c674a7e6/candidate.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent/executions/20261120T185204Z-c674a7e6/correspondence.json",
+      "examples/310-threeten-complete-hours/receipts/clock-parent/executions/20261120T185204Z-c674a7e6/replay.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff"
+}
