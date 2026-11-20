@@ -1,0 +1,175 @@
+{
+  "status": "established",
+  "entry": "paint.Projection#primary(I)I",
+  "inputs": 8,
+  "differences": 0,
+  "sides": {
+    "nested": {
+      "commit": "fixture:nested",
+      "entry": {
+        "entry": "paint.Projection#primary(I)I",
+        "classSha256": "4331440adb1cd29279a26d56d9fb144af87fe0faf5bbfe1f834736ee4b66329f",
+        "loadedFrom": "adapter-nested.jar",
+        "subject": "paint.Paint#run(I)Lpaint/Outcome;",
+        "subjectClassSha256": "b8abf5a5b111446e6cbebf984481ab710068a097cbf8093817617e4a119deedf"
+      },
+      "classpath": [
+        {
+          "path": "adapter-nested.jar",
+          "sha256": "b32227a05cdc8d1e2034930e35a6daa419526f3c74e741db3703b37a28918a5d",
+          "role": "adapter"
+        },
+        {
+          "path": "nested.jar",
+          "sha256": "cff7a4657f1229e0a2fe978edd1611ef7dbb62318eb6b330e546c831763b6af3",
+          "role": "original"
+        }
+      ],
+      "parameter": "code",
+      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 8)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = paint.Projection.primary(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+      "probeClassSha256": "2176bd88168e3ce9ba5f3c50fa78bb0d0cd72cd8439b804fb2cbf64be8df18e4",
+      "stdoutSha256": "2b0f32ff8cb683e0d42ebec64ad06bf5fcf7b51254660837333b74686296f33c",
+      "arguments": [
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC"
+      ],
+      "interval": [
+        0,
+        7
+      ],
+      "rows": [
+        {
+          "value": 0,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 1,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 2,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 3,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 4,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 5,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 6,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        },
+        {
+          "value": 7,
+          "admitted": true,
+          "satisfies": true,
+          "observations": [
+            1,
+            null
+          ]
+        }
+      ],
+      "seconds": 0.113,
+      "cpuSeconds": 0.1211,
+      "peakRssBytes": 61706240,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "jdkRelease": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "correspondence": [
+    {
+      "revision": "nested",
+      "entry": "paint.Projection#primary(I)I",
+      "adapterSha256": "b32227a05cdc8d1e2034930e35a6daa419526f3c74e741db3703b37a28918a5d",
+      "adapterClassSha256": "4331440adb1cd29279a26d56d9fb144af87fe0faf5bbfe1f834736ee4b66329f",
+      "subject": {
+        "class": "paint.Paint",
+        "method": "run",
+        "descriptor": "(I)Lpaint/Outcome;",
+        "loadedFrom": "nested.jar",
+        "classSha256": "b8abf5a5b111446e6cbebf984481ab710068a097cbf8093817617e4a119deedf",
+        "adapterCalls": [
+          "paint.Paint#run(I)Lpaint/Outcome;",
+          "paint.Tagged#getSuppressed()[Ljava/lang/Throwable;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "The three low mask bits specify failures of left close, right close and the body. Each action throws a fresh Tagged instance of the same runtime class.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 8,
+      "disagreements": 0
+    }
+  ],
+  "prepareSeconds": 2.611,
+  "controlSeconds": 0.1171,
+  "wallSeconds": 3.5255,
+  "task": "primary-nested",
+  "sourceClaim": "bcf36d0d372b158c",
+  "inputsKey": "62a48e36c6b25c237e2fc2722b989a01b0fc6a06060d49de664028b15012658d",
+  "revisions": [
+    "nested"
+  ],
+  "expected": "established",
+  "sourceLocks": {
+    "nested": "57179d6eefaae09799f42c580af966ee94546413f82475fbc3fe616edb02e9f8"
+  }
+}

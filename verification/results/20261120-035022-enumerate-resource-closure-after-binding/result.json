@@ -1,0 +1,256 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-035022-enumerate-resource-closure-after-binding",
+  "title": "Enumerate resource closure after binding the mask argument",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 17.8s, peak 128.3 MiB (estimated 2m00s, 2.0 GiB); 10 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-035022-enumerate-resource-closure-after-binding.json",
+    "sha256": "7ced1625ffd4ff5de14d6e7b83309b4dfc19c1107094b86d2d0081457c1dcab3",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-035022-enumerate-resource-closure-after-binding",
+      "title": "Enumerate resource closure after binding the mask argument",
+      "description": "The frozen boolean outcomes and masks stay unchanged. The adapter now exposes the declared code parameter.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvm:finite-domain",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "322"
+        ],
+        "jobs": [
+          "20261120-032649-exhaustive-jvm-322-resource-close-order"
+        ]
+      },
+      "expected": "Retain the actual bounded checker statement, independent results, measurements and any first diagnostic.",
+      "submitted": {
+        "at": "2026-11-20T03:50:22+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "10m"
+      },
+      "steps": [
+        {
+          "name": "Exercise the frozen claims",
+          "run": "python3 examples/tools/build.py 322 --finite-domain --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/322-ordered-suppressed-exceptions/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "4a1b5ef112df93c81f1d839c7f6dec4fee762e20",
+  "startedAt": "2026-11-20T04:00:23+00:00",
+  "finishedAt": "2026-11-20T04:04:33+00:00",
+  "wallSeconds": 250.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 134512640,
+    "wallSeconds": 17.8,
+    "cpuSeconds": 28.9,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.15
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Exercise the frozen claims",
+      "run": "python3 examples/tools/build.py 322 --finite-domain --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 600.0,
+      "cancelled": false,
+      "wallSeconds": 17.838,
+      "cpuSeconds": 28.862,
+      "cpuThrottledSeconds": 1.151,
+      "peakMemoryBytes": 134512640,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-exercise-the-frozen-claims.log",
+        "lines": 9,
+        "bytes": 390,
+        "sha256": "f7c639a59bd0b0c8a4236f3619448770764e858f823f249e1cac0e07edcfa262",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "322 primary-original established 8 admitted ",
+        "322 primary-nested established 8 admitted ",
+        "322 primary-reversed refuted 8 admitted ",
+        "322 suppressed-original established 8 admitted ",
+        "322 suppressed-nested established 8 admitted ",
+        "322 suppressed-reversed refuted 8 admitted ",
+        "322 close-original established 8 admitted ",
+        "322 close-nested established 8 admitted ",
+        "322 close-reversed refuted 8 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/records/finite-proofs/20261120T040416Z-7d1df947/batch.json",
+      "change": "added",
+      "bytes": 5315,
+      "sha256": "d750a6975b6389098d2cf3f1442219b6dd5794c3f8c8c4124dd981f488c22d20",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/records/finite-proofs/20261120T040416Z-7d1df947/close-nested.json",
+      "change": "added",
+      "bytes": 5387,
+      "sha256": "b61c69d75b61a2ba03ab620d3e9b947b78bdaab284308b907dedf9d3c3f3e2ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/records/finite-proofs/20261120T040416Z-7d1df947/close-original.json",
+      "change": "added",
+      "bytes": 5408,
+      "sha256": "1a63f874f9b9fcb61ecf97c07ab1876e470559eb7f826080d2fafca09249307c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/records/finite-proofs/20261120T040416Z-7d1df947/close-reversed.json",
+      "change": "added",
+      "bytes": 7401,
+      "sha256": "9165c07887873c4b9cc494198b258bafeb70f1c23f7c021a5326ed9e05e08216",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/records/finite-proofs/20261120T040416Z-7d1df947/primary-nested.json",
+      "change": "added",
+      "bytes": 5397,
+      "sha256": "db94b62e3aa726f2394adfdd905e4675e849bd80313c5da523179566e0f74584",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/records/finite-proofs/20261120T040416Z-7d1df947/primary-original.json",
+      "change": "added",
+      "bytes": 5418,
+      "sha256": "b4c393be0c162e103d7b2be764d334b3f6b471ca93677b80c483ba85db0f668d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/records/finite-proofs/20261120T040416Z-7d1df947/primary-reversed.json",
+      "change": "added",
+      "bytes": 7434,
+      "sha256": "0d847cdf2a62d15a0eaaee9f8b25a45f1ae7f1b44848dc95c2c4b938595a851c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/records/finite-proofs/20261120T040416Z-7d1df947/suppressed-nested.json",
+      "change": "added",
+      "bytes": 5413,
+      "sha256": "867e73aeb3a8b49b21963a1f8f2568a48ac7edd53f3578b04874c03218b0925e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/records/finite-proofs/20261120T040416Z-7d1df947/suppressed-original.json",
+      "change": "added",
+      "bytes": 5433,
+      "sha256": "31d9f106ec589738f86d761e09b983d9af251d775365cc011d761bd088c37dc8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/322-ordered-suppressed-exceptions/records/finite-proofs/20261120T040416Z-7d1df947/suppressed-reversed.json",
+      "change": "added",
+      "bytes": 7459,
+      "sha256": "425da8b1c338a183c09407b75681344be3b12cd2aa5132e5710931f689225d7d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T04:04:36+00:00",
+    "applied": [
+      "examples/322-ordered-suppressed-exceptions/records/finite-proofs/20261120T040416Z-7d1df947/batch.json",
+      "examples/322-ordered-suppressed-exceptions/records/finite-proofs/20261120T040416Z-7d1df947/close-nested.json",
+      "examples/322-ordered-suppressed-exceptions/records/finite-proofs/20261120T040416Z-7d1df947/close-original.json",
+      "examples/322-ordered-suppressed-exceptions/records/finite-proofs/20261120T040416Z-7d1df947/close-reversed.json",
+      "examples/322-ordered-suppressed-exceptions/records/finite-proofs/20261120T040416Z-7d1df947/primary-nested.json",
+      "examples/322-ordered-suppressed-exceptions/records/finite-proofs/20261120T040416Z-7d1df947/primary-original.json",
+      "examples/322-ordered-suppressed-exceptions/records/finite-proofs/20261120T040416Z-7d1df947/primary-reversed.json",
+      "examples/322-ordered-suppressed-exceptions/records/finite-proofs/20261120T040416Z-7d1df947/suppressed-nested.json",
+      "examples/322-ordered-suppressed-exceptions/records/finite-proofs/20261120T040416Z-7d1df947/suppressed-original.json",
+      "examples/322-ordered-suppressed-exceptions/records/finite-proofs/20261120T040416Z-7d1df947/suppressed-reversed.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "f5fabd2a442fc816be6daceb77f2ea87b60d0e0c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f5fabd2a442fc816be6daceb77f2ea87b60d0e0c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

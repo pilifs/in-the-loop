@@ -1,0 +1,172 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "paint.Projection#primary(int)",
+    "domain": "code: int",
+    "assume": "code >= 0 && code < 8",
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-void-method:java.lang.Throwable.addSuppressed(Ljava/lang/Throwable;)V@jdk-21.0.13 (java.lang.Throwable.addSuppressed(java.lang.Throwable) at paint.Paint.run:7). With --gaps assume it assumes instead that java.lang.Throwable.addSuppressed(java.lang.Throwable) returns and does nothing: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "paint.Projection#primary(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-void-method:java.lang.Throwable.addSuppressed(Ljava/lang/Throwable;)V@jdk-21.0.13 (java.lang.Throwable.addSuppressed(java.lang.Throwable) at paint.Paint.run:7). With --gaps assume it assumes instead that java.lang.Throwable.addSuppressed(java.lang.Throwable) returns and does nothing: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+        "uri": null,
+        "line": 5
+      }
+    ],
+    "output": "✗ paint.Projection#primary(int) cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-void-method:java.lang.Throwable.addSuppressed(Ljava/lang/Throwable;)V@jdk-21.0.13 (java.lang.Throwable.addSuppressed(java.lang.Throwable) at paint.Paint.run:7). With --gaps assume it assumes instead that java.lang.Throwable.addSuppressed(java.lang.Throwable) returns and does nothing: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (Bitwuzla)",
+      "seconds": 0.012124684,
+      "properties": 1,
+      "unwind": 16,
+      "max_array_length": 10,
+      "stage": null,
+      "native": {
+        "paths": 8,
+        "merges": 0,
+        "solver_calls": 9,
+        "solving_seconds": 0.000012254,
+        "gates_evaluated": 12,
+        "evaluating_seconds": 5.85e-6,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "word_operations": 5,
+        "finite_queries": {
+          "diagrams": 9,
+          "bitwuzla": 0
+        },
+        "variables": 9,
+        "clauses": 1,
+        "seconds": 0.01107052,
+        "loading_seconds": 0.000567141,
+        "decoding_seconds": 0.000100057,
+        "encoding_seconds": 0.00013126,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "jdk-void-method:java.lang.Throwable.addSuppressed(Ljava/lang/Throwable;)V@jdk-21.0.13",
+          "kind": "jdk-void-method",
+          "call": "java.lang.Throwable.addSuppressed(java.lang.Throwable)",
+          "sites": [
+            "paint.Paint.run:7"
+          ],
+          "approximation": "returns and does nothing: it throws nothing and changes neither its receiver nor its arguments",
+          "treatment": "refused"
+        }
+      ],
+      "deadline_seconds": 30.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 30.0,
+          "seconds": 0.011,
+          "ended": "no-verdict",
+          "ending": "no-verdict",
+          "phases": {
+            "loading": 0.001,
+            "lowering": 0.0,
+            "symbolic": 0.01,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 9,
+            "clauses": 1
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.052,
+        "setup": 0.002,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.011,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.039
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code < 8",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 16,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:9cdc1023dfdd0a61b652102a3720ee43ae8bdb967fd75786cf99517d73dd276a",
+        "classes": 38,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (Bitwuzla)",
+        "solver": "Bitwuzla 0.8.2 (the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms; sat-solver cadical, produce-models, otherwise defaults) with finite word diagrams",
+        "fallback": null,
+        "sat": {
+          "solver": "Bitwuzla",
+          "version": "0.8.2",
+          "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+          "configuration": [
+            "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+            "sat-solver cadical",
+            "produce-models",
+            "otherwise Bitwuzla's default options",
+            "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+            "the run's deadline through Bitwuzla's termination callback",
+            "exact reduced word diagrams up to 18 input bits and 750000 nodes, then the full Bitwuzla formula"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

@@ -1,0 +1,215 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-035732-archive-the-resolved-commons-text-releas",
+  "title": "Archive the resolved Commons Text release score proof",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.5s, peak 93.7 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-035732-archive-the-resolved-commons-text-releas.json",
+    "sha256": "ef8d11830dbbbc1bec11066dfe89b627f7fb164cca44dd984c108805cf36fda8",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-035732-archive-the-resolved-commons-text-releas",
+      "title": "Archive the resolved Commons Text release score proof",
+      "description": "Run the original 225-input LCS claim again at its original semantics and preserve the complete structured checker output, released byte identity, route adapters and JVM controls. The latest transfer proved the score after matrix allocation and small-integer boxing.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "native:arrays"
+      ],
+      "links": {
+        "examples": [
+          "308",
+          "317"
+        ]
+      },
+      "expected": "Retain the actual bounded checker statement, independent results, measurements and any first diagnostic.",
+      "submitted": {
+        "at": "2026-11-20T03:57:32+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "10m"
+      },
+      "steps": [
+        {
+          "name": "Exercise the frozen claims",
+          "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/308-commons-text-longest-common-subsequence/pilot.py --java-home \"$HOME/.sdkman/candidates/java/21.0.13.0+9-tem\" --fetch-locked --native \"$JVMCONTRACT\" --native-record examples/308-commons-text-longest-common-subsequence/records/release-score-native.json > examples/308-commons-text-longest-common-subsequence/records/release-score-transfer.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/308-commons-text-longest-common-subsequence/records/release-score-native.json",
+        "examples/308-commons-text-longest-common-subsequence/records/release-score-transfer.json"
+      ]
+    }
+  },
+  "sourceCommit": "4a1b5ef112df93c81f1d839c7f6dec4fee762e20",
+  "startedAt": "2026-11-20T04:00:23+00:00",
+  "finishedAt": "2026-11-20T04:04:21+00:00",
+  "wallSeconds": 238.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 98263040,
+    "wallSeconds": 5.5,
+    "cpuSeconds": 8.2,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 228.301,
+      "cpuSeconds": 228.462,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2108731392,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "2baee3b4c24806db61532f9b4c290fa07ceb923972b1b5709381be1d2dd1be91",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261120-035732-archive-the-resolved-commons-text-releas/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 48s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Exercise the frozen claims",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/308-commons-text-longest-common-subsequence/pilot.py --java-home \"$HOME/.sdkman/candidates/java/21.0.13.0+9-tem\" --fetch-locked --native \"$JVMCONTRACT\" --native-record examples/308-commons-text-longest-common-subsequence/records/release-score-native.json > examples/308-commons-text-longest-common-subsequence/records/release-score-transfer.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 600.0,
+      "cancelled": false,
+      "wallSeconds": 5.549,
+      "cpuSeconds": 8.185,
+      "cpuThrottledSeconds": 0.155,
+      "peakMemoryBytes": 98263040,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-exercise-the-frozen-claims.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/308-commons-text-longest-common-subsequence/records/release-score-native.json",
+      "change": "added",
+      "bytes": 6718,
+      "sha256": "2ff2843cb71a9b28dab7c4906414a1548353d4b588a1b67445b5c48d08035438",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/308-commons-text-longest-common-subsequence/records/release-score-transfer.json",
+      "change": "added",
+      "bytes": 2083,
+      "sha256": "a533ab826b7d392c965bb1e3e4f3e8e277a487878563dbcd0640ff07bd1e171e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T04:04:37+00:00",
+    "applied": [
+      "examples/308-commons-text-longest-common-subsequence/records/release-score-native.json",
+      "examples/308-commons-text-longest-common-subsequence/records/release-score-transfer.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "f5fabd2a442fc816be6daceb77f2ea87b60d0e0c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f5fabd2a442fc816be6daceb77f2ea87b60d0e0c/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff"
+}

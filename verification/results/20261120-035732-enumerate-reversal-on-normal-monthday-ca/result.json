@@ -1,0 +1,190 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-035732-enumerate-reversal-on-normal-monthday-ca",
+  "title": "Enumerate reversal on normal MonthDay calls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 16.2s, peak 242.2 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-035732-enumerate-reversal-on-normal-monthday-ca.json",
+    "sha256": "40a537ed8d04abec6ef3b57cd7a094f2610e0705a153d9a6bcf22bf830f85f3c",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-035732-enumerate-reversal-on-normal-monthday-ca",
+      "title": "Enumerate reversal on normal MonthDay calls",
+      "description": "Evaluate both actual directional calls in the guard and require sign reversal only on the inputs where both return. Preserve the earlier material-implication claims and independent exceptional observations.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvm:finite-domain",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "327"
+        ]
+      },
+      "expected": "Retain the actual bounded checker statement, independent results, measurements and any first diagnostic.",
+      "submitted": {
+        "at": "2026-11-20T03:57:32+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "10m"
+      },
+      "steps": [
+        {
+          "name": "Exercise the frozen claims",
+          "run": "python3 examples/tools/build.py 327 --finite-domain --tasks reversal-on-returns-parent,reversal-on-returns-fix --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/327-joda-monthday-distance/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "4a1b5ef112df93c81f1d839c7f6dec4fee762e20",
+  "startedAt": "2026-11-20T04:00:28+00:00",
+  "finishedAt": "2026-11-20T04:04:32+00:00",
+  "wallSeconds": 244.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 253992960,
+    "wallSeconds": 16.2,
+    "cpuSeconds": 26.7,
+    "memoryOfEstimate": 0.12,
+    "durationOfEstimate": 0.14
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Exercise the frozen claims",
+      "run": "python3 examples/tools/build.py 327 --finite-domain --tasks reversal-on-returns-parent,reversal-on-returns-fix --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 600.0,
+      "cancelled": false,
+      "wallSeconds": 16.242,
+      "cpuSeconds": 26.709,
+      "cpuThrottledSeconds": 3.039,
+      "peakMemoryBytes": 253992960,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-exercise-the-frozen-claims.log",
+        "lines": 2,
+        "bytes": 109,
+        "sha256": "c14381aa3516ccb09df9dcee71e0e222bdbd9a7c275052e6082cbdc81242a34c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "327 reversal-on-returns-parent established 16 admitted ",
+        "327 reversal-on-returns-fix established 25 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/327-joda-monthday-distance/records/finite-proofs/20261120T040416Z-74246d38/batch.json",
+      "change": "added",
+      "bytes": 1575,
+      "sha256": "ad43ea5baefb45bd7ac606dbde0f7f466894074c91defd2666809f7c1d4d12ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/records/finite-proofs/20261120T040416Z-74246d38/reversal-on-returns-fix.json",
+      "change": "added",
+      "bytes": 9145,
+      "sha256": "d83e0062de955f8bc9657ad25a3230fcfe1753e7acf7d8bc851c163e946504e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/327-joda-monthday-distance/records/finite-proofs/20261120T040416Z-74246d38/reversal-on-returns-parent.json",
+      "change": "added",
+      "bytes": 8263,
+      "sha256": "c1d40cae3400380ef3d13c5e3a3ea3ecd4698960ed7ffc7efb1ba6208a52a1ae",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T04:04:37+00:00",
+    "applied": [
+      "examples/327-joda-monthday-distance/records/finite-proofs/20261120T040416Z-74246d38/batch.json",
+      "examples/327-joda-monthday-distance/records/finite-proofs/20261120T040416Z-74246d38/reversal-on-returns-fix.json",
+      "examples/327-joda-monthday-distance/records/finite-proofs/20261120T040416Z-74246d38/reversal-on-returns-parent.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "f5fabd2a442fc816be6daceb77f2ea87b60d0e0c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f5fabd2a442fc816be6daceb77f2ea87b60d0e0c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}
