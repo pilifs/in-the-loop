@@ -82,7 +82,55 @@ fn names_utf8(units: &[u16]) -> bool {
     UTF8_NAMES.iter().any(|name| name.to_ascii_lowercase().encode_utf16().eq(lower.iter().copied()))
 }
 
+/// A slice of a well-formed UTF-8 stream can start inside one character and
+/// end inside another. OpenJDK replaces each stray continuation at the front
+/// and the one incomplete scalar at the end. Interior malformed sequences
+/// outside this language retain the original unsupported-operation diagnostic.
+pub fn utf8_slice_units(bytes: &[u8]) -> Option<Vec<u16>> {
+    let leading = bytes.iter().take_while(|&&b| (0x80..0xc0).contains(&b)).count();
+    let mut units = vec![0xfffd; leading];
+    let tail = &bytes[leading..];
+    match std::str::from_utf8(tail) {
+        Ok(text) => units.extend(text.encode_utf16()),
+        Err(error) if error.error_len().is_none() => {
+            units.extend(std::str::from_utf8(&tail[..error.valid_up_to()]).ok()?.encode_utf16());
+            units.push(0xfffd);
+        }
+        Err(_) => return None,
+    }
+    Some(units)
+}
+
 impl Engine<'_> {
+    /// Constant-fold a known byte slice and exact standard charset. All bounds,
+    /// pre-existing heap reads and freshness checks precede the content update.
+    pub(super) fn string_from_utf8(&mut self, path: &mut Path, object: usize, args: &[Val]) -> Option<Step> {
+        let (source, range, charset) = match args {
+            [Val::R(Some(a)), Val::R(Some(c))] => (*a, None, *c),
+            [Val::R(Some(a)), Val::I(off), Val::I(len), Val::R(Some(c))] => (*a, Some((off, len)), *c),
+            _ => return None,
+        };
+        if path.literals.get(&Literal::Charset("UTF_8")) != Some(&charset) { return None; }
+        let array = path.objects[source].as_array().filter(|a| a.element == Type::Byte)?;
+        let length = usize::try_from(self.b.constant_value(&array.length)?).ok()?;
+        let (start, size) = match range {
+            None => (0, length),
+            Some((off, n)) => (usize::try_from(self.b.constant_value(off)?).ok()?, usize::try_from(self.b.constant_value(n)?).ok()?),
+        };
+        let end = start.checked_add(size)?;
+        if end > length { return None; }
+        let bytes: Vec<u8> = array.cells.get(start..end)?.iter().map(|b| self.b.constant_value(b).map(|n| n as u8)).collect::<Option<_>>()?;
+        let units = utf8_slice_units(&bytes)?;
+        if size > 0 && self.there_before(path, source) {
+            if let Err(stop) = self.reads(path, || "String reads a pre-existing UTF-8 byte slice".into()) { return Some(Err(stop)); }
+        }
+        if let Err(stop) = self.keeps(path, Some(object), "initializes a pre-existing String") { return Some(Err(stop)); }
+        let length = self.b.constant(units.len() as i64, 32);
+        let cells = units.into_iter().map(|c| self.b.constant(i64::from(c), 16)).collect();
+        path.objects[object].array = Some(Array { element: Type::Char, length, cells, refs: Vec::new() });
+        self.advance(path);
+        Some(Ok(None))
+    }
     /// `String.getBytes(Charset)` and `String.getBytes(String)` on a String of content `s`: see the module's notes.
     /// `None` where the call stays the JDK's.
     pub(super) fn string_bytes(&mut self, path: &mut Path, s: &Array, descriptor: &str, args: &[Val]) -> Option<Step> {

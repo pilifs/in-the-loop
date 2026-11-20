@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-215315-345-measure-full-and-io-only-native-byte",
+  "title": "345 measure full and IO-only native byte preview",
+  "description": "Compile the unchanged PageImporter and Projection for both strategies. Native-check bytes at the complete 96-input guard after each independent IO, CSV, unused-class and joint upgrade. Restrict the byte-preview client to IO alone, verify cache identity and cross-check every result against a fresh native re-execution. Measure cold preparation, native search, fresh original JVM witness, end-to-end wall and process RSS.",
+  "kind": "real-world",
+  "capabilities": [
+    "proof:reuse",
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "345"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T21:53:15+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "4m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Compare six updates on both native classpaths",
+      "run": "python3 examples/345-paged-importer-upgrades/controls/native_preview.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/345-paged-importer-upgrades/records/native-preview"
+  ]
+}

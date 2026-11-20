@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "four-byte-units",
+  "statement": "For each of the eight partitions of the four UTF-8 bytes of U+1F600, return exactly UTF-16 D83D DE00.",
+  "assume": "code >= 4 && code < 12",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 160,
+    "maxArrayLength": 48
+  },
+  "assert": "result == 1"
+}

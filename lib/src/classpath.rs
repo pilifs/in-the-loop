@@ -806,11 +806,17 @@ impl ClassPath {
         Some((class, method))
     }
 
+    pub(crate) fn surrogate_arithmetic(owner: &str, name: &str, descriptor: &str) -> bool {
+        owner == "java/lang/Character" && matches!((name, descriptor),
+            ("isSurrogate", "(C)Z") | ("isSupplementaryCodePoint", "(I)Z")
+            | ("highSurrogate" | "lowSurrogate", "(I)C"))
+    }
+
     /// Numeric code executed from the selected JDK image. Factories follow their actual
     /// allocation and cache branches. The hypot implementation includes the FdLibm helpers
     /// the selected image calls. An additional helper can produce a named refusal.
     pub(crate) fn numeric_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
-        if !matches!((owner, name, descriptor),
+        if !Self::surrogate_arithmetic(owner, name, descriptor) && !matches!((owner, name, descriptor),
             ("java/lang/Math" | "java/lang/StrictMath", "hypot", "(DD)D")
             | ("java/lang/Byte" | "java/lang/Short" | "java/lang/Integer" | "java/lang/Long" | "java/lang/Float" | "java/lang/Double",
                "doubleValue", "()D")

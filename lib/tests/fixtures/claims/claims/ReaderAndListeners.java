@@ -20,6 +20,16 @@ public final class ReaderAndListeners {
     }
 
     public static boolean chars(boolean shifted) throws IOException {
+        int cp = shifted ? 0x1F600 : 0x10FFFF;
+        byte[] emoji = {(byte) 0xf0, (byte) 0x9f, (byte) 0x98, (byte) 0x80};
+        var utf8 = java.nio.charset.StandardCharsets.UTF_8;
+        if (!new String(emoji, utf8).equals("\uD83D\uDE00")
+                || !new String(emoji, 0, 3, utf8).equals("\uFFFD")
+                || !new String(emoji, 1, 2, utf8).equals("\uFFFD\uFFFD")) return false;
+        if (!Character.isSupplementaryCodePoint(cp) || Character.isSupplementaryCodePoint(0xFEFF)
+                || !Character.isSurrogate(Character.highSurrogate(cp)) || !Character.isSurrogate(Character.lowSurrogate(cp))
+                || Character.highSurrogate(cp) != (shifted ? 0xD83D : 0xDBFF)
+                || Character.lowSurrogate(cp) != (shifted ? 0xDE00 : 0xDFFF) || Character.isSurrogate('\uFEFF')) return false;
         String text = "a\ud800b";
         char[] out = {'x', 'x', 'x', 'x'};
         int offset = shifted ? 1 : 0;

@@ -169,8 +169,9 @@ def inventory(folder, example, target, claim_filter=None, revision=None):
     root = folder.parent.parent
     claims, replays = {}, []
     receipts, journals = recorded_evidence(root, folder)
-    from targets import finite_check
+    from targets import finite_check, native_selectors
     finite_batches = finite_check.recorded_batches(folder)
+    selector_roots = native_selectors.evidence_roots(folder)
     jobs, other_jobs = job_history(root, folder, example["id"])
     history = [read_json(path) for path in sorted((folder / "history").glob("*.json"))]
     source = accept.Source(root)
@@ -264,9 +265,8 @@ def inventory(folder, example, target, claim_filter=None, revision=None):
             row["finiteJvm"] = finite_check.evidence(folder, plan, finite_batches)
             finite_answers = {r["status"] for r in row["finiteJvm"]}
             row["overallConclusion"] = disposition(answers | finite_answers)
-        if not isinstance(plan, Unsupported) and (folder / "records/native-selectors").is_dir():
-            from targets import native_selectors
-            if checked := native_selectors.evidence(folder, plan):
+        if selector_roots and not isinstance(plan, Unsupported):
+            if checked := native_selectors.evidence(folder, plan, selector_roots):
                 row["nativeSelectors"] = checked
                 row["overallConclusion"] = disposition(answers | {r["status"] for r in row.get("finiteJvm", [])}
                                                         | {r["status"] for r in checked})

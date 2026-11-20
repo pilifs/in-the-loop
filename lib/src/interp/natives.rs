@@ -512,6 +512,19 @@ pub fn invoke_special_jdk(m: &mut Machine, r: Ref, owner: &str, name: &str, desc
         }
         Native::String(_) => {
             let contents = match descriptor {
+                "([BLjava/nio/charset/Charset;)V" | "([BIILjava/nio/charset/Charset;)V" => {
+                    if m.get_static("java/nio/charset/StandardCharsets", "UTF_8")? != *args.last().unwrap() {
+                        return unsupported("String byte slice requires the exact UTF-8 charset");
+                    }
+                    let Some(array) = args[0].as_ref() else { return unsupported("String byte slice of null"); };
+                    let Object::Array { element: Type::Byte, data } = m.heap.get(array) else { return unsupported("String byte slice needs a byte array"); };
+                    let (offset, count) = if args.len() == 2 { (0, data.len() as i32) } else { (args[1].as_int(), args[2].as_int()) };
+                    let (Ok(first), Ok(n)) = (usize::try_from(offset), usize::try_from(count)) else { return unsupported("invalid String byte range"); };
+                    let Some(slice) = data.get(first..first.saturating_add(n)) else { return unsupported("invalid String byte range"); };
+                    let bytes: Vec<u8> = slice.iter().map(|v| v.as_int() as u8).collect();
+                    let Some(units) = crate::bmc::bytes::utf8_slice_units(&bytes) else { return unsupported("interior malformed UTF-8 sequence"); };
+                    JStr::from_units(units)
+                }
                 "()V" => JStr::new(),
                 "(Ljava/lang/String;)V" => string_arg(m, args[0])?,
                 "([C)V" => {

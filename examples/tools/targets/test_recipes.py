@@ -26,6 +26,8 @@ class RecipesTest(unittest.TestCase):
         raw = {"target": method, "assert": "result == 1", "verdict": "verified", "proof": "all paths",
                "stated": {"gap_mode": "strict", "checker": {"engine": "native"},
                           "bounds": {"unwind": 96, "complete": True}}}
+        raw["stated"].update(domain={"parameters":[]}, observations={"exceptions":"none may be thrown"})
+        raw["search"]={"properties":1,"max_array_length":96}
         self.assertEqual(disposition(raw, method, bounds, 0)[0], "established")
         raw["stated"]["bounds"]["complete"] = False
         self.assertEqual(disposition(raw, method, bounds, 0)[0], "open")

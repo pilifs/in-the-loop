@@ -76,8 +76,9 @@ def bytecode_selectors(data, owner, low, high, entry=None):
     return admitted
 
 
-def compile_methods(home, work, name, bodies, cp):
+def compile_methods(home, work, name, bodies, cp, classes):
     work.mkdir(parents=True, exist_ok=True)
+    classes.mkdir(parents=True, exist_ok=True)
     src = work / (name + ".java")
     src.write_text(
         "package " + PACKAGE + ";\npublic final class " + name + " {\n" + "\n".join(bodies) + "\n}\n"
@@ -91,7 +92,7 @@ def compile_methods(home, work, name, bodies, cp):
             "-cp",
             os.pathsep.join(map(str, cp)),
             "-d",
-            work,
+            classes,
             src,
         ],
         capture_output=True,
@@ -100,19 +101,19 @@ def compile_methods(home, work, name, bodies, cp):
     )
     if run.returncode:
         raise ValueError(run.stderr[-1200:])
-    file = work / PACKAGE / (name + ".class")
+    file = classes / PACKAGE / (name + ".class")
     # The repository ignores .class files. Retain identical bytes under a portable name.
     archived = work / (name + ".jvm-bytecode")
     archived.write_bytes(file.read_bytes())
     return archived
 
 
-def compiled_calls(home, dest, owner, method, low, high, cp):
+def compiled_calls(home, dest, owner, method, low, high, cp, classes):
     bodies = [
         f"public static int {case_name(v)}() throws Throwable {{ return {owner}.{method}({v}); }}"
         for v in range(low, high + 1)
     ]
-    file = compile_methods(home, dest, "Calls", bodies, cp)
+    file = compile_methods(home, dest, "Calls", bodies, cp, classes)
     bytecode_selectors(file.read_bytes(), "Calls", low, high, (owner, method, "(I)I"))
     return file
 
@@ -128,7 +129,10 @@ def admission_methods(guard, parameter, low, high):
 
 
 def admitted_selectors(home, dest, guard, parameter, low, high):
-    file = compile_methods(home, dest, "Admission", admission_methods(guard, parameter, low, high), [])
+    with tempfile.TemporaryDirectory(prefix="native-selector-guard-") as compiled:
+        file = compile_methods(
+            home, dest, "Admission", admission_methods(guard, parameter, low, high), [], Path(compiled)
+        )
     admitted = bytecode_selectors(file.read_bytes(), "Admission", low, high)
     if not admitted:
         raise ValueError("no admitted selector")
@@ -194,6 +198,7 @@ def native_case(exe, jdk, cp, compiled, value, bounds, seconds, work, dest):
 
 def disposition(answer, method, bounds, rc):
     stated = answer.get("stated") or {}
+    search = answer.get("search") or {}
     if (
         answer.get("target") != method
         or answer.get("assume") is not None
@@ -201,6 +206,10 @@ def disposition(answer, method, bounds, rc):
         or stated.get("gap_mode") != "strict"
         or (stated.get("checker") or {}).get("engine") != "native"
         or (stated.get("bounds") or {}).get("unwind") != bounds["unwind"]
+        or (stated.get("domain") or {}).get("parameters") != []
+        or (stated.get("observations") or {}).get("exceptions") != "none may be thrown"
+        or search.get("properties") != 1
+        or search.get("max_array_length") != bounds["maxArrayLength"]
     ):
         return "open", "the native checker returned a different statement"
     if (
@@ -212,6 +221,8 @@ def disposition(answer, method, bounds, rc):
         return "established", None
     elif (
         answer["verdict"] == "violation"
+        and rc == 1
+        and (answer.get("replay") or {}).get("by") == "jvm"
         and answer.get("counterexample")
         and (answer.get("replay") or {}).get("reproduced")
     ):
@@ -220,7 +231,7 @@ def disposition(answer, method, bounds, rc):
         return "open", answer.get("problem") or answer.get("output") or answer["verdict"]
 
 
-def check(plan, prepared, shared, work, out, exe, seconds, first):
+def check(plan, prepared, shared, work, out, exe, seconds, first, max_cases, task_start):
     claim = plan.claim
     recipe = recipes.translate(plan)
     if (
@@ -228,7 +239,7 @@ def check(plan, prepared, shared, work, out, exe, seconds, first):
         or plan.kind != "prove"
         or plan.engine != "native"
         or plan.gaps != "strict"
-        or claim.get("assert", "").strip() != "result == 1"
+        or (claim.get("assert") or "").strip() != "result == 1"
         or claim.get("observations") != ["result", "exception"]
         or any(
             claim.get(k)
@@ -265,7 +276,7 @@ def check(plan, prepared, shared, work, out, exe, seconds, first):
     if any(runtime_jar.read_class(j, PACKAGE + "/Calls") is not None for j in cp):
         raise ValueError("the added call-site class would shadow an existing class")
     [parameter], _ = runtime_jar.parameter_names(data, method, desc)
-    low, high = finite_check.envelope(claim["assume"], parameter)
+    low, high = finite_check.envelope(claim["assume"], parameter, max_cases)
     jdk = runtime._verifier_jdk(plan, prepared)
     home = Path(jdk["home"])
     bindings = workflow_ingest.bound_revisions(plan, prepared)
@@ -287,8 +298,9 @@ def check(plan, prepared, shared, work, out, exe, seconds, first):
         {"entry": recipe.entry, "classpath": cp_info, "bounds": claim["bounds"], "envelope": [low, high]}
     )
     shared_dir = out / "calls" / key[:20]
+    classpath_root = work / "specializations" / key
     if key not in shared["calls"]:
-        file = compiled_calls(home, shared_dir, owner, method, low, high, cp)
+        file = compiled_calls(home, shared_dir, owner, method, low, high, cp, classpath_root)
         shared["calls"][key] = (file, {})
     file, cases = shared["calls"][key]
     order = list(admitted)
@@ -315,6 +327,7 @@ def check(plan, prepared, shared, work, out, exe, seconds, first):
         "assertion": claim["assert"],
         "bounds": claim["bounds"],
         "envelope": [low, high],
+        "maxCases": max_cases,
         "admitted": admitted,
         "JDK": jdk["release"],
         "checker": {**runtime._verifier_build(exe), "sha256": runtime.sha256(exe)},
@@ -329,6 +342,7 @@ def check(plan, prepared, shared, work, out, exe, seconds, first):
         "status": "open",
     }
     start = time.monotonic()
+    replay_seconds = 0.0
     for v in order:
         dest = shared_dir / "cases" / case_name(v)
         reused = v in cases
@@ -336,15 +350,17 @@ def check(plan, prepared, shared, work, out, exe, seconds, first):
             scratch = work / (plan.task + "-" + case_name(v))
             scratch.mkdir()
             cases[v] = native_case(
-                exe, jdk, cp, shared_dir, v, claim["bounds"], seconds, scratch / "checker", dest
+                exe, jdk, cp, classpath_root, v, claim["bounds"], seconds, scratch / "checker", dest
             )
         verified = {**cases[v], "raw": str((dest / "native.json").relative_to(out)), "reusedInBatch": reused}
         record["checked"].append(verified)
         if verified["status"] == "refuted":
             inputs = [{"name": parameter, "type": "int", "value": v}]
+            replay_start = time.monotonic()
             replay = replay_candidate.check(
                 plan, prepared, inputs, work / (plan.task + "-replay"), entry=recipe.entry
             )
+            replay_seconds = time.monotonic() - replay_start
             record["originalJVMReplay"] = replay
             if replay.get("reproduced"):
                 record["status"] = "refuted"
@@ -359,6 +375,14 @@ def check(plan, prepared, shared, work, out, exe, seconds, first):
     else:
         record["status"] = "established"
     record["wallSeconds"] = round(time.monotonic() - start, 5)
+    measured = [r for r in record["checked"] if not r["reusedInBatch"]]
+    record["cost"] = {
+        "preparationAndCorrespondenceSeconds": round(start - task_start, 5),
+        "checkerWallSeconds": round(sum(r["wallSeconds"] for r in measured), 5),
+        "originalWitnessReplaySeconds": round(replay_seconds, 5),
+        "endToEndSeconds": round(time.monotonic() - task_start, 5),
+        "peakNativeRssBytes": max((r["usage"].get("peakRssBytes", 0) for r in measured), default=0),
+    }
     executions.save(task_dir / "result.json", record)
     print(
         f"{plan.task} {record['status']}, {len(record['checked'])}/{len(admitted)} admitted selectors",
@@ -391,7 +415,9 @@ def validate_result(folder, plan, path):
         or doc["bounds"] != plan.claim["bounds"]
     ):
         raise ValueError("different statement")
-    low, high = finite_check.envelope(doc["guard"], doc.get("parameter", "code"))
+    low, high = finite_check.envelope(
+        doc["guard"], doc.get("parameter", "code"), doc.get("maxCases", finite_check.LIMIT)
+    )
     if doc["envelope"] != [low, high]:
         raise ValueError("different proved envelope")
     bytecode_selectors(calls.read_bytes(), "Calls", low, high, runtime_jar.parse_target(entry))
@@ -440,22 +466,50 @@ def validate_result(folder, plan, path):
             raise ValueError("different replay binding or input")
     return {
         "status": status,
-        "record": str(path.relative_to(folder)),
+        "record": os.path.relpath(path, folder),
         "admitted": len(admitted),
         "checked": len(ids),
         "firstBlocker": doc.get("firstBlocker"),
     }
 
 
-def evidence(folder, plan):
+def evidence_roots(folder):
+    from targets.claim_history import evidence_folders
+
+    folder = Path(folder).resolve()
+    return [
+        (directory, manifest)
+        for directory, manifest in evidence_folders(folder.parent.parent, folder)
+        if (directory / "records/native-selectors").is_dir()
+    ]
+
+
+def evidence(folder, plan, roots=None):
+    from targets.claim_history import has_evidence
+
+    folder = Path(folder).resolve()
     accepted = []
-    for path in sorted((folder / "records/native-selectors").glob(f"*/*/tasks/{plan.task}/result.json")):
-        try:
-            accepted.append(validate_result(folder, plan, path))
-        except (OSError, IndexError, ValueError, KeyError, TypeError, struct.error) as exc:
-            accepted.append(
-                {"status": "ineligible", "record": str(path.relative_to(folder)), "firstBlocker": str(exc)}
-            )
+    seen = set()
+    for directory, manifest in evidence_roots(folder) if roots is None else roots:
+        for path in sorted(
+            (directory / "records/native-selectors").glob(f"*/*/tasks/{plan.task}/result.json")
+        ):
+            if not has_evidence(directory, manifest, folder.relative_to(folder.parent.parent), path):
+                continue
+            signature = (path.parents[2].name, runtime.sha256(path))
+            if signature in seen:
+                continue
+            seen.add(signature)
+            try:
+                accepted.append(validate_result(folder, plan, path))
+            except (OSError, IndexError, ValueError, KeyError, TypeError, struct.error) as exc:
+                accepted.append(
+                    {
+                        "status": "ineligible",
+                        "record": os.path.relpath(path, folder),
+                        "firstBlocker": str(exc),
+                    }
+                )
     return accepted
 
 
@@ -467,6 +521,7 @@ def main(argv):
     parser.add_argument("tasks")
     parser.add_argument("--checker-seconds", type=int, default=90)
     parser.add_argument("--first", type=int, help="check this selector first when the full guard admits it")
+    parser.add_argument("--max-cases", type=int, default=finite_check.LIMIT)
     a = parser.parse_args(argv)
     (folder,) = build.EXAMPLES.glob(a.example + "-*")
     example = build.load_example(folder)
@@ -479,6 +534,7 @@ def main(argv):
             or any(not isinstance(p, interfaces.TaskPlan) or len(p.revisions) != 1 for p in plans)
             or len({tuple(p.revisions) for p in plans}) != 1
             or a.checker_seconds <= 0
+            or not 1 <= a.max_cases <= 65534
         ):
             raise ValueError("select distinct tasks on one original revision")
         exe = runtime.jvmcontract()
@@ -493,10 +549,25 @@ def main(argv):
             shared = {"prepared": {}, "calls": {}}
             passed = True
             for plan in plans:
+                task_start = time.monotonic()
                 p = route.prepare_revision(plan, rev, work / "prepare" / plan.task, shared["prepared"])
                 if isinstance(p, interfaces.Unsupported) or p.stage != "artifacts-ready":
                     raise ValueError("preparation failed for " + rev)
-                passed = check(plan, {rev: p}, shared, work, out, exe, a.checker_seconds, a.first) and passed
+                passed = (
+                    check(
+                        plan,
+                        {rev: p},
+                        shared,
+                        work,
+                        out,
+                        exe,
+                        a.checker_seconds,
+                        a.first,
+                        a.max_cases,
+                        task_start,
+                    )
+                    and passed
+                )
             return 0 if passed else 1
     except (OSError, ValueError, KeyError, subprocess.SubprocessError, RuntimeError) as exc:
         parser.exit(1, f"native selector checks unresolved: {exc}\n")

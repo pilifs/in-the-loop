@@ -5232,6 +5232,10 @@ impl<'a> Engine<'a> {
         let unmodelled = gaps::unmodelled_instance_call(self.cp, &member.owner, &member.name, &member.descriptor);
         let contracted = matches!(&unmodelled, JdkCall::Gap(kind) if self.contracts.contains_key(&Gap { kind: *kind, owner: member.owner.clone(), name: member.name.clone(), descriptor: member.descriptor.clone() }));
         if !contracted {
+            if special && member.owner == STRING && member.name == "<init>"
+                && matches!(member.descriptor.as_str(), "([BLjava/nio/charset/Charset;)V" | "([BIILjava/nio/charset/Charset;)V") {
+                if let Some(step) = self.string_from_utf8(path, o, &args) { return step; }
+            }
             if (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str()) ==
                 ("jdk/internal/access/JavaLangAccess", "decodeASCII", "([BI[CII)I")
                 && matches!(path.statics.get(&("sun/nio/cs/UTF_8".into(), "JLA".into())), Some(Val::R(Some(r))) if *r == o) {

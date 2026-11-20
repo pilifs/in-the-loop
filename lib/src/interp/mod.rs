@@ -643,6 +643,11 @@ impl<'a> Machine<'a> {
         if crate::bmc::runtime::property_call(owner, name, descriptor) {
             return self.system_property(name, &args, false);
         }
+        if ClassPath::surrogate_arithmetic(owner, name, descriptor) {
+            if let Some((class, method)) = self.cp.numeric_image_method(owner, name, descriptor) {
+                return self.invoke(&class, &method, args);
+            }
+        }
         if let Some((class, method)) = self.model_method(owner, name, descriptor) {
             self.ensure_initialized(owner)?;
             return self.invoke(&class, &method, args);

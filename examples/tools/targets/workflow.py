@@ -664,10 +664,11 @@ def handoff(folder, example, target, task):
         return Unsupported("handoff", WORKFLOW, f"example {example.get('id')} has no task {task!r}", stage="handoff")
     from targets import workflow_handoff
     packet = workflow_handoff.packet(folder, example, target, task)
-    if (Path(folder) / "records/native-selectors").is_dir():
+    if any(item["id"] == task and item.get("kind") == "prove" for item in target["tasks"]):
         from targets import native_selectors
         planned = plan_task(folder, example, target, task)
-        if isinstance(planned, TaskPlan) and planned.claim and (cases := native_selectors.evidence(Path(folder), planned)):
+        if (isinstance(planned, TaskPlan) and (planned.claim.get("assert") or "").strip() == "result == 1"
+                and (cases := native_selectors.evidence(Path(folder), planned))):
             packet["nativeSelectors"] = cases
     if spec := target.get("scheduleReduction"):
         from targets import schedule_reduction

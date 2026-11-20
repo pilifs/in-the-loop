@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "four-byte-eof",
+  "statement": "Return EOF twice after the last UTF-16 unit under all eight partitions of U+1F600.",
+  "assume": "code >= 4 && code < 12",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 160,
+    "maxArrayLength": 48
+  },
+  "assert": "result == 1"
+}

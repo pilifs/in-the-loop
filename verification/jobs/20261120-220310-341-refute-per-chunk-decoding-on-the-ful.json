@@ -1,0 +1,46 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-220310-341-refute-per-chunk-decoding-on-the-ful",
+  "title": "341 refute per-chunk decoding on the full frozen domain",
+  "description": "Retain the original 5,578-selector guard and the real per-chunk String constructor. Prove the Java selector mapping and check the original distinguishing input where all four bytes of U+1F600 are separated. A native violation must reproduce on the unchanged constructor and UTF-16 observer in a fresh JVM.",
+  "kind": "real-world",
+  "capabilities": [
+    "native:finite-partition",
+    "jvm:unicode",
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "341"
+    ]
+  },
+  "expected": "Every frozen obligation meets its expectation, with a real independent JVM witness for each refutation.",
+  "submitted": {
+    "at": "2026-11-20T22:03:10+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Native counterexample on the original 5,578-case obligation",
+      "run": "python3 examples/tools/build.py 341 --native-selectors units-separate --max-cases 5578 --first 11 --checker-seconds 90",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/341-utf8-chunk-boundaries/records/native-selectors/separate"
+  ]
+}
