@@ -5355,6 +5355,9 @@ impl<'a> Engine<'a> {
         // answers for, the call is the gap it was.
         // Whether a char is a letter, of an ASCII unit ([`strings`]): the JDK's call of any other.
         if strings::models_static(owner, name, descriptor) {
+            if let ("toChars", [Val::I(ch)]) = (name, args.as_slice()) {
+                return self.to_chars(path, ch);
+            }
             return self.is_letter(path, &args);
         }
         if runtime::models_static(owner, name, descriptor) || regex::models_static(owner, name, descriptor) || bytes::models_static(owner, name, descriptor) || locale::models_static(owner, name, descriptor) {

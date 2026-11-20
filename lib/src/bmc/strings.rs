@@ -35,6 +35,7 @@
 //! (`StringIndexOutOfBoundsException` outside the length), `append(String)` (the four units `null` for null),
 //! `append(Object)` (`null` for null, a String's units, an exception's `toString()` where the engine has it,
 //! [`super::throwables`], and the JDK call for any other object),
+//! `appendCodePoint(int)` (one BMP code unit or a surrogate pair, with an invalid int throwing before any write),
 //! `append(char)`, `append(int)` (the int's decimal digits, [`super::bytes`]; each the builder itself returned, its
 //! content at most [`MOST_BUILDER_CONTENT`] units, past which the run ends with no verdict), `indexOf(String)`,
 //! `indexOf(String, int)`, `substring(int, int)` (the literal `""` for an empty range, else a new String), `delete(int, int)` (the
@@ -67,9 +68,9 @@ pub fn models(name: &str, descriptor: &str) -> bool {
     )
 }
 
-/// Whether the engine models the static call here, where its argument lets it: `Character.isLetter(char)`.
+/// Character operations on a symbolic unit or code point.
 pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
-    (owner, name, descriptor) == (CHARACTER, "isLetter", "(C)Z")
+    owner == CHARACTER && matches!((name, descriptor), ("isLetter", "(C)Z") | ("toChars", "(I)[C"))
 }
 
 /// Whether the engine models `StringBuilder.name(descriptor)`, its two constructors included.
@@ -77,7 +78,7 @@ pub fn models_builder(owner: &str, name: &str, descriptor: &str) -> bool {
     owner == BUILDER
         && matches!(
             (name, descriptor),
-            ("<init>", "()V" | "(I)V" | "(Ljava/lang/String;)V") | ("length", "()I") | ("charAt", "(I)C") | ("append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;" | "(Ljava/lang/Object;)Ljava/lang/StringBuilder;" | "(C)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuilder;") | ("indexOf", "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("substring", "(II)Ljava/lang/String;") | ("delete", "(II)Ljava/lang/StringBuilder;") | ("toString", "()Ljava/lang/String;")
+            ("<init>", "()V" | "(I)V" | "(Ljava/lang/String;)V") | ("length", "()I") | ("charAt", "(I)C") | ("append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;" | "(Ljava/lang/Object;)Ljava/lang/StringBuilder;" | "(C)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuilder;") | ("appendCodePoint", "(I)Ljava/lang/StringBuilder;") | ("indexOf", "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("substring", "(II)Ljava/lang/String;") | ("delete", "(II)Ljava/lang/StringBuilder;") | ("toString", "()Ljava/lang/String;")
         )
 }
 
@@ -181,16 +182,17 @@ impl Engine<'_> {
         self.unit_hit(s, ch, from, false)
     }
 
-    /// The first (or, with `last`, the last) index at or after `from` where `s` holds the code point `ch`: its one
-    /// unit, or for a supplementary one its surrogate pair, both inside the String; -1 where there is none, as
-    /// `String.indexOf(int, int)` and `String.lastIndexOf(int)` give it (the latter from 0, every index).
-    fn unit_hit(&mut self, s: &Array, ch: &Bits, from: &Bits, last: bool) -> Bits {
+    /// UTF-16 code units for a valid Java code point. An isolated surrogate in the BMP is one unit.
+    fn code_point_units(&mut self, ch: &Bits) -> (Lit, Array) {
         let bmp_limit = self.b.constant(0x1_0000, 32);
         let limit = self.b.constant(0x11_0000, 32);
         let is_bmp = self.b.ult(ch, &bmp_limit);
         let below_limit = self.b.ult(ch, &limit);
-        let is_supplementary = self.b.and(-is_bmp, below_limit);
         let unit = self.b.trunc(ch, 16);
+        let one = self.b.constant(1, 32);
+        if is_bmp == TRUE {
+            return (below_limit, Array { element: Type::Char, length: one, cells: vec![unit], refs: Vec::new() });
+        }
         let offset = self.b.sub(ch, &bmp_limit);
         let ten = self.b.constant(10, 32);
         let top = self.b.ushr(&offset, &ten);
@@ -202,6 +204,17 @@ impl Engine<'_> {
         let low_base = self.b.constant(0xDC00, 32);
         let low = self.b.add(&bottom, &low_base);
         let low = self.b.trunc(&low, 16);
+        let two = self.b.constant(2, 32);
+        let length = self.b.ite_bits(is_bmp, &one, &two);
+        let first = self.b.ite_bits(is_bmp, &unit, &high);
+        (below_limit, Array { element: Type::Char, length, cells: vec![first, low], refs: Vec::new() })
+    }
+
+    fn unit_hit(&mut self, s: &Array, ch: &Bits, from: &Bits, last: bool) -> Bits {
+        let (valid, encoded) = self.code_point_units(ch);
+        let one_unit = self.b.constant(1, 32);
+        let is_bmp = self.b.eq(&encoded.length, &one_unit);
+        let is_supplementary = self.b.and(valid, -is_bmp);
         let mut result = self.b.constant(-1, 32);
         // Each hit overrides the ones met before it, so the order of the indices is which hit wins.
         let order: Vec<usize> = if last { (0..s.cells.len()).collect() } else { (0..s.cells.len()).rev().collect() };
@@ -209,14 +222,14 @@ impl Engine<'_> {
             let here = self.b.constant(i as i64, 32);
             let inside = self.b.slt(&here, &s.length);
             let after = self.b.sle(from, &here);
-            let one = self.b.eq(&s.cells[i], &unit);
+            let one = self.b.eq(&s.cells[i], &encoded.cells[0]);
             let one = self.b.and(is_bmp, one);
-            let pair = match s.cells.get(i + 1) {
-                Some(next) => {
+            let pair = match s.cells.get(i + 1).zip(encoded.cells.get(1)) {
+                Some((next, low)) => {
                     let second = self.b.constant(i as i64 + 1, 32);
                     let has_second = self.b.slt(&second, &s.length);
-                    let first_is = self.b.eq(&s.cells[i], &high);
-                    let second_is = self.b.eq(next, &low);
+                    let first_is = self.b.eq(&s.cells[i], &encoded.cells[0]);
+                    let second_is = self.b.eq(next, low);
                     self.b.all(&[is_supplementary, has_second, first_is, second_is])
                 }
                 None => FALSE,
@@ -283,6 +296,16 @@ impl Engine<'_> {
         let letter = self.b.and(-below, -above);
         let ascii = self.b.ult(&unit, &limit);
         self.branch_gap_or(path, -ascii, (GapKind::JdkStaticMethod, CHARACTER, "isLetter", "(C)Z"), move |engine, path| engine.push_truth(path, letter))
+    }
+
+    pub(super) fn to_chars(&mut self, path: &mut Path, ch: &Bits) -> Step {
+        let (valid, units) = self.code_point_units(ch);
+        self.branch_throw_or(path, -valid, "java/lang/IllegalArgumentException", move |engine, path| {
+            let array = engine.alloc(path, "[C");
+            path.objects[array].array = Some(units);
+            engine.push(path, Val::R(Some(array)));
+            engine.advance(path);
+        })
     }
 
     /// Pushes a truth value as the int the JVM holds it as.
@@ -482,7 +505,7 @@ impl Engine<'_> {
         // method that reads the content out (`toString`, `length`, …) is refused by name, as it would give the
         // content the engine no longer holds.
         let Some(s) = path.objects[o].array.clone() else {
-            if matches!(name, "append" | "charAt") {
+            if matches!(name, "append" | "appendCodePoint" | "charAt") {
                 return None;
             }
             return Some(unsupported(format!("StringBuilder.{name} on a builder made or changed by a call the engine does not model")));
@@ -499,6 +522,17 @@ impl Engine<'_> {
                 let unit = self.unit_at(&s, index);
                 let value = self.b.zext(&unit, 32);
                 self.branch_throw(path, -inside, "java/lang/StringIndexOutOfBoundsException", Val::I(value))
+            }
+            ("appendCodePoint", [Val::I(ch)]) => {
+                let (valid, units) = self.code_point_units(ch);
+                if valid != FALSE && s.cells.len() + units.cells.len() > MOST_BUILDER_CONTENT {
+                    return Some(unsupported(format!("a StringBuilder of more than {MOST_BUILDER_CONTENT} code units")));
+                }
+                self.branch_throw_or(path, -valid, "java/lang/IllegalArgumentException", move |engine, path| {
+                    path.objects[o].array = Some(engine.joined(&s, &units));
+                    engine.push(path, Val::R(Some(o)));
+                    engine.advance(path);
+                })
             }
             ("append", [appended]) => {
                 // What is appended: a String's units (`null` for null), a char, or an int's decimal digits.

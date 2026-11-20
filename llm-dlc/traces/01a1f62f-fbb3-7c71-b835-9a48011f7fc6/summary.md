@@ -44,6 +44,12 @@ change `wmzztnsqzqyn` · [log `052ea65a6370`](https://terminalvalue.net/raw-trac
 
 The sub-hour verification job 20261120-000646-prove-the-twelve-sub-hour-crossings-at-t exited during argument parsing before launching either task. Parse the checker deadline once for single and batch execution and pass it to each batch member alongside its retry identity. The public-entry regression tests mixed outcomes, shared preparation and a 120-second budget on both calls. All 27 selected test groups passed. Superseding job 20261120-001338-prove-the-twelve-sub-hour-crossings-at-t runs the same command, budget, claims and expectations.
 
+### Verify supplementary code points and StringBuilder search in native bytecode (verification pending)
+
+change `pkrtqvvpwynv` · [log `052ea65a6370`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/052ea65a63701704ad83909d97d2a818485e56b9e83faa1235bd9a4fef2446bb.jsonl.gz)
+
+Share the UTF-16 encoding of a Java code point between String search, Character.toChars and StringBuilder.appendCodePoint. Invalid input throws before the builder changes. Model the Basic Latin and Combining Diacritical Marks regex blocks used in library initialization. A symbolic test checks the conversion and exception classes, a JVM checks all 65,536 BMP units and supplementary boundary controls, and interpreter replay checks the same units. The strict fixed Commons Lang probe established the original last-match property. The 27 selected test groups passed. Job 20261120-001502-retry-commons-lang-utf-16-search-on-the retries all five original claims with their original execution references, source artifacts and budgets.
+
 ## Conversation
 
 Each prompt with the final reply to it, shortened where long. The [log](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/052ea65a63701704ad83909d97d2a818485e56b9e83faa1235bd9a4fef2446bb.jsonl.gz) has every step in between: reasoning, tool calls and their results.

@@ -39,7 +39,8 @@
 //! alternatives (`|`), the quantifiers `*`, `+`, `?`, `{n}`, `{n,}` and `{n,m}` (greedy: a reluctant one is the same
 //! language and is refused all the same, a possessive one is not), and the anchors `\A`, `^` (the input's
 //! beginning, without `MULTILINE`) and `\z`. Nothing else: no `$` (which also matches before a last line
-//! terminator), back reference, look-around, flag or Unicode class. With `CASE_INSENSITIVE`, literals and
+//! terminator), back reference, look-around or inline flag. Standalone Unicode block atoms support Basic Latin
+//! and Combining Diacritical Marks, with their complements. With `CASE_INSENSITIVE`, literals and
 //! bracket ranges match both ASCII cases. Negation applies to the resulting character set.
 //!
 //! - `String.matches(String)` of a String whose content the engine holds and a regex that is such a constant:
@@ -219,6 +220,7 @@ impl Reader<'_> {
                     'z' => Node::End,
                     'D' | 'W' | 'S' => Node::One(Atom::Class(shorthand(e.to_ascii_lowercase())?, true)),
                     'd' | 'w' | 's' => Node::One(Atom::Class(shorthand(e)?, false)),
+                    'p' | 'P' => Node::One(Atom::Class(vec![self.unicode_block()?], e == 'P')),
                     _ => Node::One(Atom::Unit(escaped(e)?)),
                 }
             }
@@ -282,6 +284,18 @@ impl Reader<'_> {
             c if stands_for_itself(c) => Node::One(Atom::Unit(c as u16)),
             _ => return None,
         })
+    }
+
+    /// The whole block name, braces included. Every other property stays outside the grammar.
+    fn unicode_block(&mut self) -> Option<(u16, u16)> {
+        for (name, range) in [("{InBasicLatin}", (0x0000, 0x007f)), ("{InCombiningDiacriticalMarks}", (0x0300, 0x036f))] {
+            let end = self.at + name.len();
+            if self.units.get(self.at..end).is_some_and(|units| units.iter().copied().eq(name.encode_utf16())) {
+                self.at = end;
+                return Some(range);
+            }
+        }
+        None
     }
 
     fn number(&mut self) -> Option<u32> {

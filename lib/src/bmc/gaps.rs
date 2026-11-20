@@ -595,7 +595,7 @@ pub fn jdk_static_call(owner: &str, name: &str, descriptor: &str) -> JdkCall {
     let Ok(d) = MethodDescriptor::parse(descriptor) else { return JdkCall::Refused };
     let floating = |t: &Type| matches!(t, Type::Float | Type::Double);
     // A model that makes an array (`Arrays.copyOf`) is one before an array result is refused.
-    if super::bytes::models_static(owner, name, descriptor) {
+    if super::bytes::models_static(owner, name, descriptor) || super::strings::models_static(owner, name, descriptor) {
         return JdkCall::Exact;
     }
     if d.params.iter().any(floating) || matches!(d.ret, Type::Float | Type::Double | Type::Array(_)) {

@@ -1106,9 +1106,17 @@ fn code_point_units(c: i32) -> Option<JStr> {
     }
 }
 
+fn checked_code_point(m: &mut Machine, point: i32) -> Exec<JStr> {
+    code_point_units(point).ok_or_else(|| m.throw("java/lang/IllegalArgumentException", Some(&format!("Not a valid Unicode code point: 0x{point:X}"))))
+}
+
 fn string_builder_method(m: &mut Machine, r: Ref, s: JStr, name: &str, descriptor: &str, args: &[Value]) -> Exec<Option<Value>> {
     let mut text = s;
     let result = match (name, descriptor) {
+        ("appendCodePoint", "(I)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuffer;") => {
+            text.push(&checked_code_point(m, args[0].as_int())?);
+            Some(Value::Ref(r))
+        }
         ("append", d) => {
             let params = MethodDescriptor::parse(d).map_err(|e| Fault::Unsupported(e.to_string()))?.params;
             if params.len() != 1 {
@@ -2419,6 +2427,10 @@ fn to_radix(v: i64, radix: u32) -> String {
 fn character(m: &mut Machine, name: &str, descriptor: &str, a: &[Value]) -> Exec<Value> {
     let c = |v: Value| char::from_u32(v.as_int() as u32).unwrap_or('\u{FFFD}');
     Ok(match name {
+        "toChars" if descriptor == "(I)[C" => {
+            let units = checked_code_point(m, a[0].as_int())?;
+            m.new_array_of(Type::Char, units.units().iter().map(|u| Value::Int(i32::from(*u))).collect())
+        }
         "valueOf" => box_value(m, "java/lang/Character", a[0]),
         "toString" => m.new_string(JStr::from_units(vec![a[0].as_int() as u16])),
         "isDigit" => Value::bool(c(a[0]).is_numeric()),

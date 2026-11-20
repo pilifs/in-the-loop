@@ -391,6 +391,22 @@ fn an_observed_initializer_is_observed_with_a_relative_work_folder() {
 }
 
 #[test]
+fn utf16_encoding_preserves_code_units_and_rejects_invalid_points_before_writing() {
+    jvmcontract::tool_tier!();
+    use jvmcontract::interp::{Machine, Value};
+    let Some(classes) = classes() else { return };
+    assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.UnicodePoints").status().unwrap().success());
+    for method in ["encoding", "block"] {
+        proved(classes, &format!("claims.UnicodePoints#{method}"), 3);
+    }
+    let cp = jvmcontract::witness::classpath([classes]).unwrap();
+    let mut interpreter = Machine::new(&cp);
+    for c in [-1, 0, 0xd800, 0xdc00, 0xffff, 0x10000, 0x2070e, 0x10ffff, 0x110000] {
+        assert_eq!(interpreter.call_static("claims/UnicodePoints", "encoding", "(I)Z", vec![Value::Int(c)]).unwrap(), Some(Value::Int(1)));
+    }
+}
+
+#[test]
 fn enum_order_checks_the_declaring_class_on_the_jvm_in_proof_and_in_replay() {
     jvmcontract::tool_tier!();
     use jvmcontract::interp::{Machine, Value};
