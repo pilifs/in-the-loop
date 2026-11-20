@@ -12,25 +12,25 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T05:08:49.057Z",
-  "duration_seconds": 27079,
+  "ended": "2026-11-20T05:13:10.551Z",
+  "duration_seconds": 27341,
   "stats": {
     "turns": 7,
-    "api_calls": 1636,
-    "tool_calls": 4230,
+    "api_calls": 1657,
+    "tool_calls": 4284,
     "tool_errors": 139,
     "compactions": 6,
     "peak_context_tokens": 550849,
     "usage": {
-      "input_tokens": 3139944,
-      "output_tokens": 817527,
-      "cache_read_input_tokens": 466772736,
+      "input_tokens": 3164161,
+      "output_tokens": 826817,
+      "cache_read_input_tokens": 472950400,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 2444,
-    "exec": 1572,
+    "Bash": 2477,
+    "exec": 1593,
     "apply_patch": 162,
     "wait": 42,
     "sleep": 10
@@ -225,24 +225,24 @@
     {
       "index": 6,
       "started": "2026-11-20T04:47:07.525Z",
-      "ended": "2026-11-20T05:08:49.057Z",
+      "ended": "2026-11-20T05:13:10.551Z",
       "turns": 1,
-      "api_calls": 102,
+      "api_calls": 123,
       "usage": {
-        "input_tokens": 481825,
-        "output_tokens": 44589,
-        "cache_read_input_tokens": 20707712,
+        "input_tokens": 506042,
+        "output_tokens": 53879,
+        "cache_read_input_tokens": 26885376,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 284090
+      "peak_context_tokens": 306642
     }
   ],
   "log": {
-    "sha256": "526f2d0930321d156b4c1ffed3bcf9c6e0ed4197dfc4b063de4820f0e00e2b1d",
-    "bytes": 39967600,
-    "lines": 12776,
-    "gzip_bytes": 15038998,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/526f2d0930321d156b4c1ffed3bcf9c6e0ed4197dfc4b063de4820f0e00e2b1d.jsonl.gz"
+    "sha256": "647a247f96db7c10a47a9b98bb4ddf0fcf56f324a1df750b4e995484e620435d",
+    "bytes": 40340110,
+    "lines": 12935,
+    "gzip_bytes": 15183978,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/647a247f96db7c10a47a9b98bb4ddf0fcf56f324a1df750b4e995484e620435d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -855,20 +855,20 @@
       "log_sha256": "180a5b12307a26f0d0d2d58aa3d7b341df6c732688238daf9e9ac131702a3c37"
     },
     {
-      "change_id": "qovsyxpkyotswnkmpvlokvsusnoxslyo",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "526f2d0930321d156b4c1ffed3bcf9c6e0ed4197dfc4b063de4820f0e00e2b1d"
-    },
-    {
       "change_id": "tqnsxtyukynwqqqponxsxussuvlsrmkw",
       "commit_id": null,
       "immutable": false,
       "summary": "Retry the comparison checks under systemd (verification pending)",
       "body": "The first runner selected isolation none inside the sandbox. It was stopped while compiling the checker, before any of the three example checks ran. The pipeline retained the three build error records. The retries use the same comparison commit, original deadlines and domains.\n\nJobs 20261120-050759-recheck-cube-intersections-after-native, 20261120-050759-recheck-guava-map-collisions-after-nativ and 20261120-050800-verify-both-signed-zero-maxima-with-ieee each identify their superseded attempt.",
       "log_sha256": "526f2d0930321d156b4c1ffed3bcf9c6e0ed4197dfc4b063de4820f0e00e2b1d"
+    },
+    {
+      "change_id": "yruukuovwqwzxmmnpzxpvxzmqqzrymkq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Prove coverage of bounded IEEE arithmetic (verification pending)",
+      "body": "Widen every signed int to binary64 with an exact bit-vector circuit. For other numeric conversions and floating arithmetic, enumerate reachable operand tuples under the path condition, preserving their correlations. Each accepted operation ends with an unsatisfiable complement. A 65th tuple or an unspecified NaN payload leaves a named refusal. The profile includes square root, sign-preserving zero arithmetic, Java narrowing and Guava's highest-bit and rotate operations.\n\nVerified against the JVM on rounding ties at 2^24 and 2^53, signed underflow, saturating casts, NaNs, infinities, the table-size discriminator, and 64 correlated products with the 65th explicitly refused. Changed test groups passed, the initializer fallback was rechecked on the final fixture, and job schema and test-tier lint passed.\n\nOriginal campaigns continue in 20261120-051056-repeat-signed-zero-proofs-on-the-bounded, 20261120-051056-verify-guava-collision-traces-through-it, 20261120-051056-verify-cube-hits-through-bounded-vector and 20261120-051057-verify-percentage-overflow-after-bounded. All four keep the frozen inputs, classpaths, observers and budgets.",
+      "log_sha256": "647a247f96db7c10a47a9b98bb4ddf0fcf56f324a1df750b4e995484e620435d"
     }
   ],
   "logs": {
@@ -966,6 +966,12 @@
       "bytes": 5759696,
       "lines": 1625,
       "gzip_bytes": 2092336,
+      "url": null
+    },
+    "647a247f96db7c10a47a9b98bb4ddf0fcf56f324a1df750b4e995484e620435d": {
+      "bytes": 40340110,
+      "lines": 12935,
+      "gzip_bytes": 15183978,
       "url": null
     },
     "6a6d0d34f837cb1d206f1e978430cb1be45f7c80301c65918506492a38607852": {

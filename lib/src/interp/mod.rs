@@ -1213,28 +1213,8 @@ impl<'a> Machine<'a> {
                     }
                 })
             }
-            Kind::Float => {
-                let (x, y) = (a.as_float(), b.as_float());
-                Value::Float(match op {
-                    ArithOp::Add => x + y,
-                    ArithOp::Sub => x - y,
-                    ArithOp::Mul => x * y,
-                    ArithOp::Div => x / y,
-                    ArithOp::Rem => x % y,
-                    _ => return Err(Fault::Unsupported("bitwise op on float".into())),
-                })
-            }
-            Kind::Double => {
-                let (x, y) = (a.as_double(), b.as_double());
-                Value::Double(match op {
-                    ArithOp::Add => x + y,
-                    ArithOp::Sub => x - y,
-                    ArithOp::Mul => x * y,
-                    ArithOp::Div => x / y,
-                    ArithOp::Rem => x % y,
-                    _ => return Err(Fault::Unsupported("bitwise op on double".into())),
-                })
-            }
+            Kind::Float => Value::Float(ieee_binary(op, a.as_float(), b.as_float())),
+            Kind::Double => Value::Double(ieee_binary(op, a.as_double(), b.as_double())),
             Kind::Ref => return Err(Fault::Unsupported("arithmetic on references".into())),
         })
     }
@@ -1245,7 +1225,21 @@ enum Flow {
     Return(Option<Value>),
 }
 
-fn convert(v: Value, to: Narrow) -> Value {
+/// The five binary floating-point bytecodes, shared by JVM replay and bounded native evaluation.
+pub(crate) fn ieee_binary<T>(op: ArithOp, x: T, y: T) -> T
+where T: std::ops::Add<Output=T> + std::ops::Sub<Output=T> + std::ops::Mul<Output=T>
+       + std::ops::Div<Output=T> + std::ops::Rem<Output=T> {
+    match op {
+        ArithOp::Add => x + y,
+        ArithOp::Sub => x - y,
+        ArithOp::Mul => x * y,
+        ArithOp::Div => x / y,
+        ArithOp::Rem => x % y,
+        _ => unreachable!("binary float or double opcode"),
+    }
+}
+
+pub(crate) fn convert(v: Value, to: Narrow) -> Value {
     match to {
         Narrow::Byte => Value::Int(v.as_int() as i8 as i32),
         Narrow::Char => Value::Int(v.as_int() as u16 as i32),

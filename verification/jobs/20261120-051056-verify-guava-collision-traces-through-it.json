@@ -1,0 +1,52 @@
+{
+  "$schema": "../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261120-051056-verify-guava-collision-traces-through-it",
+  "title": "Verify Guava collision traces through its computed table sizes",
+  "description": "Use exact integer bit primitives and bounded IEEE multiplication and narrowing in the real Guava table-size calculation. Check all eight original claims on the parent and fix with the same 30-second deadline and 121 command words.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "target:replay"
+  ],
+  "links": {
+    "examples": [
+      "319"
+    ]
+  },
+  "expected": "Each frozen claim has its own non-vacuous proof or independently JVM-replayed counterexample. Preserve a precise refusal with its original scope and last stage if checking stops.",
+  "submitted": {
+    "at": "2026-11-20T05:10:56+00:00",
+    "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+  },
+  "priority": 7,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "memoryLimit": "4G",
+    "timeout": "8m"
+  },
+  "steps": [
+    {
+      "name": "Check the frozen obligations on their prepared bytes",
+      "run": "JVMCONTRACT_SOLVER=bitwuzla-finite JVMCONTRACT_BITWUZLA=\"${JVMCONTRACT_BITWUZLA:-$HOME/tools/bitwuzla/current}\" python3 examples/tools/build.py 319 --tasks size-parent,size-fix,lookup-parent,lookup-fix,entries-parent,entries-fix,unique-parent,unique-fix --checker-seconds 30",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/319-guava-last-put-hash-collision/receipts/size-parent",
+    "examples/319-guava-last-put-hash-collision/receipts/size-fix",
+    "examples/319-guava-last-put-hash-collision/receipts/lookup-parent",
+    "examples/319-guava-last-put-hash-collision/receipts/lookup-fix",
+    "examples/319-guava-last-put-hash-collision/receipts/entries-parent",
+    "examples/319-guava-last-put-hash-collision/receipts/entries-fix",
+    "examples/319-guava-last-put-hash-collision/receipts/unique-parent",
+    "examples/319-guava-last-put-hash-collision/receipts/unique-fix"
+  ]
+}

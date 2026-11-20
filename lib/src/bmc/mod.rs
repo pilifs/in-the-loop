@@ -39,7 +39,7 @@
 //! a constant splits the path per cell. An application class's static fields are path state, and its initializer
 //! runs where the JVM runs it (JVMS §5.5); an enum's is one, its constants made through `java.lang.Enum`'s model
 //! and its `$VALUES` an array of references. IEEE 754 comparisons and signed zero use raw bit-vectors.
-//! Floating-point arithmetic, the JDK's unmodeled static state and the rest of the
+//! Arithmetic over bounded floating-point operands uses their complete reachable tuples. Unmodeled static state and the rest of the
 //! JDK are refused with a reason, so that a caller can fall back to JBMC. A verdict it gives is on the same statement JBMC would
 //! check, the generated harness class, so a counterexample is replayed and shrunk like JBMC's.
 //!
@@ -85,7 +85,8 @@
 //! | `Pattern.quote`, `String.join`, `Pattern.compile(String, int)`, `Pattern.matcher`, `Matcher.matches()` as far as [`regex`] says; `Character.isLetter(char)` of an ASCII unit ([`strings`]); `Integer.parseInt(String)`, `MessageDigest.isEqual`, `Arrays.copyOf` of an array of numbers or of references and `getstatic` of `StandardCharsets.UTF_8` as far as [`bytes`] says; `getstatic` of `Locale`'s constants, `Locale.forLanguageTag(String)` and `Locale.setDefault(Locale)` as far as [`locale`] says; `Class.getName()`, `Class.getTypeName()`, `Class.getClassLoader()`, `Object.getClass()` of a String, `Proxy.isProxyClass(Class)`, `Class.forName(String, boolean, ClassLoader)`, `Class.forName(String)` with its initialization, `Class.isAssignableFrom(Class)`, `Thread.currentThread()` and its `getContextClassLoader()`, `Collections.emptyMap()`, `Logger.getLogger(String)`, `getstatic` of a `java.util.logging.Level` other than `OFF`, `getstatic` of `Boolean.TRUE` and `Boolean.FALSE`, `Logger.isLoggable(Level)`, `Logger.log(LogRecord)` and what a library calls to make the record, `new ArrayList()`, `new ConcurrentHashMap()` and `new ConcurrentHashMap(int)` as far as [`runtime`] says | modelled where their arguments let them be, under the assumptions the run states ([`Outcome::assumed`]); the JDK call (a gap) elsewhere |
 //! | `ldc` of a string or a class | implemented: one object per distinct literal on a path, as the JVM interns strings and has one `Class` object per class, a String with its content, its code units as the class file holds them, an isolated surrogate included (`BootstrapArg::Units`) |
 //! | `fconst`, `dconst`, floating-point loads, stores, returns, array cells and `ldc` constants, `fcmpl` / `fcmpg` and their double variants | exact IEEE 754 words and JVM comparison bias. Float and Double bit conversions and NaN tests, plus Math/StrictMath extrema, are bounded as described in [`floating`] |
-//! | floating point arithmetic (`fadd` …) and numeric conversions (`f2i` …), `jsr`/`ret`, `putstatic` of a JDK field, any other `getstatic` of one, a static field of a class taken to be initialized other than a constant, any other `invokedynamic`, a JDK method with a floating-point parameter or result or an array result, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
+//! | floating point arithmetic (`fadd` …) and numeric conversions (`f2i` …) | exact `i2d` for every int and sign-bit negation for non-NaNs. Other operations evaluate up to 64 reachable operand tuples and check that their complement is unsatisfiable. Unspecified NaN result bits and wider domains have a named refusal. |
+//! | `jsr`/`ret`, `putstatic` of a JDK field, any other `getstatic` of one, a static field of a class taken to be initialized other than a constant, any other `invokedynamic`, a JDK method with a floating-point parameter or result or an array result, a native method | refused: no verdict, so that `--engine auto` can ask JBMC |
 //! | under JBMC, not this engine ([`crate::jbmc_gaps`]): a method with no bytecode on JBMC's class path, or an `invokedynamic` JBMC does not link, or a monitor instruction, which JBMC drops | JBMC's gaps: its stub of a JDK method is one of the JDK kinds above, any other is `missing-body`, an unlinked call site is `invokedynamic`, and a method that synchronizes is `monitor`; this engine refuses the first two and implements monitors |
 //!
 //! A gap is refused by name under [`gaps::GapMode::Strict`], the default: the path ends there, and a run that met
@@ -3697,6 +3698,7 @@ impl<'a> Engine<'a> {
                 self.push(path, v1);
                 self.push(path, v2);
             }
+            Insn::Arith(op, kind @ (Kind::Float | Kind::Double)) => return self.floating_arithmetic(path, op, kind),
             Insn::Arith(op, kind) => return self.arith(path, op, kind),
             Insn::IInc(slot, delta) => {
                 let frame = path.frames.last_mut().expect("a frame");
@@ -3730,7 +3732,8 @@ impl<'a> Engine<'a> {
                         let t = self.b.trunc(&x, 16);
                         Val::I(self.b.sext(&t, 32))
                     }
-                    _ => return unsupported(format!("floating point conversion {from:?} to {to:?}")),
+                    (from, Narrow::To(to)) => self.floating_convert(path, from, to)?,
+                    _ => return unsupported(format!("invalid numeric conversion {from:?} to {to:?}")),
                 };
                 self.push(path, v);
             }
@@ -5638,6 +5641,23 @@ impl<'a> Engine<'a> {
                 Val::I(self.b.ite_bits(lt, &minus_one, &tail))
             }
             ("java/lang/Integer", "toUnsignedLong") => Val::J(self.b.zext(&a[0], 64)),
+            ("java/lang/Integer" | "java/lang/Long", "rotateLeft" | "rotateRight") => {
+                let negative = self.b.neg(&a[1]);
+                let (left, right) = if name == "rotateLeft" { (&a[1], &negative) } else { (&negative, &a[1]) };
+                let upper = self.b.shl(&a[0], left);
+                let lower = self.b.ushr(&a[0], right);
+                wrap(self.b.or_bits(&upper, &lower))
+            }
+            ("java/lang/Integer" | "java/lang/Long", "highestOneBit") => {
+                let mut result = a[0].clone();
+                let mut above = FALSE;
+                for bit in result.iter_mut().rev() {
+                    let original = *bit;
+                    *bit = self.b.and(original, -above);
+                    above = self.b.or(above, original);
+                }
+                wrap(result)
+            }
             ("java/lang/Integer" | "java/lang/Long", "numberOfLeadingZeros") => {
                 // A priority encoder: the zeros above the highest one bit, the width for zero. Each bit, from the
                 // lowest up, overrides the count the bits below it gave.
@@ -5674,7 +5694,7 @@ pub fn models_jdk_static(owner: &str, name: &str) -> bool {
         ("java/lang/Math" | "java/lang/StrictMath", "addExact" | "subtractExact" | "multiplyExact" | "negateExact" | "incrementExact" | "decrementExact" | "toIntExact" | "absExact" | "abs" | "max" | "min" | "floorDiv" | "floorMod")
             | ("java/lang/Integer" | "java/lang/Long", "max" | "min" | "sum" | "compare" | "signum")
             | ("java/lang/Integer", "toUnsignedLong")
-            | ("java/lang/Integer" | "java/lang/Long", "numberOfLeadingZeros")
+            | ("java/lang/Integer" | "java/lang/Long", "numberOfLeadingZeros" | "highestOneBit" | "rotateLeft" | "rotateRight")
             | ("java/lang/Boolean", "logicalAnd" | "logicalOr" | "logicalXor")
     )
 }

@@ -80,7 +80,7 @@ use std::sync::OnceLock;
 
 use serde::Serialize;
 
-use crate::classfile::{Insn, Kind, MemberRef, MethodDescriptor, Narrow, Type};
+use crate::classfile::{Insn, MemberRef, MethodDescriptor, Type};
 use crate::classpath::ClassPath;
 use crate::Error;
 
@@ -1122,10 +1122,6 @@ impl<'a> Walker<'a> {
                 constant = cf.pool.loadable(index).ok().and_then(|c| c.string_units().map(|units| units.into_owned()));
             }
             match insn {
-                Insn::Arith(op, k @ (Kind::Float | Kind::Double)) => self.refuse("floating point", format!("floating-point {k:?} {op:?}"), &site),
-                Insn::Convert(from, to) if matches!(from, Kind::Float | Kind::Double) || matches!(to, Narrow::To(Kind::Float | Kind::Double)) => {
-                    self.refuse("floating point", format!("floating-point conversion {from:?} to {to:?}"), &site);
-                }
                 Insn::Jsr(_) | Insn::Ret(_) => self.refuse("jsr/ret", "jsr".into(), &site),
                 Insn::PutStatic(index) | Insn::GetStatic(index) => {
                     let member = cf.pool.member(index).map_err(|e| Error::new(e.to_string()))?;

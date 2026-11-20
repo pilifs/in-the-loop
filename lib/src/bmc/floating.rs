@@ -1,8 +1,9 @@
 //! JVM comparisons over IEEE 754 interchange bits. The stack carries the raw word until an
-//! opcode or a method descriptor supplies its interpretation. No host floating-point arithmetic
-//! or solver-specific floating-point theory is involved.
+//! opcode or a method descriptor supplies its interpretation. Integer widening and comparisons are
+//! bit-vector circuits. Arithmetic uses the JVM rounding rules on exhaustively covered operand tuples.
 
-use super::{unsupported, Bits, Blaster, Engine, Kind, Lit, Path, Step, Stop, Val, FALSE, TRUE};
+use super::{unsupported, ArithOp, Bits, Blaster, Engine, Kind, Lit, Narrow, Path, Step, Stop, Val, FALSE, TRUE};
+use crate::interp::Value;
 
 fn fraction_width(bits: &Bits) -> usize {
     match bits.len() {
@@ -47,13 +48,15 @@ fn cmp(b: &mut Blaster, x: &Bits, y: &Bits, unordered: i32) -> Bits {
 
 pub(super) fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!((owner, name, descriptor),
-        ("java/lang/Double", "isNaN", "(D)Z")
-        | ("java/lang/Float", "isNaN", "(F)Z")
+        ("java/lang/Double", "isNaN" | "isFinite" | "isInfinite", "(D)Z")
+        | ("java/lang/Float", "isNaN" | "isFinite" | "isInfinite", "(F)Z")
         | ("java/lang/Double", "doubleToRawLongBits" | "doubleToLongBits", "(D)J")
         | ("java/lang/Float", "floatToRawIntBits" | "floatToIntBits", "(F)I")
         | ("java/lang/Double", "longBitsToDouble", "(J)D")
         | ("java/lang/Float", "intBitsToFloat", "(I)F")
-        | ("java/lang/Math" | "java/lang/StrictMath", "min" | "max", "(DD)D" | "(FF)F"))
+        | ("java/lang/Math" | "java/lang/StrictMath", "min" | "max", "(DD)D" | "(FF)F")
+        | ("java/lang/Math" | "java/lang/StrictMath", "abs", "(D)D" | "(F)F")
+        | ("java/lang/Math" | "java/lang/StrictMath", "sqrt", "(D)D"))
 }
 
 impl Engine<'_> {
@@ -82,6 +85,20 @@ impl Engine<'_> {
         let x_nan = nan(&mut self.b, x);
         let result = match name {
             "isNaN" => self.b.zext(&vec![x_nan], 32),
+            "isInfinite" | "isFinite" => {
+                let special = self.b.all(&x[fraction_width(x)..x.len() - 1]);
+                let truth = if name == "isFinite" { -special } else { self.b.and(special, -x_nan) };
+                self.b.zext(&vec![truth], 32)
+            }
+            "abs" => {
+                self.exclude_float_case(path, x_nan, "floating point absolute value with an unspecified NaN sign")?;
+                let mut bits = x.clone();
+                *bits.last_mut().expect("a sign bit") = FALSE;
+                bits
+            }
+            "sqrt" => self.finite_operation(path, "double sqrt", [x], 64, |[value]| {
+                result_bits(Value::Double(f64::from_bits(value as u64).sqrt()))
+            })?,
             "doubleToLongBits" | "floatToIntBits" => {
                 let value = if x.len() == 64 { 0x7ff8_0000_0000_0000 } else { 0x7fc0_0000 };
                 self.b.ite_bits(x_nan, &self.b.constant(value, x.len()), x)
@@ -102,6 +119,122 @@ impl Engine<'_> {
             _ => unreachable!("a classified floating-point intrinsic"),
         };
         self.push(path, if result.len() == 64 { Val::J(result) } else { Val::I(result) });
+        self.advance(path);
+        Ok(None)
+    }
+}
+
+/// An int's magnitude has at most 32 significant bits. Normalization into the 53-bit
+/// binary64 significand is therefore exact even for Integer.MIN_VALUE.
+fn int_to_double(b: &mut Blaster, x: &Bits) -> Bits {
+    let sign = b.negative(x);
+    let negated = b.neg(x);
+    let magnitude = b.ite_bits(sign, &negated, x);
+    let mut word = b.constant(0, 64);
+    for lead in 0..32 {
+        let mut normalized = b.constant(((1023 + lead) as i64) << 52, 64);
+        normalized[52 - lead..52].copy_from_slice(&magnitude[..lead]);
+        word = b.ite_bits(magnitude[lead], &normalized, &word);
+    }
+    word[63] = sign;
+    word
+}
+
+fn value_of(kind: Kind, raw: i64) -> Value {
+    match kind {
+        Kind::Int => Value::Int(raw as i32),
+        Kind::Long => Value::Long(raw),
+        Kind::Float => Value::Float(f32::from_bits(raw as u32)),
+        Kind::Double => Value::Double(f64::from_bits(raw as u64)),
+        Kind::Ref => unreachable!("numeric operand"),
+    }
+}
+
+fn result_bits(value: Value) -> Option<i64> {
+    match value {
+        Value::Int(x) => Some(i64::from(x)),
+        Value::Long(x) => Some(x),
+        Value::Float(x) if !x.is_nan() => Some(i64::from(x.to_bits())),
+        Value::Double(x) if !x.is_nan() => Some(x.to_bits() as i64),
+        Value::Float(_) | Value::Double(_) => None,
+        _ => unreachable!("numeric result"),
+    }
+}
+
+impl Engine<'_> {
+    fn pop_word(&self, path: &mut Path, kind: Kind) -> Result<Bits, Stop> {
+        if matches!(kind, Kind::Long | Kind::Double) { self.pop_long(path) } else { self.pop_int(path) }
+    }
+
+    /// Compute the operation on every reachable operand tuple and prove their complement
+    /// unsatisfiable before using the result. The limit bounds cost and never truncates the domain.
+    fn finite_operation<const N: usize>(&mut self, path: &Path, operation: &str, operands: [&Bits; N], width: usize,
+        evaluate: impl Fn([i64; N]) -> Option<i64>) -> Result<Bits, Stop> {
+        const MAX_TUPLES: usize = 64;
+        let checked = |values| evaluate(values).ok_or_else(|| Stop::Unsupported(format!("{operation} with an unspecified NaN result encoding")));
+        if operands.iter().all(|word| self.b.constant_value(word).is_some()) {
+            let raw = operands.map(|word| self.b.constant_value(word).expect("constant"));
+            return Ok(self.b.constant(checked(raw)?, width));
+        }
+        let mut remaining = path.cond.clone();
+        let mut result = self.b.constant(0, width);
+        let mut count = 0;
+        while self.solve(&remaining)? {
+            if count == MAX_TUPLES {
+                return unsupported(format!("{operation} with more than {MAX_TUPLES} reachable operand tuples"));
+            }
+            let mut model = self.b.snapshot();
+            let values = operands.map(|word| {
+                let mut raw = 0u64;
+                for (bit, &literal) in word.iter().enumerate() {
+                    raw |= u64::from(self.b.holds(&mut model, literal)) << bit;
+                }
+                raw as i64
+            });
+            let mut selected = TRUE;
+            for (word, value) in operands.iter().zip(values) {
+                let equal = self.b.eq(word, &self.b.constant(value, word.len()));
+                selected = self.b.and(selected, equal);
+            }
+            let value = self.b.constant(checked(values)?, width);
+            result = if count == 0 { value } else { self.b.ite_bits(selected, &value, &result) };
+            remaining.push(-selected);
+            count += 1;
+        }
+        Ok(result)
+    }
+
+    pub(super) fn floating_convert(&mut self, path: &mut Path, from: Kind, to: Kind) -> Result<Val, Stop> {
+        let x = self.pop_word(path, from)?;
+        if from == Kind::Int && to == Kind::Double { return Ok(Val::J(int_to_double(&mut self.b, &x))); }
+        let wide = matches!(to, Kind::Long | Kind::Double);
+        let result = self.finite_operation(path, &format!("{from:?} to {to:?}"), [&x], if wide { 64 } else { 32 }, |[raw]| {
+            result_bits(crate::interp::convert(value_of(from, raw), Narrow::To(to)))
+        })?;
+        Ok(if wide { Val::J(result) } else { Val::I(result) })
+    }
+
+    pub(super) fn floating_arithmetic(&mut self, path: &mut Path, op: ArithOp, kind: Kind) -> Step {
+        let y = self.pop_word(path, kind)?;
+        let result = if op == ArithOp::Neg {
+            let is_nan = nan(&mut self.b, &y);
+            self.exclude_float_case(path, is_nan, "floating point negation with an unspecified NaN sign")?;
+            let mut bits = y;
+            let sign = bits.last_mut().expect("a floating-point word");
+            *sign = -*sign;
+            bits
+        } else {
+            let x = self.pop_word(path, kind)?;
+            self.finite_operation(path, &format!("{kind:?} {op:?}"), [&x, &y], x.len(), |[left, right]| {
+                let value = match kind {
+                    Kind::Float => Value::Float(crate::interp::ieee_binary(op, f32::from_bits(left as u32), f32::from_bits(right as u32))),
+                    Kind::Double => Value::Double(crate::interp::ieee_binary(op, f64::from_bits(left as u64), f64::from_bits(right as u64))),
+                    _ => unreachable!("a floating-point opcode"),
+                };
+                result_bits(value)
+            })?
+        };
+        self.push(path, if kind == Kind::Double { Val::J(result) } else { Val::I(result) });
         self.advance(path);
         Ok(None)
     }
