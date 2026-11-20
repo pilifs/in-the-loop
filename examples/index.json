@@ -10264,6 +10264,295 @@
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 311 TASK"
       }
+    },
+    {
+      "id": "312",
+      "path": "examples/312-invoice-ordered-rate-jars",
+      "title": "One invoice class with two ordered rate JARs",
+      "summary": "Reversing two JARs with the same Rate class changes four nonzero invoices and preserves zero.",
+      "origin": "constructed",
+      "system": "Invoice",
+      "symbol": "invoice.Invoice#total(I)I",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "class-files"
+        ],
+        "defect": [
+          "configuration-drift"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Swapping the two dependency JARs changes four of the five invoice totals. Both JAR sets and the Invoice class digest are identical. The zero input returns zero under both orders. A fresh JVM records the selected Rate code source and class digest. Ingestion rejects the opposite order.",
+        "The two absolute rate claims distinguish a checker loading the wrong helper from an actual preservation result."
+      ],
+      "source": null,
+      "target": {
+        "family": "invoice-ordered-rate-jars",
+        "role": "control",
+        "case": "invoice-ordered-rate-jars",
+        "tasks": [
+          "replay",
+          "invoice-values",
+          "zero-only",
+          "rate-two-first",
+          "rate-three-first"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "invoice-values": "scaffolded",
+          "zero-only": "scaffolded",
+          "rate-two-first": "scaffolded",
+          "rate-three-first": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "invoice-values": "refuted",
+          "zero-only": "established",
+          "rate-two-first": "established",
+          "rate-three-first": "established"
+        },
+        "claims": {
+          "invoice-values": null,
+          "zero-only": null,
+          "rate-two-first": null,
+          "rate-three-first": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T023801Z-4a980e03/result.json",
+            "attempt": "20261120T023801Z-4a980e03",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 2
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 312 TASK"
+      }
+    },
+    {
+      "id": "314",
+      "path": "examples/314-arraycopy-exceptional-prefix",
+      "title": "Array copy leaves a prefix before an incompatible element",
+      "summary": "Prevalidating all elements preserves exception classes but loses the writes preceding an incompatible boxed integer.",
+      "origin": "constructed",
+      "system": "Array copy",
+      "symbol": "copy.Copy#transfer([Ljava/lang/Object;[Ljava/lang/String;)V",
+      "approach": "B9",
+      "approaches": [
+        "B9"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "exceptions"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "refactor",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The JVM copied 40 typed Object[] sources into fresh String[] destinations. Both implementations threw ArrayStoreException on 25 inputs. Twelve destinations differed. For the source containing A and boxed 1, the reference left [A, x] and the precheck left [x, x].",
+        "The complete table freezes the runtime component types, nulls, source values, exception class and final destination. The selected adapter fields are checked independently against direct calls."
+      ],
+      "source": null,
+      "target": {
+        "family": "arraycopy-exceptional-prefix",
+        "role": "control",
+        "case": "arraycopy-exceptional-prefix",
+        "tasks": [
+          "replay",
+          "exception-class",
+          "exceptional-poststate",
+          "assignable-poststate"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "exception-class": "scaffolded",
+          "exceptional-poststate": "scaffolded",
+          "assignable-poststate": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "exception-class": "established",
+          "exceptional-poststate": "refuted",
+          "assignable-poststate": "established"
+        },
+        "claims": {
+          "exception-class": null,
+          "exceptional-poststate": null,
+          "assignable-poststate": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T023345Z-e42e52ce/result.json",
+            "attempt": "20261120T023345Z-e42e52ce",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 314 TASK"
+      }
+    },
+    {
+      "id": "315",
+      "path": "examples/315-tai-signed-fraction",
+      "title": "ThreeTen-Extra formats and parses negative fractional seconds",
+      "summary": "A matching sign error in the formatter and parser lets every object round trip while both one-way contracts fail.",
+      "origin": "real-world",
+      "system": "ThreeTen-Extra",
+      "symbol": "org.threeten.extra.scale.TaiInstant#toString()Ljava/lang/String;",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "clocks-and-time"
+        ],
+        "defect": [
+          "parser-differential"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "Frozen bounded proof obligations",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "On the 20 pinned TAI instants the parent failed six exact formatting and six independent parsing cases. Every object round trip passed. The fix passed all three comparisons on every input.",
+        "At negative half a second the parent prints -1.500000000s(TAI) and reads the canonical -0.500000000s(TAI) as positive half a second. Both directions use separately supplied oracle inputs."
+      ],
+      "source": "https://github.com/ThreeTen/threeten-extra/commit/1a51a1dc391ddbcbcb20eb7b9d13ceedf6a47c3c",
+      "target": {
+        "family": "tai-signed-fraction",
+        "role": "calibration",
+        "case": "tai-signed-fraction",
+        "tasks": [
+          "replay",
+          "format-parent",
+          "format-fix",
+          "parse-parent",
+          "parse-fix",
+          "round-trip-parent",
+          "round-trip-fix"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "format-parent": "scaffolded",
+          "format-fix": "scaffolded",
+          "parse-parent": "scaffolded",
+          "parse-fix": "scaffolded",
+          "round-trip-parent": "scaffolded",
+          "round-trip-fix": "scaffolded"
+        },
+        "expected": {
+          "replay": null,
+          "format-parent": "refuted",
+          "format-fix": "established",
+          "parse-parent": "refuted",
+          "parse-fix": "established",
+          "round-trip-parent": "established",
+          "round-trip-fix": "established"
+        },
+        "claims": {
+          "format-parent": null,
+          "format-fix": null,
+          "parse-parent": null,
+          "parse-fix": null,
+          "round-trip-parent": null,
+          "round-trip-fix": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261120T023356Z-815f403a/result.json",
+            "attempt": "20261120T023356Z-815f403a",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen bounded proof obligations",
+          "source": "https://github.com/ThreeTen/threeten-extra/commit/1a51a1dc391ddbcbcb20eb7b9d13ceedf6a47c3c",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 315 TASK"
+      }
     }
   ]
 }

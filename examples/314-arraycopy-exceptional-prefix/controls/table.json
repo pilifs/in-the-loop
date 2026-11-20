@@ -1,0 +1,64 @@
+{
+  "schema": "finite-jvm-observations/v1",
+  "fields": {
+    "exception": {
+      "entry": "copy.Projection#thrown(I)I",
+      "encoding": "index",
+      "alphabet": [
+        null,
+        "java.lang.ArrayStoreException"
+      ]
+    },
+    "state": {
+      "entry": "copy.Projection#state(I)I",
+      "encoding": "digits",
+      "alphabet": [
+        "x",
+        null,
+        "A"
+      ]
+    }
+  },
+  "cases": [
+    {"id": 0, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": []}, "expected": {"exception": null, "state": []}},
+    {"id": 1, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [null]}, "expected": {"exception": null, "state": [null]}},
+    {"id": 2, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": ["A"]}, "expected": {"exception": null, "state": ["A"]}},
+    {"id": 3, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [1]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": ["x"]}},
+    {"id": 4, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [null, null]}, "expected": {"exception": null, "state": [null, null]}},
+    {"id": 5, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": ["A", null]}, "expected": {"exception": null, "state": ["A", null]}},
+    {"id": 6, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [1, null]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": ["x", "x"]}},
+    {"id": 7, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [null, "A"]}, "expected": {"exception": null, "state": [null, "A"]}},
+    {"id": 8, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": ["A", "A"]}, "expected": {"exception": null, "state": ["A", "A"]}},
+    {"id": 9, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [1, "A"]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": ["x", "x"]}},
+    {"id": 10, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [null, 1]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": [null, "x"]}},
+    {"id": 11, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": ["A", 1]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": ["A", "x"]}},
+    {"id": 12, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [1, 1]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": ["x", "x"]}},
+    {"id": 13, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [null, null, null]}, "expected": {"exception": null, "state": [null, null, null]}},
+    {"id": 14, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": ["A", null, null]}, "expected": {"exception": null, "state": ["A", null, null]}},
+    {"id": 15, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [1, null, null]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": ["x", "x", "x"]}},
+    {"id": 16, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [null, "A", null]}, "expected": {"exception": null, "state": [null, "A", null]}},
+    {"id": 17, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": ["A", "A", null]}, "expected": {"exception": null, "state": ["A", "A", null]}},
+    {"id": 18, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [1, "A", null]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": ["x", "x", "x"]}},
+    {"id": 19, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [null, 1, null]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": [null, "x", "x"]}},
+    {"id": 20, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": ["A", 1, null]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": ["A", "x", "x"]}},
+    {"id": 21, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [1, 1, null]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": ["x", "x", "x"]}},
+    {"id": 22, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [null, null, "A"]}, "expected": {"exception": null, "state": [null, null, "A"]}},
+    {"id": 23, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": ["A", null, "A"]}, "expected": {"exception": null, "state": ["A", null, "A"]}},
+    {"id": 24, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [1, null, "A"]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": ["x", "x", "x"]}},
+    {"id": 25, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [null, "A", "A"]}, "expected": {"exception": null, "state": [null, "A", "A"]}},
+    {"id": 26, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": ["A", "A", "A"]}, "expected": {"exception": null, "state": ["A", "A", "A"]}},
+    {"id": 27, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [1, "A", "A"]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": ["x", "x", "x"]}},
+    {"id": 28, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [null, 1, "A"]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": [null, "x", "x"]}},
+    {"id": 29, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": ["A", 1, "A"]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": ["A", "x", "x"]}},
+    {"id": 30, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [1, 1, "A"]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": ["x", "x", "x"]}},
+    {"id": 31, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [null, null, 1]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": [null, null, "x"]}},
+    {"id": 32, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": ["A", null, 1]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": ["A", null, "x"]}},
+    {"id": 33, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [1, null, 1]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": ["x", "x", "x"]}},
+    {"id": 34, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [null, "A", 1]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": [null, "A", "x"]}},
+    {"id": 35, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": ["A", "A", 1]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": ["A", "A", "x"]}},
+    {"id": 36, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [1, "A", 1]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": ["x", "x", "x"]}},
+    {"id": 37, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [null, 1, 1]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": [null, "x", "x"]}},
+    {"id": 38, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": ["A", 1, 1]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": ["A", "x", "x"]}},
+    {"id": 39, "input": {"sourceType": "[Ljava.lang.Object;", "destinationType": "[Ljava.lang.String;", "source": [1, 1, 1]}, "expected": {"exception": "java.lang.ArrayStoreException", "state": ["x", "x", "x"]}}
+  ]
+}

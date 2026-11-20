@@ -1,0 +1,126 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "invoice-ordered-rate-jars",
+    "family": "invoice-ordered-rate-jars",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "two-first": {
+        "fixture": "client",
+        "fixtureClasspath": [
+          "rates/two",
+          "rates/three"
+        ],
+        "orderedClasses": [
+          "invoice.Rate"
+        ]
+      },
+      "three-first": {
+        "fixture": "client",
+        "fixtureClasspath": [
+          "rates/three",
+          "rates/two"
+        ],
+        "orderedClasses": [
+          "invoice.Rate"
+        ]
+      }
+    },
+    "pairs": [
+      {
+        "name": "reordered",
+        "kind": "positive",
+        "before": "two-first",
+        "after": "three-first"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "reordered",
+      "target": "invoice.Invoice#total(I)I"
+    },
+    {
+      "id": "invoice-values",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "invoice.Invoice#total(I)I",
+      "claim": "claims/invoice-values.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "pair": "reordered"
+    },
+    {
+      "id": "zero-only",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "invoice.Invoice#total(I)I",
+      "claim": "claims/zero-only.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "pair": "reordered"
+    },
+    {
+      "id": "rate-two-first",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "invoice.Invoice#total(I)I",
+      "claim": "claims/rate-two-first.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "two-first"
+    },
+    {
+      "id": "rate-three-first",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "invoice.Invoice#total(I)I",
+      "claim": "claims/rate-three-first.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "revision": "three-first"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/invoice/Invoices.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/oracle.py"
+    }
+  ]
+}

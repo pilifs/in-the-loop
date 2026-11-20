@@ -202,6 +202,16 @@ def bound_revisions(plan, prepared):
                                                                   if stray else "is empty"))
         if not any(a.role == "original" for a in p.artifacts if a.path in p.classpath):
             raise Refused(f"revision {revision}'s classpath has no original artifact")
+        if entry.get("fixtureClasspath"):
+            dependencies = {a.path for a in p.artifacts if a.role == "dependency"}
+            ordered = [path for path in p.classpath if path in dependencies]
+            if ordered != [f"lib/{root}.jar" for root in entry["fixtureClasspath"]]:
+                raise Refused(f"revision {revision} was prepared with a different dependency order")
+            roots = p.source.get("dependencies", [])
+            digests = [workflow.canonical_digest([(Path(f["path"]).relative_to(root["root"]).as_posix(), f["sha256"])
+                                                   for f in root["files"]]) for root in roots]
+            if digests != entry["dependencySourceDigests"]:
+                raise Refused(f"revision {revision} was built from different dependency sources")
         out[revision] = (entry, p, revision_identity(plan, entry))
     return out
 
@@ -365,6 +375,15 @@ def record_problem(record, bound):
 def read_with_oracle(plan, oracle, records):
     """What the oracle's check() says of each record's observations, in order: {"problems": [[input, why]]} or
     {"error": why} (an incomplete replay, or an oracle that failed)."""
+    if oracle["path"].endswith(".json"):
+        from targets.finite_oracle import Table
+        out = []
+        for record in records:
+            try:
+                out.append({"problems": Table(Path(plan.folder) / oracle["path"]).problems(record.observations)})
+            except (OSError, ValueError, TypeError, KeyError) as e:
+                out.append({"error": str(e)})
+        return out
     lines = [[json.dumps(o, ensure_ascii=False) for o in r.observations] for r in records]
     if not lines:
         return []

@@ -1,0 +1,39 @@
+{
+  "schema": "finite-jvm-observations/v1",
+  "fields": {
+    "format": {
+      "entry": "taigrid.Projection#format(I)I",
+      "encoding": "matches"
+    },
+    "parse": {
+      "entry": "taigrid.Projection#parse(I)I",
+      "encoding": "matches"
+    },
+    "roundTrip": {
+      "entry": "taigrid.Projection#roundTrip(I)I",
+      "encoding": "matches"
+    }
+  },
+  "cases": [
+    {"id": 0, "input": {"seconds": -2, "nanos": 0, "canonical": "-2.000000000s(TAI)"}, "expected": {"format": "-2.000000000s(TAI)", "parse": [-2, 0], "roundTrip": [-2, 0]}},
+    {"id": 1, "input": {"seconds": -2, "nanos": 1, "canonical": "-1.999999999s(TAI)"}, "expected": {"format": "-1.999999999s(TAI)", "parse": [-2, 1], "roundTrip": [-2, 1]}},
+    {"id": 2, "input": {"seconds": -2, "nanos": 500000000, "canonical": "-1.500000000s(TAI)"}, "expected": {"format": "-1.500000000s(TAI)", "parse": [-2, 500000000], "roundTrip": [-2, 500000000]}},
+    {"id": 3, "input": {"seconds": -2, "nanos": 999999999, "canonical": "-1.000000001s(TAI)"}, "expected": {"format": "-1.000000001s(TAI)", "parse": [-2, 999999999], "roundTrip": [-2, 999999999]}},
+    {"id": 4, "input": {"seconds": -1, "nanos": 0, "canonical": "-1.000000000s(TAI)"}, "expected": {"format": "-1.000000000s(TAI)", "parse": [-1, 0], "roundTrip": [-1, 0]}},
+    {"id": 5, "input": {"seconds": -1, "nanos": 1, "canonical": "-0.999999999s(TAI)"}, "expected": {"format": "-0.999999999s(TAI)", "parse": [-1, 1], "roundTrip": [-1, 1]}},
+    {"id": 6, "input": {"seconds": -1, "nanos": 500000000, "canonical": "-0.500000000s(TAI)"}, "expected": {"format": "-0.500000000s(TAI)", "parse": [-1, 500000000], "roundTrip": [-1, 500000000]}},
+    {"id": 7, "input": {"seconds": -1, "nanos": 999999999, "canonical": "-0.000000001s(TAI)"}, "expected": {"format": "-0.000000001s(TAI)", "parse": [-1, 999999999], "roundTrip": [-1, 999999999]}},
+    {"id": 8, "input": {"seconds": 0, "nanos": 0, "canonical": "0.000000000s(TAI)"}, "expected": {"format": "0.000000000s(TAI)", "parse": [0, 0], "roundTrip": [0, 0]}},
+    {"id": 9, "input": {"seconds": 0, "nanos": 1, "canonical": "0.000000001s(TAI)"}, "expected": {"format": "0.000000001s(TAI)", "parse": [0, 1], "roundTrip": [0, 1]}},
+    {"id": 10, "input": {"seconds": 0, "nanos": 500000000, "canonical": "0.500000000s(TAI)"}, "expected": {"format": "0.500000000s(TAI)", "parse": [0, 500000000], "roundTrip": [0, 500000000]}},
+    {"id": 11, "input": {"seconds": 0, "nanos": 999999999, "canonical": "0.999999999s(TAI)"}, "expected": {"format": "0.999999999s(TAI)", "parse": [0, 999999999], "roundTrip": [0, 999999999]}},
+    {"id": 12, "input": {"seconds": 1, "nanos": 0, "canonical": "1.000000000s(TAI)"}, "expected": {"format": "1.000000000s(TAI)", "parse": [1, 0], "roundTrip": [1, 0]}},
+    {"id": 13, "input": {"seconds": 1, "nanos": 1, "canonical": "1.000000001s(TAI)"}, "expected": {"format": "1.000000001s(TAI)", "parse": [1, 1], "roundTrip": [1, 1]}},
+    {"id": 14, "input": {"seconds": 1, "nanos": 500000000, "canonical": "1.500000000s(TAI)"}, "expected": {"format": "1.500000000s(TAI)", "parse": [1, 500000000], "roundTrip": [1, 500000000]}},
+    {"id": 15, "input": {"seconds": 1, "nanos": 999999999, "canonical": "1.999999999s(TAI)"}, "expected": {"format": "1.999999999s(TAI)", "parse": [1, 999999999], "roundTrip": [1, 999999999]}},
+    {"id": 16, "input": {"seconds": 2, "nanos": 0, "canonical": "2.000000000s(TAI)"}, "expected": {"format": "2.000000000s(TAI)", "parse": [2, 0], "roundTrip": [2, 0]}},
+    {"id": 17, "input": {"seconds": 2, "nanos": 1, "canonical": "2.000000001s(TAI)"}, "expected": {"format": "2.000000001s(TAI)", "parse": [2, 1], "roundTrip": [2, 1]}},
+    {"id": 18, "input": {"seconds": 2, "nanos": 500000000, "canonical": "2.500000000s(TAI)"}, "expected": {"format": "2.500000000s(TAI)", "parse": [2, 500000000], "roundTrip": [2, 500000000]}},
+    {"id": 19, "input": {"seconds": 2, "nanos": 999999999, "canonical": "2.999999999s(TAI)"}, "expected": {"format": "2.999999999s(TAI)", "parse": [2, 999999999], "roundTrip": [2, 999999999]}}
+  ]
+}

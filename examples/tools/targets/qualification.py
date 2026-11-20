@@ -208,10 +208,14 @@ def correspondence(plan, prepared, records):
             if not source.resolve().is_relative_to(where.resolve()) or runtime.sha256(source) != oracle["sha256"]:
                 return rows, f"{rev} correspondence oracle bytes changed"
             try:
-                result = subprocess.run([sys.executable, "-I", "-c", script, str(source)], capture_output=True,
-                                        input=json.dumps([json.dumps(o) for o in record.observations]), text=True, timeout=30)
-                counts = json.loads(result.stdout) if result.returncode == 0 else {}
-            except (ValueError, OSError, subprocess.TimeoutExpired) as error:
+                if source.suffix == ".json":
+                    from targets.finite_oracle import Table
+                    counts = Table(source).correspondence(record.observations, recipe["entry"])
+                else:
+                    result = subprocess.run([sys.executable, "-I", "-c", script, str(source)], capture_output=True,
+                                            input=json.dumps([json.dumps(o) for o in record.observations]), text=True, timeout=30)
+                    counts = json.loads(result.stdout) if result.returncode == 0 else {}
+            except (ValueError, KeyError, TypeError, OSError, subprocess.TimeoutExpired) as error:
                 return rows, f"{rev} correspondence could not be checked: {error}"
             rows.append({"revision": rev, "entry": recipe["entry"], "adapterSha256": adapter.sha256,
                          "adapterClassSha256": hashlib.sha256(data).hexdigest(), "subject": p.source["target"], "mapping": recipe["mapping"], "jdk": ids["jdkRelease"], **counts})

@@ -146,6 +146,22 @@ def artifact_sources(folder, target, revisions):
                 entry["parent"] = revision["parent"]
         else:
             entry["fixture"] = revision["fixture"]
+        for key in ("fixtureClasspath", "orderedClasses"):
+            if key in defined[source]:
+                if route != "fixture":
+                    return f"revision {source}: {key} requires a fixture"
+                entry[key] = list(defined[source][key])
+        if entry.get("fixtureClasspath"):
+            trees = []
+            for relative in entry["fixtureClasspath"]:
+                root = (Path(folder) / relative).resolve()
+                if Path(folder).resolve() not in root.parents or not root.is_dir():
+                    return f"revision {source}: fixture dependency {relative} is not a source directory in the example"
+                files = sorted(root.rglob("*.java"))
+                if not files or any(not path.resolve().is_relative_to(root) for path in files):
+                    return f"revision {source}: fixture dependency {relative} has missing or external Java sources"
+                trees.append(canonical_digest([(p.relative_to(root).as_posix(), file_sha256(p)) for p in files]))
+            entry["dependencySourceDigests"] = trees
         if route in ("published-artifact", "source-slice"):
             published = [{k: a[k] for k in ("coordinates", "url", "sha256") if k in a}
                          for a in prep.get("artifacts", []) if a["revision"] == source]

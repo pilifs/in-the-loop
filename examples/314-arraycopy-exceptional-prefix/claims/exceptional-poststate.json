@@ -1,0 +1,22 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "preservation",
+  "property": "exceptional-poststate",
+  "statement": "Both calls leave identical destination cells including after a throw.",
+  "assume": "code >= 0 && code < 40",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 10,
+    "maxArrayLength": 3
+  },
+  "adapter": {
+    "entry": "copy.Projection#state(I)I",
+    "mapping": "Bijective base three encodes all Object[] inputs of zero to three cells, low digit first: null, String A, boxed Integer 1. Every destination is a fresh String[] initially filled with x. State encodes the final x/null/A cells in base three for the known length, after either exit. Thrown covers exactly ArrayStoreException.",
+    "correspondence": "finite-oracle",
+    "cases": 40
+  }
+}

@@ -12,27 +12,27 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-19T21:37:29.873Z",
-  "ended": "2026-11-20T01:47:14.491Z",
-  "duration_seconds": 14985,
+  "ended": "2026-11-20T02:40:06.578Z",
+  "duration_seconds": 18157,
   "stats": {
-    "turns": 4,
-    "api_calls": 1027,
-    "tool_calls": 2598,
-    "tool_errors": 88,
-    "compactions": 3,
+    "turns": 6,
+    "api_calls": 1113,
+    "tool_calls": 2865,
+    "tool_errors": 95,
+    "compactions": 4,
     "peak_context_tokens": 478319,
     "usage": {
-      "input_tokens": 1852714,
-      "output_tokens": 476229,
-      "cache_read_input_tokens": 287247232,
+      "input_tokens": 2093691,
+      "output_tokens": 535178,
+      "cache_read_input_tokens": 304530048,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 1504,
-    "exec": 984,
-    "apply_patch": 73,
-    "wait": 37
+    "Bash": 1668,
+    "exec": 1062,
+    "apply_patch": 93,
+    "wait": 42
   },
   "files_touched": [
     "examples/197-shared-int-array-poststates/README.md",
@@ -44,15 +44,30 @@
     "examples/310-threeten-complete-hours/controls/check_retries.py",
     "examples/310-threeten-complete-hours/records/midnight-witness.json",
     "examples/311-commons-lang-utf16-search/README.md",
+    "examples/312-invoice-ordered-rate-jars/client/invoice/Invoice.java",
+    "examples/312-invoice-ordered-rate-jars/controls/oracle.py",
+    "examples/312-invoice-ordered-rate-jars/driver/invoice/Invoices.java",
+    "examples/312-invoice-ordered-rate-jars/proofs/audit_order.py",
+    "examples/312-invoice-ordered-rate-jars/rates/three/invoice/Rate.java",
+    "examples/312-invoice-ordered-rate-jars/rates/two/invoice/Rate.java",
+    "examples/314-arraycopy-exceptional-prefix/adapter/copy/Projection.java",
+    "examples/314-arraycopy-exceptional-prefix/driver/copy/CopyCases.java",
+    "examples/314-arraycopy-exceptional-prefix/precheck/copy/Copy.java",
+    "examples/314-arraycopy-exceptional-prefix/reference/copy/Copy.java",
     "examples/schema/result.schema.json",
     "examples/schema/target-claim.schema.json",
+    "examples/schema/target.schema.json",
     "examples/tools/build.py",
     "examples/tools/targets/claim_history.py",
     "examples/tools/targets/executions.py",
+    "examples/tools/targets/finite_oracle.py",
+    "examples/tools/targets/java/LoadedClasses.java",
+    "examples/tools/targets/java/org/intheloop/controls/Grid.java",
     "examples/tools/targets/qualification.py",
     "examples/tools/targets/recipes.py",
     "examples/tools/targets/route.py",
     "examples/tools/targets/runtime.py",
+    "examples/tools/targets/test_acceptance.py",
     "examples/tools/targets/test_gap_inventory.py",
     "examples/tools/targets/test_recipes.py",
     "examples/tools/targets/test_workflow_refusal.py",
@@ -143,27 +158,217 @@
     {
       "index": 3,
       "started": "2026-11-20T00:46:36.703Z",
-      "ended": "2026-11-20T01:47:14.491Z",
+      "ended": "2026-11-20T01:54:43.516Z",
       "turns": 1,
-      "api_calls": 265,
+      "api_calls": 286,
       "usage": {
-        "input_tokens": 574306,
-        "output_tokens": 105876,
-        "cache_read_input_tokens": 60752128,
+        "input_tokens": 582679,
+        "output_tokens": 114901,
+        "cache_read_input_tokens": 67467648,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 317021
+      "peak_context_tokens": 323964
+    },
+    {
+      "index": 4,
+      "started": "2026-11-20T01:54:43.523Z",
+      "ended": "2026-11-20T02:40:06.578Z",
+      "turns": 2,
+      "api_calls": 65,
+      "usage": {
+        "input_tokens": 232604,
+        "output_tokens": 49924,
+        "cache_read_input_tokens": 10567296,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 242859
     }
   ],
   "log": {
-    "sha256": "093c9fdeb97f0dccd0e32651e3c3ed22f451c93d737860d178ffb1bcfbc8d7a9",
-    "bytes": 24107007,
-    "lines": 7976,
-    "gzip_bytes": 9182785,
-    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/093c9fdeb97f0dccd0e32651e3c3ed22f451c93d737860d178ffb1bcfbc8d7a9.jsonl.gz"
+    "sha256": "1cba1eb7b4b8718a6109d74ba05cc7df57e3d7ebf5077a0329bace970bf21fc3",
+    "bytes": 27321097,
+    "lines": 8702,
+    "gzip_bytes": 10291893,
+    "path": "llm-dlc/traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/logs/1cba1eb7b4b8718a6109d74ba05cc7df57e3d7ebf5077a0329bace970bf21fc3.jsonl.gz"
   },
   "subagents": [],
   "commits": [
+    {
+      "change_id": "pkyzwyvytnmyssqwmuzynrnknvukwszs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-045: a second Codex session opened the run-brief skill before working alone",
+      "body": "The single-agent run foundation-and-python-restart, a new Codex session given a prompt that calls the work 'written for multiple agents', read .agents/skills/run-brief/SKILL.md in its first minute, then decided the brief was for one agent and worked on it directly, starting nothing. The finding records this second occurrence.",
+      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
+    },
+    {
+      "change_id": "lxnwsprmkwzvlluzpulzsqslymrvrpov",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Codex sessions start without the Pets, Hotline, Safety Settings and Sites apps",
+      "body": "The ChatGPT account gives every Codex session its apps as deferred tools (codex_apps). On the user's word (2026-11-19), four that no work in this repository has a use for are turned off: Pets, Hotline, Safety Settings and Sites. GitHub, ChatGPT Space, Codex Document Control and Plugin Management stay. The loops pass the settings on every turn (CODEX_CONFIG in agent_client.py, as apps.<connector id>.enabled=false), and .codex/config.toml carries the same for a person's own Codex in a trusted checkout. Run 1 of foundation-domain-streams called none of the eight apps. Verified with codex debug prompt-input (CLI 0.170) rendered with CODEX_CONFIG: only the four kept apps' namespaces remain, and CLAUDE.md is still read; the TOML parses; the changed tests pass (8 of 8 files).",
+      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
+    },
+    {
+      "change_id": "pzqqompzkvnwxkvxqurownylmosunzmq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-214230-gradebook-frozen-claims-on-the-checkpoin: failed: 5 failed step(s) in 22.2s, peak 97.3 MiB (estimated 2m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
+    },
+    {
+      "change_id": "wmswovokuroqrrtlsxzslysvyolyknuv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261119-214238-math-238-direct-method-checkpoint-compar: passed: 4 passed step(s) in 6m57s, peak 940.3 MiB (estimated 5m00s, 4.0 GiB); 55 output file(s) changed; signals: example:task-as-expected×1 Applied 55 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
+    },
+    {
+      "change_id": "wuttosxkzuypsxpzwwmnqutvkotuwsns",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-215957-threetenbp-hours-adapter-on-the-qualifie: failed: 1 failed step(s) in 12.0s, peak 220.5 MiB (estimated 3m00s, 3.0 GiB); 77 output file(s) changed; signals: example:task-unexpected×5 20261119-220147-gradebook-qualified-attempts-and-interru: passed: 2 passed step(s) in 20.0s, peak 227.5 MiB (estimated 2m00s, 3.0 GiB); 84 output file(s) changed; signals: example:task-as-expected×2; example:task-as-expected×3 Applied 84 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
+    },
+    {
+      "change_id": "qtnnvmzuwxtrqykwqsmyovpwxzpmouwo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261119-215949-math-238-direct-recipe-on-frozen-power-a: passed: 1 passed step(s) in 6m23s, peak 994.5 MiB (estimated 9m00s, 4.0 GiB); 57 output file(s) changed; signals: example:task-as-expected×4 Applied 57 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
+    },
+    {
+      "change_id": "pqqonrvpsvuowwypuonyzzotyyytrpxp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 4 job(s)",
+      "body": "Outputs applied for 2 of the 4 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261119-221145-qualify-heap-merges-initialized-display: passed: 1 passed step(s) in 5.0s, peak 92.1 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261119-221152-qualify-integrated-jbmc-on-the-distinct: passed: 1 passed step(s) in 3.4s, peak 73.0 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261119-221200-separate-quote-amount-and-ordered-send-r: failed: 1 failed step(s) in 4.0s, peak 85.2 MiB (estimated 2m00s, 2.0 GiB); 6 output file(s) changed 20261119-222214-check-the-supplementary-character-search: failed: 1 failed step(s) in 15.2s, peak 306.0 MiB (estimated 3m00s, 3.0 GiB); 77 output file(s) changed; signals: example:task-unexpected×5 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
+    },
+    {
+      "change_id": "owxqwqnrkpokqrusullyoywpwmmkvlws",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 2 of the 2 job(s). 20261119-221555-retain-a-measured-gcd-checker-timeout-an: passed: 1 passed step(s) in 3m26s, peak 951.7 MiB (estimated 5m00s, 3.0 GiB); 29 output file(s) changed Applied 29 output(s). 20261119-222610-recheck-quote-projections-with-compile-s: passed: 1 passed step(s) in 5.4s, peak 85.6 MiB (estimated 1m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
+    },
+    {
+      "change_id": "utsnpupxotvqozmullurtmyxpkvrwrxy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-230939-retry-threetenbp-hours-after-exact-jdk-a: failed: 4 passed, 1 failed step(s) in 28.1s, peak 233.9 MiB (estimated 3m00s, 3.0 GiB); 89 output file(s) changed; signals: example:task-unexpected×5 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "73a0995638584c4c507ae92b8c4a6abf9fbcb14caaf0590eff1c9464124fb209"
+    },
+    {
+      "change_id": "zpymnulpnmwtqulnopqmvuqossqvulnp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261119-231539-retry-threetenbp-hours-after-exact-jdk-a: passed: 5 passed step(s) in 28.9s, peak 210.8 MiB (estimated 3m00s, 3.0 GiB); 89 output file(s) changed; signals: example:task-unexpected×5 Applied 89 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "73a0995638584c4c507ae92b8c4a6abf9fbcb14caaf0590eff1c9464124fb209"
+    },
+    {
+      "change_id": "onuzmoonryltynpoxumzxmtpumryzrtm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Twenty Java verification examples as a fast-follow brief for one agent's run",
+      "body": "llm-dlc/loops/twenty-example-fast-follow.md is the user's brief for the run after foundation-and-python-restart: 20 new cases, ten historical upstream repairs (Commons Lang, ThreeTen-Extra, Commons CSV, Guava, Commons Collections, JFreeChart, Joda-Time, Commons Math, Commons Geometry) and ten controlled Java examples, in four waves (artifacts and observations; heaps and sequences; language and library boundaries; transfer and cost), each with a frozen subject, domain, observation, independent oracle and expected discriminator. Copied unchanged.",
+      "log_sha256": "cc31d75a915fc8ebac47ae85aae9b1639a9ed2f4d8c60d65ab92f283c36bea9a"
+    },
+    {
+      "change_id": "zqmtmlosvpxvzuszlvkoztuwoyvuksqy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-000226-threetenbp-clock-parent-with-observed-ch: passed: 1 passed step(s) in 13.0s, peak 154.4 MiB (estimated 1m00s, 2.0 GiB); 16 output file(s) changed; signals: example:task-as-expected×1 Applied 16 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "cc31d75a915fc8ebac47ae85aae9b1639a9ed2f4d8c60d65ab92f283c36bea9a"
+    },
+    {
+      "change_id": "xulyotzsuymvqnsmrzqzzktouzutqknq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose the watcher's two decision ids for the allow list",
+      "body": "The watcher session's logs carry single-foundation-and-python-restart-D001 and -D002, the ids single_run.py gives the watcher's continue answers, which the scan reads as long tokens (10126be8, d5cbb565). Checked masked: each occurs after 'continue recorded as'. Proposed for a person to approve; the run's agent proposed 10126be8 too on its own line. The commit also holds the run's decision record (llm-dlc/decisions/single-foundation-and-python-restart.*).",
+      "log_sha256": "cc31d75a915fc8ebac47ae85aae9b1639a9ed2f4d8c60d65ab92f283c36bea9a"
+    },
+    {
+      "change_id": "slvrxzkqtqvzpkqnktyqvlkvxnkrtozx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "20261120-000227-threetenbp-same-day-with-observed-chrono: passed, its receipt in examples/310-threeten-complete-hours/receipts/same-day-observed. 20261120-000646-prove-the-twelve-sub-hour-crossings-at-t: failed: 1 failed step(s) in 0.2s, peak 32.8 MiB (estimated 1m00s, 2.0 GiB); its outputs were not produced. Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way. Two collections that ran beside a commit of the watcher's were folded into this one commit.",
+      "log_sha256": "cc31d75a915fc8ebac47ae85aae9b1639a9ed2f4d8c60d65ab92f283c36bea9a"
+    },
+    {
+      "change_id": "xymkkkzururwsqlwttkrryltqwwvyuwt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Regenerate the traces README after folding two results commits",
+      "body": "Folding two verification-result commits that had raced a watcher commit left llm-dlc/traces/README.md out of step with the manifests; sync.py regenerate brings it back.",
+      "log_sha256": "cc31d75a915fc8ebac47ae85aae9b1639a9ed2f4d8c60d65ab92f283c36bea9a"
+    },
+    {
+      "change_id": "wzovxqwloyokvpnnsmptmknrltvkxupu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 3 job(s)",
+      "body": "Outputs applied for 0 of the 3 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-000226-threetenbp-clock-fix-with-observed-chron: failed: 1 failed step(s) in 10m09s, peak 1.5 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-000226-threetenbp-reversal-fix-with-observed-ch: failed: 1 failed step(s) in 10m10s, peak 1.6 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-000227-threetenbp-reversal-parent-with-observed: failed: 1 failed step(s) in 10m10s, peak 990.8 MiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "cc31d75a915fc8ebac47ae85aae9b1639a9ed2f4d8c60d65ab92f283c36bea9a"
+    },
+    {
+      "change_id": "nkvunvqknrursqmvyzmyupwxlmvvwzww",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-001338-prove-the-twelve-sub-hour-crossings-at-t: passed: 1 passed step(s) in 21.7s, peak 182.5 MiB (estimated 1m00s, 2.0 GiB); 31 output file(s) changed; signals: example:task-as-expected×2 Applied 31 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "cc31d75a915fc8ebac47ae85aae9b1639a9ed2f4d8c60d65ab92f283c36bea9a"
+    },
+    {
+      "change_id": "mrswtquknywomqmxwsppnvvnvoowopzs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-001502-retry-commons-lang-utf-16-search-on-the: passed: 1 passed step(s) in 15.0s, peak 319.9 MiB (estimated 1m00s, 3.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×5 Applied 78 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "cc31d75a915fc8ebac47ae85aae9b1639a9ed2f4d8c60d65ab92f283c36bea9a"
+    },
+    {
+      "change_id": "skzzvykuuootsxvykmxqlwuwvvlossmz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-005556-recheck-jbmc-preservation-on-all-71-null: passed: 2 passed step(s) in 7.2s, peak 74.7 MiB (estimated 20.0s, 1.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "0d5e02c30d5c26a76e72d77495ea4b81906a5a058eb94bbf1a1ada38c8b5e156"
+    },
+    {
+      "change_id": "uotkyzwmrkuzzzssyzzpxltowxvzqkkt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-010828-retry-all-five-full-grid-threetenbp-regi: failed: 4 failed, 1 passed step(s) in 1m44s, peak 848.8 MiB (estimated 1m00s, 2.0 GiB); 30 output file(s) changed; signals: example:task-as-expected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "0d5e02c30d5c26a76e72d77495ea4b81906a5a058eb94bbf1a1ada38c8b5e156"
+    },
+    {
+      "change_id": "lyszoznyxllslntslktrkxkvusutstxx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-012520-publish-five-linked-full-grid-threetenbp: passed: 5 passed step(s) in 1m36s, peak 848.5 MiB (estimated 1m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×1 Applied 78 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "8379daebb208d9b41dce32e3adf26b276e28b500176a28442ab1233b04cac7f8"
+    },
+    {
+      "change_id": "kpmstovlvzwwxyvxxzssryqlpuyrxvyk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261120-013844-qualify-shared-and-distinct-right-root-p: passed: 3 passed step(s) in 18.0s, peak 75.0 MiB (estimated 20.0s, 1.0 GiB); 9 output file(s) changed Applied 9 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
+      "log_sha256": "093c9fdeb97f0dccd0e32651e3c3ed22f451c93d737860d178ffb1bcfbc8d7a9"
+    },
     {
       "change_id": "oxzsrsuyxpmtknxmssqpnyoqmvmlpxkk",
       "commit_id": null,
@@ -237,70 +442,6 @@
       "log_sha256": "06c62a8ed209911b20366c322c62d051683ce29e05fe2b31c839564585ef83d3"
     },
     {
-      "change_id": "pkyzwyvytnmyssqwmuzynrnknvukwszs",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "VF-045: a second Codex session opened the run-brief skill before working alone",
-      "body": "The single-agent run foundation-and-python-restart, a new Codex session given a prompt that calls the work 'written for multiple agents', read .agents/skills/run-brief/SKILL.md in its first minute, then decided the brief was for one agent and worked on it directly, starting nothing. The finding records this second occurrence.",
-      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
-    },
-    {
-      "change_id": "lxnwsprmkwzvlluzpulzsqslymrvrpov",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Codex sessions start without the Pets, Hotline, Safety Settings and Sites apps",
-      "body": "The ChatGPT account gives every Codex session its apps as deferred tools (codex_apps). On the user's word (2026-11-19), four that no work in this repository has a use for are turned off: Pets, Hotline, Safety Settings and Sites. GitHub, ChatGPT Space, Codex Document Control and Plugin Management stay. The loops pass the settings on every turn (CODEX_CONFIG in agent_client.py, as apps.<connector id>.enabled=false), and .codex/config.toml carries the same for a person's own Codex in a trusted checkout. Run 1 of foundation-domain-streams called none of the eight apps. Verified with codex debug prompt-input (CLI 0.170) rendered with CODEX_CONFIG: only the four kept apps' namespaces remain, and CLAUDE.md is still read; the TOML parses; the changed tests pass (8 of 8 files).",
-      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
-    },
-    {
-      "change_id": "pzqqompzkvnwxkvxqurownylmosunzmq",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-214230-gradebook-frozen-claims-on-the-checkpoin: failed: 5 failed step(s) in 22.2s, peak 97.3 MiB (estimated 2m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
-    },
-    {
-      "change_id": "wmswovokuroqrrtlsxzslysvyolyknuv",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261119-214238-math-238-direct-method-checkpoint-compar: passed: 4 passed step(s) in 6m57s, peak 940.3 MiB (estimated 5m00s, 4.0 GiB); 55 output file(s) changed; signals: example:task-as-expected×1 Applied 55 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
-    },
-    {
-      "change_id": "wuttosxkzuypsxpzwwmnqutvkotuwsns",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 2 job(s)",
-      "body": "Outputs applied for 1 of the 2 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-215957-threetenbp-hours-adapter-on-the-qualifie: failed: 1 failed step(s) in 12.0s, peak 220.5 MiB (estimated 3m00s, 3.0 GiB); 77 output file(s) changed; signals: example:task-unexpected×5 20261119-220147-gradebook-qualified-attempts-and-interru: passed: 2 passed step(s) in 20.0s, peak 227.5 MiB (estimated 2m00s, 3.0 GiB); 84 output file(s) changed; signals: example:task-as-expected×2; example:task-as-expected×3 Applied 84 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
-    },
-    {
-      "change_id": "qtnnvmzuwxtrqykwqsmyovpwxzpmouwo",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261119-215949-math-238-direct-recipe-on-frozen-power-a: passed: 1 passed step(s) in 6m23s, peak 994.5 MiB (estimated 9m00s, 4.0 GiB); 57 output file(s) changed; signals: example:task-as-expected×4 Applied 57 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
-    },
-    {
-      "change_id": "pqqonrvpsvuowwypuonyzzotyyytrpxp",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 4 job(s)",
-      "body": "Outputs applied for 2 of the 4 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261119-221145-qualify-heap-merges-initialized-display: passed: 1 passed step(s) in 5.0s, peak 92.1 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261119-221152-qualify-integrated-jbmc-on-the-distinct: passed: 1 passed step(s) in 3.4s, peak 73.0 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261119-221200-separate-quote-amount-and-ordered-send-r: failed: 1 failed step(s) in 4.0s, peak 85.2 MiB (estimated 2m00s, 2.0 GiB); 6 output file(s) changed 20261119-222214-check-the-supplementary-character-search: failed: 1 failed step(s) in 15.2s, peak 306.0 MiB (estimated 3m00s, 3.0 GiB); 77 output file(s) changed; signals: example:task-unexpected×5 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
-    },
-    {
-      "change_id": "owxqwqnrkpokqrusullyoywpwmmkvlws",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 2 job(s)",
-      "body": "Outputs applied for 2 of the 2 job(s). 20261119-221555-retain-a-measured-gcd-checker-timeout-an: passed: 1 passed step(s) in 3m26s, peak 951.7 MiB (estimated 5m00s, 3.0 GiB); 29 output file(s) changed Applied 29 output(s). 20261119-222610-recheck-quote-projections-with-compile-s: passed: 1 passed step(s) in 5.4s, peak 85.6 MiB (estimated 1m00s, 2.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "f0aa930613068d2b70e831cb8323eea106baf73a5897b049abd3da4b753c1212"
-    },
-    {
       "change_id": "wuqvmopopvzqqomtmqqxyrzwzwsrruwm",
       "commit_id": null,
       "immutable": false,
@@ -347,22 +488,6 @@
       "summary": "Keep temporary jj file splits out of the verification queue",
       "body": "A runner polling another workspace picked up a ThreeTenBP job while sync.py was setting aside files outside a scoped commit. The transient tree carried only the first checker change. For a runnable job the queue now checks which commit last touched its file, including jobs with explicit source revisions, and waits while that commit is the temporary set-aside.\n\nThe queue regression exercises two simultaneous views of the same job, both revision choices and a commit message with an adjacent metadata line. On the actual recorded history the queue skips 0c74dbf6 and finds a78b7348. All 24 selected test files passed, including the 40 pipeline tests.",
       "log_sha256": "a802a2f8c1d3c45b88ee0c9ab84f2b75d436bbb0e5833ba415b1f66cff238345"
-    },
-    {
-      "change_id": "utsnpupxotvqozmullurtmyxpkvrwrxy",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261119-230939-retry-threetenbp-hours-after-exact-jdk-a: failed: 4 passed, 1 failed step(s) in 28.1s, peak 233.9 MiB (estimated 3m00s, 3.0 GiB); 89 output file(s) changed; signals: example:task-unexpected×5 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "73a0995638584c4c507ae92b8c4a6abf9fbcb14caaf0590eff1c9464124fb209"
-    },
-    {
-      "change_id": "zpymnulpnmwtqulnopqmvuqossqvulnp",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261119-231539-retry-threetenbp-hours-after-exact-jdk-a: passed: 5 passed step(s) in 28.9s, peak 210.8 MiB (estimated 3m00s, 3.0 GiB); 89 output file(s) changed; signals: example:task-unexpected×5 Applied 89 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "73a0995638584c4c507ae92b8c4a6abf9fbcb14caaf0590eff1c9464124fb209"
     },
     {
       "change_id": "ymmomsosuvlporkkqqxnqknoolvvtlvr",
@@ -421,70 +546,6 @@
       "log_sha256": "83286b210d21c074b4a3d1d9d123cbfc20416cb3969da67de5626758c9a2e87b"
     },
     {
-      "change_id": "onuzmoonryltynpoxumzxmtpumryzrtm",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Twenty Java verification examples as a fast-follow brief for one agent's run",
-      "body": "llm-dlc/loops/twenty-example-fast-follow.md is the user's brief for the run after foundation-and-python-restart: 20 new cases, ten historical upstream repairs (Commons Lang, ThreeTen-Extra, Commons CSV, Guava, Commons Collections, JFreeChart, Joda-Time, Commons Math, Commons Geometry) and ten controlled Java examples, in four waves (artifacts and observations; heaps and sequences; language and library boundaries; transfer and cost), each with a frozen subject, domain, observation, independent oracle and expected discriminator. Copied unchanged.",
-      "log_sha256": "cc31d75a915fc8ebac47ae85aae9b1639a9ed2f4d8c60d65ab92f283c36bea9a"
-    },
-    {
-      "change_id": "zqmtmlosvpxvzuszlvkoztuwoyvuksqy",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261120-000226-threetenbp-clock-parent-with-observed-ch: passed: 1 passed step(s) in 13.0s, peak 154.4 MiB (estimated 1m00s, 2.0 GiB); 16 output file(s) changed; signals: example:task-as-expected×1 Applied 16 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "cc31d75a915fc8ebac47ae85aae9b1639a9ed2f4d8c60d65ab92f283c36bea9a"
-    },
-    {
-      "change_id": "xulyotzsuymvqnsmrzqzzktouzutqknq",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Propose the watcher's two decision ids for the allow list",
-      "body": "The watcher session's logs carry single-foundation-and-python-restart-D001 and -D002, the ids single_run.py gives the watcher's continue answers, which the scan reads as long tokens (10126be8, d5cbb565). Checked masked: each occurs after 'continue recorded as'. Proposed for a person to approve; the run's agent proposed 10126be8 too on its own line. The commit also holds the run's decision record (llm-dlc/decisions/single-foundation-and-python-restart.*).",
-      "log_sha256": "cc31d75a915fc8ebac47ae85aae9b1639a9ed2f4d8c60d65ab92f283c36bea9a"
-    },
-    {
-      "change_id": "slvrxzkqtqvzpkqnktyqvlkvxnkrtozx",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 2 job(s)",
-      "body": "20261120-000227-threetenbp-same-day-with-observed-chrono: passed, its receipt in examples/310-threeten-complete-hours/receipts/same-day-observed. 20261120-000646-prove-the-twelve-sub-hour-crossings-at-t: failed: 1 failed step(s) in 0.2s, peak 32.8 MiB (estimated 1m00s, 2.0 GiB); its outputs were not produced. Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way. Two collections that ran beside a commit of the watcher's were folded into this one commit.",
-      "log_sha256": "cc31d75a915fc8ebac47ae85aae9b1639a9ed2f4d8c60d65ab92f283c36bea9a"
-    },
-    {
-      "change_id": "xymkkkzururwsqlwttkrryltqwwvyuwt",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Regenerate the traces README after folding two results commits",
-      "body": "Folding two verification-result commits that had raced a watcher commit left llm-dlc/traces/README.md out of step with the manifests; sync.py regenerate brings it back.",
-      "log_sha256": "cc31d75a915fc8ebac47ae85aae9b1639a9ed2f4d8c60d65ab92f283c36bea9a"
-    },
-    {
-      "change_id": "wzovxqwloyokvpnnsmptmknrltvkxupu",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 3 job(s)",
-      "body": "Outputs applied for 0 of the 3 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-000226-threetenbp-clock-fix-with-observed-chron: failed: 1 failed step(s) in 10m09s, peak 1.5 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-000226-threetenbp-reversal-fix-with-observed-ch: failed: 1 failed step(s) in 10m10s, peak 1.6 GiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 20261120-000227-threetenbp-reversal-parent-with-observed: failed: 1 failed step(s) in 10m10s, peak 990.8 MiB (estimated 10m00s, 2.0 GiB); 15 output file(s) changed; signals: example:task-unexpected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "cc31d75a915fc8ebac47ae85aae9b1639a9ed2f4d8c60d65ab92f283c36bea9a"
-    },
-    {
-      "change_id": "nkvunvqknrursqmvyzmyupwxlmvvwzww",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261120-001338-prove-the-twelve-sub-hour-crossings-at-t: passed: 1 passed step(s) in 21.7s, peak 182.5 MiB (estimated 1m00s, 2.0 GiB); 31 output file(s) changed; signals: example:task-as-expected×2 Applied 31 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "cc31d75a915fc8ebac47ae85aae9b1639a9ed2f4d8c60d65ab92f283c36bea9a"
-    },
-    {
-      "change_id": "mrswtquknywomqmxwsppnvvnvoowopzs",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261120-001502-retry-commons-lang-utf-16-search-on-the: passed: 1 passed step(s) in 15.0s, peak 319.9 MiB (estimated 1m00s, 3.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×5 Applied 78 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "cc31d75a915fc8ebac47ae85aae9b1639a9ed2f4d8c60d65ab92f283c36bea9a"
-    },
-    {
       "change_id": "syymwsotsnnzrywnqtryzmpywpuysvlv",
       "commit_id": null,
       "immutable": false,
@@ -525,36 +586,12 @@
       "log_sha256": "6a6d0d34f837cb1d206f1e978430cb1be45f7c80301c65918506492a38607852"
     },
     {
-      "change_id": "skzzvykuuootsxvykmxqlwuwvvlossmz",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261120-005556-recheck-jbmc-preservation-on-all-71-null: passed: 2 passed step(s) in 7.2s, peak 74.7 MiB (estimated 20.0s, 1.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "0d5e02c30d5c26a76e72d77495ea4b81906a5a058eb94bbf1a1ada38c8b5e156"
-    },
-    {
-      "change_id": "uotkyzwmrkuzzzssyzzpxltowxvzqkkt",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-010828-retry-all-five-full-grid-threetenbp-regi: failed: 4 failed, 1 passed step(s) in 1m44s, peak 848.8 MiB (estimated 1m00s, 2.0 GiB); 30 output file(s) changed; signals: example:task-as-expected×1 Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "0d5e02c30d5c26a76e72d77495ea4b81906a5a058eb94bbf1a1ada38c8b5e156"
-    },
-    {
       "change_id": "qsopuqyvnpzxvwrovzyvwlmwoswzwuny",
       "commit_id": null,
       "immutable": false,
       "summary": "Validate finite word counters in receipts (verification pending)",
       "body": "The public receipt schema now accepts the checker’s two nonnegative integer query counts and rejects missing or malformed counts. The initial five full-grid runs stopped at receipt publication despite returning four proofs and a reproduced parent counterexample. Their checker outcomes, prepared bindings and replay stages are archived in 20261120-010828-retry-all-five-full-grid-threetenbp-regi.\n\nJob 20261120-012520-publish-five-linked-full-grid-threetenbp retries those five archived executions individually at the same 600-second budgets. All five real search records passed the corrected schema. Twelve changed Python test groups passed. This merge also brings in the two qualified wide-array results from 20261120-005556-recheck-jbmc-preservation-on-all-71-null.",
       "log_sha256": "0d5e02c30d5c26a76e72d77495ea4b81906a5a058eb94bbf1a1ada38c8b5e156"
-    },
-    {
-      "change_id": "lyszoznyxllslntslktrkxkvusutstxx",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261120-012520-publish-five-linked-full-grid-threetenbp: passed: 5 passed step(s) in 1m36s, peak 848.5 MiB (estimated 1m00s, 2.0 GiB); 78 output file(s) changed; signals: example:task-as-expected×1 Applied 78 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "8379daebb208d9b41dce32e3adf26b276e28b500176a28442ab1233b04cac7f8"
     },
     {
       "change_id": "tsynttsptnpsotumqolwoxnkzwymsyww",
@@ -565,20 +602,36 @@
       "log_sha256": "8379daebb208d9b41dce32e3adf26b276e28b500176a28442ab1233b04cac7f8"
     },
     {
-      "change_id": "kpmstovlvzwwxyvxxzssryqlpuyrxvyk",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record verification results for 1 job(s)",
-      "body": "Outputs applied for 1 of the 1 job(s). 20261120-013844-qualify-shared-and-distinct-right-root-p: passed: 3 passed step(s) in 18.0s, peak 75.0 MiB (estimated 20.0s, 1.0 GiB); 9 output file(s) changed Applied 9 output(s). Collected by the watcher of the foundation-and-python-restart run, which keeps the queue while the run is under way.",
-      "log_sha256": "093c9fdeb97f0dccd0e32651e3c3ed22f451c93d737860d178ffb1bcfbc8d7a9"
-    },
-    {
       "change_id": "kxvqvqvszpnkqsplzyykyokvmltwlwlt",
       "commit_id": null,
       "immutable": false,
       "summary": "Record shared and distinct right-root proofs on JBMC",
       "body": "Job 20261120-013844-qualify-shared-and-distinct-right-root-p produced four complete non-vacuous proofs and two JVM-replayed refutations. On the 71-heap domain the right-root witness uses two references to one [0]. On the nine distinct heaps JBMC proves the right root agrees even when a left write is skipped, while the two-root witness uses two different arrays holding [0]. The equivalent rewrite passes on both profiles.\n\nVerified all nine output digests, each raw checker statement, the six qualification decisions, the exact sharing in both witnesses, and the original domain and class identities. Examples 197 and 310 validated and all 23 changed test groups passed. The handoff links each result to its domain.",
       "log_sha256": "093c9fdeb97f0dccd0e32651e3c3ed22f451c93d737860d178ffb1bcfbc8d7a9"
+    },
+    {
+      "change_id": "umtznouwluvnvxltpkkzpvolroonzkzp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the watcher's last two answers on the foundation-and-python-restart run",
+      "body": "D003 (continue after cycle 3, at the user's word for more checker depth) and D004 (stop after cycle 4: the restart brief's outcome reached) were in the default workspace's decision record when the run landed by moving forward; they are committed here and the review page regenerated (decisions.py render).",
+      "log_sha256": "1cba1eb7b4b8718a6109d74ba05cc7df57e3d7ebf5077a0329bace970bf21fc3"
+    },
+    {
+      "change_id": "nxytvllqouptrqpnvxtoskzppyzkxzxm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Allow the statement's vacuity.outside in the receipt schema",
+      "body": "The foundation-and-python-restart run added Vacuity.outside to the checker's statement (lib/src/statement.rs, nwkovvmp: the allowed change a regression witness is known to lie outside) and a qualification that requires it, but examples/schema/result.schema.json still forbids extra vacuity fields, so a receipt from a current build fails check_result. The run's own default run did not see it: its workspace has no release build, so test_targets_contract's fixture calibration skipped there; this checkout's release binary predated the change until it was rebuilt. The schema now admits the field. test_targets_contract passes on the rebuilt binary, and test_costs.py run --changed passed 10 of 10.",
+      "log_sha256": "1cba1eb7b4b8718a6109d74ba05cc7df57e3d7ebf5077a0329bace970bf21fc3"
+    },
+    {
+      "change_id": "pyrvssmmxplltyrmvpwwzzplwppltlyu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind ordered JARs and finite JVM observations (verification pending)",
+      "body": "The public recipe records explicitly selected duplicate dependency classes, confirms their code source and bytes in a fresh JVM, and rejects the opposite dependency order. A typed finite table qualifies each adapter projection independently against every declared direct JVM input. Example 312 changed four invoice amounts on identical client bytes. Example 314 found twelve poststate differences despite identical exception classes. Example 315 found six formatting and six parsing errors on the historical parent yet every round trip held. The three validators, 42 changed test groups, and the reversed-order negative control passed.\n\nJobs 20261120-023617-check-invoice-values-on-swapped-dependen, 20261120-023617-check-partial-copy-state-through-arrayst and 20261120-023617-check-signed-time-in-each-direction-on-t run the frozen native obligations with their own bindings and JVM controls.",
+      "log_sha256": "1cba1eb7b4b8718a6109d74ba05cc7df57e3d7ebf5077a0329bace970bf21fc3"
     }
   ],
   "logs": {
@@ -616,6 +669,12 @@
       "bytes": 5166915,
       "lines": 1407,
       "gzip_bytes": 1829944,
+      "url": null
+    },
+    "1cba1eb7b4b8718a6109d74ba05cc7df57e3d7ebf5077a0329bace970bf21fc3": {
+      "bytes": 27321097,
+      "lines": 8702,
+      "gzip_bytes": 10291893,
       "url": null
     },
     "27f3e2c8cff696523eea71114d5387429ade654e0a7dd67468c3d9a7511c2622": {

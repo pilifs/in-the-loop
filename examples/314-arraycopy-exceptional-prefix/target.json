@@ -1,0 +1,101 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "arraycopy-exceptional-prefix",
+    "family": "arraycopy-exceptional-prefix",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "reference": {
+        "fixture": "reference"
+      },
+      "precheck": {
+        "fixture": "precheck"
+      }
+    },
+    "pairs": [
+      {
+        "name": "refactor",
+        "kind": "introduction",
+        "before": "reference",
+        "after": "precheck"
+      }
+    ]
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "adapters": [
+      "adapter/copy/Projection.java"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "relation": "calibration",
+      "pair": "refactor",
+      "target": "copy.Copy#transfer([Ljava/lang/Object;[Ljava/lang/String;)V"
+    },
+    {
+      "id": "exception-class",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "copy.Copy#transfer([Ljava/lang/Object;[Ljava/lang/String;)V",
+      "claim": "claims/exception-class.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "pair": "refactor"
+    },
+    {
+      "id": "exceptional-poststate",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "copy.Copy#transfer([Ljava/lang/Object;[Ljava/lang/String;)V",
+      "claim": "claims/exceptional-poststate.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "refuted",
+      "pair": "refactor"
+    },
+    {
+      "id": "assignable-poststate",
+      "kind": "equivalence",
+      "relation": "preservation",
+      "target": "copy.Copy#transfer([Ljava/lang/Object;[Ljava/lang/String;)V",
+      "claim": "claims/assignable-poststate.json",
+      "engine": "native",
+      "gaps": "strict",
+      "requires": [
+        "replay"
+      ],
+      "expected": "established",
+      "pair": "refactor"
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "path": "driver/copy/CopyCases.java"
+    },
+    {
+      "id": "finite-oracle",
+      "kind": "oracle",
+      "path": "controls/table.json"
+    }
+  ]
+}

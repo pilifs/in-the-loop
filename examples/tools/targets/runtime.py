@@ -87,6 +87,7 @@ from targets import interfaces, runtime_jar, runtime_jdk, runtime_maven, runtime
 from targets.interfaces import RUNTIME, Artifact, PreparedTarget, Unsupported
 
 HERE = Path(__file__).resolve().parent
+GRID_DRIVER = HERE / "java/org/intheloop/controls/Grid.java"
 RECORD = "prepared.json"  # the preparation record a work directory holds; a directory without one is not ours
 COMPILE_TIMEOUT = 300
 
@@ -222,11 +223,13 @@ def _controls_source(folder, entry):
         data = sorted({c["path"] for c in listed if c["kind"] in ORACLE_DATA})
         if data:  # the files the oracle reads (its probes), locked and copied with it
             oracle["data"] = _hashed(folder, [_inside(folder, d, "oracle data") for d in data])
+    driver = (dict(_component(folder, [controls["driver"]["path"]], "driver"), control=controls["driver"]["id"],
+                   main=_main_class(folder, controls["driver"]["path"])) if "driver" in controls else None)
+    if driver and oracle and oracle["path"].endswith(".json"):
+        driver["gridWriterSha256"] = sha256(GRID_DRIVER)
     return {
         "adapter": _component(folder, entry.get("adapters") or [], "adapter") if entry.get("adapters") else None,
-        "driver": dict(_component(folder, [controls["driver"]["path"]], "driver"), control=controls["driver"]["id"],
-                       main=_main_class(folder, controls["driver"]["path"]))
-        if "driver" in controls else None,
+        "driver": driver,
         "oracle": oracle,
         "jdks": list(entry.get("jdks") or []),
     }
@@ -249,6 +252,19 @@ def _lock_fixture(plan, revision, entry, folder):
         **_controls_source(folder, entry),
         "recipe": {"tool": "javac", "by": "examples/tools/targets/fixtures/build_fixtures.py's recipe", **_fixture_recipe()},
     }
+    if entry.get("fixtureClasspath"):
+        dependencies = []
+        for relative in entry["fixtureClasspath"]:
+            root = _inside(folder, relative, "fixture dependency")
+            files = _java_files(folder, root)
+            if not files:
+                raise Refused("lock", f"fixture dependency {relative} holds no Java sources")
+            dependencies.append({"root": root.relative_to(folder).as_posix(), "files": _hashed(folder, files)})
+        if len({d["root"] for d in dependencies}) != len(dependencies):
+            raise Refused("lock", "fixture dependencies include the same source root twice")
+        source["dependencies"] = dependencies
+    if entry.get("orderedClasses"):
+        source["orderedClasses"] = entry["orderedClasses"]
     return f"fixture:{entry['fixture']}", source
 
 
@@ -613,6 +629,7 @@ class _Build:
         if code != 0:
             tail = "\n".join(out.strip().splitlines()[-15:])
             raise Refused("build", f"{step} failed (exit {code}): {' '.join(argv)}\n{tail}", command=" ".join(argv))
+        return out
 
     def compile(self, step, sources, classpath):
         classes = self.workdir / "classes" / step
@@ -633,11 +650,20 @@ class _Build:
         return name
 
 
-def _check_classpath(plan, workdir, classpath, original, adapter):
+def _check_classpath(plan, workdir, classpath, original, adapter, *, ordered_classes=(), dependencies=()):
     """The loaded target's origin, after refusing shadowed classes and a missing target method; and the original
     methods the adapter calls. A replay task's adapter must reference the target. The prepared record carries this
     reference check for the verifier and the JVM controls."""
-    shadowed = runtime_jar.duplicates(classpath, workdir)
+    declared = {runtime_jar.internal(name) for name in ordered_classes}
+    resolution = {}
+    shadowed = []
+    for name, holders in runtime_jar.duplicates(classpath, workdir):
+        if name in declared and all(path in dependencies for path in holders):
+            resolution[name.replace("/", ".")] = [
+                {"path": path, "classSha256": hashlib.sha256(runtime_jar.read_class(workdir / path, name)).hexdigest()}
+                for path in holders]
+        else:
+            shadowed.append((name, holders))
     if shadowed:
         listed = "; ".join(f"{name.replace('/', '.')} in {', '.join(holders)}" for name, holders in shadowed[:10])
         raise Refused("classpath", f"{len(shadowed)} class(es) held by more than one classpath entry, so the class loaded "
@@ -652,6 +678,10 @@ def _check_classpath(plan, workdir, classpath, original, adapter):
         raise Refused("target", f"{cls} in {original} declares no method {method}{descriptor or ''}")
     found = {"class": cls, "method": method, "descriptor": descriptor, "loadedFrom": original,
              "classSha256": hashlib.sha256(data).hexdigest()}
+    if set(ordered_classes) != set(resolution):
+        raise Refused("classpath", "a declared ordered class does not have multiple dependency providers")
+    if resolution:
+        found["orderedClasses"] = resolution
     if adapter:
         originals = set(runtime_jar.classes(workdir / original))
         adapters = set(runtime_jar.classes(workdir / adapter))
@@ -723,7 +753,12 @@ def _add_controls(build, source, folder, workdir, revision, below):
                             f"adapter-{revision}.jar", "adapter", "built from " + ", ".join(source["adapter"]["roots"]))
         classpath.insert(0, adapter)
     if source.get("driver"):
-        driver = build.jar("driver", build.compile("driver", _files(folder, source["driver"]), tuple(classpath)),
+        files = _files(folder, source["driver"])
+        if "gridWriterSha256" in source["driver"]:
+            if sha256(GRID_DRIVER) != source["driver"]["gridWriterSha256"]:
+                raise Refused("lock", "the finite observation writer changed after the source lock")
+            files.append(GRID_DRIVER)
+        driver = build.jar("driver", build.compile("driver", files, tuple(classpath)),
                            "driver.jar", "driver", "built from " + ", ".join(source["driver"]["roots"]))
         classpath.insert(0, driver)
     if source.get("oracle"):
@@ -795,9 +830,29 @@ def _prepare_fixture(plan, revision, locked, workdir):
         how = (f"constructed: {source['fixture']} with the patch {source['mutant']['patch']['path']} (sha256 "
                f"{source['mutant']['patch']['sha256']}) applied, built by the fixture recipe" if "mutant" in source
                else f"built from {source['fixture']} by the fixture recipe")
-        original = build.jar("original", build.compile("original", sources, ()), f"{revision}.jar", "original", how)
-        classpath, adapter = _add_controls(build, source, folder, workdir, revision, [original])
-        source["target"] = _check_classpath(plan, workdir, classpath, original, adapter)
+        dependencies = []
+        for i, component in enumerate(source.get("dependencies", [])):
+            jar = f"lib/{component['root']}.jar"
+            (workdir / jar).parent.mkdir(parents=True, exist_ok=True)
+            step = f"dependency-{i}"
+            dep = build.jar(step, build.compile(step, _files(folder, component), dependencies),
+                            jar, "dependency", f"built from {component['root']}")
+            dependencies.append(dep)
+            if _hashed(folder, _java_files(folder, folder / component["root"])) != component["files"]:
+                raise Refused("lock", f"fixture dependency {component['root']} changed during preparation")
+        original = build.jar("original", build.compile("original", sources, dependencies), f"{revision}.jar", "original", how)
+        classpath, adapter = _add_controls(build, source, folder, workdir, revision, [original, *dependencies])
+        source["target"] = _check_classpath(plan, workdir, classpath, original, adapter,
+                                            ordered_classes=source.get("orderedClasses", ()), dependencies=dependencies)
+        if selected := source["target"].get("orderedClasses"):
+            probe = HERE / "java/LoadedClasses.java"
+            stdout = build.run("loaded-classes", [str(build.home / "bin/java"), "-cp",
+                               os.pathsep.join(str(workdir / path) for path in classpath), str(probe),
+                               str(workdir), *sorted(selected)])
+            expected = [f"{name}\t{selected[name][0]['path']}\t{selected[name][0]['classSha256']}" for name in sorted(selected)]
+            if stdout.splitlines() != expected:
+                raise Refused("classpath", "the JVM code source or class digest differs from the first dependency provider")
+            source["target"]["jvmClassOrigins"] = {name: selected[name][0] for name in sorted(selected)}
     except Refused as e:
         return _failed(plan, revision, locked.commit, source, e, build.artifacts, build.logs, toolchain)
     return _ready(plan, revision, locked, workdir, source, build, classpath, toolchain)
@@ -1241,10 +1296,15 @@ def _oracle_inputs(where, prepared):
     oracle = next((a for a in prepared.artifacts if a.role == "oracle" and (a.origin == origin or origin is None)), None)
     if oracle is None:
         raise Refused("controls", f"revision {prepared.revision}'s preparation has no oracle, so no inputs to run on")
-    spec = importlib.util.spec_from_file_location(f"targets_oracle_{oracle.sha256[:16]}", where / oracle.path)
-    module = importlib.util.module_from_spec(spec)
+    oracle_path = where / oracle.path
     try:
-        spec.loader.exec_module(module)
+        if oracle_path.suffix == ".json":
+            from targets.finite_oracle import Table
+            module = Table(oracle_path)
+        else:
+            spec = importlib.util.spec_from_file_location(f"targets_oracle_{oracle.sha256[:16]}", oracle_path)
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
         if callable(getattr(module, "driver_args", None)):
             args, convention = module.driver_args(), "driver_args"
         else:

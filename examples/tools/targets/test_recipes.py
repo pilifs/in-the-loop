@@ -14,6 +14,41 @@ from targets import executions, interfaces, qualification, recipes, replay_candi
 
 
 class RecipesTest(unittest.TestCase):
+    def test_finite_observations_require_complete_inputs_and_the_selected_projection(self):
+        from targets.finite_oracle import Table
+        table = Table(next(TOOLS.parent.glob("314-*/controls/table.json")))
+        rows = []
+        for case in table.cases.values():
+            state = 0
+            for cell in case["expected"]["state"]:
+                state = state * 3 + ["x", None, "A"].index(cell)
+            rows.append({**case, "direct": case["expected"],
+                         "adapter": {"state": state, "exception": int(case["expected"]["exception"] is not None)}})
+        self.assertFalse(table.problems(rows))
+        rows[11]["adapter"]["state"] += 1
+        self.assertEqual(table.correspondence(rows, "copy.Projection#state(I)I"), {"cases": 40, "disagreements": 1})
+        self.assertEqual(table.correspondence(rows, "copy.Projection#thrown(I)I")["disagreements"], 0)
+        for malformed in (rows[:-1], rows + rows[:1], [{**rows[0], "id": False}, *rows[1:]],
+                          [{**rows[0], "input": {"source": []}}, *rows[1:]]):
+            with self.assertRaises(ValueError):
+                table.problems(malformed)
+
+    def test_invoice_preparation_rejects_the_other_order_with_identical_client_bytes(self):
+        from targets import runtime, workflow_ingest
+        plan = self.plan("312", "invoice-values")
+        prepared = {}
+        for rev, entry in zip(plan.revisions, plan.artifacts):
+            lock = runtime.lock(plan, rev)
+            paths = ["client.jar", *[f"lib/{root}.jar" for root in entry["fixtureClasspath"]]]
+            artifacts = tuple(interfaces.Artifact(path, workflow.canonical_digest(path),
+                              "original" if path == "client.jar" else "dependency") for path in paths)
+            prepared[rev] = replace(lock, stage="artifacts-ready", artifacts=artifacts, classpath=tuple(paths))
+        workflow_ingest.bound_revisions(plan, prepared)
+        before, after = plan.revisions
+        prepared[before] = replace(prepared[after], revision=before)
+        with self.assertRaisesRegex(workflow_ingest.Refused, "different dependency order"):
+            workflow_ingest.bound_revisions(plan, prepared)
+
     def plan(self, number, task):
         folder = next(TOOLS.parent.glob(number + "-*"))
         return workflow.plan_task(folder, json.loads((folder / "example.json").read_text()),

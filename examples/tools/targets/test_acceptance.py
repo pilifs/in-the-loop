@@ -258,6 +258,19 @@ class A2PreparationIntegrityOnTheReceipts(unittest.TestCase):
                 pinned |= {a["sha256"] for a in prep.get("slice", {}).get("published", {}).get(base, [])
                            if isinstance(a, dict) and "sha256" in a}
                 with self.subTest(str(directory.relative_to(EXAMPLES)), revision=revision, route=route):
+                    if route == "fixture" and (roots := target["history"]["revisions"][base].get("fixtureClasspath")):
+                        plan = json.loads((directory / "plan.json").read_text())["plan"]
+                        source = next(a for a in plan["artifacts"] if a["revision"] == revision)
+                        self.assertEqual(source["fixtureClasspath"], roots)
+                        self.assertEqual(source["dependencySourceDigests"], [workflow.canonical_digest([
+                            (p.relative_to(folder / root).as_posix(), workflow.file_sha256(p))
+                            for p in sorted((folder / root).rglob("*.java"))]) for root in roots])
+                        records = json.loads((directory / "records/execution.json").read_text())["records"]
+                        for record in records:
+                            if record["kind"] == "jvm-control" and record["revision"] == revision:
+                                deps = [a for a in record["identities"]["classpath"] if a["role"] == "dependency"]
+                                self.assertEqual([a["path"] for a in deps], [f"lib/{root}.jar" for root in roots])
+                                pinned.update(a["sha256"] for a in deps)
                     for d in t["dependencies"]:
                         if d["revision"] != revision:
                             continue

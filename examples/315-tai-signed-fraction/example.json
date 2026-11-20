@@ -1,0 +1,43 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "315",
+  "title": "ThreeTen-Extra formats and parses negative fractional seconds",
+  "summary": "A matching sign error in the formatter and parser lets every object round trip while both one-way contracts fail.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "clocks-and-time",
+    "parser-differential",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "ThreeTen-Extra",
+    "file": "src/main/java/org/threeten/extra/scale/TaiInstant.java",
+    "symbol": "org.threeten.extra.scale.TaiInstant#toString()Ljava/lang/String;"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "A matching sign error in the formatter and parser lets every object round trip while both one-way contracts fail."
+  },
+  "target": "target.json",
+  "notes": [
+    "On the 20 pinned TAI instants the parent failed six exact formatting and six independent parsing cases. Every object round trip passed. The fix passed all three comparisons on every input.",
+    "At negative half a second the parent prints -1.500000000s(TAI) and reads the canonical -0.500000000s(TAI) as positive half a second. Both directions use separately supplied oracle inputs."
+  ],
+  "source": {
+    "kind": "commit",
+    "repository": "https://github.com/ThreeTen/threeten-extra",
+    "url": "https://github.com/ThreeTen/threeten-extra/commit/1a51a1dc391ddbcbcb20eb7b9d13ceedf6a47c3c"
+  },
+  "verdictLabel": "Frozen bounded proof obligations"
+}

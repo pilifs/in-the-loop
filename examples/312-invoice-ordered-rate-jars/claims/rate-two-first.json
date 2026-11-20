@@ -1,0 +1,17 @@
+{
+  "$schema": "../../schema/target-claim.schema.json",
+  "schema": "example-target-claim/v1",
+  "kind": "property",
+  "property": "rate-two-first",
+  "statement": "The invoice uses the rate supplied by the first dependency JAR.",
+  "assume": "q >= -2 && q <= 2",
+  "observations": [
+    "result",
+    "exception"
+  ],
+  "bounds": {
+    "unwind": 10,
+    "maxArrayLength": 3
+  },
+  "assert": "result == q * 2"
+}

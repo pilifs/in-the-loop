@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "312",
+  "title": "One invoice class with two ordered rate JARs",
+  "summary": "Reversing two JARs with the same Rate class changes four nonzero invoices and preserves zero.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "class-files",
+    "configuration-drift",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Invoice",
+    "file": "client/invoice/Invoice.java",
+    "symbol": "invoice.Invoice#total(I)I"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "Reversing two JARs with the same Rate class changes four nonzero invoices and preserves zero."
+  },
+  "target": "target.json",
+  "notes": [
+    "Swapping the two dependency JARs changes four of the five invoice totals. Both JAR sets and the Invoice class digest are identical. The zero input returns zero under both orders. A fresh JVM records the selected Rate code source and class digest. Ingestion rejects the opposite order.",
+    "The two absolute rate claims distinguish a checker loading the wrong helper from an actual preservation result."
+  ],
+  "verdictLabel": "Frozen bounded proof obligations"
+}

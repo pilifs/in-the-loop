@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "314",
+  "title": "Array copy leaves a prefix before an incompatible element",
+  "summary": "Prevalidating all elements preserves exception classes but loses the writes preceding an incompatible boxed integer.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "array-utilities",
+    "exceptions",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Array copy",
+    "file": "reference/copy/Copy.java",
+    "symbol": "copy.Copy#transfer([Ljava/lang/Object;[Ljava/lang/String;)V"
+  },
+  "approach": {
+    "id": "B9",
+    "name": "Regression verification",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "refactor",
+    "description": "Prevalidating all elements preserves exception classes but loses the writes preceding an incompatible boxed integer."
+  },
+  "target": "target.json",
+  "notes": [
+    "The JVM copied 40 typed Object[] sources into fresh String[] destinations. Both implementations threw ArrayStoreException on 25 inputs. Twelve destinations differed. For the source containing A and boxed 1, the reference left [A, x] and the precheck left [x, x].",
+    "The complete table freezes the runtime component types, nulls, source values, exception class and final destination. The selected adapter fields are checked independently against direct calls."
+  ],
+  "verdictLabel": "Frozen bounded proof obligations"
+}
