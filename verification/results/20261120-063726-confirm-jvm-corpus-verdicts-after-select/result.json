@@ -1,0 +1,214 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-063726-confirm-jvm-corpus-verdicts-after-select",
+  "title": "Confirm JVM corpus verdicts after selected JDK list checking",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 24m06s, peak 2.2 GiB (estimated 12m00s, 2.0 GiB); signals: cargo:tests×1",
+  "attention": [
+    "took 24m06s, 2.01× the estimate"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-063726-confirm-jvm-corpus-verdicts-after-select.json",
+    "sha256": "7a4c16290792f0d1ab92b8d1b072f68012cf9493e95898eb856a41ccd9ee1a2c",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-063726-confirm-jvm-corpus-verdicts-after-select",
+      "title": "Confirm JVM corpus verdicts after selected JDK list checking",
+      "description": "Check automatic confirmation for the same JVM corpus after native ArrayList support. In particular, the original guarded mutable-list copy now has a non-vacuous proof eligible for confirmation.",
+      "kind": "library",
+      "capabilities": [
+        "tests:proof",
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/tests/conformance.rs"
+        ],
+        "jobs": [
+          "20261120-033516-confirm-jvm-corpus-results-after-fast-fo"
+        ]
+      },
+      "expected": "All auto-confirm checks match each concrete JVM calibration and recorded scope.",
+      "submitted": {
+        "at": "2026-11-20T06:37:26+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 8,
+      "requires": [
+        "cargo",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "12m",
+        "memoryLimit": "5G",
+        "timeout": "35m"
+      },
+      "steps": [
+        {
+          "name": "Check the corpus with auto-confirm",
+          "run": "cargo test --manifest-path lib/Cargo.toml --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --exact --test-threads=1",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "c938ffc598f7cd20489b9edb557285a3229dc1e7",
+  "startedAt": "2026-11-20T06:45:45+00:00",
+  "finishedAt": "2026-11-20T07:09:57+00:00",
+  "wallSeconds": 1452.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3184551,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 5368709120,
+    "timeoutSeconds": 2100.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 720.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2314792960,
+    "wallSeconds": 1446.8,
+    "cpuSeconds": 1534.8,
+    "memoryOfEstimate": 1.08,
+    "durationOfEstimate": 2.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the corpus with auto-confirm",
+      "run": "cargo test --manifest-path lib/Cargo.toml --release --test conformance the_corpus_agrees_with_the_jvm_under_auto_confirm -- --ignored --exact --test-threads=1",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2100.0,
+      "cancelled": false,
+      "wallSeconds": 1446.806,
+      "cpuSeconds": 1534.796,
+      "cpuThrottledSeconds": 1.123,
+      "peakMemoryBytes": 2314792960,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-corpus-with-auto-con.log",
+        "lines": 63,
+        "bytes": 2179,
+        "sha256": "760c21f25eedeb359bb8ad383107e41b48d209bdda215fe805593488dcbe1e76",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 62,
+          "text": "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 1234.09s",
+          "groups": [
+            "ok",
+            "1",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "   Compiling anstyle-query v1.1.5",
+        "   Compiling is_terminal_polyfill v1.70.2",
+        "   Compiling anstyle v1.0.14",
+        "   Compiling anstream v1.0.0",
+        "   Compiling aho-corasick v1.1.5",
+        "   Compiling cadical v0.1.16",
+        "   Compiling stacker v0.1.25",
+        "   Compiling heck v0.5.0",
+        "   Compiling serde v1.0.229",
+        "   Compiling strsim v0.11.1",
+        "   Compiling clap_lex v1.1.1",
+        "   Compiling simd-adler32 v0.3.10",
+        "   Compiling serde_json v1.0.154",
+        "   Compiling adler2 v2.0.1",
+        "   Compiling regex-syntax v0.8.11",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling itoa v1.0.18",
+        "   Compiling rustix v1.1.6",
+        "   Compiling getrandom v0.4.3",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling clap v4.6.7",
+        "   Compiling regex v1.13.1",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling tempfile v3.27.0",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261120-063726-confirm-jvm-corpus-verdicts-after-select/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 32s",
+        "     Running tests/conformance.rs (lib/target/release/deps/conformance-3836de857774f2d6)",
+        "",
+        "running 1 test",
+        "test the_corpus_agrees_with_the_jvm_under_auto_confirm ... ok",
+        "",
+        "test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 1234.09s",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-20T07:10:15+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  }
+}
