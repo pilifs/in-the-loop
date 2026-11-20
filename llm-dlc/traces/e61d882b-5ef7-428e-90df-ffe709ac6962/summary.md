@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (ended) |
+| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (open) |
 | When | 2026-11-17 12:37 UTC to 2026-11-20 00:01 UTC (3564 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.326 |
@@ -2104,6 +2104,12 @@ The foundation-and-python-restart run added Vacuity.outside to the checker's sta
 change `syuprottmwot` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
 
 Outputs applied for 2 of the 3 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261120-041029-prove-both-recursive-tiling-callers-with: passed: 1 passed step(s) in 6.6s, peak 165.3 MiB (estimated 2m00s, 2.0 GiB); 28 output file(s) changed; signals: example:task-as-expected×2 Applied 28 output(s). 20261120-041029-run-optional-suppliers-through-the-selec: passed: 1 passed step(s) in 7.2s, peak 143.2 MiB (estimated 2m00s, 2.0 GiB); 91 output file(s) changed; signals: example:task-as-expected×6 Applied 91 output(s). 20261120-041223-recheck-both-signed-tai-round-trips-afte: failed: 1 failed step(s) in 7.0s, peak 330.4 MiB (estimated 2m00s, 2.0 GiB); 30 output file(s) changed; signals: example:task-unexpected×2 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
+
+### Record verification results for 4 job(s)
+
+change `txppvxvnnmvs` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+
+Outputs applied for 1 of the 4 job(s); 3 kept under outputs/, not applied (the job didn't pass). 20261120-051056-repeat-signed-zero-proofs-on-the-bounded: passed: 1 passed step(s) in 13.3s, peak 386.8 MiB (estimated 2m00s, 2.0 GiB); 61 output file(s) changed; signals: example:task-as-expected×4 Applied 61 output(s). 20261120-051056-verify-cube-hits-through-bounded-vector: failed: 1 failed step(s) in 8.6s, peak 188.3 MiB (estimated 2m00s, 2.0 GiB); 60 output file(s) changed; signals: example:task-unexpected×4 20261120-051056-verify-guava-collision-traces-through-it: failed: 1 failed step(s) in 24.2s, peak 653.0 MiB (estimated 2m00s, 2.0 GiB); 120 output file(s) changed; signals: example:task-as-expected×2; example:task-unexpected×6 20261120-051057-verify-percentage-overflow-after-bounded: failed: 1 failed step(s) in 14.0s, peak 367.3 MiB (estimated 2m00s, 2.0 GiB); 90 output file(s) changed; signals: example:task-unexpected×6 Collected by the watcher of the twenty-example-fast-follow run, which keeps the queue while the run is under way.
 
 ## Conversation
 
