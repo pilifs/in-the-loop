@@ -1,0 +1,229 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-035022-enumerate-fraction-percentages-with-sour",
+  "title": "Enumerate fraction percentages with source-provenance checks",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 22.4s, peak 414.4 MiB (estimated 2m00s, 2.0 GiB); 7 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/20261120-035022-enumerate-fraction-percentages-with-sour.json",
+    "sha256": "37c29755dc4a605821a4d6e01cf143b4bd441841c80f1728bb373a7dedc3a8c5",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-035022-enumerate-fraction-percentages-with-sour",
+      "title": "Enumerate fraction percentages with source-provenance checks",
+      "description": "The complete upstream subject is rebuilt with both package-private spline companions bound to their original compilation units. The same 13 fraction inputs and raw-bit oracle apply.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvm:finite-domain",
+        "target:replay"
+      ],
+      "links": {
+        "examples": [
+          "328"
+        ],
+        "jobs": [
+          "20261120-032649-exhaustive-jvm-328-commons-math-fraction"
+        ]
+      },
+      "expected": "Retain the actual bounded checker statement, independent results, measurements and any first diagnostic.",
+      "submitted": {
+        "at": "2026-11-20T03:50:22+00:00",
+        "session": "01a1f5be-43bd-7532-a80c-5b4f5c304590"
+      },
+      "priority": 7,
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "memoryLimit": "4G",
+        "timeout": "10m"
+      },
+      "steps": [
+        {
+          "name": "Exercise the frozen claims",
+          "run": "python3 examples/tools/build.py 328 --finite-domain --checker-seconds 120",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/328-commons-math-fraction-percentage/records/finite-proofs"
+      ]
+    }
+  },
+  "sourceCommit": "4a1b5ef112df93c81f1d839c7f6dec4fee762e20",
+  "startedAt": "2026-11-20T04:00:23+00:00",
+  "finishedAt": "2026-11-20T04:04:38+00:00",
+  "wallSeconds": 255.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 455046,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 85899345920,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 434577408,
+    "wallSeconds": 22.4,
+    "cpuSeconds": 37.2,
+    "memoryOfEstimate": 0.2,
+    "durationOfEstimate": 0.19
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Exercise the frozen claims",
+      "run": "python3 examples/tools/build.py 328 --finite-domain --checker-seconds 120",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 600.0,
+      "cancelled": false,
+      "wallSeconds": 22.448,
+      "cpuSeconds": 37.215,
+      "cpuThrottledSeconds": 3.769,
+      "peakMemoryBytes": 434577408,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-exercise-the-frozen-claims.log",
+        "lines": 6,
+        "bytes": 237,
+        "sha256": "6da9872b53a90d06f1be201211174cf372b2e26f454db826f6091e649aa28405",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "328 bits-parent refuted 13 admitted ",
+        "328 bits-fix established 13 admitted ",
+        "328 normal-parent established 13 admitted ",
+        "328 normal-fix established 13 admitted ",
+        "328 small-parent established 3 admitted ",
+        "328 small-fix established 3 admitted "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/batch.json",
+      "change": "added",
+      "bytes": 3573,
+      "sha256": "b79b29821feb37137055b7f4ef4f002ef237f9350116d5b89744d660968f9362",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/bits-fix.json",
+      "change": "added",
+      "bytes": 6447,
+      "sha256": "f266335238ada59ee3e6ee770ebcd6dfe89a4d5444c8dc25b6ce033afcde47f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/bits-parent.json",
+      "change": "added",
+      "bytes": 8393,
+      "sha256": "52ce5958abf8236aa5f39965bee89e22adfa4ef728d4dcd218cb52d90c5ca387",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/normal-fix.json",
+      "change": "added",
+      "bytes": 6457,
+      "sha256": "c06808c8968195c0d56ded476a013886cfb87cdb2933985a84baec8d86f90745",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/normal-parent.json",
+      "change": "added",
+      "bytes": 6483,
+      "sha256": "93d7af9dc9665562d8c4d029f61dfc93416cca43976396450c2b7191789e82a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/small-fix.json",
+      "change": "added",
+      "bytes": 4728,
+      "sha256": "5de09ad892d7026ebf9926675ef6330c500f59d510d99cef83b96309501658a4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/small-parent.json",
+      "change": "added",
+      "bytes": 4755,
+      "sha256": "ff82ea1425b4c0fd7333a2588ecb6e9375de51361229d0ece549503fff04e0dc",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T04:05:07+00:00",
+    "applied": [
+      "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/batch.json",
+      "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/bits-fix.json",
+      "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/bits-parent.json",
+      "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/normal-fix.json",
+      "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/normal-parent.json",
+      "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/small-fix.json",
+      "examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/small-parent.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "f5fabd2a442fc816be6daceb77f2ea87b60d0e0c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f5fabd2a442fc816be6daceb77f2ea87b60d0e0c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff"
+}

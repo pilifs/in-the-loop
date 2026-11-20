@@ -1,0 +1,1334 @@
+--- /dev/null
++++ b/examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/batch.json
+@@ -0,0 +1,118 @@
++{
++  "schema": "finite-jvm-batch/v1",
++  "id": "20261120T040416Z-8051dd38",
++  "retryOf": null,
++  "order": [
++    "bits-parent",
++    "bits-fix",
++    "normal-parent",
++    "normal-fix",
++    "small-parent",
++    "small-fix"
++  ],
++  "claims": {
++    "bits-parent": {
++      "sourceClaim": "b8b7a0c7bf39b0a8",
++      "inputsKey": "bb1eecd3200fe904d51cafebf9b26883f3b19511c722736551b086d47de97818",
++      "revisions": [
++        "parent"
++      ],
++      "expected": "refuted",
++      "sourceLocks": {
++        "parent": "1ae58d4cea696741ce98564145e1d4ee13befa2e1e1ebc49713c868bb0db3cd3"
++      }
++    },
++    "bits-fix": {
++      "sourceClaim": "b8b7a0c7bf39b0a8",
++      "inputsKey": "ab3fef64c15f16e176cb987678d329825e9ed46eab9a48bca053b156bcf8202e",
++      "revisions": [
++        "fix"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "fix": "b3061871010c31801fff281920a9d86191c2591a61cfef712f37be367d4625c4"
++      }
++    },
++    "normal-parent": {
++      "sourceClaim": "6daf44feca6db57c",
++      "inputsKey": "93122b2438f4484b5bac22423feeeab73e3c9db512f4f8ba39109d5f2fe09b4a",
++      "revisions": [
++        "parent"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "parent": "1ae58d4cea696741ce98564145e1d4ee13befa2e1e1ebc49713c868bb0db3cd3"
++      }
++    },
++    "normal-fix": {
++      "sourceClaim": "6daf44feca6db57c",
++      "inputsKey": "f8425061256275ddec2b9e1e1fc947c2590a663e6df09b1c3720acc2afee7a3e",
++      "revisions": [
++        "fix"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "fix": "b3061871010c31801fff281920a9d86191c2591a61cfef712f37be367d4625c4"
++      }
++    },
++    "small-parent": {
++      "sourceClaim": "1cb81567d9bc538a",
++      "inputsKey": "cda47a7ca73ee624d82f221114ce4910f454f145fb6185594a95c3c129806d9f",
++      "revisions": [
++        "parent"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "parent": "1ae58d4cea696741ce98564145e1d4ee13befa2e1e1ebc49713c868bb0db3cd3"
++      }
++    },
++    "small-fix": {
++      "sourceClaim": "1cb81567d9bc538a",
++      "inputsKey": "10d2589dac643cf2716dcec6ffee7add71d80d6178a329ae298bfe4d5af82dfb",
++      "revisions": [
++        "fix"
++      ],
++      "expected": "established",
++      "sourceLocks": {
++        "fix": "b3061871010c31801fff281920a9d86191c2591a61cfef712f37be367d4625c4"
++      }
++    }
++  },
++  "status": "completed",
++  "completed": [
++    {
++      "task": "bits-parent",
++      "status": "refuted",
++      "sha256": "52ce5958abf8236aa5f39965bee89e22adfa4ef728d4dcd218cb52d90c5ca387"
++    },
++    {
++      "task": "bits-fix",
++      "status": "established",
++      "sha256": "f266335238ada59ee3e6ee770ebcd6dfe89a4d5444c8dc25b6ce033afcde47f3"
++    },
++    {
++      "task": "normal-parent",
++      "status": "established",
++      "sha256": "93d7af9dc9665562d8c4d029f61dfc93416cca43976396450c2b7191789e82a8"
++    },
++    {
++      "task": "normal-fix",
++      "status": "established",
++      "sha256": "c06808c8968195c0d56ded476a013886cfb87cdb2933985a84baec8d86f90745"
++    },
++    {
++      "task": "small-parent",
++      "status": "established",
++      "sha256": "ff82ea1425b4c0fd7333a2588ecb6e9375de51361229d0ece549503fff04e0dc"
++    },
++    {
++      "task": "small-fix",
++      "status": "established",
++      "sha256": "5de09ad892d7026ebf9926675ef6330c500f59d510d99cef83b96309501658a4"
++    }
++  ],
++  "missing": [],
++  "secondsPerJvm": 120,
++  "launcherSha256": "8dd2ea5568ee5f61c0f92ca27a09338ca8c33333cceb04fff6370ad131f2c8f8",
++  "scope": "One JVM per claim and revision. Each integer starts with a fresh application class loader, on the pinned runtime and classpath."
++}
+--- /dev/null
++++ b/examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/bits-fix.json
+@@ -0,0 +1,220 @@
++{
++  "status": "established",
++  "entry": "fractiongrid.Projection#bits(I)I",
++  "inputs": 13,
++  "differences": 0,
++  "sides": {
++    "fix": {
++      "commit": "63a48705a496bf2506121dcddbd8cac2a78f877c",
++      "entry": {
++        "entry": "fractiongrid.Projection#bits(I)I",
++        "classSha256": "94d3a5ee7c09f793efbfd89efa259fda5c015db60cef869c80ad7b32c03be510",
++        "loadedFrom": "adapter-fix.jar",
++        "subject": "org.apache.commons.math3.fraction.Fraction#percentageValue()D",
++        "subjectClassSha256": "056fbe526b7f36c404807ba2c6fd477439aba018895ede24ea29a58b621656b9"
++      },
++      "classpath": [
++        {
++          "path": "adapter-fix.jar",
++          "sha256": "bbdeba30222ffb8fe61928bb1a864f8960e47aef76e86c2d70c6bd79c56ece90",
++          "role": "adapter"
++        },
++        {
++          "path": "slice/fix.jar",
++          "sha256": "53d79a465aa65ea2910dc56540b29ea7afc20d18fde4d7f8c61bce8739f258cb",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 13)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = fractiongrid.Projection.bits(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "5401d5f04d3e82d2668455973a2d3323cab03e5cc18b6ccbad4b0a4be95a3286",
++      "stdoutSha256": "d7aca38dbdc908c352eae9ea634871e48d7f571b10fb1c32fe7cb463a007b9ee",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        12
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 9,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 10,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 11,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 12,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.122,
++      "cpuSeconds": 0.1973,
++      "peakRssBytes": 63655936,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "fix",
++      "entry": "fractiongrid.Projection#bits(I)I",
++      "adapterSha256": "bbdeba30222ffb8fe61928bb1a864f8960e47aef76e86c2d70c6bd79c56ece90",
++      "adapterClassSha256": "94d3a5ee7c09f793efbfd89efa259fda5c015db60cef869c80ad7b32c03be510",
++      "subject": {
++        "class": "org.apache.commons.math3.fraction.Fraction",
++        "method": "percentageValue",
++        "descriptor": "()D",
++        "loadedFrom": "slice/fix.jar",
++        "classSha256": "056fbe526b7f36c404807ba2c6fd477439aba018895ede24ea29a58b621656b9",
++        "adapterCalls": [
++          "org.apache.commons.math3.fraction.Fraction#<init>(II)V",
++          "org.apache.commons.math3.fraction.Fraction#percentageValue()D"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "Code 0 to 9 selects both signs of 21474836 plus offsets -2 through 2. Codes 10 to 12 select -1, 0 and 1. Denominator is one. Each exact integer product 100L*n is representable as double; the observer uses all 64 raw bits.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 13,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 7.2817,
++  "controlSeconds": 0.1022,
++  "wallSeconds": 7.9633,
++  "task": "bits-fix",
++  "sourceClaim": "b8b7a0c7bf39b0a8",
++  "inputsKey": "ab3fef64c15f16e176cb987678d329825e9ed46eab9a48bca053b156bcf8202e",
++  "revisions": [
++    "fix"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "fix": "b3061871010c31801fff281920a9d86191c2591a61cfef712f37be367d4625c4"
++  }
++}
+--- /dev/null
++++ b/examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/bits-parent.json
+@@ -0,0 +1,275 @@
++{
++  "status": "refuted",
++  "entry": "fractiongrid.Projection#bits(I)I",
++  "inputs": 13,
++  "differences": 4,
++  "sides": {
++    "parent": {
++      "commit": "a49e443c44766df45d254e13bea377d4133f5ee6",
++      "entry": {
++        "entry": "fractiongrid.Projection#bits(I)I",
++        "classSha256": "94d3a5ee7c09f793efbfd89efa259fda5c015db60cef869c80ad7b32c03be510",
++        "loadedFrom": "adapter-parent.jar",
++        "subject": "org.apache.commons.math3.fraction.Fraction#percentageValue()D",
++        "subjectClassSha256": "4a15348046e92879fcdc121e92db629e7e35dbac69714c408bcdf020692e1d9a"
++      },
++      "classpath": [
++        {
++          "path": "adapter-parent.jar",
++          "sha256": "bbdeba30222ffb8fe61928bb1a864f8960e47aef76e86c2d70c6bd79c56ece90",
++          "role": "adapter"
++        },
++        {
++          "path": "slice/parent.jar",
++          "sha256": "c13cc69d5031e8497a65dfba8bf99e63b7af66c6be0be23691743b1442cfb215",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 13)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = fractiongrid.Projection.bits(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "5401d5f04d3e82d2668455973a2d3323cab03e5cc18b6ccbad4b0a4be95a3286",
++      "stdoutSha256": "63dcd1fd6d4170c30bb6eb14f5888e76c8c2d25d49217bd1f7f5c5e32e59916d",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        12
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 9,
++          "admitted": true,
++          "satisfies": false,
++          "observations": [
++            0,
++            null
++          ]
++        },
++        {
++          "value": 10,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 11,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 12,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.179,
++      "cpuSeconds": 0.238,
++      "peakRssBytes": 63655936,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "parent",
++      "entry": "fractiongrid.Projection#bits(I)I",
++      "adapterSha256": "bbdeba30222ffb8fe61928bb1a864f8960e47aef76e86c2d70c6bd79c56ece90",
++      "adapterClassSha256": "94d3a5ee7c09f793efbfd89efa259fda5c015db60cef869c80ad7b32c03be510",
++      "subject": {
++        "class": "org.apache.commons.math3.fraction.Fraction",
++        "method": "percentageValue",
++        "descriptor": "()D",
++        "loadedFrom": "slice/parent.jar",
++        "classSha256": "4a15348046e92879fcdc121e92db629e7e35dbac69714c408bcdf020692e1d9a",
++        "adapterCalls": [
++          "org.apache.commons.math3.fraction.Fraction#<init>(II)V",
++          "org.apache.commons.math3.fraction.Fraction#percentageValue()D"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "Code 0 to 9 selects both signs of 21474836 plus offsets -2 through 2. Codes 10 to 12 select -1, 0 and 1. Denominator is one. Each exact integer product 100L*n is representable as double; the observer uses all 64 raw bits.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 13,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 8.7671,
++  "controlSeconds": 0.1526,
++  "replay": {
++    "claimKey": "b8b7a0c7bf39b0a8",
++    "entry": "fractiongrid.Projection#bits(I)I",
++    "inputs": [
++      {
++        "name": "code",
++        "type": "int",
++        "value": 3
++      }
++    ],
++    "observations": [
++      "result",
++      "exception"
++    ],
++    "by": "jvm",
++    "reproduced": true,
++    "sides": {
++      "parent": {
++        "entryClassSha256": "94d3a5ee7c09f793efbfd89efa259fda5c015db60cef869c80ad7b32c03be510",
++        "classpath": [
++          "bbdeba30222ffb8fe61928bb1a864f8960e47aef76e86c2d70c6bd79c56ece90",
++          "c13cc69d5031e8497a65dfba8bf99e63b7af66c6be0be23691743b1442cfb215"
++        ],
++        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 3;\nif (!(code >= 0 && code < 13)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = fractiongrid.Projection.bits(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++        "admitted": true,
++        "values": [
++          0,
++          null
++        ],
++        "satisfies": false
++      }
++    },
++    "jdkRelease": {
++      "JAVA_VERSION": "21.0.13",
++      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++      "IMPLEMENTOR": "Eclipse Adoptium",
++      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++      "OS_ARCH": "x86_64"
++    },
++    "finiteObservation": {
++      "id": 3,
++      "input": {
++        "n": 21474837,
++        "denominator": 1
++      },
++      "field": "bits",
++      "direct": {
++        "parent": {
++          "bits": "c1dffffff3000000",
++          "normal": null
++        }
++      },
++      "tableSha256": "058257ce18dbf4de81d9b80fecdaf974aeb5a2b7452fe6bf818d60baa2085d4a"
++    }
++  },
++  "wallSeconds": 10.4839,
++  "task": "bits-parent",
++  "sourceClaim": "b8b7a0c7bf39b0a8",
++  "inputsKey": "bb1eecd3200fe904d51cafebf9b26883f3b19511c722736551b086d47de97818",
++  "revisions": [
++    "parent"
++  ],
++  "expected": "refuted",
++  "sourceLocks": {
++    "parent": "1ae58d4cea696741ce98564145e1d4ee13befa2e1e1ebc49713c868bb0db3cd3"
++  }
++}
+--- /dev/null
++++ b/examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/normal-fix.json
+@@ -0,0 +1,220 @@
++{
++  "status": "established",
++  "entry": "fractiongrid.Projection#normal(I)I",
++  "inputs": 13,
++  "differences": 0,
++  "sides": {
++    "fix": {
++      "commit": "63a48705a496bf2506121dcddbd8cac2a78f877c",
++      "entry": {
++        "entry": "fractiongrid.Projection#normal(I)I",
++        "classSha256": "94d3a5ee7c09f793efbfd89efa259fda5c015db60cef869c80ad7b32c03be510",
++        "loadedFrom": "adapter-fix.jar",
++        "subject": "org.apache.commons.math3.fraction.Fraction#percentageValue()D",
++        "subjectClassSha256": "056fbe526b7f36c404807ba2c6fd477439aba018895ede24ea29a58b621656b9"
++      },
++      "classpath": [
++        {
++          "path": "adapter-fix.jar",
++          "sha256": "bbdeba30222ffb8fe61928bb1a864f8960e47aef76e86c2d70c6bd79c56ece90",
++          "role": "adapter"
++        },
++        {
++          "path": "slice/fix.jar",
++          "sha256": "53d79a465aa65ea2910dc56540b29ea7afc20d18fde4d7f8c61bce8739f258cb",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 13)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = fractiongrid.Projection.normal(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "b82ff425d7303427178d0b46c46db1fa127959ab1cee8ec0b806dbe1d425680b",
++      "stdoutSha256": "d7aca38dbdc908c352eae9ea634871e48d7f571b10fb1c32fe7cb463a007b9ee",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        12
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 9,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 10,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 11,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 12,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.162,
++      "cpuSeconds": 0.2457,
++      "peakRssBytes": 63655936,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "fix",
++      "entry": "fractiongrid.Projection#normal(I)I",
++      "adapterSha256": "bbdeba30222ffb8fe61928bb1a864f8960e47aef76e86c2d70c6bd79c56ece90",
++      "adapterClassSha256": "94d3a5ee7c09f793efbfd89efa259fda5c015db60cef869c80ad7b32c03be510",
++      "subject": {
++        "class": "org.apache.commons.math3.fraction.Fraction",
++        "method": "percentageValue",
++        "descriptor": "()D",
++        "loadedFrom": "slice/fix.jar",
++        "classSha256": "056fbe526b7f36c404807ba2c6fd477439aba018895ede24ea29a58b621656b9",
++        "adapterCalls": [
++          "org.apache.commons.math3.fraction.Fraction#<init>(II)V",
++          "org.apache.commons.math3.fraction.Fraction#percentageValue()D"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "Code 0 to 9 selects both signs of 21474836 plus offsets -2 through 2. Codes 10 to 12 select -1, 0 and 1. Denominator is one. Each exact integer product 100L*n is representable as double; the observer uses all 64 raw bits.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 13,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 0.0057,
++  "controlSeconds": 0.0037,
++  "wallSeconds": 0.6867,
++  "task": "normal-fix",
++  "sourceClaim": "6daf44feca6db57c",
++  "inputsKey": "f8425061256275ddec2b9e1e1fc947c2590a663e6df09b1c3720acc2afee7a3e",
++  "revisions": [
++    "fix"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "fix": "b3061871010c31801fff281920a9d86191c2591a61cfef712f37be367d4625c4"
++  }
++}
+--- /dev/null
++++ b/examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/normal-parent.json
+@@ -0,0 +1,220 @@
++{
++  "status": "established",
++  "entry": "fractiongrid.Projection#normal(I)I",
++  "inputs": 13,
++  "differences": 0,
++  "sides": {
++    "parent": {
++      "commit": "a49e443c44766df45d254e13bea377d4133f5ee6",
++      "entry": {
++        "entry": "fractiongrid.Projection#normal(I)I",
++        "classSha256": "94d3a5ee7c09f793efbfd89efa259fda5c015db60cef869c80ad7b32c03be510",
++        "loadedFrom": "adapter-parent.jar",
++        "subject": "org.apache.commons.math3.fraction.Fraction#percentageValue()D",
++        "subjectClassSha256": "4a15348046e92879fcdc121e92db629e7e35dbac69714c408bcdf020692e1d9a"
++      },
++      "classpath": [
++        {
++          "path": "adapter-parent.jar",
++          "sha256": "bbdeba30222ffb8fe61928bb1a864f8960e47aef76e86c2d70c6bd79c56ece90",
++          "role": "adapter"
++        },
++        {
++          "path": "slice/parent.jar",
++          "sha256": "c13cc69d5031e8497a65dfba8bf99e63b7af66c6be0be23691743b1442cfb215",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 0 && code < 13)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = fractiongrid.Projection.normal(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "b82ff425d7303427178d0b46c46db1fa127959ab1cee8ec0b806dbe1d425680b",
++      "stdoutSha256": "d7aca38dbdc908c352eae9ea634871e48d7f571b10fb1c32fe7cb463a007b9ee",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        0,
++        12
++      ],
++      "rows": [
++        {
++          "value": 0,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 1,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 2,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 3,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 4,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 5,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 6,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 7,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 8,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 9,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 10,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 11,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 12,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.132,
++      "cpuSeconds": 0.204,
++      "peakRssBytes": 63655936,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "parent",
++      "entry": "fractiongrid.Projection#normal(I)I",
++      "adapterSha256": "bbdeba30222ffb8fe61928bb1a864f8960e47aef76e86c2d70c6bd79c56ece90",
++      "adapterClassSha256": "94d3a5ee7c09f793efbfd89efa259fda5c015db60cef869c80ad7b32c03be510",
++      "subject": {
++        "class": "org.apache.commons.math3.fraction.Fraction",
++        "method": "percentageValue",
++        "descriptor": "()D",
++        "loadedFrom": "slice/parent.jar",
++        "classSha256": "4a15348046e92879fcdc121e92db629e7e35dbac69714c408bcdf020692e1d9a",
++        "adapterCalls": [
++          "org.apache.commons.math3.fraction.Fraction#<init>(II)V",
++          "org.apache.commons.math3.fraction.Fraction#percentageValue()D"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "Code 0 to 9 selects both signs of 21474836 plus offsets -2 through 2. Codes 10 to 12 select -1, 0 and 1. Denominator is one. Each exact integer product 100L*n is representable as double; the observer uses all 64 raw bits.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 13,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 0.0072,
++  "controlSeconds": 0.0045,
++  "wallSeconds": 0.5942,
++  "task": "normal-parent",
++  "sourceClaim": "6daf44feca6db57c",
++  "inputsKey": "93122b2438f4484b5bac22423feeeab73e3c9db512f4f8ba39109d5f2fe09b4a",
++  "revisions": [
++    "parent"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "parent": "1ae58d4cea696741ce98564145e1d4ee13befa2e1e1ebc49713c868bb0db3cd3"
++  }
++}
+--- /dev/null
++++ b/examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/small-fix.json
+@@ -0,0 +1,130 @@
++{
++  "status": "established",
++  "entry": "fractiongrid.Projection#bits(I)I",
++  "inputs": 3,
++  "differences": 0,
++  "sides": {
++    "fix": {
++      "commit": "63a48705a496bf2506121dcddbd8cac2a78f877c",
++      "entry": {
++        "entry": "fractiongrid.Projection#bits(I)I",
++        "classSha256": "94d3a5ee7c09f793efbfd89efa259fda5c015db60cef869c80ad7b32c03be510",
++        "loadedFrom": "adapter-fix.jar",
++        "subject": "org.apache.commons.math3.fraction.Fraction#percentageValue()D",
++        "subjectClassSha256": "056fbe526b7f36c404807ba2c6fd477439aba018895ede24ea29a58b621656b9"
++      },
++      "classpath": [
++        {
++          "path": "adapter-fix.jar",
++          "sha256": "bbdeba30222ffb8fe61928bb1a864f8960e47aef76e86c2d70c6bd79c56ece90",
++          "role": "adapter"
++        },
++        {
++          "path": "slice/fix.jar",
++          "sha256": "53d79a465aa65ea2910dc56540b29ea7afc20d18fde4d7f8c61bce8739f258cb",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 10 && code < 13)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = fractiongrid.Projection.bits(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "950703bb411977b3b46e6b5c1e35f86f840ad559ab057043691d0b528d02e969",
++      "stdoutSha256": "6a2c43ff6f93f7588fd39212928882f92e9cf80b87f789ac8b41c2492518ae7c",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        10,
++        12
++      ],
++      "rows": [
++        {
++          "value": 10,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 11,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 12,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.072,
++      "cpuSeconds": 0.1102,
++      "peakRssBytes": 63655936,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "fix",
++      "entry": "fractiongrid.Projection#bits(I)I",
++      "adapterSha256": "bbdeba30222ffb8fe61928bb1a864f8960e47aef76e86c2d70c6bd79c56ece90",
++      "adapterClassSha256": "94d3a5ee7c09f793efbfd89efa259fda5c015db60cef869c80ad7b32c03be510",
++      "subject": {
++        "class": "org.apache.commons.math3.fraction.Fraction",
++        "method": "percentageValue",
++        "descriptor": "()D",
++        "loadedFrom": "slice/fix.jar",
++        "classSha256": "056fbe526b7f36c404807ba2c6fd477439aba018895ede24ea29a58b621656b9",
++        "adapterCalls": [
++          "org.apache.commons.math3.fraction.Fraction#<init>(II)V",
++          "org.apache.commons.math3.fraction.Fraction#percentageValue()D"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "Code 0 to 9 selects both signs of 21474836 plus offsets -2 through 2. Codes 10 to 12 select -1, 0 and 1. Denominator is one. Each exact integer product 100L*n is representable as double; the observer uses all 64 raw bits.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 13,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 0.0087,
++  "controlSeconds": 0.0051,
++  "wallSeconds": 0.599,
++  "task": "small-fix",
++  "sourceClaim": "1cb81567d9bc538a",
++  "inputsKey": "10d2589dac643cf2716dcec6ffee7add71d80d6178a329ae298bfe4d5af82dfb",
++  "revisions": [
++    "fix"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "fix": "b3061871010c31801fff281920a9d86191c2591a61cfef712f37be367d4625c4"
++  }
++}
+--- /dev/null
++++ b/examples/328-commons-math-fraction-percentage/records/finite-proofs/20261120T040416Z-8051dd38/small-parent.json
+@@ -0,0 +1,130 @@
++{
++  "status": "established",
++  "entry": "fractiongrid.Projection#bits(I)I",
++  "inputs": 3,
++  "differences": 0,
++  "sides": {
++    "parent": {
++      "commit": "a49e443c44766df45d254e13bea377d4133f5ee6",
++      "entry": {
++        "entry": "fractiongrid.Projection#bits(I)I",
++        "classSha256": "94d3a5ee7c09f793efbfd89efa259fda5c015db60cef869c80ad7b32c03be510",
++        "loadedFrom": "adapter-parent.jar",
++        "subject": "org.apache.commons.math3.fraction.Fraction#percentageValue()D",
++        "subjectClassSha256": "4a15348046e92879fcdc121e92db629e7e35dbac69714c408bcdf020692e1d9a"
++      },
++      "classpath": [
++        {
++          "path": "adapter-parent.jar",
++          "sha256": "bbdeba30222ffb8fe61928bb1a864f8960e47aef76e86c2d70c6bd79c56ece90",
++          "role": "adapter"
++        },
++        {
++          "path": "slice/parent.jar",
++          "sha256": "c13cc69d5031e8497a65dfba8bf99e63b7af66c6be0be23691743b1442cfb215",
++          "role": "original"
++        }
++      ],
++      "parameter": "code",
++      "program": "class CandidateReplay { public static void main(String[] args) {\nint code = Integer.parseInt(args[0]);\nif (!(code >= 10 && code < 13)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = fractiongrid.Projection.bits(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
++      "probeClassSha256": "950703bb411977b3b46e6b5c1e35f86f840ad559ab057043691d0b528d02e969",
++      "stdoutSha256": "6a2c43ff6f93f7588fd39212928882f92e9cf80b87f789ac8b41c2492518ae7c",
++      "arguments": [
++        "-Xmx512m",
++        "-Dfile.encoding=UTF-8",
++        "-Dstdout.encoding=UTF-8",
++        "-Dstderr.encoding=UTF-8",
++        "-Duser.language=en",
++        "-Duser.country=US",
++        "-Duser.timezone=UTC"
++      ],
++      "interval": [
++        10,
++        12
++      ],
++      "rows": [
++        {
++          "value": 10,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 11,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        },
++        {
++          "value": 12,
++          "admitted": true,
++          "satisfies": true,
++          "observations": [
++            1,
++            null
++          ]
++        }
++      ],
++      "seconds": 0.072,
++      "cpuSeconds": 0.0988,
++      "peakRssBytes": 63655936,
++      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++    }
++  },
++  "jdkRelease": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "correspondence": [
++    {
++      "revision": "parent",
++      "entry": "fractiongrid.Projection#bits(I)I",
++      "adapterSha256": "bbdeba30222ffb8fe61928bb1a864f8960e47aef76e86c2d70c6bd79c56ece90",
++      "adapterClassSha256": "94d3a5ee7c09f793efbfd89efa259fda5c015db60cef869c80ad7b32c03be510",
++      "subject": {
++        "class": "org.apache.commons.math3.fraction.Fraction",
++        "method": "percentageValue",
++        "descriptor": "()D",
++        "loadedFrom": "slice/parent.jar",
++        "classSha256": "4a15348046e92879fcdc121e92db629e7e35dbac69714c408bcdf020692e1d9a",
++        "adapterCalls": [
++          "org.apache.commons.math3.fraction.Fraction#<init>(II)V",
++          "org.apache.commons.math3.fraction.Fraction#percentageValue()D"
++        ],
++        "adapterCallsTarget": true
++      },
++      "mapping": "Code 0 to 9 selects both signs of 21474836 plus offsets -2 through 2. Codes 10 to 12 select -1, 0 and 1. Denominator is one. Each exact integer product 100L*n is representable as double; the observer uses all 64 raw bits.",
++      "jdk": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "cases": 13,
++      "disagreements": 0
++    }
++  ],
++  "prepareSeconds": 0.0073,
++  "controlSeconds": 0.005,
++  "wallSeconds": 0.6072,
++  "task": "small-parent",
++  "sourceClaim": "1cb81567d9bc538a",
++  "inputsKey": "cda47a7ca73ee624d82f221114ce4910f454f145fb6185594a95c3c129806d9f",
++  "revisions": [
++    "parent"
++  ],
++  "expected": "established",
++  "sourceLocks": {
++    "parent": "1ae58d4cea696741ce98564145e1d4ee13befa2e1e1ebc49713c868bb0db3cd3"
++  }
++}
