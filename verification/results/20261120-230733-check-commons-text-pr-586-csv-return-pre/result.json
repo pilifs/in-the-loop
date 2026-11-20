@@ -1,0 +1,242 @@
+{
+  "$schema": "../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261120-230733-check-commons-text-pr-586-csv-return-pre",
+  "title": "Check Commons Text PR 586 CSV return preservation",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 2.2s, peak 146.2 MiB (estimated 3m00s, 3.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (example 349 task preservation (equivalence)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/20261120-230733-check-commons-text-pr-586-csv-return-pre.json",
+    "sha256": "eafe18ee2c8cc2f528d8d427fa413fd84c33f1edfea3dca4a01fb39fed00c7d8",
+    "spec": {
+      "$schema": "../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261120-230733-check-commons-text-pr-586-csv-return-pre",
+      "title": "Check Commons Text PR 586 CSV return preservation",
+      "description": "On the original Commons Text PR revisions compiled with their own Commons Lang 3.16.0 and 3.17.0 dependencies, run the public strict native equivalence workflow on StringEscapeUtils.escapeCsv for all non-null fields of length zero through three over a, comma, double quote, CR and LF. Record the first unsupported step or a qualified result. The independent JVM oracle and calibration-only quote-doubling mutant have separate replay tasks.",
+      "kind": "example",
+      "capabilities": [
+        "B9",
+        "jvmcontract:equivalence",
+        "target:equivalence"
+      ],
+      "links": {
+        "examples": [
+          "349"
+        ]
+      },
+      "expected": "example 349 task preservation gives its expected conclusion, established: build.py prints 'as expected' and exits 0",
+      "submitted": {
+        "at": "2026-11-20T23:07:33+00:00",
+        "session": "01a1fb31-d64c-78a3-8007-dfadb7fff401"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git",
+        "python3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m",
+        "timeout": "8m",
+        "notes": "Two 15-file source checkouts, compilation, deterministic 156-field JVM controls and a bounded native comparison."
+      },
+      "steps": [
+        {
+          "name": "example 349 task preservation (equivalence)",
+          "run": "python3 examples/tools/build.py 349 --task preservation",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/349-commons-text-csv-upgrade/receipts/preservation"
+      ]
+    }
+  },
+  "sourceCommit": "19fbb233b928fb822ab3d9e018dccbb2756748cd",
+  "startedAt": "2026-11-20T23:20:57+00:00",
+  "finishedAt": "2026-11-20T23:23:48+00:00",
+  "wallSeconds": 171.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3364785,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 77309411328,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": "Two 15-file source checkouts, compilation, deterministic 156-field JVM controls and a bounded native comparison."
+  },
+  "usage": {
+    "peakMemoryBytes": 153280512,
+    "wallSeconds": 2.2,
+    "cpuSeconds": 3.2,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 164.991,
+      "cpuSeconds": 165.212,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2148323328,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "0074eabf0f2d628ec4097f0cdbb01bf2847c347818898a936eb15998ea391c0d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261120-230733-check-commons-text-pr-586-csv-return-pre/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 44s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "example 349 task preservation (equivalence)",
+      "run": "python3 examples/tools/build.py 349 --task preservation",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 2.207,
+      "cpuSeconds": 3.159,
+      "cpuThrottledSeconds": 0.357,
+      "peakMemoryBytes": 153280512,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-example-349-task-preservation.log",
+        "lines": 31,
+        "bytes": 3309,
+        "sha256": "cbccde151e5cbd661da17c2c16e9dae8d5aae5bdf4d57f8027eb0cdda4ff3039",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "349-commons-text-csv-upgrade: running task preservation (target route)",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261120-230733-check-commons-text-pr-586-csv-return-pre/examples/tools/build.py\", line 4474, in <module>",
+        "    sys.exit(main(sys.argv[1:]))",
+        "             ~~~~^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261120-230733-check-commons-text-pr-586-csv-return-pre/examples/tools/build.py\", line 289, in main",
+        "    return run_task(next(f for f in folders if f.name[:3] == ids[0]), task, plan_only=mode == \"--plan\", retry_of=retry_of, interrupt=interrupt, checker_seconds=checker_seconds, witness=witness)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261120-230733-check-commons-text-pr-586-csv-return-pre/examples/tools/build.py\", line 440, in run_task",
+        "    receipt = target_route.run(folder, example, target, task, scratch() / \"targets\" / folder.name[:3] / task, **policy)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261120-230733-check-commons-text-pr-586-csv-return-pre/examples/tools/targets/route.py\", line 116, in run",
+        "    r = prepare_revision(p, revision, workdir / \"prepare\" / revision, shared)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261120-230733-check-commons-text-pr-586-csv-return-pre/examples/tools/targets/route.py\", line 77, in prepare_revision",
+        "    return runtime.prepare(plan, revision, directory)",
+        "           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261120-230733-check-commons-text-pr-586-csv-return-pre/examples/tools/targets/runtime.py\", line 1336, in prepare",
+        "    prepared = PREPARES[locked.source[\"route\"]](plan, revision, locked, workdir)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261120-230733-check-commons-text-pr-586-csv-return-pre/examples/tools/targets/runtime.py\", line 1266, in _prepare_slice",
+        "    source[\"target\"] = _check_classpath(plan, workdir, classpath, original, adapter)",
+        "                       ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261120-230733-check-commons-text-pr-586-csv-return-pre/examples/tools/targets/runtime.py\", line 684, in _check_classpath",
+        "    declared = runtime_jar.methods(data)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261120-230733-check-commons-text-pr-586-csv-return-pre/examples/tools/targets/runtime_jar.py\", line 170, in methods",
+        "    return set(_declarations(data)[1])",
+        "               ~~~~~~~~~~~~~^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261120-230733-check-commons-text-pr-586-csv-return-pre/examples/tools/targets/runtime_jar.py\", line 143, in _declarations",
+        "    pool, offset = _pool(data)",
+        "                   ~~~~~^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261120-230733-check-commons-text-pr-586-csv-return-pre/examples/tools/targets/runtime_jar.py\", line 107, in _pool",
+        "    pool[i] = (1, data[offset + 2: offset + 2 + length].decode(\"utf-8\", \"surrogatepass\"))",
+        "                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc0 in position 0: invalid start byte"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/349-commons-text-csv-upgrade/receipts/preservation/executions/20261120T232346Z-d9324fa3/attempt.json",
+      "change": "added",
+      "bytes": 801,
+      "sha256": "68bfbea55de020f366fddaf3a825dcacf115ec4a3364716982897849b5b423b0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-20T23:24:14+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "examples/349-commons-text-csv-upgrade/receipts/preservation/executions/20261120T232346Z-d9324fa3/attempt.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "6ff6d17a384664aaf02d89881193eef038b86637",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6ff6d17a384664aaf02d89881193eef038b86637/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261120-230733-check-commons-text-pr-586-csv-return-pre"
+}
