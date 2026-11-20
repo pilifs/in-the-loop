@@ -535,7 +535,8 @@
             "status": { "description": "`non-vacuous`: some input reaches the calls; `vacuous`: none does, so the proof covers no input; `unknown`: the probe gave no verdict.", "enum": ["non-vacuous", "vacuous", "unknown"] },
             "basis": { "description": "How it is known: `harness` (nothing skips an input before the calls), `probe` (the harness with the calls replaced by a failure, run by the tool's own checker), `identical` (the versions' bytecode is identical).", "enum": ["harness", "probe", "identical"] },
             "text": { "description": "The status in a sentence, as the page states it.", "type": "string" },
-            "witness": { "description": "An input that reaches the calls, as the probe found it.", "type": "string" }
+            "witness": { "description": "An input that reaches the calls, as the probe found it.", "type": "string" },
+            "outside": { "description": "For a regression statement with an allowed change: the change the witness is known to lie outside, as the check that found it knows. Absent when no change was allowed or the witness is not known to lie outside it.", "type": "string" }
           }
         }
       }

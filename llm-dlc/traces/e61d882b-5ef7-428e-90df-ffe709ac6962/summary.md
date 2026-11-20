@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (ended) |
+| Session | `e61d882b-5ef7-428e-90df-ffe709ac6962` (open) |
 | When | 2026-11-17 12:37 UTC to 2026-11-20 00:01 UTC (3564 min) |
 | Models | `claude-opus-5-5` |
 | Client | claude-code 2.1.326 |
@@ -2092,6 +2092,12 @@ change `nwkovvmpuklp` · [log `77b8388769e4`](https://terminalvalue.net/raw-trac
 Give the native checker a selected String-key ConcurrentHashMap, materialize empty registry objects observed on the pinned JVM, and check enum ordering with the selected JDK bytecode. The interpreter now distinguishes different enum declarations during replay. The public proof recipe binds the initializer class bytes and state separately for each revision and checks structured runtime assumptions. The five new tasks retain the original tick domains, cite their original tasks, and declare an unwind of 32. Tests cover aliasing, key equality, nulls and exceptions, model selection, and rejection of the wrong initializer or state. All 29 changed test groups and the example validator passed.
 
 Verification pending for 20261120-000226-threetenbp-clock-fix-with-observed-chron, 20261120-000226-threetenbp-clock-parent-with-observed-ch, 20261120-000226-threetenbp-reversal-fix-with-observed-ch, 20261120-000227-threetenbp-reversal-parent-with-observed and 20261120-000227-threetenbp-same-day-with-observed-chrono. A capped native probe found a parent counterexample that the JVM reproduced. The original strict receipts remain linked to their original statements.
+
+### Allow the statement's vacuity.outside in the receipt schema
+
+change `nxytvllqoupt` · [log `77b8388769e4`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/77b8388769e4640c771ac1765766e82e3e4b853ae97ba0b6a539f6490f4542fc.jsonl.gz)
+
+The foundation-and-python-restart run added Vacuity.outside to the checker's statement (lib/src/statement.rs, nwkovvmp: the allowed change a regression witness is known to lie outside) and a qualification that requires it, but examples/schema/result.schema.json still forbids extra vacuity fields, so a receipt from a current build fails check_result. The run's own default run did not see it: its workspace has no release build, so test_targets_contract's fixture calibration skipped there; this checkout's release binary predated the change until it was rebuilt. The schema now admits the field. test_targets_contract passes on the rebuilt binary, and test_costs.py run --changed passed 10 of 10.
 
 ## Conversation
 

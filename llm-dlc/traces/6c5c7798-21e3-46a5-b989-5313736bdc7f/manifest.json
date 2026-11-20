@@ -12,37 +12,38 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-20T02:02:59.420Z",
-  "duration_seconds": 376533,
+  "ended": "2026-11-20T02:18:37.005Z",
+  "duration_seconds": 377470,
   "stats": {
-    "turns": 357,
-    "api_calls": 2063,
-    "tool_calls": 1870,
-    "tool_errors": 30,
+    "turns": 359,
+    "api_calls": 2086,
+    "tool_calls": 1893,
+    "tool_errors": 31,
     "compactions": 8,
     "peak_context_tokens": 564231,
     "usage": {
-      "input_tokens": 4828,
-      "output_tokens": 1190343,
-      "cache_read_input_tokens": 488876935,
-      "cache_creation_input_tokens": 3036213
+      "input_tokens": 4878,
+      "output_tokens": 1197792,
+      "cache_read_input_tokens": 495534556,
+      "cache_creation_input_tokens": 3052434
     }
   },
   "tools": {
-    "Bash": 1772,
-    "Edit": 27,
+    "Bash": 1793,
+    "Edit": 28,
     "SendMessage": 18,
     "ToolSearch": 13,
     "TaskStop": 10,
     "Write": 8,
     "ListAgents": 7,
-    "Read": 6,
+    "Read": 7,
     "AskUserQuestion": 5,
     "Monitor": 2,
     "Skill": 2
   },
   "files_touched": [
     "CLAUDE.md",
+    "examples/schema/result.schema.json",
     "examples/schema/target.schema.json",
     "examples/tools/scaffold_example.py",
     "examples/tools/targets/test_acceptance.py",
@@ -173,24 +174,24 @@
     {
       "index": 8,
       "started": "2026-11-19T18:00:49.571Z",
-      "ended": "2026-11-20T02:02:59.420Z",
-      "turns": 54,
-      "api_calls": 238,
+      "ended": "2026-11-20T02:18:37.005Z",
+      "turns": 56,
+      "api_calls": 261,
       "usage": {
-        "input_tokens": 586,
-        "output_tokens": 76498,
-        "cache_read_input_tokens": 44484463,
-        "cache_creation_input_tokens": 247937
+        "input_tokens": 636,
+        "output_tokens": 83947,
+        "cache_read_input_tokens": 51142084,
+        "cache_creation_input_tokens": 264158
       },
-      "peak_context_tokens": 282156
+      "peak_context_tokens": 298423
     }
   ],
   "log": {
-    "sha256": "efa0b8eb185a40637da097ea6743659a6ccf3c3997368dfa4cb4bc4ab0a3c0b6",
-    "bytes": 39117505,
-    "lines": 17246,
-    "gzip_bytes": 6531433,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/efa0b8eb185a40637da097ea6743659a6ccf3c3997368dfa4cb4bc4ab0a3c0b6.jsonl.gz"
+    "sha256": "a90e8da76e31170e0cd41386381821b7d3da1d86ebc792ed529a0ec7cb2c4b68",
+    "bytes": 39506946,
+    "lines": 17430,
+    "gzip_bytes": 6593662,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/a90e8da76e31170e0cd41386381821b7d3da1d86ebc792ed529a0ec7cb2c4b68.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -3769,6 +3770,14 @@
       "summary": "Record the watcher's last two answers on the foundation-and-python-restart run",
       "body": "D003 (continue after cycle 3, at the user's word for more checker depth) and D004 (stop after cycle 4: the restart brief's outcome reached) were in the default workspace's decision record when the run landed by moving forward; they are committed here and the review page regenerated (decisions.py render).",
       "log_sha256": "efa0b8eb185a40637da097ea6743659a6ccf3c3997368dfa4cb4bc4ab0a3c0b6"
+    },
+    {
+      "change_id": "nxytvllqouptrqpnvxtoskzppyzkxzxm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Allow the statement's vacuity.outside in the receipt schema",
+      "body": "The foundation-and-python-restart run added Vacuity.outside to the checker's statement (lib/src/statement.rs, nwkovvmp: the allowed change a regression witness is known to lie outside) and a qualification that requires it, but examples/schema/result.schema.json still forbids extra vacuity fields, so a receipt from a current build fails check_result. The run's own default run did not see it: its workspace has no release build, so test_targets_contract's fixture calibration skipped there; this checkout's release binary predated the change until it was rebuilt. The schema now admits the field. test_targets_contract passes on the rebuilt binary, and test_costs.py run --changed passed 10 of 10.",
+      "log_sha256": "a90e8da76e31170e0cd41386381821b7d3da1d86ebc792ed529a0ec7cb2c4b68"
     }
   ],
   "logs": {
@@ -4533,6 +4542,12 @@
       "lines": 15864,
       "gzip_bytes": 6251313,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/a8601cce1fa9b71e24c0d4843afca2749234a1c302a29ca47190fd87d5a1a650.jsonl.gz"
+    },
+    "a90e8da76e31170e0cd41386381821b7d3da1d86ebc792ed529a0ec7cb2c4b68": {
+      "bytes": 39506946,
+      "lines": 17430,
+      "gzip_bytes": 6593662,
+      "url": null
     },
     "aa8e482c0282dd3efd3b7b0f8e1c243a0a7c9ad6627e753c2ec26d40b057e7d7": {
       "bytes": 4148165,
